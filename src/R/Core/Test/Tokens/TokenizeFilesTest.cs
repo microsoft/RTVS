@@ -20,7 +20,7 @@ namespace Microsoft.R.Core.Test.Tokens
             {
                 string testFile = TestFiles.GetTestFilePath(context, name);
                 // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"F:\Personal\R\R\Core\Test\Files\Tokenization";
+                string enlistmentPath = @"F:\RTVS\src\R\Core\Test\Files\Tokenization";
                 string baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
 
                 string text = TestFiles.LoadFile(context, testFile);

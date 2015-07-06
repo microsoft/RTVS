@@ -90,6 +90,8 @@
     <None Include="Files\Tokenization\Floats.r.tokens" />
     <None Include="Files\Tokenization\Functions.r" />
     <None Include="Files\Tokenization\Functions.r.tokens" />
+    <None Include="Files\Tokenization\Hex.r" />
+    <None Include="Files\Tokenization\Hex.r.tokens" />
     <None Include="Files\Tokenization\Integers.r.tokens" />
     <None Include="Files\Tokenization\lsfit.r" />
     <None Include="Files\Tokenization\lsfit.r.tokens" />

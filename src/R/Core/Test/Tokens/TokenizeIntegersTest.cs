@@ -60,5 +60,11 @@ namespace Microsoft.R.Core.Test.Tokens
         {
             TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Integers.r");
         }
+
+        [TestMethod]
+        public void TokenizeFile_HexFile()
+        {
+            TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Hex.r");
+        }
     }
 }
