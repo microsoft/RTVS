@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Parser\ParseComplexNumbersTest.cs" />
+    <Compile Include="Parser\ParseFunctionsTest.cs" />
     <Compile Include="Parser\ParseKnownContstantsTest.cs" />
     <Compile Include="Parser\ParseIndexerTest.cs" />
     <Compile Include="Parser\ParseStringContstantsTest.cs" />

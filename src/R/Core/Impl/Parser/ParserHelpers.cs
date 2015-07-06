@@ -65,7 +65,7 @@ namespace Microsoft.R.Core.Parser
             return null;
         }
 
-        public static IScope ParseScope(ParseContext context, IAstNode parent, bool allowsSimpleScope)
+        public static IScope ParseScope(ParseContext context, IAstNode parent, bool allowsSimpleScope, string terminatingKeyword)
         {
             TokenStream<RToken> tokens = context.Tokens;
             IScope scope;
@@ -81,7 +81,7 @@ namespace Microsoft.R.Core.Parser
             else if (allowsSimpleScope)
             {
                 // Try simple on-line scope as in 'for(...) statement # comment'
-                scope = new SimpleScope();
+                scope = new SimpleScope(terminatingKeyword);
                 if (scope.Parse(context, parent))
                 {
                     return scope;

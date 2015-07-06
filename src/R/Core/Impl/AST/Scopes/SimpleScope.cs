@@ -16,6 +16,7 @@ namespace Microsoft.R.Core.AST.Scopes
     public sealed class SimpleScope : AstNode, IScope
     {
         private Statement statement;
+        private string terminatingKeyword;
 
         #region IScope
         public string Name
@@ -48,9 +49,14 @@ namespace Microsoft.R.Core.AST.Scopes
         }
         #endregion
 
+        public SimpleScope(string terminatingKeyword)
+        {
+            this.terminatingKeyword = terminatingKeyword;
+        }
+
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            this.statement = Statement.Create(context, this.Parent);
+            this.statement = Statement.Create(context, this);
             if (this.statement != null)
             {
                 if(this.statement.Parse(context, this))

@@ -51,7 +51,6 @@ namespace Microsoft.R.Core.AST.Statements
 
                 case RTokenType.Semicolon:
                     statement = new Statement();
-                    statement.Parse(context, parent);
                     break;
 
                 default:

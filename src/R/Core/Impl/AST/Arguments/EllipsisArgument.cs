@@ -4,7 +4,7 @@
     /// Represents '...' argument. Normally it is the last 
     /// one in the function definition.
     /// </summary>
-    public sealed class EllipsisArgument : CommaSeparatedItem
+    public sealed class EllipsisArgument : TokenNode
     {
         public override string ToString()
         {

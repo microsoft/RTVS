@@ -22,7 +22,7 @@ namespace Microsoft.R.Core.AST.Statements
         {
             if (this.ParseKeywordSequence(context))
             {
-                IScope scope = RParser.ParseScope(context, this, this.allowsSimpleScope);
+                IScope scope = RParser.ParseScope(context, this, this.allowsSimpleScope, terminatingKeyword: null);
                 if (scope != null)
                 {
                     this.Scope = scope;

@@ -12,6 +12,11 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
     /// </summary>
     public sealed class If : KeywordExpressionScopeStatement
     {
+        public If():
+            base("else")
+        {
+        }
+
         public KeywordScopeStatement Else { get; private set; }
 
         public override bool Parse(ParseContext context, IAstNode parent)
