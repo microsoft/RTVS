@@ -1,0 +1,8 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<!-- Common Build Settings and Configurations -->
+	<PropertyGroup>
+		<DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">$(DefineConstants);VS14</DefineConstants>
+	</PropertyGroup>
+
+</Project>

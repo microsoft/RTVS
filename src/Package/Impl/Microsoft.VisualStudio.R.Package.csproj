@@ -1,0 +1,272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectTypeGuids>{82B43B9B-A64C-4715-B499-D71E9CA2BD60};{60DC8134-EBA5-43B8-BCC9-BB4BC16C2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{26035FE3-25AB-45EC-BB45-7FD0B6C1D545}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.VisualStudio.R.Package</RootNamespace>
+    <AssemblyName>Microsoft.VisualStudio.R.Package</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <GeneratePkgDefFile>false</GeneratePkgDefFile>
+    <UseCodebase>true</UseCodebase>
+    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
+    <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
+    <CreateVsixContainer>True</CreateVsixContainer>
+    <DeployExtension>True</DeployExtension>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Document\IVsEditorDocumentFactory.cs" />
+    <Compile Include="Document\VsREditorDocument.cs" />
+    <Compile Include="Document\VsEditorDocumentFactory.cs" />
+    <Compile Include="Interop\CommandTargetToOleShim.cs" />
+    <Compile Include="Interop\CommandTargetToOleShimVariantStacks.cs" />
+    <Compile Include="Interop\ConnectionPoint.cs" />
+    <Compile Include="Interop\IOleServiceProvider.cs" />
+    <Compile Include="Interop\NativeMethods.cs" />
+    <Compile Include="Interop\OleCommand.cs" />
+    <Compile Include="Interop\OleToCommandTargetShim.cs" />
+    <Compile Include="Options\Attributes\EnumTypeConverter.cs" />
+    <Compile Include="Options\Attributes\LocCategoryAttribute.cs" />
+    <Compile Include="Options\Attributes\LocDescriptionAttribute.cs" />
+    <Compile Include="Options\Attributes\OnOffTypeConverter.cs" />
+    <Compile Include="Options\Attributes\LocDisplayNameAttribute.cs" />
+    <Compile Include="Options\Common\LanguageSettingsStorage.cs" />
+    <Compile Include="Options\Common\LanguageSettingsStorageWithDialog.cs" />
+    <Compile Include="Options\R\RToolsOptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\R\REditorOptionsDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\R\VsRSettingsStorage.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Shell\AppEventsSource.cs" />
+    <Compile Include="Shell\AppShell.cs" />
+    <Compile Include="Editors\REditorFactory.cs" />
+    <Compile Include="Shell\IApplicationShell.cs" />
+    <Compile Include="Packages\RGuidList.cs" />
+    <Compile Include="Languages\RLanguageService.cs" />
+    <Compile Include="Editors\TextBufferInitializationTracker.cs" />
+    <Compile Include="Editors\BaseEditorFactory.cs" />
+    <Compile Include="Languages\BaseLanguageService.cs" />
+    <Compile Include="Packages\BasePackage.cs" />
+    <Compile Include="Packages\RPackage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shell\IdleTimeSource.cs" />
+    <Compile Include="Shell\VsEditorShell.cs" />
+    <Compile Include="Utilities\Navigation.cs" />
+    <Compile Include="Utilities\ProjectUtilities.cs" />
+    <Compile Include="Utilities\TextBufferUtilities.cs" />
+    <Compile Include="Utilities\CompletionUtilities.cs" />
+    <Compile Include="Utilities\ViewUtilities.cs" />
+    <Compile Include="Workspace\VsFileInfo.cs" />
+    <Compile Include="Workspace\IVsWorkspaceItem.cs" />
+    <Compile Include="Workspace\VsFile.cs" />
+    <Compile Include="Workspace\VsFolder.cs" />
+    <Compile Include="Workspace\VsWorkspace.cs" />
+    <Compile Include="Workspace\VsWorkspaceItem.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="35MSSharedLib1024.snk" />
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VSPackage.resx">
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.ComponentModelHost">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.CoreUtility">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Editor">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Language.Intellisense">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.OLE.Interop">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.14.0">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.11.0">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.12.0">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.12.1.DesignTime">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Data">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Logic">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.11.0">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.12.1.DesignTime, Version=12.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Utilities">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Telemetry\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Languages.Core.csproj">
+      <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
+      <Name>Microsoft.Languages.Core</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\Editor\Impl\Microsoft.Languages.Editor.csproj">
+      <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
+      <Name>Microsoft.Languages.Editor</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
+      <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
+      <Name>Microsoft.R.Core</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Name>Microsoft.R.Editor</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Package.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <VSCTCompile Include="Package.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
+    </VSCTCompile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

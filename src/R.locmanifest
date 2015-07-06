@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- Assemblies -->
+    <FilesToLocalize Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.ApacheCordovaToolsPackage.dll" Condition="'$(MSBuildProjectFile)' == 'ApacheCordovaToolsPackage.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <HasLceComments>true</HasLceComments>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Microsoft.VisualStudio.MultiDeviceHybridApps.ApacheCordovaToolsPackage.dll.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.Common.dll" Condition="'$(MSBuildProjectFile)' == 'Common.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <HasLceComments>true</HasLceComments>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Microsoft.VisualStudio.MultiDeviceHybridApps.Common.dll.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Microsoft.VisualStudio.DesignTools.Html.Common.dll" Condition="'$(MSBuildProjectFile)' == 'CommonPackage.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <HasLceComments>true</HasLceComments>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Microsoft.VisualStudio.DesignTools.Html.Common.dll.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.CordovaParser.dll" Condition="'$(MSBuildProjectFile)' == 'CordovaParser.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <HasLceComments>true</HasLceComments>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Microsoft.VisualStudio.MultiDeviceHybridApps.CordovaParser.dll.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.MdaBuildTasks.dll" Condition="'$(MSBuildProjectFile)' == 'MdaBuildTasks.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <HasLceComments>true</HasLceComments>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Microsoft.VisualStudio.MultiDeviceHybridApps.MdaBuildTasks.dll.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.VSTemplateWizard.dll" Condition="'$(MSBuildProjectFile)' == 'VSTemplateWizard.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <HasLceComments>true</HasLceComments>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Microsoft.VisualStudio.MultiDeviceHybridApps.VSTemplateWizard.dll.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.Configuration.dll" Condition="'$(MSBuildProjectFile)' == 'Configuration.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <HasLceComments>true</HasLceComments>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Microsoft.VisualStudio.MultiDeviceHybridApps.Configuration.dll.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <!-- Packages -->
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-tac\resources\en\resources.json" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentAndUI_SourceEncoding.lss</SettingsFile>
+      <LciCommentFile>$(MSBuildThisFileDirectory)loc\lci\packages\vs-tac\resources\en\resources.json.lci</LciCommentFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-tac\resources\en\resources.json.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-remote\resources\en\resources.json" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentAndUI_SourceEncoding.lss</SettingsFile>
+      <LciCommentFile>$(MSBuildThisFileDirectory)loc\lci\packages\vs-mda-remote\resources\en\resources.json.lci</LciCommentFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-remote\resources\en\resources.json.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <!-- General Debug Targets -->
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\debugger_general.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\debugger_general.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <!-- Ripple Debug Targets -->
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\RippleiPad.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\RippleiPad.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\RippleiPad3.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\RippleiPad3.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\RippleiPhone4.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\RippleiPhone4.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\RippleiPhone5.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\RippleiPhone5.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\RippleNexus.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\RippleNexus.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\RippleNexus7.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\RippleNexus7.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\RippleNexusS.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\RippleNexusS.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <!-- Android Debug Targets -->
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\AndroidEmulator.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <LciCommentFile>$(MSBuildThisFileDirectory)loc\lci\packages\vs-mda-targets\AndroidEmulator.xaml.lci</LciCommentFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\AndroidEmulator.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <!-- iOS Debug Targets -->
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\iOSEmulatoriPad2.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\iOSEmulatoriPad2.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\iOSEmulatoriPadAir.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\iOSEmulatoriPadAir.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\iOSEmulatoriPadRetina.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\iOSEmulatoriPadRetina.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\iOSEmulatoriPhone4S.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\iOSEmulatoriPhone4S.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\iOSEmulatoriPhone5.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\iOSEmulatoriPhone5.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\iOSEmulatoriPhone5S.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\iOSEmulatoriPhone5S.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\iOSEmulatoriPhone6.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\iOSEmulatoriPhone6.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\iOSEmulatoriPhone6Plus.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\iOSEmulatoriPhone6Plus.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\iOSLocalDevice.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\iOSLocalDevice.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <!-- Windows Phone 8.1 Debug Targets -->
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\PhoneDevice.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\PhoneDevice.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\PhoneDevice81.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\PhoneDevice81.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\PhoneEmulatorWvga.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\PhoneEmulatorWvga.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\PhoneEmulatorWvga512.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\PhoneEmulatorWvga512.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\PhoneEmulatorWxga.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\PhoneEmulatorWxga.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <!-- Windows Debug Targets -->
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\WindowsLocal.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\WindowsLocal.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\WindowsRemote.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\WindowsRemote.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\WindowsRemoteProperties.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <LciCommentFile>$(MSBuildThisFileDirectory)loc\lci\packages\vs-mda-targets\WindowsRemoteProperties.xaml.lci</LciCommentFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\WindowsRemoteProperties.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\WindowsSimulator.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\WindowsSimulator.xaml.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <!-- Windows mobile targets -->
+    <FilesToLocalize Include="$(OutDir)\Packages\vs-mda-targets\WindowsMobileEmulator.xaml" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_strpLocTg_vc.lss</SettingsFile>
+      <LciCommentFile>$(MSBuildThisFileDirectory)loc\lci\packages\vs-mda-targets\WindowsMobileEmulator.xaml.lci</LciCommentFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Packages\vs-mda-targets\WindowsMobileEmulator.xaml.lcl</TranslationFile>
+    </FilesToLocalize>    
+
+    <!-- Templates -->
+    <!-- BlankFileMirrorCordovaJS -->
+    <FilesToLocalize Include="$(OutDir)\Templates\JavaScript\BlankFileMirrorCordovaJS\BlankCordovaJS.vstemplate" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_vstemplate.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\JavaScript\BlankFileMirrorCordovaJS\BlankCordovaJS.vstemplate.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\JavaScript\BlankFileMirrorCordovaJS\www\index.html" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\HTML_SourceEncodingComment.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\JavaScript\BlankFileMirrorCordovaJS\www\index.html.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\JavaScript\BlankFileMirrorCordovaJS\Project_Readme.html" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <LciCommentFile>$(MSBuildThisFileDirectory)loc\lci\Templates\JavaScript\BlankFileMirrorCordovaJS\Project_Readme.html.lci</LciCommentFile>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\HTML_NoEmbeddedImg.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\JavaScript\BlankFileMirrorCordovaJS\Project_Readme.html.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\JavaScript\BlankFileMirrorCordovaJS\merges\android\scripts\android2.3-jscompat.js" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentOnly_SourceEncoding.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\JavaScript\BlankFileMirrorCordovaJS\merges\android\scripts\android2.3-jscompat.js.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\JavaScript\BlankFileMirrorCordovaJS\merges\android\scripts\platformOverrides.js" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentOnly_SourceEncoding.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\JavaScript\BlankFileMirrorCordovaJS\merges\android\scripts\platformOverrides.js.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\JavaScript\BlankFileMirrorCordovaJS\merges\windows\scripts\platformOverrides.js" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentOnly_SourceEncoding.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\JavaScript\BlankFileMirrorCordovaJS\merges\windows\scripts\platformOverrides.js.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\JavaScript\BlankFileMirrorCordovaJS\www\scripts\index.js" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentOnly_SourceEncoding.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\JavaScript\BlankFileMirrorCordovaJS\www\scripts\index.js.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\JavaScript\BlankFileMirrorCordovaJS\www\scripts\platformOverrides.js" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentOnly_SourceEncoding.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\JavaScript\BlankFileMirrorCordovaJS\www\scripts\platformOverrides.js.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <!-- BlankFileMirrorCordovaTS -->
+    <FilesToLocalize Include="$(OutDir)\Templates\TypeScript\BlankFileMirrorCordovaTS\BlankCordovaTS.vstemplate" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\locxml_vstemplate.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\TypeScript\BlankFileMirrorCordovaTS\BlankCordovaTS.vstemplate.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\TypeScript\BlankFileMirrorCordovaTS\www\index.html" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\HTML_SourceEncodingComment.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\TypeScript\BlankFileMirrorCordovaTS\www\index.html.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\TypeScript\BlankFileMirrorCordovaTS\Project_Readme.html" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <LciCommentFile>$(MSBuildThisFileDirectory)loc\lci\Templates\TypeScript\BlankFileMirrorCordovaTS\Project_Readme.html.lci</LciCommentFile>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\HTML_NoEmbeddedImg.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\TypeScript\BlankFileMirrorCordovaTS\Project_Readme.html.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\TypeScript\BlankFileMirrorCordovaTS\merges\android\scripts\android2.3-jscompat.js" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentOnly_SourceEncoding.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\TypeScript\BlankFileMirrorCordovaTS\merges\android\scripts\android2.3-jscompat.js.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\TypeScript\BlankFileMirrorCordovaTS\merges\android\scripts\platformOverrides.js" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentOnly_SourceEncoding.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\TypeScript\BlankFileMirrorCordovaTS\merges\android\scripts\platformOverrides.js.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\TypeScript\BlankFileMirrorCordovaTS\merges\windows\scripts\platformOverrides.js" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <SettingsFile>$(LSBuildRoot)\CommentOnly_SourceEncoding.lss</SettingsFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\TypeScript\BlankFileMirrorCordovaTS\merges\windows\scripts\platformOverrides.js.lcl</TranslationFile>
+    </FilesToLocalize>
+    <FilesToLocalize Include="$(OutDir)\Templates\TypeScript\BlankFileMirrorCordovaTS\scripts\index.ts" Condition="'$(MSBuildProjectFile)' == 'LocalizableContent.csproj'">
+      <Languages>$(VS)</Languages>
+      <Parser>22</Parser>
+      <SettingsFile>$(LSBuildRoot)\CommentOnly_UTF8.lss</SettingsFile>
+      <ProjectFile>$(MSBuildThisFileFullPath)</ProjectFile>
+      <TranslationFile>$(MSBuildThisFileDirectory)loc\lcl\{Lang}\Templates\TypeScript\BlankFileMirrorCordovaTS\scripts\index.ts.lcl</TranslationFile>
+    </FilesToLocalize>
+
+    <WPFDependency Include="$(OutDir)\Microsoft.Web.Core.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.Web.Editor.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.Css.Core.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.Css.Editor.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.Html.Core.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.Html.Editor.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.JavaScript.Services.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.JavaScript.Project.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Telemetry.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.WebClient.Diagnostics.Services.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.WebClient.Diagnostics.HtmlToolHost.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Composition.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.AppxPackage.Contracts.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.ConnectedServices.Contracts.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Web.Internal.Contracts.dll" />
+    <WPFDependency Include="$(OutDir)\Newtonsoft.Json.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.ApacheCordovaToolsPackage.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.Common.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.DesignTools.Html.Common.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.Configuration.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.DesignTools.Html.Utility.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.CordovaParser.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.MdaBuildTasks.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.MultiDeviceHybridApps.VSTemplateWizard.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.DesignTools.Html.Common.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.14.0.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Immutable.10.0.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Immutable.11.0.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Immutable.14.0.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Interop.12.1.DesignTime.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Interop.8.0.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Interop.9.0.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Interop.10.0.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Interop.11.0.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Interop.12.0.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Shell.Interop.dll" />
+    <WPFDependency Include="$(OutDir)\Microsoft.VisualStudio.Settings.14.0.dll" />
+    <WPFDependency Include="$(OutDir)\PresentationFramework.dll" />
+    <WPFDependency Include="$(OutDir)\PresentationCore.dll" />
+    <WPFDependency Include="$(OutDir)\WindowsBase.dll" />
+    <WPFDependency Include="$(OutDir)\System.Xaml.dll" />
+  </ItemGroup>
+</Project>

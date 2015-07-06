@@ -1,0 +1,39 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <!-- 
+      When building from a dev machine, the BuildNumber won't be set, so set it to 65000.1 
+      to indicate this is a private build. 65000 is also greater than lab build numbers and hence
+      developer can update MSI installed from the official build by the private copy 
+    -->
+    <BuildNumber Condition=" '$(BuildNumber)' == '' ">65000.1</BuildNumber>
+    <MajorVersion>14.0</MajorVersion>
+    <AssemblyVersion>$(MajorVersion).$(BuildNumber)</AssemblyVersion>
+    <BuildVersion>$(MajorVersion).$(BuildNumber)</BuildVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyVersionAttribute Include="System.Reflection.AssemblyVersionAttribute">
+      <_Parameter1>$(AssemblyVersion)</_Parameter1>
+    </AssemblyVersionAttribute>
+    <AssemblyVersionAttribute Include="System.Reflection.AssemblyFileVersionAttribute">
+      <_Parameter1>$(BuildVersion)</_Parameter1>
+    </AssemblyVersionAttribute>
+    <AssemblyVersionAttribute Include="System.Reflection.AssemblyInformationalVersionAttribute">
+      <_Parameter1>$(BuildVersion)</_Parameter1>
+    </AssemblyVersionAttribute>
+  </ItemGroup>
+
+  <Target Name="GenerateAssemblyInfoFile" Inputs="$(MSBuildAllProjects)" Outputs="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs">
+    <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
+							Language="C#"
+							OutputFile="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs">
+      <Output TaskParameter="OutputFile" ItemName="Compile" />
+      <Output TaskParameter="OutputFile" ItemName="FileWrites" />
+    </WriteCodeFragment>
+  </Target>
+
+  <PropertyGroup>
+    <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
+  </PropertyGroup>
+</Project>

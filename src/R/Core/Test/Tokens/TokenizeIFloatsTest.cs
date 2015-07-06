@@ -1,0 +1,115 @@
+﻿using Microsoft.R.Core.Tokens;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Microsoft.R.Core.Test.Tokens
+{
+    [TestClass]
+    public class TokenizeFloatsTest : TokenizeTestBase
+    {
+        [TestMethod]
+        public void TokenizeFloats1()
+        {
+            var tokens = this.Tokenize("+1 ");
+
+            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(0, tokens[0].Start);
+            Assert.AreEqual(2, tokens[0].Length);
+        }
+
+        [TestMethod]
+        public void TokenizeFloats2()
+        {
+            var tokens = this.Tokenize("-.0");
+
+            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(0, tokens[0].Start);
+            Assert.AreEqual(3, tokens[0].Length);
+        }
+
+        [TestMethod]
+        public void TokenizeFloats3()
+        {
+            var tokens = this.Tokenize("0.e1");
+
+            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(0, tokens[0].Start);
+            Assert.AreEqual(4, tokens[0].Length);
+        }
+
+        [TestMethod]
+        public void TokenizeFloats4()
+        {
+            var tokens = this.Tokenize(".0e-2");
+
+            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(0, tokens[0].Start);
+            Assert.AreEqual(5, tokens[0].Length);
+        }
+
+        [TestMethod]
+        public void TokenizeFloats5()
+        {
+            var tokens = this.Tokenize("-0.e");
+
+            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(0, tokens[0].Start);
+            Assert.AreEqual(4, tokens[0].Length);
+        }
+
+        [TestMethod]
+        public void TokenizeFloats6()
+        {
+            var tokens = this.Tokenize("-12.%foo%-.1e");
+
+            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(0, tokens[0].Start);
+            Assert.AreEqual(4, tokens[0].Length);
+
+            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
+            Assert.AreEqual(4, tokens[1].Start);
+            Assert.AreEqual(5, tokens[1].Length);
+
+            Assert.AreEqual(RTokenType.Number, tokens[2].TokenType);
+            Assert.AreEqual(9, tokens[2].Start);
+            Assert.AreEqual(4, tokens[2].Length);
+        }
+
+        [TestMethod]
+        public void TokenizeFloats7()
+        {
+            var tokens = this.Tokenize(".1");
+
+            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(0, tokens[0].Start);
+            Assert.AreEqual(2, tokens[0].Length);
+        }
+
+        [TestMethod]
+        public void TokenizeFloats8()
+        {
+            var tokens = this.Tokenize("1..1");
+
+            Assert.AreEqual(2, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(0, tokens[0].Start);
+            Assert.AreEqual(2, tokens[0].Length);
+
+            Assert.AreEqual(RTokenType.Number, tokens[1].TokenType);
+            Assert.AreEqual(2, tokens[1].Start);
+            Assert.AreEqual(2, tokens[1].Length);
+        }
+
+        [TestMethod]
+        public void TokenizeFile_FloatsFile()
+        {
+            TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Floats.r");
+        }
+    }
+}

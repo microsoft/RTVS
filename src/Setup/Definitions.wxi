@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <?define ProductName="Microsoft Visual Studio Tools for R" ?>
+  <?define VSRegVer="14.0" ?>
+  
+  <!-- 
+     Uncomment this to simulate loc build.
+     You may need to copy bin/*/localize folder contents
+     from nightly build drop into your bin folder.
+  -->
+  <!--<?define LabBuild="1" ?>-->
+
+  <?define BinDir="$(var.OutDir)" ?>
+  <?define LocDir="$(var.OutDir)\localize" ?>
+  <?define SourceDir=".." ?>
+
+  <?ifdef LabBuild?>
+  <?define LangList=CHS;CHT;CSY;DEU;ENU;ESN;FRA;ITA;JPN;KOR;PLK;PTB;RUS;TRK?>
+  <?else?>
+  <?define LangList=ENU?>
+  <?endif?>
+
+</Include>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <DirectoryRef Id="INSTALLFOLDER">
+    <Component Id="ProductAssemblies" Guid="{37B3AC0F-F90A-441F-A2FE-2991AF6C2E03}">
+      <File Source="$(var.BinDir)\extension.vsixmanifest" />
+      <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Editor.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
+      <File Source="$(var.BinDir)\Microsoft.Languages.Editor.dll" />
+      <File Source="$(var.BinDir)\Microsoft.Languages.Core.dll" />
+      <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pkgdef" />
+    </Component>
+    <?ifdef Debug?>
+    <Component Id="ProductAssembliesDebugData" Guid="{320E46DF-665F-492C-A0D6-9CE7DE21036D}">
+      <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.R.Editor.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.R.Core.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.Languages.Editor.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.Languages.Core.pdb" />
+    </Component>
+    <?endif?>
+  </DirectoryRef>
+</Include>

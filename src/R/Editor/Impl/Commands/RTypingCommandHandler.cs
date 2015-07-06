@@ -1,0 +1,73 @@
+﻿using System;
+using System.Diagnostics;
+using Microsoft.Languages.Editor;
+using Microsoft.Languages.Editor.Completion;
+using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Completion.AutoCompletion;
+using Microsoft.R.Editor.Document;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
+
+namespace Microsoft.Html.Editor.Commands
+{
+    /// <summary>
+    /// Processes typing in HTML document. Implements ICommandTarget to 
+    /// receive typing as commands
+    /// </summary>
+    internal class RTypingCommandHandler : TypingCommandHandler
+    {
+        public RTypingCommandHandler(ITextView textView)
+            : base(textView)
+        {
+        }
+
+        #region ICommand
+        public override void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
+        {
+            if (group == VSConstants.VSStd2K)
+            {
+                var typedChar = GetTypedChar(group, id, inputArg);
+
+                HandleCompletion(typedChar);
+
+                base.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
+            }
+        }
+        #endregion
+
+        protected override CompletionController CompletionController
+        {
+            get
+            {
+                return ServiceManager.GetService<RCompletionController>(TextView);
+            }
+        }
+
+        private void HandleCompletion(char typedChar)
+        {
+            REditorDocument document = REditorDocument.FromTextBuffer(TextBuffer);
+            Debug.Assert(document != null);
+
+            switch (typedChar)
+            {
+                case '\'':
+                case '\"':
+                case '=':
+                case '{':
+                case '(':
+                case '[':
+                    //QuoteCompletion.CompleteQuotes(TextView, editorTree, position, typedChar);
+                    break;
+            }
+
+            // Workaround for Dev12 bug 730266 - QuoteCompletion will suppress adding provisional text,
+            // but it has no idea when to allow it again.
+            // Hopefully someday the static variable workaround in that class can be removed and this
+            // workaround can be removed.
+            QuoteCompletion.CancelSuppression();
+        }
+    }
+}

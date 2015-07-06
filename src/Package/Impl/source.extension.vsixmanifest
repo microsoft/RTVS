@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="RTVS.Microsoft.69055957-4E1C-4684-9C23-2494599A8CB2" Version="1.0" Language="en-US" Publisher="Microsoft" />
+    <DisplayName>R Tools for Visual Studio </DisplayName>
+    <Description xml:space="preserve">Microsoft Visual Studio Tools for language R</Description>
+  </Metadata>
+  <Installation AllUsers="true">
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0]" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" Path="Microsoft.VisualStudio.R.Package.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Languages.Editor.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Editor.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Package.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Core.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Core.dll" />
+  </Assets>
+</PackageManifest>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?include Definitions.wxi ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+  <Product Id="*"
+           Name="$(var.ProductName)"
+           Language="1033"
+           Version="$(var.MsiVersion)"
+           Manufacturer="Microsoft Corporation"
+           UpgradeCode="{F8B68FDA-2C2A-4203-8793-4EEC88ECB015}">
+
+    <Package InstallerVersion="350" Compressed="yes" InstallScope="perMachine" />
+
+    <Icon Id ="ControlPanelIcon" SourceFile="vsicon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="ControlPanelIcon" />
+
+    <!-- Uninstall Current MSI -->
+    <Upgrade Id="{F8B68FDA-2C2A-4203-8793-4EEC88ECB015}">
+      <UpgradeVersion IncludeMinimum="yes" Minimum="1.0.0.0" Property="VS2015_APACHECORDOVATOOLS" RemoveFeatures="ALL" />
+    </Upgrade>
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Search for shared root "MS VS XX.X" folder-->
+    <Property Id="VS_ROOT_FOLDER" Secure="yes">
+      <RegistrySearch Id="VSRootSearch" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS" Name="ProductDir" Type="raw" />
+    </Property>
+
+    <!-- MDD detection key that is used by the secondary installer -->
+    <Feature Id="RToolsDetection">
+      <Component Id="RToolsDetectionKey" Directory="TARGETDIR">
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS\RTVS" Name="Installed" Type="integer" Value="1" />
+      </Component>
+    </Feature>
+
+    <Feature Id="RToolsVersion">
+      <Component Id="RToolsVersionKey" Directory="TARGETDIR">
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS\RTVS" Name="Version" Type="string" Value="$(var.MsiVersion)" />
+      </Component>
+    </Feature>
+    
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallInitialize" />
+    </InstallExecuteSequence>
+    
+    <?include Feature.wxi ?>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="VSFolder" Name="Microsoft Visual Studio $(var.VSRegVer)">
+          <Directory Id="VS_ROOT_FOLDER">
+
+            <Directory Id="VSCommonFilesFolder" Name="Common7">
+              <Directory Id="CommonIdeFolder" Name="IDE">
+                <Directory Id="ExtensionsFolder" Name="Extensions">
+                  <Directory Id="MicrosoftFolder" Name="Microsoft">
+                    <Directory Id="INSTALLFOLDER" Name="R Tools for Visual Studio">
+
+                    <?ifdef LabBuild?>
+                    <Directory Id="CHS_Satellites" Name="zh-cn" />
+                    <Directory Id="CHT_Satellites" Name="zh-tw" />
+                    <Directory Id="CSY_Satellites" Name="cs" />
+                    <Directory Id="DEU_Satellites" Name="de" />
+                    <Directory Id="ESN_Satellites" Name="es" />
+                    <Directory Id="FRA_Satellites" Name="fr" />
+                    <Directory Id="ITA_Satellites" Name="it" />
+                    <Directory Id="JPN_Satellites" Name="ja" />
+                    <Directory Id="KOR_Satellites" Name="ko" />
+                    <Directory Id="PLK_Satellites" Name="pl" />
+                    <Directory Id="PTB_Satellites" Name="pt" />
+                    <Directory Id="RUS_Satellites" Name="ru" />
+                    <Directory Id="TRK_Satellites" Name="tr" />
+                    <?endif?>
+
+                    </Directory>
+                  </Directory>
+                </Directory>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+
+      </Directory>
+    </Directory>
+
+  </Fragment>
+
+  <Fragment>
+    <?include Assemblies.wxi ?>
+
+    <?ifdef LabBuild?>
+    <?include LocalizedResources.wxi ?>
+    <?endif?>
+  </Fragment>
+
+</Wix>
