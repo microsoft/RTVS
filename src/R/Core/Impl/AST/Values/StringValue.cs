@@ -18,7 +18,7 @@ namespace Microsoft.R.Core.AST.Values
 
             Debug.Assert(currentToken.TokenType == RTokenType.String);
 
-            this.nodeValue = new RString(text);
+            NodeValue = new RString(text);
             return base.Parse(context, parent);
         }
     }

@@ -11,7 +11,7 @@ namespace Microsoft.R.Core.AST.Values
     {
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            this.nodeValue = new RNull();
+            NodeValue = new RNull();
             return base.Parse(context, parent);
         }
     }

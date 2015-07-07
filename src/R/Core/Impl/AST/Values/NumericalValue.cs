@@ -19,7 +19,7 @@ namespace Microsoft.R.Core.AST.Values
 
             if (Double.TryParse(text, out result))
             {
-                this.nodeValue = new RNumber(result);
+                NodeValue = new RNumber(result);
                 return base.Parse(context, parent);
             }
 

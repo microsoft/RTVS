@@ -17,9 +17,9 @@ namespace Microsoft.R.Core.AST
     [DebuggerDisplay("[Children = {Children.Count}  {Start}...{End}, Length = {Length}]")]
     public abstract class AstNode : IAstNode
     {
-        private Lazy<PropertyDictionary> properties = new Lazy<PropertyDictionary>(() => new PropertyDictionary());
-        private IAstNode parent;
-        protected TextRangeCollection<IAstNode> children = new TextRangeCollection<IAstNode>();
+        private Lazy<PropertyDictionary> _properties = new Lazy<PropertyDictionary>(() => new PropertyDictionary());
+        private IAstNode _parent;
+        protected TextRangeCollection<IAstNode> _children = new TextRangeCollection<IAstNode>();
 
         #region IAstNode
         /// <summary>
@@ -27,7 +27,7 @@ namespace Microsoft.R.Core.AST
         /// </summary>
         public virtual AstRoot Root
         {
-            get { return this.Parent != null ? this.Parent.Root : null; }
+            get { return Parent != null ? Parent.Root : null; }
         }
 
         /// <summary>
@@ -35,25 +35,25 @@ namespace Microsoft.R.Core.AST
         /// </summary>
         public IAstNode Parent
         {
-            get { return this.parent; }
+            get { return _parent; }
             set
             {
-                if (this.parent != null && this.parent != value && value != null)
+                if (_parent != null && _parent != value && value != null)
                 {
                     throw new InvalidOperationException("Node already has parent");
                 }
 
-                this.parent = value;
-                if (this.parent != null)
+                _parent = value;
+                if (_parent != null)
                 {
-                    this.parent.AppendChild(this);
+                    _parent.AppendChild(this);
                 }
             }
         }
 
         public virtual IReadOnlyTextRangeCollection<IAstNode> Children
         {
-            get { return this.children; }
+            get { return _children; }
         }
 
         public void AppendChild(IAstNode child)
@@ -64,9 +64,9 @@ namespace Microsoft.R.Core.AST
             }
             else if (child.Parent == this)
             {
-                Debug.Assert(!this.children.Contains(child.Start), "Children collection already contains this node");
-                this.children.Add(child);
-                this.children.Sort();
+                Debug.Assert(!_children.Contains(child.Start), "Children collection already contains this node");
+                _children.Add(child);
+                _children.Sort();
             }
             else
             {
@@ -78,14 +78,14 @@ namespace Microsoft.R.Core.AST
         #region IPropertyOwner
         public PropertyDictionary Properties
         {
-            get { return this.properties.Value; }
+            get { return _properties.Value; }
         }
         #endregion
 
         #region IParseItem
         public virtual bool Parse(ParseContext context, IAstNode parent = null)
         {
-            this.Parent = parent;
+            Parent = parent;
             return true;
         }
         #endregion
@@ -93,34 +93,34 @@ namespace Microsoft.R.Core.AST
         #region ITextRange
         public virtual int Start
         {
-            get { return this.Children.Count > 0 ? this.Children[0].Start : 0; }
+            get { return Children.Count > 0 ? Children[0].Start : 0; }
         }
 
         public virtual int End
         {
-            get { return this.Children.Count > 0 ? this.Children[this.Children.Count - 1].End : 0; }
+            get { return Children.Count > 0 ? Children[Children.Count - 1].End : 0; }
         }
 
         public int Length
         {
-            get { return this.End - this.Start; }
+            get { return End - Start; }
         }
 
         public virtual bool Contains(int position)
         {
-            return this.Children.Contains(position);
+            return Children.Contains(position);
         }
 
         public virtual void Shift(int offset)
         {
-            this.Children.Shift(offset);
+            Children.Shift(offset);
         }
         #endregion
 
         #region ICompositeTextRange
         public virtual void ShiftStartingFrom(int position, int offset)
         {
-            this.Children.ShiftStartingFrom(position, offset);
+            Children.ShiftStartingFrom(position, offset);
         }
         #endregion
 
@@ -129,7 +129,7 @@ namespace Microsoft.R.Core.AST
         {
             if (visitor != null && visitor.Visit(this, parameter))
             {
-                for (int i = 0; i < this.Children.Count; i++)
+                for (int i = 0; i < Children.Count; i++)
                 {
                     var child = Children[i] as IAstNode;
 

@@ -22,9 +22,9 @@ namespace Microsoft.R.Core.AST
 
         public AstRoot(ITextProvider textProvider, ICodeEvaluator codeEvaluator)
         {
-            this.TextProvider = textProvider;
-            this.Comments = new TextRangeCollection<TokenNode>();
-            this.CodeEvaluator = codeEvaluator;
+            TextProvider = textProvider;
+            Comments = new TextRangeCollection<TokenNode>();
+            CodeEvaluator = codeEvaluator;
         }
 
         #region IAstNode

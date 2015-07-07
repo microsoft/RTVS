@@ -7,25 +7,25 @@ namespace Microsoft.R.Core.Test.Utility
 {
     internal class AstWriter
     {
-        private int indent = 0;
-        private StringBuilder sb;
-        private AstRoot ast;
+        private int _indent = 0;
+        private StringBuilder _sb;
+        private AstRoot _ast;
 
         public string WriteTree(AstRoot ast)
         {
-            this.sb = new StringBuilder();
-            this.indent = 0;
-            this.ast = ast;
+            _sb = new StringBuilder();
+            _indent = 0;
+            _ast = ast;
 
             foreach (IAstNode node in ast.Children)
             {
                 WriteNode(node);
             }
 
-            string text = this.sb.ToString();
+            string text = _sb.ToString();
 
-            this.sb = null;
-            this.ast = null;
+            _sb = null;
+            _ast = null;
 
             return text;
         }
@@ -37,8 +37,8 @@ namespace Microsoft.R.Core.Test.Utility
             string type = node.GetType().ToString();
             string name = type.Substring(type.LastIndexOf('.') + 1);
 
-            this.sb.Append(name);
-            this.sb.Append("  [");
+            _sb.Append(name);
+            _sb.Append("  [");
 
             string innerType = node.ToString();
 
@@ -48,22 +48,22 @@ namespace Microsoft.R.Core.Test.Utility
                 innerType = innerType.Substring(type.LastIndexOf('.') + 1);
             }
 
-            this.sb.Append(innerType);
-            this.sb.AppendLine("]");
+            _sb.Append(innerType);
+            _sb.AppendLine("]");
 
-            this.indent++;
+            _indent++;
 
             foreach (IAstNode child in node.Children)
             {
                 WriteNode(child);
             }
 
-            this.indent--;
+            _indent--;
         }
 
         private void Indent()
         {
-            this.sb.Append(' ', this.indent * 4);
+            _sb.Append(' ', _indent * 4);
         }
     }
 }

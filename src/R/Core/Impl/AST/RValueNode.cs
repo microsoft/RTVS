@@ -10,17 +10,17 @@ namespace Microsoft.R.Core.AST
     /// </summary>
     public abstract class RValueNode<T> : AstNode, IRValueNode where T : RObject
     {
-        protected T nodeValue;
+        protected T NodeValue { get; set; }
 
         #region IRValueNode
         public RObject GetValue()
         {
-            if(this.nodeValue == null)
+            if(NodeValue == null)
             {
-                this.nodeValue = (T)this.Root.CodeEvaluator.Evaluate(this);
+                NodeValue = (T)Root.CodeEvaluator.Evaluate(this);
             }
 
-            return this.nodeValue;
+            return NodeValue;
         }
         #endregion
     }

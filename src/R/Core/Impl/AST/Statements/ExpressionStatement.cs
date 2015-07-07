@@ -20,10 +20,10 @@ namespace Microsoft.R.Core.AST.Statements
                 if(this.Expression.Children.Count == 1 && this.Expression.Children[0] is Expression)
                 {
                     // Promote up
-                    this.Expression = this.Expression.Children[0] as Expression;
-                    this.Expression.Parent = null;
-                    this.children.RemoveAt(0);
-                    this.Expression.Parent = this;
+                    Expression = this.Expression.Children[0] as Expression;
+                    Expression.Parent = null;
+                    _children.RemoveAt(0);
+                    Expression.Parent = this;
                 }
 
                 return base.Parse(context, parent);
