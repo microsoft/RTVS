@@ -19,9 +19,7 @@ namespace Microsoft.R.Core.Test.Tokens
             try
             {
                 string testFile = TestFiles.GetTestFilePath(context, name);
-                // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"F:\RTVS\src\R\Core\Test\Files\Tokenization";
-                string baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
+                string baselineFile = testFile + ".tokens";
 
                 string text = TestFiles.LoadFile(context, testFile);
                 ITextProvider textProvider = new TextStream(text);
@@ -32,7 +30,11 @@ namespace Microsoft.R.Core.Test.Tokens
 
                 if (_regenerateBaselineFiles)
                 {
-                   TestFiles.UpdateBaseline(baselineFile, actual);
+                    // Update this to your actual enlistment if you need to update baseline
+                    string enlistmentPath = @"C:\RTVS\src\R\Core\Test\Files\Tokenization";
+                    baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
+
+                    TestFiles.UpdateBaseline(baselineFile, actual);
                 }
                 else
                 {

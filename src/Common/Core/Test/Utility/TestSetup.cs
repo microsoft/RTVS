@@ -34,7 +34,7 @@ namespace Microsoft.Languages.Core.Test.Utility
                 // Running tests from the command line will deploy into the "bin" directory
                 int binIndex = assemblyLoc.IndexOf(@"\bin\", StringComparison.OrdinalIgnoreCase);
                 Assert.AreNotEqual(-1, binIndex);
-                enlistmentRoot = assemblyLoc.Substring(0, binIndex);
+                enlistmentRoot = assemblyLoc.Substring(0, binIndex) + "\\src"; // Git version
             }
 
             Assert.IsNotNull(enlistmentRoot);
