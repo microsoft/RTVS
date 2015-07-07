@@ -32,6 +32,7 @@ namespace Microsoft.R.Core.Parser
 
             AstRoot tree = new AstRoot(textProvider);
             tree.Parse(context, tree);
+            tree.Errors = context.Errors;
 
             return tree;
         }

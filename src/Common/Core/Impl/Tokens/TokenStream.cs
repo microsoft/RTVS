@@ -7,9 +7,9 @@ namespace Microsoft.Languages.Core.Tokens
 {
     public sealed class TokenStream<T> : IEnumerable<T> where T : ITextRange
     {
-        private IReadOnlyTextRangeCollection<T> tokens;
-        private int index;
-        private T endOfStreamToken;
+        private IReadOnlyTextRangeCollection<T> _tokens;
+        private int _index;
+        private T _endOfStreamToken;
 
         public TokenStream(IReadOnlyTextRangeCollection<T> tokens, T endOfStreamToken)
         {
@@ -18,36 +18,36 @@ namespace Microsoft.Languages.Core.Tokens
                 throw new ArgumentNullException("tokens");
             }
 
-            index = 0;
-            this.tokens = tokens;
-            this.endOfStreamToken = endOfStreamToken;
+            _index = 0;
+            _tokens = tokens;
+            _endOfStreamToken = endOfStreamToken;
         }
 
         public int Length
         {
-            get { return this.tokens.Count; }
+            get { return _tokens.Count; }
         }
         public void Reset()
         {
-            this.index = 0;
+            _index = 0;
         }
 
         public int Position
         {
-            get { return this.index; }
+            get { return _index; }
             set
             {
                 if (value < 0)
                 {
-                    this.index = 0;
+                    _index = 0;
                 }
-                else if (value >= this.tokens.Count)
+                else if (value >= _tokens.Count)
                 {
-                    this.index = tokens.Count;
+                    _index = _tokens.Count;
                 }
                 else
                 {
-                    this.index = value;
+                    _index = value;
                 }
             }
         }
@@ -56,10 +56,10 @@ namespace Microsoft.Languages.Core.Tokens
         {
             get
             {
-                if (index < this.tokens.Count)
-                    return this.tokens[index];
+                if (_index < _tokens.Count)
+                    return _tokens[_index];
 
-                return endOfStreamToken;
+                return _endOfStreamToken;
             }
         }
 
@@ -67,7 +67,7 @@ namespace Microsoft.Languages.Core.Tokens
         {
             get
             {
-                return this.LookAhead(1);
+                return LookAhead(1);
             }
         }
 
@@ -75,57 +75,64 @@ namespace Microsoft.Languages.Core.Tokens
         {
             get
             {
-                return this.LookAhead(-1);
+                return LookAhead(-1);
             }
         }
 
         public T LookAhead(int count)
         {
-            return this.GetTokenAt(index + count);
+            return GetTokenAt(_index + count);
         }
 
         public T GetTokenAt(int position)
         {
-            if (position >= 0 && position < this.tokens.Count)
-                return this.tokens[position];
+            if (position >= 0 && position < _tokens.Count)
+                return _tokens[position];
 
-            return this.endOfStreamToken;
+            return _endOfStreamToken;
         }
 
         public bool IsEndOfStream()
         {
-            return index >= this.tokens.Count;
+            return _index >= _tokens.Count;
         }
 
         public T MoveToNextToken()
         {
-            return this.Advance(1);
+            return Advance(1);
         }
 
         public T Advance(int count)
         {
-            if (this.index + count >= this.tokens.Count)
+            if (_index + count >= _tokens.Count)
             {
-                this.index = this.tokens.Count;
+                _index = _tokens.Count;
             }
-            else if (this.index + count < 0)
+            else if (_index + count < 0)
             {
-                this.index = -1;
+                _index = -1;
+            }
+            else
+            {
+                _index = _index + count;
             }
 
-            this.index = this.index + count;
-
-            return this.CurrentToken;
+            return CurrentToken;
         }
 
         public void MoveToNextLine(ITextProvider textProvider)
         {
-            while (!this.IsEndOfStream() && this.Position < this.Length - 1)
+            while (!IsEndOfStream())
             {
-                int currentTokenEnd = this.CurrentToken.End;
-                int nextTokenStart = this.NextToken.End;
+                int currentTokenEnd = CurrentToken.End;
+                int nextTokenStart = NextToken.End;
 
-                this.MoveToNextToken();
+                MoveToNextToken();
+
+                if (IsEndOfStream() || Position == _tokens.Count - 1)
+                {
+                    break;
+                }
 
                 if (textProvider.IndexOf("\n", TextRange.FromBounds(currentTokenEnd, nextTokenStart), false) >= 0)
                 {
@@ -137,12 +144,12 @@ namespace Microsoft.Languages.Core.Tokens
         #region IEnumerable
         public IEnumerator<T> GetEnumerator()
         {
-            return tokens.GetEnumerator();
+            return _tokens.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return tokens.GetEnumerator();
+            return _tokens.GetEnumerator();
         }
         #endregion
     }

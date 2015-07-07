@@ -43,7 +43,7 @@ namespace Microsoft.R.Core.AST.Expressions
                 }
                 else
                 {
-                    context.Errors.Add(new ParseError(ParseErrorType.CloseBraceExpected, context.Tokens.CurrentToken));
+                    context.Errors.Add(new MissingItemParseError(ParseErrorType.CloseBraceExpected, context.Tokens.PreviousToken));
                     return false;
                 }
             }

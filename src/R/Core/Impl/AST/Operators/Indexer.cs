@@ -57,7 +57,7 @@ namespace Microsoft.R.Core.AST.Variables
                 }
                 else
                 {
-                    context.Errors.Add(new ParseError(ParseErrorType.CloseSquareBracketExpected, tokens.CurrentToken));
+                    context.Errors.Add(new MissingItemParseError(ParseErrorType.CloseSquareBracketExpected, tokens.PreviousToken));
                 }
             }
 

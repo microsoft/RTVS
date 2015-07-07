@@ -105,7 +105,7 @@ namespace Microsoft.R.Core.AST.Scopes
 
             if (this.OpenCurlyBrace != null && this.CloseCurlyBrace == null)
             {
-                context.Errors.Add(new ParseError(ParseErrorType.CloseCurlyBraceExpected, currentToken));
+                context.Errors.Add(new MissingItemParseError(ParseErrorType.CloseCurlyBraceExpected, context.Tokens.PreviousToken));
                 return false;
             }
 

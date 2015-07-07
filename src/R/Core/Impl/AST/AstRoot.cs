@@ -1,9 +1,11 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿using System.Collections.Generic;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Evaluation.Definitions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.Evaluation;
 using Microsoft.R.Core.Parser;
+using Microsoft.R.Core.Parser.Definitions;
 
 namespace Microsoft.R.Core.AST
 {
@@ -14,6 +16,8 @@ namespace Microsoft.R.Core.AST
         public TextRangeCollection<TokenNode> Comments { get; private set; }
 
         public ICodeEvaluator CodeEvaluator { get; private set; }
+
+        public List<IParseError> Errors { get; internal set; }
 
         public AstRoot(ITextProvider textProvider) :
             this(textProvider, new CodeEvaluator())

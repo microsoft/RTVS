@@ -120,6 +120,8 @@
     <Compile Include="AST\Operators\Indexer.cs" />
     <Compile Include="Evaluation\Evaluator.cs" />
     <Compile Include="Parser\Definitions\IParseError.cs" />
+    <Compile Include="Parser\MissingItemParseError.cs" />
+    <Compile Include="Parser\ParseErrorPosiiton.cs" />
     <Compile Include="Parser\ParseErrorType.cs" />
     <Compile Include="Parser\Definitions\IParseItem.cs" />
     <Compile Include="AST\AstNode.cs" />

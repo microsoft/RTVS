@@ -59,7 +59,7 @@ namespace Microsoft.R.Core.AST.Values
             }
             else
             {
-                context.Errors.Add(new ParseError(ParseErrorType.NumberExpected, currentToken));
+                context.Errors.Add(new MissingItemParseError(ParseErrorType.NumberExpected, context.Tokens.PreviousToken));
                 return false;
             }
 

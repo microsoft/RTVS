@@ -42,6 +42,7 @@ namespace Microsoft.R.Core.AST.Expressions
             OperationType currentOperationType = OperationType.None;
             ParseErrorType errorType = ParseErrorType.None;
             bool endOfExpression = false;
+            IAstNode result = null;
 
             // Push sentinel
             this.operators.Push(ExpressionParser.Sentinel);
@@ -152,45 +153,65 @@ namespace Microsoft.R.Core.AST.Expressions
 
                 if (this.previousOperationType == currentOperationType)
                 {
-                    errorType = ParseErrorType.OperandExpected;
-
                     // 'operator, operator' or 'identifier identifier' sequence is an error
-                    if (currentOperationType == OperationType.Operand)
+                    switch (currentOperationType)
                     {
-                        errorType = ParseErrorType.OperatorExpected;
+                        case OperationType.Operand:
+                            context.Errors.Add(new MissingItemParseError(ParseErrorType.OperatorExpected, tokens.PreviousToken));
+                            break;
+
+                        case OperationType.None:
+                            if (tokens.IsEndOfStream())
+                            {
+                                context.Errors.Add(new ParseError(ParseErrorType.UnexpectedEndOfFile, ParseErrorLocation.AfterToken, tokens.PreviousToken));
+                            }
+                            else
+                            {
+                                context.Errors.Add(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, tokens.CurrentToken));
+                            }
+                            break;
+
+                        default:
+                            context.Errors.Add(new MissingItemParseError(ParseErrorType.OperandExpected, tokens.PreviousToken));
+                            break;
                     }
 
-                    context.Errors.Add(new ParseError(errorType, tokens.PreviousToken));
                     return null;
                 }
                 else if (this.previousOperationType == OperationType.UnaryOperator && currentOperationType == OperationType.BinaryOperator)
                 {
                     // unary followed by binary doesn't make sense 
-                    context.Errors.Add(new ParseError(ParseErrorType.IndentifierExpected, tokens.PreviousToken));
+                    context.Errors.Add(new MissingItemParseError(ParseErrorType.IndentifierExpected, tokens.PreviousToken));
                     return null;
                 }
             }
 
-            if (errorType != ParseErrorType.None)
-            {
-                context.Errors.Add(new ParseError(errorType, tokens.CurrentToken));
-                return null;
-            }
-
-            if (this.operators.Count > 1)
+            if (errorType == ParseErrorType.None && this.operators.Count > 1)
             {
                 // If there are still operators to process,
                 // construct final node. After this only sentil
                 // operator should be in the operators stack
                 // and a single final root node in the operand stack.
-                this.ProcessHigherPrecendenceOperators(ExpressionParser.Sentinel);
+                errorType = this.ProcessHigherPrecendenceOperators(ExpressionParser.Sentinel);
+            }
+
+            if (errorType != ParseErrorType.None)
+            {
+                context.Errors.Add(new MissingItemParseError(errorType, tokens.PreviousToken));
+                return null;
             }
 
             Debug.Assert(this.operators.Count == 1);
-            Debug.Assert(this.operands.Count == 1);
 
-            IAstNode result = this.operands.Pop();
-            parent.AppendChild(result);
+            // If operand stack ie empty and there is no error
+            // then the expression is empty.
+            if (this.operands.Count > 0)
+            {
+                Debug.Assert(this.operands.Count == 1);
+
+                result = this.operands.Pop();
+                parent.AppendChild(result);
+            }
 
             return result;
         }
@@ -200,7 +221,7 @@ namespace Microsoft.R.Core.AST.Expressions
             // Indexing or function call is performed on the topmost operand which 
             // generally should be a variable or a node that evaluates to it.
             // However, we leave syntax check to separate code.
-            
+
             IAstNode operand = this.SafeGetOperand();
             if (operand == null)
             {

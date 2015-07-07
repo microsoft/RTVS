@@ -23,7 +23,7 @@ namespace Microsoft.R.Core.AST.Values
                 return base.Parse(context, parent);
             }
 
-            context.Errors.Add(new ParseError(ParseErrorType.NumberExpected, currentToken));
+            context.Errors.Add(new ParseError(ParseErrorType.NumberExpected, ParseErrorLocation.Token, currentToken));
             return false;
         }
     }

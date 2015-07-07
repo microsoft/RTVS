@@ -35,7 +35,7 @@ namespace Microsoft.R.Core.AST.Values
                 return base.Parse(context, parent);
             }
 
-            context.Errors.Add(new ParseError(ParseErrorType.LogicalExpected, currentToken));
+            context.Errors.Add(new ParseError(ParseErrorType.LogicalExpected, ParseErrorLocation.Token, currentToken));
             return false;
         }
     }

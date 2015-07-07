@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
@@ -20,6 +21,19 @@ namespace Microsoft.R.Core.Test.Utility
             foreach (IAstNode node in ast.Children)
             {
                 WriteNode(node);
+            }
+
+            if(_ast.Errors.Count > 0)
+            {
+                _sb.AppendLine();
+
+                foreach(var error in _ast.Errors)
+                {
+                    _sb.AppendFormat(CultureInfo.InvariantCulture, 
+                        "{0} {1} [{2}...{3})\r\n", 
+                        error.ErrorType.ToString(), error.Location.ToString(), 
+                        error.Start, error.End);
+                }
             }
 
             string text = _sb.ToString();

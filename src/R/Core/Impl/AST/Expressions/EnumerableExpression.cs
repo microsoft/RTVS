@@ -41,13 +41,13 @@ namespace Microsoft.R.Core.AST.Expressions
                     }
                     else
                     {
-                        context.Errors.Add(new ParseError(ParseErrorType.InKeywordExpected, tokens.CurrentToken));
+                        context.Errors.Add(new MissingItemParseError(ParseErrorType.InKeywordExpected, tokens.CurrentToken));
                     }
                 }
             }
             else
             {
-                context.Errors.Add(new ParseError(ParseErrorType.IndentifierExpected, tokens.CurrentToken));
+                context.Errors.Add(new MissingItemParseError(ParseErrorType.IndentifierExpected, tokens.PreviousToken));
             }
 
             return false;

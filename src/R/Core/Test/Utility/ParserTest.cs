@@ -21,7 +21,7 @@ namespace Microsoft.R.Core.Test.Utility
         {
             AstWriter astWriter = new AstWriter();
             string actual = astWriter.WriteTree(actualTree);
-
+            
             string expectedLine, actualLine;
             int result = BaselineCompare.CompareLines(expected, actual, out expectedLine, out actualLine);
 
