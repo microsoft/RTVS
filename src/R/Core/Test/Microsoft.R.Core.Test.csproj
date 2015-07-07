@@ -85,7 +85,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="BaselineCompare\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
@@ -126,7 +125,7 @@
     <Compile Include="Tokens\TokenizeFilesTest.cs" />
     <Compile Include="Tokens\TokenizeTestBase.cs" />
     <Compile Include="Utility\ParserTest.cs" />
-    <Compile Include="Utility\TestFilesSetup.cs" />
+    <Compile Include="Utility\CoreTestFilesSetup.cs" />
     <Compile Include="Utility\AstWriter.cs" />
   </ItemGroup>
   <Choose>

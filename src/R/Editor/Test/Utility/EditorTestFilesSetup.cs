@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.R.Editor.Test.Utility
 {
     [TestClass]
-    internal class TestFilesSetup
+    public class EditorTestFilesSetup
     {
         static object _deploymentLock = new object();
         static bool _deployed = false;
@@ -21,7 +21,7 @@ namespace Microsoft.R.Editor.Test.Utility
                     string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetup.GetTestFolders(@"R\Core\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetup.GetTestFolders(@"R\Editor\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
                     TestSetup.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }
