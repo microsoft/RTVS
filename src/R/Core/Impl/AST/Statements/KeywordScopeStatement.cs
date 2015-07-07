@@ -20,13 +20,13 @@ namespace Microsoft.R.Core.AST.Statements
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            if (this.ParseKeywordSequence(context))
+            if (base.Parse(context, parent))
             {
                 IScope scope = RParser.ParseScope(context, this, this.allowsSimpleScope, terminatingKeyword: null);
                 if (scope != null)
                 {
                     this.Scope = scope;
-                    return base.Parse(context, parent);
+                    return true;
                 }
             }
 

@@ -46,7 +46,7 @@ namespace Microsoft.R.Core.AST.Statements
                     // Some of the statements may be R-values like typeof() but
                     // in case of the statement appearing on its own return value
                     // will be simply ignored. IDE may choose to show a warning.
-                    statement = KeywordStatement.Create(context, parent);
+                    statement = KeywordStatement.CreateStatement(context, parent);
                     break;
 
                 case RTokenType.Semicolon:

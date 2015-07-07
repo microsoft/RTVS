@@ -12,21 +12,20 @@ namespace Microsoft.R.Core.AST.Statements
         public Expression Expression { get; private set; }
         public TokenNode CloseBrace { get; private set; }
 
-        protected override bool ParseKeywordSequence(ParseContext context)
+        public override bool Parse(ParseContext context, IAstNode parent)
         {
-            TokenStream<RToken> tokens = context.Tokens;
-
-            base.ParseKeywordSequence(context);
-
-            this.OpenBrace = RParser.ParseOpenBraceSequence(context, this);
-            if (this.OpenBrace != null)
+            if (base.Parse(context, parent))
             {
-                if (this.ParseExpression(context, this))
+                this.OpenBrace = RParser.ParseOpenBraceSequence(context, this);
+                if (this.OpenBrace != null)
                 {
-                    this.CloseBrace = RParser.ParseCloseBraceSequence(context, this);
-                    if (this.CloseBrace != null)
+                    if (this.ParseExpression(context, this))
                     {
-                        return base.Parse(context, this);
+                        this.CloseBrace = RParser.ParseCloseBraceSequence(context, this);
+                        if (this.CloseBrace != null)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -40,12 +39,7 @@ namespace Microsoft.R.Core.AST.Statements
         protected virtual bool ParseExpression(ParseContext context, IAstNode parent)
         {
             this.Expression = new Expression();
-            if (this.Expression.Parse(context, this))
-            {
-                return base.Parse(context, parent);
-            }
-
-            return false;
+            return this.Expression.Parse(context, this);
         }
     }
 }

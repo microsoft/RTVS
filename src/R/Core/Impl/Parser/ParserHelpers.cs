@@ -35,8 +35,6 @@ namespace Microsoft.R.Core.Parser
         {
             TokenStream<RToken> tokens = context.Tokens;
 
-            RParser.ParseKeyword(context, parent);
-
             if (tokens.CurrentToken.TokenType == RTokenType.OpenBrace)
             {
                 TokenNode openBrace = new TokenNode();

@@ -16,14 +16,10 @@ namespace Microsoft.R.Core.AST.Statements
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            this.ParseKeywordSequence(context);
-            return base.Parse(context, parent);
-        }
-
-        protected virtual bool ParseKeywordSequence(ParseContext context)
-        {
             this.Keyword = RParser.ParseKeyword(context, this);
-            return true;
+            this.Text = context.TextProvider.GetText(this.Keyword);
+
+            return base.Parse(context, parent);
         }
 
         /// <summary>

@@ -16,12 +16,7 @@ namespace Microsoft.R.Core.AST.Statements.Loops
         protected override bool ParseExpression(ParseContext context, IAstNode parent)
         {
             this.EnumerableExpression = new EnumerableExpression();
-            if(this.EnumerableExpression.Parse(context, this))
-            {
-                return base.Parse(context, parent);
-            }
-
-            return false;
+            return this.EnumerableExpression.Parse(context, this);
         }
     }
 }
