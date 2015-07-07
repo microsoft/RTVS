@@ -1,10 +1,11 @@
-﻿using Microsoft.R.Core.Test.Utility;
+﻿using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens
 {
     [TestClass]
-    public class ParseLogicalConstantsTest : TokenizeTestBase
+    public class ParseLogicalConstantsTest : UnitTestBase
     {
         [TestMethod]
         public void ParseLogicalConstantsTest1()

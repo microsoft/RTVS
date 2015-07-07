@@ -1,10 +1,11 @@
-﻿using Microsoft.R.Core.Test.Utility;
+﻿using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens
 {
     [TestClass]
-    public class ParseSimpleExpressionsTest : TokenizeTestBase
+    public class ParseSimpleExpressionsTest : UnitTestBase
     {
         [TestMethod]
         public void ParseSimpleExpressions1()
