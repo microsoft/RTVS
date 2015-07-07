@@ -72,11 +72,5 @@ namespace Microsoft.R.Core.Tokens
             while (!_cs.IsEndOfStream() && _cs.IsWhiteSpace())
                 _cs.MoveToNextChar();
         }
-
-        public void SkipToWhitespace()
-        {
-            while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace())
-                _cs.MoveToNextChar();
-        }
     }
 }

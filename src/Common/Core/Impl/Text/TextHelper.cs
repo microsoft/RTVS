@@ -146,7 +146,7 @@ namespace Microsoft.Languages.Core.Text
             return sb.ToString();
         }
 
-        public static int MeasaureLeadingWhitespace(string text, int tabSize)
+        public static int MeasureLeadingWhitespace(string text, int tabSize)
         {
             int spacesSoFar = 0;
             int size = 0;

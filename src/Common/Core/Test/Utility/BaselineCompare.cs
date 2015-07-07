@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -6,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Core.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public static class BaselineCompare
     {
         public static string CompareStrings(string expected, string actual)

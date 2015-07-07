@@ -179,15 +179,10 @@ namespace Microsoft.R.Core.Tokens
                 return false;
             }
 
+            // R only supports 0xABCD. x0A is not legal.
             if (_cs.CurrentChar == '0' && _cs.NextChar == 'x')
             {
                 // Hex humber like 0xA1BC
-                return true;
-            }
-
-            if (_cs.CurrentChar == 'x' && CharacterStream.IsHex(_cs.NextChar))
-            {
-                // Hex humber like xBC23
                 return true;
             }
 

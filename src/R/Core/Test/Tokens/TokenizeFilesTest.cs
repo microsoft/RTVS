@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using Microsoft.Languages.Core.Diagnostics;
@@ -9,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens
 {
+    [ExcludeFromCodeCoverage]
     public class TokenizeFiles
     {
         // change to true in debugger if you want all baseline tree files regenerated

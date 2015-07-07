@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using Microsoft.Languages.Core.Text;
@@ -6,6 +7,7 @@ using Microsoft.Languages.Core.Tokens;
 
 namespace Microsoft.Languages.Core.Diagnostics
 {
+    [ExcludeFromCodeCoverage]
     public class DebugWriter
     {
         public static string WriteTokens<Token, TokenType>(IReadOnlyTextRangeCollection<Token> tokens) where Token : ITextRange

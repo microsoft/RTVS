@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
-using System.Text;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Core.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public static class TestFiles
     {
         static public string LoadFile(TestContext context, string fileName)

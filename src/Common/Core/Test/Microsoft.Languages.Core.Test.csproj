@@ -75,6 +75,8 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Text\InclusiveTextRange.cs" />
     <Compile Include="Text\TextRangeCollectionTest.cs" />
+    <Compile Include="Text\TextHelperTest.cs" />
+    <Compile Include="Tokens\TokenStreamTest.cs" />
     <Compile Include="Text\TextRangeTest.cs" />
     <Compile Include="Utility\BaselineCompare.cs" />
     <Compile Include="Utility\TestFilesSetup.cs" />

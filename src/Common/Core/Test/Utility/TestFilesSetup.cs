@@ -1,13 +1,16 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Languages.Core.Test.Utility;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Languages.Core.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public static class CommonTestData
     {
         public const string TestFilesRelativePath = @"Files\";
     }
 
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class TestFilesSetup
     {
