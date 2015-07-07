@@ -36,7 +36,7 @@ OperandExpected AfterToken [1...2)
 @"GlobalScope  [Global]
 
 CloseBraceExpected AfterToken [0...1)
-OperandExpected AfterToken [0...1)
+UnexpectedEndOfFile AfterToken [0...1)
 ";
             ParserTest.VerifyParse(expected, "(");
         }
