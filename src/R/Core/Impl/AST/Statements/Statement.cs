@@ -1,5 +1,6 @@
 ﻿using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
@@ -9,21 +10,32 @@ namespace Microsoft.R.Core.AST.Statements
     /// Represents statement: assignment, function definition,
     /// function call, conditional statement and so on.
     /// </summary>
-    public class Statement : AstNode
+    public abstract class Statement : AstNode, IStatement
     {
         /// <summary>
         /// Optional terminating semicolon
         /// </summary>
         public TokenNode Semicolon { get; private set; }
 
-        public override bool Parse(ParseContext context, IAstNode parent)
+        protected bool ParseSemicolon(ParseContext context, IAstNode parent)
         {
-            if (context.Tokens.CurrentToken.TokenType == RTokenType.Semicolon)
+            if (!context.Tokens.IsEndOfStream())
             {
-                this.Semicolon = RParser.ParseToken(context, this);
+                if (!context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1))
+                {
+                    if (context.Tokens.CurrentToken.TokenType == RTokenType.Semicolon)
+                    {
+                        this.Semicolon = RParser.ParseToken(context, this);
+                    }
+                    else
+                    {
+                        context.Errors.Add(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, context.Tokens.CurrentToken));
+                        return false;
+                    }
+                }
             }
 
-            return base.Parse(context, parent);
+            return true;
         }
 
         /// <summary>
@@ -31,12 +43,12 @@ namespace Microsoft.R.Core.AST.Statements
         /// token and the following token sequence
         /// </summary>
         /// <returns></returns>
-        public static Statement Create(ParseContext context, IAstNode parent)
+        public static IStatement Create(ParseContext context, IAstNode parent)
         {
             TokenStream<RToken> tokens = context.Tokens;
             RToken currentToken = tokens.CurrentToken;
 
-            Statement statement = null;
+            IStatement statement = null;
 
             switch (currentToken.TokenType)
             {
@@ -50,7 +62,7 @@ namespace Microsoft.R.Core.AST.Statements
                     break;
 
                 case RTokenType.Semicolon:
-                    statement = new Statement();
+                    statement = new EmptyStatement();
                     break;
 
                 default:

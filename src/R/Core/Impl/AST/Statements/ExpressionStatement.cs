@@ -1,16 +1,19 @@
 ﻿using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
+using Microsoft.R.Core.AST.Expressions.Definitions;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST.Statements
 {
     /// <summary>
-    /// Statement that either defines variable (i.e. first time use)
-    /// or assign a new value to the variable or any of its parts.
+    /// Statement that is based on expression. Expression 
+    /// can be mathematical, conditional, assignment, function 
+    /// or operator definition.
     /// </summary>
-    public sealed class ExpressionStatement : Statement
+    public sealed class ExpressionStatement : Statement, IExpressionStatement
     {
-        public Expression Expression { get; private set; }
+        public IExpression Expression { get; private set; }
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Statements.Conditionals;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.AST.Statements.Loops;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
@@ -8,7 +9,7 @@ using Microsoft.R.Core.Tokens;
 namespace Microsoft.R.Core.AST.Statements
 {
     [DebuggerDisplay("[{Text}]")]
-    public class KeywordStatement : Statement
+    public class KeywordStatement : Statement, IKeywordStatement
     {
         public TokenNode Keyword { get; private set; }
 
@@ -16,20 +17,33 @@ namespace Microsoft.R.Core.AST.Statements
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
+            if (ParseKeyword(context, this))
+            {
+                if (ParseSemicolon(context, this))
+                {
+                    return base.Parse(context, parent);
+                }
+            }
+
+            return false;
+        }
+
+        protected bool ParseKeyword(ParseContext context, IAstNode parent)
+        {
             this.Keyword = RParser.ParseKeyword(context, this);
             this.Text = context.TextProvider.GetText(this.Keyword);
 
-            return base.Parse(context, parent);
+            return true;
         }
 
         /// <summary>
         /// Abstract factory
         /// </summary>
-        public static Statement CreateStatement(ParseContext context, IAstNode parent)
+        public static IStatement CreateStatement(ParseContext context, IAstNode parent)
         {
             RToken currentToken = context.Tokens.CurrentToken;
             string keyword = context.TextProvider.GetText(currentToken);
-            Statement statement = null;
+            IStatement statement = null;
 
             switch (keyword)
             {
@@ -57,7 +71,7 @@ namespace Microsoft.R.Core.AST.Statements
                 case "return":
                 case "typeof":
                 case "library":
-                    statement = new KeywordBracesStatement();
+                    statement = new KeywordExpressionStatement();
                     break;
             }
 

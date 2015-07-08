@@ -2,6 +2,7 @@
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Statements;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser.Definitions;
 
 namespace Microsoft.R.Core.AST.Scopes.Definitions
@@ -18,7 +19,7 @@ namespace Microsoft.R.Core.AST.Scopes.Definitions
 
         TokenNode OpenCurlyBrace { get; }
 
-        IReadOnlyTextRangeCollection<Statement> Statements { get; }
+        IReadOnlyTextRangeCollection<IStatement> Statements { get; }
 
         TokenNode CloseCurlyBrace { get; }
 

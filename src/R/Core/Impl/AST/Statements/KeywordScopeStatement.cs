@@ -1,5 +1,6 @@
 ﻿using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST.Statements
@@ -7,25 +8,26 @@ namespace Microsoft.R.Core.AST.Statements
     /// <summary>
     /// Statement with keyword and scope { } such as repeat { } and else { }
     /// </summary>
-    public sealed class KeywordScopeStatement : KeywordStatement
+    public sealed class KeywordScopeStatement : KeywordStatement, IKeywordScopeStatement
     {
         public IScope Scope { get; private set; }
 
-        private bool allowsSimpleScope;
+        private bool _allowsSimpleScope;
 
         public KeywordScopeStatement(bool allowsSimpleScope)
         {
-            this.allowsSimpleScope = allowsSimpleScope;
+            _allowsSimpleScope = allowsSimpleScope;
         }
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            if (base.Parse(context, parent))
+            if (ParseKeyword(context, parent))
             {
-                IScope scope = RParser.ParseScope(context, this, this.allowsSimpleScope, terminatingKeyword: null);
+                IScope scope = RParser.ParseScope(context, this, _allowsSimpleScope, terminatingKeyword: null);
                 if (scope != null)
                 {
                     this.Scope = scope;
+                    this.Parent = parent;
                     return true;
                 }
             }

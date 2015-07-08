@@ -1,19 +1,20 @@
 ﻿using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST.Statements
 {
     /// <summary>
-    /// Statement that is based on a keyword and condition typically
-    /// in a form of 'keyword ( expression )'. It may or may not
-    /// have scope.
+    /// Statement that is based on a keyword and condition 
+    /// followed by a scope typically in a form of 
+    /// 'keyword ( expression ) { }'.
     /// </summary>
-    public class KeywordExpressionScopeStatement : KeywordBracesStatement
+    public class KeywordExpressionScopeStatement : KeywordExpressionStatement, IKeywordExpressionScopeStatement
     {
         public IScope Scope { get; private set; }
 
-        private string terminatingKeyword;
+        private string _terminatingKeyword;
 
         public KeywordExpressionScopeStatement():
             this(null)
@@ -22,7 +23,7 @@ namespace Microsoft.R.Core.AST.Statements
 
         public KeywordExpressionScopeStatement(string terminatingKeyword)
         {
-            this.terminatingKeyword = terminatingKeyword;
+            _terminatingKeyword = terminatingKeyword;
         }
 
         public override bool Parse(ParseContext context, IAstNode parent)
@@ -30,7 +31,7 @@ namespace Microsoft.R.Core.AST.Statements
             if (base.Parse(context, parent))
             {
                 IScope scope = RParser.ParseScope(context, this, allowsSimpleScope: true, 
-                                                  terminatingKeyword: this.terminatingKeyword);
+                                                  terminatingKeyword: _terminatingKeyword);
                 if(scope != null)
                 {
                     this.Scope = scope;

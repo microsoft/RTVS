@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
@@ -10,11 +11,13 @@ namespace Microsoft.R.Core.AST.Expressions
     /// Represents inner part of 'for' operator which looks like 'for ( name in vector )'.
     /// http://cran.r-project.org/doc/manuals/r-release/R-lang.html#for
     /// </summary>
-    public sealed class EnumerableExpression : AstNode
+    public sealed class EnumerableExpression : AstNode, IEnumerableExpression
     {
+        #region IEnumerableExpression
         public TokenNode VariableName { get; private set; }
         public TokenNode InOperator { get; private set; }
-        public Expression Expression { get; private set; }
+        public IExpression Expression { get; private set; }
+        #endregion
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {

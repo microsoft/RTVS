@@ -4,6 +4,7 @@ using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST.Scopes
@@ -15,8 +16,8 @@ namespace Microsoft.R.Core.AST.Scopes
     /// </summary>
     public sealed class SimpleScope : AstNode, IScope
     {
-        private Statement statement;
-        private string terminatingKeyword;
+        private IStatement _statement;
+        private string _terminatingKeyword;
 
         #region IScope
         public string Name
@@ -43,23 +44,23 @@ namespace Microsoft.R.Core.AST.Scopes
         {
             get { return StaticDictionary<string, int>.Empty; }
         }
-        public IReadOnlyTextRangeCollection<Statement> Statements
+        public IReadOnlyTextRangeCollection<IStatement> Statements
         {
-            get { return new TextRangeCollection<Statement>() { this.statement }; }
+            get { return new TextRangeCollection<IStatement>() { _statement }; }
         }
         #endregion
 
         public SimpleScope(string terminatingKeyword)
         {
-            this.terminatingKeyword = terminatingKeyword;
+            _terminatingKeyword = terminatingKeyword;
         }
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            this.statement = Statement.Create(context, this);
-            if (this.statement != null)
+            _statement = Statement.Create(context, this);
+            if (_statement != null)
             {
-                if(this.statement.Parse(context, this))
+                if(_statement.Parse(context, this))
                 {
                     return base.Parse(context, parent);
                 }

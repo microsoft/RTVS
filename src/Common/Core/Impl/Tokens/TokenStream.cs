@@ -218,15 +218,32 @@ namespace Microsoft.Languages.Core.Tokens
         /// Determines if there is a line break between current
         /// and the next token.
         /// </summary>
-        public bool IsLineBreakAfter(ITextProvider textProvider)
+        public bool IsLineBreakAfter(ITextProvider textProvider, int tokenIndex)
         {
-            if (IsEndOfStream() || Position == _tokens.Count - 1)
+            if(tokenIndex >= _tokens.Count)
             {
                 return false;
             }
 
-            int currentTokenEnd = CurrentToken.End;
-            int nextTokenStart = NextToken.Start;
+            if(tokenIndex < 0)
+            {
+                tokenIndex = 0;
+            }
+
+            T currentToken = GetTokenAt(tokenIndex);
+
+            int currentTokenEnd = currentToken.End;
+            int nextTokenStart;
+
+            if (tokenIndex < _tokens.Count - 1)
+            {
+                T nextToken = GetTokenAt(tokenIndex + 1);
+                nextTokenStart = nextToken.Start;
+            }
+            else
+            {
+                nextTokenStart = textProvider.Length;
+            }
 
             if (textProvider.IndexOf("\n", TextRange.FromBounds(currentTokenEnd, nextTokenStart), false) >= 0)
             {

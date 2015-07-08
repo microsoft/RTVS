@@ -5,6 +5,7 @@ using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
@@ -19,7 +20,7 @@ namespace Microsoft.R.Core.AST.Scopes
     {
         private Dictionary<string, int> variables = new Dictionary<string, int>();
         private Dictionary<string, int> functions = new Dictionary<string, int>();
-        private TextRangeCollection<Statement> statements = new TextRangeCollection<Statement>();
+        private TextRangeCollection<IStatement> statements = new TextRangeCollection<IStatement>();
 
         #region IScope
         /// <summary>
@@ -29,7 +30,7 @@ namespace Microsoft.R.Core.AST.Scopes
 
         public TokenNode OpenCurlyBrace { get; private set; }
 
-        public IReadOnlyTextRangeCollection<Statement> Statements
+        public IReadOnlyTextRangeCollection<IStatement> Statements
         {
             get { return this.statements; }
         }
@@ -81,7 +82,7 @@ namespace Microsoft.R.Core.AST.Scopes
                         break;
 
                     default:
-                        Statement statement = Statement.Create(context, this);
+                        IStatement statement = Statement.Create(context, this);
                         if (statement != null)
                         {
                             if (statement.Parse(context, this))

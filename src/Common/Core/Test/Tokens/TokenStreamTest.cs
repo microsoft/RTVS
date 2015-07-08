@@ -140,13 +140,13 @@ namespace Microsoft.Languages.Core.Test.Text
             var ts = CreateTokenStream(tokens);
             ITextProvider textProvider = new TextStream("1  2  11  \r\n12345678x");
 
-            Assert.IsFalse(ts.IsLineBreakAfter(textProvider));
+            Assert.IsFalse(ts.IsLineBreakAfter(textProvider, ts.Position));
 
             ts.Advance(2);
-            Assert.IsTrue(ts.IsLineBreakAfter(textProvider));
+            Assert.IsTrue(ts.IsLineBreakAfter(textProvider, ts.Position));
 
             ts.Advance(-1);
-            Assert.IsFalse(ts.IsLineBreakAfter(textProvider));
+            Assert.IsFalse(ts.IsLineBreakAfter(textProvider, ts.Position));
 
             ts.MoveToNextLine(textProvider);
             Assert.AreEqual(TestTokenType.Token1, ts.CurrentToken.TokenType);

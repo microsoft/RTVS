@@ -56,6 +56,9 @@ namespace Microsoft.R.Core.Test.Utility
 
             string innerType = node.ToString();
 
+            innerType = innerType.Replace("\n", "\\n");
+            innerType = innerType.Replace("\r", "\\r");
+
             int ms = innerType.IndexOf("Microsoft", StringComparison.Ordinal);
             if (ms >= 0)
             {

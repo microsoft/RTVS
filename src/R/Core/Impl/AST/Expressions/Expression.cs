@@ -1,33 +1,35 @@
 ﻿using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Expressions
 {
     /// <summary>
-    /// Represents mathematical expression such as x + 2.0 + y * (z - 1). 
-    /// Parsing splits expression into triplets like A + [remaining part].
-    /// Expression may include braces and may or may not have second part
-    /// or the operator. For example: (x) is valid expression as is single
-    /// identifier such as in 'x &lt;- y' assignments.  
+    /// Represents mathematical or conditional expression, 
+    /// assignment, function or operator definition optionally
+    /// enclosed in braces. Expression is a tree and may have
+    /// nested extressions in its content.
     /// </summary>
-    public sealed class Expression : RValueNode<RObject>
+    public sealed class Expression : RValueNode<RObject>, IExpression
     {
-        private bool braceless;
+        private bool _braceless;
 
+        #region IExpression
         public TokenNode OpenBrace { get; private set; }
         public IAstNode Content { get; private set; }
         public TokenNode CloseBrace { get; private set; }
+        #endregion
 
         public Expression(bool braceless = false)
         {
-            this.braceless = braceless;
+            _braceless = braceless;
         }
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            if (!braceless && context.Tokens.CurrentToken.TokenType == RTokenType.OpenBrace)
+            if (!_braceless && context.Tokens.CurrentToken.TokenType == RTokenType.OpenBrace)
             {
                 this.OpenBrace = RParser.ParseToken(context, this);
             }
