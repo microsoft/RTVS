@@ -1,4 +1,5 @@
-﻿using Microsoft.R.Core.AST.Definitions;
+﻿using System.Diagnostics;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
@@ -8,6 +9,7 @@ namespace Microsoft.R.Core.AST.Statements
     /// <summary>
     /// Statement with keyword and scope { } such as repeat { } and else { }
     /// </summary>
+    [DebuggerDisplay("[{Text}]")]
     public sealed class KeywordScopeStatement : KeywordStatement, IKeywordScopeStatement
     {
         public IScope Scope { get; private set; }

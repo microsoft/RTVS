@@ -1,4 +1,5 @@
-﻿using Microsoft.R.Core.AST.Definitions;
+﻿using System.Diagnostics;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
@@ -10,6 +11,7 @@ namespace Microsoft.R.Core.AST.Statements
     /// followed by a scope typically in a form of 
     /// 'keyword ( expression ) { }'.
     /// </summary>
+    [DebuggerDisplay("[{Text}]")]
     public class KeywordExpressionScopeStatement : KeywordExpressionStatement, IKeywordExpressionScopeStatement
     {
         public IScope Scope { get; private set; }

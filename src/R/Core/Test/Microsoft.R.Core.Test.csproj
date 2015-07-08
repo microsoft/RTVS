@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Parser\ParseComplexNumbersTest.cs" />
+    <Compile Include="Parser\ParseIfElseTest.cs" />
     <Compile Include="Parser\ParseMultilineExpressionsTest.cs" />
     <Compile Include="Parser\ParseExpressionErrorsTest.cs" />
     <Compile Include="Parser\ParseEmptyStatementTest.cs" />

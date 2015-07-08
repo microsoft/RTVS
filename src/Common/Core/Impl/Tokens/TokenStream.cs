@@ -188,12 +188,13 @@ namespace Microsoft.Languages.Core.Tokens
 
         /// <summary>
         /// Advances stream position to the nearest token that resides
-        /// on the next line (i.e. past the line break).
-        /// of tokens. Does nothing if position is at the end 
-        /// of the stream. Advances to the end of the stream
-        /// if current line is the last line in the file.
+        /// on the next line (i.e. past the line break) or past the nearest
+        /// token as specific by the stop function.
+        /// Does nothing if position is at the end of the stream. 
+        /// Advances to the end of the stream if current line is 
+        /// the last line in the file.
         /// </summary>
-        public void MoveToNextLine(ITextProvider textProvider)
+        public void MoveToNextLine(ITextProvider textProvider, Func<TokenStream<T>, bool> stopFunction = null)
         {
             while (!IsEndOfStream())
             {
@@ -202,12 +203,14 @@ namespace Microsoft.Languages.Core.Tokens
 
                 MoveToNextToken();
 
-                if (IsEndOfStream() || Position == _tokens.Count - 1)
+                if(stopFunction != null && stopFunction(this))
                 {
-                    break;
+                    MoveToNextToken();
+                    return;
                 }
 
-                if (textProvider.IndexOf("\n", TextRange.FromBounds(currentTokenEnd, nextTokenStart), false) >= 0)
+                if (Position < _tokens.Count - 1 && 
+                    textProvider.IndexOf("\n", TextRange.FromBounds(currentTokenEnd, nextTokenStart), false) >= 0)
                 {
                     break;
                 }

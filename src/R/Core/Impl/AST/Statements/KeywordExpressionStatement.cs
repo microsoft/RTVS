@@ -1,4 +1,5 @@
-﻿using Microsoft.R.Core.AST.Definitions;
+﻿using System.Diagnostics;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
 using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -6,6 +7,7 @@ using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST.Statements
 {
+    [DebuggerDisplay("[{Text}]")]
     public class KeywordExpressionStatement : KeywordStatement, IKeywordExpressionStatement
     {
         #region IKeywordExpressionStatement

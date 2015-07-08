@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
@@ -72,6 +73,16 @@ namespace Microsoft.R.Core.Tokens
         public bool IsBuiltin
         {
             get { return this.TokenType == RTokenType.Identifier && this.SubType == RTokenSubType.BuiltinFunction; }
+        }
+
+        public bool IsKeywordText(ITextProvider textProvider, string keywordText)
+        {
+            if (this.TokenType == RTokenType.Keyword)
+            {
+                return textProvider.CompareTo(this.Start, this.Length, keywordText, ignoreCase: false);
+            }
+
+            return false;
         }
     }
 }

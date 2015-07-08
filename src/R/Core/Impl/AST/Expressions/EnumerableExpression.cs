@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Languages.Core.Tokens;
+﻿using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.Parser;
@@ -23,29 +22,25 @@ namespace Microsoft.R.Core.AST.Expressions
         {
             TokenStream<RToken> tokens = context.Tokens;
 
-            if(tokens.CurrentToken.TokenType == RTokenType.Identifier)
+            if (tokens.CurrentToken.TokenType == RTokenType.Identifier)
             {
                 this.VariableName = new TokenNode();
                 this.VariableName.Parse(context, this);
 
-                if(tokens.CurrentToken.TokenType == RTokenType.Keyword)
+                if (tokens.CurrentToken.IsKeywordText(context.TextProvider, "in"))
                 {
-                    string keyword = context.TextProvider.GetText(tokens.CurrentToken);
-                    if(keyword.Equals("in", StringComparison.Ordinal))
-                    {
-                        this.InOperator = new TokenNode();
-                        this.InOperator.Parse(context, this);
+                    this.InOperator = new TokenNode();
+                    this.InOperator.Parse(context, this);
 
-                        this.Expression = new Expression();
-                        if(this.Expression.Parse(context, this))
-                        {
-                            return base.Parse(context, parent);
-                        }
-                    }
-                    else
+                    this.Expression = new Expression();
+                    if (this.Expression.Parse(context, this))
                     {
-                        context.Errors.Add(new MissingItemParseError(ParseErrorType.InKeywordExpected, tokens.CurrentToken));
+                        return base.Parse(context, parent);
                     }
+                }
+                else
+                {
+                    context.Errors.Add(new MissingItemParseError(ParseErrorType.InKeywordExpected, tokens.CurrentToken));
                 }
             }
             else
