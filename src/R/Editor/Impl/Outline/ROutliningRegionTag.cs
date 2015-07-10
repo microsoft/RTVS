@@ -1,0 +1,32 @@
+﻿using Microsoft.Languages.Editor.Outline;
+using Microsoft.VisualStudio.Text.Tagging;
+
+namespace Microsoft.R.Editor.Outline
+{
+    public class ROutliningRegionTag : OutliningRegionTag, IOutliningRegionTag
+    {
+        private OutlineRegion _outlineRegion;
+
+        internal ROutliningRegionTag(OutlineRegion outlineRegion) :
+            base(false, false, string.Empty, string.Empty)
+        {
+            _outlineRegion = outlineRegion;
+        }
+
+        object IOutliningRegionTag.CollapsedForm
+        {
+            get
+            {
+                return _outlineRegion.DisplayText;
+            }
+        }
+
+        object IOutliningRegionTag.CollapsedHintForm
+        {
+            get
+            {
+                return _outlineRegion.HoverText;
+            }
+        }
+    }
+}

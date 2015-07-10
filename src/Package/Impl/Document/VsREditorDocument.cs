@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Document
 {
-    internal class VsREditorDocument : REditorDocument
+    internal class VsREditorDocument : EditorDocument
     {
         private IEditorInstance _editorInstance;
         private VsWorkspaceItem _workspaceItem;

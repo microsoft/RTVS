@@ -56,6 +56,19 @@ namespace Microsoft.R.Core.AST
             get { return _children; }
         }
 
+        /// <summary>
+        /// Node unique key. Helps track nodes in the tree as they come and go.
+        /// For example, validation thread uses this to see if node it is about
+        /// to validate is still in the tree or if it is already gone (deleted).
+        /// </summary>
+        public int Key { get; set; }
+
+        /// <summary>
+        /// Node content has been invalidated. Node and its children
+        /// collection will be updated on the next parser pass.
+        /// </summary>
+        public bool IsDirty { get; set; }
+
         public void AppendChild(IAstNode child)
         {
             if (child.Parent == null)
@@ -73,6 +86,161 @@ namespace Microsoft.R.Core.AST
                 throw new InvalidOperationException("Node already has parent");
             }
         }
+
+        public void RemoveChildren(int start, int count)
+        {
+            if (start < 0 || start >= Children.Count)
+                throw new ArgumentOutOfRangeException("start");
+
+            if (count < 0 || count > Children.Count || start + count > Children.Count)
+                throw new ArgumentOutOfRangeException("count");
+
+            if (Children.Count == count)
+            {
+                _children = TextRangeCollection<IAstNode>.EmptyCollection;
+            }
+            else
+            {
+                var newChildren = new IAstNode[Children.Count - count];
+
+                int j = 0;
+
+                for (int i = 0; i < start; i++, j++)
+                    newChildren[j] = Children[i];
+
+                for (int i = start + count; i < Children.Count; i++, j++)
+                    newChildren[j] = Children[i];
+
+                _children = new TextRangeCollection<IAstNode>(newChildren);
+            }
+        }
+
+        #region Node lookup
+        /// <summary>
+        /// Finds deepest node that contains given position
+        /// </summary>
+        /// <param name="position">Position</param>
+        /// <returns>Node or null if not found</returns>
+        public virtual IAstNode NodeFromPosition(int position)
+        {
+            if (!this.Contains(position))
+            {
+                return null; // not this element
+            }
+
+            for (int i = 0; i < this.Children.Count; i++)
+            {
+                var child = Children[i];
+
+                if (child.Start > position)
+                    break;
+
+                if (child.Contains(position))
+                    return child.NodeFromPosition(position);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Finds deepest node that fully encloses given range
+        /// </summary>
+        public virtual IAstNode NodeFromRange(ITextRange range)
+        {
+            IAstNode node = null;
+
+            if (TextRange.Contains(this, range))
+            {
+                node = this;
+
+                for (int i = 0; i < this.Children.Count; i++)
+                {
+                    var child = Children[i];
+
+                    if (range.End < child.Start)
+                        break;
+
+                    if (child.Contains(range.Start) && child.Contains(range.End))
+                    {
+                        node = (child.Children.Count > 0)
+                            ? child.NodeFromRange(range)
+                            : child;
+
+                        break;
+                    }
+                }
+            }
+
+            return node;
+        }
+
+        /// <summary>
+        /// Determines position type and the enclosing node for 
+        /// a given position in the document text.
+        /// </summary>
+        /// <param name="position">Position in the document text</param>
+        /// <param name="node">Node that contains position</param>
+        /// <returns>Position type</returns>
+        public virtual PositionType GetPositionNode(int position, out IAstNode node)
+        {
+            node = null;
+
+            if (!this.Contains(position))
+            {
+                return PositionType.Undefined;
+            }
+
+            for (int i = 0; i < this.Children.Count; i++)
+            {
+                var child = Children[i];
+
+                if (position < child.Start)
+                    break;
+
+                if (child.Contains(position))
+                {
+                    return child.GetPositionNode(position, out node);
+                }
+            }
+
+            node = this;
+            return PositionType.Node;
+        }
+
+        /// <summary>
+        /// Finds two nodes that surround given text range
+        /// </summary>
+        /// <param name="start">Range start</param>
+        /// <param name="length">Range length</param>
+        /// <param name="startNode">Node that precedes the range or null if there is none</param>
+        /// <param name="startPositionType">Type of position in the start node</param>
+        /// <param name="endNode">Node that follows the range or null if there is none</param>
+        /// <param name="endPositionType">Type of position in the end node</param>
+        /// <returns>Node that encloses the range or root node</returns>
+        public IAstNode GetElementsEnclosingRange(
+                                int start, int length,
+                                out IAstNode startNode, out PositionType startPositionType,
+                                out IAstNode endNode, out PositionType endPositionType)
+        {
+            int end = start + length;
+
+            startPositionType = PositionType.Undefined;
+            endPositionType = PositionType.Undefined;
+
+            startNode = null;
+            endNode = null;
+
+            startPositionType = GetPositionNode(start, out startNode);
+            endPositionType = GetPositionNode(end, out endNode);
+
+            if (startNode == endNode)
+                return startNode;
+
+            return this;
+        }
+
+        #endregion
+
         #endregion
 
         #region IPropertyOwner

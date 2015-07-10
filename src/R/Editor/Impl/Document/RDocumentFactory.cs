@@ -14,7 +14,7 @@ namespace Microsoft.R.Editor.Document
     {
         public IEditorDocument CreateDocument(IEditorInstance editorInstance)
         {
-            var document =  new REditorDocument(editorInstance.ViewBuffer, editorInstance.WorkspaceItem);
+            var document =  new EditorDocument(editorInstance.ViewBuffer, editorInstance.WorkspaceItem);
             return document;
         }
     }

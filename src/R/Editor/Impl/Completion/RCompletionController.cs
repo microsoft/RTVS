@@ -37,14 +37,14 @@ namespace Microsoft.R.Editor.Completion
         {
             _textBuffer = subjectBuffers[0];
 
-            ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
+            ServiceManager.AdviseServiceAdded<EditorDocument>(_textBuffer, OnDocumentReady);
         }
 
         public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
             if (_textBuffer == subjectBuffer)
             {
-                ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
+                ServiceManager.AdviseServiceAdded<EditorDocument>(_textBuffer, OnDocumentReady);
             }
 
             base.ConnectSubjectBuffer(subjectBuffer);
@@ -71,7 +71,7 @@ namespace Microsoft.R.Editor.Completion
         }
 
         // There are startup sequences (eg: rename txt->html) where the document hasn't been created yet. 
-        private void OnDocumentReady(REditorDocument document)
+        private void OnDocumentReady(EditorDocument document)
         {
             //document.HtmlEditorTree.UpdateCompleted += OnTreeUpdateCompleted;
 

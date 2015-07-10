@@ -1,0 +1,807 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.Threading;
+using System.Windows.Threading;
+using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Core.Utility;
+using Microsoft.Languages.Editor.Diagnostics;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Tasks;
+using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.Utility;
+using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Definitions;
+using Microsoft.VisualStudio.Text;
+
+namespace Microsoft.R.Editor.Tree
+{
+    /// <summary>
+    /// Asynchronous text change processing task
+    /// </summary>
+    internal sealed partial class TreeUpdateTask : CancellableTask
+    {
+        public static readonly BooleanSwitch TraceParse =
+                new BooleanSwitch("rTracePartialParse", "Trace R parse events in debug window.");
+
+        public static readonly IntegerSwitch ParserDelay =
+                new IntegerSwitch("rParserDelay", "Milliseconds to delay R parsing after last text buffer change.", 200);
+
+        #region Private members
+
+        private static readonly Guid _treeUserId = new Guid("BE78E649-B9D4-4BC0-A332-F38A2B16CD10");
+        private static int _parserDelay = 200;
+
+        /// <summary>
+        /// Creator thread - typically manin thread ID
+        /// </summary>
+        private int _creatorThreadId = Thread.CurrentThread.ManagedThreadId;
+
+        /// <summary>
+        /// Editor tree that task is servicing
+        /// </summary>
+        private EditorTree _editorTree;
+
+        /// <summary>
+        /// Text buffer
+        /// </summary>
+        private ITextBuffer TextBuffer
+        {
+            get { return _editorTree.TextBuffer; }
+        }
+
+        /// <summary>
+        /// Output queue of the background parser
+        /// </summary>
+        private ConcurrentQueue<EditorTreeChanges> _backgroundParsingResults = new ConcurrentQueue<EditorTreeChanges>();
+
+        /// <summary>
+        /// Pending changes since the last parse or since async parsing task started.
+        /// </summary>
+        private TextChange _pendingChanges = new TextChange();
+
+        /// <summary>
+        /// Time when background task requested transition to main thread.
+        /// Used for debugging/profiling purposes.
+        /// </summary>
+        private DateTime _uiThreadTransitionRequestTime;
+
+        /// <summary>
+        /// If true the task was disposed (document was closed and tree is now orphaned).
+        /// </summary>
+        private bool _disposed;
+
+        /// <summary>
+        /// Prevents disposing when background task is running
+        /// </summary>
+        object _disposeLock = new object();
+
+        /// <summary>
+        /// List of tree update completion callbacks supplied to HtmlEditorTree.ProcessChanges
+        /// </summary>
+        private List<Action> _completionCallbacks = new List<Action>();
+
+        /// <summary>
+        // If true (default) tree will still update element positions
+        /// on text buffer changes although background parsing will be stopped. If false, no tree changes
+        /// or any kind will be performed when text buffer changes        
+        /// </summary>
+        private bool _allowElementPositionTracking;
+
+        private DateTime _lastChangeTime = DateTime.UtcNow;
+        #endregion
+
+        #region Constructors
+        public TreeUpdateTask(EditorTree editorTree)
+        {
+            _editorTree = editorTree;
+            EditorShell.OnIdle += OnIdle;
+
+            _parserDelay = ParserDelay.SwitchValue;
+#if DEBUG
+            TraceParse.Enabled = false;
+#endif
+        }
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// Detemines if tree is 'out of date' i.e. user made changes to the document
+        /// so text snapshot attached to the tree is no longer the same as ITextBuffer.CurrentSnapshot
+        /// </summary>
+        /// <returns></returns>
+        internal bool ChangesPending
+        {
+            get { return !_pendingChanges.IsEmpty(); }
+        }
+
+        /// <summary>
+        /// Returns an object that describes pending changes if any, null otherwise
+        /// </summary>
+        internal TextChange Changes
+        {
+            get { return _pendingChanges; }
+        }
+        #endregion
+
+        internal void RegisterCompletionCallback(Action action)
+        {
+            _completionCallbacks.Add(action);
+        }
+
+        internal void ClearChanges()
+        {
+            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+                throw new ThreadStateException("Method should only be called on the main thread");
+
+            _pendingChanges.Clear();
+        }
+
+        /// <summary>
+        /// Indicates that parser is suspended and tree is not 
+        /// getting updated on text buffer changes. This may, for example,
+        /// happen during document formatting or other massive changes.
+        /// </summary>
+        public bool UpdatesSuspended { get; private set; }
+
+        /// <summary>
+        /// Suspend tree updates. Typically called before massive 
+        /// changes to the document.
+        /// </summary>
+        /// <param name="allowElementPositionTracking">If true (default) tree will 
+        /// still update element positions on text buffer changes although background 
+        /// parsing will be stopped. If false, no tree changes of any kind 
+        /// will be performed when text buffer changes</param>
+        internal void Suspend(bool allowElementPositionTracking)
+        {
+            UpdatesSuspended = true;
+            TextBufferChangedSinceSuspend = false;
+            _allowElementPositionTracking = allowElementPositionTracking;
+        }
+
+        /// <summary>
+        /// Resumes tree updates. If changes were made to the text buffer 
+        /// since suspend, full parse is performed.
+        /// </summary>
+        internal void Resume()
+        {
+            if (UpdatesSuspended)
+            {
+                UpdatesSuspended = false;
+
+                if (TextBufferChangedSinceSuspend)
+                {
+                    TextBufferChangedSinceSuspend = false;
+
+                    RequestFullParse();
+
+                    GuardedOperations.DispatchInvoke(() =>
+                        ProcessPendingTextBufferChanges(async: true),
+                        DispatcherPriority.ApplicationIdle);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Indicates if text buffer changed since tree updates were suspended.
+        /// </summary>
+        internal bool TextBufferChangedSinceSuspend { get; private set; }
+
+        /// <summary>
+        /// Request full parse on the next background parse run
+        /// </summary>
+        internal void RequestFullParse()
+        {
+            _lastChangeTime = DateTime.UtcNow;
+
+            _pendingChanges.FullParseRequired = true;
+            _pendingChanges.IncrementalTreeUpdate = true;
+
+            // TextBuffer might be null in unit tests
+            _pendingChanges.Version = TextBuffer != null ? TextBuffer.CurrentSnapshot.Version.VersionNumber : 1;
+
+            if (TraceParse.Enabled)
+                Debug.WriteLine("Full parse requested");
+        }
+
+        /// <summary>
+        /// Text buffer change event handler. Performs analysis of the change. If change is trivial,
+        /// such as when typing plain text, simply applies the changes by shifting tree elements.
+        /// If some elements get deleted or otherwise damaged, removes them from the ttree right away.
+        /// Non-trivial changes are queued for background parsing which hits on idle.
+        /// Must be called on a main thread only, typically from an event handler of text 
+        /// buffer changes events. 
+        /// </summary>
+        internal void OnTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges)
+        {
+            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+                throw new ThreadStateException("Method should only be called on the main thread");
+
+            _editorTree.FireOnUpdatesPending(textChanges);
+            if (UpdatesSuspended)
+            {
+                this.TextBufferChangedSinceSuspend = true;
+
+                if (_allowElementPositionTracking)
+                {
+                    UpdateSuspended(textChanges);
+                }
+            }
+            else
+            {
+                foreach (TextChangeEventArgs change in textChanges)
+                {
+                    _lastChangeTime = DateTime.UtcNow;
+                    var context = new TextChangeContext(_editorTree, change, _pendingChanges);
+
+                    // No need to analyze changes if full parse is already pending
+                    if (!_pendingChanges.FullParseRequired)
+                    {
+                        TextChangeAnalyzer.DetermineChangeType(context);
+                    }
+
+                    ProcessChange(context);
+                }
+            }
+
+            _editorTree.FireOnUpdatesCompleted();
+        }
+
+        /// <summary>
+        /// Performs minimal (position) updates to the tree while in suspended state.
+        /// This is necessary for socntained language formatting where secondary language
+        /// formatter may modify its text buffer hence shifting positions of elements
+        /// and artifacts. Normally no changes to elements are expected in suspended state.
+        /// </summary>
+        private void UpdateSuspended(IReadOnlyCollection<TextChangeEventArgs> textChanges)
+        {
+            try
+            {
+                _editorTree.AcquireWriteLock();
+                _editorTree.NotifyTextChanges(textChanges);
+
+                UpdateTreeTextSnapshot();
+            }
+            finally
+            {
+                _editorTree.ReleaseWriteLock();
+            }
+        }
+
+        private void ProcessChange(TextChangeContext context)
+        {
+            _editorTree.FireOnUpdateBegin();
+
+            if (_pendingChanges.IsSimpleChange)
+            {
+                ProcessSimpleChange(context);
+            }
+            else
+            {
+                ProcessComplexChange(context);
+            }
+        }
+
+        /// <summary>
+        /// Handles simple (safe) changes.
+        /// </summary>
+        private void ProcessSimpleChange(TextChangeContext context)
+        {
+            bool elementsRemoved = false;
+
+            try
+            {
+                _editorTree.AcquireWriteLock();
+
+                elementsRemoved = DeleteAndShiftElements(context);
+                UpdateTreeTextSnapshot();
+
+                // If no elements were invalidated and full parse is not required, clear pending changes
+                if (!elementsRemoved)
+                {
+                    ClearChanges();
+                }
+            }
+            finally
+            {
+                _editorTree.ReleaseWriteLock();
+            }
+
+            if (!elementsRemoved)
+            {
+                if (context.ChangedNode != null)
+                {
+                    _editorTree.FireOnPositionsOnlyChanged(context.ChangedNode);
+                }
+
+                _editorTree.FireOnUpdateCompleted(TreeUpdateType.PositionsOnly, _pendingChanges.FullParseRequired);
+            }
+            else
+            {
+                _editorTree.FireOnUpdateCompleted(TreeUpdateType.NodesChanged, _pendingChanges.FullParseRequired);
+            }
+
+            DebugTree.VerifyTree(_editorTree);
+        }
+
+        /// <summary>
+        /// Handles non-trivial changes like changes in markup that delete tags, change
+        /// their names, introducing new tags and so on. In other words, all changes
+        /// that cannot that prevent us from updating tree without background parse.
+        /// </summary>
+        private void ProcessComplexChange(TextChangeContext context)
+        {
+            // Cancel background parse if it is running
+            Cancel();
+
+            TextChange textChange = new TextChange()
+            {
+                OldTextProvider = context.OldTextProvider,
+                NewTextProvider = context.NewTextProvider
+            };
+
+            try
+            {
+                // Get write lock since there may be concurrent readers of the tree. Note that there are
+                // no concurrent writers since changes are always applied from a main thread.
+                _editorTree.AcquireWriteLock();
+
+                if (_pendingChanges.FullParseRequired)
+                {
+                    // When full parse is required, change is like replace the entire file
+                    textChange.OldRange = TextRange.FromBounds(0, context.OldText.Length);
+                    textChange.NewRange = TextRange.FromBounds(0, context.NewText.Length);
+
+                    _editorTree.NotifyTextChange(context.Start, context.OldLength, context.NewLength);
+
+                    // Remove al elements from the tree
+                    _editorTree.InvalidateAll();
+                }
+                else
+                {
+                    textChange.OldRange = context.OldRange;
+                    textChange.NewRange = context.NewRange;
+
+                    DeleteAndShiftElements(context);
+                }
+
+                _pendingChanges.Combine(textChange);
+                _pendingChanges.Version = TextBuffer != null ? TextBuffer.CurrentSnapshot.Version.VersionNumber : 1;
+
+                UpdateTreeTextSnapshot();
+            }
+            finally
+            {
+                // Lock must be released before firing events otherwise we may hang
+                _editorTree.ReleaseWriteLock();
+            }
+
+            _editorTree.FireOnUpdateCompleted(TreeUpdateType.NodesChanged, _pendingChanges.FullParseRequired);
+        }
+
+        private void UpdateTreeTextSnapshot()
+        {
+            if (TextBuffer != null)
+            {
+                if (_pendingChanges.OldTextProvider == null)
+                    _pendingChanges.OldTextProvider = new TextProvider(_editorTree.TextSnapshot, partial: true);
+
+                _editorTree.TextSnapshot = TextBuffer.CurrentSnapshot;
+            }
+        }
+
+        // internal for unit tests
+        internal bool DeleteAndShiftElements(TextChangeContext context)
+        {
+            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+                throw new ThreadStateException("Method should only be called on the main thread");
+
+            TextChange textChange = context.TextChange;
+            var changeType = textChange.TextChangeType;
+            bool elementsChanged = false;
+
+            if (changeType == TextChangeType.Token)
+            {
+                TokenNode tokenNode = context.ChangedNode as TokenNode;
+                tokenNode.Token.Expand(0, textChange.NewRange.Length - textChange.OldRange.Length);
+            }
+            else
+            {
+                IAstNode changedElement = context.ChangedNode;
+                int start = context.Start;
+
+                // We delete change nodes unless node is a token node 
+                // which range can be modified such as string or comment
+                var positionType = PositionType.Undefined;
+
+                if (changedElement != null)
+                {
+                    IAstNode node;
+                    positionType = changedElement.GetPositionNode(context.Start, out node);
+                }
+
+                bool deleteElements = (context.OldLength > 0) || (positionType != PositionType.Token);
+
+                // In case of delete or replace we need to invalidate elements that were 
+                // damaged by the delete operation. We need to remove elements and their keys 
+                // so they won't be found by validator and incremental change analysis 
+                // will not be looking at zombies.
+
+                if (deleteElements)
+                {
+                    _pendingChanges.FullParseRequired =
+                        _editorTree.InvalidateInRange(_editorTree.AstRoot, context.OldRange, out elementsChanged);
+                }
+            }
+
+            _editorTree.NotifyTextChange(context.Start, context.OldLength, context.NewLength);
+
+            return elementsChanged;
+        }
+
+        /// <summary>
+        /// Idle time event handler. Kicks background parsing if there are pending changes
+        /// </summary>
+        private void OnIdle(object sender, EventArgs e)
+        {
+            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+                throw new ThreadStateException("Method should only be called on the main thread");
+
+            if (TextBuffer == null || TextBuffer.EditInProgress)
+                return;
+
+            if (_lastChangeTime != DateTime.MinValue && TimeUtility.MillisecondsSinceUTC(_lastChangeTime) > _parserDelay)
+            {
+                // Kick background parsing when idle slot comes so parser does not hit on every keystroke
+                ProcessPendingTextBufferChanges(async: true);
+
+                _lastChangeTime = DateTime.MinValue;
+            }
+        }
+
+        internal void ProcessPendingTextBufferChanges(bool async)
+        {
+            if (TextBuffer != null)
+            {
+                ProcessPendingTextBufferChanges(new TextProvider(TextBuffer.CurrentSnapshot, partial: true), async);
+            }
+        }
+
+        internal void ProcessPendingTextBufferChanges(ITextProvider newTextProvider, bool async)
+        {
+            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+                throw new ThreadStateException("Method should only be called on the main thread");
+
+            if (ChangesPending)
+            {
+                if (async && (IsTaskRunning() || _backgroundParsingResults.Count > 0))
+                    return; // Try next time or we may end up spawning a lot of tasks
+
+                // Combine changes in processing with pending changes.
+                var changesToProcess = new TextChange(_pendingChanges, newTextProvider);
+
+                // We need to signal task start here, in the main thread since it takes
+                // some time before task is created and when it actually starts.
+                // Therefore setting task state in the task body creates a gap
+                // where we may end up spawning another task.
+
+                base.Run((isCancelledCallback) => ProcessTextChanges(changesToProcess, async, isCancelledCallback), async);
+            }
+        }
+
+        /// <summary>
+        /// Main asyncronous task body
+        /// </summary>
+        void ProcessTextChanges(TextChange changeToProcess, bool async, Func<bool> isCancelledCallback)
+        {
+            lock (_disposeLock)
+            {
+                if (_editorTree == null || _disposed || isCancelledCallback())
+                    return;
+
+                Stopwatch sw = null;
+                if (TraceParse.Enabled)
+                {
+                    sw = new Stopwatch();
+                    sw.Start();
+                }
+
+                EditorTreeChanges treeChanges = null;
+
+                // Cache id since it can change if task is canceled
+                long taskId = TaskId;
+
+                try
+                {
+                    AstRoot rootNode;
+
+                    // We only need read lock since changes will be applied from a main thread
+                    if (async)
+                        rootNode = _editorTree.AcquireReadLock(_treeUserId);
+                    else
+                        rootNode = _editorTree.AstRoot;
+
+                    treeChanges = new EditorTreeChanges(changeToProcess.Version, changeToProcess.FullParseRequired);
+                    TextChangeProcessor changeProcessor = new TextChangeProcessor(_editorTree, rootNode, isCancelledCallback);
+
+                    bool fullParseRequired = changeToProcess.FullParseRequired;
+                    if (fullParseRequired)
+                    {
+                        changeProcessor.FullParse(treeChanges, changeToProcess.NewTextProvider, changeToProcess.IncrementalTreeUpdate);
+                    }
+                    else
+                    {
+                        changeProcessor.ProcessChange(changeToProcess, treeChanges);
+                    }
+                }
+                finally
+                {
+                    if (async && _editorTree != null)
+                        _editorTree.ReleaseReadLock(_treeUserId);
+                }
+
+                if (TraceParse.Enabled)
+                {
+                    Debug.WriteLine(String.Format(CultureInfo.CurrentCulture, "HTML parser time: {0} ms", sw.ElapsedMilliseconds));
+                    sw.Restart();
+                }
+
+                // Lock should be released at this point since actual application
+                // of tree changes is going to be happen from the main thread.
+
+                if (!isCancelledCallback() && treeChanges != null)
+                {
+                    // Queue results for the main thread application. This must be done before 
+                    // signaling that the task is complete since if EnsureProcessingComplete 
+                    // is waiting it will want to apply changes itself rather than wait for 
+                    // the DispatchOnUIThread to go though and hence it will need all changes
+                    // stored and ready for application.
+
+                    _backgroundParsingResults.Enqueue(treeChanges);
+                }
+
+                // Signal task complete now so if main thread is waiting
+                // it can proceed and appy the changes immediately.
+                SignalTaskComplete(taskId);
+
+                if (_backgroundParsingResults.Count > 0)
+                {
+                    _uiThreadTransitionRequestTime = DateTime.UtcNow;
+
+                    // It is OK to post results while main thread might be working
+                    // on them since if if it does, by the time posted request comes
+                    // queue will already be empty.
+                    if (async)
+                    {
+                        // Post request to apply tree changes to the main thread.
+                        // This must NOT block or else task will never enter 'RanToCompletion' state.
+                        EditorShell.DispatchOnUIThread(() => ApplyBackgroundProcessingResults());
+                    }
+                    else
+                    {
+                        // When processing is synchronous, apply changes and fire events right away.
+                        ApplyBackgroundProcessingResults();
+                    }
+                }
+
+                if (TraceParse.Enabled)
+                {
+                    sw.Stop();
+                    Debug.WriteLine(String.Format(CultureInfo.CurrentCulture, "HTML apply tree changes: {0} ms\r\n--- complete---\r\n", sw.ElapsedMilliseconds));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Makes sure all pending changes are processed and applied to the tree
+        /// </summary>
+        internal void EnsureProcessingComplete()
+        {
+            if (_creatorThreadId != Thread.CurrentThread.ManagedThreadId)
+                throw new ThreadStateException("Method should only be called on the main thread");
+
+            Stopwatch sw = null;
+            if (TraceParse.Enabled)
+            {
+                sw = new Stopwatch();
+                sw.Start();
+            }
+
+            // We want to make sure changes that are in a background processing are applied to the tree
+            // before returning. We can't wait on events since call comes on a main thread and wait 
+            // will prevent WPF dispatcher call from going through.
+
+            // this will attempt to apply changes from the background processing results queue.
+            // It will discard stale changes and only apply changes if they match current
+            // text buffer snapshot version. This will only apply changes are that already
+            // in the queue. If background task is still running or all changes are stale
+            // the tree still will be out of date.
+
+            // Check if tree is up to date. It is up to date if there are no text buffer changes that
+            // are pending for background processing.
+            if (ChangesPending)
+            {
+                // If task is running, give it a chance to finish. No need to wait long
+                // since even on a large file full parse rarely takes more than 50 ms.
+                // Also we can't wait indefinitely since if task is *scheduled to run*
+                // and then got cancelled before actually sarting, it will never complete.
+                WaitForCompletion(2000);
+
+                _uiThreadTransitionRequestTime = DateTime.UtcNow;
+                ApplyBackgroundProcessingResults();
+
+                if (ChangesPending)
+                {
+#if DEBUG
+                    string originalPendingChanges = Changes.ToString();
+#endif
+
+                    // We *sometimes* still have pending changes even after calling ProcessPendingTextBufferChanges(async: false).
+                    //   I'd like to determine whether this is a timing issue by retrying here multiple times and seeing if it helps.
+                    int retryCount = 0;
+                    while (retryCount < 10 && ChangesPending)
+                    {
+                        // Changes are still pending. Even if they are already in a backround processing,
+                        // process them right away here and ignore background processing results
+                        ProcessPendingTextBufferChanges(async: false);
+                        retryCount += 1;
+                    }
+
+#if DEBUG
+                    if (retryCount == 10)
+                    {
+                        string msg = string.Format(CultureInfo.InvariantCulture, 
+                            "Pending changes remain: ChangesPending: {0}, original:\"{1}\", new:\"{2}\"", 
+                            ChangesPending, originalPendingChanges, Changes.ToString());
+
+                        // using Debugger.Break as I want all threads suspended so the state doesn't change
+                        Debug.Assert(false, msg);
+                    }
+#endif
+                }
+            }
+
+            Debug.Assert(!ChangesPending);
+
+            if (TraceParse.Enabled)
+            {
+                sw.Stop();
+                Debug.WriteLine(String.Format(CultureInfo.CurrentCulture, "HTML EnsureProcessingComplete: {0} ms", sw.ElapsedMilliseconds));
+            }
+        }
+
+        /// <summary>
+        /// Applies queued changes to the tree. Must only be called in a main thread context.
+        /// </summary>
+        /// <param name="o"></param>
+        internal void ApplyBackgroundProcessingResults()
+        {
+            if (_creatorThreadId != Thread.CurrentThread.ManagedThreadId)
+                throw new ThreadStateException("Method should only be called on the main thread");
+
+            if (TraceParse.Enabled)
+                Debug.WriteLine(String.Format(CultureInfo.CurrentCulture, "UI thread transition time: {0} ms", (DateTime.UtcNow - _uiThreadTransitionRequestTime).TotalMilliseconds));
+
+            if (_disposed)
+                return;
+
+            EditorTreeChanges treeChanges;
+            bool changed = false;
+            bool fullParse = false;
+            bool staleChanges = false;
+            var eventsToFire = new List<TreeChangeEventRecord>();
+
+            while (_backgroundParsingResults.TryDequeue(out treeChanges))
+            {
+                // If no changes are pending, then main thread already processes
+                // everything in EnsureProcessingComplete call. Changes are pending
+                // until they are applied to the tree. If queue is not empty
+                // it either contains stale changes or main thread had to handle
+                // changes in sync per request from, say, intellisense or formatting.
+                if (ChangesPending)
+                {
+                    // Check if background processing result matches current text buffer snapshot version
+                    staleChanges = (TextBuffer != null && treeChanges.SnapshotVersion < TextBuffer.CurrentSnapshot.Version.VersionNumber);
+
+                    if (!staleChanges)
+                    {
+                        // We can't fire events when appying changes since listeners may
+                        // attempt to access tree which is not fully updated and/or may
+                        // try to acquire read lock and hang since ApplyTreeChanges
+                        // hols write lock.
+
+                        eventsToFire = ApplyTreeChanges(treeChanges);
+                        fullParse = _pendingChanges.FullParseRequired;
+
+                        // Queue must be empty by now since only most recent changes are not stale
+                        // Added local variable as I hit this assert, but _backgroundParsingResults.Count was zero
+                        //   by the time I broke into the debugger. If this hits again, we may need to 
+                        //   think through this code and whether we need to be protecting against concurrent access.
+                        int count = _backgroundParsingResults.Count;
+                        Debug.Assert(count == 0);
+
+                        // Clear pending changes as we are done
+                        ClearChanges();
+
+                        changed = true;
+
+                        // No need for further processing as queue must be empty
+                        break;
+                    }
+                }
+            }
+
+            if (!staleChanges)
+            {
+                Stopwatch sw = null;
+                if (TraceParse.Enabled)
+                {
+                    sw = new Stopwatch();
+                    sw.Start();
+                }
+
+                // Now that tree is fully updated, fire events
+                if (_editorTree != null)
+                {
+                    // first notify registered callbacks
+                    // copy collection since callbacks may unadvise on invoke
+                    var list = new List<Action>();
+                    list.AddRange(_completionCallbacks);
+
+                    foreach (var cb in list)
+                        cb.Invoke();
+
+                    _completionCallbacks.Clear();
+                    _editorTree.FirePostUpdateEvents(eventsToFire, fullParse);
+
+                    if (changed)
+                        DebugTree.VerifyTree(_editorTree);
+                }
+
+                if (TraceParse.Enabled)
+                {
+                    sw.Stop();
+                    Debug.WriteLine(String.Format(CultureInfo.CurrentCulture, "HTML events firing: {0} ms", sw.ElapsedMilliseconds));
+                }
+            }
+        }
+
+        List<TreeChangeEventRecord> ApplyTreeChanges(EditorTreeChanges changesToApply)
+        {
+            // Check editor tree reference since document could have been 
+            // closed before parsing was completed
+
+            if (!_disposed && _editorTree != null)
+            {
+                if (TextBuffer != null)
+                    _editorTree.TextSnapshot = TextBuffer.CurrentSnapshot;
+
+                return _editorTree.ApplyChangesFromQueue(changesToApply.ChangeQueue);
+            }
+
+            return new List<TreeChangeEventRecord>();
+        }
+
+        #region Dispose
+        protected override void Dispose(bool disposing)
+        {
+            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+                throw new ThreadStateException("Method should only be called on the main thread");
+
+            lock (_disposeLock)
+            {
+                if (disposing)
+                {
+                    Cancel();
+
+                    _disposed = true;
+                    EditorShell.OnIdle -= OnIdle;
+                }
+                base.Dispose(disposing);
+            }
+        }
+        #endregion
+    }
+}

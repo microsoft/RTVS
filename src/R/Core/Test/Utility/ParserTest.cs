@@ -12,8 +12,7 @@ namespace Microsoft.R.Core.Test.Utility
     {
         public static void VerifyParse(string expected, string expression)
         {
-            RParser parser = new RParser();
-            AstRoot ast = parser.Parse(new TextStream(expression));
+            AstRoot ast = RParser.Parse(new TextStream(expression));
             ParserTest.CompareTrees(expected, ast);
         }
 

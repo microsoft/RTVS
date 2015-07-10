@@ -98,6 +98,12 @@
     <Compile Include="ContentType\RContentTypeDefinition.cs" />
     <Compile Include="ContentType\RdContentTypeDefinition.cs" />
     <Compile Include="Document\RDocumentFactory.cs" />
+    <Compile Include="Outline\ROutlineTaggerProvider.cs" />
+    <Compile Include="Outline\OutlineTagsCommandHandler.cs" />
+    <Compile Include="Outline\ROutliningRegionTag.cs" />
+    <Compile Include="Outline\ROutliningTagger.cs" />
+    <Compile Include="Outline\ROutlineRegion.cs" />
+    <Compile Include="Outline\ROutlineRegionBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Document\REditorDocument.cs" />
     <Compile Include="Resources.Designer.cs">
@@ -106,6 +112,25 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings\RSettings.cs" />
+    <Compile Include="Tree\ApplyTreeChanges.cs" />
+    <Compile Include="Tree\ChangeProcessor.cs" />
+    <Compile Include="Tree\Debug.cs" />
+    <Compile Include="Tree\EditorTree.cs" />
+    <Compile Include="Tree\TreeChangeType.cs" />
+    <Compile Include="Tree\TreeCompare.cs" />
+    <Compile Include="Tree\TreeSearch.cs" />
+    <Compile Include="Tree\EditorTreeChange.cs" />
+    <Compile Include="Tree\RangeContentType.cs" />
+    <Compile Include="Tree\TextChange.cs" />
+    <Compile Include="Tree\TextChangeAnalyzer.cs" />
+    <Compile Include="Tree\TextChangeContext.cs" />
+    <Compile Include="Tree\TextChangeType.cs" />
+    <Compile Include="Tree\TreeChangeEventRecord.cs" />
+    <Compile Include="Tree\TreeEventArgs.cs" />
+    <Compile Include="Tree\TreeEvents.cs" />
+    <Compile Include="Tree\TreeLock.cs" />
+    <Compile Include="Tree\TreeUpdateTask.cs" />
+    <Compile Include="Tree\TreeUpdateType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
@@ -129,6 +154,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TaskList\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

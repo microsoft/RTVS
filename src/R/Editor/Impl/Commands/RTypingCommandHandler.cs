@@ -48,7 +48,7 @@ namespace Microsoft.Html.Editor.Commands
 
         private void HandleCompletion(char typedChar)
         {
-            REditorDocument document = REditorDocument.FromTextBuffer(TextBuffer);
+            EditorDocument document = EditorDocument.FromTextBuffer(TextBuffer);
             Debug.Assert(document != null);
 
             switch (typedChar)

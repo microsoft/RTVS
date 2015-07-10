@@ -7,14 +7,14 @@ namespace Microsoft.R.Core.Parser
 {
     public sealed partial class RParser
     {
-        public AstRoot Parse(string text)
+        public static AstRoot Parse(string text)
         {
-            return this.Parse(new TextStream(text));
+            return RParser.Parse(new TextStream(text));
         }
 
-        public AstRoot Parse(ITextProvider textProvider)
+        public static AstRoot Parse(ITextProvider textProvider)
         {
-            return this.Parse(textProvider, new TextRange(0, textProvider.Length));
+            return RParser.Parse(textProvider, new TextRange(0, textProvider.Length));
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Microsoft.R.Core.Parser
         /// </summary>
         /// <param name="textProvider">Text provider</param>
         /// <param name="range">Range to parse</param>
-        public AstRoot Parse(ITextProvider textProvider, ITextRange range)
+        public static AstRoot Parse(ITextProvider textProvider, ITextRange range)
         {
             var tokenizer = new Tokenizer();
 
@@ -30,11 +30,11 @@ namespace Microsoft.R.Core.Parser
             TokenStream<RToken>  tokenStream = new TokenStream<RToken>(tokens, new RToken(RTokenType.EndOfStream, TextRange.EmptyRange));
             ParseContext context = new ParseContext(textProvider, range, tokenStream);
 
-            AstRoot tree = new AstRoot(textProvider);
-            tree.Parse(context, tree);
-            tree.Errors = context.Errors;
+            AstRoot astRoot = new AstRoot(textProvider);
+            astRoot.Parse(context, astRoot);
+            astRoot.Errors = context.Errors;
 
-            return tree;
+            return astRoot;
         }
     }
 }

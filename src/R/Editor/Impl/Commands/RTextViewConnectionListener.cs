@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Commands
             }
             else
             {
-                REditorDocument doc = ServiceManager.GetService<REditorDocument>(textBuffer);
+                EditorDocument doc = EditorDocument.FromTextBuffer(textBuffer);
                 if (doc != null)
                 {
                     doc.Dispose();

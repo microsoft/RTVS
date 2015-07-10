@@ -65,8 +65,11 @@
     <Compile Include="AST\Arguments\NamedArgument.cs" />
     <Compile Include="AST\DataTypes\RMissing.cs" />
     <Compile Include="AST\DataTypes\RNull.cs" />
+    <Compile Include="AST\Definitions\PositionType.cs" />
     <Compile Include="AST\Expressions\Definitions\IEnumerableExpression.cs" />
     <Compile Include="AST\Expressions\Definitions\IExpression.cs" />
+    <Compile Include="AST\Keys\KeyGenerator.cs" />
+    <Compile Include="AST\Keys\Keys.cs" />
     <Compile Include="AST\Operators\Definitions\IOperator.cs" />
     <Compile Include="AST\Operators\Association.cs" />
     <Compile Include="AST\Operators\Operator.cs" />

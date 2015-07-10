@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Completion
             if (_asyncSession != null)
                 return;
 
-            REditorDocument doc = REditorDocument.FromTextBuffer(_textBuffer);
+            EditorDocument doc = EditorDocument.FromTextBuffer(_textBuffer);
             if (doc == null)
                 return;
 
@@ -133,7 +133,7 @@ namespace Microsoft.R.Editor.Completion
             // If we ever get called on a background thread, something is drastically wrong.
             Debug.Assert(EditorShell.IsUIThread);
 
-            REditorDocument doc = REditorDocument.FromTextBuffer(_textBuffer);
+            EditorDocument doc = EditorDocument.FromTextBuffer(_textBuffer);
             if (doc == null)
                 return;
 
