@@ -91,15 +91,19 @@ namespace Microsoft.R.Core.AST.Scopes
                             }
                             else
                             {
-                                // try recovering at the next line or past nearest 
-                                // semicolon or closing curly brace
-                                tokens.MoveToNextLine(context.TextProvider,
-                                    (TokenStream<RToken> ts) => 
-                                    {
-                                        return ts.CurrentToken.TokenType == RTokenType.Semicolon || 
-                                               ts.NextToken.TokenType == RTokenType.CloseCurlyBrace;
-                                    });
+                                statement = null;
                             }
+                        }
+                        if (statement == null)
+                        {
+                            // try recovering at the next line or past nearest 
+                            // semicolon or closing curly brace
+                            tokens.MoveToNextLine(context.TextProvider,
+                                (TokenStream<RToken> ts) =>
+                                {
+                                    return ts.CurrentToken.TokenType == RTokenType.Semicolon ||
+                                           ts.NextToken.TokenType == RTokenType.CloseCurlyBrace;
+                                });
                         }
                         break;
                 }

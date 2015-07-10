@@ -69,9 +69,11 @@ namespace Microsoft.R.Core.AST.Statements
                     break;
 
                 case "return":
-                case "typeof":
-                case "library":
                     statement = new KeywordExpressionStatement();
+                    break;
+
+                default:
+                    context.Errors.Add(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, currentToken));
                     break;
             }
 

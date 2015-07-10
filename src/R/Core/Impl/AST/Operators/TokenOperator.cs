@@ -9,46 +9,53 @@ namespace Microsoft.R.Core.AST.Operators
     [DebuggerDisplay("[{OperatorType} Precedence={Precedence} Unary={IsUnary}]")]
     public sealed class TokenOperator : Operator
     {
-        private OperatorType operatorType;
-        private int precedence;
-        private bool isUnary;
+        private OperatorType _operatorType;
+        private int _precedence;
+        private bool _isUnary;
 
         public TokenNode OperatorToken { get; private set; }
 
         #region IOperator
         public override OperatorType OperatorType
         {
-            get { return this.operatorType; }
+            get { return _operatorType; }
         }
 
         public override int Precedence
         {
-            get { return this.precedence; }
+            get { return _precedence; }
         }
         public override bool IsUnary
         {
-            get { return this.isUnary; }
+            get { return _isUnary; }
         }
         #endregion
 
         public TokenOperator(bool unary)
         {
-            this.isUnary = unary;
+            _isUnary = unary;
+        }
+        public TokenOperator(OperatorType operatorType, bool unary):
+            this(unary)
+        {
+            _operatorType = operatorType;
         }
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
             Debug.Assert(context.Tokens.CurrentToken.TokenType == RTokenType.Operator);
 
-            this.operatorType = TokenOperator.GetOperatorType(context);
+            _operatorType = TokenOperator.GetOperatorType(context);
             this.OperatorToken = RParser.ParseToken(context, this);
 
-            bool isUnary;
-            this.precedence = this.GetCurrentOperatorPrecedence(context, this.OperatorType, out isUnary);
+            this.Association = OperatorAssociation.GetAssociation(_operatorType);
 
-            if (!this.isUnary)
+            bool isUnary;
+            _precedence = this.GetCurrentOperatorPrecedence(context, this.OperatorType, out isUnary);
+
+            if (!_isUnary)
             {
-                this.isUnary = isUnary;
+                _isUnary = isUnary;
             }
 
 
@@ -182,6 +189,9 @@ namespace Microsoft.R.Core.AST.Operators
                 case "->":
                 case "->>":
                     return OperatorType.RightAssign;
+
+                case "=":
+                    return OperatorType.Equals;
 
                 default:
                     if (text.Length > 2 && text[0] == '%' && text[text.Length - 1] == '%')

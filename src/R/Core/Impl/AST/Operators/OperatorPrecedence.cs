@@ -6,26 +6,29 @@
         {
             switch (operatorType)
             {
+                case OperatorType.Sentinel:
+                    return 0;
+
                 case OperatorType.Equals:
-                    return 1;
+                    return 10;
 
                 case OperatorType.LeftAssign:
                 case OperatorType.RightAssign:
-                    return 2;
+                    return 20;
 
                 case OperatorType.Tilde:
-                    return 3;
+                    return 30;
 
                 case OperatorType.Or:
                 case OperatorType.CondtitionalOr:
-                    return 4;
+                    return 40;
 
                 case OperatorType.And:
                 case OperatorType.ConditionalAnd:
-                    return 5;
+                    return 50;
 
                 case OperatorType.Not:
-                    return 6;
+                    return 60;
 
                 case OperatorType.GreaterThan:
                 case OperatorType.GreaterThanOrEquals:
@@ -33,15 +36,15 @@
                 case OperatorType.LessThanOrEquals:
                 case OperatorType.ConditionalEquals:
                 case OperatorType.ConditionalNotEquals:
-                    return 7;
+                    return 70;
 
                 case OperatorType.Add:
                 case OperatorType.Subtract:
-                    return 8;
+                    return 80;
 
                 case OperatorType.Multiply:
                 case OperatorType.Divide:
-                    return 9;
+                    return 90;
 
                 case OperatorType.Modulo: // %%
                 case OperatorType.IntegerDivide: // %/%
@@ -50,29 +53,29 @@
                 case OperatorType.KroneckerProduct: // %x%
                 case OperatorType.MatchingPperator: // %in%
                 case OperatorType.Special: // %abc%
-                    return 10;
+                    return 100;
 
                 case OperatorType.Sequence: // :
-                    return 11;
+                    return 110;
 
                 case OperatorType.Exponent: // ^
-                    return 12;
+                    return 120;
 
                 case OperatorType.Unary: // +, =, !
-                    return 13;
+                    return 130;
 
                 case OperatorType.FunctionCall: // (...)
                 case OperatorType.Index: // [] [[]]
-                    return 14;
+                    return 140;
 
                 case OperatorType.ListIndex: // $ or @
-                    return 15;
+                    return 150;
 
                 case OperatorType.Namespace: // :: or :::
-                    return 16;
+                    return 160;
             }
 
-            return 0;
+            return 1000;
         }
     }
 }

@@ -35,6 +35,5 @@ namespace Microsoft.R.Core.AST.Operators
 
             return false;
         }
-
     }
 }

@@ -66,6 +66,25 @@ namespace Microsoft.R.Core.AST
         }
 
 
+        /// <summary>
+        /// Updates positions of all elements and attributes in the tree
+        /// reflecting multiple changes made to the source text buffer.
+        /// </summary>
+        public void ReflectTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges)
+        {
+            foreach (TextChangeEventArgs curChange in textChanges)
+            {
+                ReflectTextChange(curChange.Start, curChange.OldLength, curChange.NewLength);
+            }
+        }
+
+        /// <summary>
+        /// Updates positions of all elements and attributes in the tree
+        /// reflecting change made to the source text buffer.
+        /// </summary>
+        /// <param name="start">Start position of the change</param>
+        /// <param name="oldLength">Length of changed fragment before the change</param>
+        /// <param name="newLength">Length of changed fragment after the change</param>
         public void ReflectTextChange(int start, int oldLength, int newLength)
         {
             // Note that shifting tree elements also shifts artifacts in 

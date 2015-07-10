@@ -6,6 +6,7 @@
         {
             switch (operatorType)
             {
+                case OperatorType.Exponent:     // ^
                 case OperatorType.Equals:       // =
                 case OperatorType.LeftAssign:   // <- or <<-
                 case OperatorType.FunctionCall: // ()

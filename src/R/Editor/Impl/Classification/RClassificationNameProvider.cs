@@ -35,7 +35,6 @@ namespace Microsoft.R.Editor.Classification
                 case RTokenType.CloseDoubleSquareBracket:
                 case RTokenType.OpenBrace:
                 case RTokenType.CloseBrace:
-                case RTokenType.Dot:
                 case RTokenType.Ellipsis:
                     return RClassificationTypes.Punctuation;
 

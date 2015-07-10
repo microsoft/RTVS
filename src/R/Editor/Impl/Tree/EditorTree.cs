@@ -43,7 +43,10 @@ namespace Microsoft.R.Editor.Tree
             internal set
             {
                 _textSnapShot = value;
-                AstRoot.TextProvider = new TextProvider(_textSnapShot, partial: true);
+                if (_astRoot != null)
+                {
+                    _astRoot.TextProvider = new TextProvider(_textSnapShot, partial: true);
+                }
             }
         }
 
@@ -254,9 +257,14 @@ namespace Microsoft.R.Editor.Tree
 
         internal void NotifyTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges)
         {
-            foreach (TextChangeEventArgs curChange in textChanges)
+            _astRoot.ReflectTextChanges(textChanges);
+
+            if (ReflectTextChange != null)
             {
-                ReflectTextChange(this, curChange);
+                foreach (TextChangeEventArgs curChange in textChanges)
+                {
+                    ReflectTextChange(this, curChange);
+                }
             }
         }
 
@@ -376,7 +384,7 @@ namespace Microsoft.R.Editor.Tree
             // make sure not to use RootNode property since
             // calling get; causes parse
             List<IAstNode> removedNodes = new List<IAstNode>();
-            foreach (var child in  _astRoot.Children)
+            foreach (var child in _astRoot.Children)
             {
                 removedNodes.Add(child);
                 _astRoot.Keys.RemoveElement(child);

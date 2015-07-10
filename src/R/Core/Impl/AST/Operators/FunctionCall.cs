@@ -2,26 +2,23 @@
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Operators
 {
-    public sealed class FunctionCall : Operator
+    public sealed class FunctionCall : Operator, IFunction
     {
-        #region IOperator
+        #region IFunction
         public TokenNode OpenBrace { get; private set; }
 
         public ArgumentList Arguments { get; private set; }
 
         public TokenNode CloseBrace { get; private set; }
+        #endregion
 
-        public override bool IsUnary
-        {
-            get { return true; }
-        }
-
+        #region IOperator
         public override OperatorType OperatorType
         {
             get { return OperatorType.FunctionCall; }
@@ -30,6 +27,11 @@ namespace Microsoft.R.Core.AST.Operators
         public override int Precedence
         {
             get { return OperatorPrecedence.GetPrecedence(OperatorType.FunctionCall); }
+        }
+
+        public override bool IsUnary
+        {
+            get { return true; }
         }
 
         public override Association Association

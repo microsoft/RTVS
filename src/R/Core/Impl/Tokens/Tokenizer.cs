@@ -59,19 +59,6 @@ namespace Microsoft.R.Core.Tokens
                     HandleComment();
                     break;
 
-                case '.':
-                    if (_cs.NextChar == '.' && _cs.LookAhead(2) == '.')
-                    {
-                        AddToken(RTokenType.Ellipsis, _cs.Position, 3);
-                        _cs.Advance(3);
-                    }
-                    else
-                    {
-                        AddToken(RTokenType.Dot, _cs.Position, 1);
-                        _cs.MoveToNextChar();
-                    }
-                    break;
-
                 case '(':
                     AddToken(RTokenType.OpenBrace, _cs.Position, 1);
                     _cs.MoveToNextChar();
@@ -134,7 +121,15 @@ namespace Microsoft.R.Core.Tokens
                     break;
 
                 default:
-                    HandleOther();
+                    if (_cs.CurrentChar == '.' && _cs.NextChar == '.' && _cs.LookAhead(2) == '.')
+                    {
+                        AddToken(RTokenType.Ellipsis, _cs.Position, 3);
+                        _cs.Advance(3);
+                    }
+                    else
+                    {
+                        HandleOther();
+                    }
                     break;
             }
         }
@@ -303,23 +298,30 @@ namespace Microsoft.R.Core.Tokens
                 }
                 else if (s == "NULL")
                 {
-                    this.AddToken(RTokenType.Null, start, s.Length);
+                    this.AddToken(RTokenType.Null, RTokenSubType.BuiltinConstant, start, s.Length);
                 }
                 else if (s == "NA")
                 {
-                    this.AddToken(RTokenType.Missing, start, s.Length);
+                    this.AddToken(RTokenType.Missing, RTokenSubType.BuiltinConstant, start, s.Length);
                 }
                 else if (s == "Inf")
                 {
-                    this.AddToken(RTokenType.Infinity, start, s.Length);
+                    this.AddToken(RTokenType.Infinity, RTokenSubType.BuiltinConstant, start, s.Length);
                 }
                 else if (s == "NaN")
                 {
-                    this.AddToken(RTokenType.NaN, start, s.Length);
+                    this.AddToken(RTokenType.NaN, RTokenSubType.BuiltinConstant, start, s.Length);
                 }
                 else
                 {
-                    this.AddToken(RTokenType.Identifier, start, s.Length);
+                    RTokenSubType subType = RTokenSubType.None;
+
+                    if(Builtins.IsBuiltin(s))
+                    {
+                        subType = RTokenSubType.BuiltinFunction;
+                    }
+
+                    this.AddToken(RTokenType.Identifier, subType, start, s.Length);
                 }
 
                 return;
@@ -403,10 +405,7 @@ namespace Microsoft.R.Core.Tokens
 
             int start = _cs.Position;
 
-            while (!_cs.IsWhiteSpace() && !_cs.IsEndOfStream() && (_cs.IsAnsiLetter() || _cs.IsDecimal() || _cs.CurrentChar == '.' || _cs.CurrentChar == '_'))
-            {
-                _cs.MoveToNextChar();
-            }
+            SkipIdentifier();
 
             if (_cs.Position > start)
             {
@@ -434,7 +433,7 @@ namespace Microsoft.R.Core.Tokens
 
             while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace())
             {
-                if (!_cs.IsAnsiLetter() && !_cs.IsDecimal())
+                if (!IsIdentifierCharacter())
                     break;
 
                 _cs.MoveToNextChar();
@@ -450,6 +449,11 @@ namespace Microsoft.R.Core.Tokens
 
                 _cs.MoveToNextChar();
             }
+        }
+
+        private bool IsIdentifierCharacter()
+        {
+            return (_cs.IsAnsiLetter() || _cs.IsDecimal() || _cs.CurrentChar == '.' || _cs.CurrentChar == '_');
         }
     }
 }

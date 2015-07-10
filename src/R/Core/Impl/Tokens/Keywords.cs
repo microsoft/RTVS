@@ -22,8 +22,6 @@ namespace Microsoft.R.Core.Tokens
             "next",
             "repeat",
             "return",
-            "switch", // technically a function but usually is considered a statement
-            "typeof",
             "while",
         };
     }

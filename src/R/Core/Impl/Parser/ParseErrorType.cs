@@ -55,7 +55,7 @@
         OpenSquareBracketExpected,
         CloseSquareBracketExpected,
         OperatorExpected,
-        FunctionKeywordExpected,
+        FunctionExpected,
         InKeywordExpected,
         UnexpectedEndOfFile,
     }

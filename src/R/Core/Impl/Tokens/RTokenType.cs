@@ -73,7 +73,6 @@ namespace Microsoft.R.Core.Tokens
         CloseBrace,
         Comma, 
         Semicolon,
-        Dot,
 
         /// <summary>
         /// '...' sequence, typically argument indicating

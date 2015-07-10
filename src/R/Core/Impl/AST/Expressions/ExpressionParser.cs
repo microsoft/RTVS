@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.AST.Values;
@@ -17,7 +19,7 @@ namespace Microsoft.R.Core.AST.Expressions
     /// </summary>
     public sealed class ExpressionParser
     {
-        private static readonly IOperator Sentinel = new TokenOperator(false);
+        private static readonly IOperator Sentinel = new TokenOperator(OperatorType.Sentinel, false);
 
         enum OperationType
         {
@@ -135,7 +137,6 @@ namespace Microsoft.R.Core.AST.Expressions
                     case RTokenType.CloseCurlyBrace:
                     case RTokenType.CloseSquareBracket:
                     case RTokenType.CloseDoubleSquareBracket:
-                    case RTokenType.Keyword:
                         if (_previousOperationType == OperationType.None)
                         {
                             context.Errors.Add(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, tokens.CurrentToken));
@@ -145,6 +146,15 @@ namespace Microsoft.R.Core.AST.Expressions
 
                     case RTokenType.Comma:
                     case RTokenType.Semicolon:
+                        endOfExpression = true;
+                        break;
+
+                    case RTokenType.Keyword:
+                        errorType = HandleKeyword(context);
+                        if (errorType == ParseErrorType.None)
+                        {
+                            currentOperationType = OperationType.Operand;
+                        }
                         endOfExpression = true;
                         break;
 
@@ -246,6 +256,32 @@ namespace Microsoft.R.Core.AST.Expressions
             return result;
         }
 
+        private ParseErrorType HandleKeyword(ParseContext context)
+        {
+            ParseErrorType errorType = ParseErrorType.None;
+
+            string keyword = context.TextProvider.GetText(context.Tokens.CurrentToken);
+            if (keyword.Equals("function", StringComparison.Ordinal))
+            {
+                // Special case 'exp <- function(...) { }
+                FunctionDefinition funcDef = new FunctionDefinition();
+                if (funcDef.Parse(context, null))
+                {
+                    _operands.Push(funcDef);
+                }
+                else
+                {
+                    errorType = ParseErrorType.FunctionExpected;
+                }
+            }
+            else
+            {
+                errorType = ParseErrorType.UnexpectedToken;
+            }
+
+            return errorType;
+        }
+
         private ParseErrorType HandleFunctionOrIndexer(IAstNode operatorNode)
         {
             // Indexing or function call is performed on the topmost operand which 
@@ -274,10 +310,13 @@ namespace Microsoft.R.Core.AST.Expressions
             // it is interpreted as unary.
 
             TokenOperator currentOperator = new TokenOperator(_operands.Count == 0);
+
             currentOperator.Parse(context, null);
+            isUnary = currentOperator.IsUnary;
 
             IOperator lastOperator = _operators.Peek();
-            if (currentOperator.Precedence <= lastOperator.Precedence)
+            if (currentOperator.Precedence <= lastOperator.Precedence && 
+                !(currentOperator.OperatorType == lastOperator.OperatorType && currentOperator.Association == Association.Right))
             {
                 // New operator has lower or equal precedence. We need to make a tree from
                 // the topmost operator and its operand(s). Example: a*b+c. + has lower priority
@@ -287,8 +326,10 @@ namespace Microsoft.R.Core.AST.Expressions
                 errorType = this.ProcessHigherPrecendenceOperators(currentOperator);
             }
 
-            _operators.Push(currentOperator);
-            isUnary = currentOperator.IsUnary;
+            if (errorType == ParseErrorType.None)
+            {
+                _operators.Push(currentOperator);
+            }
 
             return errorType;
         }
@@ -296,48 +337,64 @@ namespace Microsoft.R.Core.AST.Expressions
         private ParseErrorType ProcessHigherPrecendenceOperators(IOperator currentOperator)
         {
             Debug.Assert(_operators.Count > 1);
+            ParseErrorType errorType = ParseErrorType.None;
+            Association association = currentOperator.Association;
 
             // At least one operator above sentinel is on the stack.
             do
             {
-                IOperator operatorNode = _operators.Pop();
-
-                IAstNode rightOperand = this.SafeGetOperand();
-                if (rightOperand == null)
+                errorType = MakeNode();
+                if (errorType == ParseErrorType.None)
                 {
-                    // Oddly, no operands
+                    IOperator nextOperatorNode = _operators.Peek();
+
+                    if (association == Association.Left && nextOperatorNode.Precedence <= currentOperator.Precedence)
+                    {
+                        break;
+                    }
+
+                    if (association == Association.Right && nextOperatorNode.Precedence < currentOperator.Precedence)
+                    {
+                        break;
+                    }
+                }
+            } while (_operators.Count > 1 && errorType == ParseErrorType.None);
+
+            return errorType;
+        }
+
+        private ParseErrorType MakeNode()
+        {
+            IOperator operatorNode = _operators.Pop();
+
+            IAstNode rightOperand = this.SafeGetOperand();
+            if (rightOperand == null)
+            {
+                // Oddly, no operands
+                return ParseErrorType.OperandExpected;
+            }
+
+            if (operatorNode.IsUnary)
+            {
+                operatorNode.AppendChild(rightOperand);
+                operatorNode.RightOperand = rightOperand;
+            }
+            else
+            {
+                IAstNode leftOperand = this.SafeGetOperand();
+                if (leftOperand == null)
+                {
                     return ParseErrorType.OperandExpected;
                 }
 
-                if (operatorNode.IsUnary)
-                {
-                    operatorNode.AppendChild(rightOperand);
-                    operatorNode.RightOperand = rightOperand;
-                }
-                else
-                {
-                    IAstNode leftOperand = this.SafeGetOperand();
-                    if (leftOperand == null)
-                    {
-                        return ParseErrorType.OperandExpected;
-                    }
+                operatorNode.LeftOperand = leftOperand;
+                operatorNode.RightOperand = rightOperand;
 
-                    operatorNode.LeftOperand = leftOperand;
-                    operatorNode.RightOperand = rightOperand;
+                operatorNode.AppendChild(leftOperand);
+                operatorNode.AppendChild(rightOperand);
+            }
 
-                    operatorNode.AppendChild(leftOperand);
-                    operatorNode.AppendChild(rightOperand);
-                }
-
-                _operands.Push(operatorNode);
-
-                IOperator nextOperatorNode = _operators.Peek();
-                if (nextOperatorNode.Precedence <= currentOperator.Precedence)
-                {
-                    break;
-                }
-
-            } while (_operators.Count > 1);
+            _operands.Push(operatorNode);
 
             return ParseErrorType.None;
         }

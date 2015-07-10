@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Windows.Threading;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Outline;
+using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Editor.Document;
@@ -90,13 +92,13 @@ namespace Microsoft.R.Editor.Outline
                     else
                     {
                         // Tree was busy. Will try again later.
-                        BackgroundTask.DoTaskOnIdle();
+                        GuardedOperations.DispatchInvoke(() => BackgroundTask.DoTaskOnIdle(), DispatcherPriority.Normal);
                     }
                 }
 
                 return true;
             }
-        }
+        } 
 
         protected override void MainThreadAction(object backgroundProcessingResult)
         {
