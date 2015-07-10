@@ -180,4 +180,10 @@
   <data name="SaveAsFilterR" xml:space="preserve">
     <value>R Language Files (*.r)|*.r|All Files (*.*)|*.*</value>
   </data>
+  <data name="Temp_SettingDescription" xml:space="preserve">
+    <value>Setting description</value>
+  </data>
+  <data name="Temp_SettingDisplayName" xml:space="preserve">
+    <value>Setting</value>
+  </data>
 </root>

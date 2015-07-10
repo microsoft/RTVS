@@ -241,6 +241,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Setting description.
+        /// </summary>
+        internal static string Temp_SettingDescription {
+            get {
+                return ResourceManager.GetString("Temp_SettingDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Setting.
+        /// </summary>
+        internal static string Temp_SettingDisplayName {
+            get {
+                return ResourceManager.GetString("Temp_SettingDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Format Document.
         /// </summary>
         internal static string UndoActionFormatDocument {

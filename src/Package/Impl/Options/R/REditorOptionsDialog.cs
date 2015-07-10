@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R
 {
-    [Guid("2E3086D0-9BEC-43EA-8F2F-1126A98AF013")]
+    [Guid("970B289E-7CCB-44FD-BA0E-514C165750DF")]
     [ComVisible(true)]
     public class REditorOptionsDialog : DialogPage
     {

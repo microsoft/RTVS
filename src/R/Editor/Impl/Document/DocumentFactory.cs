@@ -10,7 +10,7 @@ namespace Microsoft.R.Editor.Document
     /// </summary>
     [Export(typeof(IEditorDocumentFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    public class RDocumentFactory : IEditorDocumentFactory
+    public class DocumentFactory : IEditorDocumentFactory
     {
         public IEditorDocument CreateDocument(IEditorInstance editorInstance)
         {

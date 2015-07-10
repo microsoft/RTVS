@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Document
     {
         public IEditorDocument CreateDocument(IEditorInstance editorInstance)
         {
-            return new VsREditorDocument(editorInstance);
+            return new VsEditorDocument(editorInstance);
         }
     }
 }

@@ -9,8 +9,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
 		private bool _someSetting;
 
 		[Category("SettingCategory")]
-		[CustomLocDisplayName("SomeSettingDisplayName")]
-		[LocDescription("SomeSettingDescription")]
+		[CustomLocDisplayName("Temp_SettingDisplayName")]
+		[LocDescription("Temp_SettingDescription")]
 		public bool SomeSetting
 		{
 			get { return this._someSetting; }

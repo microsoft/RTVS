@@ -106,7 +106,7 @@ namespace Microsoft.R.Editor.Outline
             }
         }
 
-        #region IHtmlTreeVisitor
+        #region IAstVisitor
         public bool Visit(IAstNode node, object param)
         {
             var regions = param as TextRangeCollection<OutlineRegion>;

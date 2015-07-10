@@ -9,29 +9,29 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Document
 {
-    internal class VsREditorDocument : EditorDocument
+    internal class VsEditorDocument : EditorDocument
     {
         private IEditorInstance _editorInstance;
         private VsWorkspaceItem _workspaceItem;
 
-        public VsREditorDocument(IEditorInstance editorInstance)
+        public VsEditorDocument(IEditorInstance editorInstance)
             : this(editorInstance, false)
         {
         }
 
-        public VsREditorDocument(IEditorInstance editorInstance, bool disableContainedLanguages)
+        public VsEditorDocument(IEditorInstance editorInstance, bool disableContainedLanguages)
             : base(editorInstance.ViewBuffer, editorInstance.WorkspaceItem)
         {
             _editorInstance = editorInstance;
             _workspaceItem = editorInstance.WorkspaceItem as VsWorkspaceItem;
 
             ServiceProvider = ServiceProvider.GlobalProvider;
-            ServiceManager.AddService<VsREditorDocument>(this, TextBuffer);
+            ServiceManager.AddService<VsEditorDocument>(this, TextBuffer);
         }
 
         public override void Close()
         {
-            ServiceManager.RemoveService<VsREditorDocument>(TextBuffer);
+            ServiceManager.RemoveService<VsEditorDocument>(TextBuffer);
 
             base.Close();
 
@@ -45,7 +45,6 @@ namespace Microsoft.VisualStudio.R.Package.Document
         public VSConstants.VSITEMID ItemId { get { return _workspaceItem.ItemId; } }
 
         public ServiceProvider ServiceProvider { get; private set; }
-        public bool Transient { get; internal set; }
 
         public string FileName
         {
