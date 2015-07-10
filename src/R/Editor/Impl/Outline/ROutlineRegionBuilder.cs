@@ -15,6 +15,14 @@ namespace Microsoft.R.Editor.Outline
 {
     internal sealed class ROutlineRegionBuilder : OutlineRegionBuilder, IAstVisitor
     {
+        class OutliningContext
+        {
+            public int LastRegionStartLineNumber = -1;
+            public int LastRegionEndLineNumber = -1;
+
+            public OutlineRegionCollection Regions;
+        }
+
         private static readonly Guid _treeUserId = new Guid("15B63323-6670-4D24-BDD7-FF71DD14CD5A");
         private const int _minLinesToOutline = 3;
 
@@ -76,7 +84,10 @@ namespace Microsoft.R.Editor.Outline
                     rootNode = _tree.AcquireReadLock(_treeUserId);
                     if (rootNode != null)
                     {
-                        rootNode.Accept(this, newRegions);
+                        OutliningContext context = new OutliningContext();
+                        context.Regions = newRegions;
+
+                        rootNode.Accept(this, context);
                     }
                 }
                 catch (Exception ex)
@@ -111,26 +122,45 @@ namespace Microsoft.R.Editor.Outline
         #region IAstVisitor
         public bool Visit(IAstNode node, object param)
         {
-            var regions = param as TextRangeCollection<OutlineRegion>;
+            OutliningContext context = param as OutliningContext;
+            int startLineNumber, endLineNumber;
 
-            if (OutlineNode(node))
+            if (OutlineNode(node, out startLineNumber, out endLineNumber))
             {
-                regions.Add(new ROutlineRegion(_document.TextBuffer, node));
+                if (context.LastRegionStartLineNumber == startLineNumber && context.LastRegionEndLineNumber != endLineNumber)
+                {
+                    // Always prefer outer (bigger) region.
+                    var lastRegion = context.Regions[context.Regions.Count - 1];
+                    if (lastRegion.Length < node.Length)
+                    {
+                        context.Regions.RemoveAt(context.Regions.Count - 1);
+                        context.Regions.Add(new ROutlineRegion(_document.TextBuffer, node));
+                    }
+                }
+                else if (context.LastRegionStartLineNumber != startLineNumber)
+                {
+                    context.Regions.Add(new ROutlineRegion(_document.TextBuffer, node));
+
+                    context.LastRegionStartLineNumber = startLineNumber;
+                    context.LastRegionEndLineNumber = endLineNumber;
+                }
             }
 
             return true;
         }
         #endregion
 
-        private static bool OutlineRange(ITextSnapshot snapshot, ITextRange range, bool trimEmptyLines = false)
+        private static bool OutlineRange(ITextSnapshot snapshot, ITextRange range, bool trimEmptyLines, out int startLineNumber, out int endLineNumber)
         {
             int start = Math.Max(0, range.Start);
             int end = Math.Min(range.End, snapshot.Length);
 
+            startLineNumber = endLineNumber = 0;
+
             if (start < end)
             {
-                var startLineNumber = snapshot.GetLineNumberFromPosition(start);
-                var endLineNumber = snapshot.GetLineNumberFromPosition(end);
+                startLineNumber = snapshot.GetLineNumberFromPosition(start);
+                endLineNumber = snapshot.GetLineNumberFromPosition(end);
 
                 if (trimEmptyLines)
                 {
@@ -156,14 +186,15 @@ namespace Microsoft.R.Editor.Outline
             return false;
         }
 
-        private bool OutlineNode(IAstNode node)
+        private bool OutlineNode(IAstNode node, out int startLineNumber, out int endLineNumber)
         {
             if (node is AstRoot)
             {
+                startLineNumber = endLineNumber = 0;
                 return false;
             }
 
-            return OutlineRange(_tree.TextSnapshot, node);
+            return OutlineRange(_tree.TextSnapshot, node, false, out startLineNumber, out endLineNumber);
         }
 
         #region IDisposable

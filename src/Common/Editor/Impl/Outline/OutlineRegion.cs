@@ -9,7 +9,7 @@ namespace Microsoft.Languages.Editor.Outline
     /// </summary>
     public class OutlineRegion : TextRange
     {
-        private ITextBuffer _textBuffer;
+        protected ITextBuffer _textBuffer;
 
         public OutlineRegion(ITextBuffer textBuffer, ITextRange range)
             : this(textBuffer, range.Start, range.Length)

@@ -104,6 +104,7 @@
     <None Include="Files\Tokenization\Integers.r" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Parser\ParseScopeTest.cs" />
     <Compile Include="Parser\ParseFunctionDefinitionTest.cs" />
     <Compile Include="Parser\ParseExponentTest.cs" />
     <Compile Include="Parser\ParseComplexNumbersTest.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Parser\ParseKnownContstantsTest.cs" />
     <Compile Include="Parser\ParseIndexerTest.cs" />
     <Compile Include="Parser\ParseAssignmentsTest.cs" />
+    <Compile Include="Parser\ParseConditionalExpressionsTest.cs" />
     <Compile Include="Parser\ParseStringContstantsTest.cs" />
     <Compile Include="Parser\ParseLogicalContstantsTest.cs" />
     <Compile Include="Parser\ParseSimpleExpressionsTest.cs" />

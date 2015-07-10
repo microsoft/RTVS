@@ -17,10 +17,22 @@ namespace Microsoft.R.Core.AST.Values
 
             Debug.Assert(currentToken.TokenType == RTokenType.Number);
 
-            if (Double.TryParse(text, out result))
+            if (text[text.Length - 1] == 'L')
             {
-                NodeValue = new RNumber(result);
-                return base.Parse(context, parent);
+                int r;
+                if (Int32.TryParse(text.Substring(0, text.Length-1), out r))
+                {
+                    NodeValue = new RNumber(r);
+                    return base.Parse(context, parent);
+                }
+            }
+            else
+            {
+                if (Double.TryParse(text, out result))
+                {
+                    NodeValue = new RNumber(result);
+                    return base.Parse(context, parent);
+                }
             }
 
             context.Errors.Add(new ParseError(ParseErrorType.NumberExpected, ParseErrorLocation.Token, currentToken));

@@ -212,16 +212,19 @@ namespace Microsoft.R.Core.AST.Expressions
                 // However, in 'x + 1 <line_break> + y' it stops expression
                 // parsing at the line break.
 
-                if (!endOfExpression && currentOperationType == OperationType.Operand && _previousOperationType != OperationType.None)
+                if (!endOfExpression)
                 {
-                    // Since we haven't seen explicit end of expression and 
-                    // the last operation was 'operand' which is a variable 
-                    // or a constant and there is a line break ahead of us
-                    // then the expression is complete. Outer parser may still
-                    // continue if braces are not closed yet.
-                    if (context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1))
+                    if (currentOperationType == OperationType.Function || (currentOperationType == OperationType.Operand && _previousOperationType != OperationType.None))
                     {
-                        endOfExpression = true;
+                        // Since we haven't seen explicit end of expression and 
+                        // the last operation was 'operand' which is a variable 
+                        // or a constant and there is a line break ahead of us
+                        // then the expression is complete. Outer parser may still
+                        // continue if braces are not closed yet.
+                        if (context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1))
+                        {
+                            endOfExpression = true;
+                        }
                     }
                 }
             }
@@ -315,7 +318,7 @@ namespace Microsoft.R.Core.AST.Expressions
             isUnary = currentOperator.IsUnary;
 
             IOperator lastOperator = _operators.Peek();
-            if (currentOperator.Precedence <= lastOperator.Precedence && 
+            if (currentOperator.Precedence <= lastOperator.Precedence &&
                 !(currentOperator.OperatorType == lastOperator.OperatorType && currentOperator.Association == Association.Right))
             {
                 // New operator has lower or equal precedence. We need to make a tree from

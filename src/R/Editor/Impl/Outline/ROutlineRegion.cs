@@ -7,13 +7,33 @@ namespace Microsoft.R.Editor.Outline
 {
     internal class ROutlineRegion : OutlineRegion
     {
-        //private string _displayText;
-        private EditorDocument _document;
+        private string _displayText;
 
         public ROutlineRegion(ITextBuffer textBuffer, IAstNode node)
             : base(textBuffer, node)
         {
-            _document = EditorDocument.FromTextBuffer(textBuffer);
         }
-   }
+
+        public override string DisplayText
+        {
+            get
+            {
+                if (_displayText == null)
+                {
+                    _displayText = _textBuffer.CurrentSnapshot.GetText(this.Start, this.Length);
+                    int index = _displayText.IndexOfAny(new char[] { '(', '{' });
+                    if(index >= 0)
+                    {
+                        _displayText = _displayText.Substring(0, index).Trim() + "...";
+                    }
+                    else if(_displayText.Length > 50)
+                    {
+                        _displayText = _displayText.Substring(0, 50) + "...";
+                    }
+                }
+
+                return _displayText;
+            }
+        }
+    }
 }

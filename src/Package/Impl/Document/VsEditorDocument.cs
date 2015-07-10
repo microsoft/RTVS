@@ -37,6 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Document
 
             if (_editorInstance != null)
             {
+                _editorInstance.Dispose();
                 _editorInstance = null;
             }
         }

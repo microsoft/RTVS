@@ -105,11 +105,6 @@ namespace Microsoft.R.Core.Tokens
                     _cs.MoveToNextChar();
                     break;
 
-                case '=':
-                    AddToken(RTokenType.Operator, _cs.Position, 1);
-                    _cs.MoveToNextChar();
-                    break;
-
                 case ',':
                     AddToken(RTokenType.Comma, _cs.Position, 1);
                     _cs.MoveToNextChar();
@@ -125,6 +120,11 @@ namespace Microsoft.R.Core.Tokens
                     {
                         AddToken(RTokenType.Ellipsis, _cs.Position, 3);
                         _cs.Advance(3);
+                    }
+                    else if (_cs.CurrentChar == '=' &&_cs.NextChar != '=')
+                    {
+                        AddToken(RTokenType.Operator, _cs.Position, 1);
+                        _cs.MoveToNextChar();
                     }
                     else
                     {
