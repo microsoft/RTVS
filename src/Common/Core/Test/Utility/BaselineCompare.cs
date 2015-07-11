@@ -19,10 +19,10 @@ namespace Microsoft.Languages.Core.Test.Utility
             {
                 if (expected[i] != actual[i])
                 {
-                    result.AppendFormat("Position: {0}: expected: '{1}', actual '{2}'\r\n", i, expected[i], actual[i]);
+                    result.AppendFormat(CultureInfo.InvariantCulture, "Position: {0}: expected: '{1}', actual '{2}'\r\n", i, expected[i], actual[i]);
                     if (i > 6 && i < length - 6)
                     {
-                        result.AppendFormat("Context: {0} -> {1}", expected.Substring(i - 6, 12), actual.Substring(i - 6, 12));
+                        result.AppendFormat(CultureInfo.InvariantCulture, "Context: {0} -> {1}", expected.Substring(i - 6, 12), actual.Substring(i - 6, 12));
                     }
                     break;
                 }
@@ -30,7 +30,7 @@ namespace Microsoft.Languages.Core.Test.Utility
             }
 
             if (expected.Length != actual.Length)
-                result.AppendFormat("\r\nLength different. Expected: '{0}' , actual '{1}'", expected.Length, actual.Length);
+                result.AppendFormat(CultureInfo.InvariantCulture, "\r\nLength different. Expected: '{0}' , actual '{1}'", expected.Length, actual.Length);
 
             return result.ToString();
         }
