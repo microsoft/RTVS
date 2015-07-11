@@ -30,7 +30,8 @@ namespace Microsoft.R.Core.Parser
         public RToken Token { get; private set; }
         #endregion
 
-        public ParseError(ParseErrorType errorType, ParseErrorLocation location, RToken token)
+        public ParseError(ParseErrorType errorType, ParseErrorLocation location, RToken token):
+            base(token)
         {
             this.Token = token;
             this.ErrorType = errorType;
