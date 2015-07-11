@@ -12,6 +12,8 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
     /// </summary>
     public sealed class If : KeywordExpressionScopeStatement
     {
+        private const string _terminatingKeyword = "else";
+
         // In R any expression is permitted like in C/C++. It is not limited to conditional
         // expressions like in C# where 'x = y' is not valid inside 'if' or 'while'.
 
@@ -24,7 +26,7 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
         // a numeric vector an error is signalled.
 
         public If() :
-            base("else")
+            base(_terminatingKeyword)
         {
         }
 

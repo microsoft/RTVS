@@ -15,6 +15,7 @@ namespace Microsoft.R.Core.AST.Expressions
     public sealed class Expression : RValueNode<RObject>, IExpression
     {
         private bool _braceless;
+        private string _terminatingKeyword;
 
         #region IExpression
         public TokenNode OpenBrace { get; private set; }
@@ -27,6 +28,12 @@ namespace Microsoft.R.Core.AST.Expressions
             _braceless = braceless;
         }
 
+        public Expression(bool braceless, string terminatingKeyword): 
+            this(braceless)
+        {
+            _terminatingKeyword = terminatingKeyword;
+        }
+
         public override bool Parse(ParseContext context, IAstNode parent)
         {
             if (!_braceless && context.Tokens.CurrentToken.TokenType == RTokenType.OpenBrace)
@@ -34,7 +41,7 @@ namespace Microsoft.R.Core.AST.Expressions
                 this.OpenBrace = RParser.ParseToken(context, this);
             }
 
-            ExpressionParser expressionParser = new ExpressionParser();
+            ExpressionParser expressionParser = new ExpressionParser(_terminatingKeyword);
             this.Content = expressionParser.Parse(context, this);
 
             if (this.OpenBrace != null)

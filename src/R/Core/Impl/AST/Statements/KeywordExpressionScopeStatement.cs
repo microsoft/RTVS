@@ -14,9 +14,9 @@ namespace Microsoft.R.Core.AST.Statements
     [DebuggerDisplay("[{Text}]")]
     public class KeywordExpressionScopeStatement : KeywordExpressionStatement, IKeywordExpressionScopeStatement
     {
-        public IScope Scope { get; private set; }
-
         private string _terminatingKeyword;
+
+        public IScope Scope { get; private set; }
 
         public KeywordExpressionScopeStatement():
             this(null)

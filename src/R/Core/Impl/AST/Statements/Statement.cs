@@ -43,7 +43,7 @@ namespace Microsoft.R.Core.AST.Statements
         /// token and the following token sequence
         /// </summary>
         /// <returns></returns>
-        public static IStatement Create(ParseContext context, IAstNode parent)
+        public static IStatement Create(ParseContext context, IAstNode parent, string terminatingKeyword)
         {
             TokenStream<RToken> tokens = context.Tokens;
             RToken currentToken = tokens.CurrentToken;
@@ -68,7 +68,7 @@ namespace Microsoft.R.Core.AST.Statements
                 default:
                     // Possible L-value in a left-hand assignment, 
                     // a function call or R-value in a right hand assignment.
-                    statement = new ExpressionStatement();
+                    statement = new ExpressionStatement(terminatingKeyword);
                     break;
             }
 

@@ -57,7 +57,7 @@ namespace Microsoft.R.Core.AST.Scopes
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            _statement = Statement.Create(context, this);
+            _statement = Statement.Create(context, this, _terminatingKeyword);
             if (_statement != null)
             {
                 if(_statement.Parse(context, this))

@@ -13,11 +13,22 @@ namespace Microsoft.R.Core.AST.Statements
     /// </summary>
     public sealed class ExpressionStatement : Statement, IExpressionStatement
     {
+        private string _terminatingKeyword;
+
         public IExpression Expression { get; private set; }
+
+        public ExpressionStatement()
+        {
+        }
+
+        public ExpressionStatement(string terminatingKeyword)
+        {
+            _terminatingKeyword = terminatingKeyword;
+        }
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            this.Expression = new Expression(braceless: true);
+            this.Expression = new Expression(true, _terminatingKeyword);
             if (this.Expression.Parse(context, this))
             {
                 if(this.Expression.Children.Count == 1 && this.Expression.Children[0] is Expression)

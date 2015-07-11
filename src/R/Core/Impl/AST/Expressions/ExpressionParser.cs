@@ -33,6 +33,12 @@ namespace Microsoft.R.Core.AST.Expressions
         private Stack<IAstNode> _operands = new Stack<IAstNode>();
         private Stack<IOperator> _operators = new Stack<IOperator>();
         private OperationType _previousOperationType = OperationType.None;
+        private string _terminatingKeyword;
+
+        public ExpressionParser(string terminatingKeyword)
+        {
+            _terminatingKeyword = terminatingKeyword;
+        }
 
         public IAstNode Parse(ParseContext context, IAstNode parent)
         {
@@ -150,7 +156,14 @@ namespace Microsoft.R.Core.AST.Expressions
                         break;
 
                     case RTokenType.Keyword:
-                        errorType = HandleKeyword(context);
+                        string keyword = context.TextProvider.GetText(context.Tokens.CurrentToken);
+                        if(IsTerminatingKeyword(keyword))
+                        {
+                            endOfExpression = true;
+                            break;
+                        }
+
+                        errorType = HandleKeyword(context, keyword);
                         if (errorType == ParseErrorType.None)
                         {
                             currentOperationType = OperationType.Operand;
@@ -259,11 +272,10 @@ namespace Microsoft.R.Core.AST.Expressions
             return result;
         }
 
-        private ParseErrorType HandleKeyword(ParseContext context)
+        private ParseErrorType HandleKeyword(ParseContext context, string keyword)
         {
             ParseErrorType errorType = ParseErrorType.None;
 
-            string keyword = context.TextProvider.GetText(context.Tokens.CurrentToken);
             if (keyword.Equals("function", StringComparison.Ordinal))
             {
                 // Special case 'exp <- function(...) { }
@@ -283,6 +295,16 @@ namespace Microsoft.R.Core.AST.Expressions
             }
 
             return errorType;
+        }
+
+        private bool IsTerminatingKeyword(string s)
+        {
+            if(_terminatingKeyword == null)
+            {
+                return false;
+            }
+
+            return s.Equals(_terminatingKeyword, StringComparison.Ordinal);
         }
 
         private ParseErrorType HandleFunctionOrIndexer(IAstNode operatorNode)

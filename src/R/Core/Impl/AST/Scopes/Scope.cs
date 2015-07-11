@@ -82,7 +82,7 @@ namespace Microsoft.R.Core.AST.Scopes
                         break;
 
                     default:
-                        IStatement statement = Statement.Create(context, this);
+                        IStatement statement = Statement.Create(context, this, null);
                         if (statement != null)
                         {
                             if (statement.Parse(context, this))
