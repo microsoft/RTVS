@@ -58,20 +58,20 @@ namespace Microsoft.R.Core.AST.Keys
 
             foreach (var node in _ast.Children)
             {
-                AddElement(node);
+                AddNode(node);
             }
         }
 
         /// <summary>
         /// Adds element and its children to the collection
         /// </summary>
-        internal void AddElement(IAstNode node)
+        internal void AddNode(IAstNode node)
         {
             _keys.TryAdd(node.Key, node);
 
             foreach (var child in node.Children)
             {
-                AddElement(child);
+                AddNode(child);
             }
         }
 

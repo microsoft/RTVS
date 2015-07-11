@@ -246,7 +246,7 @@ namespace Microsoft.R.Editor.Tree
                 }
             }
 
-            _editorTree.FireOnUpdatesCompleted();
+            //_editorTree.FireOnUpdateCompleted();
         }
 
         /// <summary>

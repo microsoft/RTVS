@@ -169,9 +169,7 @@ namespace Microsoft.R.Editor.Tree
             FireOnUpdatesPending(textChanges);
 
             FireOnUpdateBegin();
-            FireOnNewTree();
             FireOnUpdateCompleted(TreeUpdateType.NodesChanged, true);
-            FireOnUpdatesCompleted();
 
             sw.Stop();
         }

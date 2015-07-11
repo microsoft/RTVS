@@ -9,6 +9,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Tree;
+using Microsoft.R.Editor.Validation;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Document
@@ -40,6 +41,8 @@ namespace Microsoft.R.Editor.Document
 #pragma warning restore 67
         #endregion
 
+        //private TreeValidator _validator;
+
         #region Constructors
         public EditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem)
         {
@@ -54,6 +57,8 @@ namespace Microsoft.R.Editor.Document
             ServiceManager.AddService<EditorDocument>(this, TextBuffer);
 
             this.EditorTree = new EditorTree(textBuffer);
+            //_validator = new TreeValidator(this.EditorTree);
+
             this.EditorTree.Build();
         }
         #endregion

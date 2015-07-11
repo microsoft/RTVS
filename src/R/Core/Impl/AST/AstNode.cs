@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Keys;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST
@@ -254,6 +255,10 @@ namespace Microsoft.R.Core.AST
         public virtual bool Parse(ParseContext context, IAstNode parent = null)
         {
             Parent = parent;
+
+            Key = KeyGenerator.GetNextKey();
+            context.AstRoot.Keys.AddNode(this);
+
             return true;
         }
         #endregion

@@ -23,11 +23,6 @@ namespace Microsoft.R.Editor.Tree
         public event EventHandler<TreeUpdatePendingEventArgs> UpdatesPending;
 
         /// <summary>
-        /// Event fires when all updates have been processed.
-        /// </summary>
-        public event EventHandler<EventArgs> UpdatesCompleted;
-
-        /// <summary>
         /// Signals that editor tree is about to be updated
         /// </summary>
         public event EventHandler<EventArgs> UpdateBegin;
@@ -51,33 +46,12 @@ namespace Microsoft.R.Editor.Tree
         public event EventHandler<TreeNodesRemovedEventArgs> NodesRemoved;
 
         /// <summary>
-        /// Fires when full document reparse is complete and new tree was created.
-        /// </summary>
-        public event EventHandler<EventArgs> NewTree;
-
-        /// <summary>
-        /// Fires when editor tree update completes. Each change to the text buffer
-        /// produces one or two update calls. First call signals node position updates
-        /// and if tree is dirty (i.e. nodes changed) second call will follow when
-        /// asynchronous parsing is complete.
-        /// </summary>
-        public event EventHandler<TreeUpdatedEventArgs> UpdateCompletedHighPriority;
-
-        /// <summary>
-        /// Fires when editor tree update completes and after <seealso cref="UpdateCompletedHighPriority"/>. 
-        /// was fired. Each change to the text buffer produces one or two update calls. First call signals 
-        /// node position updates and if tree is dirty (i.e. nodes changed) second call will follow 
+        /// Fires when editor tree update completes. Each change to the text buffer 
+        /// produces one or two update calls. First call signals node position 
+        /// updates and if tree is dirty (i.e. nodes changed) second call will follow 
         /// when asynchronous parsing is complete.
         /// </summary>
         public event EventHandler<TreeUpdatedEventArgs> UpdateCompleted;
-
-        /// <summary>
-        /// Fires when editor tree update completes and after <seealso cref="UpdateCompleted"/>. 
-        /// was fired. Each change to the text buffer produces one or two update calls. First call signals 
-        /// node position updates and if tree is dirty (i.e. nodes changed) second call will follow 
-        /// when asynchronous parsing is complete.
-        /// </summary>
-        public event EventHandler<TreeUpdatedEventArgs> UpdateCompletedLowPriority;
 
         /// <summary>
         /// Fires when editor tree is closing.
@@ -106,29 +80,6 @@ namespace Microsoft.R.Editor.Tree
             {
                 Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
                     "Exception thrown in a tree.OnUpdatesPending event handler: {0}", ex.Message));
-            }
-        }
-
-        /// <summary>
-        /// Fires 'tree updates completed' event on the main thread context
-        /// </summary>
-        internal void FireOnUpdatesCompleted()
-        {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
-            {
-                Debug.Fail(_threadContextInvalidMessage);
-                return;
-            }
-
-            try
-            {
-                if (UpdatesCompleted != null)
-                    UpdatesCompleted(this, EventArgs.Empty);
-            }
-            catch (Exception ex)
-            {
-                Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
-                    "Exception thrown in a tree.OnUpdatesCompleted event handler: {0}", ex.Message));
             }
         }
 
@@ -228,29 +179,6 @@ namespace Microsoft.R.Editor.Tree
         }
 
         /// <summary>
-        /// Fires 'new tree' event on the main thread context
-        /// </summary>
-        internal void FireOnNewTree()
-        {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
-            {
-                Debug.Fail(_threadContextInvalidMessage);
-                return;
-            }
-
-            try
-            {
-                if (NewTree != null)
-                    NewTree(this, EventArgs.Empty);
-            }
-            catch (Exception ex)
-            {
-                Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
-                    "Exception thrown in a tree.OnNewTree event handler: {0}", ex.Message));
-            }
-        }
-
-        /// <summary>
         /// Fires 'update end' event on the main thread context
         /// </summary>
         internal void FireOnUpdateCompleted(TreeUpdateType updateType, bool fullParse)
@@ -261,14 +189,8 @@ namespace Microsoft.R.Editor.Tree
                 return;
             }
 
-            if (UpdateCompletedHighPriority != null)
-                UpdateCompletedHighPriority(this, new TreeUpdatedEventArgs(updateType, fullParse));
-
             if (UpdateCompleted != null)
                 UpdateCompleted(this, new TreeUpdatedEventArgs(updateType, fullParse));
-
-            if (UpdateCompletedLowPriority != null)
-                UpdateCompletedLowPriority(this, new TreeUpdatedEventArgs(updateType, fullParse));
         }
     }
 }

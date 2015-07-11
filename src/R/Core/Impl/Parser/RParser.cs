@@ -28,9 +28,10 @@ namespace Microsoft.R.Core.Parser
 
             IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(textProvider, range.Start, range.Length);
             TokenStream<RToken>  tokenStream = new TokenStream<RToken>(tokens, new RToken(RTokenType.EndOfStream, TextRange.EmptyRange));
-            ParseContext context = new ParseContext(textProvider, range, tokenStream);
 
             AstRoot astRoot = new AstRoot(textProvider);
+            ParseContext context = new ParseContext(astRoot, range, tokenStream);
+
             astRoot.Parse(context, astRoot);
             astRoot.Errors = context.Errors;
 

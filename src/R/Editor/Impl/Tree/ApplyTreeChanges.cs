@@ -117,10 +117,6 @@ namespace Microsoft.R.Editor.Tree
                 {
                     switch (change.ChangeType)
                     {
-                        case TreeChangeType.NewTree:
-                            FireOnNewTree();
-                            break;
-
                         case TreeChangeType.TokenChange:
                             FireOnTokenNodeChanged(change.Node);
                             break;
@@ -133,7 +129,6 @@ namespace Microsoft.R.Editor.Tree
             }
 
             FireOnUpdateCompleted(TreeUpdateType.NodesChanged, fullParse);
-            FireOnUpdatesCompleted();
         }
     }
 }

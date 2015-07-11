@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser.Definitions;
+using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Parser
 {
@@ -24,18 +26,15 @@ namespace Microsoft.R.Core.Parser
         /// Gives hint to IDE what to squiggle.
         /// </summary>
         public ParseErrorLocation Location { get; private set; }
+
+        public RToken Token { get; private set; }
         #endregion
 
-        public ParseError(ParseErrorType errorType, ParseErrorLocation location, ITextRange range) :
-            this(errorType, location, range.Start, range.Length)
+        public ParseError(ParseErrorType errorType, ParseErrorLocation location, RToken token)
         {
-        }
-
-        public ParseError(ParseErrorType errorType, ParseErrorLocation location, int start, int length) :
-            base(start, length)
-        {
-            ErrorType = errorType;
-            Location = location;
+            this.Token = token;
+            this.ErrorType = errorType;
+            this.Location = location;
         }
     }
 }

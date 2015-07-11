@@ -134,6 +134,24 @@
     <Compile Include="Tree\TreeLock.cs" />
     <Compile Include="Tree\TreeUpdateTask.cs" />
     <Compile Include="Tree\TreeUpdateType.cs" />
+    <Compile Include="Validation\Definitions\IValidator.cs" />
+    <Compile Include="Validation\Definitions\IValidatorProvider.cs" />
+    <Compile Include="Validation\Definitions\IValidationError.cs" />
+    <Compile Include="Validation\ValidatorManager.cs" />
+    <Compile Include="Validation\Errors\ValidationError.cs" />
+    <Compile Include="Validation\Errors\ValidationErrorBase.cs" />
+    <Compile Include="Validation\Errors\ValidationErrorCollection.cs" />
+    <Compile Include="Validation\Definitions\ValidationErrorLocation.cs" />
+    <Compile Include="Validation\Errors\ValidationErrorLocationRange.cs" />
+    <Compile Include="Validation\Definitions\ValidationErrorSeverity.cs" />
+    <Compile Include="Validation\Errors\ValidationMessage.cs" />
+    <Compile Include="Validation\Errors\ValidationSentinel.cs" />
+    <Compile Include="Validation\Errors\ValidationWarning.cs" />
+    <Compile Include="Validation\Tagger\EditorErrorTag.cs" />
+    <Compile Include="Validation\Tagger\ErrorTagCollection.cs" />
+    <Compile Include="Validation\Tagger\EditorErrorTagger.cs" />
+    <Compile Include="Validation\Tagger\EditorErrorTaggerProvider.cs" />
+    <Compile Include="Validation\TreeValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />

@@ -1,0 +1,27 @@
+﻿using System.Collections.Generic;
+using Microsoft.R.Core.AST.Definitions;
+
+namespace Microsoft.R.Editor.Validation.Definitions
+{
+    /// <summary>
+    /// AST node validator
+    /// </summary>
+    public interface IValidator
+    {
+        /// <summary>
+        /// Called by validation manager when validation session is about to begin.
+        /// </summary>
+        void OnBeginValidation();
+
+        /// <summary>
+        /// Called by validation manager/aggregator when validation session is completed.
+        /// </summary>
+        void OnEndValidation();
+
+        /// <summary>
+        /// Validates a single AST node element.
+        /// </summary>
+        /// <returns>A collection of validation errors</returns>
+        IReadOnlyCollection<IValidationError> ValidateElement(IAstNode node);
+    }
+}
