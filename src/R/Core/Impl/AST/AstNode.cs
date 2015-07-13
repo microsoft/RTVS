@@ -3,7 +3,6 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Keys;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST
@@ -58,13 +57,6 @@ namespace Microsoft.R.Core.AST
         }
 
         /// <summary>
-        /// Node unique key. Helps track nodes in the tree as they come and go.
-        /// For example, validation thread uses this to see if node it is about
-        /// to validate is still in the tree or if it is already gone (deleted).
-        /// </summary>
-        public int Key { get; set; }
-
-        /// <summary>
         /// Node content has been invalidated. Node and its children
         /// collection will be updated on the next parser pass.
         /// </summary>
@@ -108,6 +100,9 @@ namespace Microsoft.R.Core.AST
 
                 for (int i = 0; i < start; i++, j++)
                     newChildren[j] = Children[i];
+
+                for (int i = start; i < start + count; i++)
+                    Children[i].Parent = null;
 
                 for (int i = start + count; i < Children.Count; i++, j++)
                     newChildren[j] = Children[i];
@@ -255,10 +250,6 @@ namespace Microsoft.R.Core.AST
         public virtual bool Parse(ParseContext context, IAstNode parent = null)
         {
             Parent = parent;
-
-            Key = KeyGenerator.GetNextKey();
-            context.AstRoot.Keys.AddNode(this);
-
             return true;
         }
         #endregion

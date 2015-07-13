@@ -7,7 +7,8 @@ namespace Microsoft.R.Editor.Tree
     public enum TreeUpdateType
     {
         PositionsOnly,
-        CommentsChanged,
-        NodesChanged
+        NodesRemoved,
+        ScopeChanged,
+        NewTree
     }
 }

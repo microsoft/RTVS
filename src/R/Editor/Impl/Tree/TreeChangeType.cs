@@ -3,7 +3,6 @@
     internal enum TreeChangeType
     {
         NewTree,
-        TokenChange,
-        NodesChanged
+        ScopeChanged
     }
 }

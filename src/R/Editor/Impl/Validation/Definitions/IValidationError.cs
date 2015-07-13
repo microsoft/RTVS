@@ -1,22 +1,24 @@
 ﻿using System;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Editor.Validation.Definitions
 {
     /// <summary>
-    /// Represents validation result. Due to asynchronous nature of the validation 
-    /// the data does not include physical location of the error in the text buffer
-    /// or a reference to the node instance. Instread, it includes unique
-    /// node key as well as error location as an enumeration. Code that creates
-    /// actual squiggles and pushes data to a task list is normally running on UI
-    /// thread and maps location enum to the current physical position. 
+    /// Represents validation result. May be based
+    /// on AST node or a standalone token.
     /// </summary>
     public interface IValidationError
     {
         /// <summary>
-        /// Key of the AST node the error applies to.
+        /// Token the error applies to.
         /// </summary>
         RToken Token { get; }
+
+        /// <summary>
+        /// AST node the error applies to.
+        /// </summary>
+        IAstNode Node { get; }
 
         /// <summary>
         /// Message to place in a task list and/or tooltip

@@ -8,6 +8,10 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.Outline
 {
+    /// <summary>
+    /// Provider or tagger (code outliner in this context)
+    /// for the core VS text editor.
+    /// </summary>
     [Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType(RContentTypeDefinition.ContentType)]

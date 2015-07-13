@@ -169,7 +169,7 @@ namespace Microsoft.R.Editor.Tree
             FireOnUpdatesPending(textChanges);
 
             FireOnUpdateBegin();
-            FireOnUpdateCompleted(TreeUpdateType.NodesChanged, true);
+            FireOnUpdateCompleted(TreeUpdateType.NewTree);
 
             sw.Stop();
         }
@@ -267,7 +267,9 @@ namespace Microsoft.R.Editor.Tree
         }
 
         /// <summary>
-        /// Request full parse on the next background parse run
+        /// Request full parse on the next background parse run.
+        /// Usually called at the end of a massive change operation
+        /// such as document formatting, snippet insertion and so on.
         /// </summary>
         public void RequestFullParse()
         {
@@ -334,16 +336,15 @@ namespace Microsoft.R.Editor.Tree
             {
                 for (int i = firstToRemove; i <= lastToRemove; i++)
                 {
-                    var child = node.Children[i];
-
+                    IAstNode child = node.Children[i];
                     removedElements.Add(child);
-                    AstRoot.Keys.RemoveElement(child);
+
+                    _astRoot.Errors.RemoveInRange(child);
                 }
 
                 // Set flag that will tell node comparison code in the incremental 
                 // tree updates that node needs to be reparsed/updated
                 node.IsDirty = true;
-
                 node.RemoveChildren(firstToRemove, lastToRemove - firstToRemove + 1);
             }
 
@@ -385,7 +386,6 @@ namespace Microsoft.R.Editor.Tree
             foreach (var child in _astRoot.Children)
             {
                 removedNodes.Add(child);
-                _astRoot.Keys.RemoveElement(child);
             }
 
             _astRoot.RemoveChildren(0, _astRoot.Children.Count);

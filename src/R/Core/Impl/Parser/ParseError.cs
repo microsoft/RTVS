@@ -27,10 +27,30 @@ namespace Microsoft.R.Core.Parser
         /// </summary>
         public ParseErrorLocation Location { get; private set; }
 
+        /// <summary>
+        /// Node the error applies to. Some errors may not have
+        /// AST node associated with them since due to errors
+        /// the node was not actually created.
+        /// </summary>
+        public IAstNode Node { get; private set; }
+
+        /// <summary>
+        /// Token the error applies to. Some errors may not have
+        /// AST node associated with them since due to errors
+        /// the node was not actually created.
+        /// </summary>
         public RToken Token { get; private set; }
         #endregion
 
-        public ParseError(ParseErrorType errorType, ParseErrorLocation location, RToken token):
+        public ParseError(ParseErrorType errorType, ParseErrorLocation location, IAstNode node):
+            base(node)
+        {
+            this.Node = node;
+            this.ErrorType = errorType;
+            this.Location = location;
+        }
+
+        public ParseError(ParseErrorType errorType, ParseErrorLocation location, RToken token) :
             base(token)
         {
             this.Token = token;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.Parser.Definitions;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Parser
@@ -33,7 +34,7 @@ namespace Microsoft.R.Core.Parser
             ParseContext context = new ParseContext(astRoot, range, tokenStream);
 
             astRoot.Parse(context, astRoot);
-            astRoot.Errors = context.Errors;
+            astRoot.Errors = new TextRangeCollection<IParseError>(context.Errors);
 
             return astRoot;
         }

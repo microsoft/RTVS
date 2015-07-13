@@ -2,6 +2,7 @@
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.TaskList.Definitions;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
@@ -18,7 +19,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
     /// </summary>
     internal class EditorErrorTag : ErrorTag, ITagSpan<IErrorTag>, IExpandableTextRange, IEditorTaskListItem
     {
-        public RToken Token { get; private set; }
+        public IAstNode Node { get; private set; }
 
         private ITextBuffer _textBuffer;
         private ITextRange _range;
@@ -28,11 +29,11 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             _textBuffer = editorTree.TextBuffer;
 
-            Token = error.Token;
+            Node = error.Node;
             Description = error.Message;
             TaskType = GetTaskType(error);
 
-            _range = error.Token;
+            _range = error.Node;
 
             if (_range == null || _range.Start < 0)
                 _range = TextRange.EmptyRange;
@@ -104,7 +105,6 @@ namespace Microsoft.R.Editor.Validation.Tagger
         }
 
         #region ITextRange Members
-
         public int Start
         {
             get { return _range.Start; }
@@ -177,7 +177,6 @@ namespace Microsoft.R.Editor.Validation.Tagger
         #endregion
 
         #region IEditorTaskListItem
-
         public string Description { get; private set; }
         public TaskType TaskType { get; private set; }
 

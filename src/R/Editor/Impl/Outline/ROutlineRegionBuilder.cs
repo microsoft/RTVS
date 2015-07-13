@@ -13,6 +13,10 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Outline
 {
+    /// <summary>
+    /// Code outline region builder. Runs asynchronously but starts
+    /// on next idle slot after the most recent tree change.
+    /// </summary>
     internal sealed class ROutlineRegionBuilder : OutlineRegionBuilder, IAstVisitor
     {
         class OutliningContext
@@ -53,7 +57,7 @@ namespace Microsoft.R.Editor.Outline
 
         private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e)
         {
-            if (e.UpdateType == TreeUpdateType.NodesChanged)
+            if (e.UpdateType != TreeUpdateType.PositionsOnly)
             {
                 BackgroundTask.DoTaskOnIdle();
             }

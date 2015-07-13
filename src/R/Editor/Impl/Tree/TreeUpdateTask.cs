@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Tree
         /// <summary>
         /// Output queue of the background parser
         /// </summary>
-        private ConcurrentQueue<EditorTreeChanges> _backgroundParsingResults = new ConcurrentQueue<EditorTreeChanges>();
+        private ConcurrentQueue<EditorTreeChangeCollection> _backgroundParsingResults = new ConcurrentQueue<EditorTreeChangeCollection>();
 
         /// <summary>
         /// Pending changes since the last parse or since async parsing task started.
@@ -79,16 +79,12 @@ namespace Microsoft.R.Editor.Tree
         object _disposeLock = new object();
 
         /// <summary>
-        /// List of tree update completion callbacks supplied to HtmlEditorTree.ProcessChanges
+        /// List of tree update completion callbacks supplied called once
+        /// when tree update completes. Typically used by async intellisense
+        /// providers that show intellisense list placeholder if tree is not
+        /// ready and populate it with actual items when tree update completes.
         /// </summary>
         private List<Action> _completionCallbacks = new List<Action>();
-
-        /// <summary>
-        // If true (default) tree will still update element positions
-        /// on text buffer changes although background parsing will be stopped. If false, no tree changes
-        /// or any kind will be performed when text buffer changes        
-        /// </summary>
-        private bool _allowElementPositionTracking;
 
         private DateTime _lastChangeTime = DateTime.UtcNow;
         #endregion
@@ -150,15 +146,10 @@ namespace Microsoft.R.Editor.Tree
         /// Suspend tree updates. Typically called before massive 
         /// changes to the document.
         /// </summary>
-        /// <param name="allowElementPositionTracking">If true (default) tree will 
-        /// still update element positions on text buffer changes although background 
-        /// parsing will be stopped. If false, no tree changes of any kind 
-        /// will be performed when text buffer changes</param>
-        internal void Suspend(bool allowElementPositionTracking)
+        internal void Suspend()
         {
             UpdatesSuspended = true;
             TextBufferChangedSinceSuspend = false;
-            _allowElementPositionTracking = allowElementPositionTracking;
         }
 
         /// <summary>
@@ -197,7 +188,6 @@ namespace Microsoft.R.Editor.Tree
             _lastChangeTime = DateTime.UtcNow;
 
             _pendingChanges.FullParseRequired = true;
-            _pendingChanges.IncrementalTreeUpdate = true;
 
             // TextBuffer might be null in unit tests
             _pendingChanges.Version = TextBuffer != null ? TextBuffer.CurrentSnapshot.Version.VersionNumber : 1;
@@ -207,12 +197,14 @@ namespace Microsoft.R.Editor.Tree
         }
 
         /// <summary>
-        /// Text buffer change event handler. Performs analysis of the change. If change is trivial,
-        /// such as when typing plain text, simply applies the changes by shifting tree elements.
-        /// If some elements get deleted or otherwise damaged, removes them from the ttree right away.
-        /// Non-trivial changes are queued for background parsing which hits on idle.
-        /// Must be called on a main thread only, typically from an event handler of text 
-        /// buffer changes events. 
+        /// Text buffer change event handler. Performs analysis of the change.
+        /// If change is trivial, such as change in whitespace (excluding line 
+        /// breaks that in R may be sensistive), simply applies the changes 
+        /// by shifting tree elements. If some elements get deleted or otherwise 
+        /// damaged, removes them from the tree right away. Non-trivial changes 
+        /// are queued for background parsing which starts on next on idle.
+        /// Methond must be called on a main thread only, typically from an event 
+        /// handler that receives text buffer change events. 
         /// </summary>
         internal void OnTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges)
         {
@@ -223,11 +215,6 @@ namespace Microsoft.R.Editor.Tree
             if (UpdatesSuspended)
             {
                 this.TextBufferChangedSinceSuspend = true;
-
-                if (_allowElementPositionTracking)
-                {
-                    UpdateSuspended(textChanges);
-                }
             }
             else
             {
@@ -244,29 +231,6 @@ namespace Microsoft.R.Editor.Tree
 
                     ProcessChange(context);
                 }
-            }
-
-            //_editorTree.FireOnUpdateCompleted();
-        }
-
-        /// <summary>
-        /// Performs minimal (position) updates to the tree while in suspended state.
-        /// This is necessary for socntained language formatting where secondary language
-        /// formatter may modify its text buffer hence shifting positions of elements
-        /// and artifacts. Normally no changes to elements are expected in suspended state.
-        /// </summary>
-        private void UpdateSuspended(IReadOnlyCollection<TextChangeEventArgs> textChanges)
-        {
-            try
-            {
-                _editorTree.AcquireWriteLock();
-                _editorTree.NotifyTextChanges(textChanges);
-
-                UpdateTreeTextSnapshot();
-            }
-            finally
-            {
-                _editorTree.ReleaseWriteLock();
             }
         }
 
@@ -313,23 +277,23 @@ namespace Microsoft.R.Editor.Tree
             {
                 if (context.ChangedNode != null)
                 {
-                    _editorTree.FireOnPositionsOnlyChanged(context.ChangedNode);
+                    _editorTree.FireOnPositionsOnlyChanged();
                 }
 
-                _editorTree.FireOnUpdateCompleted(TreeUpdateType.PositionsOnly, _pendingChanges.FullParseRequired);
+                _editorTree.FireOnUpdateCompleted(TreeUpdateType.PositionsOnly);
             }
             else
             {
-                _editorTree.FireOnUpdateCompleted(TreeUpdateType.NodesChanged, _pendingChanges.FullParseRequired);
+                _editorTree.FireOnUpdateCompleted(TreeUpdateType.NodesRemoved);
             }
 
             DebugTree.VerifyTree(_editorTree);
         }
 
         /// <summary>
-        /// Handles non-trivial changes like changes in markup that delete tags, change
-        /// their names, introducing new tags and so on. In other words, all changes
-        /// that cannot that prevent us from updating tree without background parse.
+        /// Handles non-trivial changes like changes that delete elements, 
+        /// change identifier names, introducing new braces: changes
+        /// that cannot be handled without background parse.
         /// </summary>
         private void ProcessComplexChange(TextChangeContext context)
         {
@@ -344,8 +308,10 @@ namespace Microsoft.R.Editor.Tree
 
             try
             {
-                // Get write lock since there may be concurrent readers of the tree. Note that there are
-                // no concurrent writers since changes are always applied from a main thread.
+                // Get write lock since there may be concurrent readers 
+                // of the tree. Note that there are no concurrent writers 
+                // since changes can only come from a background parser
+                // and are always applied from the main thread.
                 _editorTree.AcquireWriteLock();
 
                 if (_pendingChanges.FullParseRequired)
@@ -378,7 +344,7 @@ namespace Microsoft.R.Editor.Tree
                 _editorTree.ReleaseWriteLock();
             }
 
-            _editorTree.FireOnUpdateCompleted(TreeUpdateType.NodesChanged, _pendingChanges.FullParseRequired);
+            _editorTree.FireOnUpdateCompleted(TreeUpdateType.NodesRemoved);
         }
 
         private void UpdateTreeTextSnapshot()
@@ -463,12 +429,20 @@ namespace Microsoft.R.Editor.Tree
 
         internal void ProcessPendingTextBufferChanges(bool async)
         {
+            // Text buffer can be null in unit tests
             if (TextBuffer != null)
             {
                 ProcessPendingTextBufferChanges(new TextProvider(TextBuffer.CurrentSnapshot, partial: true), async);
             }
         }
 
+        /// <summary>
+        /// Processes text buffer changed accumulated so far. 
+        /// Typically called on idle.
+        /// </summary>
+        /// <param name="newTextProvider">New text buffer content</param>
+        /// <param name="async">True if processing is to be done asynchronously.
+        /// Non-async processing is typically used in unit tests only.</param>
         internal void ProcessPendingTextBufferChanges(ITextProvider newTextProvider, bool async)
         {
             if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
@@ -477,7 +451,10 @@ namespace Microsoft.R.Editor.Tree
             if (ChangesPending)
             {
                 if (async && (IsTaskRunning() || _backgroundParsingResults.Count > 0))
-                    return; // Try next time or we may end up spawning a lot of tasks
+                {
+                    // Try next time or we may end up spawning a lot of tasks
+                    return; 
+                }
 
                 // Combine changes in processing with pending changes.
                 var changesToProcess = new TextChange(_pendingChanges, newTextProvider);
@@ -508,8 +485,7 @@ namespace Microsoft.R.Editor.Tree
                     sw.Start();
                 }
 
-                EditorTreeChanges treeChanges = null;
-
+                EditorTreeChangeCollection treeChanges = null;
                 // Cache id since it can change if task is canceled
                 long taskId = TaskId;
 
@@ -517,19 +493,24 @@ namespace Microsoft.R.Editor.Tree
                 {
                     AstRoot rootNode;
 
-                    // We only need read lock since changes will be applied from a main thread
+                    // We only need read lock since changes will be applied 
+                    // from the main thread
                     if (async)
+                    {
                         rootNode = _editorTree.AcquireReadLock(_treeUserId);
+                    }
                     else
+                    {
                         rootNode = _editorTree.AstRoot;
+                    }
 
-                    treeChanges = new EditorTreeChanges(changeToProcess.Version, changeToProcess.FullParseRequired);
+                    treeChanges = new EditorTreeChangeCollection(changeToProcess.Version, changeToProcess.FullParseRequired);
                     TextChangeProcessor changeProcessor = new TextChangeProcessor(_editorTree, rootNode, isCancelledCallback);
 
                     bool fullParseRequired = changeToProcess.FullParseRequired;
                     if (fullParseRequired)
                     {
-                        changeProcessor.FullParse(treeChanges, changeToProcess.NewTextProvider, changeToProcess.IncrementalTreeUpdate);
+                        changeProcessor.FullParse(treeChanges, changeToProcess.NewTextProvider);
                     }
                     else
                     {
@@ -687,11 +668,11 @@ namespace Microsoft.R.Editor.Tree
             if (_disposed)
                 return;
 
-            EditorTreeChanges treeChanges;
+            EditorTreeChangeCollection treeChanges;
+            var eventsToFire = new List<TreeChangeEventRecord>();
             bool changed = false;
             bool fullParse = false;
             bool staleChanges = false;
-            var eventsToFire = new List<TreeChangeEventRecord>();
 
             while (_backgroundParsingResults.TryDequeue(out treeChanges))
             {
@@ -745,15 +726,8 @@ namespace Microsoft.R.Editor.Tree
                 // Now that tree is fully updated, fire events
                 if (_editorTree != null)
                 {
-                    // first notify registered callbacks
-                    // copy collection since callbacks may unadvise on invoke
-                    var list = new List<Action>();
-                    list.AddRange(_completionCallbacks);
-
-                    foreach (var cb in list)
-                        cb.Invoke();
-
-                    _completionCallbacks.Clear();
+                    // First notify registered callbacks
+                    InvokeCompletionCallbacks();
                     _editorTree.FirePostUpdateEvents(eventsToFire, fullParse);
 
                     if (changed)
@@ -767,8 +741,20 @@ namespace Microsoft.R.Editor.Tree
                 }
             }
         }
+        
+        private void InvokeCompletionCallbacks()
+        {
+            // Copy collection since callbacks may disconnet on invoke
+            var list = new List<Action>();
+            list.AddRange(_completionCallbacks);
 
-        List<TreeChangeEventRecord> ApplyTreeChanges(EditorTreeChanges changesToApply)
+            foreach (var cb in list)
+                cb.Invoke();
+
+            _completionCallbacks.Clear();
+        }
+
+        List<TreeChangeEventRecord> ApplyTreeChanges(EditorTreeChangeCollection changesToApply)
         {
             // Check editor tree reference since document could have been 
             // closed before parsing was completed

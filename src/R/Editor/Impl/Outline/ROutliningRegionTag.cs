@@ -3,6 +3,9 @@ using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.R.Editor.Outline
 {
+    /// <summary>
+    /// Represents code outline region.
+    /// </summary>
     public class ROutliningRegionTag : OutliningRegionTag, IOutliningRegionTag
     {
         private OutlineRegion _outlineRegion;

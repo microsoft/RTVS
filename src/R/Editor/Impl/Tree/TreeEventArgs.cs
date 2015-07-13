@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 
 namespace Microsoft.R.Editor.Tree
@@ -22,12 +21,10 @@ namespace Microsoft.R.Editor.Tree
     public class TreeUpdatedEventArgs : EventArgs
     {
         public TreeUpdateType UpdateType { get; private set; }
-        public bool FullParse { get; private set; }
-
-        public TreeUpdatedEventArgs(TreeUpdateType updateType, bool fullParse)
+ 
+        public TreeUpdatedEventArgs(TreeUpdateType updateType)
         {
             UpdateType = updateType;
-            FullParse = fullParse;
         }
     }
 
@@ -43,51 +40,21 @@ namespace Microsoft.R.Editor.Tree
     }
 
     [ExcludeFromCodeCoverage]
-    public class TreeTokenNodeChangedEventArgs : EventArgs
+    public class TreeScopeChangedEventArgs : EventArgs
     {
-        public int NodeKey { get; private set; }
+        public IAstNode ScopeNode { get; private set; }
 
-        public TreeTokenNodeChangedEventArgs(int nodeKey)
+        public TreeScopeChangedEventArgs(IAstNode scopeNode)
         {
-            NodeKey = nodeKey;
-        }
-    }
-
-    [ExcludeFromCodeCoverage]
-    public class TreeNodeChangedEventArgs : EventArgs
-    {
-        public IAstNode OldNode { get; private set; }
-
-        public IAstNode NewNode { get; private set; }
-
-        public TreeNodeChangedEventArgs(IAstNode oldNode, IAstNode newNode)
-        {
-            OldNode = oldNode;
-            NewNode = newNode;
+            ScopeNode = scopeNode;
         }
     }
 
     [ExcludeFromCodeCoverage]
     public class TreePositionsOnlyChangedEventArgs : EventArgs
     {
-        public int ElementKey { get; private set; }
-
-        public TreePositionsOnlyChangedEventArgs(int elementKey)
+        public TreePositionsOnlyChangedEventArgs()
         {
-            ElementKey = elementKey;
-        }
-    }
-
-    [ExcludeFromCodeCoverage]
-    public class TreePositionEventArgs : EventArgs
-    {
-        public int StartingPosition { get; private set; }
-        public int Offset { get; private set; }
-
-        public TreePositionEventArgs(int startingPosition, int offset)
-        {
-            StartingPosition = startingPosition;
-            Offset = offset;
         }
     }
 }

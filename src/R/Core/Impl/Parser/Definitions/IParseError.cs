@@ -1,4 +1,6 @@
 ﻿using Microsoft.Languages.Core.Text;
+using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Parser.Definitions
 {
@@ -20,5 +22,19 @@ namespace Microsoft.R.Core.Parser.Definitions
         /// Gives hint to IDE what to squiggle.
         /// </summary>
         ParseErrorLocation Location { get; }
+
+        /// <summary>
+        /// Node the error applies to. Some errors may not have
+        /// AST node associated with them since due to errors
+        /// the node was not actually created.
+        /// </summary>
+        IAstNode Node { get; }
+
+        /// <summary>
+        /// Token the error applies to. Some errors may not have
+        /// AST node associated with them since due to errors
+        /// the node was not actually created.
+        /// </summary>
+        RToken Token { get; }
     }
 }

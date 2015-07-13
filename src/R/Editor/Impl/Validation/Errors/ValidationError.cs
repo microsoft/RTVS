@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Validation.Definitions;
 
@@ -11,7 +12,15 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// Constructs validation error based on existing error.
         /// </summary>
         public ValidationError(IValidationError error) :
-            base(error.Token, error.Message, error.Location, error.Severity)
+            base(error.Node, error.Message, error.Location, error.Severity)
+        {
+        }
+
+        /// <summary>
+        /// Constructs validation error for an element at a specified location.
+        /// </summary>
+        public ValidationError(IAstNode node, string message, ValidationErrorLocation location) :
+            base(node, message, location, ValidationErrorSeverity.Error)
         {
         }
 

@@ -12,12 +12,15 @@ namespace Microsoft.R.Editor.Tree
     internal class TextChangeContext
     {
         public EditorTree EditorTree { get; private set; }
+
         public int Start { get; private set; }
         public int OldStart { get; private set; }
         public int OldLength { get; private set; }
         public int NewLength { get; private set; }
+
         public ITextProvider OldTextProvider { get; private set; }
         public ITextProvider NewTextProvider { get; private set; }
+
         public TextChange TextChange { get; private set; }
         public IAstNode ChangedNode { get; set; }
 

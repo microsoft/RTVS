@@ -30,11 +30,13 @@ namespace Microsoft.R.Editor.Tree
             if (queue == null || queue.Count == 0)
                 return changesToFire;
 
-            // Since we have write lock we cannot fire events. If we fire an event, listener may try 
-            // and access the tree while a) tree not ready and b) calling HtmlEditorTree.RootNode will 
-            // check tree readiness and since we are not ready yet (still applying changes) it may try
-            // and update tree on its own and end up hanging trying to acquire write lock again. 
-            // Hence we must store events in a list and fire then when update is done and lock is released.
+            // Since we have write lock we cannot fire events. If we fire an event,
+            // listener may try and access the tree while a) tree not ready and
+            // b) accessing AstRoot may check tree readiness and since tree is not
+            // ready yet (as it is still applying changes) it may try and update
+            // tree on its own and end up hanging trying to acquire write lock again.
+            // Hence we must store events in a list and fire then when update 
+            // is done and the lock is released.
 
             try
             {
@@ -60,11 +62,10 @@ namespace Microsoft.R.Editor.Tree
                             }
                             break;
 
-                        case TreeChangeType.TokenChange:
+                        case TreeChangeType.ScopeChanged:
                             {
-                                var c = change as EditorTreeChange_TokenNodeChanged;
-                                IAstNode node = AstRoot.GetNode(c.NodeKey);
-                                changesToFire.Add(new TreeChangeEventRecord(change.ChangeType, node));
+                                var c = change as EditorTreeChange_ScopeChanged;
+                                changesToFire.Add(new TreeChangeEventRecord(change.ChangeType, c.ScopeNode));
                             }
                             break;
 
@@ -107,8 +108,9 @@ namespace Microsoft.R.Editor.Tree
 
             // Fire UpdatesPending notification, even though we don't have ranges for the event
             List<TextChangeEventArgs> textChanges = new List<TextChangeEventArgs>();
-            FireOnUpdatesPending(textChanges);
+            bool newTree = false;
 
+            FireOnUpdatesPending(textChanges);
             FireOnUpdateBegin();
 
             if (changes.Count > 0)
@@ -117,8 +119,12 @@ namespace Microsoft.R.Editor.Tree
                 {
                     switch (change.ChangeType)
                     {
-                        case TreeChangeType.TokenChange:
-                            FireOnTokenNodeChanged(change.Node);
+                        case TreeChangeType.ScopeChanged:
+                            FireOnScopeChanged(change.Node);
+                            break;
+
+                        case TreeChangeType.NewTree:
+                            newTree = true;
                             break;
 
                         default:
@@ -128,7 +134,7 @@ namespace Microsoft.R.Editor.Tree
                 }
             }
 
-            FireOnUpdateCompleted(TreeUpdateType.NodesChanged, fullParse);
+            FireOnUpdateCompleted(newTree ? TreeUpdateType.NewTree : TreeUpdateType.ScopeChanged);
         }
     }
 }

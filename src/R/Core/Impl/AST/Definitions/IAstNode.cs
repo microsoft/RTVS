@@ -32,13 +32,6 @@ namespace Microsoft.R.Core.AST.Definitions
         IReadOnlyTextRangeCollection<IAstNode> Children { get; }
 
         /// <summary>
-        /// Node unique key. Helps track nodes in the tree as they come and go.
-        /// For example, validation thread uses this to see if node it is about
-        /// to validate is still in the tree or if it is already gone (deleted).
-        /// </summary>
-        int Key { get; set; }
-
-        /// <summary>
         /// Adds child node. Node is added in sorted order according to 
         /// its text range. Child node text ranges should not intersect.
         /// </summary>

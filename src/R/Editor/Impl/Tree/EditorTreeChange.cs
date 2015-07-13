@@ -30,55 +30,17 @@ namespace Microsoft.R.Editor.Tree
     }
 
     [ExcludeFromCodeCoverage]
-    internal class EditorTreeChange_TokenNodeChanged : EditorTreeChange
+    internal class EditorTreeChange_ScopeChanged : EditorTreeChange
     {
-        public int NodeKey { get; private set; }
-
-        public EditorTreeChange_TokenNodeChanged(int affectedNodeKey)
-            : base(TreeChangeType.TokenChange)
-        {
-            NodeKey = affectedNodeKey;
-        }
-    }
-
-    [ExcludeFromCodeCoverage]
-    internal class EditorTreeChange_NodesChanged : EditorTreeChange
-    {
-        public int NodeKey { get; private set; }
+        public IAstNode ScopeNode { get; private set; }
 
         public IReadOnlyCollection<IAstNode> NewChildren { get; private set; }
-        public IReadOnlyCollection<IAstNode> AddedElements { get; private set; }
-        public IReadOnlyCollection<IAstNode> RemovedElements { get; private set; }
 
-        public EditorTreeChange_NodesChanged(
-            int affectedNodeKey,
-            IReadOnlyCollection<IAstNode> newChildren,
-            IReadOnlyCollection<IAstNode> addedElements,
-            IReadOnlyCollection<IAstNode> removedElements)
-            : base(TreeChangeType.NodesChanged)
+        public EditorTreeChange_ScopeChanged(IAstNode scopeNode, IReadOnlyCollection<IAstNode> newChildren)
+            : base(TreeChangeType.ScopeChanged)
         {
-            NodeKey = affectedNodeKey;
+            ScopeNode = scopeNode;
             NewChildren = newChildren.Count > 0 ? newChildren : ReadOnlyTextRangeCollection<IAstNode>.EmptyCollection;
-            AddedElements = addedElements.Count > 0 ? addedElements : ReadOnlyTextRangeCollection<IAstNode>.EmptyCollection;
-            RemovedElements = removedElements.Count > 0 ? removedElements : ReadOnlyTextRangeCollection<IAstNode>.EmptyCollection;
-        }
-    }
-    internal class EditorTreeChanges
-    {
-        public Queue<EditorTreeChange> ChangeQueue { get; private set; }
-        public int SnapshotVersion { get; private set; }
-        public bool FullParse { get; private set; }
-
-        public EditorTreeChanges(int _snapshotVersion, bool fullParse)
-            : this(new Queue<EditorTreeChange>(), _snapshotVersion, fullParse)
-        {
-        }
-
-        public EditorTreeChanges(Queue<EditorTreeChange> changes, int _snapshotVersion, bool fullParse)
-        {
-            ChangeQueue = changes;
-            SnapshotVersion = _snapshotVersion;
-            FullParse = fullParse;
         }
     }
 }

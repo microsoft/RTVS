@@ -35,10 +35,10 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
         /// <summary>
         /// Queue of element keys representing nodes which associated
-        ///  error tags need to be removed from the collection. Removal 
+        /// error tags need to be removed from the collection. Removal 
         /// is performed in a separate thread.
         /// </summary>
-        private ConcurrentQueue<int> _nodeKeysPendingRemoval = new ConcurrentQueue<int>();
+        private ConcurrentQueue<IAstNode> _nodesPendingRemoval = new ConcurrentQueue<IAstNode>();
 
         /// <summary>
         /// Compound text range that encloses added and removed tags. 
@@ -185,32 +185,31 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// <summary>
         /// Removes all tags associated with a given node
         /// </summary>
-        /// <param name="nodeKey">Node key in the AST</param>
+        /// <param name="node">Node in the AST</param>
         /// <returns>Text range that encloses removed tag spans</returns>
-        public ITextRange RemoveTagsForNode(int nodeKey)
+        public ITextRange RemoveTagsForNode(IAstNode node)
         {
             int start = _editorTree.TextBuffer.CurrentSnapshot.Length;
-            var element = _editorTree.AstRoot.GetNode(nodeKey);
             ITextRange range = TextRange.EmptyRange;
-            //int end = 0;
+            int end = 0;
 
             lock (_lockObj)
             {
-                // Remove all tags for this element
+                // Remove all tags for this node
                 for (int i = 0; i < _tags.Count; i++)
                 {
-                //    if (_tags[i].NodeKey == nodeKey)
-                //    {
-                //        start = Math.Min(start, _tags[i].Start);
-                //        end = Math.Max(end, _tags[i].End);
+                    if (_tags[i].Node == node)
+                    {
+                        start = Math.Min(start, _tags[i].Start);
+                        end = Math.Max(end, _tags[i].End);
 
-                //        RemovedTags.Enqueue(_tags[i]);
+                        RemovedTags.Enqueue(_tags[i]);
 
-                //        _tags.RemoveAt(i);
-                //        i--;
+                        _tags.RemoveAt(i);
+                        i--;
 
-                //        range = TextRange.Union(range, start, end - start);
-                //    }
+                        range = TextRange.Union(range, start, end - start);
+                    }
                 }
             }
 
@@ -244,7 +243,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
         void OnUpdateCompleted(object sender, TreeUpdatedEventArgs e)
         {
-            if (_nodeKeysPendingRemoval.Count > 0)
+            if (_nodesPendingRemoval.Count > 0)
             {
                 if (Interlocked.CompareExchange(ref _taskRunning, 1, 0) == 0)
                 {
@@ -260,7 +259,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                 StoreRemovedNodeKeys(child);
             }
 
-            _nodeKeysPendingRemoval.Enqueue(node.Key);
+            _nodesPendingRemoval.Enqueue(node);
         }
 
         void ProcessPendingNodeRemoval()
@@ -270,26 +269,26 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
             try
             {
-                if (_nodeKeysPendingRemoval.Count > 0)
+                if (_nodesPendingRemoval.Count > 0)
                 {
                     lock (_lockObj)
                     {
-                        int key;
+                        IAstNode node;
 
-                        while (_nodeKeysPendingRemoval.TryDequeue(out key))
+                        while (_nodesPendingRemoval.TryDequeue(out node))
                         {
                             for (int j = 0; j < _tags.Count; j++)
                             {
-                                //if (_tags[j].NodeKey == key || !_editorTree.AstRoot.ContainsNode(_tags[j].NodeKey))
-                                //{
-                                //    start = Math.Min(start, _tags[j].Start);
-                                //    end = Math.Max(end, _tags[j].End);
+                                if (_tags[j].Node == node || node.Parent == null)
+                                {
+                                    start = Math.Min(start, _tags[j].Start);
+                                    end = Math.Max(end, _tags[j].End);
 
-                                //    RemovedTags.Enqueue(_tags[j]);
+                                    RemovedTags.Enqueue(_tags[j]);
 
-                                //    _tags.RemoveAt(j);
-                                //    j--;
-                                //}
+                                    _tags.RemoveAt(j);
+                                    j--;
+                                }
                             }
                         }
 

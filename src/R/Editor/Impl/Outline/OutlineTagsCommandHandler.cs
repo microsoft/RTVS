@@ -12,6 +12,10 @@ using Microsoft.VisualStudio.Text.Outlining;
 
 namespace Microsoft.R.Editor.Outline
 {
+    /// <summary>
+    /// Hander of VS outlining commands typically found 
+    /// in the Edit | Outlining menu.
+    /// </summary>
     internal sealed class ROutlineTagsCommandHandler : ViewCommand
     {
         private static CommandId[] _commandIds = new CommandId[]
@@ -41,7 +45,7 @@ namespace Microsoft.R.Editor.Outline
             }
         }
 
-        private IEnumerable<ICollapsible> CollapsibleHtmlRegions
+        private IEnumerable<ICollapsible> CollapsibleRegions
         {
             get
             {
@@ -51,7 +55,7 @@ namespace Microsoft.R.Editor.Outline
             }
         }
 
-        private IEnumerable<ICollapsed> CollapsedHtmlRegions
+        private IEnumerable<ICollapsed> CollapsedRegions
         {
             get
             {
@@ -71,9 +75,9 @@ namespace Microsoft.R.Editor.Outline
                 switch (vsCmdID)
                 {
                     case VSConstants.VSStd2KCmdID.COLLAPSETAG:
-                        return CollapsibleHtmlRegions.Any() ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+                        return CollapsibleRegions.Any() ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
                     case VSConstants.VSStd2KCmdID.UNCOLLAPSETAG:
-                        return CollapsedHtmlRegions.Any() ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+                        return CollapsedRegions.Any() ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
                 }
             }
 
@@ -92,7 +96,7 @@ namespace Microsoft.R.Editor.Outline
                     {
                         ICollapsible maxCollapsibleRegion = null;
                         int maxStart = 0;
-                        foreach (ICollapsible curRegion in CollapsibleHtmlRegions)
+                        foreach (ICollapsible curRegion in CollapsibleRegions)
                         {
                             int curStart = curRegion.Extent.GetCurrentStart();
                             if ((maxCollapsibleRegion == null) || (curStart > maxStart))
@@ -114,7 +118,7 @@ namespace Microsoft.R.Editor.Outline
                     {
                         ICollapsed minCollapsedRegion = null;
                         int minStart = Int32.MaxValue;
-                        foreach (ICollapsed curRegion in CollapsedHtmlRegions)
+                        foreach (ICollapsed curRegion in CollapsedRegions)
                         {
                             int curStart = curRegion.Extent.GetCurrentStart();
                             if ((minCollapsedRegion == null) || (curStart < minStart))
@@ -136,7 +140,6 @@ namespace Microsoft.R.Editor.Outline
 
             return CommandResult.NotSupported;
         }
-
         #endregion
     }
 }

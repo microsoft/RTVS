@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Services;
@@ -19,9 +17,16 @@ using Microsoft.VisualStudio.Text;
 namespace Microsoft.R.Editor.Validation
 {
     /// <summary>
-    /// Main R validator (syntax check, etc) that generates error 
-    /// list items and squiggles. Works asynchronously except
-    /// the final part that pushes actual task items to the IDE.
+    /// Main R validator: performs syntax check, produces results that
+    /// then sent to the task list and tagger that creates squiggles.
+    /// Works asynchronously except the final part that pushes actual 
+    /// task items to the IDE. Additional validators can be added
+    /// via MEF exports.
+    /// 
+    /// Validator listens to tree updated events and schedules validation
+    /// passes for next idle slot. Next idle validation thread starts
+    /// and performas its work. Validator also listens to changes in
+    /// settings which may turn validation on or off.
     /// </summary>
     public sealed class TreeValidator
     {
@@ -37,14 +42,13 @@ namespace Microsoft.R.Editor.Validation
         /// <summary>
         /// Queue of validation results. Typically accessed from the main 
         /// thread that pushes errors/warning into a task list window. 
-        /// Code that places items on the task list should be checking if element that the error
-        /// is about still exist in the document.
+        /// Code that places items on the task list should be checking if 
+        /// node that produced the error is still exist in the document.
         /// </summary>
         internal ConcurrentQueue<IValidationError> ValidationResults { get; private set; }
 
         private EditorTree _editorTree;
         private bool _validationEnabled = false;
-        private bool _errorsAsWarnings = true;
         private bool _validationStarted = false;
 
         private bool _advisedToIdleTime = false;
@@ -71,14 +75,13 @@ namespace Microsoft.R.Editor.Validation
 
             _validationEnabled = RSettings.ValidationEnabled;
 
-            // Advise to settings changed after accessing the RSettings, as accessing
-            // the settings may actually fire the Changed notification for some reason.
+            // Advise to settings changed *after* accessing the RSettings, 
+            // since accessing the host application (VS) settings object may 
+            // cause it fire Changed notification in some cases.
             RSettings.Changed += OnSettingsChanged;
 
-            // We don't want to start validation right away since it may interfere with 
-            // editor perceived startup performance primarily because queueing the entire
-            // tree of elements is done from main thread and may take some time.
-            // We'll do it on next idle instead.
+            // We don't want to start validation right away since it may 
+            // interfere with the editor perceived startup performance.
 
             StartValidationNextIdle();
             ValidationResults = new ConcurrentQueue<IValidationError>();
@@ -157,7 +160,6 @@ namespace Microsoft.R.Editor.Validation
         private void OnSettingsChanged(object sender, EventArgs e)
         {
             bool validationWasEnabled = _validationEnabled;
-            bool errorsAsWarnings = _errorsAsWarnings;
 
             _validationEnabled = RSettings.ValidationEnabled;
 
@@ -189,7 +191,7 @@ namespace Microsoft.R.Editor.Validation
             _validationStarted = false;
 
             //  Empty the results queue
-            while(!ValidationResults.IsEmpty)
+            while (!ValidationResults.IsEmpty)
             {
                 IValidationError error;
                 ValidationResults.TryDequeue(out error);
@@ -200,13 +202,22 @@ namespace Microsoft.R.Editor.Validation
 
         #region Tree event handlers
 
+        /// <summary>
+        /// Listens to 'nodes removed' event which fires when user
+        /// deletes text that generated AST nodes or pastes over
+        /// new content. This allows validator to remove related
+        /// errors from the task list quickly so they don't linger
+        /// until the next validation pass.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e)
         {
             if (_validationEnabled)
             {
-                foreach (var element in e.Nodes)
+                foreach (var node in e.Nodes)
                 {
-                    ClearResultsForElement(element);
+                    ClearResultsForNode(node);
                 }
             }
         }
@@ -233,23 +244,24 @@ namespace Microsoft.R.Editor.Validation
         }
         #endregion
 
-        private void ClearResultsForElement(IAstNode node)
+        private void ClearResultsForNode(IAstNode node)
         {
             foreach (var child in node.Children)
             {
-                ClearResultsForElement(child);
+                ClearResultsForNode(child);
             }
 
-            // null for thne aggregatevalidator as we want it removed for all
+            // Adding sentinel will cause task list handler
+            // to remove all results from the task list 
             ValidationResults.Enqueue(new ValidationSentinel(new RToken(RTokenType.EndOfStream, TextRange.EmptyRange)));
         }
 
         private void QueueTreeForValidation()
         {
             // Transfer available errors from the tree right away
-            foreach(ParseError e in _editorTree.AstRoot.Errors)
+            foreach (ParseError e in _editorTree.AstRoot.Errors)
             {
-                ValidationResults.Enqueue(new ValidationError(e.Token, e.ErrorType.ToString(), ValidationErrorLocation.Node));
+                ValidationResults.Enqueue(new ValidationError(e.Node, e.ErrorType.ToString(), ValidationErrorLocation.Node));
             }
         }
     }

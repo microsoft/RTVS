@@ -5,37 +5,33 @@ using System.Globalization;
 using System.Threading;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
-using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Tree
 {
     public partial class EditorTree
     {
-        private const string _threadContextInvalidMessage = "R editor tree events must be fired on a main thread.";
+        private const string _threadContextInvalidMessage = 
+            "Editor tree events must be fired on a main thread.";
 
         #region Events
         /// <summary>
         /// Event fires when there are text changes pending in the change queue.
         /// Tree users should stop using the tree and release read locks ASAP.
-        /// Called when user made changes to the text buffer and before initial
+        /// Fires when user made changes to the text buffer and before initial
         /// tree nodes position updates.
         /// </summary>
         public event EventHandler<TreeUpdatePendingEventArgs> UpdatesPending;
 
         /// <summary>
-        /// Signals that editor tree is about to be updated
+        /// Signals that editor tree is about to be updated with the results
+        /// of the background parsing.
         /// </summary>
         public event EventHandler<EventArgs> UpdateBegin;
 
         /// <summary>
-        /// Fires when only node positions changed
+        /// Fires when only node positions changed. No parsing was performed.
         /// </summary>
         public event EventHandler<TreePositionsOnlyChangedEventArgs> PositionsOnlyChanged;
-
-        /// <summary>
-        /// Fires when only node positions changed
-        /// </summary>
-        public event EventHandler<TreeTokenNodeChangedEventArgs> TokenNodeChanged;
 
         /// <summary>
         /// Fires when new elements were removed from the tree. Argument contains
@@ -46,6 +42,13 @@ namespace Microsoft.R.Editor.Tree
         public event EventHandler<TreeNodesRemovedEventArgs> NodesRemoved;
 
         /// <summary>
+        /// Fires when child elements of a scope node have changed. Typically
+        /// means that relatively simple text editor was perfomed within { } 
+        /// scope without generating changes in ancestor scope structure.
+        /// </summary>
+        public event EventHandler<TreeScopeChangedEventArgs> ScopeChanged;
+
+        /// <summary>
         /// Fires when editor tree update completes. Each change to the text buffer 
         /// produces one or two update calls. First call signals node position 
         /// updates and if tree is dirty (i.e. nodes changed) second call will follow 
@@ -54,7 +57,9 @@ namespace Microsoft.R.Editor.Tree
         public event EventHandler<TreeUpdatedEventArgs> UpdateCompleted;
 
         /// <summary>
-        /// Fires when editor tree is closing.
+        /// Fires when editor tree is closing. Listeners should finish
+        /// aor cancel any outstanding processing and disconnect from 
+        /// the tree events.
         /// </summary>
         public event EventHandler<EventArgs> Closing;
         #endregion
@@ -87,7 +92,7 @@ namespace Microsoft.R.Editor.Tree
         /// Fires 'positions changed starting inside this element' event on the main thread context
         /// </summary>
         /// <param name="element">Element</param>
-        internal void FireOnPositionsOnlyChanged(IAstNode node)
+        internal void FireOnPositionsOnlyChanged()
         {
             if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
             {
@@ -98,7 +103,7 @@ namespace Microsoft.R.Editor.Tree
             try
             {
                 if (PositionsOnlyChanged != null)
-                    PositionsOnlyChanged(this, new TreePositionsOnlyChangedEventArgs(node.Key));
+                    PositionsOnlyChanged(this, new TreePositionsOnlyChangedEventArgs());
             }
             catch (Exception ex)
             {
@@ -133,9 +138,10 @@ namespace Microsoft.R.Editor.Tree
         }
 
         /// <summary>
-        /// Fires 'token node changed' event on the main thread context
+        /// Fires 'nodes removed' event on the main thread context
         /// </summary>
-        internal void FireOnTokenNodeChanged(IAstNode node)
+        /// <param name="nodes">Collection of removed nodes</param>
+        internal void FireOnScopeChanged(IAstNode scopeNode)
         {
             if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
             {
@@ -145,13 +151,13 @@ namespace Microsoft.R.Editor.Tree
 
             try
             {
-                if (TokenNodeChanged != null)
-                    TokenNodeChanged(this, new TreeTokenNodeChangedEventArgs(node.Key));
+                if (ScopeChanged != null)
+                    ScopeChanged(this, new TreeScopeChangedEventArgs(scopeNode));
             }
             catch (Exception ex)
             {
                 Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
-                    "Exception thrown in a tree.FireOnTokenNodeChanged event handler: {0}", ex.Message));
+                    "Exception thrown in a tree.FireOnScopeChanged event handler: {0}", ex.Message));
             }
         }
 
@@ -181,7 +187,7 @@ namespace Microsoft.R.Editor.Tree
         /// <summary>
         /// Fires 'update end' event on the main thread context
         /// </summary>
-        internal void FireOnUpdateCompleted(TreeUpdateType updateType, bool fullParse)
+        internal void FireOnUpdateCompleted(TreeUpdateType updateType)
         {
             if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
             {
@@ -190,7 +196,7 @@ namespace Microsoft.R.Editor.Tree
             }
 
             if (UpdateCompleted != null)
-                UpdateCompleted(this, new TreeUpdatedEventArgs(updateType, fullParse));
+                UpdateCompleted(this, new TreeUpdatedEventArgs(updateType));
         }
     }
 }

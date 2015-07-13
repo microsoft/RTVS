@@ -45,11 +45,6 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         public ITextProvider NewTextProvider;
 
-        /// <summary>
-        /// True if tree should be updated incrementally.
-        /// </summary>
-        public bool IncrementalTreeUpdate;
-
         public TextChange()
         {
             Clear();
@@ -98,7 +93,6 @@ namespace Microsoft.R.Editor.Tree
             OldRange = TextRange.EmptyRange;
             NewRange = TextRange.EmptyRange;
             FullParseRequired = false;
-            IncrementalTreeUpdate = true;
 
             OldTextProvider = null;
             NewTextProvider = null;
@@ -122,7 +116,6 @@ namespace Microsoft.R.Editor.Tree
 
             FullParseRequired |= other.FullParseRequired;
             TextChangeType |= other.TextChangeType;
-            IncrementalTreeUpdate &= other.IncrementalTreeUpdate;
 
             if (OldRange == TextRange.EmptyRange || NewRange == TextRange.EmptyRange)
             {
@@ -212,8 +205,8 @@ namespace Microsoft.R.Editor.Tree
         public override string ToString()
         {
             return string.Format(CultureInfo.InvariantCulture, 
-                "Version:{0}, TextChangeType:{1}, OldRange:{2}, NewRange:{3}, FullParseRequired:{4}, IncrementalTreeUpdate:{5}", 
-                Version, TextChangeType, OldRange, NewRange, FullParseRequired, IncrementalTreeUpdate);
+                "Version:{0}, TextChangeType:{1}, OldRange:{2}, NewRange:{3}, FullParseRequired:{4}", 
+                Version, TextChangeType, OldRange, NewRange, FullParseRequired);
         }
     }
 }
