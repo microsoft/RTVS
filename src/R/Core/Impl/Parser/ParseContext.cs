@@ -40,7 +40,7 @@ namespace Microsoft.R.Core.Parser
 
             foreach(IParseError e in _errors)
             {
-                if(e.Start == error.Start && e.Length == error.Length && e.ErrorType == e.ErrorType)
+                if(e.Start == error.Start && e.Length == error.Length && e.ErrorType == error.ErrorType)
                 {
                     found = true;
                     break;
