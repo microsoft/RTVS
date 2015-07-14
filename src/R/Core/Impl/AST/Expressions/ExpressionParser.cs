@@ -99,11 +99,11 @@ namespace Microsoft.R.Core.AST.Expressions
                             tokens.PreviousToken.TokenType == RTokenType.Identifier)
                         {
                             FunctionCall functionCall = new FunctionCall();
-                            if (functionCall.Parse(context, null))
-                            {
-                                errorType = HandleFunctionOrIndexer(functionCall);
-                                currentOperationType = OperationType.Function;
-                            }
+                            functionCall.Parse(context, null);
+
+                            errorType = HandleFunctionOrIndexer(functionCall);
+                            currentOperationType = OperationType.Function;
+
                         }
                         else
                         {
@@ -157,7 +157,7 @@ namespace Microsoft.R.Core.AST.Expressions
 
                     case RTokenType.Keyword:
                         string keyword = context.TextProvider.GetText(context.Tokens.CurrentToken);
-                        if(IsTerminatingKeyword(keyword))
+                        if (IsTerminatingKeyword(keyword))
                         {
                             endOfExpression = true;
                             break;
@@ -280,10 +280,11 @@ namespace Microsoft.R.Core.AST.Expressions
             {
                 // Special case 'exp <- function(...) { }
                 FunctionDefinition funcDef = new FunctionDefinition();
-                if (funcDef.Parse(context, null))
-                {
-                    _operands.Push(funcDef);
-                }
+                funcDef.Parse(context, null);
+
+                // Add to the stack even if it has errors in order
+                // to avoid extra errors
+                _operands.Push(funcDef);
             }
             else
             {
@@ -295,7 +296,7 @@ namespace Microsoft.R.Core.AST.Expressions
 
         private bool IsTerminatingKeyword(string s)
         {
-            if(_terminatingKeyword == null)
+            if (_terminatingKeyword == null)
             {
                 return false;
             }

@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Core.Text
         /// </summary>
         /// <param name="textProvider">Text provider</param>
         /// <param name="position">Position to check</param>
-        public static bool IsNewLineBeforePosition(ITextProvider textProvider, int position)
+        public static bool IsNewLineBeforePosition(this ITextProvider textProvider, int position)
         {
             if (position > 0)
             {
@@ -101,7 +101,7 @@ namespace Microsoft.Languages.Core.Text
                     lines.Add(text.Substring(lineStart, i - lineStart));
 
                     // Skip '\n' but only in "\r\n" sequence. 
-                    if (ch == '\r' && i + 1 < text.Length && text[i + 1] =='\n')
+                    if (ch == '\r' && i + 1 < text.Length && text[i + 1] == '\n')
                     {
                         i++;
                     }
@@ -163,7 +163,7 @@ namespace Microsoft.Languages.Core.Text
                 else if (!Char.IsWhiteSpace(ch) || ch == '\r' || ch == '\n')
                 {
                     break;
-                 }
+                }
                 else
                 {
                     spacesSoFar++;
@@ -274,6 +274,41 @@ namespace Microsoft.Languages.Core.Text
             }
 
             return false;
+        }
+
+        public static string GetCurrentLineText(this ITextProvider textProvider, int position)
+        {
+            int start = 0;
+            int end = 0;
+
+            for (int i = position; i >= 0; i--)
+            {
+                char ch = textProvider[i];
+
+                if (ch == '\r' || ch == '\n')
+                {
+                    start = i + 1;
+                    break;
+                }
+            }
+
+            for (int i = position; i < textProvider.Length; i++)
+            {
+                char ch = textProvider[i];
+
+                if (ch == '\r' || ch == '\n')
+                {
+                    end = i;
+                    break;
+                }
+            }
+
+            if(start > end)
+            {
+                start = end;
+            }
+
+            return textProvider.GetText(TextRange.FromBounds(start, end));
         }
     }
 }

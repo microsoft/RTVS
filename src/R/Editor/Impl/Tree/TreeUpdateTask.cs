@@ -166,8 +166,6 @@ namespace Microsoft.R.Editor.Tree
                 {
                     TextBufferChangedSinceSuspend = false;
 
-                    RequestFullParse();
-
                     GuardedOperations.DispatchInvoke(() =>
                         ProcessPendingTextBufferChanges(async: true),
                         DispatcherPriority.ApplicationIdle);
@@ -179,22 +177,6 @@ namespace Microsoft.R.Editor.Tree
         /// Indicates if text buffer changed since tree updates were suspended.
         /// </summary>
         internal bool TextBufferChangedSinceSuspend { get; private set; }
-
-        /// <summary>
-        /// Request full parse on the next background parse run
-        /// </summary>
-        internal void RequestFullParse()
-        {
-            _lastChangeTime = DateTime.UtcNow;
-
-            _pendingChanges.FullParseRequired = true;
-
-            // TextBuffer might be null in unit tests
-            _pendingChanges.Version = TextBuffer != null ? TextBuffer.CurrentSnapshot.Version.VersionNumber : 1;
-
-            if (TraceParse.Enabled)
-                Debug.WriteLine("Full parse requested");
-        }
 
         /// <summary>
         /// Text buffer change event handler. Performs analysis of the change.
@@ -453,7 +435,7 @@ namespace Microsoft.R.Editor.Tree
                 if (async && (IsTaskRunning() || _backgroundParsingResults.Count > 0))
                 {
                     // Try next time or we may end up spawning a lot of tasks
-                    return; 
+                    return;
                 }
 
                 // Combine changes in processing with pending changes.
@@ -633,8 +615,8 @@ namespace Microsoft.R.Editor.Tree
 #if DEBUG
                     if (retryCount == 10)
                     {
-                        string msg = string.Format(CultureInfo.InvariantCulture, 
-                            "Pending changes remain: ChangesPending: {0}, original:\"{1}\", new:\"{2}\"", 
+                        string msg = string.Format(CultureInfo.InvariantCulture,
+                            "Pending changes remain: ChangesPending: {0}, original:\"{1}\", new:\"{2}\"",
                             ChangesPending, originalPendingChanges, Changes.ToString());
 
                         // using Debugger.Break as I want all threads suspended so the state doesn't change
@@ -741,7 +723,7 @@ namespace Microsoft.R.Editor.Tree
                 }
             }
         }
-        
+
         private void InvokeCompletionCallbacks()
         {
             // Copy collection since callbacks may disconnet on invoke

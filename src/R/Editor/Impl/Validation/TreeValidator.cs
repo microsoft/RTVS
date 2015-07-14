@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Validation
             get { return _traceValidation; }
         }
 
-        private static int _validationDelay = 1000;
+        private static int _validationDelay = 200;
 
         /// <summary>
         /// Queue of validation results. Typically accessed from the main 

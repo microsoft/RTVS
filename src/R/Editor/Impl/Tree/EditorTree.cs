@@ -144,9 +144,8 @@ namespace Microsoft.R.Editor.Tree
 
         #region Building
         /// <summary>
-        /// Builds initial tree. Subsequent updates should be coming from a background thread.
+        /// Builds initial AST. Subsequent updates should be coming from a background thread.
         /// </summary>
-        /// <param name="incrementalUpdate"></param>
         public void Build()
         {
             if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
@@ -264,16 +263,6 @@ namespace Microsoft.R.Editor.Tree
                     ReflectTextChange(this, curChange);
                 }
             }
-        }
-
-        /// <summary>
-        /// Request full parse on the next background parse run.
-        /// Usually called at the end of a massive change operation
-        /// such as document formatting, snippet insertion and so on.
-        /// </summary>
-        public void RequestFullParse()
-        {
-            TreeUpdateTask.RequestFullParse();
         }
 
         internal TextChange PendingChanges

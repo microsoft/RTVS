@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
@@ -44,27 +45,19 @@ namespace Microsoft.R.Editor.Tree
 
             context.ChangedNode = node;
 
-            if (positionType == PositionType.Undefined || positionType == PositionType.Scope)
+            string oldLineText = context.OldTextProvider.GetCurrentLineText(context.OldStart);
+            if (string.IsNullOrWhiteSpace(oldLineText))
             {
                 return true;
             }
 
-            if (context.NewText.IndexOfAny(_lineBreaks) >= 0)
+            string newLineText = context.NewTextProvider.GetCurrentLineText(context.Start);
+            if (string.IsNullOrWhiteSpace(newLineText))
             {
-                return false;
+                return true;
             }
 
-            // The change is not safe if old or new text contains line breaks
-            // as in R comments runs to the end of the line and deleting
-            // line break at the end of the comment may bring code into 
-            // the comment range and change the entire file structure.
-
-            if (context.OldText.IndexOfAny(_lineBreaks) >= 0)
-            {
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
         private static bool SafeChangeInsideComment(TextChangeContext context)

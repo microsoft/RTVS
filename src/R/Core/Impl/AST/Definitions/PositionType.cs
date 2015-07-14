@@ -30,11 +30,6 @@ namespace Microsoft.R.Core.AST.Definitions
         /// <summary>
         /// Position is inside expression
         /// </summary>
-        Expression,
-
-        /// <summary>
-        /// Position is in scope but not in any of inner nodes
-        /// </summary>
-        Scope
+        Expression
     }
 }
