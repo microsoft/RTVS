@@ -62,12 +62,12 @@ namespace Microsoft.R.Editor.Tree
                             }
                             break;
 
-                        case TreeChangeType.ScopeChanged:
-                            {
-                                var c = change as EditorTreeChange_ScopeChanged;
-                                changesToFire.Add(new TreeChangeEventRecord(change.ChangeType, c.ScopeNode));
-                            }
-                            break;
+                        //case TreeChangeType.ScopeChanged:
+                        //    {
+                        //        var c = change as EditorTreeChange_ScopeChanged;
+                        //        changesToFire.Add(new TreeChangeEventRecord(change.ChangeType, c.ScopeNode));
+                        //    }
+                        //    break;
 
                         default:
                             Debug.Fail("Unknown tree change");
@@ -119,9 +119,9 @@ namespace Microsoft.R.Editor.Tree
                 {
                     switch (change.ChangeType)
                     {
-                        case TreeChangeType.ScopeChanged:
-                            FireOnScopeChanged(change.Node);
-                            break;
+                        //case TreeChangeType.ScopeChanged:
+                        //    FireOnScopeChanged(change.Node);
+                        //    break;
 
                         case TreeChangeType.NewTree:
                             newTree = true;
@@ -134,7 +134,7 @@ namespace Microsoft.R.Editor.Tree
                 }
             }
 
-            FireOnUpdateCompleted(newTree ? TreeUpdateType.NewTree : TreeUpdateType.ScopeChanged);
+            FireOnUpdateCompleted(TreeUpdateType.NewTree); // newTree ? TreeUpdateType.NewTree : TreeUpdateType.ScopeChanged);
         }
     }
 }

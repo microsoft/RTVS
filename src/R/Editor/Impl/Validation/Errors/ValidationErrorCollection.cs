@@ -14,17 +14,17 @@ namespace Microsoft.R.Editor.Validation.Errors
 
         public void Add(IAstNode node, string message)
         {
-            Add(node, message, ValidationErrorLocation.Node);
+            Add(node, null, message, ValidationErrorLocation.Node);
         }
 
         public void Add(RToken token, string message, ValidationErrorLocation location)
         {
-            Add(new ValidationError(token, message, location));
+            Add(new ValidationError(null, token, message, location));
         }
 
-        public void Add(IAstNode node, string message, ValidationErrorLocation location)
+        public void Add(IAstNode node, RToken token, string message, ValidationErrorLocation location)
         {
-            Add(new ValidationError(node, message, location));
+            Add(new ValidationError(node, token, message, location));
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Microsoft.R.Editor.Tree
     {
         PositionsOnly,
         NodesRemoved,
-        ScopeChanged,
+        //ScopeChanged,
         NewTree
     }
 }

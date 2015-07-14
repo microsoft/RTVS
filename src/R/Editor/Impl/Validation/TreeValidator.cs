@@ -224,8 +224,11 @@ namespace Microsoft.R.Editor.Validation
 
         private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e)
         {
-            StopValidation();
-            StartValidationNextIdle();
+            if (e.UpdateType == TreeUpdateType.NewTree)
+            {
+                StopValidation();
+                StartValidationNextIdle();
+            }
         }
 
         private void OnTreeClose(object sender, EventArgs e)
@@ -261,7 +264,7 @@ namespace Microsoft.R.Editor.Validation
             // Transfer available errors from the tree right away
             foreach (ParseError e in _editorTree.AstRoot.Errors)
             {
-                ValidationResults.Enqueue(new ValidationError(e.Node, e.ErrorType.ToString(), ValidationErrorLocation.Node));
+                ValidationResults.Enqueue(new ValidationError(e.Node, e.Token, ErrorText.GetText(e.ErrorType), ValidationErrorLocation.Node));
             }
         }
     }

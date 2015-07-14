@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
             Description = error.Message;
             TaskType = GetTaskType(error);
 
-            _range = error.Node;
+            _range = error;
 
             if (_range == null || _range.Start < 0)
                 _range = TextRange.EmptyRange;

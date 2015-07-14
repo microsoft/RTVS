@@ -17,7 +17,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             EditorErrorTagger tagger = null;
 
-            if (EditorDocument.FromTextBuffer(textBuffer) != null)
+            if (EditorDocument.TryFromTextBuffer(textBuffer) != null)
             {
                 tagger = ServiceManager.GetService<EditorErrorTagger>(textBuffer);
                 if (tagger == null)

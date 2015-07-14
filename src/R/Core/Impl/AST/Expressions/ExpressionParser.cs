@@ -145,7 +145,7 @@ namespace Microsoft.R.Core.AST.Expressions
                     case RTokenType.CloseDoubleSquareBracket:
                         if (_previousOperationType == OperationType.None)
                         {
-                            context.Errors.Add(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, tokens.CurrentToken));
+                            context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, tokens.CurrentToken));
                         }
                         endOfExpression = true;
                         break;
@@ -187,22 +187,22 @@ namespace Microsoft.R.Core.AST.Expressions
                     switch (currentOperationType)
                     {
                         case OperationType.Operand:
-                            context.Errors.Add(new MissingItemParseError(ParseErrorType.OperatorExpected, tokens.PreviousToken));
+                            context.AddError(new MissingItemParseError(ParseErrorType.OperatorExpected, tokens.PreviousToken));
                             break;
 
                         case OperationType.None:
                             if (tokens.IsEndOfStream())
                             {
-                                context.Errors.Add(new ParseError(ParseErrorType.UnexpectedEndOfFile, ParseErrorLocation.AfterToken, tokens.PreviousToken));
+                                context.AddError(new ParseError(ParseErrorType.UnexpectedEndOfFile, ParseErrorLocation.AfterToken, tokens.PreviousToken));
                             }
                             else
                             {
-                                context.Errors.Add(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, tokens.CurrentToken));
+                                context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, tokens.CurrentToken));
                             }
                             break;
 
                         default:
-                            context.Errors.Add(new MissingItemParseError(ParseErrorType.OperandExpected, tokens.PreviousToken));
+                            context.AddError(new MissingItemParseError(ParseErrorType.OperandExpected, tokens.PreviousToken));
                             break;
                     }
 
@@ -211,7 +211,7 @@ namespace Microsoft.R.Core.AST.Expressions
                 else if (_previousOperationType == OperationType.UnaryOperator && currentOperationType == OperationType.BinaryOperator)
                 {
                     // unary followed by binary doesn't make sense 
-                    context.Errors.Add(new MissingItemParseError(ParseErrorType.IndentifierExpected, tokens.PreviousToken));
+                    context.AddError(new MissingItemParseError(ParseErrorType.IndentifierExpected, tokens.PreviousToken));
                     return null;
                 }
 
@@ -253,7 +253,7 @@ namespace Microsoft.R.Core.AST.Expressions
 
             if (errorType != ParseErrorType.None)
             {
-                context.Errors.Add(new MissingItemParseError(errorType, tokens.PreviousToken));
+                context.AddError(new MissingItemParseError(errorType, tokens.PreviousToken));
                 return null;
             }
 
@@ -283,10 +283,6 @@ namespace Microsoft.R.Core.AST.Expressions
                 if (funcDef.Parse(context, null))
                 {
                     _operands.Push(funcDef);
-                }
-                else
-                {
-                    errorType = ParseErrorType.FunctionExpected;
                 }
             }
             else

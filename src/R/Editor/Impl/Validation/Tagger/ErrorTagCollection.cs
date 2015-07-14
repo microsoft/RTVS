@@ -128,7 +128,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
             }
         }
 
-        public void Add(EditorErrorTag tag)
+        internal void Add(EditorErrorTag tag)
         {
             lock (_lockObj)
             {
@@ -237,7 +237,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             foreach (var node in e.Nodes)
             {
-                StoreRemovedNodeKeys(node);
+                StoreRemovedNodes(node);
             }
         }
 
@@ -252,11 +252,11 @@ namespace Microsoft.R.Editor.Validation.Tagger
             }
         }
 
-        private void StoreRemovedNodeKeys(IAstNode node)
+        private void StoreRemovedNodes(IAstNode node)
         {
             foreach (var child in node.Children)
             {
-                StoreRemovedNodeKeys(child);
+                StoreRemovedNodes(child);
             }
 
             _nodesPendingRemoval.Enqueue(node);

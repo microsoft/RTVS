@@ -8,8 +8,10 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -46,8 +48,8 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
             _document = EditorDocument.FromTextBuffer(textBuffer);
             _document.OnDocumentClosing += OnDocumentClosing;
-            _document.EditorTree.UpdateCompleted += OnNewTree;
-
+            _document.EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
+            _document.EditorTree.NodesRemoved += OnNodesRemoved;
             _errorTags = new ErrorTagCollection(_document.EditorTree);
 
             _textBuffer = _document.EditorTree.TextBuffer;
@@ -76,35 +78,42 @@ namespace Microsoft.R.Editor.Validation.Tagger
             return ServiceManager.GetService<EditorErrorTagger>(textBuffer);
         }
 
-        private void OnNewTree(object sender, EventArgs e)
+        private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e)
+        {
+            foreach(IAstNode node in e.Nodes)
+            {
+                _errorTags.RemoveTagsForNode(node);
+            }
+        }
+
+        private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e)
+        {
+            if (e.UpdateType != TreeUpdateType.PositionsOnly)
+            {
+                RemoveAllTags();
+            }
+        }
+
+        private void OnCleared(object sender, EventArgs e)
+        {
+            RemoveAllTags();
+        }
+
+        private void RemoveAllTags()
         {
             _errorTags.Clear();
+
+            if (TasksCleared != null)
+                TasksCleared(this, EventArgs.Empty);
 
             if (TagsChanged != null)
             {
                 TagsChanged(this, new SnapshotSpanEventArgs(
                                     new SnapshotSpan(_textBuffer.CurrentSnapshot, 0, _textBuffer.CurrentSnapshot.Length)));
             }
-
-            if (TasksCleared != null)
-                TasksCleared(this, EventArgs.Empty);
         }
 
-        void OnCleared(object sender, EventArgs e)
-        {
-            _errorTags.Clear();
-
-            if (TasksCleared != null)
-                TasksCleared(this, EventArgs.Empty);
-
-            if (TagsChanged != null)
-            {
-                TagsChanged(this, new SnapshotSpanEventArgs(
-                                    new SnapshotSpan(_textBuffer.CurrentSnapshot, 0, _textBuffer.CurrentSnapshot.Length)));
-            }
-        }
-
-        void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
         {
             if (RSettings.ValidationEnabled && e.Changes.Count > 0)
             {
@@ -141,13 +150,14 @@ namespace Microsoft.R.Editor.Validation.Tagger
         }
 
         #region Tree event handlers
-        void OnDocumentClosing(object sender, EventArgs e)
+        private void OnDocumentClosing(object sender, EventArgs e)
         {
             if (_textBuffer != null)
             {
                 EditorShell.OnIdle -= OnIdle;
 
-                _document.EditorTree.UpdateCompleted -= OnNewTree;
+                _document.EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
+                _document.EditorTree.NodesRemoved -= OnNodesRemoved;
 
                 _document.OnDocumentClosing -= OnDocumentClosing;
                 _document = null;
@@ -216,7 +226,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                                 }
                             }
                         }
-                        else //if (_document.EditorTree.AstRoot.ContainsNode(error.NodeKey))
+                        else if ((error.Node != null && error.Node.Parent != null) || error.Token != null)
                         {
                             EditorErrorTag tag = new EditorErrorTag(_document.EditorTree, error);
                             if (tag.Length > 0)

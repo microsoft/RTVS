@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 
 namespace Microsoft.R.Editor.Tree
 {
@@ -29,18 +26,18 @@ namespace Microsoft.R.Editor.Tree
         }
     }
 
-    [ExcludeFromCodeCoverage]
-    internal class EditorTreeChange_ScopeChanged : EditorTreeChange
-    {
-        public IAstNode ScopeNode { get; private set; }
+    //[ExcludeFromCodeCoverage]
+    //internal class EditorTreeChange_ScopeChanged : EditorTreeChange
+    //{
+    //    public IAstNode ScopeNode { get; private set; }
 
-        public IReadOnlyCollection<IAstNode> NewChildren { get; private set; }
+    //    public IReadOnlyCollection<IAstNode> NewChildren { get; private set; }
 
-        public EditorTreeChange_ScopeChanged(IAstNode scopeNode, IReadOnlyCollection<IAstNode> newChildren)
-            : base(TreeChangeType.ScopeChanged)
-        {
-            ScopeNode = scopeNode;
-            NewChildren = newChildren.Count > 0 ? newChildren : ReadOnlyTextRangeCollection<IAstNode>.EmptyCollection;
-        }
-    }
+    //    public EditorTreeChange_ScopeChanged(IAstNode scopeNode, IReadOnlyCollection<IAstNode> newChildren)
+    //        : base(TreeChangeType.ScopeChanged)
+    //    {
+    //        ScopeNode = scopeNode;
+    //        NewChildren = newChildren.Count > 0 ? newChildren : ReadOnlyTextRangeCollection<IAstNode>.EmptyCollection;
+    //    }
+    //}
 }

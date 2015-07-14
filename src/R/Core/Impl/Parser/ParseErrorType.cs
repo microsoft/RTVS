@@ -9,6 +9,7 @@
         /// No errors
         /// </summary>
         None,
+
         /// <summary>
         /// Unknown or general syntax error
         /// </summary>

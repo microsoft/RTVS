@@ -40,12 +40,12 @@ namespace Microsoft.R.Core.AST.Expressions
                 }
                 else
                 {
-                    context.Errors.Add(new MissingItemParseError(ParseErrorType.InKeywordExpected, tokens.CurrentToken));
+                    context.AddError(new MissingItemParseError(ParseErrorType.InKeywordExpected, tokens.CurrentToken));
                 }
             }
             else
             {
-                context.Errors.Add(new MissingItemParseError(ParseErrorType.IndentifierExpected, tokens.PreviousToken));
+                context.AddError(new MissingItemParseError(ParseErrorType.IndentifierExpected, tokens.PreviousToken));
             }
 
             return false;

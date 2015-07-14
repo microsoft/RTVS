@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Validation.Definitions;
 
@@ -11,7 +12,11 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// Constructs validation warning for an element at a specified location.
         /// </summary>
         public ValidationWarning(RToken token, string message, ValidationErrorLocation location) :
-            base(token, message, location, ValidationErrorSeverity.Warning)
+            this(null, token, message, location)
+        {
+        }
+        public ValidationWarning(IAstNode node, RToken token, string message, ValidationErrorLocation location) :
+             base(node, token, message, location, ValidationErrorSeverity.Warning)
         {
         }
     }

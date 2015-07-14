@@ -73,7 +73,7 @@ namespace Microsoft.R.Core.AST.Statements
                     break;
 
                 default:
-                    context.Errors.Add(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, currentToken));
+                    context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, currentToken));
                     break;
             }
 

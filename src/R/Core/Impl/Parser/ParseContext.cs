@@ -11,11 +11,20 @@ namespace Microsoft.R.Core.Parser
     [DebuggerDisplay("{Tokens.Position} = {Tokens.CurrentToken.TokenType} : Errors = {Errors.Count}")]
     public sealed class ParseContext
     {
+        private List<IParseError> _errors = new List<IParseError>();
+
         public AstRoot AstRoot { get; private set; }
+
         public ITextProvider TextProvider { get; private set; }
+
         public TokenStream<RToken> Tokens { get; private set; }
+
         public ITextRange TextRange { get; private set; }
-        public List<IParseError> Errors { get; private set; }
+
+        public IReadOnlyCollection<IParseError> Errors
+        {
+            get { return _errors; }
+        }
 
         public ParseContext(AstRoot astRoot, ITextRange range, TokenStream<RToken> tokens)
         {
@@ -23,7 +32,25 @@ namespace Microsoft.R.Core.Parser
             this.TextProvider = astRoot.TextProvider;
             this.Tokens = tokens;
             this.TextRange = range;
-            this.Errors = new List<IParseError>();
+        }
+
+        public void AddError(ParseError error)
+        {
+            bool found = false;
+
+            foreach(IParseError e in _errors)
+            {
+                if(e.Start == error.Start && e.Length == error.Length && e.ErrorType == e.ErrorType)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found)
+            {
+                _errors.Add(error);
+            }
         }
 
         public void RemoveCommentTokens()

@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Tree
         /// means that relatively simple text editor was perfomed within { } 
         /// scope without generating changes in ancestor scope structure.
         /// </summary>
-        public event EventHandler<TreeScopeChangedEventArgs> ScopeChanged;
+        //public event EventHandler<TreeScopeChangedEventArgs> ScopeChanged;
 
         /// <summary>
         /// Fires when editor tree update completes. Each change to the text buffer 
@@ -141,25 +141,25 @@ namespace Microsoft.R.Editor.Tree
         /// Fires 'nodes removed' event on the main thread context
         /// </summary>
         /// <param name="nodes">Collection of removed nodes</param>
-        internal void FireOnScopeChanged(IAstNode scopeNode)
-        {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
-            {
-                Debug.Fail(_threadContextInvalidMessage);
-                return;
-            }
+        //internal void FireOnScopeChanged(IAstNode scopeNode)
+        //{
+        //    if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+        //    {
+        //        Debug.Fail(_threadContextInvalidMessage);
+        //        return;
+        //    }
 
-            try
-            {
-                if (ScopeChanged != null)
-                    ScopeChanged(this, new TreeScopeChangedEventArgs(scopeNode));
-            }
-            catch (Exception ex)
-            {
-                Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
-                    "Exception thrown in a tree.FireOnScopeChanged event handler: {0}", ex.Message));
-            }
-        }
+        //    try
+        //    {
+        //        if (ScopeChanged != null)
+        //            ScopeChanged(this, new TreeScopeChangedEventArgs(scopeNode));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
+        //            "Exception thrown in a tree.FireOnScopeChanged event handler: {0}", ex.Message));
+        //    }
+        //}
 
         /// <summary>
         /// Fires 'update begin' event on the main thread context

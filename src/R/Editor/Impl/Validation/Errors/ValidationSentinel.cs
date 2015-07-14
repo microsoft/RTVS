@@ -12,7 +12,7 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// Constructs 'barrier' pseudo error that clears all messages for a given node.
         /// </summary>
         public ValidationSentinel(RToken token) :
-            base(token, String.Empty, ValidationErrorLocation.Node, ValidationErrorSeverity.Error)
+            base(null, token, String.Empty, ValidationErrorLocation.Node, ValidationErrorSeverity.Error)
         {
         }
     }

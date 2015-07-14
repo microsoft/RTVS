@@ -39,16 +39,16 @@ namespace Microsoft.R.Editor.Tree
         }
     }
 
-    [ExcludeFromCodeCoverage]
-    public class TreeScopeChangedEventArgs : EventArgs
-    {
-        public IAstNode ScopeNode { get; private set; }
+    //[ExcludeFromCodeCoverage]
+    //public class TreeScopeChangedEventArgs : EventArgs
+    //{
+    //    public IAstNode ScopeNode { get; private set; }
 
-        public TreeScopeChangedEventArgs(IAstNode scopeNode)
-        {
-            ScopeNode = scopeNode;
-        }
-    }
+    //    public TreeScopeChangedEventArgs(IAstNode scopeNode)
+    //    {
+    //        ScopeNode = scopeNode;
+    //    }
+    //}
 
     [ExcludeFromCodeCoverage]
     public class TreePositionsOnlyChangedEventArgs : EventArgs

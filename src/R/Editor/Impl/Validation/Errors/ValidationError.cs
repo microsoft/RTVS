@@ -12,15 +12,15 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// Constructs validation error based on existing error.
         /// </summary>
         public ValidationError(IValidationError error) :
-            base(error.Node, error.Message, error.Location, error.Severity)
+            base(error.Node, error.Token, error.Message, error.Location, error.Severity)
         {
         }
 
         /// <summary>
         /// Constructs validation error for an element at a specified location.
         /// </summary>
-        public ValidationError(IAstNode node, string message, ValidationErrorLocation location) :
-            base(node, message, location, ValidationErrorSeverity.Error)
+        public ValidationError(IAstNode node, RToken token, string message, ValidationErrorLocation location) :
+            base(node, token, message, location, ValidationErrorSeverity.Error)
         {
         }
 
@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// Constructs validation error for an element at a specified location.
         /// </summary>
         public ValidationError(RToken token, string message, ValidationErrorLocation location) :
-            base(token, message, location, ValidationErrorSeverity.Error)
+            base(null, token, message, location, ValidationErrorSeverity.Error)
         {
         }
     }

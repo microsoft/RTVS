@@ -56,7 +56,7 @@ namespace Microsoft.R.Core.AST.Operators
                     return base.Parse(context, parent);
                 }
 
-                context.Errors.Add(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
+                context.AddError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
             }
 
             return false;

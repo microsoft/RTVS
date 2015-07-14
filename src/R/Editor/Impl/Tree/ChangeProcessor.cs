@@ -99,11 +99,11 @@ namespace Microsoft.R.Editor.Tree
             }
             else
             {
-                if (commonParent == null)
-                {
-                    // Find parent that still has well formed curly braces.
-                    commonParent = FindWellFormedOuterScope(startNode);
-                }
+                //if (commonParent == null)
+                //{
+                //    // Find parent that still has well formed curly braces.
+                //    commonParent = FindWellFormedOuterScope(startNode);
+                //}
 
                 if (commonParent == null)
                 {
@@ -163,25 +163,25 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         /// <param name="node">Node to start search with</param>
         /// <returns>Well formed ancestor scope or root node</returns>
-        private static IAstNode FindWellFormedOuterScope(IAstNode node)
-        {
-            var parent = node.Parent;
+        //private static IAstNode FindWellFormedOuterScope(IAstNode node)
+        //{
+        //    var parent = node.Parent;
 
-            while (true)
-            {
-                if (parent is AstRoot)
-                    break;
+        //    while (true)
+        //    {
+        //        if (parent is AstRoot)
+        //            break;
 
-                IScope scope = parent as IScope;
-                if (scope != null && scope.OpenCurlyBrace != null && scope.CloseCurlyBrace != null)
-                {
-                    break;
-                }
+        //        IScope scope = parent as IScope;
+        //        if (scope != null && scope.OpenCurlyBrace != null && scope.CloseCurlyBrace != null)
+        //        {
+        //            break;
+        //        }
 
-                parent = parent.Parent;
-            }
+        //        parent = parent.Parent;
+        //    }
 
-            return parent;
-        }
+        //    return parent;
+        //}
     }
 }

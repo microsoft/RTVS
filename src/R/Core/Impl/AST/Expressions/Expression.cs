@@ -52,7 +52,7 @@ namespace Microsoft.R.Core.AST.Expressions
                 }
                 else
                 {
-                    context.Errors.Add(new MissingItemParseError(ParseErrorType.CloseBraceExpected, context.Tokens.PreviousToken));
+                    context.AddError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, context.Tokens.PreviousToken));
                     return false;
                 }
             }

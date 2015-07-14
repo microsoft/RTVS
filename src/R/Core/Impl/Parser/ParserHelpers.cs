@@ -44,7 +44,7 @@ namespace Microsoft.R.Core.Parser
             }
             else
             {
-                context.Errors.Add(new MissingItemParseError(ParseErrorType.OpenBraceExpected, tokens.PreviousToken));
+                context.AddError(new MissingItemParseError(ParseErrorType.OpenBraceExpected, tokens.PreviousToken));
             }
 
             return null;
@@ -59,7 +59,7 @@ namespace Microsoft.R.Core.Parser
                 return RParser.ParseToken(context, parent);
             }
 
-            context.Errors.Add(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
+            context.AddError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
             return null;
         }
 
@@ -87,7 +87,7 @@ namespace Microsoft.R.Core.Parser
             }
             else
             {
-                context.Errors.Add(new MissingItemParseError(ParseErrorType.OpenCurlyBraceExpected, tokens.PreviousToken));
+                context.AddError(new MissingItemParseError(ParseErrorType.OpenCurlyBraceExpected, tokens.PreviousToken));
             }
 
             return null;

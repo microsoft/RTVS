@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Validation.Definitions;
@@ -6,7 +7,7 @@ using Microsoft.R.Editor.Validation.Definitions;
 namespace Microsoft.R.Editor.Validation.Errors
 {
     [ExcludeFromCodeCoverage]
-    public class ValidationErrorBase : IValidationError
+    public class ValidationErrorBase : TextRange, IValidationError
     {
         /// <summary>
         /// AST node in the parse tree
@@ -33,20 +34,12 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// </summary>
         public ValidationErrorSeverity Severity { get; private set; }
 
-        public ValidationErrorBase(IAstNode node, string message, ValidationErrorLocation location, ValidationErrorSeverity severity) :
-            this(message, location, severity)
+        public ValidationErrorBase(IAstNode node, RToken token, string message, ValidationErrorLocation location, ValidationErrorSeverity severity) :
+            base(node != null ? node : token as ITextRange)
         {
             Node = node;
-        }
-
-        public ValidationErrorBase(RToken token, string message, ValidationErrorLocation location, ValidationErrorSeverity severity) :
-            this(message, location, severity)
-        {
             Token = token;
-        }
 
-        private ValidationErrorBase(string message, ValidationErrorLocation location, ValidationErrorSeverity severity)
-        {
             Message = message;
             Severity = severity;
             Location = location;

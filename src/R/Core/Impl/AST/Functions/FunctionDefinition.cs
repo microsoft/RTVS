@@ -47,12 +47,12 @@ namespace Microsoft.R.Core.AST.Functions
                         }
                     }
 
-                    context.Errors.Add(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
+                    context.AddError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
                 }
             }
             else
             {
-                context.Errors.Add(new MissingItemParseError(ParseErrorType.OpenBraceExpected, tokens.PreviousToken));
+                context.AddError(new MissingItemParseError(ParseErrorType.OpenBraceExpected, tokens.PreviousToken));
             }
 
             return false;

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 
@@ -8,7 +9,7 @@ namespace Microsoft.R.Editor.Validation.Definitions
     /// Represents validation result. May be based
     /// on AST node or a standalone token.
     /// </summary>
-    public interface IValidationError
+    public interface IValidationError: ITextRange
     {
         /// <summary>
         /// Token the error applies to.
