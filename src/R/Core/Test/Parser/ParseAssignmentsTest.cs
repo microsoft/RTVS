@@ -89,6 +89,7 @@ namespace Microsoft.R.Core.Test.Tokens
 ";
             ParserTest.VerifyParse(expected, "0 -> a -> b");
         }
+
         [TestMethod]
         public void ParseAssignmentsTest5()
         {
@@ -109,6 +110,17 @@ namespace Microsoft.R.Core.Test.Tokens
                     TokenNode  [) [12...13]]
 ";
             ParserTest.VerifyParse(expected, "z <- .Call(x)");
+        }
+
+        [TestMethod]
+        public void ParseAssignmentsTest6()
+        {
+            string expected =
+@"GlobalScope  [Global]
+
+UnexpectedToken Token [0...2)
+";
+            ParserTest.VerifyParse(expected, "_z <- 0");
         }
     }
 }
