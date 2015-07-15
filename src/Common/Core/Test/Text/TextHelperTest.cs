@@ -12,19 +12,19 @@ namespace Microsoft.Languages.Core.Test.Text
         {
             ITextProvider tp = new TextStream("01\n34\r678\r\nBC");
 
-            Assert.IsFalse(TextHelper.IsNewLineBeforePosition(tp, 0));
-            Assert.IsFalse(TextHelper.IsNewLineBeforePosition(tp, 1));
-            Assert.IsFalse(TextHelper.IsNewLineBeforePosition(tp, 2));
-            Assert.IsTrue(TextHelper.IsNewLineBeforePosition(tp, 3));
-            Assert.IsFalse(TextHelper.IsNewLineBeforePosition(tp, 4));
-            Assert.IsFalse(TextHelper.IsNewLineBeforePosition(tp, 5));
-            Assert.IsTrue(TextHelper.IsNewLineBeforePosition(tp, 6));
-            Assert.IsFalse(TextHelper.IsNewLineBeforePosition(tp, 7));
-            Assert.IsFalse(TextHelper.IsNewLineBeforePosition(tp, 8));
-            Assert.IsFalse(TextHelper.IsNewLineBeforePosition(tp, 9));
-            Assert.IsTrue(TextHelper.IsNewLineBeforePosition(tp, 10));
-            Assert.IsTrue(TextHelper.IsNewLineBeforePosition(tp, 11));
-            Assert.IsFalse(TextHelper.IsNewLineBeforePosition(tp, 12));
+            Assert.IsFalse(tp.IsNewLineBeforePosition(0));
+            Assert.IsFalse(tp.IsNewLineBeforePosition(1));
+            Assert.IsFalse(tp.IsNewLineBeforePosition(2));
+            Assert.IsTrue(tp.IsNewLineBeforePosition(3));
+            Assert.IsFalse(tp.IsNewLineBeforePosition(4));
+            Assert.IsFalse(tp.IsNewLineBeforePosition(5));
+            Assert.IsTrue(tp.IsNewLineBeforePosition(6));
+            Assert.IsFalse(tp.IsNewLineBeforePosition(7));
+            Assert.IsFalse(tp.IsNewLineBeforePosition(8));
+            Assert.IsFalse(tp.IsNewLineBeforePosition(9));
+            Assert.IsTrue(tp.IsNewLineBeforePosition(10));
+            Assert.IsTrue(tp.IsNewLineBeforePosition(11));
+            Assert.IsFalse(tp.IsNewLineBeforePosition(12));
         }
 
         [TestMethod]

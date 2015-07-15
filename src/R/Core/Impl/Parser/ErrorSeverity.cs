@@ -1,10 +1,10 @@
 ﻿
-namespace Microsoft.R.Editor.Validation.Definitions
+namespace Microsoft.R.Core.Parser
 {
     /// <summary>
     /// Describes severity of the validation error
     /// </summary>
-    public enum ValidationErrorSeverity
+    public enum ErrorSeverity
     {
         /// <summary>
         /// Informational message, a suggestion

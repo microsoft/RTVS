@@ -78,7 +78,15 @@ namespace Microsoft.R.Core.AST.Scopes
                 switch (currentToken.TokenType)
                 {
                     case RTokenType.CloseCurlyBrace:
-                        this.CloseCurlyBrace = RParser.ParseToken(context, this);
+                        if (this.OpenCurlyBrace != null)
+                        {
+                            this.CloseCurlyBrace = RParser.ParseToken(context, this);
+                        }
+                        else
+                        {
+                            context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, currentToken));
+                            context.Tokens.MoveToNextToken();
+                        }
                         break;
 
                     default:
@@ -96,14 +104,17 @@ namespace Microsoft.R.Core.AST.Scopes
                         }
                         if (statement == null)
                         {
-                            // try recovering at the next line or past nearest 
-                            // semicolon or closing curly brace
-                            tokens.MoveToNextLine(context.TextProvider,
-                                (TokenStream<RToken> ts) =>
-                                {
-                                    return ts.CurrentToken.TokenType == RTokenType.Semicolon ||
-                                           ts.NextToken.TokenType == RTokenType.CloseCurlyBrace;
-                                });
+                            if (!context.TextProvider.IsNewLineBeforePosition(context.Tokens.CurrentToken.Start))
+                            {
+                                // try recovering at the next line or past nearest 
+                                // semicolon or closing curly brace
+                                tokens.MoveToNextLine(context.TextProvider,
+                                    (TokenStream<RToken> ts) =>
+                                    {
+                                        return ts.CurrentToken.TokenType == RTokenType.Semicolon ||
+                                               ts.NextToken.TokenType == RTokenType.CloseCurlyBrace;
+                                    });
+                            }
                         }
                         break;
                 }

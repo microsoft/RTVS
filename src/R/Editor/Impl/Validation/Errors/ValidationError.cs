@@ -2,6 +2,7 @@
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Validation.Definitions;
+using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Editor.Validation.Errors
 {
@@ -19,16 +20,16 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// <summary>
         /// Constructs validation error for an element at a specified location.
         /// </summary>
-        public ValidationError(IAstNode node, RToken token, string message, ValidationErrorLocation location) :
-            base(node, token, message, location, ValidationErrorSeverity.Error)
+        public ValidationError(IAstNode node, RToken token, string message, ErrorLocation location) :
+            base(node, token, message, location, ErrorSeverity.Error)
         {
         }
 
         /// <summary>
         /// Constructs validation error for an element at a specified location.
         /// </summary>
-        public ValidationError(RToken token, string message, ValidationErrorLocation location) :
-            base(null, token, message, location, ValidationErrorSeverity.Error)
+        public ValidationError(RToken token, string message, ErrorLocation location) :
+            base(null, token, message, location, ErrorSeverity.Error)
         {
         }
     }

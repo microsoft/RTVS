@@ -141,8 +141,6 @@
     <Compile Include="Validation\Errors\ValidationError.cs" />
     <Compile Include="Validation\Errors\ValidationErrorBase.cs" />
     <Compile Include="Validation\Errors\ValidationErrorCollection.cs" />
-    <Compile Include="Validation\Definitions\ValidationErrorLocation.cs" />
-    <Compile Include="Validation\Definitions\ValidationErrorSeverity.cs" />
     <Compile Include="Validation\Errors\ValidationMessage.cs" />
     <Compile Include="Validation\Errors\ValidationSentinel.cs" />
     <Compile Include="Validation\Errors\ValidationWarning.cs" />

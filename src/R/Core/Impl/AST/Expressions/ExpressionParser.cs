@@ -145,7 +145,7 @@ namespace Microsoft.R.Core.AST.Expressions
                     case RTokenType.CloseDoubleSquareBracket:
                         if (_previousOperationType == OperationType.None)
                         {
-                            context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, tokens.CurrentToken));
+                            context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
                         }
                         endOfExpression = true;
                         break;
@@ -193,11 +193,11 @@ namespace Microsoft.R.Core.AST.Expressions
                         case OperationType.None:
                             if (tokens.IsEndOfStream())
                             {
-                                context.AddError(new ParseError(ParseErrorType.UnexpectedEndOfFile, ParseErrorLocation.AfterToken, tokens.PreviousToken));
+                                context.AddError(new ParseError(ParseErrorType.UnexpectedEndOfFile, ErrorLocation.AfterToken, tokens.PreviousToken));
                             }
                             else
                             {
-                                context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, tokens.CurrentToken));
+                                context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
                             }
                             break;
 

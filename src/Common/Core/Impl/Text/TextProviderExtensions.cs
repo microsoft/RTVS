@@ -10,6 +10,13 @@ namespace Microsoft.Languages.Core.Text
             return Char.IsWhiteSpace(charBefore);
         }
 
+        /// <summary>
+        /// Detemines if there is nothing but whitespace between
+        /// given position and preceding line break or beginning 
+        /// of the file.
+        /// </summary>
+        /// <param name="textProvider">Text provider</param>
+        /// <param name="position">Position to check</param>
         public static bool IsNewLineBeforePosition(this ITextProvider textProvider, int position)
         {
             int newLinePosition; // Don't care about the value for this function overload

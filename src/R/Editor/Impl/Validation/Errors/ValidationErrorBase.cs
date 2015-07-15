@@ -3,6 +3,8 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Validation.Definitions;
+using Microsoft.R.Core.Parser;
+using System;
 
 namespace Microsoft.R.Editor.Validation.Errors
 {
@@ -27,15 +29,15 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// <summary>
         /// Error location
         /// </summary>
-        public ValidationErrorLocation Location { get; private set; }
+        public ErrorLocation Location { get; private set; }
 
         /// <summary>
         /// Error severity
         /// </summary>
-        public ValidationErrorSeverity Severity { get; private set; }
+        public ErrorSeverity Severity { get; private set; }
 
-        public ValidationErrorBase(IAstNode node, RToken token, string message, ValidationErrorLocation location, ValidationErrorSeverity severity) :
-            base(node != null ? node : token as ITextRange)
+        public ValidationErrorBase(IAstNode node, RToken token, string message, ErrorLocation location, ErrorSeverity severity) :
+            base(GetLocationRange(node, token, location))
         {
             Node = node;
             Token = token;
@@ -43,6 +45,22 @@ namespace Microsoft.R.Editor.Validation.Errors
             Message = message;
             Severity = severity;
             Location = location;
+        }
+
+        private static ITextRange GetLocationRange(IAstNode node, RToken token, ErrorLocation location)
+        {
+            ITextRange itemRange = node != null ? node : token as ITextRange;
+
+            //switch (location)
+            //{
+            //    case ErrorLocation.BeforeToken:
+            //        return new TextRange(Math.Max(0, itemRange.Start-1), 1);
+
+            //    case ErrorLocation.AfterToken:
+            //        return new TextRange(itemRange.End, 1);
+            //}
+
+            return itemRange;
         }
     }
 }

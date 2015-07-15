@@ -134,7 +134,7 @@
     <Compile Include="Evaluation\Evaluator.cs" />
     <Compile Include="Parser\Definitions\IParseError.cs" />
     <Compile Include="Parser\MissingItemParseError.cs" />
-    <Compile Include="Parser\ParseErrorPosiiton.cs" />
+    <Compile Include="Parser\ErrorLocation.cs" />
     <Compile Include="Parser\ParseErrorType.cs" />
     <Compile Include="Parser\Definitions\IParseItem.cs" />
     <Compile Include="AST\AstNode.cs" />
@@ -158,6 +158,7 @@
     <Compile Include="AST\TokenNode.cs" />
     <Compile Include="AST\Values\StringValue.cs" />
     <Compile Include="AST\Expressions\ExpressionParser.cs" />
+    <Compile Include="Parser\ErrorSeverity.cs" />
     <Compile Include="Tokens\Builtins.cs" />
     <Compile Include="Tokens\Logicals.cs" />
     <Compile Include="Tokens\Constants.cs" />

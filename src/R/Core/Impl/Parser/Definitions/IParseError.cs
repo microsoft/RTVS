@@ -21,7 +21,7 @@ namespace Microsoft.R.Core.Parser.Definitions
         /// Location of the parsing error.
         /// Gives hint to IDE what to squiggle.
         /// </summary>
-        ParseErrorLocation Location { get; }
+        ErrorLocation Location { get; }
 
         /// <summary>
         /// Node the error applies to. Some errors may not have

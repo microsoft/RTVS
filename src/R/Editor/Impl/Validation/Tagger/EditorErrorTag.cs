@@ -1,16 +1,15 @@
-﻿using System;
-using Microsoft.Languages.Core.Text;
+﻿using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.Tokens;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Definitions;
-using Microsoft.R.Editor.Validation.Errors;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Tagging;
+using System;
 
 namespace Microsoft.R.Editor.Validation.Tagger
 {
@@ -70,15 +69,15 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
             switch (error.Severity)
             {
-                case ValidationErrorSeverity.Fatal:
-                case ValidationErrorSeverity.Error:
+                case ErrorSeverity.Fatal:
+                case ErrorSeverity.Error:
                     errorType = PredefinedErrorTypeNames.SyntaxError;
                     break;
-                case ValidationErrorSeverity.Warning:
+                case ErrorSeverity.Warning:
                     errorType = PredefinedErrorTypeNames.Warning;
                     break;
 
-                case ValidationErrorSeverity.Informational:
+                case ErrorSeverity.Informational:
                     errorType = PredefinedErrorTypeNames.OtherError;
                     break;
             }
@@ -90,14 +89,14 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             switch (error.Severity)
             {
-                case ValidationErrorSeverity.Fatal:
-                case ValidationErrorSeverity.Error:
+                case ErrorSeverity.Fatal:
+                case ErrorSeverity.Error:
                     return TaskType.Error;
 
-                case ValidationErrorSeverity.Warning:
+                case ErrorSeverity.Warning:
                     return TaskType.Warning;
 
-                case ValidationErrorSeverity.Informational:
+                case ErrorSeverity.Informational:
                     return TaskType.Informational;
             }
 

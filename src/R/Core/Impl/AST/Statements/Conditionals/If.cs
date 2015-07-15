@@ -56,7 +56,7 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
                     // Verify that there is no line break before the 'else'
                     if (context.Tokens.IsLineBreakAfter(context.TextProvider, tokens.Position - 1))
                     {
-                        context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, tokens.CurrentToken));
+                        context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
                         return false;
                     }
                 }

@@ -98,41 +98,10 @@ namespace Microsoft.R.Editor.Tree
 
         internal void FirePostUpdateEvents(List<TreeChangeEventRecord> changes, bool fullParse)
         {
-            // Fire update/begin end even if there are no actual changes. This allows
-            // listeners to better track changes like clean element delete. On clean delete
-            // element removed from the tree right away without waiting for background
-            // parse to happen. First event comes as simple tree update after text change 
-            // with tree still in a dirty state. After the parse 'tree updated' event comes 
-            // telling that tree is no longer dirty but there are no actual tree changes
-            // since element has been removed on the text change.
-
-            // Fire UpdatesPending notification, even though we don't have ranges for the event
             List<TextChangeEventArgs> textChanges = new List<TextChangeEventArgs>();
-            bool newTree = false;
 
             FireOnUpdatesPending(textChanges);
             FireOnUpdateBegin();
-
-            if (changes.Count > 0)
-            {
-                foreach (var change in changes)
-                {
-                    switch (change.ChangeType)
-                    {
-                        //case TreeChangeType.ScopeChanged:
-                        //    FireOnScopeChanged(change.Node);
-                        //    break;
-
-                        case TreeChangeType.NewTree:
-                            newTree = true;
-                            break;
-
-                        default:
-                            Debug.Fail("Unknown tree change");
-                            break;
-                    }
-                }
-            }
 
             FireOnUpdateCompleted(TreeUpdateType.NewTree); // newTree ? TreeUpdateType.NewTree : TreeUpdateType.ScopeChanged);
         }

@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.Languages.Core.Text;
+﻿using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Editor.Validation.Definitions
@@ -29,11 +29,11 @@ namespace Microsoft.R.Editor.Validation.Definitions
         /// <summary>
         /// Location of the error in the element.
         /// </summary>
-        ValidationErrorLocation Location { get; }
+        ErrorLocation Location { get; }
 
         /// <summary>
         /// Error severity
         /// </summary>
-        ValidationErrorSeverity Severity { get; }
+        ErrorSeverity Severity { get; }
     }
 }

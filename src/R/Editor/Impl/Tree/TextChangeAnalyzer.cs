@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Tree
                 return;
             }
 
-            if (SafeLineBreak(change, node, positionType))
+            if (SafeWhiteSpaceChange(change, node, positionType))
             {
                 change.TextChange.TextChangeType = TextChangeType.Trivial;
                 return;
@@ -38,23 +38,23 @@ namespace Microsoft.R.Editor.Tree
             change.TextChange.FullParseRequired = true;
         }
 
-        private static bool SafeLineBreak(TextChangeContext context, IAstNode node, PositionType positionType)
+        private static bool SafeWhiteSpaceChange(TextChangeContext context, IAstNode node, PositionType positionType)
         {
             // In R there is no line continuation and expression hence
             // adding or deleting line breaks may change expression syntax.
 
             context.ChangedNode = node;
 
-            string oldLineText = context.OldTextProvider.GetCurrentLineText(context.OldStart);
-            if (string.IsNullOrWhiteSpace(oldLineText))
-            {
-                return true;
-            }
 
-            string newLineText = context.NewTextProvider.GetCurrentLineText(context.Start);
-            if (string.IsNullOrWhiteSpace(newLineText))
+            if (string.IsNullOrWhiteSpace(context.OldText) && string.IsNullOrWhiteSpace(context.NewText))
             {
-                return true;
+                string oldLineText = context.OldTextProvider.GetCurrentLineText(context.OldStart);
+                string newLineText = context.NewTextProvider.GetCurrentLineText(context.Start);
+
+                if(string.IsNullOrWhiteSpace(oldLineText) && string.IsNullOrWhiteSpace(newLineText))
+                {
+                    return true;
+                }
             }
 
             return false;

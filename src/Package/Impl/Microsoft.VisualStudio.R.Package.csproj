@@ -27,7 +27,7 @@
     <RootNamespace>Microsoft.VisualStudio.R.Package</RootNamespace>
     <AssemblyName>Microsoft.VisualStudio.R.Package</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <GeneratePkgDefFile>false</GeneratePkgDefFile>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <UseCodebase>true</UseCodebase>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>

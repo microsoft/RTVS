@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="RTVS.Microsoft.69055957-4E1C-4684-9C23-2494599A8CB2" Version="1.0" Language="en-US" Publisher="Microsoft" />
+    <Identity Id="Microsoft.RTVS.BD35D5E4-6BBC-413F-9065-2E48E7149650" Version="1.0" Language="en-US" Publisher="Microsoft" />
     <DisplayName>R Tools for Visual Studio </DisplayName>
     <Description xml:space="preserve">Microsoft Visual Studio Tools for language R</Description>
   </Metadata>

@@ -13,33 +13,6 @@ namespace Microsoft.Languages.Core.Text
         public static char[] EndOfLineChars = { '\r', '\n' };
 
         /// <summary>
-        /// Detemines if there is nothing but whitespace between
-        /// given position and preceding line break or beginning 
-        /// of the file.
-        /// </summary>
-        /// <param name="textProvider">Text provider</param>
-        /// <param name="position">Position to check</param>
-        public static bool IsNewLineBeforePosition(this ITextProvider textProvider, int position)
-        {
-            if (position > 0)
-            {
-                // Walk backwards from the artifact position
-                for (int i = position - 1; i >= 0; i--)
-                {
-                    char ch = textProvider[i];
-
-                    if (ch == '\n' || ch == '\r')
-                        return true;
-
-                    if (!Char.IsWhiteSpace(ch))
-                        break;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Determines if there is nothing but whitespace between
         /// given position and the next line break or end of file.
         /// </summary>

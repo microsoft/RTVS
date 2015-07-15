@@ -264,7 +264,7 @@ namespace Microsoft.R.Editor.Validation
             // Transfer available errors from the tree right away
             foreach (ParseError e in _editorTree.AstRoot.Errors)
             {
-                ValidationResults.Enqueue(new ValidationError(e.Node, e.Token, ErrorText.GetText(e.ErrorType), ValidationErrorLocation.Node));
+                ValidationResults.Enqueue(new ValidationError(e.Node, e.Token, ErrorText.GetText(e.ErrorType), e.Location));
             }
         }
     }

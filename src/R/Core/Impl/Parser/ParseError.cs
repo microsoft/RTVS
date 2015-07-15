@@ -25,7 +25,7 @@ namespace Microsoft.R.Core.Parser
         /// Location of the parsing error.
         /// Gives hint to IDE what to squiggle.
         /// </summary>
-        public ParseErrorLocation Location { get; private set; }
+        public ErrorLocation Location { get; private set; }
 
         /// <summary>
         /// Node the error applies to. Some errors may not have
@@ -42,7 +42,7 @@ namespace Microsoft.R.Core.Parser
         public RToken Token { get; private set; }
         #endregion
 
-        public ParseError(ParseErrorType errorType, ParseErrorLocation location, IAstNode node):
+        public ParseError(ParseErrorType errorType, ErrorLocation location, IAstNode node):
             base(node)
         {
             this.Node = node;
@@ -50,7 +50,7 @@ namespace Microsoft.R.Core.Parser
             this.Location = location;
         }
 
-        public ParseError(ParseErrorType errorType, ParseErrorLocation location, RToken token) :
+        public ParseError(ParseErrorType errorType, ErrorLocation location, RToken token) :
             base(token)
         {
             this.Token = token;

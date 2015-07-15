@@ -29,7 +29,7 @@ namespace Microsoft.R.Core.AST.Statements
                     }
                     else
                     {
-                        context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ParseErrorLocation.Token, context.Tokens.CurrentToken));
+                        context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, context.Tokens.CurrentToken));
                         return false;
                     }
                 }
