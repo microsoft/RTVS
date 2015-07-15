@@ -201,9 +201,10 @@ namespace Microsoft.Languages.Core.Tokens
                 int currentTokenEnd = CurrentToken.End;
                 int nextTokenStart = NextToken.Start;
 
-                if(stopFunction != null && stopFunction(this))
+                MoveToNextToken();
+
+                if (stopFunction != null && stopFunction(this))
                 {
-                    MoveToNextToken();
                     return;
                 }
 
@@ -212,8 +213,6 @@ namespace Microsoft.Languages.Core.Tokens
                 {
                     break;
                 }
-
-                MoveToNextToken();
             }
         }
 

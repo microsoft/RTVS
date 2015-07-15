@@ -102,6 +102,7 @@ namespace Microsoft.R.Core.AST.Scopes
                                 statement = null;
                             }
                         }
+
                         if (statement == null)
                         {
                             if (!context.TextProvider.IsNewLineBeforePosition(context.Tokens.CurrentToken.Start))
@@ -114,6 +115,10 @@ namespace Microsoft.R.Core.AST.Scopes
                                         return ts.CurrentToken.TokenType == RTokenType.Semicolon ||
                                                ts.NextToken.TokenType == RTokenType.CloseCurlyBrace;
                                     });
+                            }
+                            else
+                            {
+                                tokens.MoveToNextToken();
                             }
                         }
                         break;

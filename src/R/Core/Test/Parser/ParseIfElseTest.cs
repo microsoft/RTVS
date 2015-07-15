@@ -215,8 +215,18 @@ namespace Microsoft.R.Core.Test.Tokens
                             Variable  [x]
                             TokenNode  [+ [16...17]]
                             NumericalValue  [1 [17...18]]
-
-UnexpectedToken Token [21...25)
+        KeywordScopeStatement  []
+            TokenNode  [else [21...25]]
+            SimpleScope  [SimpleScope]
+                ExpressionStatement  [x <- x + 2]
+                    Expression  [x <- x + 2]
+                        TokenOperator  [<- [28...30]]
+                            Variable  [x]
+                            TokenNode  [<- [28...30]]
+                            TokenOperator  [+ [33...34]]
+                                Variable  [x]
+                                TokenNode  [+ [33...34]]
+                                NumericalValue  [2 [35...36]]
 ";
             ParserTest.VerifyParse(expected, "if(x < y) x <- x+1 \n else x <- x + 2");
         }

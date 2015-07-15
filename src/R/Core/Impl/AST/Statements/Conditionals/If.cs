@@ -51,15 +51,15 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
 
             if (tokens.CurrentToken.IsKeywordText(context.TextProvider, "else"))
             {
-                if (isSimpleScope)
-                {
-                    // Verify that there is no line break before the 'else'
-                    if (context.Tokens.IsLineBreakAfter(context.TextProvider, tokens.Position - 1))
-                    {
-                        context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
-                        return false;
-                    }
-                }
+                //if (isSimpleScope)
+                //{
+                //    // Verify that there is no line break before the 'else'
+                //    if (context.Tokens.IsLineBreakAfter(context.TextProvider, tokens.Position - 1))
+                //    {
+                //        context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
+                //        return false;
+                //    }
+                //}
 
                 this.Else = new KeywordScopeStatement(allowsSimpleScope: true);
                 return this.Else.Parse(context, this);

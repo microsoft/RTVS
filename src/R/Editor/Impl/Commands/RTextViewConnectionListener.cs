@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Commands
             }
             else
             {
-                EditorDocument doc = EditorDocument.FromTextBuffer(textBuffer);
+                EditorDocument doc = EditorDocument.TryFromTextBuffer(textBuffer);
                 if (doc != null)
                 {
                     doc.Dispose();

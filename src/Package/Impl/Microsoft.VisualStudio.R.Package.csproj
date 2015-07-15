@@ -66,6 +66,10 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\ContextMenuId.cs" />
+    <Compile Include="Commands\ShowContextMenuCommand.cs" />
+    <Compile Include="Commands\VsCommandFactory.cs" />
+    <Compile Include="Commands\VsTextViewConnectionListener.cs" />
     <Compile Include="Document\IVsEditorDocumentFactory.cs" />
     <Compile Include="Document\VsEditorDocument.cs" />
     <Compile Include="Document\VsEditorDocumentFactory.cs" />

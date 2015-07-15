@@ -50,6 +50,7 @@ namespace Microsoft.R.Core.AST.Expressions
             TokenStream<RToken> tokens = context.Tokens;
             OperationType currentOperationType = OperationType.None;
             ParseErrorType errorType = ParseErrorType.None;
+            ErrorLocation errorLocation = ErrorLocation.BeforeToken;
             bool endOfExpression = false;
             IAstNode result = null;
 
@@ -173,6 +174,7 @@ namespace Microsoft.R.Core.AST.Expressions
 
                     default:
                         errorType = ParseErrorType.UnexpectedToken;
+                        errorLocation = ErrorLocation.Token;
                         break;
                 }
 
@@ -253,7 +255,8 @@ namespace Microsoft.R.Core.AST.Expressions
 
             if (errorType != ParseErrorType.None)
             {
-                context.AddError(new MissingItemParseError(errorType, tokens.PreviousToken));
+                context.AddError(new MissingItemParseError(errorType, errorLocation == ErrorLocation.BeforeToken ?
+                                                                      tokens.PreviousToken : tokens.CurrentToken));
                 return null;
             }
 

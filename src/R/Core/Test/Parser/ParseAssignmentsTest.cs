@@ -89,5 +89,26 @@ namespace Microsoft.R.Core.Test.Tokens
 ";
             ParserTest.VerifyParse(expected, "0 -> a -> b");
         }
+        [TestMethod]
+        public void ParseAssignmentsTest5()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [z <- .Call(x)]
+        Expression  [z <- .Call(x)]
+            TokenOperator  [<- [2...4]]
+                Variable  [z]
+                TokenNode  [<- [2...4]]
+                FunctionCall  [FunctionCall]
+                    Variable  [.Call]
+                    TokenNode  [( [10...11]]
+                    ArgumentList  [ArgumentList]
+                        ExpressionArgument  [ExpressionArgument]
+                            Expression  [x]
+                                Variable  [x]
+                    TokenNode  [) [12...13]]
+";
+            ParserTest.VerifyParse(expected, "z <- .Call(x)");
+        }
     }
 }

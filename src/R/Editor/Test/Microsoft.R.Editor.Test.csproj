@@ -98,6 +98,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Classification\" />
     <Folder Include="Tokens\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Languages.Editor.Outline;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -16,8 +17,7 @@ namespace Microsoft.Languages.Editor.Controller
         {
             var list = new List<ICommandTarget>();
 
-            // TODO: activate outlining controller when AST is up
-            // list.Add(new OutlineController(textView));
+            list.Add(new OutlineController(textView));
             return list;
         }
     }

@@ -82,6 +82,9 @@ namespace Microsoft.R.Core.AST
 
         public void RemoveChildren(int start, int count)
         {
+            if (count == 0)
+                return;
+
             if (start < 0 || start >= Children.Count)
                 throw new ArgumentOutOfRangeException("start");
 

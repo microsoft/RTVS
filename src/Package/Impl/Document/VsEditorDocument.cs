@@ -15,11 +15,6 @@ namespace Microsoft.VisualStudio.R.Package.Document
         private VsWorkspaceItem _workspaceItem;
 
         public VsEditorDocument(IEditorInstance editorInstance)
-            : this(editorInstance, false)
-        {
-        }
-
-        public VsEditorDocument(IEditorInstance editorInstance, bool disableContainedLanguages)
             : base(editorInstance.ViewBuffer, editorInstance.WorkspaceItem)
         {
             _editorInstance = editorInstance;

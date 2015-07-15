@@ -221,7 +221,7 @@ namespace Microsoft.R.Core.Tokens
             // Letter may be starting keyword, function or a variable name. 
             // At this point we should be either right after whitespace or 
             // at the beginning of the file.
-            if (Char.IsLetter(_cs.CurrentChar))
+            if (_cs.IsAnsiLetter() || _cs.CurrentChar == '.')
             {
                 // If this is not a keyword or a function name candidate
                 HandleKeywordOrIdentifier();
@@ -326,6 +326,10 @@ namespace Microsoft.R.Core.Tokens
 
                 return;
             }
+            else
+            {
+                this.AddToken(RTokenType.Unknown, start, 1);
+            }
 
             _cs.MoveToNextChar();
         }
@@ -428,7 +432,7 @@ namespace Microsoft.R.Core.Tokens
 
         internal void SkipIdentifier()
         {
-            if (!_cs.IsAnsiLetter())
+            if (!_cs.IsAnsiLetter() && _cs.CurrentChar != '.')
                 return;
 
             while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace())
