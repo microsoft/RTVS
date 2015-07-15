@@ -66,5 +66,37 @@ namespace Microsoft.R.Core.Test.Tokens
 ";
             ParserTest.VerifyParse(expected, "x <- function(a) return(1)");
         }
+
+        [TestMethod]
+        public void ParseFunctionDefinitionTest3()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x <- function(a b, c d, e) { }]
+        Expression  [x <- function(a b, c d, e) { }]
+            TokenOperator  [<- [2...4]]
+                Variable  [x]
+                TokenNode  [<- [2...4]]
+                FunctionDefinition  [FunctionDefinition]
+                    TokenNode  [function [5...13]]
+                    TokenNode  [( [13...14]]
+                    ArgumentList  [ArgumentList]
+                        MissingArgument  [{Missing}]
+                            TokenNode  [, [17...18]]
+                        MissingArgument  [{Missing}]
+                            TokenNode  [, [22...23]]
+                        ExpressionArgument  [ExpressionArgument]
+                            Expression  [e]
+                                Variable  [e]
+                    TokenNode  [) [25...26]]
+                    Scope  []
+                        TokenNode  [{ [27...28]]
+                        TokenNode  [} [29...30]]
+
+OperatorExpected AfterToken [16...17)
+OperatorExpected AfterToken [21...22)
+";
+            ParserTest.VerifyParse(expected, "x <- function(a b, c d, e) { }");
+        }
     }
 }

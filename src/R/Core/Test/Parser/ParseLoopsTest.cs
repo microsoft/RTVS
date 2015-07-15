@@ -67,6 +67,33 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
+        public void ParseWhileTest2()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    KeywordExpressionScopeStatement  []
+        TokenNode  [while [0...5]]
+        TokenNode  [( [5...6]]
+        TokenNode  [) [12...13]]
+        Scope  []
+            TokenNode  [{ [14...15]]
+            ExpressionStatement  [a <- a+1]
+                Expression  [a <- a+1]
+                    TokenOperator  [<- [18...20]]
+                        Variable  [a]
+                        TokenNode  [<- [18...20]]
+                        TokenOperator  [+ [22...23]]
+                            Variable  [a]
+                            TokenNode  [+ [22...23]]
+                            NumericalValue  [1 [23...24]]
+            TokenNode  [} [25...26]]
+
+OperandExpected AfterToken [10...11)
+";
+            ParserTest.VerifyParse(expected, "while(a+b > ) { a <- a+1 }");
+        }
+
+        [TestMethod]
         public void ParseForTest1()
         {
             string expected =

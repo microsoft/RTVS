@@ -23,7 +23,12 @@ namespace Microsoft.R.Core.AST.Statements
                 this.OpenBrace = RParser.ParseOpenBraceSequence(context, this);
                 if (this.OpenBrace != null)
                 {
-                    if (this.ParseExpression(context, this))
+                    this.ParseExpression(context, this);
+
+                    // Even if expression is broken but we are at 
+                    // the closing brace we want to recover and continue.
+
+                    if(context.Tokens.CurrentToken.TokenType == Tokens.RTokenType.CloseBrace)
                     {
                         this.CloseBrace = RParser.ParseCloseBraceSequence(context, this);
                         if (this.CloseBrace != null)

@@ -24,7 +24,7 @@ namespace Microsoft.R.Core.AST.Arguments
         {
             bool result = true;
 
-            while (true)
+            while (!context.Tokens.IsEndOfStream())
             {
                 if (context.Tokens.CurrentToken.TokenType == this.terminatingTokenType)
                 {
@@ -50,7 +50,14 @@ namespace Microsoft.R.Core.AST.Arguments
                 result = item.Parse(context, this);
                 if (!result)
                 {
-                    break;
+                    // Try to recoved at comma or closing brace so
+                    // we can detect all errors in the argument list
+                    // and  not just the first one.
+                    if (context.Tokens.CurrentToken.TokenType != RTokenType.Comma &&
+                        context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace)
+                    {
+                        break;
+                    }
                 }
 
                 this.arguments.Add(item);
