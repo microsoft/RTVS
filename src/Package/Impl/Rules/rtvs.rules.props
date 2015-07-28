@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <DefaultContentType Condition="$(DefaultContentType) == ''">Default</DefaultContentType>
+    <!-- We don't target any framework, so clear what the Microsoft.Common.targets sets. -->
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectCapability Include="OutputGroups"/>
+    <ProjectCapability Include="AllTargetOutputGroups"/>
+    <ProjectCapability Include="VisualStudioWellKnownOutputGroups"/>
+    <ProjectCapability Include="SourceItemsFromImports"/>
+    <ProjectCapability Include="ProjectConfigurationsDeclaredAsItems"/>
+    <ProjectCapability Include="SharedImports"/>
+    <ProjectCapability Include="RTools"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\ProjectItemsSchema.xaml;"/>
+    
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\General.BrowseObject.xaml;">
+      <Context>BrowseObject</Context>
+    </PropertyPageSchema>
+    
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\Content.xaml;
+                                 $(MSBuildThisFileDirectory)\Folder.xaml;
+                                 $(MSBuildThisFileDirectory)\None.xaml;">
+      <Context>File;BrowseObject</Context>
+    </PropertyPageSchema>
+  </ItemGroup>
+  
+</Project>

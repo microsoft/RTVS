@@ -12,7 +12,7 @@ if NOT "%ProgramFiles(x86)%"=="" (
 )
 
 set COMMON7IDE=%SysProgramFiles%\Microsoft Visual Studio 14.0\Common7\IDE
-set MDDBUILD=%SysProgramFiles%\MSBuild\Microsoft\VisualStudio\v14.0\ApacheCordovaTools\vs-mda-targets
+set MSBUILD=%SysProgramFiles%\MSBuild\Microsoft\VisualStudio\v14.0\RTVS
 set PRIVATEASSEMBLIES=%SysProgramFiles%\Microsoft Visual Studio 14.0\Common7\IDE\PrivateAssemblies
 
 rem ------- If not provided on the command line, use the default binaries location

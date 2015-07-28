@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="Folder" DisplayName="General" PageTemplate="generic" Description="Folder" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" HasConfigurationCondition="false" ItemType="Folder" />
+  </Rule.DataSource>
+</Rule>

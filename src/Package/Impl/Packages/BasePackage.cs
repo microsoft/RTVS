@@ -1,18 +1,24 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.Shell.Interop;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Diagnostics;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using static System.FormattableString;
 
-namespace Microsoft.VisualStudio.R.Packages
+namespace Microsoft.VisualStudio.R.Package.Packages
 {
-    public abstract class BasePackage<TLanguageService> : Microsoft.VisualStudio.Shell.Package
+    public abstract class BasePackage<TLanguageService> : VisualStudio.Shell.Package
         where TLanguageService : class, new()
     {
-        protected BasePackage()
-        {
-        }
+        private Dictionary<IVsProjectGenerator, uint> _projectFileGenerators;
 
         protected abstract IEnumerable<IVsEditorFactory> CreateEditorFactories();
+        protected abstract IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators();
+        protected abstract IEnumerable<IVsProjectFactory> CreateProjectFactories();
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -24,28 +30,91 @@ namespace Microsoft.VisualStudio.R.Packages
 
             AppShell.AddRef();
 
-            IServiceContainer container = this as IServiceContainer;
+            IServiceContainer container = this;
             container.AddService(typeof(TLanguageService), new TLanguageService(), true);
+
+            foreach (var projectFactory in CreateProjectFactories())
+            {
+                RegisterProjectFactory(projectFactory);
+            }
+
+            foreach (var projectFileGenerator in CreateProjectFileGenerators())
+            {
+                RegisterProjectFileGenerator(projectFileGenerator);
+            }
 
             foreach (var editorFactory in CreateEditorFactories())
             {
-                base.RegisterEditorFactory(editorFactory);
+                RegisterEditorFactory(editorFactory);
             }
         }
 
-        #region IDisposable
+        private void RegisterProjectFileGenerator(IVsProjectGenerator projectFileGenerator)
+        {
+            var registerProjectGenerators = GetService(typeof(SVsRegisterProjectTypes)) as IVsRegisterProjectGenerators;
+            if (registerProjectGenerators == null)
+            {
+                throw new InvalidOperationException(typeof(SVsRegisterProjectTypes).FullName);
+            }
+
+            uint cookie;
+            Guid riid = projectFileGenerator.GetType().GUID;
+            registerProjectGenerators.RegisterProjectGenerator(ref riid, projectFileGenerator, out cookie);
+
+            if (_projectFileGenerators == null)
+            {
+                _projectFileGenerators = new Dictionary<IVsProjectGenerator, uint>();
+            }
+
+            _projectFileGenerators[projectFileGenerator] = cookie;
+        }
+
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!disposing)
             {
-                IServiceContainer container = this as IServiceContainer;
-                container.RemoveService(typeof(TLanguageService));
+                return;
+            }
 
-                AppShell.Release();
+            if (_projectFileGenerators != null)
+            {
+                var projectFileGenerators = _projectFileGenerators;
+                _projectFileGenerators = null;
+                UnregisterProjectFileGenerators(projectFileGenerators);
+            }
 
-                base.Dispose(disposing);
+            IServiceContainer container = this;
+            container.RemoveService(typeof(TLanguageService));
+
+            AppShell.Release();
+
+            base.Dispose(disposing);
+        }
+
+        private void UnregisterProjectFileGenerators(Dictionary<IVsProjectGenerator, uint> projectFileGenerators)
+        {
+            try
+            {
+                IVsRegisterProjectGenerators registerProjectGenerators = GetService(typeof (SVsRegisterProjectTypes)) as IVsRegisterProjectGenerators;
+                if (registerProjectGenerators != null)
+                {
+                    foreach (var projectFileGenerator in projectFileGenerators)
+                    {
+                        try
+                        {
+                            registerProjectGenerators.UnregisterProjectGenerator(projectFileGenerator.Value);
+                        }
+                        finally
+                        {
+                            (projectFileGenerator.Key as IDisposable)?.Dispose();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Fail(Invariant($"Failed to dispose project file generator for package {GetType().FullName}\n{e.Message}"));
             }
         }
-        #endregion
     }
 }
