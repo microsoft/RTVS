@@ -61,6 +61,9 @@ namespace Microsoft.R.Editor.Validation.Errors
 
                 case ParseErrorType.UnexpectedEndOfFile:
                     return Resources.ParseError_UnexpectedEndOfFile;
+
+                case ParseErrorType.FunctionBodyExpected:
+                    return Resources.ParseError_FunctionBodyExpected;
             }
         }
     }

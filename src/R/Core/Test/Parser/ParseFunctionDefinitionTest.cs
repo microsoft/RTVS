@@ -2,7 +2,7 @@
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
+namespace Microsoft.R.Core.Test.Parser
 {
     [TestClass]
     public class ParseFunctionDefinitionTest : UnitTestBase
@@ -93,10 +93,33 @@ namespace Microsoft.R.Core.Test.Tokens
                         TokenNode  [{ [27...28]]
                         TokenNode  [} [29...30]]
 
-OperatorExpected AfterToken [16...17)
-OperatorExpected AfterToken [21...22)
+OperatorExpected Token [16...17)
+OperatorExpected Token [21...22)
 ";
             ParserTest.VerifyParse(expected, "x <- function(a b, c d, e) { }");
+        }
+
+        [TestMethod]
+        public void ParseFunctionDefinitionTest4()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x <- function(a b) { }]
+        Expression  [x <- function(a b) { }]
+            TokenOperator  [<- [2...4]]
+                Variable  [x]
+                TokenNode  [<- [2...4]]
+                FunctionDefinition  [FunctionDefinition]
+                    TokenNode  [function [5...13]]
+                    TokenNode  [( [13...14]]
+                    TokenNode  [) [17...18]]
+                    Scope  []
+                        TokenNode  [{ [19...20]]
+                        TokenNode  [} [21...22]]
+
+OperatorExpected Token [16...17)
+";
+            ParserTest.VerifyParse(expected, "x <- function(a b) { }");
         }
     }
 }

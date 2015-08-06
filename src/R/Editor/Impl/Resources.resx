@@ -226,4 +226,7 @@
   <data name="ParseError_UnexpectedToken" xml:space="preserve">
     <value>Unexpected token</value>
   </data>
+  <data name="ParseError_FunctionBodyExpected" xml:space="preserve">
+    <value>Function body expected</value>
+  </data>
 </root>

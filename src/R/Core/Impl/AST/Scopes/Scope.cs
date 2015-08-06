@@ -89,6 +89,11 @@ namespace Microsoft.R.Core.AST.Scopes
                         }
                         break;
 
+                    case RTokenType.OpenCurlyBrace:
+                        IScope scope = new Scope(string.Empty);
+                        scope.Parse(context, this);
+                        break;
+
                     default:
                         IStatement statement = Statement.Create(context, this, null);
                         if (statement != null)

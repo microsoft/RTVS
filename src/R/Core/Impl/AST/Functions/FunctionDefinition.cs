@@ -35,24 +35,29 @@ namespace Microsoft.R.Core.AST.Functions
                 this.OpenBrace = RParser.ParseToken(context, this);
 
                 this.Arguments = new ArgumentList(RTokenType.CloseBrace);
-                if (this.Arguments.Parse(context, this))
-                {
-                    if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace)
-                    {
-                        this.CloseBrace = RParser.ParseToken(context, this);
-                        this.Scope = RParser.ParseScope(context, this, allowsSimpleScope: true, terminatingKeyword: null);
-                        if (this.Scope != null)
-                        {
-                            return base.Parse(context, parent);
-                        }
-                    }
+                this.Arguments.Parse(context, this);
 
-                    context.AddError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
+                if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace)
+                {
+                    this.CloseBrace = RParser.ParseToken(context, this);
+                    this.Scope = RParser.ParseScope(context, this, allowsSimpleScope: true, terminatingKeyword: null);
+                    if (this.Scope != null)
+                    {
+                        return base.Parse(context, parent);
+                    }
+                    else
+                    {
+                        context.AddError(new ParseError(ParseErrorType.FunctionBodyExpected, ErrorLocation.Token, tokens.PreviousToken));
+                    }
+                }
+                else
+                {
+                    context.AddError(new ParseError(ParseErrorType.CloseBraceExpected, ErrorLocation.Token, tokens.CurrentToken));
                 }
             }
             else
             {
-                context.AddError(new MissingItemParseError(ParseErrorType.OpenBraceExpected, tokens.PreviousToken));
+                context.AddError(new ParseError(ParseErrorType.OpenBraceExpected, ErrorLocation.Token, tokens.CurrentToken));
             }
 
             return false;

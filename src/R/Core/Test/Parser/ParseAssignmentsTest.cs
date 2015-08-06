@@ -2,7 +2,7 @@
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
+namespace Microsoft.R.Core.Test.Parser
 {
     [TestClass]
     public class ParseAssignmentsTest : UnitTestBase
@@ -121,6 +121,34 @@ namespace Microsoft.R.Core.Test.Tokens
 UnexpectedToken Token [0...2)
 ";
             ParserTest.VerifyParse(expected, "_z <- 0");
+        }
+
+        [TestMethod]
+        public void ParseAssignmentsTest7()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [StudentData$ScoreRounded<-round(StudentData$Score)]
+        Expression  [StudentData$ScoreRounded<-round(StudentData$Score)]
+            TokenOperator  [<- [24...26]]
+                TokenOperator  [$ [11...12]]
+                    Variable  [StudentData]
+                    TokenNode  [$ [11...12]]
+                    Variable  [ScoreRounded]
+                TokenNode  [<- [24...26]]
+                FunctionCall  [FunctionCall]
+                    Variable  [round]
+                    TokenNode  [( [31...32]]
+                    ArgumentList  [ArgumentList]
+                        ExpressionArgument  [ExpressionArgument]
+                            Expression  [StudentData$Score]
+                                TokenOperator  [$ [43...44]]
+                                    Variable  [StudentData]
+                                    TokenNode  [$ [43...44]]
+                                    Variable  [Score]
+                    TokenNode  [) [49...50]]
+";
+            ParserTest.VerifyParse(expected, "StudentData$ScoreRounded<-round(StudentData$Score)");
         }
     }
 }

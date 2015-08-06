@@ -49,6 +49,11 @@
         /// </summary>
         OperandExpected,
 
+        /// <summary>
+        /// function(a) without anything after it
+        /// </summary>
+        FunctionBodyExpected,
+
         OpenCurlyBraceExpected,
         CloseCurlyBraceExpected,
         OpenBraceExpected,

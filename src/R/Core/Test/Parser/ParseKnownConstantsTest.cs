@@ -2,10 +2,10 @@
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
+namespace Microsoft.R.Core.Test.Parser
 {
     [TestClass]
-    public class ParseKnownContstantsTest : UnitTestBase
+    public class ParseKnownConstantsTest : UnitTestBase
     {
         [TestMethod]
         public void ParseKnownContstantsTest1()

@@ -104,6 +104,7 @@
     <None Include="Files\Tokenization\Integers.r" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AST\AstShiftTest.cs" />
     <Compile Include="Parser\ParseScopeTest.cs" />
     <Compile Include="Parser\ParseFunctionDefinitionTest.cs" />
     <Compile Include="Parser\ParseExponentTest.cs" />
@@ -115,7 +116,7 @@
     <Compile Include="Parser\ParseKeywordStatementTest.cs" />
     <Compile Include="Parser\ParseLoopsTest.cs" />
     <Compile Include="Parser\ParseFunctionsTest.cs" />
-    <Compile Include="Parser\ParseKnownContstantsTest.cs" />
+    <Compile Include="Parser\ParseKnownConstantsTest.cs" />
     <Compile Include="Parser\ParseIndexerTest.cs" />
     <Compile Include="Parser\ParseAssignmentsTest.cs" />
     <Compile Include="Parser\ParseConditionalExpressionsTest.cs" />

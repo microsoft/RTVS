@@ -2,13 +2,28 @@
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
+namespace Microsoft.R.Core.Test.Parser
 {
     [TestClass]
     public class ParseFunctionsTest : UnitTestBase
     {
         [TestMethod]
         public void ParseFunctionsTest1()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a()]
+        Expression  [a()]
+            FunctionCall  [FunctionCall]
+                Variable  [a]
+                TokenNode  [( [1...2]]
+                TokenNode  [) [2...3]]
+";
+            ParserTest.VerifyParse(expected, "a()");
+        }
+
+        [TestMethod]
+        public void ParseFunctionsTest2()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -27,7 +42,7 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void ParseFunctionsTest2()
+        public void ParseFunctionsTest3()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -50,7 +65,7 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void ParseFunctionsTest3()
+        public void ParseFunctionsTest4()
         {
             string expected =
 @"GlobalScope  [Global]

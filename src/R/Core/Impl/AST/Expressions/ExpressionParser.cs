@@ -21,13 +21,19 @@ namespace Microsoft.R.Core.AST.Expressions
     {
         private static readonly IOperator Sentinel = new TokenOperator(OperatorType.Sentinel, false);
 
+        /// <summary>
+        /// Describes current and previous operation types
+        /// in the current expression. Helps to detect
+        /// errors like missing operands or operators.
+        /// </summary>
         enum OperationType
         {
             None,
             UnaryOperator,
             BinaryOperator,
             Operand,
-            Function
+            Function,
+            EndOfExpression
         }
 
         private Stack<IAstNode> _operands = new Stack<IAstNode>();
@@ -148,11 +154,13 @@ namespace Microsoft.R.Core.AST.Expressions
                         {
                             context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
                         }
+                        currentOperationType = OperationType.EndOfExpression;
                         endOfExpression = true;
                         break;
 
                     case RTokenType.Comma:
                     case RTokenType.Semicolon:
+                        currentOperationType = OperationType.EndOfExpression;
                         endOfExpression = true;
                         break;
 
@@ -160,6 +168,7 @@ namespace Microsoft.R.Core.AST.Expressions
                         string keyword = context.TextProvider.GetText(context.Tokens.CurrentToken);
                         if (IsTerminatingKeyword(keyword))
                         {
+                            currentOperationType = OperationType.EndOfExpression;
                             endOfExpression = true;
                             break;
                         }
@@ -178,18 +187,13 @@ namespace Microsoft.R.Core.AST.Expressions
                         break;
                 }
 
-                if (errorType != ParseErrorType.None || endOfExpression)
-                {
-                    break;
-                }
-
                 if (_previousOperationType == currentOperationType && currentOperationType != OperationType.Function)
                 {
                     // 'operator, operator' or 'identifier identifier' sequence is an error
                     switch (currentOperationType)
                     {
                         case OperationType.Operand:
-                            context.AddError(new MissingItemParseError(ParseErrorType.OperatorExpected, tokens.PreviousToken));
+                            context.AddError(new ParseError(ParseErrorType.OperatorExpected, ErrorLocation.Token, token));
                             break;
 
                         case OperationType.None:
@@ -199,12 +203,12 @@ namespace Microsoft.R.Core.AST.Expressions
                             }
                             else
                             {
-                                context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
+                                context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, token));
                             }
                             break;
 
                         default:
-                            context.AddError(new MissingItemParseError(ParseErrorType.OperandExpected, tokens.PreviousToken));
+                            context.AddError(new MissingItemParseError(ParseErrorType.OperandExpected, token));
                             break;
                     }
 
@@ -213,8 +217,13 @@ namespace Microsoft.R.Core.AST.Expressions
                 else if (_previousOperationType == OperationType.UnaryOperator && currentOperationType == OperationType.BinaryOperator)
                 {
                     // unary followed by binary doesn't make sense 
-                    context.AddError(new MissingItemParseError(ParseErrorType.IndentifierExpected, tokens.PreviousToken));
+                    context.AddError(new MissingItemParseError(ParseErrorType.IndentifierExpected, token));
                     return null;
+                }
+
+                if (errorType != ParseErrorType.None || endOfExpression)
+                {
+                    break;
                 }
 
                 _previousOperationType = currentOperationType;

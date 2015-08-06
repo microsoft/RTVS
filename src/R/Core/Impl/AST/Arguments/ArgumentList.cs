@@ -38,6 +38,11 @@ namespace Microsoft.R.Core.AST.Arguments
                 return new NamedArgument();
             }
 
+            if(currentToken.TokenType == RTokenType.CloseBrace)
+            {
+                return null; // no arguments supplied
+            }
+
             return new ExpressionArgument();
         }
     }

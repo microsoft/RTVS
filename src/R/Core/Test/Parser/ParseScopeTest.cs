@@ -2,7 +2,7 @@
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
+namespace Microsoft.R.Core.Test.Parser
 {
     [TestClass]
     public class ParseScopeTest : UnitTestBase
@@ -40,6 +40,26 @@ namespace Microsoft.R.Core.Test.Tokens
                     TokenNode  [) [36...37]]
 ";
             ParserTest.VerifyParse(expected, "x <- as.matrix(x) \n y <- as.matrix(y)");
+        }
+
+        [TestMethod]
+        public void ParseScopeTest2()
+        {
+            string expected =
+@"
+CloseCurlyBraceExpected AfterToken [2...3)
+";
+            ParserTest.VerifyParse(expected, "{{}");
+        }
+
+        [TestMethod]
+        public void ParseScopeTest3()
+        {
+            string expected =
+@"
+CloseCurlyBraceExpected AfterToken [0...1)
+";
+            ParserTest.VerifyParse(expected, "{");
         }
     }
 }

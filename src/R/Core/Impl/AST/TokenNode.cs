@@ -58,10 +58,12 @@ namespace Microsoft.R.Core.AST
         {
             if(this.Token.Start < position && position < this.Token.End)
             {
-                throw new InvalidOperationException("Cannot shift text range from position within it");
+                // Leaf nodes are not composite range so we cannot shift parts.
+                // Instead, we will expoand the range and next parsing pass
+                // will generate actual new tokens
+                this.Token.Expand(0, offset);
             }
-
-            if (position <= this.Token.Start)
+            else if (position <= this.Token.Start)
             {
                 this.Token.Shift(offset);
             }

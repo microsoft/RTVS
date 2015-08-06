@@ -2,7 +2,7 @@
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
+namespace Microsoft.R.Core.Test.Parser
 {
     [TestClass]
     public class ParseIndexerTest : UnitTestBase
@@ -189,6 +189,7 @@ namespace Microsoft.R.Core.Test.Tokens
 ";
             ParserTest.VerifyParse(expected, "x[,,]");
         }
+
         [TestMethod]
         public void ParseIndexerTest9()
         {
@@ -196,6 +197,45 @@ namespace Microsoft.R.Core.Test.Tokens
 @"GlobalScope  [Global]
 ";
             ParserTest.VerifyParse(expected, "");
+        }
+
+        [TestMethod]
+        public void ParseIndexerTest10()
+        {
+            string expected =
+"GlobalScope  [Global]\r\n" +
+"    ExpressionStatement  [colnames(data)[colnames(data)==\"old_name\"] <- \"new_name\"]\r\n"+
+"        Expression  [colnames(data)[colnames(data)==\"old_name\"] <- \"new_name\"]\r\n" +
+"            TokenOperator  [<- [43...45]]\r\n" +
+"                Indexer  [Indexer]\r\n" +
+"                    FunctionCall  [FunctionCall]\r\n" +
+"                        Variable  [colnames]\r\n" +
+"                        TokenNode  [( [8...9]]\r\n" +
+"                        ArgumentList  [ArgumentList]\r\n" +
+"                            ExpressionArgument  [ExpressionArgument]\r\n" +
+"                                Expression  [data]\r\n" +
+"                                    Variable  [data]\r\n" +
+"                        TokenNode  [) [13...14]]\r\n" +
+"                    TokenNode  [[ [14...15]]\r\n" +
+"                    ArgumentList  [ArgumentList]\r\n" +
+"                        ExpressionArgument  [ExpressionArgument]\r\n" +
+"                            Expression  [colnames(data)==\"old_name\"]\r\n" +
+"                                TokenOperator  [== [29...31]]\r\n" +
+"                                    FunctionCall  [FunctionCall]\r\n" +
+"                                        Variable  [colnames]\r\n" +
+"                                        TokenNode  [( [23...24]]\r\n" +
+"                                        ArgumentList  [ArgumentList]\r\n" +
+"                                            ExpressionArgument  [ExpressionArgument]\r\n" +
+"                                                Expression  [data]\r\n" +
+"                                                    Variable  [data]\r\n" +
+"                                        TokenNode  [) [28...29]]\r\n" +
+"                                    TokenNode  [== [29...31]]\r\n" +
+"                                    StringValue  [\"old_name\" [31...41]]\r\n" +
+"                    TokenNode  [] [41...42]]\r\n" +
+"                TokenNode  [<- [43...45]]\r\n" +
+"                StringValue  [\"new_name\" [46...56]]\r\n";
+
+            ParserTest.VerifyParse(expected, "colnames(data)[colnames(data)==\"old_name\"] <- \"new_name\"");
         }
     }
 }

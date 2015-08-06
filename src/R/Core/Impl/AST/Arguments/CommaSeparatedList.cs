@@ -47,23 +47,28 @@ namespace Microsoft.R.Core.AST.Arguments
                 }
 
                 IAstNode item = this.CreateItem(this, context);
-                result = item.Parse(context, this);
-                if (!result)
+                if (item != null)
                 {
-                    // Try to recoved at comma or closing brace so
-                    // we can detect all errors in the argument list
-                    // and  not just the first one.
-                    if (context.Tokens.CurrentToken.TokenType != RTokenType.Comma &&
-                        context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace)
+                    result = item.Parse(context, this);
+                    if(result)
                     {
-                        break;
+                        this.arguments.Add(item);
+                    }
+                    else
+                    {
+                        // Try to recoved at comma or closing brace so
+                        // we can detect all errors in the argument list
+                        // and  not just the first one.
+                        if (context.Tokens.CurrentToken.TokenType != RTokenType.Comma &&
+                            context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace)
+                        {
+                            break;
+                        }
                     }
                 }
-
-                this.arguments.Add(item);
             }
 
-            if(result)
+            if(result && Children.Count > 0)
             {
                 base.Parse(context, parent);
             }

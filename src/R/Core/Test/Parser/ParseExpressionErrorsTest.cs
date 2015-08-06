@@ -2,7 +2,7 @@
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
+namespace Microsoft.R.Core.Test.Parser
 {
     [TestClass]
     public class ParseExpressionErrorsTest : UnitTestBase
@@ -27,6 +27,17 @@ OperandExpected AfterToken [0...1)
 OperandExpected AfterToken [1...2)
 ";
             ParserTest.VerifyParse(expected, "x+");
+        }
+
+        [TestMethod]
+        public void ParseIncompleteExpressionTest3()
+        {
+            string expected =
+@"GlobalScope  [Global]
+
+OperatorExpected Token [2...3)
+";
+            ParserTest.VerifyParse(expected, "a b");
         }
 
         [TestMethod]
@@ -85,6 +96,18 @@ UnexpectedEndOfFile AfterToken [2...3)
 OperandExpected AfterToken [5...6)
 ";
             ParserTest.VerifyParse(expected, "(a+b)+)");
+        }
+
+        [TestMethod]
+        public void ParseMissingAssignmentTest1()
+        {
+            string expected =
+@"GlobalScope  [Global]
+
+OperatorExpected Token [2...10)
+FunctionBodyExpected Token [12...13)
+";
+            ParserTest.VerifyParse(expected, "x function(a)");
         }
     }
 }
