@@ -1,0 +1,31 @@
+using System;
+using System.IO;
+using System.Linq;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
+
+namespace Microsoft.VisualStudio.R.Package.ProjectSystem
+{
+	internal sealed class RMsBuildFileSystemFilter : IMsBuildFileSystemFilter
+	{
+		public bool IsAllowedFile(string relativePath, FileAttributes attributes)
+		{
+			return !attributes.HasFlag(FileAttributes.Hidden)
+				&& !HasExtension(relativePath, ".user");
+		}
+
+		public bool IsAllowedDirectory(string relativePath, FileAttributes attributes)
+		{
+			return !attributes.HasFlag(FileAttributes.Hidden);
+		}
+
+		public void Seal()
+		{
+		}
+
+		private static bool HasExtension(string filePath, params string[] possibleExtensions)
+		{
+			var extension = Path.GetExtension(filePath);
+			return !string.IsNullOrEmpty(extension) && possibleExtensions.Any(pe => extension.Equals(pe, StringComparison.OrdinalIgnoreCase));
+		}
+	}
+}

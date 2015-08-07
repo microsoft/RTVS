@@ -16,6 +16,7 @@
     <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -70,6 +71,7 @@
     <Compile Include="Document\IVsEditorDocumentFactory.cs" />
     <Compile Include="Document\VsREditorDocument.cs" />
     <Compile Include="Document\VsEditorDocumentFactory.cs" />
+    <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
     <Compile Include="Interop\CommandTargetToOleShimVariantStacks.cs" />
@@ -92,6 +94,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\R\VsRSettingsStorage.cs" />
+    <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
+    <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -144,6 +148,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="$(MSBuildAssembly)" />
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost">
       <Private>True</Private>
     </Reference>

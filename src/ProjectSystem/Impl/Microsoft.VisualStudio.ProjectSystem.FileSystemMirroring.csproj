@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -52,6 +53,15 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IO\IMsBuildFileSystemFilter.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcher.AttributesChanged.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcher.DirectoryCreated.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcher.DirectoryDeleted.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcher.DirectoryRenamed.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcher.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcher.FileCreated.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcher.FileDeleted.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcher.FileRenamed.cs" />
     <Compile Include="MsBuild\XDefaultValueProperty.cs" />
     <Compile Include="MsBuild\XImport.cs" />
     <Compile Include="MsBuild\XImportExisting.cs" />
@@ -66,10 +76,13 @@
     <Compile Include="Package\Registration\RegistrationAttributeBuilder.cs" />
     <Compile Include="Package\Registration\RegistrationAttributeBuilder.RegKey.cs" />
     <Compile Include="Project\FileSystemMirroringProjectFileGenerator.cs" />
-    <Compile Include="Project\FileSystemMirroringProjectLoader.cs" />
+    <Compile Include="Project\FileSystemMirroringProject.cs" />
+    <Compile Include="Project\FileSystemMirroringProjectUtilities.cs" />
+    <Compile Include="Project\FileSystemMirroringProjectSourceItemProviderExtensionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell\IVsProjectGenerator.cs" />
     <Compile Include="Shell\IVsRegisterProjectGenerators.cs" />
+    <Compile Include="Utilities\DictionaryExtensions.cs" />
     <Compile Include="Utilities\ServiceProviderExtensions.cs" />
     <Compile Include="Utilities\VsSolutionBuildManagerExtensions.cs" />
   </ItemGroup>
@@ -78,7 +91,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Build" />
+    <Reference Include="$(MSBuildAssembly)" />
     <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.CodeAnalysis.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>True</Private>
@@ -174,9 +187,7 @@
     <Analyzer Include="..\..\..\NugetPackages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc1\tools\analyzers\C#\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
     <Analyzer Include="..\..\..\NugetPackages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc1\tools\analyzers\Microsoft.CodeAnalysis.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IO\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VisualStudio.SDK.VsixSuppression.14.0.50430-pre\build\Microsoft.VisualStudio.SDK.VsixSuppression.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VisualStudio.SDK.VsixSuppression.14.0.50430-pre\build\Microsoft.VisualStudio.SDK.VsixSuppression.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

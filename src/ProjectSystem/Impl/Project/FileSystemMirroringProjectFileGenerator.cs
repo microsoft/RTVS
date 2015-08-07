@@ -12,12 +12,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
     {
         private readonly Guid _projectType;
 	    private readonly string _projectUiSubcaption;
+	    private readonly string _cpsProjExtension;
 	    private readonly IEnumerable<string> _msBuildImports;
 
-	    protected FileSystemMirroringProjectFileGenerator(Guid projectType, string projectUiSubcaption, IEnumerable<string> msBuildImports)
+	    protected FileSystemMirroringProjectFileGenerator(Guid projectType, string projectUiSubcaption, string cpsProjExtension, IEnumerable<string> msBuildImports)
 	    {
 		    _projectType = projectType;
 		    _projectUiSubcaption = projectUiSubcaption;
+		    _cpsProjExtension = cpsProjExtension;
 		    _msBuildImports = msBuildImports;
 	    }
 
@@ -30,20 +32,17 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
             EnsureCpsProjFile(pbstrGeneratedFile);
         }
 
-        private static string GetCpsProjFileName(string fileName)
+        private string GetCpsProjFileName(string fileName)
         {
-            return fileName + ".msbuild";
+            return fileName + _cpsProjExtension;
         }
 
         private void EnsureCpsProjFile(string cpsProjFileName)
         {
-            // TODO: Find best way to deal with the file.
-            // What if such file exists, but it is not our MSBuild file?
-            // Maybe it is possible to remove it after project is created. In this case, name can be random
-            var fileInfo = new FileInfo(cpsProjFileName);
+	        var fileInfo = new FileInfo(cpsProjFileName);
 
-            var vsVersion = "14.0";
-            var inMemoryTargetsFile = GetInMemoryTargetsFileName(cpsProjFileName);
+	        var vsVersion = "14.0";
+            var inMemoryTargetsFile = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(cpsProjFileName);
 
 			var xProjDocument = new XProjDocument(
 				new XProject(vsVersion, "Build",
@@ -68,16 +67,18 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 				)
 			);
 
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
 			using (var writer = fileInfo.CreateText())
 			{
 				xProjDocument.Save(writer);
 			}
-        }
 
-	    public static string GetInMemoryTargetsFileName(string cpsProjFileName)
-	    {
-		    return Path.GetFileNameWithoutExtension(cpsProjFileName) + ".InMemory.Targets";
-	    }
+            fileInfo.Attributes = FileAttributes.Hidden;
+        }
 
 	    private IEnumerable<XImport> CreateMsBuildExtensionXImports(string import)
         {
