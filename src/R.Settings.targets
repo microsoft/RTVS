@@ -5,4 +5,12 @@
 		<DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">$(DefineConstants);VS14</DefineConstants>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" $(VisualStudioVersion) == '14.0' ">
+		<TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+
+		<MSBuildAssembly>Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</MSBuildAssembly>
+		<MSBuildUtilitiesAssembly>Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</MSBuildUtilitiesAssembly>
+		<BuildFrameworkAssembly>Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</BuildFrameworkAssembly>
+		<VSThreadingAssembly>Microsoft.VisualStudio.Threading, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</VSThreadingAssembly>
+	</PropertyGroup>
 </Project>
