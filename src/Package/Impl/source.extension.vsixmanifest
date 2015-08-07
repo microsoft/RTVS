@@ -18,5 +18,6 @@
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Package.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Core.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="|Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring|" />
   </Assets>
 </PackageManifest>

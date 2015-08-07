@@ -11,6 +11,7 @@ namespace Microsoft.Languages.Editor.ContentType
         public const string LanguageName = "R";
         public const string ContentType = "R";
         public const string FileExtension = ".R";
+        public const string RStudioProjectExtension = "rproj";
 
         /// <summary>
         /// Exports the R content type
