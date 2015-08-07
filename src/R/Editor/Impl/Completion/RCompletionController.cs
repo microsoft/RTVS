@@ -4,18 +4,18 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.Languages.Editor;
+using Microsoft.Languages.Editor.Completion;
+using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Completion.TypeThrough;
+using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Settings;
 
 namespace Microsoft.R.Editor.Completion
 {
-    using Languages.Editor.Completion;
-    using Languages.Editor.Controller;
-    using Languages.Editor.Services;
-    using Languages.Editor.Completion.TypeThrough;
-    using R.Editor.Document;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
-    using Languages.Editor;
-    using Settings;
-    using Definitions;
 
     public sealed class RCompletionController : CompletionController, ICommandTarget
     {
@@ -25,7 +25,6 @@ namespace Microsoft.R.Editor.Completion
         private List<ProvisionalText> _provisionalTexts = new List<ProvisionalText>();
         private char _eatNextQuote = '\0';
         private char _commitChar = '\0';
-        private RCompletion _committedCompletion;
 
         private RCompletionController(
             ITextView textView,
@@ -115,57 +114,17 @@ namespace Microsoft.R.Editor.Completion
 
         //private void OnTreeUpdateCompleted(object sender, HtmlTreeUpdatedEventArgs e)
         //{
-            //var tree = sender as HtmlEditorTree;
-            //if (tree.IsDirty && (tree.PendingChanges.TextChangeType & (TextChangeType.Comments | TextChangeType.Artifacts)) != 0)
-            //{
-            //    var sessions = CompletionBroker.GetSessions(TextView);
-            //    foreach (var s in sessions)
-            //    {
-            //        if (s.SelectedCompletionSet is RCompletionSet)
-            //            s.Dismiss();
-            //    }
-            //}
+        //var tree = sender as HtmlEditorTree;
+        //if (tree.IsDirty && (tree.PendingChanges.TextChangeType & (TextChangeType.Comments | TextChangeType.Artifacts)) != 0)
+        //{
+        //    var sessions = CompletionBroker.GetSessions(TextView);
+        //    foreach (var s in sessions)
+        //    {
+        //        if (s.SelectedCompletionSet is RCompletionSet)
+        //            s.Dismiss();
+        //    }
         //}
-
-        /// <summary>
-        /// This uses the range that is applicable to completion and returns the character before it.
-        /// Returns zero if the range can't be determined or if there is no character before it.
-        /// </summary>
-        private char GetCharacterBeforeCompletion()
-        {
-            if (CompletionSession.SelectedCompletionSet != null)
-            {
-                ITrackingSpan span = CompletionSession.SelectedCompletionSet.ApplicableTo;
-                if (span != null)
-                {
-                    int startPos = span.GetStartPoint(_textBuffer.CurrentSnapshot).Position;
-                    if (startPos > 0)
-                    {
-                        return _textBuffer.CurrentSnapshot[startPos - 1];
-                    }
-                }
-            }
-
-            return '\0';
-        }
-
-        private char GetCharacterAfterCompletion()
-        {
-            if (CompletionSession.SelectedCompletionSet != null)
-            {
-                ITrackingSpan span = CompletionSession.SelectedCompletionSet.ApplicableTo;
-                if (span != null)
-                {
-                    int endPos = span.GetEndPoint(_textBuffer.CurrentSnapshot).Position;
-                    if (endPos < _textBuffer.CurrentSnapshot.Length)
-                    {
-                        return _textBuffer.CurrentSnapshot[endPos];
-                    }
-                }
-            }
-
-            return '\0';
-        }
+        //}
 
         /// <summary>
         /// Should this key press commit a completion session?
@@ -174,35 +133,65 @@ namespace Microsoft.R.Editor.Completion
         {
             if (HasActiveCompletionSession && typedChar != 0)
             {
-                string completionType = CompletionTypes.None;
+                // only ( completes keywords
+                CompletionSet completionSet = CompletionSession.SelectedCompletionSet;
+                string completionText = completionSet.SelectionStatus.Completion.InsertionText;
 
-                RCompletionSet curCompletionSet = CompletionSession.SelectedCompletionSet as RCompletionSet;
-                if ((curCompletionSet != null) && (curCompletionSet.SelectionStatus.IsSelected))
+                if (completionText == "else" || completionText == "repeat")
                 {
-                    //CompletionEntry curCompletion = curCompletionSet.SelectionStatus.Completion as CompletionEntry;
-                    //if ((curCompletion != null) && curCompletion.IsCommitChar(typedChar))
-                    //{
-                    //    return true;
-                    //}
+                    if(typedChar == '{')
+                        return true;
+
+                    if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
+                        return true;
+
+                    return false;
                 }
 
-                if (CompletionSession.Properties.ContainsProperty(RCompletionSource.CompletionTypeKey))
-                    completionType = (string)CompletionSession.Properties[RCompletionSource.CompletionTypeKey];
+                if (completionText == "break" || completionText == "next")
+                {
+                    if (typedChar == ';')
+                        return true;
 
+                    if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
+                        return true;
+                }
+
+                if (completionText == "if" || completionText == "for" || completionText == "while" || completionText == "return" || completionText == "library")
+                {
+                    if (typedChar == '(')
+                        return true;
+
+                    if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
+                        return true;
+
+                    return false;
+                }
+                
                 switch (typedChar)
                 {
+                    case '<':
+                    case '>':
+                    case '+':
+                    case '-':
+                    case '*':
+                    case '^':
                     case '=':
-                        var selectionStatus = CompletionSession.SelectedCompletionSet.SelectionStatus;
-                        if (selectionStatus.IsSelected)
-                        {
-                            var completion = selectionStatus.Completion as RCompletion;
-                            if (completion != null && completion.RetriggerIntellisense)
-                                return true;
-                        }
-
-                        // This will commit if there is a selection, otherwise it will dismiss
-                        CommitCompletionSession();
-                        return false;
+                    case '%':
+                    case '|':
+                    case '&':
+                    case '!':
+                    case ':':
+                    case '@':
+                    case '$':
+                    case '(':
+                    case '[':
+                    case '{':
+                    case ')':
+                    case ']':
+                    case '}':
+                    case ';':
+                        return true;
                 }
 
                 if (typedChar == ' ' && CompletionSession.Properties.ContainsProperty(RCompletionController.DisableSpaceCommitKey))
@@ -215,39 +204,28 @@ namespace Microsoft.R.Editor.Completion
             return false;
         }
 
-        public override bool IsMuteCharacter(char typedCharacter)
-        {
-            if (CompletionSession != null)
-            {
-                RCompletionSet curCompletionSet = CompletionSession.SelectedCompletionSet as RCompletionSet;
-                if ((curCompletionSet != null) && (curCompletionSet.SelectionStatus.IsSelected))
-                {
-                    //CompletionEntry curCompletion = curCompletionSet.SelectionStatus.Completion as CompletionEntry;
-                    //if ((curCompletion != null) && curCompletion.IsMuteCharacter(typedCharacter))
-                    //{
-                    //    return true;
-                    //}
-                }
-            }
-
-            switch (typedCharacter)
-            {
-                case '=':
-                    if (CanCommitCompletionSession(typedCharacter))
-                    {
-                        return true;
-                    }
-                    break;
-            }
-
-            return base.IsMuteCharacter(typedCharacter);
-        }
-
         /// <summary>
         /// Should this key press start a completion session?
         /// </summary>
-        public override bool IsTriggerChar(char typedChar)
+        public override bool IsTriggerChar(char typedCharacter)
         {
+            if (!HasActiveCompletionSession)
+            {
+                return Char.IsLetter(typedCharacter);
+            }
+
+            return false;
+        }
+
+        protected override bool IsRetriggerChar(ICompletionSession session, char typedCharacter)
+        {
+            switch (typedCharacter)
+            {
+                case '@':
+                case '$':
+                    return true;
+            }
+
             return false;
         }
 
@@ -270,29 +248,11 @@ namespace Microsoft.R.Editor.Completion
             {
                 Completion curCompletion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
                 string insertionText = curCompletion.InsertionText;
+
                 if (insertionText[insertionText.Length - 1] == _commitChar)
-                    curCompletion.InsertionText = insertionText.Substring(0, insertionText.Length - 1);
-            }
-        }
-
-        public override bool InCommit
-        {
-            set
-            {
-                if (value && (CompletionSession != null) && (CompletionSession.SelectedCompletionSet != null))
                 {
-                    // We store the completion that is being committed as this information needs to be used
-                    //    in OnCompletionSessionCommitted and may not be available at that point.
-                    //    It is unavailable in scenarios where a Dismiss occurs during the commit 
-                    //    (such as when the VSCore CompletionSession class determines that our
-                    //    ApplicableTo text has been deleted which may occur when url completion ".." entry
-                    //    is committed.
-                    CompletionSet compSet = CompletionSession.SelectedCompletionSet;
-                    Completion completion = compSet.SelectionStatus.Completion;
-                    _committedCompletion = completion as RCompletion;
+                    curCompletion.InsertionText = insertionText.Substring(0, insertionText.Length - 1);
                 }
-
-                base.InCommit = value;
             }
         }
 
@@ -305,11 +265,6 @@ namespace Microsoft.R.Editor.Completion
                 // Only call the base if we aren't in the midst of a commit
                 base.OnCompletionSessionDismissed(sender, eventArgs);
             }
-        }
-
-        protected override void OnCompletionSessionCommitted(object sender, EventArgs eventArgs)
-        {
-            base.OnCompletionSessionCommitted(sender, eventArgs);
         }
 
         private void OnCloseProvisionalText(object sender, EventArgs e)
@@ -352,17 +307,6 @@ namespace Microsoft.R.Editor.Completion
             }
 
             return provisionalText;
-        }
-
-        public override void OnPostTypeChar(char typedCharacter)
-        {
-            // Dev12 864544: Razor can call into this method after the view has been closed.
-            if (TextView == null || TextView.IsClosed)
-            {
-                return;
-            }
-
-            base.OnPostTypeChar(typedCharacter);
         }
 
         #region ICommandTarget

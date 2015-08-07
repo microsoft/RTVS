@@ -9,7 +9,6 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Completion.TypeThrough
 {
@@ -31,7 +30,6 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             _textView = textView;
 
             _textBuffer.Changed += TextBuffer_Changed;
-            _textBuffer.PostChanged += TextBuffer_PostChanged;
 
             _provisionalTexts = new List<ProvisionalText>();
             _bufferVersionWaterline = _textBuffer.CurrentSnapshot.Version.ReiteratedVersionNumber;
@@ -85,7 +83,6 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
                 textBuffer,
                 nextPosition,
                 typedCharacter,
-                c => IsAllowedLeadingStringChar(c),
                 GetInnerProvisionalText());
         }
 
@@ -94,15 +91,11 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             return !char.IsWhiteSpace(c);
         }
 
-        /// <summary>
-        /// Helper function so that HTML can share logic with the other languages
-        /// </summary>
         public static bool StaticCanCompleteBefore(
             ITextView textView,
             ITextBuffer textBuffer,
             int nextPosition,
             char typedCharacter,
-            Func<char, bool> isAllowedLeadingStringChar,
             ProvisionalText innerProvisional)
         {
             if (innerProvisional != null && innerProvisional.TrackingSpan != null)
@@ -121,11 +114,6 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
 
             if ((typedCharacter == '\'') || (typedCharacter == '\"'))
             {
-                if (isAllowedLeadingStringChar(nextCharacter))
-                {
-                    return false;
-                }
-
                 // For a quote, don't add an extra quote if they aren't "unbalanced" on the current line.
                 ITextSnapshotLine currentLine = snapshot.GetLineFromPosition(nextPosition);
                 string lineText = currentLine.GetText();
@@ -150,37 +138,7 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             return true;
         }
 
-        void TextBuffer_PostChanged(object sender, System.EventArgs e)
-        {
-            if (IsActiveController && !_processing && _typedChar != '\0')
-            {
-                // if buffer is projected, avoid completion in case when character is at the last position 
-                // of the projected span and is equal tothe nearest character to the right in the view 
-                // buffer. For example, completion of " in style="foo|" where completion of " in CSS will 
-                // interfere with quotes in top HTML buffer.
-
-                if (_textBuffer != _textView.TextBuffer)
-                {
-                    var viewCaretPosition = _textView.Caret.Position.BufferPosition;
-                    var snapshot = _textView.TextBuffer.CurrentSnapshot;
-
-                    if (viewCaretPosition < snapshot.Length)
-                    {
-                        char nextChar = snapshot.GetText(viewCaretPosition, 1)[0];
-                        if (_typedChar == nextChar)
-                        {
-                            return;
-                        }
-                    }
-
-                }
-
-                OnPostTypeChar(_typedChar);
-                _typedChar = '\0';
-            }
-        }
-
-        void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
+        private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
         {
             if (!IsActiveController || _processing)
                 return;
@@ -390,7 +348,6 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             {
                 _connected = true;
                 _textBuffer.Changed += TextBuffer_Changed;
-                _textBuffer.PostChanged += TextBuffer_PostChanged;
 
                 ServiceManager.AddService<TypeThroughController>(this, _textView);
             }
@@ -408,7 +365,6 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
 
                 _connected = false;
                 _textBuffer.Changed -= TextBuffer_Changed;
-                _textBuffer.PostChanged -= TextBuffer_PostChanged;
 
                 Debug.Assert(existingController == this);
                 if (existingController == this)

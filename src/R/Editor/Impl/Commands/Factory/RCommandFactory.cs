@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor
+namespace Microsoft.R.Editor.Commands.Factory
 {
     [Export(typeof(ICommandFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
@@ -20,12 +20,8 @@ namespace Microsoft.R.Editor
             //commands.Add(new UncommentSelectionCommand(textView, textBuffer));
             //commands.Add(new FormatDocumentCommand(textView, textBuffer));
             //commands.Add(new FormatSelectionCommand(textView, textBuffer));
-            //commands.Add(new HtmlTypingCommandHandler(textView));
-            //commands.Add(new HtmlCompletionCommandHandler(textView, textBuffer));
-            //commands.Add(new HtmlTagMatchCommand(textView, textBuffer));
-            //commands.Add(new UnminifyCommand(textView, textBuffer));
-            //commands.Add(new WrapWithDivCommand(textView, textBuffer));
-            //commands.Add(new HtmlOutlineTagsCommandHandler(textView));
+            commands.Add(new RTypingCommandHandler(textView));
+            commands.Add(new RCompletionCommandHandler(textView, textBuffer));
 
             return commands;
         }

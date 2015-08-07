@@ -20,7 +20,6 @@ namespace Microsoft.Languages.Editor.Completion
 
         public IList<ITextBuffer> SubjectBuffers { get; private set; }
         public ITextView TextView { get; private set; }
-        public virtual bool InCommit { get; set; }
 
         protected ISignatureHelpBroker SignatureBroker { get; set; }
         protected IQuickInfoBroker QuickInfoBroker { get; set; }
@@ -270,6 +269,11 @@ namespace Microsoft.Languages.Editor.Completion
         {
             bool triggerCompletion = false;
 
+            if (TextView == null || TextView.IsClosed)
+            {
+                return;
+            }
+
             if (!IntellisenseSuppressed)
             {
                 if (!HasActiveCompletionSession && IsTriggerChar(typedCharacter))
@@ -345,11 +349,7 @@ namespace Microsoft.Languages.Editor.Completion
         {
             if (HasActiveCompletionSession)
             {
-                //var customPresenter = CompletionSession.Presenter as ICustomCompletionPresenter;
-                //if (customPresenter == null || !customPresenter.DoCustomDismiss())
-                //{
-                //    CompletionSession.Dismiss();
-                //}
+                CompletionSession.Dismiss();
             }
         }
 
@@ -363,12 +363,8 @@ namespace Microsoft.Languages.Editor.Completion
             bool committed = false;
             if (CanCommitCompletionSession(typedCharacter))
             {
-                //ICustomCompletionPresenter customPresenter = CompletionSession.Presenter as ICustomCompletionPresenter;
-                //if (customPresenter == null || !customPresenter.DoCustomCommit())
-                //{
-                //    UpdateInsertionText();
-                //    CompletionSession.Commit();
-                //}
+                UpdateInsertionText();
+                CompletionSession.Commit();
 
                 committed = true;
             }
@@ -386,12 +382,6 @@ namespace Microsoft.Languages.Editor.Completion
             {
                 return false;
             }
-
-            //ICustomCompletionPresenter customPresenter = CompletionSession.Presenter as ICustomCompletionPresenter;
-            //if (customPresenter != null && customPresenter.CanCustomCommit)
-            //{
-            //    return true;
-            //}
 
             CompletionSet completionSet = CompletionSession.SelectedCompletionSet;
             CompletionSelectionStatus status = completionSet.SelectionStatus;
@@ -434,15 +424,6 @@ namespace Microsoft.Languages.Editor.Completion
         /// </summary>
         public virtual bool HandleCommand(Guid group, int id, object inputArg)
         {
-            if (HasActiveCompletionSession)
-            {
-                //var customPresenter = CompletionSession.Presenter as ICustomCompletionPresenter;
-                //if (customPresenter != null)
-                //{
-                //    return customPresenter.HandleCommand(group, id);
-                //}
-            }
-
             return false;
         }
 

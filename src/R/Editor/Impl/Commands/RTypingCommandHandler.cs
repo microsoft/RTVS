@@ -7,14 +7,12 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Completion.AutoCompletion;
 using Microsoft.R.Editor.Document;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
 
-namespace Microsoft.Html.Editor.Commands
+namespace Microsoft.R.Editor.Commands
 {
     /// <summary>
-    /// Processes typing in HTML document. Implements ICommandTarget to 
+    /// Processes typing in the document. Implements ICommandTarget to 
     /// receive typing as commands
     /// </summary>
     internal class RTypingCommandHandler : TypingCommandHandler
@@ -55,11 +53,10 @@ namespace Microsoft.Html.Editor.Commands
             {
                 case '\'':
                 case '\"':
-                case '=':
                 case '{':
                 case '(':
                 case '[':
-                    //QuoteCompletion.CompleteQuotes(TextView, editorTree, position, typedChar);
+                    SeparatorCompletion.Complete(TextView, typedChar);
                     break;
             }
 
@@ -67,7 +64,7 @@ namespace Microsoft.Html.Editor.Commands
             // but it has no idea when to allow it again.
             // Hopefully someday the static variable workaround in that class can be removed and this
             // workaround can be removed.
-            QuoteCompletion.CancelSuppression();
+            SeparatorCompletion.CancelSuppression();
         }
     }
 }

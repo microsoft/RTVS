@@ -77,6 +77,7 @@
     <Compile Include="Classification\ICompositeToken.cs" />
     <Compile Include="Classification\TokenBasedClassifier.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
+    <Compile Include="Imaging\GlyphService.cs" />
     <Compile Include="Outline\OutlineController.cs" />
     <Compile Include="Outline\OutlineRegion.cs" />
     <Compile Include="Outline\OutlineRegionBuilder.cs" />

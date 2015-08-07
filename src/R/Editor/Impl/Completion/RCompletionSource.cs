@@ -13,7 +13,9 @@ namespace Microsoft.R.Editor.Completion
 {
     using Definitions;
     using Languages.Core.Text;
+    using Engine;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
+    using Languages.Editor.Completion;
 
     /// <summary>
     /// Provides actual content for the intellisense dropdown
@@ -137,101 +139,83 @@ namespace Microsoft.R.Editor.Completion
             if (doc == null)
                 return;
 
-            //RCompletionEngine completionEngine = ServiceManager.GetService<RCompletionEngine>(_textBuffer);
-            //if (!completionEngine.IsLoaded)
-            //    return;
+            bool autoShownCompletion = true;
+            if (session.TextView.Properties.ContainsProperty(CompletionController.AutoShownCompletion))
+                autoShownCompletion = session.TextView.Properties.GetProperty<bool>(CompletionController.AutoShownCompletion);
 
+            IReadOnlyCollection<IRCompletionListProvider> providers =
+                RCompletionEngine.GetCompletionForLocation(doc.EditorTree.AstRoot, position, autoShownCompletion);
+
+            Span applicableSpan = GetApplicableSpan(position, session);
+            ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan, SpanTrackingMode.EdgeInclusive);
             List<RCompletion> completions = new List<RCompletion>();
-            ITextRange range = TextRange.EmptyRange;
-            Span itemSpan = new Span(range.Start, range.Length);
-
-            ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(itemSpan, SpanTrackingMode.EdgeInclusive);
-
-            IList<IRCompletionListProvider> providers = new List<IRCompletionListProvider>();
-            // completionEngine.GetCompletionForLocation(position, ..., out range, ...);
-
             RCompletionContext context = new RCompletionContext();
 
             foreach (IRCompletionListProvider provider in providers)
             {
-                IList<RCompletion> entries = provider.GetEntries(context);
+                IReadOnlyCollection<RCompletion> entries = provider.GetEntries(context);
                 Debug.Assert(entries != null);
 
                 if (entries.Count > 0)
                 {
-                    if (session.Properties != null)
-                    {
-                        if (!session.Properties.ContainsProperty(CompletionTypeKey))
-                        {
-                            session.Properties.AddProperty(CompletionTypeKey, provider.CompletionType);
-                        }
-                    }
-
                     completions.AddRange(entries);
                 }
             }
 
-            RemoveDuplicateEntriesAndSort(completions);
+            completions.Sort(RCompletion.Compare);
 
-            // Currently all providers will always be of the same completion type.
-            string completionType = providers.Count > 0 ? providers[0].CompletionType : CompletionTypes.None;
-
-            //foreach (Lazy<IHtmlCompletionListFilter, IContentTypesAndHtmlCompletionFilterAttributes> lazyFilter in _completionListFilters)
-            //{
-            //    if (lazyFilter.Metadata.CompletionType == completionType)
-            //    {
-            //        lazyFilter.Value.FilterCompletionList(completions, context);
-            //    }
-            //}
-
-            // Re-do this, since filters may have added or replaced items
-            RemoveDuplicateEntriesAndSort(completions);
-
-            RCompletionSet completionSet = new RCompletionSet(
+            CompletionSet completionSet = new CompletionSet(
+                "R Completion",
+                "R Completion",
                 trackingSpan,
                 completions,
-                Enumerable.Empty<RCompletion>(), // builders (none yet)
-                context,
-                providers);
+                Enumerable.Empty<RCompletion>());
 
             completionSets.Add(completionSet);
         }
 
-        private void RemoveDuplicateEntriesAndSort(List<RCompletion> completions)
+        private Span GetApplicableSpan(int position, ICompletionSession session)
         {
-            // This initial sort allows removal of items with duplicated text
-            completions.Sort(RCompletion.Compare);
-
-            int lastFilledIndex = 0;
-            for (int i = 1; i < completions.Count; i++)
+            var selectedSpans = session.TextView.Selection.SelectedSpans;
+            if (selectedSpans.Count == 1 && selectedSpans[0].Span.Length > 0)
             {
-                RCompletion curCompletion = completions[i];
-                RCompletion lastFilledCompletion = completions[lastFilledIndex];
+                return selectedSpans[0].Span;
+            }
 
-                if (!completions[i].DisplayText.Equals(completions[lastFilledIndex].DisplayText, StringComparison.Ordinal))
+            ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
+            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
+            string lineText = snapshot.GetText(line.Start, line.Length);
+            int linePosition = position - line.Start;
+
+            int start = 0;
+            int end = line.Length;
+
+            for (int i = linePosition - 1; i >= 0; i--)
+            {
+                char ch = lineText[i];
+                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.')
                 {
-                    // The DisplayText differs, make sure the current completion is added
-                    completions[++lastFilledIndex] = curCompletion;
-                }
-                else
-                {
-                    //if (curCompletion.IconAutomationText.Equals(HtmlIconAutomationText.SnippetIconText, StringComparison.Ordinal) &&
-                    //    !lastFilledCompletion.IconAutomationText.Equals(HtmlIconAutomationText.SnippetIconText, StringComparison.Ordinal))
-                    //{
-                    //    // If the current completion is a snippet and the last filled one isn't, replace the last filled entry
-                    //    completions[lastFilledIndex] = curCompletion;
-                    //}
+                    start = i + 1;
+                    break;
                 }
             }
 
-            int firstUnfilledIndex = lastFilledIndex + 1;
-            if (firstUnfilledIndex < completions.Count)
+            for (int i = linePosition; i < lineText.Length; i++)
             {
-                completions.RemoveRange(firstUnfilledIndex, completions.Count - firstUnfilledIndex);
+                char ch = lineText[i];
+                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.')
+                {
+                    end = i;
+                    break;
+                }
             }
 
-            // This sort puts the entries in order based on their SortingPriority
-            completions.Sort();
+            if (start < end)
+            {
+                return new Span(start + line.Start, end - start);
+            }
+
+            return new Span(position, 0);
         }
 
         #region Dispose

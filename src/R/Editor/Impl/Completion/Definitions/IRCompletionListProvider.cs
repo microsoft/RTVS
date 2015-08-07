@@ -14,11 +14,6 @@ namespace Microsoft.R.Editor.Completion.Definitions
         /// </summary>
         /// <param name="context">Completion context</param>
         /// <returns>List of completion entries</returns>
-        IList<RCompletion> GetEntries(RCompletionContext context);
-
-        /// <summary>
-        /// Completion type this provider is registered for
-        /// </summary>
-        string CompletionType { get; }
+        IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context);
     }
 }

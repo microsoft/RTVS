@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion.AutoCompletion
 {
-    public static class QuoteCompletion
+    public static class SeparatorCompletion
     {
         private static bool _suppressCompletion;
 
@@ -19,7 +19,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion
             _suppressCompletion = false;
         }
 
-        public static void CompleteQuotes(ITextView textView, int position, char typedChar)
+        public static void Complete(ITextView textView, char typedChar)
         {
             if (_suppressCompletion)
             {
@@ -32,10 +32,10 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion
                 return;
             }
 
-            SimpleComplete(textView, position, typedChar);
+            SimpleComplete(textView, typedChar);
         }
 
-        private static void SimpleComplete(ITextView textView, int position, char typedChar)
+        private static void SimpleComplete(ITextView textView, char typedChar)
         {
             char completeChar = '\0';
 
@@ -60,6 +60,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion
             }
 
             ITextSnapshot snapshot = textView.TextBuffer.CurrentSnapshot;
+            int position = textView.Selection.SelectedSpans[0].Start;
 
             if (completeChar != '\0' && position < snapshot.Length)
             {
@@ -71,7 +72,6 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion
                     textView.TextBuffer,
                     position,
                     typedChar,
-                    c => !char.IsWhiteSpace(c) && c != '<',
                     innerProvisional))
                 {
                     completeChar = '\0';

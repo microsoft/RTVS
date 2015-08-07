@@ -9,18 +9,15 @@ namespace Microsoft.R.Editor.Completion
     [DebuggerDisplay("{DisplayText}")]
     public class RCompletion : Completion
     {
-        private Func<string> _descriptionCallback;
         public bool RetriggerIntellisense { get; private set; }
 
         public RCompletion(
             string displayText,
             string insertionText,
-            Func<string> descriptionCallback,
-            ImageSource iconSource,
-            string iconAutomationText) :
-            base(displayText, insertionText, String.Empty, iconSource, iconAutomationText)
+            string description,
+            ImageSource iconSource) :
+            base(displayText, insertionText, String.Empty, iconSource, string.Empty)
         {
-            _descriptionCallback = descriptionCallback;
         }
 
         public RCompletion(
@@ -28,31 +25,12 @@ namespace Microsoft.R.Editor.Completion
             string insertionText,
             string description,
             ImageSource iconSource,
-            string iconAutomationText,
             int charactersBeforeCaret,
             bool retriggerIntellisense) :
-            base(displayText, insertionText, description, iconSource, iconAutomationText)
+            this(displayText, insertionText, description, iconSource)
         {
             this.CharactersBeforeCaret = charactersBeforeCaret;
             this.RetriggerIntellisense = retriggerIntellisense;
-        }
-
-        public override string Description
-        {
-            get
-            {
-                if (_descriptionCallback != null)
-                {
-                    return _descriptionCallback();
-                }
-
-                return base.Description;
-            }
-
-            set
-            {
-                base.Description = value;
-            }
         }
 
         public int CharactersBeforeCaret { get; private set; }
