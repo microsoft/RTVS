@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Core", "R\Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Editor", "R\Editor\Impl\Microsoft.R.Editor.csproj", "{D6EEEF87-CE3A-4804-A409-39966B96C850}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "Setup\Setup.wixproj", "{B86E0BA1-82AF-45F8-9BE8-FDDCB8EF7F13}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Editor.Test", "R\Editor\Test\Microsoft.R.Editor.Test.csproj", "{9066522E-780E-4409-B410-2525E6A621FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Languages.Editor.Test", "Common\Editor\Test\Microsoft.Languages.Editor.Test.csproj", "{5340191E-31E5-43A0-A485-B6678D391B10}"
@@ -83,12 +81,6 @@ Global
 		{D6EEEF87-CE3A-4804-A409-39966B96C850}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6EEEF87-CE3A-4804-A409-39966B96C850}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6EEEF87-CE3A-4804-A409-39966B96C850}.Release|x86.Build.0 = Release|Any CPU
-		{B86E0BA1-82AF-45F8-9BE8-FDDCB8EF7F13}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{B86E0BA1-82AF-45F8-9BE8-FDDCB8EF7F13}.Debug|x86.ActiveCfg = Debug|x86
-		{B86E0BA1-82AF-45F8-9BE8-FDDCB8EF7F13}.Debug|x86.Build.0 = Debug|x86
-		{B86E0BA1-82AF-45F8-9BE8-FDDCB8EF7F13}.Release|Any CPU.ActiveCfg = Release|x86
-		{B86E0BA1-82AF-45F8-9BE8-FDDCB8EF7F13}.Release|x86.ActiveCfg = Release|x86
-		{B86E0BA1-82AF-45F8-9BE8-FDDCB8EF7F13}.Release|x86.Build.0 = Release|x86
 		{9066522E-780E-4409-B410-2525E6A621FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9066522E-780E-4409-B410-2525E6A621FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9066522E-780E-4409-B410-2525E6A621FC}.Debug|x86.ActiveCfg = Debug|Any CPU
