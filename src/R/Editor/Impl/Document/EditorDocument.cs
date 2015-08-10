@@ -8,6 +8,7 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Editor.Commands;
+using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation;
 using Microsoft.VisualStudio.Text;
@@ -60,6 +61,8 @@ namespace Microsoft.R.Editor.Document
             //_validator = new TreeValidator(this.EditorTree);
 
             this.EditorTree.Build();
+
+            RCompletionEngine.Initialize();
         }
         #endregion
 

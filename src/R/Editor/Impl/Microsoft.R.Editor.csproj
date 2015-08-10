@@ -90,6 +90,7 @@
     <Compile Include="Completion\Engine\RCompletionEngine.cs" />
     <Compile Include="Completion\Provider\CompletionControllerProvider.cs" />
     <Compile Include="Completion\Provider\CompletionSourceProvider.cs" />
+    <Compile Include="Completion\Provider\FunctionCompletionProvider.cs" />
     <Compile Include="Completion\Provider\KeywordCompletionProvider.cs" />
     <Compile Include="Completion\RCompletionSource.cs" />
     <Compile Include="Completion\RCompletion.cs" />
@@ -113,7 +114,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Settings\RSettings.cs" />
+    <Compile Include="Settings\REditorSettings.cs" />
     <Compile Include="Tree\ApplyTreeChanges.cs" />
     <Compile Include="Tree\ChangeProcessor.cs" />
     <Compile Include="Tree\Debug.cs" />
@@ -160,6 +161,10 @@
     <ProjectReference Include="..\..\..\Common\Editor\Impl\Microsoft.Languages.Editor.csproj">
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Engine\Impl\Microsoft.R.Engine.csproj">
+      <Project>{0b66c950-3784-40f8-adb0-3c74637bc69d}</Project>
+      <Name>Microsoft.R.Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>

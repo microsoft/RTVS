@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Core.Test", "R\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring", "ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj", "{41AA8769-0FBC-4A80-8498-21C833F0C2AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Engine", "Engine\Impl\Microsoft.R.Engine.csproj", "{0B66C950-3784-40F8-ADB0-3C74637BC69D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -113,6 +115,14 @@ Global
 		{41AA8769-0FBC-4A80-8498-21C833F0C2AC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{41AA8769-0FBC-4A80-8498-21C833F0C2AC}.Release|x86.ActiveCfg = Release|Any CPU
 		{41AA8769-0FBC-4A80-8498-21C833F0C2AC}.Release|x86.Build.0 = Release|Any CPU
+		{0B66C950-3784-40F8-ADB0-3C74637BC69D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B66C950-3784-40F8-ADB0-3C74637BC69D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B66C950-3784-40F8-ADB0-3C74637BC69D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0B66C950-3784-40F8-ADB0-3C74637BC69D}.Debug|x86.Build.0 = Debug|Any CPU
+		{0B66C950-3784-40F8-ADB0-3C74637BC69D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B66C950-3784-40F8-ADB0-3C74637BC69D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B66C950-3784-40F8-ADB0-3C74637BC69D}.Release|x86.ActiveCfg = Release|Any CPU
+		{0B66C950-3784-40F8-ADB0-3C74637BC69D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

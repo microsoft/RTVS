@@ -99,17 +99,12 @@ namespace Microsoft.R.Editor.Completion
 
         protected override bool AutoCompletionEnabled
         {
-            get { return RSettings.CompletionEnabled; }
+            get { return REditorSettings.CompletionEnabled; }
         }
 
         protected override bool AutoSignatureHelpEnabled
         {
-            get { return RSettings.SignatureHelpEnabled; }
-        }
-
-        private void OnArtifactsChanged(object sender, EventArgs e)
-        {
-            this.DismissAllSessions();
+            get { return REditorSettings.SignatureHelpEnabled; }
         }
 
         //private void OnTreeUpdateCompleted(object sender, HtmlTreeUpdatedEventArgs e)

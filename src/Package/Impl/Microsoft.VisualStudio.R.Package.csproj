@@ -75,6 +75,7 @@
     <Compile Include="Document\IVsEditorDocumentFactory.cs" />
     <Compile Include="Document\VsEditorDocument.cs" />
     <Compile Include="Document\VsEditorDocumentFactory.cs" />
+    <Compile Include="Options\R\Tools\RToolsSettings.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
@@ -94,7 +95,7 @@
     <Compile Include="Options\R\RToolsOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\R\REditorOptionsDialog.cs">
+    <Compile Include="Options\R\Editor\REditorOptionsDialog.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\R\VsRSettingsStorage.cs" />
@@ -274,6 +275,10 @@
       <Name>Microsoft.Languages.Editor</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Engine\Impl\Microsoft.R.Engine.csproj">
+      <Project>{0b66c950-3784-40f8-adb0-3c74637bc69d}</Project>
+      <Name>Microsoft.R.Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj">
       <Project>{41AA8769-0FBC-4A80-8498-21C833F0C2AC}</Project>

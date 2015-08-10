@@ -73,12 +73,12 @@ namespace Microsoft.R.Editor.Validation
             _editorTree.UpdateCompleted += OnTreeUpdateCompleted;
             _editorTree.Closing += OnTreeClose;
 
-            _validationEnabled = RSettings.ValidationEnabled;
+            _validationEnabled = REditorSettings.ValidationEnabled;
 
             // Advise to settings changed *after* accessing the RSettings, 
             // since accessing the host application (VS) settings object may 
             // cause it fire Changed notification in some cases.
-            RSettings.Changed += OnSettingsChanged;
+            REditorSettings.Changed += OnSettingsChanged;
 
             // We don't want to start validation right away since it may 
             // interfere with the editor perceived startup performance.
@@ -161,7 +161,7 @@ namespace Microsoft.R.Editor.Validation
         {
             bool validationWasEnabled = _validationEnabled;
 
-            _validationEnabled = RSettings.ValidationEnabled;
+            _validationEnabled = REditorSettings.ValidationEnabled;
 
             if (validationWasEnabled && !_validationEnabled)
             {
@@ -243,7 +243,7 @@ namespace Microsoft.R.Editor.Validation
 
             _editorTree = null;
 
-            RSettings.Changed -= OnSettingsChanged;
+            REditorSettings.Changed -= OnSettingsChanged;
         }
         #endregion
 

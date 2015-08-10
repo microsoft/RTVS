@@ -6,7 +6,7 @@ using Microsoft.Languages.Editor.Shell;
 
 namespace Microsoft.R.Editor.Settings
 {
-    public static class RSettings
+    public static class REditorSettings
     {
         public const string FormatOnPasteKey = "FormatOnPaste";
 
