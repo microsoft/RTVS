@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.Composition;
-using Microsoft.Languages.Editor.ContentType;
 using Microsoft.Languages.Editor.EditorFactory;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.Document

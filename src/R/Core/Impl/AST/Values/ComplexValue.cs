@@ -32,7 +32,7 @@ namespace Microsoft.R.Core.AST.Values
             Debug.Assert(text[text.Length - 1] == 'i');
 
             // Drop trailing i and retokenize as two numbers
-            Tokenizer tokenizer = new Tokenizer();
+            RTokenizer tokenizer = new RTokenizer();
             IReadOnlyTextRangeCollection<RToken> tokens= tokenizer.Tokenize(text.Substring(0, text.Length - 1));
 
             if(tokens.Count == 1)

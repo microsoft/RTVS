@@ -276,10 +276,6 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <ProjectReference Include="..\..\Engine\Impl\Microsoft.R.Engine.csproj">
-      <Project>{0b66c950-3784-40f8-adb0-3c74637bc69d}</Project>
-      <Name>Microsoft.R.Engine</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj">
       <Project>{41AA8769-0FBC-4A80-8498-21C833F0C2AC}</Project>
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
@@ -297,6 +293,10 @@
       <Name>Microsoft.R.Editor</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Support\Impl\Microsoft.R.Support.csproj">
+      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
+      <Name>Microsoft.R.Support</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

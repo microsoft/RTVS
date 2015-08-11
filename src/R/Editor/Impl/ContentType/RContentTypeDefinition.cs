@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Languages.Editor.ContentType
+namespace Microsoft.R.Editor.ContentType
 {
     /// <summary>
     /// Exports the R content type and file extension
@@ -18,7 +18,6 @@ namespace Microsoft.Languages.Editor.ContentType
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(RContentTypeDefinition.ContentType)]
-        [BaseDefinition("projection")]
         [BaseDefinition("text")]
         public ContentTypeDefinition IRContentType { get; set; }
 

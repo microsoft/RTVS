@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Engine.Settings;
 
-namespace Microsoft.R.Engine.Help
+namespace Microsoft.R.Support.Help
 {
     public sealed class EngineHelpSession : IDisposable
     {

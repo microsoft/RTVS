@@ -25,7 +25,7 @@ namespace Microsoft.R.Core.Parser
         /// <param name="range">Range to parse</param>
         public static AstRoot Parse(ITextProvider textProvider, ITextRange range)
         {
-            var tokenizer = new Tokenizer();
+            var tokenizer = new RTokenizer();
 
             IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(textProvider, range.Start, range.Length);
             TokenStream<RToken>  tokenStream = new TokenStream<RToken>(tokens, new RToken(RTokenType.EndOfStream, TextRange.EmptyRange));

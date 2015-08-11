@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Microsoft.Languages.Editor.ContentType;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Languages;

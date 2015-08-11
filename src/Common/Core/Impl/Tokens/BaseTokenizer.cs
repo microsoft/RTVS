@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
-namespace Microsoft.R.Core.Tokens
+namespace Microsoft.Languages.Core.Tokens
 {
     public abstract class BaseTokenizer<T> : ITokenizer<T> where T : ITextRange
     {

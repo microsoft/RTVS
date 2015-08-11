@@ -167,7 +167,7 @@
     <Compile Include="Tokens\Operators.cs" />
     <Compile Include="Tokens\RToken.cs" />
     <Compile Include="Tokens\RTokenSubType .cs" />
-    <Compile Include="Tokens\Tokenizer.cs" />
+    <Compile Include="Tokens\RTokenizer.cs" />
     <Compile Include="Tokens\RTokenType.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,15 +1,16 @@
-﻿using Microsoft.R.Core.Tokens;
+﻿using Microsoft.Languages.Core.Test.Tokens;
+using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens
 {
     [TestClass]
-    public class TokenizeFunctionsTest : TokenizeTestBase
+    public class TokenizeFunctionsTest : TokenizeTestBase<RToken, RTokenType>
     {
         [TestMethod]
-        public void TokenizeIFunctionsTest1()
+        public void TokenizeFunctionsTest1()
         {
-            var tokens = this.Tokenize("x <- function( ");
+            var tokens = this.Tokenize("x <- function( ", new RTokenizer());
 
             Assert.AreEqual(4, tokens.Count);
 

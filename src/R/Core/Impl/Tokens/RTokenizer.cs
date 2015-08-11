@@ -9,7 +9,7 @@ namespace Microsoft.R.Core.Tokens
     /// Coloring of variables, function names and parameters
     /// is provided later by AST. Tokenizer only provides candidates.
     /// </summary>
-    internal class Tokenizer : BaseTokenizer<RToken>
+    public sealed class RTokenizer : BaseTokenizer<RToken>
     {
         /// <summary>
         /// Main tokenization method. Responsible for adding next token
@@ -356,18 +356,7 @@ namespace Microsoft.R.Core.Tokens
         /// </summary>
         private void HandleComment()
         {
-            int start = _cs.Position;
-
-            while (!_cs.IsEndOfStream() && !_cs.IsAtNewLine())
-            {
-                _cs.MoveToNextChar();
-            }
-
-            int length = _cs.Position - start;
-            if (length > 0)
-            {
-                AddToken(RTokenType.Comment, start, length);
-            }
+            Tokenizer.HandleEolComment(_cs, (start, length) => AddToken(RTokenType.Comment, start, length));
         }
 
         /// <summary>
@@ -376,26 +365,7 @@ namespace Microsoft.R.Core.Tokens
         /// <param name="openQuote"></param>
         private void HandleString(char openQuote)
         {
-            int start = _cs.Position;
-
-            _cs.MoveToNextChar();
-
-            while (!_cs.IsEndOfStream())
-            {
-                if (_cs.CurrentChar == openQuote)
-                {
-                    _cs.MoveToNextChar();
-                    break;
-                }
-
-                _cs.Advance(_cs.CurrentChar == '\\' ? 2 : 1);
-            }
-
-            int length = _cs.Position - start;
-            if (length > 0)
-            {
-                AddToken(RTokenType.String, start, length);
-            }
+            Tokenizer.HandleString(openQuote, _cs, (start, length) => AddToken(RTokenType.String, start, length));
         }
 
         private void AddIdentifier()
@@ -432,16 +402,10 @@ namespace Microsoft.R.Core.Tokens
 
         internal void SkipIdentifier()
         {
-            if (!_cs.IsAnsiLetter() && _cs.CurrentChar != '.')
-                return;
-
-            while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace())
-            {
-                if (!IsIdentifierCharacter())
-                    break;
-
-                _cs.MoveToNextChar();
-            }
+            Tokenizer.SkipIdentifier(
+                _cs, 
+                (CharacterStream cs) => { return (_cs.IsAnsiLetter() || _cs.CurrentChar == '.'); },
+                (CharacterStream cs) => { return IsIdentifierCharacter(cs); });
         }
 
         internal void SkipUnknown()
@@ -455,9 +419,9 @@ namespace Microsoft.R.Core.Tokens
             }
         }
 
-        private bool IsIdentifierCharacter()
+        private static bool IsIdentifierCharacter(CharacterStream cs)
         {
-            return (_cs.IsAnsiLetter() || _cs.IsDecimal() || _cs.CurrentChar == '.' || _cs.CurrentChar == '_');
+            return (cs.IsAnsiLetter() || cs.IsDecimal() || cs.CurrentChar == '.' || cs.CurrentChar == '_');
         }
     }
 }

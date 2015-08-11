@@ -25,7 +25,7 @@ namespace Microsoft.R.Core.Test.Tokens
 
                 string text = TestFiles.LoadFile(context, testFile);
                 ITextProvider textProvider = new TextStream(text);
-                var tokenizer = new Tokenizer();
+                var tokenizer = new RTokenizer();
 
                 var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
                 string actual = DebugWriter.WriteTokens<RToken, RTokenType>(tokens);

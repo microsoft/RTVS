@@ -1,15 +1,16 @@
-﻿using Microsoft.R.Core.Tokens;
+﻿using Microsoft.Languages.Core.Test.Tokens;
+using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens
 {
     [TestClass]
-    public class TokenizeIntegersTest: TokenizeTestBase
+    public class TokenizeIntegersTest: TokenizeTestBase<RToken, RTokenType>
     {
         [TestMethod]
         public void TokenizeIntegers1()
         {
-            var tokens = this.Tokenize("+1 ");
+            var tokens = this.Tokenize("+1 ", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
             Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
@@ -20,7 +21,7 @@ namespace Microsoft.R.Core.Test.Tokens
         [TestMethod]
         public void TokenizeIntegers2()
         {
-            var tokens = this.Tokenize("-12 +1");
+            var tokens = this.Tokenize("-12 +1", new RTokenizer());
 
             Assert.AreEqual(3, tokens.Count);
             Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
@@ -39,7 +40,7 @@ namespace Microsoft.R.Core.Test.Tokens
         [TestMethod]
         public void TokenizeIntegers3()
         {
-            var tokens = this.Tokenize("-12+-1");
+            var tokens = this.Tokenize("-12+-1", new RTokenizer());
 
             Assert.AreEqual(3, tokens.Count);
             Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);

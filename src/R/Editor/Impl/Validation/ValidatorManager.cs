@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.ContentType;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Validation.Definitions;
 
 namespace Microsoft.R.Editor.Validation

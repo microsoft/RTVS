@@ -1,13 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens
 {
     [TestClass]
-    public class VerifySortedTables : TokenizeTestBase
+    public class VerifySortedTables : TokenizeTestBase<RToken, RTokenType>
     {
+        [TestMethod]
+        public void VerifySortedRKeywords()
+        {
+            string[] array = new List<string>(Keywords.KeywordList).ToArray();
+            Array.Sort(array);
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                Assert.AreEqual(Keywords.KeywordList[i], array[i]);
+            }
+        }
+
         [TestMethod]
         public void VerifySorted2CharOperators()
         {

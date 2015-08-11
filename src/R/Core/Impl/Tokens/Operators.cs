@@ -3,7 +3,7 @@ using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.R.Core.Tokens
 {
-    internal static class Operators
+    public static class Operators
     {
         /// <summary>
         /// Given candidate returns length of operator

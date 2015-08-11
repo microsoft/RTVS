@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Microsoft.Languages.Editor.ContentType;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.R.Package;
 
 namespace Microsoft.VisualStudio.R.Languages

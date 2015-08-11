@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion.Definitions;
-using Microsoft.R.Engine.Help;
+using Microsoft.R.Support.Help;
 
 namespace Microsoft.R.Editor.Completion.Engine
 {

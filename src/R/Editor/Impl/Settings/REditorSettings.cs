@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Editor.ContentType;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Editor.ContentType;
 
 namespace Microsoft.R.Editor.Settings
 {

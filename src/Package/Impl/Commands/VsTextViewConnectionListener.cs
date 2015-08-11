@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.ContentType;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Commands;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document;

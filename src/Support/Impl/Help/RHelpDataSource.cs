@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Engine.Help
+namespace Microsoft.R.Support.Help
 {
     public sealed class RHelpDataSource : IDisposable
     {

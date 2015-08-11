@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.Languages.Editor.ContentType;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
