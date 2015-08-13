@@ -18,6 +18,7 @@ namespace Microsoft.R.Editor.ContentType
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(RContentTypeDefinition.ContentType)]
+        [BaseDefinition("projection")]
         [BaseDefinition("text")]
         public ContentTypeDefinition IRContentType { get; set; }
 

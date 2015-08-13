@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.Composition;
-using Microsoft.R.Engine.Settings.Definitions;
+using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R
 {
@@ -10,11 +10,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
         {
             // TODO: implement
             return string.Empty;
-        }
-
-        public int HelpPortNumber
-        {
-            get { return 8186; }
         }
     }
 }

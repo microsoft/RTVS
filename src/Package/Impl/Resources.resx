@@ -186,4 +186,19 @@
   <data name="Temp_SettingDisplayName" xml:space="preserve">
     <value>Setting</value>
   </data>
+  <data name="Settings_IntellisenseCategory" xml:space="preserve">
+    <value>IntelliSense</value>
+  </data>
+  <data name="Settings_ShowInternalFunctions" xml:space="preserve">
+    <value>Show internal functions</value>
+  </data>
+  <data name="Settings_ShowInternalFunctions_Description" xml:space="preserve">
+    <value>Show internal functions (functions beginning with dot) in the statement completion list</value>
+  </data>
+  <data name="Settings_ShowTclFunctions" xml:space="preserve">
+    <value>Show TCL functions</value>
+  </data>
+  <data name="Settings_ShowTclFunctions_Description" xml:space="preserve">
+    <value>Show functions from TCL/TK package in the statement completion list</value>
+  </data>
 </root>

@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Completion.Provider
+namespace Microsoft.R.Editor.Completion.Providers
 {
     /// <summary>
     /// Completion source for Visual Studio core editor

@@ -38,7 +38,7 @@ namespace Microsoft.R.Support.RD.Classification
         {
             public ArgumentClassificationFormat()
             {
-                ForegroundColor = Colors.Teal;
+                ForegroundColor = Colors.Black;
                 this.DisplayName = Resources.ColorName_RD_Argument;
             }
         }

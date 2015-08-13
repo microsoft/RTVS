@@ -1,8 +1,7 @@
-﻿namespace Microsoft.R.Engine.Settings.Definitions
+﻿namespace Microsoft.R.Support.Settings.Definitions
 {
     public interface IRToolsSettings
     {
         string GetRVersionPath();
-        int HelpPortNumber { get; }
     }
 }

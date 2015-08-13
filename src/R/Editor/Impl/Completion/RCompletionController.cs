@@ -134,7 +134,7 @@ namespace Microsoft.R.Editor.Completion
 
                 if (completionText == "else" || completionText == "repeat")
                 {
-                    if(typedChar == '{')
+                    if (typedChar == '{')
                         return true;
 
                     if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
@@ -162,7 +162,7 @@ namespace Microsoft.R.Editor.Completion
 
                     return false;
                 }
-                
+
                 switch (typedChar)
                 {
                     case '<':
@@ -206,7 +206,17 @@ namespace Microsoft.R.Editor.Completion
         {
             if (!HasActiveCompletionSession)
             {
-                return Char.IsLetter(typedCharacter);
+                switch (typedCharacter)
+                {
+                    case '(':
+                    //case '$':
+                    //case '@':
+                    case ':':
+                        return true;
+
+                    default:
+                        return Char.IsLetter(typedCharacter);
+                }
             }
 
             return false;

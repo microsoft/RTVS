@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Engine.Settings.Definitions;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.Win32;
 
-namespace Microsoft.R.Engine.Settings
+namespace Microsoft.R.Support.Settings
 {
     public static class RToolsSettings
     {
@@ -61,15 +61,6 @@ namespace Microsoft.R.Engine.Settings
             }
 
             return binFolder;
-        }
-
-        public static string HelpPort
-        {
-            get
-            {
-                Init();
-                return ToolsSettings.HelpPortNumber.ToString();
-            }
         }
 
         private static void Init()

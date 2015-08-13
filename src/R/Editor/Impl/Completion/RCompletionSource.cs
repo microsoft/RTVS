@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.Completion
         public RCompletionSource(ITextBuffer textBuffer)
         {
             _textBuffer = textBuffer;
-            _textBuffer.Changed += OnTextBufferChanged;
+            //_textBuffer.Changed += OnTextBufferChanged;
         }
 
         /// <summary>
@@ -55,80 +55,80 @@ namespace Microsoft.R.Editor.Completion
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(_textBuffer.CurrentSnapshot);
 
             // If document changed but hasn't been parsed yet start async session
-            bool documentDirty = false; // doc.HtmlEditorTree.IsDirty
-            if (documentDirty)
-            {
-                IGlyphService glyphService = EditorShell.ExportProvider.GetExport<IGlyphService>().Value;
+            //bool documentDirty = false; // doc.HtmlEditorTree.IsDirty
+            //if (documentDirty)
+            //{
+            //    IGlyphService glyphService = EditorShell.ExportProvider.GetExport<IGlyphService>().Value;
 
-                List<Completion> completions = new List<Completion>();
+            //    List<Completion> completions = new List<Completion>();
 
-                completions.Add(
-                    new Completion(Resources.AsyncIntellisense,
-                            String.Empty, String.Empty,
-                            glyphService.GetGlyph(StandardGlyphGroup.GlyphInformation, StandardGlyphItem.GlyphItemPublic),
-                            String.Empty));
+            //    completions.Add(
+            //        new Completion(Resources.AsyncIntellisense,
+            //                String.Empty, String.Empty,
+            //                glyphService.GetGlyph(StandardGlyphGroup.GlyphInformation, StandardGlyphItem.GlyphItemPublic),
+            //                String.Empty));
 
-                ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive);
+            //    ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive);
 
-                CompletionSet completionSet = new CompletionSet(
-                    null,
-                    null,
-                    trackingSpan,
-                    completions,
-                    null); // builders (none yet)
+            //    CompletionSet completionSet = new CompletionSet(
+            //        null,
+            //        null,
+            //        trackingSpan,
+            //        completions,
+            //        null); // builders (none yet)
 
-                completionSets.Add(completionSet);
+            //    completionSets.Add(completionSet);
 
-                Debug.Assert(_asyncSession == null, "We should not be adding async session to existing completion session");
+            //    Debug.Assert(_asyncSession == null, "We should not be adding async session to existing completion session");
 
-                _asyncSession = session;
-                _asyncSession.Properties.AddProperty(_asyncIntellisenseSession, String.Empty);
+            //    _asyncSession = session;
+            //    _asyncSession.Properties.AddProperty(_asyncIntellisenseSession, String.Empty);
 
-                //doc.HtmlEditorTree.ProcessChangesAsync(TreeUpdatedCallback);
-            }
-            else
-            {
+            //    //doc.HtmlEditorTree.ProcessChangesAsync(TreeUpdatedCallback);
+            //}
+            //else
+            //{
                 PopulateCompletionList(position, session, completionSets);
-            }
+            //}
         }
 
-        private void TreeUpdatedCallback()
-        {
-            ICompletionSession session = _asyncSession;
-            _asyncSession = null;
+        //private void TreeUpdatedCallback()
+        //{
+        //    ICompletionSession session = _asyncSession;
+        //    _asyncSession = null;
 
-            if (session == null || session.Properties == null || !session.Properties.ContainsProperty(_asyncIntellisenseSession))
-            {
-                return;
-            }
+        //    if (session == null || session.Properties == null || !session.Properties.ContainsProperty(_asyncIntellisenseSession))
+        //    {
+        //        return;
+        //    }
 
-            RCompletionController controller = ServiceManager.GetService<RCompletionController>(session.TextView);
-            if (controller != null)
-            {
-                if (!session.IsDismissed)
-                    controller.DismissCompletionSession();
+        //    RCompletionController controller = ServiceManager.GetService<RCompletionController>(session.TextView);
+        //    if (controller != null)
+        //    {
+        //        if (!session.IsDismissed)
+        //            controller.DismissCompletionSession();
 
-                controller.ShowCompletion(autoShownCompletion: true);
-                controller.FilterCompletionSession();
-            }
-        }
+        //        controller.ShowCompletion(autoShownCompletion: true);
+        //        controller.FilterCompletionSession();
+        //    }
+        //}
 
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
-        {
-            DismissAsyncSession();
-        }
+        //private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
+        //{
+        //    DismissAsyncSession();
+        //}
 
-        private void DismissAsyncSession()
-        {
-            if (_asyncSession != null && _asyncSession.Properties != null && _asyncSession.Properties.ContainsProperty(_asyncIntellisenseSession) && !_asyncSession.IsDismissed)
-            {
-                RCompletionController controller = ServiceManager.GetService<RCompletionController>(_asyncSession.TextView);
-                if (controller != null)
-                    controller.DismissCompletionSession();
-            }
+        //private void DismissAsyncSession()
+        //{
+        //    if (_asyncSession != null && _asyncSession.Properties != null && _asyncSession.Properties.ContainsProperty(_asyncIntellisenseSession) && !_asyncSession.IsDismissed)
+        //    {
+        //        RCompletionController controller = ServiceManager.GetService<RCompletionController>(_asyncSession.TextView);
+        //        if (controller != null)
+        //            controller.DismissCompletionSession();
+        //    }
 
-            _asyncSession = null;
-        }
+        //    _asyncSession = null;
+        //}
 
         private void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets)
         {
@@ -144,12 +144,12 @@ namespace Microsoft.R.Editor.Completion
                 autoShownCompletion = session.TextView.Properties.GetProperty<bool>(CompletionController.AutoShownCompletion);
 
             IReadOnlyCollection<IRCompletionListProvider> providers =
-                RCompletionEngine.GetCompletionForLocation(doc.EditorTree.AstRoot, position, autoShownCompletion);
+                RCompletionEngine.GetCompletionForLocation(doc.EditorTree.AstRoot, _textBuffer, position, autoShownCompletion);
 
             Span applicableSpan = GetApplicableSpan(position, session);
             ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan, SpanTrackingMode.EdgeInclusive);
             List<RCompletion> completions = new List<RCompletion>();
-            RCompletionContext context = new RCompletionContext();
+            RCompletionContext context = new RCompletionContext(session, position);
 
             foreach (IRCompletionListProvider provider in providers)
             {
@@ -223,7 +223,7 @@ namespace Microsoft.R.Editor.Completion
         {
             if (_textBuffer != null)
             {
-                _textBuffer.Changed -= OnTextBufferChanged;
+                //_textBuffer.Changed -= OnTextBufferChanged;
                 _textBuffer = null;
             }
         }

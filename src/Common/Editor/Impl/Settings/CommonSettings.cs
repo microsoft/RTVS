@@ -13,6 +13,8 @@ namespace Microsoft.Languages.Editor.Settings
         public const string InsertMatchingBracesKey = "InsertMatchingBraces";
         public const string SignatureHelpEnabledKey = "SignatureHelpEnabled";
         public const string ValidationEnabledKey = "ValidationEnabled";
+        public const string ShowInternalFunctionsKey = "ShowInternalFunctions";
+        public const string ShowTclFunctionsKey = "ShowTclFunctions";
 
         public static bool GetAutoFormat(IEditorSettingsStorage storage)
         {

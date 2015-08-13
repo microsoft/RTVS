@@ -232,11 +232,56 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IntelliSense.
+        /// </summary>
+        internal static string Settings_IntellisenseCategory {
+            get {
+                return ResourceManager.GetString("Settings_IntellisenseCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Paste.
         /// </summary>
         internal static string Settings_PasteCategory {
             get {
                 return ResourceManager.GetString("Settings_PasteCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show internal functions.
+        /// </summary>
+        internal static string Settings_ShowInternalFunctions {
+            get {
+                return ResourceManager.GetString("Settings_ShowInternalFunctions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show internal functions (functions beginning with dot) in the statement completion list.
+        /// </summary>
+        internal static string Settings_ShowInternalFunctions_Description {
+            get {
+                return ResourceManager.GetString("Settings_ShowInternalFunctions_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show TCL functions.
+        /// </summary>
+        internal static string Settings_ShowTclFunctions {
+            get {
+                return ResourceManager.GetString("Settings_ShowTclFunctions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show functions from TCL/TK package in the statement completion list.
+        /// </summary>
+        internal static string Settings_ShowTclFunctions_Description {
+            get {
+                return ResourceManager.GetString("Settings_ShowTclFunctions_Description", resourceCulture);
             }
         }
         

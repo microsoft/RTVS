@@ -26,10 +26,10 @@ namespace Microsoft.R.Core.Parser
             get { return _errors; }
         }
 
-        public ParseContext(AstRoot astRoot, ITextRange range, TokenStream<RToken> tokens)
+        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens)
         {
-            this.AstRoot = astRoot;
-            this.TextProvider = astRoot.TextProvider;
+            this.AstRoot = new AstRoot(textProvider);
+            this.TextProvider = textProvider;
             this.Tokens = tokens;
             this.TextRange = range;
         }

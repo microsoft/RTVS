@@ -1,58 +1,42 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Engine.Settings;
+using Microsoft.R.Support.Settings;
 
-namespace Microsoft.R.Support.Help
+namespace Microsoft.R.Support.Engine
 {
-    public sealed class EngineHelpSession : IDisposable
+    public sealed class EngineSession : IDisposable
     {
         private Task _startingTask;
         private Process _rProcess;
 
-        public EngineHelpSession()
+        public EngineSession()
         {
             EditorShell.OnIdle += OnIdle;
         }
 
-        public async Task<string> SendCommand(string command)
+        public async Task<EngineResponse> SendCommand(string command)
         {
-            string result = string.Empty;
+            EngineResponse response = null;
 
             await EnsureEngineRunningAsync();
 
             if (_rProcess != null)
             {
-                _rProcess.StandardOutput.DiscardBufferedData();
-
+                response = new EngineResponse(_rProcess);
                 _rProcess.StandardInput.WriteLine(command);
-                result = ReadOutput();
             }
 
-            return result;
-        }
-
-        private string ReadOutput()
-        {
-            var sb = new StringBuilder();
-
-            while(_rProcess.StandardOutput.Peek() != -1)
-            {
-                char ch = (char)_rProcess.StandardOutput.Read();
-                sb.Append(ch);
-            }
-
-            return sb.ToString();
+            return response;
         }
 
         private Task EnsureEngineRunningAsync()
         {
             EditorShell.OnIdle -= OnIdle;
 
-            if (_rProcess != null)
+            if (_rProcess == null || _rProcess.HasExited)
             {
                 return LaunchREngineAsync();
             }
@@ -68,7 +52,7 @@ namespace Microsoft.R.Support.Help
 
         private Task LaunchREngineAsync()
         {
-            if(_startingTask == null)
+            if (_startingTask == null)
             {
                 if (_rProcess == null || _rProcess.HasExited)
                 {
@@ -93,7 +77,7 @@ namespace Microsoft.R.Support.Help
         {
             ProcessStartInfo info = new ProcessStartInfo();
 
-            info.Arguments = "--vanilla --slave --ess"; 
+            info.Arguments = "--vanilla --slave --ess";
             info.RedirectStandardInput = true;
             info.RedirectStandardOutput = true;
             info.RedirectStandardError = true;
@@ -102,13 +86,15 @@ namespace Microsoft.R.Support.Help
             info.FileName = exePath;
 
             _rProcess = Process.Start(info);
-            _rProcess.Exited += OnProcess_Exited;
+            _rProcess.Exited += OnProcessExited;
+            _rProcess.BeginOutputReadLine();
+
             _startingTask = null;
         }
 
-        private void OnProcess_Exited(object sender, EventArgs e)
+        private void OnProcessExited(object sender, EventArgs e)
         {
-            _rProcess.Exited -= OnProcess_Exited;
+            _rProcess.Exited -= OnProcessExited;
             _rProcess = null;
         }
 
@@ -116,7 +102,8 @@ namespace Microsoft.R.Support.Help
         {
             if (_rProcess != null)
             {
-                _rProcess.Exited -= OnProcess_Exited;
+                _rProcess.Exited -= OnProcessExited;
+
                 _rProcess.Kill();
                 _rProcess = null;
             }

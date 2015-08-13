@@ -6,7 +6,7 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace Microsoft.R.Editor.Completion.Provider
+namespace Microsoft.R.Editor.Completion.Providers
 {
     /// <summary>
     /// R language keyword completion provider.

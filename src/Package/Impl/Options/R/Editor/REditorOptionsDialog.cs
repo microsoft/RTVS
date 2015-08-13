@@ -36,6 +36,26 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
             set { REditorSettings.ValidationEnabled = value; }
         }
 
+        [LocCategory("Settings_IntellisenseCategory")]
+        [CustomLocDisplayName("Settings_ShowInternalFunctions")]
+        [LocDescription("Settings_ShowInternalFunctions_Description")]
+        [DefaultValue(true)]
+        public bool ShowInternalFunctions
+        {
+            get { return REditorSettings.ShowInternalFunctions; }
+            set { REditorSettings.ShowInternalFunctions = value; }
+        }
+
+        [LocCategory("Settings_IntellisenseCategory")]
+        [CustomLocDisplayName("Settings_ShowTclFunctions")]
+        [LocDescription("Settings_ShowTclFunctions_Description")]
+        [DefaultValue(false)]
+        public bool ShowTclFunctions
+        {
+            get { return REditorSettings.ShowTclFunctions; }
+            set { REditorSettings.ShowTclFunctions = value; }
+        }
+
         public override void ResetSettings()
         {
             REditorSettings.ResetSettings();

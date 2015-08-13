@@ -139,6 +139,11 @@ namespace Microsoft.Languages.Core.Tokens
             return _endOfStreamToken;
         }
 
+        public T this[int index]
+        {
+            get { return GetTokenAt(index); }
+        }
+
         public bool IsEndOfStream()
         {
             return _index >= _tokens.Count;
@@ -208,7 +213,7 @@ namespace Microsoft.Languages.Core.Tokens
                     return;
                 }
 
-                if (Position < _tokens.Count - 1 && 
+                if (Position < _tokens.Count - 1 &&
                     textProvider.IndexOf("\n", TextRange.FromBounds(currentTokenEnd, nextTokenStart), false) >= 0)
                 {
                     break;
@@ -222,12 +227,12 @@ namespace Microsoft.Languages.Core.Tokens
         /// </summary>
         public bool IsLineBreakAfter(ITextProvider textProvider, int tokenIndex)
         {
-            if(tokenIndex >= _tokens.Count)
+            if (tokenIndex >= _tokens.Count)
             {
                 return false;
             }
 
-            if(tokenIndex < 0)
+            if (tokenIndex < 0)
             {
                 tokenIndex = 0;
             }

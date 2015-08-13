@@ -16,9 +16,5 @@ namespace Microsoft.R.Editor.Completion.Definitions
             this.Session = session;
             this.Position = position;
         }
-
-        public RCompletionContext()
-        {
-        }
     }
 }

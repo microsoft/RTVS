@@ -29,6 +29,18 @@ namespace Microsoft.R.Support.RD.Tokens
                     HandleString(_cs.CurrentChar);
                     break;
 
+                case '{':
+                case '(':
+                    AddToken(RdTokenType.OpenBrace, _cs.Position, 1);
+                    _cs.MoveToNextChar();
+                    break;
+
+                case '}':
+                case ')':
+                    AddToken(RdTokenType.CloseBrace, _cs.Position, 1);
+                    _cs.MoveToNextChar();
+                    break;
+
                 case '%':
                     // RD Comments are from # to the end of the line
                     HandleComment();
@@ -99,9 +111,12 @@ namespace Microsoft.R.Support.RD.Tokens
                     {
                         _cs.Advance(2);
                     }
-                    else if(char.IsLetter(_cs.NextChar))
+                    else if (char.IsLetter(_cs.NextChar))
                     {
-                        AddToken(RdTokenType.Argument, start, _cs.Position - start);
+                        if (_cs.Position > start)
+                        {
+                            AddToken(RdTokenType.Argument, start, _cs.Position - start);
+                        }
 
                         HandleKeyword();
                         start = _cs.Position;
@@ -120,6 +135,16 @@ namespace Microsoft.R.Support.RD.Tokens
                     _cs.MoveToNextChar();
                     break;
                 }
+                else if (_cs.CurrentChar == '%')
+                {
+                    if (_cs.Position > start)
+                    {
+                        AddToken(RdTokenType.Argument, start, _cs.Position - start);
+                    }
+
+                    HandleComment();
+                    start = _cs.Position;
+                }
 
                 _cs.MoveToNextChar();
             }
@@ -136,7 +161,7 @@ namespace Microsoft.R.Support.RD.Tokens
             SkipUnknown();
 
             int length = _cs.Position - start;
-            if(length > 1)
+            if (length > 1)
             {
                 AddToken(RdTokenType.Pragma, start, length);
             }

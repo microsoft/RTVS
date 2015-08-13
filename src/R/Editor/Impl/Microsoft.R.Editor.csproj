@@ -88,10 +88,12 @@
     <Compile Include="Completion\Definitions\RCompletionContext.cs" />
     <Compile Include="Completion\Definitions\IRCompletionListProvider.cs" />
     <Compile Include="Completion\Engine\RCompletionEngine.cs" />
-    <Compile Include="Completion\Provider\CompletionControllerProvider.cs" />
-    <Compile Include="Completion\Provider\CompletionSourceProvider.cs" />
-    <Compile Include="Completion\Provider\FunctionCompletionProvider.cs" />
-    <Compile Include="Completion\Provider\KeywordCompletionProvider.cs" />
+    <Compile Include="Completion\Providers\CompletionControllerProvider.cs" />
+    <Compile Include="Completion\Providers\CompletionSourceProvider.cs" />
+    <Compile Include="Completion\Providers\CompletionTypeAttribute.cs" />
+    <Compile Include="Completion\Providers\PackagesCompletionProvider.cs" />
+    <Compile Include="Completion\Providers\FunctionCompletionProvider.cs" />
+    <Compile Include="Completion\Providers\KeywordCompletionProvider.cs" />
     <Compile Include="Completion\RCompletionSource.cs" />
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />

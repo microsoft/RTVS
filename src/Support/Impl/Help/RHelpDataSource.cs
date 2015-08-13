@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.R.Support.Engine;
 
 namespace Microsoft.R.Support.Help
 {
     public sealed class RHelpDataSource : IDisposable
     {
-        EngineHelpSession _session;
+        EngineSession _session;
 
         public RHelpDataSource()
         {
-            _session = new EngineHelpSession();
+            _session = new EngineSession();
         }
 
-        public async Task<string> GetHelpText(string func, string package)
+        public async Task<EngineResponse> GetFunctionHelp(string func, string package)
         {
             string command;
 
@@ -27,9 +28,8 @@ namespace Microsoft.R.Support.Help
 
             command += " utils:::.getHelpFile(x)";
 
-            string result = await _session.SendCommand(command);
-
-            return result;
+            EngineResponse response = await _session.SendCommand(command);
+            return response;
         }
 
         public void Dispose()

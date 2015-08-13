@@ -72,6 +72,10 @@ namespace Microsoft.R.Core.AST.Statements
                     statement = new KeywordExpressionStatement();
                     break;
 
+                case "library":
+                    statement = new KeywordIdentifierStatement();
+                    break;
+
                 default:
                     context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, currentToken));
                     break;
