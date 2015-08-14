@@ -23,12 +23,12 @@
     <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,7 +36,7 @@
     <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
