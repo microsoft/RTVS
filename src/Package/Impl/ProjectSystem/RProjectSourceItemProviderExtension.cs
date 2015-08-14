@@ -15,8 +15,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
 	internal sealed class RProjectSourceItemProviderExtension : FileSystemMirroringProjectSourceItemProviderExtensionBase
 	{
 		[ImportingConstructor]
-		public RProjectSourceItemProviderExtension(UnconfiguredProject unconfiguredProject, ConfiguredProject configuredProject, IProjectLockService projectLockService) 
-			: base(unconfiguredProject, configuredProject, projectLockService)
+		public RProjectSourceItemProviderExtension(UnconfiguredProject unconfiguredProject, ConfiguredProject configuredProject, IProjectLockService projectLockService, IFileSystemMirroringProjectTemporaryItems temporaryItems) 
+			: base(unconfiguredProject, configuredProject, projectLockService, temporaryItems)
 		{
 		}
 	}

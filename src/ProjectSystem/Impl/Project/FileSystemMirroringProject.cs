@@ -15,21 +15,25 @@ using MsBuildProject = Microsoft.Build.Evaluation.Project;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 {
-	public class FileSystemMirroringProject
-	{
+	public class FileSystemMirroringProject : IFileSystemMirroringProjectTemporaryItems
+    {
 		private readonly static XProjDocument EmptyProject;
 
 		private readonly UnconfiguredProject _unconfiguredProject;
 		private readonly IProjectLockService _projectLockService;
 		private readonly MsBuildFileSystemWatcher _fileSystemWatcher;
 		private readonly CancellationToken _unloadCancellationToken;
-		private readonly string _inMemoryImportFullPath;
+        private readonly string _projectDirectory;
+        private readonly string _inMemoryImportFullPath;
 		private readonly Dictionary<string, ProjectItemElement> _fileItems;
 		private readonly Dictionary<string, ProjectItemElement> _directoryItems;
 
 		private ProjectRootElement _inMemoryImport;
+	    private ProjectItemGroupElement _filesItemGroup;
+	    private ProjectItemGroupElement _directoriesItemGroup;
+		private ProjectItemGroupElement _temporaryAddedItemGroup;
 
-		static FileSystemMirroringProject()
+	    static FileSystemMirroringProject()
 		{
 			EmptyProject = new XProjDocument(new XProject());
 		}
@@ -40,6 +44,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 			_projectLockService = projectLockService;
 			_fileSystemWatcher = fileSystemWatcher;
 			_unloadCancellationToken = _unconfiguredProject.Services.ProjectAsynchronousTasks.UnloadCancellationToken;
+			_projectDirectory = _unconfiguredProject.GetProjectDirectory();
 			_inMemoryImportFullPath = _unconfiguredProject.GetInMemoryTargetsFileFullPath();
 			_fileItems = new Dictionary<string, ProjectItemElement>(StringComparer.OrdinalIgnoreCase);
 			_directoryItems = new Dictionary<string, ProjectItemElement>(StringComparer.OrdinalIgnoreCase);
@@ -74,12 +79,63 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 					// The project didn’t already exist, so create it, and then mark the evaluated project dirty
 					// so that MSBuild will notice. This step isn’t necessary if the project was already in memory.
 					_inMemoryImport = CreateEmptyMsBuildProject(_inMemoryImportFullPath, access.ProjectCollection);
+				    _filesItemGroup = _inMemoryImport.AddItemGroup();
+                    _directoriesItemGroup = _inMemoryImport.AddItemGroup();
+                    _temporaryAddedItemGroup = _inMemoryImport.AddItemGroup();
 
-					// Note that we actually need to mark every project evaluation dirty that is already loaded.
-					await ReevaluateLoadedConfiguredProjects(_unloadCancellationToken, access);
+                    // Note that we actually need to mark every project evaluation dirty that is already loaded.
+                    await ReevaluateLoadedConfiguredProjects(_unloadCancellationToken, access);
 				}
 			}
 		}
+
+		public Task<IReadOnlyCollection<string>> AddTemporaryFiles(ConfiguredProject configuredProject, IEnumerable<string> filesToAdd)
+		{
+		    return AddTemporaryItems(configuredProject, "Content", filesToAdd);
+		}
+
+		public Task<IReadOnlyCollection<string>> AddTemporaryDirectories(ConfiguredProject configuredProject, IEnumerable<string> directoriesToAdd)
+		{
+            return AddTemporaryItems(configuredProject, "Folder", directoriesToAdd);
+		}
+
+	    private async Task<IReadOnlyCollection<string>> AddTemporaryItems(ConfiguredProject configuredProject, string itemType, IEnumerable<string> itemPathsToAdd)
+	    {
+            var unhandled = new List<string>();
+	        var relativePathToAdd = new List<string>();
+
+			foreach (var path in itemPathsToAdd)
+			{
+				if (PathHelper.IsOutsideProjectDirectory(_projectDirectory, _unconfiguredProject.MakeRooted(path)))
+				{
+					unhandled.Add(path);
+				}
+				else
+				{
+					relativePathToAdd.Add(_unconfiguredProject.MakeRelative(path));
+				}
+			}
+
+            if (relativePathToAdd.Count == 0)
+	        {
+	            return unhandled.AsReadOnly();
+	        }
+
+            using (var access = await _projectLockService.WriteLockAsync(_unloadCancellationToken))
+            {
+                await access.CheckoutAsync(_inMemoryImportFullPath);
+
+                foreach (var path in relativePathToAdd)
+                {
+                    _temporaryAddedItemGroup.AddItem(itemType, path, Enumerable.Empty<KeyValuePair<string, string>>());
+                }
+
+                var project = await access.GetProjectAsync(configuredProject, _unloadCancellationToken);
+                project.ReevaluateIfNecessary();
+            }
+
+			return unhandled.AsReadOnly();
+		} 
 
 		private async Task ReevaluateLoadedConfiguredProjects(CancellationToken cancellationToken, ProjectWriteLockReleaser access)
 		{
@@ -125,6 +181,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 			{
 				await access.CheckoutAsync(_inMemoryImportFullPath);
 
+				_temporaryAddedItemGroup.RemoveAllChildren();
+
 				await RemoveFiles(changeset.RemovedFiles, access);
 				await RemoveDirectories(changeset.RemovedDirectories, access);
 
@@ -151,33 +209,33 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 
 		private Task RemoveFiles(HashSet<string> filesToRemove, ProjectWriteLockReleaser access)
 		{
-			return RemoveItems(_fileItems, filesToRemove, access);
+			return RemoveItems(_filesItemGroup, _fileItems, filesToRemove, access);
 		}
 
 		private async Task RemoveDirectories(IReadOnlyCollection<string> directoriesToRemove, ProjectWriteLockReleaser access)
 		{
 			foreach (var directoryName in directoriesToRemove)
 			{
-				await RemoveItems(_fileItems, directoryName, access);
-				await RemoveItems(_directoryItems, directoryName, access);
+				await RemoveItems(_filesItemGroup, _fileItems, directoryName, access);
+				await RemoveItems(_directoriesItemGroup, _directoryItems, directoryName, access);
 			}
 		}
 
-		private Task RemoveItems(Dictionary<string, ProjectItemElement> items, string directoryName, ProjectWriteLockReleaser access)
+		private Task RemoveItems(ProjectItemGroupElement parent, Dictionary<string, ProjectItemElement> items, string directoryName, ProjectWriteLockReleaser access)
 		{
-			return RemoveItems(items, items.Keys.Where(f => f.StartsWith(directoryName, StringComparison.OrdinalIgnoreCase)).ToList(), access);
+			return RemoveItems(parent, items, items.Keys.Where(f => f.StartsWith(directoryName, StringComparison.OrdinalIgnoreCase)).ToList(), access);
 		}
 
-		private async Task RemoveItems(Dictionary<string, ProjectItemElement> items, IReadOnlyCollection<string> itemsToRemove, ProjectWriteLockReleaser access)
+		private async Task RemoveItems(ProjectItemGroupElement parent, Dictionary<string, ProjectItemElement> items, IReadOnlyCollection<string> itemsToRemove, ProjectWriteLockReleaser access)
 		{
 			await access.CheckoutAsync(itemsToRemove);
 			foreach (var path in itemsToRemove)
 			{
-				RemoveItem(items, path);
+				RemoveItem(parent, items, path);
 			}
 		}
 
-		private void RemoveItem(Dictionary<string, ProjectItemElement> items, string path)
+		private void RemoveItem(ProjectItemGroupElement parent, Dictionary<string, ProjectItemElement> items, string path)
 		{
 			ProjectItemElement item;
 			if (!items.TryGetValue(path, out item))
@@ -185,21 +243,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 				return;
 			}
 
-			ProjectElementContainer xmlItem = item;
-			ProjectElementContainer xmlParent = xmlItem.Parent;
-			while (xmlParent != null)
-			{
-				xmlParent.RemoveChild(xmlItem);
-				if (xmlParent.Count > 0)
-				{
-					break;
-				}
-
-				xmlItem = xmlParent;
-				xmlParent = xmlItem.Parent;
-			}
-
-			items.Remove(path);
+            parent.RemoveChild(item);
+            items.Remove(path);
 		}
 
 		private Task RenameFiles(IReadOnlyDictionary<string, string> filesToRename, ProjectWriteLockReleaser access)
@@ -244,7 +289,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 		{
 			foreach (string path in directoriesToAdd)
 			{
-				ProjectItemElement item = _inMemoryImport.AddItem("Folder", path, null);
+				ProjectItemElement item = _directoriesItemGroup.AddItem("Folder", path, Enumerable.Empty<KeyValuePair<string, string>>());
 				_directoryItems.Add(path, item);
 			}
 		}
@@ -255,11 +300,22 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 
 			foreach (string path in filesToAdd)
 			{
-				ProjectItemElement item = _inMemoryImport.AddItem("Content", path, null);
+				ProjectItemElement item = _filesItemGroup.AddItem("Content", path, Enumerable.Empty<KeyValuePair<string, string>>());
 				_fileItems.Add(path, item);
 			}
 
 			// await InMemoryProjectSourceItemProviderExtension.CallListeners(this.SourceItemsAddedListeners, contexts, false);
 		}
-	}
+    }
+
+    /// <summary>
+    /// When files or folders are added from VS, CPS requires new items to be added to project at an early stage
+    /// But since for the FSMP the only source of truth is file system, these items removed from project during next update
+    /// (which may restore them as added from file system)
+    /// </summary>
+    public interface IFileSystemMirroringProjectTemporaryItems
+    {
+		Task<IReadOnlyCollection<string>> AddTemporaryFiles(ConfiguredProject configuredProject, IEnumerable<string> filesToAdd);
+		Task<IReadOnlyCollection<string>> AddTemporaryDirectories(ConfiguredProject configuredProject, IEnumerable<string> directoriesToAdd);
+    }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
@@ -10,12 +10,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 		private class DirectoryCreated : IFileSystemChange
 		{
 			private readonly string _rootDirectory;
+			private readonly IFileSystem _fileSystem;
 			private readonly IMsBuildFileSystemFilter _fileSystemFilter;
 			private readonly string _directoryFullPath;
 
-			public DirectoryCreated(string rootDirectory, IMsBuildFileSystemFilter fileSystemFilter, string directoryFullPath)
+			public DirectoryCreated(string rootDirectory, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, string directoryFullPath)
 			{
 				_rootDirectory = rootDirectory;
+				_fileSystem = fileSystem;
 				_fileSystemFilter = fileSystemFilter;
 				_directoryFullPath = directoryFullPath;
 			}
@@ -33,7 +35,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 				while (directories.Count > 0)
 				{
 					var directoryPath = directories.Dequeue();
-					var directory = new DirectoryInfo(directoryPath);
+					var directory = _fileSystem.GetDirectoryInfo(directoryPath);
 					var relativeDirectoryPath = PathHelper.MakeRelative(_rootDirectory, directoryPath);
 
 					if (!directory.Exists)
@@ -46,7 +48,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 					{
 						relativeDirectoryPath = PathHelper.EnsureTrailingSlash(relativeDirectoryPath);
 
-						if (!_fileSystemFilter.IsAllowedDirectory(relativeDirectoryPath, directory.Attributes))
+						if (!_fileSystemFilter.IsDirectoryAllowed(relativeDirectoryPath, directory.Attributes))
 						{
 							continue;
 						}
@@ -57,7 +59,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 
 					foreach (var entry in directory.EnumerateFileSystemInfos())
 					{
-						if (entry is DirectoryInfo)
+						if (entry is IDirectoryInfo)
 						{
 							directories.Enqueue(entry.FullName);
 						}
@@ -66,7 +68,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 							var relativeFilePath = PathHelper.MakeRelative(_rootDirectory, entry.FullName);
 							
 							// If file with the same name was removed, just remove it from the RemovedFiles set
-							if (_fileSystemFilter.IsAllowedFile(relativeFilePath, entry.Attributes) && !changeset.RemovedFiles.Remove(relativeFilePath))
+							if (_fileSystemFilter.IsFileAllowed(relativeFilePath, entry.Attributes) && !changeset.RemovedFiles.Remove(relativeFilePath))
 							{
 								changeset.AddedFiles.Add(relativeFilePath);
 							}

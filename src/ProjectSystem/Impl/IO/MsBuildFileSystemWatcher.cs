@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
@@ -15,20 +16,22 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 		private readonly string _filter;
 		private readonly ConcurrentQueue<IFileSystemChange> _queue;
 		private readonly int _delayMilliseconds;
+		private readonly IFileSystem _fileSystem;
 		private readonly IMsBuildFileSystemFilter _fileSystemFilter;
 		private readonly BroadcastBlock<Changeset> _broadcastBlock;
-		private FileSystemWatcher _fileWatcher;
-		private FileSystemWatcher _directoryWatcher;
-		private FileSystemWatcher _attributesWatcher;
+		private IFileSystemWatcher _fileWatcher;
+		private IFileSystemWatcher _directoryWatcher;
+		private IFileSystemWatcher _attributesWatcher;
 		private int _consumerIsWorking;
 
 		public IReceivableSourceBlock<Changeset> SourceBlock { get; }
 
-		public MsBuildFileSystemWatcher(string directory, string filter, int delayMilliseconds, IMsBuildFileSystemFilter fileSystemFilter)
+		public MsBuildFileSystemWatcher(string directory, string filter, int delayMilliseconds, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter)
 		{
 			_directory = directory;
 			_filter = filter;
 			_delayMilliseconds = delayMilliseconds;
+			_fileSystem = fileSystem;
 			_fileSystemFilter = fileSystemFilter;
 
 			_queue = new ConcurrentQueue<IFileSystemChange>();
@@ -46,17 +49,17 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 
 		public void Start()
 		{
-			Enqueue(new DirectoryCreated(_directory, _fileSystemFilter, _directory));
+			Enqueue(new DirectoryCreated(_directory, _fileSystem, _fileSystemFilter, _directory));
 
 			_fileWatcher = CreateFileSystemWatcher(NotifyFilters.FileName);
-			_fileWatcher.Created += (sender, e) => Enqueue(new FileCreated(_directory, _fileSystemFilter, e.FullPath));
+			_fileWatcher.Created += (sender, e) => Enqueue(new FileCreated(_directory, _fileSystem, _fileSystemFilter, e.FullPath));
 			_fileWatcher.Deleted += (sender, e) => Enqueue(new FileDeleted(_directory, e.FullPath));
-			_fileWatcher.Renamed += (sender, e) => Enqueue(new FileRenamed(_directory, _fileSystemFilter, e.OldFullPath, e.FullPath));
+			_fileWatcher.Renamed += (sender, e) => Enqueue(new FileRenamed(_directory, _fileSystem, _fileSystemFilter, e.OldFullPath, e.FullPath));
 
 			_directoryWatcher = CreateFileSystemWatcher(NotifyFilters.DirectoryName);
-			_directoryWatcher.Created += (sender, e) => Enqueue(new DirectoryCreated(_directory, _fileSystemFilter, e.FullPath));
+			_directoryWatcher.Created += (sender, e) => Enqueue(new DirectoryCreated(_directory, _fileSystem, _fileSystemFilter, e.FullPath));
 			_directoryWatcher.Deleted += (sender, e) => Enqueue(new DirectoryDeleted(_directory, e.FullPath));
-			_directoryWatcher.Renamed += (sender, e) => Enqueue(new DirectoryRenamed(_directory, _fileSystemFilter, e.OldFullPath, e.FullPath));
+			_directoryWatcher.Renamed += (sender, e) => Enqueue(new DirectoryRenamed(_directory, _fileSystem, _fileSystemFilter, e.OldFullPath, e.FullPath));
 
 			_attributesWatcher = CreateFileSystemWatcher(NotifyFilters.Attributes);
 			_attributesWatcher.Changed += (sender, e) => Enqueue(new AttributesChanged(e.Name, e.FullPath));
@@ -102,15 +105,26 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 			}
 		}
 
-		private FileSystemWatcher CreateFileSystemWatcher(NotifyFilters notifyFilter)
+		private IFileSystemWatcher CreateFileSystemWatcher(NotifyFilters notifyFilter)
 		{
-			return new FileSystemWatcher(_directory, _filter)
+			var watcher = _fileSystem.CreateFileSystemWatcher(_directory, _filter);
+			watcher.EnableRaisingEvents = true;
+			watcher.IncludeSubdirectories = true;
+			watcher.InternalBufferSize = 65536;
+			watcher.NotifyFilter = notifyFilter;
+			return watcher;
+		}
+
+		private static bool IsFileAllowed(string rootDirectory, string fullPath, IFileSystem fileSystem, IMsBuildFileSystemFilter filter, out string relativePath)
+		{
+			if (!fullPath.StartsWith(rootDirectory, StringComparison.OrdinalIgnoreCase))
 			{
-				EnableRaisingEvents = true,
-				IncludeSubdirectories = true,
-				InternalBufferSize = 65536,
-				NotifyFilter = notifyFilter
-			};
+				relativePath = null;
+				return false;
+			}
+
+			relativePath = PathHelper.MakeRelative(rootDirectory, fullPath);
+			return fileSystem.FileExists(fullPath) && filter.IsFileAllowed(relativePath, fileSystem.GetFileAttributes(fullPath));
 		}
 
 		private interface IFileSystemChange

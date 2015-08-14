@@ -17,12 +17,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 		private readonly UnconfiguredProject _unconfiguredProject;
 		private readonly ConfiguredProject _configuredProject;
 		private readonly IProjectLockService _projectLockService;
+	    private readonly IFileSystemMirroringProjectTemporaryItems _temporaryItems;
 
-		protected FileSystemMirroringProjectSourceItemProviderExtensionBase(UnconfiguredProject unconfiguredProject, ConfiguredProject configuredProject, IProjectLockService projectLockService)
+	    protected FileSystemMirroringProjectSourceItemProviderExtensionBase(UnconfiguredProject unconfiguredProject, ConfiguredProject configuredProject, IProjectLockService projectLockService, IFileSystemMirroringProjectTemporaryItems temporaryItems)
 		{
 			_unconfiguredProject = unconfiguredProject;
 			_configuredProject = configuredProject;
 			_projectLockService = projectLockService;
+	        _temporaryItems = temporaryItems;
 		}
 
 		#region IProjectSourceItemProviderExtension implementation
@@ -39,23 +41,24 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 				: TplExtensions.FalseTask;
 		}
 
-		public Task<IReadOnlyCollection<ItemData>> AddOwnedSourceItemsAsync(IReadOnlyCollection<ItemData> items)
+		public async Task<IReadOnlyCollection<ItemData>> AddOwnedSourceItemsAsync(IReadOnlyCollection<ItemData> items)
 		{
-			var projectDirectory = _unconfiguredProject.GetProjectDirectory();
-			var unhandledItemData =
-				items.Where(
-					item => PathHelper.IsOutsideProjectDirectory(projectDirectory, _unconfiguredProject.MakeRooted(item.Item2)))
-					.ToImmutableArray();
-
-			return Task.FromResult<IReadOnlyCollection<ItemData>>(unhandledItemData);
+			var unhandledItems = await _temporaryItems.AddTemporaryFiles(_configuredProject, items.Select(i => i.Item2));
+			return items.Where(i => unhandledItems.Contains(i.Item2)).ToImmutableArray();
 		}
 
-		public Task<bool> TryAddSourceItemsToOwnedProjectFileAsync(IReadOnlyCollection<ItemData> items, string projectFilePath)
+		public async Task<bool> TryAddSourceItemsToOwnedProjectFileAsync(IReadOnlyCollection<ItemData> items, string projectFilePath)
 		{
-			return Task.FromResult(CheckProjectFileOwnership(projectFilePath));
+            if (!CheckProjectFileOwnership(projectFilePath))
+            {
+                return false;
+            }
+
+			var unhandledItems = await _temporaryItems.AddTemporaryFiles(_configuredProject, items.Select(i => i.Item2));
+			return unhandledItems.Count < items.Count;
 		}
 
-		public Task<IReadOnlyCollection<IProjectSourceItem>> RemoveOwnedSourceItemsAsync(
+	    public Task<IReadOnlyCollection<IProjectSourceItem>> RemoveOwnedSourceItemsAsync(
 			IReadOnlyCollection<IProjectSourceItem> projectItems, DeleteOptions deleteOptions)
 		{
 			var projectDirectory = _unconfiguredProject.GetProjectDirectory();
@@ -90,16 +93,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 				: TplExtensions.TrueTask;
 		}
 
-		public Task<IReadOnlyDictionary<string, IEnumerable<KeyValuePair<string, string>>>> AddOwnedFolderItemsAsync(
-			IReadOnlyDictionary<string, IEnumerable<KeyValuePair<string, string>>> items)
+		public async Task<IReadOnlyDictionary<string, IEnumerable<KeyValuePair<string, string>>>> AddOwnedFolderItemsAsync(IReadOnlyDictionary<string, IEnumerable<KeyValuePair<string, string>>> items)
 		{
-			var projectDirectory = _unconfiguredProject.GetProjectDirectory();
-			var unhandledItemData =
-				items.Where(
-					item => PathHelper.IsOutsideProjectDirectory(projectDirectory, _unconfiguredProject.MakeRooted(item.Key)))
-					.ToImmutableDictionary();
-
-			return Task.FromResult<IReadOnlyDictionary<string, IEnumerable<KeyValuePair<string, string>>>>(unhandledItemData);
+			var unhandledItems = await _temporaryItems.AddTemporaryDirectories(_configuredProject, items.Keys);
+			return items.Where(i => unhandledItems.Contains(i.Key)).ToImmutableDictionary();
 		}
 
 		public Task<IReadOnlyCollection<IProjectItem>> RemoveOwnedFolderItemsAsync(

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name Package="{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}" ID="2316" />
+    <Description Package="{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}" ID="2317" />
+    <Icon Package="{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}" ID="4536" />
+    <TemplateID>Microsoft.RTools.TextFile</TemplateID>
+    <ProjectType>R Language</ProjectType>
+    <ShowByDefault>false</ShowByDefault>
+    <AppliesTo>RTools</AppliesTo>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>TextFile.txt</DefaultName>
+    <SortOrder>33</SortOrder>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem>TextFile.txt</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

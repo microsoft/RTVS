@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
+﻿using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 {
@@ -9,25 +7,22 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 		private class FileCreated : IFileSystemChange
 		{
 			private readonly string _rootDirectory;
+			private readonly IFileSystem _fileSystem;
 			private readonly IMsBuildFileSystemFilter _fileSystemFilter;
 			private readonly string _fullPath;
 
-			public FileCreated(string rootDirectory, IMsBuildFileSystemFilter fileSystemFilter, string fullPath)
+			public FileCreated(string rootDirectory, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, string fullPath)
 			{
 				_rootDirectory = rootDirectory;
+				_fileSystem = fileSystem;
 				_fileSystemFilter = fileSystemFilter;
 				_fullPath = fullPath;
 			}
 
 			public void Apply(Changeset changeset)
 			{
-				if (!_fullPath.StartsWith(_rootDirectory, StringComparison.OrdinalIgnoreCase))
-				{
-					return;
-				}
-
-				var relativePath = PathHelper.MakeRelative(_rootDirectory, _fullPath);
-				if (!File.Exists(_fullPath) || !_fileSystemFilter.IsAllowedFile(relativePath, File.GetAttributes(_fullPath)))
+				string relativePath;
+				if (!IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out relativePath))
 				{
 					return;
 				}

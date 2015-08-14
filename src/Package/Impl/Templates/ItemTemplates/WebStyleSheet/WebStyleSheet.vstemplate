@@ -1,0 +1,17 @@
+﻿<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name Package="{39c9c826-8ef8-4079-8c95-428f5b1c323f}" ID="3072"/>
+    <Description Package="{39c9c826-8ef8-4079-8c95-428f5b1c323f}" ID="3073"/>
+    <Icon Package="{39c9c826-8ef8-4079-8c95-428f5b1c323f}" ID="4538"/>
+    <TemplateID>Microsoft.RTools.WebStyleSheet</TemplateID>
+    <ProjectType>R Language</ProjectType>
+    <ShowByDefault>false</ShowByDefault>
+    <AppliesTo>RTools</AppliesTo>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>StyleSheet.css</DefaultName>
+    <SortOrder>32</SortOrder>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem>StyleSheet.css</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

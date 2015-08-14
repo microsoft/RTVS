@@ -34,7 +34,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 
         private string GetCpsProjFileName(string fileName)
         {
-            return fileName + _cpsProjExtension;
+            return Path.GetDirectoryName(fileName)
+                + Path.DirectorySeparatorChar
+                + Path.GetFileNameWithoutExtension(fileName)
+                + _cpsProjExtension;
         }
 
         private void EnsureCpsProjFile(string cpsProjFileName)
@@ -76,8 +79,6 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 			{
 				xProjDocument.Save(writer);
 			}
-
-            fileInfo.Attributes = FileAttributes.Hidden;
         }
 
 	    private IEnumerable<XImport> CreateMsBuildExtensionXImports(string import)

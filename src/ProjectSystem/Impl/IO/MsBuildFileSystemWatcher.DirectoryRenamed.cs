@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
@@ -12,13 +12,15 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 		private class DirectoryRenamed : IFileSystemChange
 		{
 			private readonly string _rootDirectory;
+			private readonly IFileSystem _fileSystem;
 			private readonly IMsBuildFileSystemFilter _fileSystemFilter;
 			private readonly string _oldFullPath;
 			private readonly string _fullPath;
 
-			public DirectoryRenamed(string rootDirectory, IMsBuildFileSystemFilter fileSystemFilter, string oldFullPath, string fullPath)
+			public DirectoryRenamed(string rootDirectory, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, string oldFullPath, string fullPath)
 			{
 				_rootDirectory = rootDirectory;
+				_fileSystem = fileSystem;
 				_fileSystemFilter = fileSystemFilter;
 				_oldFullPath = oldFullPath;
 				_fullPath = fullPath;
@@ -31,9 +33,9 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
                     return;
                 }
 
-                var newDirectoryInfo = new DirectoryInfo(_fullPath);
+                var newDirectoryInfo = _fileSystem.GetDirectoryInfo(_fullPath);
                 var newRelativePath = PathHelper.MakeRelative(_rootDirectory, _fullPath);
-                if (!newDirectoryInfo.Exists || !_fileSystemFilter.IsAllowedDirectory(newRelativePath, newDirectoryInfo.Attributes))
+                if (!newDirectoryInfo.Exists || !_fileSystemFilter.IsDirectoryAllowed(newRelativePath, newDirectoryInfo.Attributes))
                 {
                     return;
                 }

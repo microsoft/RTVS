@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>R Documentation File</Name>
+    <Description>R Documentation File</Description>
+    <Icon>emptyrd.ico</Icon>
+    <TemplateID>Microsoft.RTools.EmptyRD</TemplateID>
+    <ProjectType>R Language</ProjectType>
+    <ShowByDefault>false</ShowByDefault>
+    <AppliesTo>RTools</AppliesTo>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>document.rd</DefaultName>
+    <SortOrder>10</SortOrder>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">document.rd</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

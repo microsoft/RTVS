@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>R Script</Name>
+    <Description>R Script</Description>
+    <Icon>rscript.ico</Icon>
+    <TemplateID>Microsoft.RTools.RScript</TemplateID>
+    <ProjectType>R Language</ProjectType>
+    <ShowByDefault>false</ShowByDefault>
+    <AppliesTo>RTools</AppliesTo>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>script.R</DefaultName>
+    <SortOrder>0</SortOrder>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">script.R</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

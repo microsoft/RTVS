@@ -7,13 +7,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
 {
 	internal sealed class RMsBuildFileSystemFilter : IMsBuildFileSystemFilter
 	{
-		public bool IsAllowedFile(string relativePath, FileAttributes attributes)
+		public bool IsFileAllowed(string relativePath, FileAttributes attributes)
 		{
 			return !attributes.HasFlag(FileAttributes.Hidden)
-				&& !HasExtension(relativePath, ".user");
+				&& !HasExtension(relativePath, ".user", ".rxproj");
 		}
 
-		public bool IsAllowedDirectory(string relativePath, FileAttributes attributes)
+		public bool IsDirectoryAllowed(string relativePath, FileAttributes attributes)
 		{
 			return !attributes.HasFlag(FileAttributes.Hidden);
 		}
