@@ -25,27 +25,25 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <BaseIntermediateOutputPath>..\..\..\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>..\..\..\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>..\..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\..\..\Personal\R\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <BaseIntermediateOutputPath>..\..\..\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>..\..\..\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>..\..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\..\..\Personal\R\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -80,11 +78,11 @@
     <Compile Include="RD\Utility\RdTestFilesSetup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Languages.Core.csproj">
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\Core\Test\Microsoft.Languages.Core.Test.csproj">
+    <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Languages.Core.Test.csproj">
       <Project>{ee2504a4-4666-460b-8552-5b342718cb02}</Project>
       <Name>Microsoft.Languages.Core.Test</Name>
     </ProjectReference>
