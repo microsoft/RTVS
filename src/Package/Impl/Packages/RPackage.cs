@@ -30,7 +30,19 @@ namespace Microsoft.VisualStudio.R.Packages
     internal sealed class RPackage : BasePackage<RLanguageService>
     {
         public const string OptionsDialogName = "R Tools";
-        
+
+        protected override void Initialize()
+        {
+            FunctionIndex.LoadIndexAsync();
+            base.Initialize();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            FunctionIndex.SaveIndexAsync();
+            base.Dispose(disposing);
+        }
+
         protected override IEnumerable<IVsEditorFactory> CreateEditorFactories()
         {
             yield return new REditorFactory(this);
@@ -57,5 +69,4 @@ namespace Microsoft.VisualStudio.R.Packages
             return base.GetAutomationObject(name);
         }
     }
-
 }

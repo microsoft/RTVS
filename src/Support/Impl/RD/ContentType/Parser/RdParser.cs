@@ -1,23 +1,35 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
 {
+    /// <summary>
+    /// Parser of the RD (R Documentation) file format. Primary usage 
+    /// of the parser is the extraction of information on functions 
+    /// and their parameters so we can show signature completion 
+    /// and quick info in the VS editor.
+    /// </summary>
     public static class RdParser
     {
-        public static RdFunctionInfo GetFunctionInfo(string name, string rdHelpData)
+        /// <summary>
+        /// Given RD data and function name parses the data and
+        /// creates structured information about the function.
+        /// </summary>
+        public static IFunctionInfo GetFunctionInfo(string functionName, string rdHelpData)
         {
             var tokenizer = new RdTokenizer();
             ITextProvider textProvider = new TextStream(rdHelpData);
             IReadOnlyTextRangeCollection<RdToken> tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
-            return ParseFunction(name, tokens, textProvider);
+            return ParseFunction(functionName, tokens, textProvider);
         }
 
-        public static RdFunctionInfo ParseFunction(string name, IReadOnlyTextRangeCollection<RdToken> tokens, ITextProvider textProvider)
+        private static IFunctionInfo ParseFunction(string functionName, IReadOnlyTextRangeCollection<RdToken> tokens, ITextProvider textProvider)
         {
-            ParseContext context = new ParseContext(tokens, textProvider);
-            RdFunctionInfo info = new RdFunctionInfo(name);
+            RdParseContext context = new RdParseContext(tokens, textProvider);
+            FunctionInfo info = new FunctionInfo(functionName);
             List<string> aliases = new List<string>();
             IReadOnlyDictionary<string, string> argumentDescriptions = null;
 
@@ -54,11 +66,11 @@ namespace Microsoft.R.Support.RD.Parser
                     }
                     else if (argumentDescriptions == null && token.IsKeywordText(textProvider, @"\arguments"))
                     {
-                        argumentDescriptions = FunctionArgumentDescriptions.ExtractArgumentDecriptions(context);
+                        argumentDescriptions = RdArgumentDescription.ExtractArgumentDecriptions(context);
                     }
                     else if (info.Signatures == null && token.IsKeywordText(textProvider, @"\usage"))
                     {
-                        info.Signatures = FunctionSignature.ExtractSignatures(context);
+                        info.Signatures = RdFunctionSignature.ExtractSignatures(context);
                     }
                     else
                     {

@@ -110,7 +110,6 @@ namespace Microsoft.R.Core.AST.Expressions
 
                             errorType = HandleFunctionOrIndexer(functionCall);
                             currentOperationType = OperationType.Function;
-
                         }
                         else
                         {

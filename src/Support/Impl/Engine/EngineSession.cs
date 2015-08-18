@@ -11,13 +11,20 @@ namespace Microsoft.R.Support.Engine
     {
         private Task _startingTask;
         private Process _rProcess;
+        private Func<string, object, object> _dataConverter;
+
+        public EngineSession(Func<string, object, object> dataConverter) :
+            this()
+        {
+            _dataConverter = dataConverter;
+        }
 
         public EngineSession()
         {
             EditorShell.OnIdle += OnIdle;
         }
 
-        public async Task<EngineResponse> SendCommand(string command)
+        public async Task<EngineResponse> SendCommand(string command, object p)
         {
             EngineResponse response = null;
 
@@ -25,7 +32,7 @@ namespace Microsoft.R.Support.Engine
 
             if (_rProcess != null)
             {
-                response = new EngineResponse(_rProcess);
+                response = new EngineResponse(_rProcess, _dataConverter, p);
                 _rProcess.StandardInput.WriteLine(command);
             }
 

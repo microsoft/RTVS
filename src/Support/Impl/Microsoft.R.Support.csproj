@@ -76,18 +76,35 @@
     </Compile>
     <Compile Include="Engine\EngineSession.cs" />
     <Compile Include="Engine\EngineResponse.cs" />
-    <Compile Include="Packages\InstalledPackages.cs" />
-    <Compile Include="Packages\FunctionInfo.cs" />
-    <Compile Include="RD\Parser\ArgumentInfo.cs" />
-    <Compile Include="RD\Parser\FunctionSignature.cs" />
-    <Compile Include="RD\Parser\FunctionArguments.cs" />
-    <Compile Include="RD\Parser\ParseContext.cs" />
-    <Compile Include="RD\Parser\RdParseUtility.cs" />
-    <Compile Include="RD\Parser\RdParser.cs" />
-    <Compile Include="RD\Parser\RdText.cs" />
-    <Compile Include="RD\Parser\SignatureInfo.cs" />
-    <Compile Include="RD\Parser\RdFunctionInfo.cs" />
-    <Compile Include="Packages\PackageInfo.cs" />
+    <Compile Include="Help\Packages\PackagesCollection.cs" />
+    <Compile Include="Help\Packages\UserPackagesCollection.cs" />
+    <Compile Include="Help\Packages\BasePackagesCollection.cs" />
+    <Compile Include="Help\Packages\UserPackageFunctionsInfo.cs" />
+    <Compile Include="Help\Definitions\IArgumentInfo.cs" />
+    <Compile Include="Help\Definitions\INamedItemInfo.cs" />
+    <Compile Include="Help\Definitions\IPackageInfo.cs" />
+    <Compile Include="Help\Definitions\IFunctionInfo.cs" />
+    <Compile Include="Help\Definitions\IPackageCollection.cs" />
+    <Compile Include="Help\Definitions\IRHelpDataSource.cs" />
+    <Compile Include="Help\Definitions\ISignatureInfo.cs" />
+    <Compile Include="Help\Functions\FunctionIndexSave.cs" />
+    <Compile Include="Help\Functions\FunctionIndexLoad.cs" />
+    <Compile Include="Help\Functions\FunctionIndex.cs" />
+    <Compile Include="Help\Packages\BasePackageFunctionsInfo.cs" />
+    <Compile Include="Help\Packages\PackageFunctionsInfo.cs" />
+    <Compile Include="Help\Packages\PackageEnumeration.cs" />
+    <Compile Include="Help\Packages\PackagesDataSource.cs" />
+    <Compile Include="Help\NamedItemInfo.cs" />
+    <Compile Include="Help\Functions\ArgumentInfo.cs" />
+    <Compile Include="RD\ContentType\Parser\RdFunctionSignature.cs" />
+    <Compile Include="RD\ContentType\Parser\RdArgumentDescription.cs" />
+    <Compile Include="RD\ContentType\Parser\RdParseContext.cs" />
+    <Compile Include="RD\ContentType\Parser\RdParseUtility.cs" />
+    <Compile Include="RD\ContentType\Parser\RdParser.cs" />
+    <Compile Include="RD\ContentType\Parser\RdText.cs" />
+    <Compile Include="Help\Functions\SignatureInfo.cs" />
+    <Compile Include="Help\Functions\FunctionInfo.cs" />
+    <Compile Include="Help\Packages\PackageInfo.cs" />
     <Compile Include="Help\RHelpDataSource.cs" />
     <Compile Include="RD\Classification\RdClassificationDefinitions.cs" />
     <Compile Include="RD\Classification\RdClassificationTypes.cs" />
@@ -107,6 +124,7 @@
     <Compile Include="Settings\Definitions\IRToolsSettings.cs" />
     <Compile Include="Settings\Definitions\RToolsSettings.cs" />
     <Compile Include="Utility\AsyncDataSource.cs" />
+    <Compile Include="Utility\Definitions\IAsyncDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />

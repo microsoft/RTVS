@@ -1,14 +1,16 @@
-﻿namespace Microsoft.R.Support.Packages
+﻿using Microsoft.R.Support.Help.Definitions;
+
+namespace Microsoft.R.Support.Help
 {
-    public sealed class FunctionInfo
+    public class NamedItemInfo: INamedItemInfo
     {
         /// <summary>
-        /// Function name
+        /// Item name
         /// </summary>
         public string Name { get; internal set; }
 
         /// <summary>
-        /// Function description
+        /// Item description
         /// </summary>
         public string Description { get; internal set; }
     }

@@ -4,8 +4,11 @@ using System.Collections.ObjectModel;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Statements;
+using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Definitions;
 
-namespace Microsoft.R.Editor.Tree
+namespace Microsoft.R.Editor.Tree.Search
 {
     public static class TreeSearch
     {
@@ -24,7 +27,7 @@ namespace Microsoft.R.Editor.Tree
 
             if (finder.Result.Count == 0)
             {
-                return ReadOnlyTextRangeCollection< IAstNode>.EmptyCollection;
+                return ReadOnlyTextRangeCollection<IAstNode>.EmptyCollection;
             }
 
             return new ReadOnlyCollection<IAstNode>(finder.Result);
@@ -65,6 +68,78 @@ namespace Microsoft.R.Editor.Tree
             {
                 if (_match(element))
                     Result.Add(element);
+
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Locates deepest node that matches partucular criteria 
+        /// and contains given position in the text buffer
+        /// </summary>
+        /// <returns></returns>
+        public static IAstNode GetNodeOfTypeFromPosition(this AstRoot ast, int position, Func<IAstNode, bool> match)
+        {
+            IAstNode deepestNode = null;
+            FindNodeOfType(ast, position, match, ref deepestNode);
+
+            return deepestNode;
+        }
+
+        private static void FindNodeOfType(IAstNode node, int position, Func<IAstNode, bool> match, ref IAstNode deepestNode)
+        {
+            if (!node.Contains(position))
+            {
+                return; // not this element
+            }
+
+            if (match(node))
+            {
+                deepestNode = node;
+            }
+
+            for (int i = 0; i < node.Children.Count && node.Children[i].Start <= position; i++)
+            {
+                var child = node.Children[i];
+
+                if (child.Contains(position))
+                {
+                    FindNodeOfType(child, position, match, ref deepestNode);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Retrieves list of packages available to the current file.
+        /// Consists of packages in the base library and packages
+        /// added via 'library' statements.
+        /// </summary>
+        public static IEnumerable<IPackageInfo> GetFilePackages(this AstRoot ast)
+        {
+            // TODO: results can be cached until AST actually changes
+            AstLibrarySearch search = new AstLibrarySearch();
+            ast.Accept(search, null);
+
+            return search.Packages;
+        }
+
+        private class AstLibrarySearch : IAstVisitor
+        {
+            public List<IPackageInfo> Packages { get; private set; } = new List<IPackageInfo>();
+
+            public bool Visit(IAstNode node, object parameter)
+            {
+                KeywordIdentifierStatement kis = node as KeywordIdentifierStatement;
+                if (kis != null)
+                {
+                    if (kis.Keyword.Token.IsKeywordText(node.Root.TextProvider, "library") && kis.Identifier != null)
+                    {
+                        string packageName = node.Root.TextProvider.GetText(kis.Identifier.Token);
+
+                        IPackageInfo packageInfo = new PackageInfo(packageName);
+                        this.Packages.Add(packageInfo);
+                    }
+                }
 
                 return true;
             }

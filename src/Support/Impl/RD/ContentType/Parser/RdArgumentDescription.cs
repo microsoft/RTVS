@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Tokens;
+using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
 {
-    static class FunctionArgumentDescriptions
+    static class RdArgumentDescription
     {
         /// <summary>
         /// Extracts argument names and descriptions from
         /// the RD '\arguments{...} construct
         /// </summary>
-        public static IReadOnlyDictionary<string, string> ExtractArgumentDecriptions(ParseContext context)
+        public static IReadOnlyDictionary<string, string> ExtractArgumentDecriptions(RdParseContext context)
         {
             // \arguments{
             //   \item{formula}{
@@ -82,16 +84,16 @@ namespace Microsoft.R.Support.RD.Parser
             return argumentDescriptions;
         }
 
-        private static IEnumerable<ArgumentInfo> ParseArgumentItem(ParseContext context)
+        private static IEnumerable<IArgumentInfo> ParseArgumentItem(RdParseContext context)
         {
-            List<ArgumentInfo> arguments = null;
+            List<IArgumentInfo> arguments = null;
 
             TokenStream<RdToken> tokens = context.Tokens;
             tokens.Advance(2);
 
             if (tokens.CurrentToken.TokenType == RdTokenType.Argument && tokens.NextToken.TokenType == RdTokenType.CloseBrace)
             {
-                arguments = new List<ArgumentInfo>();
+                arguments = new List<IArgumentInfo>();
 
                 string argumentsText = context.TextProvider.GetText(tokens.CurrentToken);
                 string[] argumentNames = argumentsText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);

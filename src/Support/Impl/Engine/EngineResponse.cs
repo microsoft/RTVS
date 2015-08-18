@@ -2,21 +2,59 @@
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Utility;
 
 namespace Microsoft.R.Support.Engine
 {
-    public sealed class EngineResponse : AsyncDataSource<string>
+    /// <summary>
+    /// An object that represents pending response from the R engine
+    /// that is running in a separate process
+    /// </summary>
+    public class EngineResponse : AsyncDataSource<object>
     {
+        /// <summary>
+        /// R engine process
+        /// </summary>
         private Process _process;
-        private StringBuilder _sb = new StringBuilder();
+
+        /// <summary>
+        /// Timestamp of the lst received data from the R engine process.
+        /// Events are fired line by line and we need to collect all lines
+        /// before passing data the converter. Thus there is a heardbeat
+        /// task that determines if we haven't been receiving data for 
+        /// a while so we can consider that all output was collected.
+        /// </summary>
         private DateTime? _lastOutputReceived;
+
+        /// <summary>
+        /// Optional data converter that can transform data
+        /// (such as parse RD response into a FunctionInfo)
+        /// before setting data on the async object.
+        /// </summary>
+        private Func<string, object, object> _dataConverter;
+
+        /// <summary>
+        /// Any user parameter to pass to the data converter.
+        /// </summary>
+        private object _parameter;
+        private StringBuilder _sb = new StringBuilder();
+
+        public EngineResponse(Process process, Func<string, object, object> dataConverter, object p) :
+            this(process)
+        {
+            _dataConverter = dataConverter;
+            _parameter = p;
+        }
 
         public EngineResponse(Process process)
         {
             _process = process;
             _process.OutputDataReceived += Process_OutputDataReceived;
+        }
+
+        public EngineResponse(object data) : 
+            base(data)
+        {
         }
 
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
@@ -54,7 +92,16 @@ namespace Microsoft.R.Support.Engine
             _process.OutputDataReceived -= Process_OutputDataReceived;
             _process = null;
 
-            string data = _sb.ToString();
+            object data;
+            if (_dataConverter != null)
+            {
+                data = _dataConverter(_sb.ToString(), _parameter);
+            }
+            else
+            {
+                data = _sb.ToString();
+            }
+
             _sb = null;
 
             SetData(data);

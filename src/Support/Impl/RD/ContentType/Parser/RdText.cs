@@ -5,7 +5,7 @@ namespace Microsoft.R.Support.RD.Parser
 {
     internal static class RdText
     {
-        public static string GetText(ParseContext context)
+        public static string GetText(RdParseContext context)
         {
             string text = string.Empty;
 
@@ -20,7 +20,7 @@ namespace Microsoft.R.Support.RD.Parser
             return text;
         }
 
-        public static string FromTokens(ParseContext context, int start, int end)
+        public static string FromTokens(RdParseContext context, int start, int end)
         {
             // Clean descripton so it only consists of plain text
             var sb = new StringBuilder();

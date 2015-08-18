@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
+using Microsoft.R.Editor.Tree.Search;
+using Microsoft.R.Support.Engine;
 using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Packages;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion.Engine
@@ -68,11 +74,47 @@ namespace Microsoft.R.Editor.Completion.Engine
             {
                 CompletionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany();
             }
+
+            EditorShell.OnIdle += OnIdle;
         }
 
-        public static RHelpDataSource HelpDataSource
+        private static void OnIdle(object sender, EventArgs e)
         {
-            get { return _helpDataSource; }
+            EditorShell.OnIdle -= OnIdle;
+
+            Task.Run(async () =>
+            {
+                IEnumerable<PackageInfo> packages = PackagesDataSource.GetBasePackages();
+
+                // Get list of functions in the package
+                foreach (PackageInfo pkg in packages)
+                {
+                    if (!pkg.IsLoaded)
+                    {
+                        await pkg.LoadFunctionsAsync();
+                    }
+                }
+            });
+        }
+
+        public static async Task<EngineResponse> GetFunctionHelp(AstRoot ast, string functionName)
+        {
+            IEnumerable<IPackageInfo> packages = ast.GetPackages();
+
+            // Get list of functions in the package
+            foreach (IPackageInfo pkg in packages)
+            {
+                if (pkg.IsLoaded)
+                {
+                    if (pkg.ContainsFunction(functionName))
+                    {
+                        // Get collection of function signatures from documentation (parsed RD file)
+                        return await _helpDataSource.GetFunctionHelp(functionName, pkg.Name);
+                    }
+                }
+            }
+
+            return null;
         }
 
         private static bool IsPackageListCompletion(ITextBuffer textBuffer, int position)
@@ -93,7 +135,7 @@ namespace Microsoft.R.Editor.Completion.Engine
 
             while (!tokens.IsEndOfStream())
             {
-                if(tokens.CurrentToken.Start >= linePosition)
+                if (tokens.CurrentToken.Start >= linePosition)
                 {
                     break;
                 }
@@ -108,7 +150,7 @@ namespace Microsoft.R.Editor.Completion.Engine
                         {
                             if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace)
                             {
-                                if(linePosition >= openBrace.End && linePosition <= tokens.CurrentToken.Start)
+                                if (linePosition >= openBrace.End && linePosition <= tokens.CurrentToken.Start)
                                 {
                                     return true;
                                 }

@@ -4,13 +4,15 @@ using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
 {
-    static class FunctionSignature
+    static class RdFunctionSignature
     {
-        public static IReadOnlyCollection<SignatureInfo> ExtractSignatures(ParseContext context)
+        public static IReadOnlyList<SignatureInfo> ExtractSignatures(RdParseContext context)
         {
             // \usage{
             //    loglm1(formula, data, \dots)
@@ -65,7 +67,7 @@ namespace Microsoft.R.Support.RD.Parser
             return signatures;
         }
 
-        private static SignatureInfo ParseMethod(ParseContext context)
+        private static SignatureInfo ParseMethod(RdParseContext context)
         {
             TokenStream<RdToken> tokens = context.Tokens;
 
@@ -117,7 +119,7 @@ namespace Microsoft.R.Support.RD.Parser
             TokenStream<RToken> tokens = new TokenStream<RToken>(collection, RToken.EndOfStreamToken);
 
             SignatureInfo info = new SignatureInfo();
-            List<ArgumentInfo> signatureArguments = new List<ArgumentInfo>();
+            List<IArgumentInfo> signatureArguments = new List<IArgumentInfo>();
 
             var rParseContext = new Microsoft.R.Core.Parser.ParseContext(textProvider, new TextRange(0, text.Length), tokens);
 

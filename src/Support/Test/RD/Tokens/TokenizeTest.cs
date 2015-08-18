@@ -1,5 +1,4 @@
 ﻿using Microsoft.Languages.Core.Test.Tokens;
-using Microsoft.R.Support.RD.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Support.Test.Tokens

@@ -1,27 +1,25 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Support.Utility.Definitions;
 
 namespace Microsoft.R.Support.Utility
 {
-    public abstract class AsyncDataSource<T>
+    /// <summary>
+    /// Represents data that will code asynchronously.
+    /// When data is ready object will file DataReady event.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class AsyncDataSource<T> : IAsyncDataSource<T>
     {
         private T _data;
 
+        #region IAsyncDataSource
         /// <summary>
         /// Data that becomes available asynchronously
         /// </summary>
         public T Data
         {
             get { return _data; }
-        }
-
-        /// <summary>
-        /// Indictes if data is available
-        /// </summary>
-        public bool IsReady
-        {
-            get { return _data != null; }
         }
 
         /// <summary>
@@ -33,8 +31,9 @@ namespace Microsoft.R.Support.Utility
         /// Any user data
         /// </summary>
         public object Tag { get; set; }
+        #endregion
 
-        protected void SetData (T data)
+        protected virtual void SetData(T data)
         {
             EditorShell.DispatchOnUIThread(() =>
             {
@@ -45,6 +44,19 @@ namespace Microsoft.R.Support.Utility
                     DataReady(this, data);
                 }
             });
+        }
+
+        public AsyncDataSource()
+        {
+        }
+
+        /// <summary>
+        /// Creates async object in the immediate ready state.
+        /// </summary>
+        /// <param name="data"></param>
+        protected AsyncDataSource(T data)
+        {
+            _data = data;
         }
     }
 }
