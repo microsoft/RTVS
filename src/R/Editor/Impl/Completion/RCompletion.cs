@@ -4,12 +4,15 @@ using System.Windows.Media;
 
 namespace Microsoft.R.Editor.Completion
 {
+    using Support.Utility.Definitions;
     using Support.Utility;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     [DebuggerDisplay("{DisplayText}")]
     public class RCompletion : Completion
     {
+        private IDataProvider<string> _descriptionProvider;
+
         public bool RetriggerIntellisense { get; private set; }
 
         public RCompletion(
@@ -26,18 +29,34 @@ namespace Microsoft.R.Editor.Completion
         public RCompletion(
             string displayText,
             string insertionText,
-            AsyncDataSource<string> descriptionSource,
+            IDataProvider<string> descriptionProvider,
             ImageSource iconSource,
             bool retriggerIntellisense = false) :
             this(displayText, insertionText, string.Empty, iconSource, retriggerIntellisense)
         {
-            descriptionSource.DataReady += OnDescriptionDataReady;
+            _descriptionProvider = descriptionProvider;
             this.RetriggerIntellisense = retriggerIntellisense;
         }
 
-        private void OnDescriptionDataReady(object sender, string data)
+        public override string Description
         {
-            this.Description = data;
+            get
+            {
+                string description = base.Description;
+
+                if (string.IsNullOrEmpty(description) && _descriptionProvider != null)
+                {
+                    description = _descriptionProvider.Data;
+                    base.Description = description;
+                }
+
+                return description;
+            }
+
+            set
+            {
+                base.Description = value;
+            }
         }
 
         public static int Compare(Completion completion1, Completion completion2)

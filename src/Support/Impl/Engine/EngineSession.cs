@@ -24,7 +24,7 @@ namespace Microsoft.R.Support.Engine
             EditorShell.OnIdle += OnIdle;
         }
 
-        public async Task<EngineResponse> SendCommand(string command, object p)
+        public async Task<EngineResponse> SendCommand(string command, object p, Action<object> dataReadyCallback)
         {
             EngineResponse response = null;
 
@@ -32,7 +32,7 @@ namespace Microsoft.R.Support.Engine
 
             if (_rProcess != null)
             {
-                response = new EngineResponse(_rProcess, _dataConverter, p);
+                response = new EngineResponse(_rProcess, dataReadyCallback, _dataConverter, p);
                 _rProcess.StandardInput.WriteLine(command);
             }
 

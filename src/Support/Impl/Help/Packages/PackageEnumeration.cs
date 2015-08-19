@@ -1,29 +1,28 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Definitions;
 
 namespace Microsoft.R.Support.Help.Packages
 {
-    class PackageEnumeration : IEnumerable<IPackageInfo>
+    /// <summary>
+    /// Implements enumerator of packages that is based
+    /// on the particular collection install path.
+    /// Package names normally match names of folders
+    /// the packages are installed in.
+    /// </summary>
+    internal class PackageEnumeration : IEnumerable<IPackageInfo>
     {
         private string _libraryPath;
-        private bool _isBase;
 
-        public PackageEnumeration(string libraryPath, bool isBase)
+        public PackageEnumeration(string libraryPath)
         {
             _libraryPath = libraryPath;
-            _isBase = isBase;
         }
 
         public IEnumerator<IPackageInfo> GetEnumerator()
         {
-            return new PackageEnumerator(_libraryPath, _isBase);
+            return new PackageEnumerator(_libraryPath);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -35,11 +34,9 @@ namespace Microsoft.R.Support.Help.Packages
     class PackageEnumerator : IEnumerator<IPackageInfo>
     {
         private IEnumerator<string> _directoriesEnumerator;
-        private bool _isBase;
 
-        public PackageEnumerator(string libraryPath, bool isBase)
+        public PackageEnumerator(string libraryPath)
         {
-            _isBase = isBase;
             _directoriesEnumerator = Directory.EnumerateDirectories(libraryPath).GetEnumerator();
         }
 
@@ -50,10 +47,7 @@ namespace Microsoft.R.Support.Help.Packages
                 string directoryPath = _directoriesEnumerator.Current;
                 string name = Path.GetFileName(directoryPath).ToLowerInvariant();
 
-                PackageInfo packageInfo = new PackageInfo(name, Path.GetDirectoryName(directoryPath));
-                packageInfo.IsBase = _isBase;
-
-                return packageInfo;
+                return new PackageInfo(name, Path.GetDirectoryName(directoryPath));
             }
         }
 

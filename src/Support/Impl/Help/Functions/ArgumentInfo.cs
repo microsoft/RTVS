@@ -1,7 +1,8 @@
-﻿
+﻿using Microsoft.R.Support.Help.Definitions;
+
 namespace Microsoft.R.Support.Help.Functions
 {
-    public sealed class ArgumentInfo: NamedItemInfo
+    public sealed class ArgumentInfo: NamedItemInfo, IArgumentInfo
     {
         /// <summary>
         /// Default argument value
@@ -12,5 +13,20 @@ namespace Microsoft.R.Support.Help.Functions
         /// True if argument can be omitted
         /// </summary>
         public bool IsOptional { get; internal set; }
+
+        /// <summary>
+        /// True if argument is '...'
+        /// </summary>
+        public bool IsEllipsis { get; internal set; }
+
+        public ArgumentInfo(string name) :
+            base(name)
+        {
+        }
+
+        public ArgumentInfo(string name, string description):
+            base(name, description)
+        {
+        }
     }
 }

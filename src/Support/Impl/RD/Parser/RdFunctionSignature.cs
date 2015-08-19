@@ -4,15 +4,15 @@ using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
 {
     static class RdFunctionSignature
     {
-        public static IReadOnlyList<SignatureInfo> ExtractSignatures(RdParseContext context)
+        public static IReadOnlyList<ISignatureInfo> ExtractSignatures(RdParseContext context)
         {
             // \usage{
             //    loglm1(formula, data, \dots)
@@ -24,7 +24,7 @@ namespace Microsoft.R.Support.RD.Parser
             // }
 
             TokenStream<RdToken> tokens = context.Tokens;
-            List<SignatureInfo> signatures = new List<SignatureInfo>();
+            List<ISignatureInfo> signatures = new List<ISignatureInfo>();
 
             int start = tokens.Position;
             int end = RdParseUtility.FindRdKeywordArgumentBounds(tokens);
@@ -36,7 +36,7 @@ namespace Microsoft.R.Support.RD.Parser
                 string usage = context.TextProvider.GetText(tokens.CurrentToken);
                 tokens.MoveToNextToken();
 
-                SignatureInfo sig = ParseSignature(usage);
+                ISignatureInfo sig = ParseSignature(usage);
                 if (sig != null)
                 {
                     signatures.Add(sig);
@@ -49,7 +49,7 @@ namespace Microsoft.R.Support.RD.Parser
 
                 if (tokens.NextToken.TokenType == RdTokenType.OpenBrace && token.IsKeywordText(context.TextProvider, @"\method"))
                 {
-                    SignatureInfo sig = ParseMethod(context);
+                    ISignatureInfo sig = ParseMethod(context);
                     if (sig == null)
                     {
                         tokens.Position = end;
@@ -67,7 +67,7 @@ namespace Microsoft.R.Support.RD.Parser
             return signatures;
         }
 
-        private static SignatureInfo ParseMethod(RdParseContext context)
+        private static ISignatureInfo ParseMethod(RdParseContext context)
         {
             TokenStream<RdToken> tokens = context.Tokens;
 
@@ -97,7 +97,7 @@ namespace Microsoft.R.Support.RD.Parser
             return null;
         }
 
-        private static SignatureInfo ParseSignature(string text)
+        public static SignatureInfo ParseSignature(string text, IReadOnlyDictionary<string, string> argumentsDescriptions = null)
         {
             // RD signature text may contain \dots sequence 
             // which denotes ellipsis. R parser does not know 
@@ -128,29 +128,45 @@ namespace Microsoft.R.Support.RD.Parser
 
             foreach (var arg in functionCall.Arguments)
             {
-                ArgumentInfo argInfo = new ArgumentInfo();
+                string argName = null;
+                string argDefaultValue = null;
+                bool isEllipsis = false;
+                bool isOptional = false;
 
                 ExpressionArgument expArg = arg as ExpressionArgument;
                 if (expArg != null)
                 {
-                    argInfo.Name = textProvider.GetText(expArg);
+                    argName = textProvider.GetText(expArg);
                 }
                 else
                 {
                     NamedArgument nameArg = arg as NamedArgument;
                     if (nameArg != null)
                     {
-                        argInfo.Name = textProvider.GetText(nameArg.NameRange);
-                        argInfo.DefaultValue = textProvider.GetText(nameArg.ArgumentValue);
+                        argName = textProvider.GetText(nameArg.NameRange);
+                        argDefaultValue = textProvider.GetText(nameArg.ArgumentValue);
                     }
                     else
                     {
                         EllipsisArgument ellipsisArg = arg as EllipsisArgument;
                         if (ellipsisArg != null)
                         {
-                            argInfo.Name = "...";
-                            argInfo.IsOptional = true;
+                            argName = "...";
+                            isEllipsis = true;
                         }
+                    }
+                }
+
+                ArgumentInfo argInfo = new ArgumentInfo(argName);
+                argInfo.IsEllipsis = isEllipsis;
+                argInfo.IsOptional = isOptional; // TODO: actually parse
+
+                if(argumentsDescriptions != null)
+                {
+                    string description;
+                    if (argumentsDescriptions.TryGetValue(argName, out description))
+                    {
+                        argInfo.Description = description;
                     }
                 }
 

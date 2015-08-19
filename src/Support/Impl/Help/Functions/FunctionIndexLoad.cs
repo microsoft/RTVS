@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Core.AST.Arguments;
+using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.RD.Parser;
 
 namespace Microsoft.R.Support.Help.Functions
 {
@@ -13,12 +16,10 @@ namespace Microsoft.R.Support.Help.Functions
     /// </summary>
     public static partial class FunctionIndex
     {
-        private static Task _indexReadingTask;
-
         /// <summary>
         /// Returns path to the RTVS data cache location
         /// </summary>
-        public static string RtvsDataPath
+        private static string RtvsDataPath
         {
             get
             {
@@ -29,42 +30,31 @@ namespace Microsoft.R.Support.Help.Functions
             }
         }
 
-        public static string IndexFilePath
+        private static string IndexFilePath
         {
             get { return Path.Combine(RtvsDataPath, "FunctionIndex.idx"); }
         }
 
-        public static void LoadIndexAsync()
+        private static bool LoadIndex()
         {
-            if (_indexReadingTask == null)
-            {
-                _indexReadingTask = Task.Run(() => LoadIndexAsync());
-            }
-        }
-
-        public static void CompleteLoad()
-        {
-            if(_indexReadingTask != null)
-            {
-                _indexReadingTask.Wait();
-            }
-        }
-
-        private static void LoadIndexAsync()
-        {
-            Dictionary<string, string> functionToPackageMap = new Dictionary<string, string>();
-            Dictionary<string, string> functionToDescriptionMap = new Dictionary<string, string>();
-            Dictionary<string, IReadOnlyList<string>> functionToSignaturesMap = new Dictionary<string, IReadOnlyList<string>>();
-            Dictionary<string, IReadOnlyList<string>> packageToFunctionsMap = new Dictionary<string, IReadOnlyList<string>>();
+            ConcurrentDictionary<string, string> functionToPackageMap = new ConcurrentDictionary<string, string>();
+            ConcurrentDictionary<string, string> functionToDescriptionMap = new ConcurrentDictionary<string, string>();
+            ConcurrentDictionary<string, IFunctionInfo> functionToInfoMap = new ConcurrentDictionary<string, IFunctionInfo>();
+            ConcurrentDictionary<string, BlockingCollection<string>> packageToFunctionsMap = new ConcurrentDictionary<string, BlockingCollection<string>>();
             bool loaded = false;
 
             // ~/Documents/R/RTVS/FunctionsIndex.dx -> function to package map, also contains function description
             // ~/Documents/R/RTVS/[PackageName]/[FunctionName].sig -> function signatures
+
+            // Function index format:
+            //      Each line is a triplet of function name followed 
+            //      by the package name followed by the function description
+            //      There are no tabs in the function description.
+
             try
             {
                 using (StreamReader sr = new StreamReader(IndexFilePath))
                 {
-                    // Each line is a pair of function name followed by package name
                     char[] separator = new char[] { '\t' };
 
                     while (true)
@@ -91,15 +81,14 @@ namespace Microsoft.R.Support.Help.Functions
                             functionToPackageMap[functionName] = packageName;
                             functionToDescriptionMap[functionName] = functionDescription;
 
-                            IReadOnlyList<string> functions;
+                            BlockingCollection<string> functions;
                             if (!packageToFunctionsMap.TryGetValue(packageName, out functions))
                             {
-                                functions = new List<string>();
+                                functions = new BlockingCollection<string>();
                                 packageToFunctionsMap[packageName] = functions;
                             }
 
-                            IList<string> list = functions as IList<string>;
-                            list.Add(functionName);
+                            functions.Add(functionName);
                         }
                     }
                 }
@@ -108,55 +97,132 @@ namespace Microsoft.R.Support.Help.Functions
 
             if (!loaded)
             {
-                return;
+                return false;
             }
 
-            try
-            {
-                foreach (string functionName in functionToPackageMap.Keys)
-                {
-                    string packageName = functionToPackageMap[functionName];
-                    string packageFolderName = Path.Combine(RtvsDataPath, packageName);
-                    string signaturesFileName = Path.Combine(packageFolderName, functionName + ".sig");
-
-                    using (StreamReader sr = new StreamReader(signaturesFileName))
-                    {
-                        while (true)
-                        {
-                            string line = sr.ReadLine();
-                            if (line == null)
-                            {
-                                break;
-                            }
-
-                            IReadOnlyList<string> signatures;
-                            if (!packageToFunctionsMap.TryGetValue(packageName, out signatures))
-                            {
-                                signatures = new List<string>();
-                                functionToSignaturesMap[functionName] = signatures;
-                            }
-
-                            IList<string> list = signatures as IList<string>;
-                            list.Add(line);
-                        }
-                    }
-                }
-            }
-            catch (IOException)
-            {
-                loaded = false;
-            }
-
-            if (loaded)
+            if (LoadFunctions(functionToPackageMap))
             {
                 EditorShell.DispatchOnUIThread(() =>
                 {
                     _functionToPackageMap = functionToPackageMap;
                     _functionToDescriptionMap = functionToDescriptionMap;
-                    _functionToSignaturesMap = functionToSignaturesMap;
                     _packageToFunctionsMap = packageToFunctionsMap;
+                    _functionToInfoMap = functionToInfoMap;
                 });
             }
+
+            return loaded;
+        }
+
+        private static bool LoadFunctions(ConcurrentDictionary<string, string> functionToPackageMap)
+        {
+            try
+            {
+                // Function data format:
+                //      1 if function is internal, 0 otherwise
+                //      Function description (one long line)
+                //      Function signatures (one per line)
+                //      an empty line
+                //      argument descriptions (one per line) in a form 
+                //          argument_name: description
+
+                foreach (string functionName in functionToPackageMap.Keys)
+                {
+                    string packageName = functionToPackageMap[functionName];
+                    string packageFolderName = Path.Combine(RtvsDataPath, packageName);
+                    string signaturesFileName = Path.Combine(packageFolderName, functionName + ".fd");
+
+                    using (StreamReader sr = new StreamReader(signaturesFileName))
+                    {
+                        bool isInternal = ReadInternal(sr);
+                        string description = sr.ReadLine().Trim();
+                        List<string> signatureStrings = ReadSignatures(sr);
+                        Dictionary<string, string> arguments = ReadArguments(sr);
+
+                        List<ISignatureInfo> signatureInfos = new List<ISignatureInfo>();
+                        foreach (string s in signatureStrings)
+                        {
+                            SignatureInfo info = RdFunctionSignature.ParseSignature(s);
+                            signatureInfos.Add(info);
+
+                            in
+                        }
+
+                        List<IArgumentInfo> argumentsInfos = new List<IArgumentInfo>();
+                        foreach (string s in signatureStrings)
+                        {
+                            ISignatureInfo info = RdFunctionSignature.ParseSignature(s, arguments);
+                            signatureInfos.Add(info);
+                        }
+
+                        FunctionInfo functionInfo = new FunctionInfo(functionName, description);
+                        functionInfo.IsInternal = isInternal;
+                        functionInfo.Signatures = signatureInfos;
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static List<string> ReadSignatures(StreamReader sr)
+        {
+            List<string> signatures = new List<string>();
+
+            while (true)
+            {
+                string line = sr.ReadLine().Trim();
+                if (string.IsNullOrEmpty(line))
+                {
+                    break;
+                }
+
+                signatures.Add(line);
+            }
+
+            return signatures;
+        }
+
+        private static Dictionary<string, string> ReadArguments(StreamReader sr)
+        {
+            Dictionary<string, string> arguments = new Dictionary<string, string>();
+
+            while (true)
+            {
+                string line = sr.ReadLine().Trim();
+                if (string.IsNullOrEmpty(line))
+                {
+                    break;
+                }
+
+                int index = line.IndexOf(':');
+                if (index < 0)
+                    throw new IOException();
+
+                string name = line.Substring(0, index);
+                string description = line.Substring(index + 1);
+
+                arguments[name] = description;
+            }
+
+            return arguments;
+        }
+
+        private static bool ReadInternal(StreamReader sr)
+        {
+            string line = sr.ReadLine().Trim();
+
+            int value;
+            if (!Int32.TryParse(line, out value))
+            {
+                throw new IOException();
+            }
+
+            return value > 0;
         }
     }
 }

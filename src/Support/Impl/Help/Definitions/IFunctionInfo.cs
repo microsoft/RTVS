@@ -6,11 +6,6 @@ namespace Microsoft.R.Support.Help.Definitions
     public interface IFunctionInfo: INamedItemInfo
     {
         /// <summary>
-        /// Package the function comes from
-        /// </summary>
-        string PackageName { get; }
-
-        /// <summary>
         /// Other function name variants
         /// </summary>
         IReadOnlyList<string> Aliases { get; }
@@ -18,7 +13,7 @@ namespace Microsoft.R.Support.Help.Definitions
         /// <summary>
         /// Function sugnatures
         /// </summary>
-        IReadOnlyList<SignatureInfo> Signatures { get; }
+        IReadOnlyList<ISignatureInfo> Signatures { get; }
 
         /// <summary>
         /// Return value description

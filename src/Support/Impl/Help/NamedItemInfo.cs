@@ -12,6 +12,21 @@ namespace Microsoft.R.Support.Help
         /// <summary>
         /// Item description
         /// </summary>
-        public string Description { get; internal set; }
+        public virtual string Description { get; internal set; }
+
+        public NamedItemInfo(): 
+            this(null)
+        {
+        }
+        public NamedItemInfo(string name): 
+            this(name, string.Empty)
+        {
+        }
+
+        public NamedItemInfo(string name, string description)
+        {
+            Name = name;
+            Description = description;
+        }
     }
 }

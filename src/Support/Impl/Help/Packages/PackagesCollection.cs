@@ -4,7 +4,10 @@ using Microsoft.R.Support.Help.Definitions;
 
 namespace Microsoft.R.Support.Help.Packages
 {
-    public abstract class PackagesCollection : IPackageCollection
+    /// <summary>
+    /// Base class for package collections
+    /// </summary>
+    public abstract class PackageCollection : IPackageCollection
     {
         public abstract string InstallPath { get; }
 
@@ -17,7 +20,7 @@ namespace Microsoft.R.Support.Help.Packages
                     string libraryPath = this.InstallPath;
                     if (string.IsNullOrEmpty(libraryPath))
                     {
-                        return new PackageEnumeration(libraryPath, isBase: true);
+                        return new PackageEnumeration(libraryPath);
                     }
                 }
                 catch (IOException) { }

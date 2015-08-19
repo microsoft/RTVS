@@ -2,10 +2,16 @@
 
 namespace Microsoft.R.Support.Help.Definitions
 {
+    /// <summary>
+    /// Describes collection or R packages. 
+    /// Typically implementation is exported via MEF
+    /// since there multiple collections exist.
+    /// </summary>
     public interface IPackageCollection
     {
         /// <summary>
-        /// Path to base R packages. Typically ~/Program Files/R/[version]/library
+        /// Path to base R packages. 
+        /// Typically ~/Program Files/R/[version]/library
         /// </summary>
         string InstallPath { get; }
 

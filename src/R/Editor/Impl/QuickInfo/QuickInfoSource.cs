@@ -1,16 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Editor.Completion;
-using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Signatures;
-using Microsoft.R.Editor.Tree.Search;
-using Microsoft.R.Support.Engine;
 using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Packages;
-using Microsoft.R.Support.RD.Parser;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -72,46 +66,29 @@ namespace Microsoft.R.Editor.QuickInfo
             {
                 applicableToSpan = snapshot.CreateTrackingSpan(position, signatureEnd - position, SpanTrackingMode.EdgeInclusive);
 
-                EngineResponse response = RCompletionEngine.GetFunctionHelp(document.EditorTree.AstRoot, functionName).Result;
-                if (response != null)
+                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName);
+                if (functionInfo != null)
                 {
-                    if (!response.IsReady)
+                    foreach (ISignatureInfo sig in functionInfo.Signatures)
                     {
-                        response.DataReady += OnDataReady;
-                        _textView = session.TextView;
-                    }
-                    else
-                    {
-                        IFunctionInfo functionInfo = response.Data as IFunctionInfo;
+                        var signatureString = sig.GetSignatureString(functionInfo.Name);
+                        string text;
 
-                        foreach (ISignatureInfo sig in functionInfo.Signatures)
+                        if (string.IsNullOrWhiteSpace(functionInfo.Description))
                         {
-                            var signatureString = sig.GetSignatureString(functionInfo.Name);
-                            string text;
-
-                            if (string.IsNullOrWhiteSpace(functionInfo.Description))
-                            {
-                                text = string.Empty;
-                            }
-                            else
-                            {
-                                text = signatureString + "\r\n" + functionInfo.Description;
-                            }
-
-                            quickInfoContent.Add(text);
-                            break;
+                            text = string.Empty;
                         }
+                        else
+                        {
+                            text = signatureString + "\r\n" + functionInfo.Description;
+                        }
+
+                        quickInfoContent.Add(text);
+                        break;
                     }
                 }
             }
         }
-
-        private void OnDataReady(object sender, object e)
-        {
-            IQuickInfoBroker broker = EditorShell.ExportProvider.GetExport<IQuickInfoBroker>().Value;
-            broker.TriggerQuickInfo(_textView);
-        }
-
         #endregion
 
         #region IDisposable

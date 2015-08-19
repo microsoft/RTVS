@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
-using Microsoft.R.Editor.Tree.Search;
-using Microsoft.R.Support.Engine;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Packages;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion.Engine
@@ -22,7 +16,6 @@ namespace Microsoft.R.Editor.Completion.Engine
     internal static class RCompletionEngine
     {
         private static IEnumerable<Lazy<IRCompletionListProvider>> CompletionProviders { get; set; }
-        private static RHelpDataSource _helpDataSource;
 
         /// <summary>
         /// Provides list of completion entries for a given location in the AST.
@@ -65,56 +58,12 @@ namespace Microsoft.R.Editor.Completion.Engine
 
         public static void Initialize()
         {
-            if (_helpDataSource == null)
-            {
-                _helpDataSource = new RHelpDataSource();
-            }
+            FunctionIndex.Initialize();
 
             if (CompletionProviders == null)
             {
                 CompletionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany();
             }
-
-            EditorShell.OnIdle += OnIdle;
-        }
-
-        private static void OnIdle(object sender, EventArgs e)
-        {
-            EditorShell.OnIdle -= OnIdle;
-
-            Task.Run(async () =>
-            {
-                IEnumerable<PackageInfo> packages = PackagesDataSource.GetBasePackages();
-
-                // Get list of functions in the package
-                foreach (PackageInfo pkg in packages)
-                {
-                    if (!pkg.IsLoaded)
-                    {
-                        await pkg.LoadFunctionsAsync();
-                    }
-                }
-            });
-        }
-
-        public static async Task<EngineResponse> GetFunctionHelp(AstRoot ast, string functionName)
-        {
-            IEnumerable<IPackageInfo> packages = ast.GetPackages();
-
-            // Get list of functions in the package
-            foreach (IPackageInfo pkg in packages)
-            {
-                if (pkg.IsLoaded)
-                {
-                    if (pkg.ContainsFunction(functionName))
-                    {
-                        // Get collection of function signatures from documentation (parsed RD file)
-                        return await _helpDataSource.GetFunctionHelp(functionName, pkg.Name);
-                    }
-                }
-            }
-
-            return null;
         }
 
         private static bool IsPackageListCompletion(ITextBuffer textBuffer, int position)

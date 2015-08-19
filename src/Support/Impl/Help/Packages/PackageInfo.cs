@@ -2,73 +2,50 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Html.Core.Tree;
 using Microsoft.Html.Core.Tree.Nodes;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
-using Microsoft.R.Support.Utility;
 
 namespace Microsoft.R.Support.Help.Packages
 {
-    public sealed class PackageInfo : AsyncDataSource<string>, IPackageInfo
+    public sealed class PackageInfo : NamedItemInfo, IPackageInfo
     {
-        #region IPackageInfo
-        public string Name { get; private set; }
+        private string _description;
 
-        public string InstallPath { get; private set; }
+        public PackageInfo(string name, string installPath): 
+            base(name)
+        {
+            InstallPath = installPath;
+        }
 
-        public bool IsBase { get; internal set; }
-
-        public string Description
+        #region NamedItemInfo
+        public override string Description
         {
             get
             {
                 if (_description == null)
-                {
-                    Task.Run(() =>
-                    {
-                        _description = GetDescription();
-                        SetData(_description);
-                    });
-                }
+                    _description = GetDescription();
 
-                return _description ?? string.Empty;
-            }
-        }
-
-        public IReadOnlyCollection<INamedItemInfo> Functions
-        {
-            get
-            {
-                return Func
-                IReadOnlyList<string> functions = FunctionIndex.GetPackageFunctions(this.Name);
-                if (functions == null)
-                {
-                    functions = GetFunctions();
-                }
-
-                return _functions.Values;
+                return _description;
             }
         }
         #endregion
 
-        private string _description;
-        private PackageFunctionsInfo _functionsInfo;
+        #region IPackageInfo
+        /// <summary>
+        /// Package install path
+        /// </summary>
+        public string InstallPath { get; private set; }
 
-        public PackageInfo(string name, string installPath)
+        /// <summary>
+        /// Collection of functions in the package
+        /// </summary>
+        public IReadOnlyCollection<INamedItemInfo> Functions
         {
-            Name = name;
-            InstallPath = installPath;
-
-            _functionsInfo = new PackageFunctionsInfo(name, )
-            this.DataReady += OnDataReady;
+            get { return FunctionIndex.GetPackageFunctions(this.Name); }
         }
-
-        private void OnDataReady(object sender, string e)
-        {
-            FunctionIndex.AddPackageData
-        }
+        #endregion
 
         /// <summary>
         /// Extract package description from the DESCRITION file on disk
@@ -88,7 +65,7 @@ namespace Microsoft.R.Support.Help.Packages
                 //    spanning multiple lines. The second and subsequent lines
                 //    should be indented, usually with four spaces.
 
-                string descriptionFilePath = Path.Combine(InstallPath, Name, "DESCRIPTION");
+                string descriptionFilePath = Path.Combine(this.InstallPath, this.Name, "DESCRIPTION");
 
                 using (StreamReader sr = new StreamReader(descriptionFilePath, Encoding.UTF8))
                 {
@@ -134,6 +111,88 @@ namespace Microsoft.R.Support.Help.Packages
             catch (IOException) { }
 
             return sb.ToString().Trim();
+        }
+
+        internal IReadOnlyList<INamedItemInfo> LoadFunctionInfoFromPackageHelpIndex()
+        {
+            List<INamedItemInfo> functions = new List<INamedItemInfo>();
+            string content = null;
+
+            try
+            {
+                string htmlFile = Path.Combine(this.InstallPath, this.Name, "html", "00index.html");
+
+                using (StreamReader sr = new StreamReader(htmlFile, Encoding.UTF8))
+                {
+                    content = sr.ReadToEnd();
+                }
+            }
+            catch (IOException) { }
+
+            if (!string.IsNullOrEmpty(content))
+            {
+                HtmlTree tree = new HtmlTree(new Microsoft.Web.Core.Text.TextStream(content));
+                tree.Build();
+
+                FunctionSearch functionSearch = new FunctionSearch(functions);
+                tree.Accept(functionSearch, null);
+            }
+
+            return functions;
+        }
+
+        private class FunctionSearch : IHtmlTreeVisitor
+        {
+            private List<INamedItemInfo> _functions;
+
+            public FunctionSearch(List<INamedItemInfo> functions)
+            {
+                _functions = functions;
+            }
+
+            public bool Visit(ElementNode element, object parameter)
+            {
+                if (element.Name.Equals("tr", StringComparison.OrdinalIgnoreCase) && element.Children.Count == 2)
+                {
+                    ElementNode tdNode1 = element.Children[0];
+                    ElementNode tdNode2 = element.Children[1];
+
+                    if (tdNode1.Children.Count == 1 && tdNode1.Children[0].Name.Equals("a", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string functionName = element.Root.TextProvider.GetText(tdNode1.Children[0].InnerRange);
+                        if (IsValidName(functionName))
+                        {
+                            string functionDescription = element.Root.TextProvider.GetText(tdNode2.InnerRange) ?? string.Empty;
+                            _functions.Add(new NamedItemInfo(functionName, functionDescription));
+                        }
+                    }
+                }
+
+                return true;
+            }
+            private bool IsValidName(string name)
+            {
+                bool hasCharacters = false;
+
+                if (name == null || name.Length == 0 || !char.IsLetter(name[0]))
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < name.Length; i++)
+                {
+                    if (char.IsLetterOrDigit(name[i]))
+                    {
+                        hasCharacters = true;
+                    }
+                    else if (name[i] != '.' && name[i] != '_')
+                    {
+                        return false;
+                    }
+                }
+
+                return hasCharacters;
+            }
         }
     }
 }

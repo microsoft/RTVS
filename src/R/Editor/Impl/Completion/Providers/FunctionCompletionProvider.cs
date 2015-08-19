@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree.Search;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
@@ -32,17 +35,20 @@ namespace Microsoft.R.Editor.Completion.Providers
             // packages may have been loaded from the command line. 
             // We need an extensibility point here.
 
-            IEnumerable<IPackageInfo> packages = document.EditorTree.AstRoot.GetFilePackages();
-
+            IEnumerable<IPackageInfo> filePackages = document.EditorTree.AstRoot.GetFilePackages();
+            IEnumerable<IPackageInfo> allPackages = filePackages.Union(PackageIndex.BasePackages);
+            
             // Get list of functions in the package
-            foreach (IPackageInfo pkg in packages)
+            foreach (IPackageInfo pkg in allPackages)
             {
-                IEnumerable<INamedItemInfo> functions = pkg.Functions;
-                if (functions != null)
+                IEnumerable<string> functionNames = pkg.Functions;
+                if (functionNames != null)
                 {
-                    foreach (INamedItemInfo func in functions)
+                    foreach (string functionName in functionNames)
                     {
-                        var completion = new RCompletion(func.Name, func.Name, func.Description, glyph);
+                        string description = FunctionIndex.GetFunctionDescription(functionName);
+
+                        var completion = new RCompletion(functionName, functionName, description, glyph);
                         completions.Add(completion);
                     }
                 }
@@ -53,45 +59,3 @@ namespace Microsoft.R.Editor.Completion.Providers
         #endregion
     }
 }
-
-
-//private void OnResponseDataReady(object sender, string data)
-//{
-//    EngineResponse response = RCompletionEngine.HelpDataSource.GetFunctionHelp("abs", "base").Result;
-
-//    CompletionData completionData = new CompletionData()
-//    {
-//        Completion = completion,
-//        Session = context.Session
-//    };
-
-//    response.Tag = completionData;
-//    response.DataReady += OnResponseDataReady;
-
-//    if (response.IsReady)
-//    {
-//        PopulateCompletionData(response);
-//    }
-
-//    EngineResponse response = sender as EngineResponse;
-//    PopulateCompletionData(response);
-//}
-
-//private void PopulateCompletionData(EngineResponse response)
-//{
-//    if (response.Data != null)
-//    {
-//        CompletionData completionData = response.Tag as CompletionData;
-//        if (!completionData.Session.IsDismissed)
-//        {
-//            RdFunctionInfo functionInfo = RdParser.GetFunctionInfo(completionData.Completion.InsertionText, response.Data);
-//            completionData.Completion.Description = functionInfo != null ? functionInfo.Description : string.Empty;
-//        }
-//    }
-//}
-
-//private class CompletionData
-//{
-//    public RCompletion Completion;
-//    public ICompletionSession Session;
-//}

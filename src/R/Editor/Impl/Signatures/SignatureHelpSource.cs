@@ -8,6 +8,7 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Engine;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.RD.Parser;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -52,16 +53,9 @@ namespace Microsoft.R.Editor.Signatures
                         ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(position, signatureEnd - position, SpanTrackingMode.EdgeInclusive);
 
                         // Get collection of function signatures from documentation (parsed RD file)
-                        EngineResponse response = RCompletionEngine.GetFunctionHelp(document.EditorTree.AstRoot, functionName).Result;
-                        if (!response.IsReady)
+                            IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName);
+                        if (functionInfo != null)
                         {
-                            response.DataReady += OnDataReady;
-                            _textView = session.TextView;
-                        }
-                        else
-                        {
-                            IFunctionInfo functionInfo = response.Data as IFunctionInfo;
-
                             foreach (ISignatureInfo signatureInfo in functionInfo.Signatures)
                             {
                                 var signature = CreateSignature(session, _textBuffer, functionInfo, signatureInfo, applicableToSpan, position);
@@ -71,12 +65,6 @@ namespace Microsoft.R.Editor.Signatures
                     }
                 }
             }
-        }
-
-        private void OnDataReady(object sender, object e)
-        {
-            ISignatureHelpBroker broker = EditorShell.ExportProvider.GetExport<ISignatureHelpBroker>().Value;
-            broker.TriggerSignatureHelp(_textView);
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session)

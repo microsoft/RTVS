@@ -10,7 +10,7 @@ namespace Microsoft.R.Support.Engine
     /// An object that represents pending response from the R engine
     /// that is running in a separate process
     /// </summary>
-    public class EngineResponse : AsyncDataSource<object>
+    public class EngineResponse : AsyncData<object>
     {
         /// <summary>
         /// R engine process
@@ -37,16 +37,18 @@ namespace Microsoft.R.Support.Engine
         /// Any user parameter to pass to the data converter.
         /// </summary>
         private object _parameter;
+
         private StringBuilder _sb = new StringBuilder();
 
-        public EngineResponse(Process process, Func<string, object, object> dataConverter, object p) :
-            this(process)
+        public EngineResponse(Process process, Action<object> dataReadyCallBack, Func<string, object, object> dataConverter, object p = null) :
+            this(process, dataReadyCallBack)
         {
             _dataConverter = dataConverter;
             _parameter = p;
         }
 
-        public EngineResponse(Process process)
+        public EngineResponse(Process process, Action<object> dataReadyCallBack): 
+            base(dataReadyCallBack)
         {
             _process = process;
             _process.OutputDataReceived += Process_OutputDataReceived;

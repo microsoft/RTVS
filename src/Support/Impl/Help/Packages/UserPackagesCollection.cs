@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Help.Packages
 {
-    public sealed class UserPackagesCollection : PackagesCollection
+    [Export(typeof(IPackageCollection))]
+    public sealed class UserPackagesCollection : PackageCollection
     {
         public override string InstallPath
         {

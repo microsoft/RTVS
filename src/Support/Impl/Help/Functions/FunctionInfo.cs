@@ -1,23 +1,25 @@
 ﻿using System.Collections.Generic;
 using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Packages;
 
 namespace Microsoft.R.Support.Help.Functions
 {
-    public sealed class FunctionInfo: NamedItemInfo
+    public sealed class FunctionInfo : NamedItemInfo, IFunctionInfo
     {
-        /// <summary>
-        /// Package the function comes from
-        /// </summary>
-        public string PackageName { get; internal set; }
+        #region INamedItemInfo
+        public override string Description
+        {
+            get { return FunctionIndex.GetFunctionDescription(this.Name); }
+        }
+        #endregion
 
+        #region IFunctionInfo
         /// <summary>
         /// Other function name variants
         /// </summary>
         public IReadOnlyList<string> Aliases { get; internal set; }
 
         /// <summary>
-        /// Function sugnatures
+        /// Function signatures
         /// </summary>
         public IReadOnlyList<ISignatureInfo> Signatures { get; internal set; }
 
@@ -31,15 +33,16 @@ namespace Microsoft.R.Support.Help.Functions
         /// in its list of keywords)
         /// </summary>
         public bool IsInternal { get; internal set; }
+        #endregion
 
-        internal bool IsComplete
+        public FunctionInfo(string name, string description) :
+            base(name, description)
         {
-            get { return Description != null && Signatures != null && ReturnValue != null; }
         }
 
-        public FunctionInfo(string name)
+        public FunctionInfo(string name) :
+            base(name)
         {
-            Name = name;
         }
     }
 }

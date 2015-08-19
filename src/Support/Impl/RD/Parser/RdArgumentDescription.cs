@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Tokens;
-using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
@@ -63,7 +63,7 @@ namespace Microsoft.R.Support.RD.Parser
 
                 if (token.IsKeywordText(context.TextProvider, @"\item") && tokens.NextToken.TokenType == RdTokenType.OpenBrace)
                 {
-                    IEnumerable<ArgumentInfo> args = ParseArgumentItem(context);
+                    IEnumerable<IArgumentInfo> args = ParseArgumentItem(context);
                     if (args == null)
                     {
                         tokens.Position = end;
@@ -106,11 +106,7 @@ namespace Microsoft.R.Support.RD.Parser
 
                     foreach (string name in argumentNames)
                     {
-                        ArgumentInfo info = new ArgumentInfo();
-
-                        info.Name = name.Trim();
-                        info.Description = description.Trim();
-
+                        ArgumentInfo info = new ArgumentInfo(name.Trim(), description.Trim());
                         arguments.Add(info);
                     }
                 }

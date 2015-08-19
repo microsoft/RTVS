@@ -2,6 +2,7 @@
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
@@ -92,14 +93,16 @@ namespace Microsoft.R.Support.RD.Parser
                     foreach (var arg in sigInfo.Arguments)
                     {
                         string description;
-                        argumentDescriptions.TryGetValue(arg.Name, out description);
-                        arg.Description = description ?? string.Empty;
+                        if (argumentDescriptions.TryGetValue(arg.Name, out description))
+                        {
+                            ((NamedItemInfo)arg).Description = description ?? string.Empty;
+                        }
                     }
                 }
             }
 
             info.Aliases = aliases;
-            return (info.Signatures != null && info.Signatures.Count > 0) ? info : null;
+            return info;
         }
     }
 }
