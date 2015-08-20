@@ -39,6 +39,7 @@ namespace Microsoft.R.Support.Engine
         private object _parameter;
 
         private StringBuilder _sb = new StringBuilder();
+        private DateTime _processingStartTime = DateTime.Now;
 
         public EngineResponse(Process process, Action<object> dataReadyCallBack, Func<string, object, object> dataConverter, object p = null) :
             this(process, dataReadyCallBack)
@@ -47,14 +48,14 @@ namespace Microsoft.R.Support.Engine
             _parameter = p;
         }
 
-        public EngineResponse(Process process, Action<object> dataReadyCallBack): 
+        public EngineResponse(Process process, Action<object> dataReadyCallBack) :
             base(dataReadyCallBack)
         {
             _process = process;
             _process.OutputDataReceived += Process_OutputDataReceived;
         }
 
-        public EngineResponse(object data) : 
+        public EngineResponse(object data) :
             base(data)
         {
         }
@@ -107,6 +108,7 @@ namespace Microsoft.R.Support.Engine
             _sb = null;
 
             SetData(data);
+            Debug.WriteLine("R engine response time: {0} ms", (DateTime.Now - _processingStartTime).TotalMilliseconds);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using Microsoft.Languages.Core.Tokens;
+﻿using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
@@ -19,46 +17,33 @@ namespace Microsoft.R.Support.RD.Parser
 
         private static int SkipAllBraces(TokenStream<RdToken> tokens)
         {
-            if (tokens.CurrentToken.TokenType != RdTokenType.OpenBrace && tokens.NextToken.TokenType == RdTokenType.OpenBrace)
+            int end = tokens.Position;
+
+            RdBraceCounter<RdToken> braceCounter = new RdBraceCounter<RdToken>(
+                new RdToken(RdTokenType.OpenCurlyBrace),
+                new RdToken(RdTokenType.CloseCurlyBrace),
+                new RdToken(RdTokenType.OpenSquareBracket),
+                new RdToken(RdTokenType.CloseSquareBracket)
+                );
+
+            tokens.MoveToNextToken();
+
+            while (!tokens.IsEndOfStream())
             {
-                tokens.MoveToNextToken();
-            }
-
-            Debug.Assert(tokens.CurrentToken.TokenType == RdTokenType.OpenBrace);
-
-            Stack<RdToken> braces = new Stack<RdToken>();
-            int start = tokens.Position;
-            int end = -1;
-            int i;
-
-            braces.Push(tokens[start]);
-
-            for (i = start + 1; i < tokens.Length && braces.Count > 0; i++)
-            {
-                RdToken token = tokens[i];
-
-                switch (token.TokenType)
+                if (braceCounter.CountBrace(tokens.CurrentToken))
                 {
-                    case RdTokenType.OpenBrace:
-                        braces.Push(token);
+                    if (braceCounter.Count == 0)
                         break;
-
-                    case RdTokenType.CloseBrace:
-                        if (braces.Count > 0)
-                        {
-                            braces.Pop();
-                        }
-                        else
-                        {
-                            return -1;
-                        }
-                        break;
+                }
+                else
+                {
+                    tokens.MoveToNextToken();
                 }
             }
 
-            if (braces.Count == 0)
+            if (braceCounter.Count == 0)
             {
-                end = i;
+                end = tokens.Position;
             }
 
             return end;

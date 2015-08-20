@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
@@ -27,23 +28,26 @@ namespace Microsoft.R.Support.RD.Parser
 
             for (int i = start + 1; i < end; i++)
             {
-                RdToken token = context.Tokens[i];
-                if (token.TokenType == RdTokenType.Argument)
+                TextRange range = TextRange.FromBounds(context.Tokens[i - 1].End, context.Tokens[i].Start);
+                string s = context.TextProvider.GetText(range);
+
+                for (int j = 0; j < s.Length; j++)
                 {
-                    string s = context.TextProvider.GetText(token);
-                    for (int j = 0; j < s.Length; j++)
+                    char ch = s[j];
+
+                    if (ch == '\n' || ch == '\r' || ch == '\t' || char.IsWhiteSpace(ch))
                     {
-                        char ch = s[j];
+                        ch = ' ';
+                    }
 
-                        if (ch == '\n' || ch == '\r' || ch == '\t' || char.IsWhiteSpace(ch))
-                        {
-                            ch = ' ';
-                        }
+                    if (ch == '\\')
+                    {
+                        continue; // skip escapes
+                    }
 
-                        if (ch != ' ' || (sb.Length > 0 && sb[sb.Length - 1] != ' '))
-                        {
-                            sb.Append(ch);
-                        }
+                    if (ch != ' ' || (sb.Length > 0 && sb[sb.Length - 1] != ' '))
+                    {
+                        sb.Append(ch);
                     }
                 }
             }

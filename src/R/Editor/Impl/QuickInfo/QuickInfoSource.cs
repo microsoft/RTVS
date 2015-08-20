@@ -7,7 +7,6 @@ using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.R.Editor.QuickInfo
@@ -20,9 +19,8 @@ namespace Microsoft.R.Editor.QuickInfo
         [Import]
         internal ITextBufferFactoryService TextBufferFactoryService { get; set; }
 
-        ITextBuffer _subjectBuffer;
-        ITextView _textView;
-        int _lastPosition = -1;
+        private ITextBuffer _subjectBuffer;
+        private int _lastPosition = -1;
 
         public QuickInfoSource(ITextBuffer subjectBuffer)
         {
@@ -66,8 +64,10 @@ namespace Microsoft.R.Editor.QuickInfo
             {
                 applicableToSpan = snapshot.CreateTrackingSpan(position, signatureEnd - position, SpanTrackingMode.EdgeInclusive);
 
-                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName);
-                if (functionInfo != null)
+                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName,
+                    (object o) => RetriggerQuickInfoSession(o as IQuickInfoSession), session);
+
+                if (functionInfo != null && functionInfo.Signatures != null)
                 {
                     foreach (ISignatureInfo sig in functionInfo.Signatures)
                     {
@@ -90,6 +90,18 @@ namespace Microsoft.R.Editor.QuickInfo
             }
         }
         #endregion
+
+        private void RetriggerQuickInfoSession(IQuickInfoSession session)
+        {
+            if (session != null && !session.IsDismissed)
+            {
+                session.Dismiss();
+            }
+
+            _lastPosition = -1;
+            IQuickInfoBroker broker = EditorShell.ExportProvider.GetExport<IQuickInfoBroker>().Value;
+            broker.TriggerQuickInfo(session.TextView, session.GetTriggerPoint(session.TextView.TextBuffer), session.TrackMouse);
+        }
 
         #region IDisposable
         public void Dispose()

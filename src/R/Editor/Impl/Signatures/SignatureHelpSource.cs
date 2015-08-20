@@ -2,24 +2,18 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Support.Engine;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
-using Microsoft.R.Support.RD.Parser;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures
 {
     sealed class SignatureHelpSource : ISignatureHelpSource
     {
         ITextBuffer _textBuffer;
-        ITextView _textView;
 
         public SignatureHelpSource(ITextBuffer textBuffer)
         {

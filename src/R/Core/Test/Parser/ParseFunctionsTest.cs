@@ -92,6 +92,7 @@ namespace Microsoft.R.Core.Test.Parser
                             NullValue  [NULL [13...17]]
                         TokenNode  [, [17...18]]
                     EllipsisArgument  [...]
+                        TokenNode  [... [19...22]]
                 TokenNode  [) [22...23]]
 ";
             ParserTest.VerifyParse(expected, "x(a, b=NA, c=NULL, ...)");

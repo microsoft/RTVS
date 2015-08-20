@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Languages;
@@ -33,13 +34,13 @@ namespace Microsoft.VisualStudio.R.Packages
 
         protected override void Initialize()
         {
-            FunctionIndex.LoadIndexAsync();
             base.Initialize();
+            FunctionIndex.BuildIndexAsync();
         }
 
         protected override void Dispose(bool disposing)
         {
-            FunctionIndex.SaveIndexAsync();
+            //FunctionIndex.SaveIndexAsync();
             base.Dispose(disposing);
         }
 

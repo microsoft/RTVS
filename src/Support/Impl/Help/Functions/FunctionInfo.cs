@@ -5,13 +5,6 @@ namespace Microsoft.R.Support.Help.Functions
 {
     public sealed class FunctionInfo : NamedItemInfo, IFunctionInfo
     {
-        #region INamedItemInfo
-        public override string Description
-        {
-            get { return FunctionIndex.GetFunctionDescription(this.Name); }
-        }
-        #endregion
-
         #region IFunctionInfo
         /// <summary>
         /// Other function name variants

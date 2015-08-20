@@ -34,12 +34,12 @@ namespace Microsoft.R.Support.RD.Parser
             List<string> aliases = new List<string>();
             IReadOnlyDictionary<string, string> argumentDescriptions = null;
 
-            while (!context.Tokens.IsEndOfStream() && !info.IsComplete && argumentDescriptions == null)
+            while (!context.Tokens.IsEndOfStream() && argumentDescriptions == null)
             {
                 RdToken token = context.Tokens.CurrentToken;
 
                 if (token.TokenType == RdTokenType.Keyword &&
-                    context.Tokens.NextToken.TokenType == RdTokenType.OpenBrace)
+                    context.Tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace)
                 {
                     if (string.IsNullOrEmpty(info.Description) && token.IsKeywordText(textProvider, @"\description"))
                     {

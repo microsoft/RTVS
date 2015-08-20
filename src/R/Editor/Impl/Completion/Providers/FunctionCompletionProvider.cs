@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
+using System.Diagnostics;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree.Search;
 using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -35,20 +34,38 @@ namespace Microsoft.R.Editor.Completion.Providers
             // packages may have been loaded from the command line. 
             // We need an extensibility point here.
 
-            IEnumerable<IPackageInfo> filePackages = document.EditorTree.AstRoot.GetFilePackages();
-            IEnumerable<IPackageInfo> allPackages = filePackages.Union(PackageIndex.BasePackages);
+            IEnumerable<string> filePackageNames = document.EditorTree.AstRoot.GetFilePackageNames();
+
+            List<IPackageInfo> filePackages = new List<IPackageInfo>();
+            foreach(string packageName in filePackageNames)
+            {
+                IPackageInfo p = PackageIndex.GetPackageByName(packageName);
+                // May be null if user mistyped package name in the library()
+                // statement or package is not installed.
+                if (p != null) 
+                {
+                    filePackages.Add(p);
+                }
+            }
+
+            IPackageInfo basePackage = PackageIndex.GetPackageByName("base");
+            Debug.Assert(basePackage != null, "Base package information is missing");
+
+            filePackages.Add(basePackage);
             
             // Get list of functions in the package
-            foreach (IPackageInfo pkg in allPackages)
+            foreach (IPackageInfo pkg in filePackages)
             {
-                IEnumerable<string> functionNames = pkg.Functions;
-                if (functionNames != null)
-                {
-                    foreach (string functionName in functionNames)
-                    {
-                        string description = FunctionIndex.GetFunctionDescription(functionName);
+                Debug.Assert(pkg != null);
 
-                        var completion = new RCompletion(functionName, functionName, description, glyph);
+                IEnumerable<INamedItemInfo> functions = pkg.Functions;
+                if (functions != null)
+                {
+                    foreach (INamedItemInfo function in functions)
+                    {
+                        Debug.Assert(function != null);
+
+                        var completion = new RCompletion(function.Name, function.Name, function.Description, glyph);
                         completions.Add(completion);
                     }
                 }

@@ -2,13 +2,14 @@
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Expressions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Arguments
 {
     [DebuggerDisplay("[{Name}]")]
-    public class NamedArgument : ExpressionArgument
+    public class NamedArgument : CommaSeparatedItem
     {
         public ITextRange NameRange
         {
@@ -23,18 +24,22 @@ namespace Microsoft.R.Core.AST.Arguments
 
         public TokenNode EqualsSign { get; private set; }
 
+        public Expression DefaultValue { get; private set; }
+
         public override bool Parse(ParseContext context, IAstNode parent)
         {
             TokenStream<RToken> tokens = context.Tokens;
 
-            if (tokens.CurrentToken.TokenType == RTokenType.Identifier &&
-                tokens.NextToken.TokenType == RTokenType.Operator &&
-                context.TextProvider.GetText(tokens.NextToken) == "=")
+            this.Identifier = RParser.ParseToken(context, this);
+            this.EqualsSign = RParser.ParseToken(context, this);
+
+            Expression exp = new Expression();
+            if (!exp.Parse(context, this))
             {
-                this.Identifier = RParser.ParseToken(context, this);
-                this.EqualsSign = RParser.ParseToken(context, this);
+                return false;
             }
 
+            this.DefaultValue = exp;
             return base.Parse(context, parent);
         }
     }

@@ -38,9 +38,8 @@ namespace Microsoft.R.Support.Help.Functions
         private static bool LoadIndex()
         {
             ConcurrentDictionary<string, string> functionToPackageMap = new ConcurrentDictionary<string, string>();
-            ConcurrentDictionary<string, string> functionToDescriptionMap = new ConcurrentDictionary<string, string>();
             ConcurrentDictionary<string, IFunctionInfo> functionToInfoMap = new ConcurrentDictionary<string, IFunctionInfo>();
-            ConcurrentDictionary<string, BlockingCollection<string>> packageToFunctionsMap = new ConcurrentDictionary<string, BlockingCollection<string>>();
+            ConcurrentDictionary<string, BlockingCollection<INamedItemInfo>> packageToFunctionsMap = new ConcurrentDictionary<string, BlockingCollection<INamedItemInfo>>();
             bool loaded = false;
 
             // ~/Documents/R/RTVS/FunctionsIndex.dx -> function to package map, also contains function description
@@ -79,16 +78,15 @@ namespace Microsoft.R.Support.Help.Functions
                             }
 
                             functionToPackageMap[functionName] = packageName;
-                            functionToDescriptionMap[functionName] = functionDescription;
 
-                            BlockingCollection<string> functions;
+                            BlockingCollection<INamedItemInfo> functions;
                             if (!packageToFunctionsMap.TryGetValue(packageName, out functions))
                             {
-                                functions = new BlockingCollection<string>();
+                                functions = new BlockingCollection<INamedItemInfo>();
                                 packageToFunctionsMap[packageName] = functions;
                             }
 
-                            functions.Add(functionName);
+                            functions.Add(new NamedItemInfo(functionName, functionDescription));
                         }
                     }
                 }
@@ -105,7 +103,6 @@ namespace Microsoft.R.Support.Help.Functions
                 EditorShell.DispatchOnUIThread(() =>
                 {
                     _functionToPackageMap = functionToPackageMap;
-                    _functionToDescriptionMap = functionToDescriptionMap;
                     _packageToFunctionsMap = packageToFunctionsMap;
                     _functionToInfoMap = functionToInfoMap;
                 });
@@ -144,15 +141,18 @@ namespace Microsoft.R.Support.Help.Functions
                         {
                             SignatureInfo info = RdFunctionSignature.ParseSignature(s);
                             signatureInfos.Add(info);
-
-                            in
                         }
 
-                        List<IArgumentInfo> argumentsInfos = new List<IArgumentInfo>();
-                        foreach (string s in signatureStrings)
+                        foreach (SignatureInfo sig in signatureInfos)
                         {
-                            ISignatureInfo info = RdFunctionSignature.ParseSignature(s, arguments);
-                            signatureInfos.Add(info);
+                            foreach(ArgumentInfo arg in sig.Arguments)
+                            {
+                                string argDescription;
+                                if (arguments.TryGetValue(arg.Name, out argDescription))
+                                {
+                                    arg.Description = argDescription;
+                                }
+                            }
                         }
 
                         FunctionInfo functionInfo = new FunctionInfo(functionName, description);

@@ -13,7 +13,7 @@ namespace Microsoft.R.Support.Help.Packages
     {
         private string _description;
 
-        public PackageInfo(string name, string installPath): 
+        public PackageInfo(string name, string installPath) :
             base(name)
         {
             InstallPath = installPath;
@@ -43,7 +43,16 @@ namespace Microsoft.R.Support.Help.Packages
         /// </summary>
         public IReadOnlyCollection<INamedItemInfo> Functions
         {
-            get { return FunctionIndex.GetPackageFunctions(this.Name); }
+            get
+            {
+                IReadOnlyCollection<INamedItemInfo> functions = FunctionIndex.GetPackageFunctions(this.Name);
+                if (functions == null || functions.Count == 0)
+                {
+                    functions = LoadFunctionInfoFromPackageHelpIndex();
+                }
+
+                return functions;
+            }
         }
         #endregion
 
@@ -80,7 +89,7 @@ namespace Microsoft.R.Support.Help.Packages
                         if (line.StartsWith("Description:", StringComparison.OrdinalIgnoreCase))
                         {
                             line = line.Substring(12).Trim();
-                            sb.Append(line);
+                            sb.Append(line.Trim());
                             sb.Append(' ');
 
                             while (!found)
@@ -95,7 +104,7 @@ namespace Microsoft.R.Support.Help.Packages
                                 {
                                     line.Trim();
 
-                                    sb.Append(line);
+                                    sb.Append(line.Trim());
                                     sb.Append(' ');
                                 }
                                 else
@@ -175,6 +184,11 @@ namespace Microsoft.R.Support.Help.Packages
                 bool hasCharacters = false;
 
                 if (name == null || name.Length == 0 || !char.IsLetter(name[0]))
+                {
+                    return false;
+                }
+
+                if (name.Length >= 2 && name[0] == '.' && name[1] == '_')
                 {
                     return false;
                 }

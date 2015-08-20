@@ -25,22 +25,5 @@ namespace Microsoft.R.Support.RD.Classification
                 this.DisplayName = Resources.ColorName_RD_CurlyBraces;
             }
         }
-
-        [Export]
-        [Name("RD Argument")]
-        internal ClassificationTypeDefinition ArgumentClassificationType { get; set; }
-
-        [Export(typeof(EditorFormatDefinition))]
-        [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "RD Argument")]
-        [Name("RD Argument")]
-        internal sealed class ArgumentClassificationFormat : ClassificationFormatDefinition
-        {
-            public ArgumentClassificationFormat()
-            {
-                ForegroundColor = Colors.Black;
-                this.DisplayName = Resources.ColorName_RD_Argument;
-            }
-        }
     }
 }

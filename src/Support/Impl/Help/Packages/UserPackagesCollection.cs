@@ -11,33 +11,35 @@ namespace Microsoft.R.Support.Help.Packages
     [Export(typeof(IPackageCollection))]
     public sealed class UserPackagesCollection : PackageCollection
     {
-        public override string InstallPath
+        public UserPackagesCollection() :
+            base(GetInstallPath())
         {
-            get
+        }
+
+        private static string GetInstallPath()
+        {
+            string libraryPath = string.Empty;
+
+            try
             {
-                string libraryPath = string.Empty;
+                string userDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                libraryPath = Path.Combine(userDocumentsPath, @"R\win-library");
 
-                try
+                IEnumerable<string> directories = Directory.EnumerateDirectories(libraryPath);
+                if (directories.Count() == 1)
                 {
-                    string userDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                    libraryPath = Path.Combine(userDocumentsPath, @"R\win-library");
-
-                    IEnumerable<string> directories = Directory.EnumerateDirectories(libraryPath);
-                    if (directories.Count() == 1)
-                    {
-                        // Most common case
-                        libraryPath = Path.Combine(libraryPath, directories.First());
-                    }
-                    else
-                    {
-                        string version = GetReducedVersion();
-                        libraryPath = Path.Combine(libraryPath, version);
-                    }
+                    // Most common case
+                    libraryPath = Path.Combine(libraryPath, directories.First());
                 }
-                catch (IOException) { }
-
-                return libraryPath;
+                else
+                {
+                    string version = GetReducedVersion();
+                    libraryPath = Path.Combine(libraryPath, version);
+                }
             }
+            catch (IOException) { }
+
+            return libraryPath;
         }
 
         private static string GetReducedVersion()

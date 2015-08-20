@@ -16,9 +16,14 @@ namespace Microsoft.R.Support.RD.Tokens
         Comment,
 
         /// <summary>
-        /// "..." sequence
+        /// String inside R-type block
         /// </summary>
         String,
+
+        /// <summary>
+        /// Number inside R-type block
+        /// </summary>
+        Number,
 
         /// <summary>
         /// "#if ... #else" sequence
@@ -30,13 +35,11 @@ namespace Microsoft.R.Support.RD.Tokens
         /// </summary>
         Keyword,
 
-        OpenBrace,
-        CloseBrace,
+        OpenCurlyBrace,
+        CloseCurlyBrace,
 
-        /// <summary>
-        /// Sequence inside { }
-        /// </summary>
-        Argument,
+        OpenSquareBracket,
+        CloseSquareBracket,
 
         /// <summary>
         /// Preudo-token indicating end of stream

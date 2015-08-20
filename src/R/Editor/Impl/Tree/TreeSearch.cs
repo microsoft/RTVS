@@ -7,6 +7,7 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Packages;
 
 namespace Microsoft.R.Editor.Tree.Search
 {
@@ -114,18 +115,18 @@ namespace Microsoft.R.Editor.Tree.Search
         /// Consists of packages in the base library and packages
         /// added via 'library' statements.
         /// </summary>
-        public static IEnumerable<IPackageInfo> GetFilePackages(this AstRoot ast)
+        public static IEnumerable<string> GetFilePackageNames(this AstRoot ast)
         {
             // TODO: results can be cached until AST actually changes
             AstLibrarySearch search = new AstLibrarySearch();
             ast.Accept(search, null);
 
-            return search.Packages;
+            return search.PackageNames;
         }
 
         private class AstLibrarySearch : IAstVisitor
         {
-            public List<IPackageInfo> Packages { get; private set; } = new List<IPackageInfo>();
+            public List<string> PackageNames { get; private set; } = new List<string>();
 
             public bool Visit(IAstNode node, object parameter)
             {
@@ -135,9 +136,7 @@ namespace Microsoft.R.Editor.Tree.Search
                     if (kis.Keyword.Token.IsKeywordText(node.Root.TextProvider, "library") && kis.Identifier != null)
                     {
                         string packageName = node.Root.TextProvider.GetText(kis.Identifier.Token);
-
-                        IPackageInfo packageInfo = new PackageInfo(packageName);
-                        this.Packages.Add(packageInfo);
+                        this.PackageNames.Add(packageName);
                     }
                 }
 

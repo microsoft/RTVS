@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
@@ -37,7 +38,7 @@ namespace Microsoft.R.Support.RD.Parser
             TokenStream<RdToken> tokens = context.Tokens;
 
             // '\arguments{' is expected
-            if (tokens.NextToken.TokenType != RdTokenType.OpenBrace)
+            if (tokens.NextToken.TokenType != RdTokenType.OpenCurlyBrace)
             {
                 return null;
             }
@@ -61,7 +62,7 @@ namespace Microsoft.R.Support.RD.Parser
             {
                 RdToken token = tokens.CurrentToken;
 
-                if (token.IsKeywordText(context.TextProvider, @"\item") && tokens.NextToken.TokenType == RdTokenType.OpenBrace)
+                if (token.IsKeywordText(context.TextProvider, @"\item") && tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace)
                 {
                     IEnumerable<IArgumentInfo> args = ParseArgumentItem(context);
                     if (args == null)
@@ -91,16 +92,17 @@ namespace Microsoft.R.Support.RD.Parser
             TokenStream<RdToken> tokens = context.Tokens;
             tokens.Advance(2);
 
-            if (tokens.CurrentToken.TokenType == RdTokenType.Argument && tokens.NextToken.TokenType == RdTokenType.CloseBrace)
+            if (tokens.CurrentToken.TokenType == RdTokenType.CloseCurlyBrace)
             {
+                TextRange range = TextRange.FromBounds(tokens.PreviousToken.End, tokens.CurrentToken.Start);
+
+                string argumentsText = context.TextProvider.GetText(range);
+                string[] argumentNames = argumentsText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 arguments = new List<IArgumentInfo>();
 
-                string argumentsText = context.TextProvider.GetText(tokens.CurrentToken);
-                string[] argumentNames = argumentsText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                tokens.MoveToNextToken();
 
-                tokens.Advance(2);
-
-                if (tokens.CurrentToken.TokenType == RdTokenType.OpenBrace)
+                if (tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace)
                 {
                     string description = RdText.GetText(context);
 

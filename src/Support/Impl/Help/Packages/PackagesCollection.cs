@@ -7,9 +7,9 @@ namespace Microsoft.R.Support.Help.Packages
     /// <summary>
     /// Base class for package collections
     /// </summary>
-    public abstract class PackageCollection : IPackageCollection
+    public class PackageCollection : IPackageCollection
     {
-        public abstract string InstallPath { get; }
+        public string InstallPath { get; private set; }
 
         public IEnumerable<IPackageInfo> Packages
         {
@@ -18,7 +18,7 @@ namespace Microsoft.R.Support.Help.Packages
                 try
                 {
                     string libraryPath = this.InstallPath;
-                    if (string.IsNullOrEmpty(libraryPath))
+                    if (!string.IsNullOrEmpty(libraryPath))
                     {
                         return new PackageEnumeration(libraryPath);
                     }
@@ -27,6 +27,11 @@ namespace Microsoft.R.Support.Help.Packages
 
                 return new IPackageInfo[0];
             }
+        }
+
+        protected PackageCollection(string installPath)
+        {
+            InstallPath = installPath;
         }
     }
 }

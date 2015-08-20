@@ -1,13 +1,19 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
 namespace Microsoft.R.Support.RD.Tokens
 {
     [DebuggerDisplay("[{TokenType} : {Start}...{End}), Length = {Length}")]
-    public class RdToken : Token<RdTokenType>
+    public class RdToken : Token<RdTokenType>, IComparable<RdToken>
     {
-        public static RdToken EndOfStreamToken = new RdToken(RdTokenType.EndOfStream, TextRange.EmptyRange);
+        public static RdToken EndOfStreamToken = new RdToken(RdTokenType.EndOfStream);
+
+        public RdToken(RdTokenType tokenType)
+            : this(tokenType, TextRange.EmptyRange)
+        {
+        }
 
         public RdToken(RdTokenType tokenType, ITextRange range)
             : base(tokenType, range)
@@ -42,7 +48,10 @@ namespace Microsoft.R.Support.RD.Tokens
         {
             get
             {
-                return this.TokenType == RdTokenType.OpenBrace || this.TokenType == RdTokenType.CloseBrace;
+                return this.TokenType == RdTokenType.OpenCurlyBrace ||
+                       this.TokenType == RdTokenType.CloseCurlyBrace ||
+                       this.TokenType == RdTokenType.OpenSquareBracket ||
+                       this.TokenType == RdTokenType.CloseSquareBracket;
             }
         }
 
@@ -54,6 +63,17 @@ namespace Microsoft.R.Support.RD.Tokens
             }
 
             return false;
+        }
+
+        public int CompareTo(RdToken other)
+        {
+            if (this.TokenType == other.TokenType)
+                return 0;
+
+            if ((int)this.TokenType < (int)other.TokenType)
+                return -1;
+
+            return 1;
         }
     }
 }

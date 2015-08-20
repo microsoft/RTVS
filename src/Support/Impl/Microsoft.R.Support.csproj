@@ -78,10 +78,10 @@
     <Compile Include="Engine\EngineResponse.cs" />
     <Compile Include="Help\Functions\FunctionIndexBuild.cs" />
     <Compile Include="Help\Functions\RdFunctionHelp.cs" />
+    <Compile Include="Help\Packages\BasePackagesCollection.cs" />
     <Compile Include="Help\Packages\PackageIndex.cs" />
     <Compile Include="Help\Packages\PackagesCollection.cs" />
     <Compile Include="Help\Packages\UserPackagesCollection.cs" />
-    <Compile Include="Help\Packages\BasePackagesCollection.cs" />
     <Compile Include="Help\Definitions\IArgumentInfo.cs" />
     <Compile Include="Help\Definitions\INamedItemInfo.cs" />
     <Compile Include="Help\Definitions\IPackageInfo.cs" />
@@ -110,6 +110,8 @@
     <Compile Include="RD\Classification\RdClassifier.cs" />
     <Compile Include="RD\ContentType\RdContentTypeDefinition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RD\Tokens\RdBlockContentType.cs" />
+    <Compile Include="RD\Tokens\RdBraceCounter.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

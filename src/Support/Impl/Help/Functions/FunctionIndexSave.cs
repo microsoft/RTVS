@@ -49,22 +49,22 @@ namespace Microsoft.R.Support.Help.Functions
             {
                 using (StreamWriter sw = new StreamWriter(IndexFilePath))
                 {
-                    foreach (string functionName in _functionToPackageMap.Keys)
+                    foreach (string packageName in _packageToFunctionsMap.Keys)
                     {
-                        string packageName = null;
-                        _functionToPackageMap.TryGetValue(functionName, out packageName);
+                        BlockingCollection<INamedItemInfo> functions;
+                        _packageToFunctionsMap.TryGetValue(packageName, out functions);
 
-                        if (string.IsNullOrEmpty(packageName))
+                        if (functions == null)
                             throw new IOException();
 
-                        string description = null;
-                        _functionToDescriptionMap.TryGetValue(functionName, out description);
+                        foreach (INamedItemInfo function in functions)
+                        {
+                            string line = string.Format(CultureInfo.InvariantCulture, "{0}\t{1}\t{2}", function.Name, packageName, function.Description ?? string.Empty);
+                            sw.WriteLine(line);
+                        }
 
-                        string line = string.Format(CultureInfo.InvariantCulture, "{0}\t{1}\t{2}", functionName, packageName, description ?? string.Empty);
-                        sw.WriteLine(line);
+                        sw.WriteLine("completed completed completed");
                     }
-
-                    sw.WriteLine("completed completed completed");
                 }
             }
             catch (IOException)

@@ -29,31 +29,33 @@ namespace Microsoft.R.Support.RD.Parser
             int start = tokens.Position;
             int end = RdParseUtility.FindRdKeywordArgumentBounds(tokens);
 
+            // Skip '\usage' and '{'
             tokens.Advance(2);
 
-            if (tokens.CurrentToken.TokenType == RdTokenType.Argument)
-            {
-                string usage = context.TextProvider.GetText(tokens.CurrentToken);
-                tokens.MoveToNextToken();
+            // Counting ( and ) find the end of the signature string
+            int signatureStart = tokens.PreviousToken.End;
+            int signatureEnd = FindEndOfSignature(context, start);
 
-                ISignatureInfo sig = ParseSignature(usage);
-                if (sig != null)
-                {
-                    signatures.Add(sig);
-                }
+            TextRange range = TextRange.FromBounds(signatureStart, signatureEnd);
+            string usage = context.TextProvider.GetText(range).Trim();
+
+            ISignatureInfo sig = ParseSignature(usage);
+            if (sig != null)
+            {
+                signatures.Add(sig);
             }
 
             while (!tokens.IsEndOfStream() && tokens.Position < end)
             {
                 RdToken token = tokens.CurrentToken;
 
-                if (tokens.NextToken.TokenType == RdTokenType.OpenBrace && token.IsKeywordText(context.TextProvider, @"\method"))
+                if (tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace && token.IsKeywordText(context.TextProvider, @"\method"))
                 {
-                    ISignatureInfo sig = ParseMethod(context);
+                    sig = ParseMethod(context);
                     if (sig == null)
                     {
                         tokens.Position = end;
-                        return null;
+                        break;
                     }
 
                     signatures.Add(sig);
@@ -74,27 +76,51 @@ namespace Microsoft.R.Support.RD.Parser
             // \method{name}{suffix}(formula, data, \dots)
             tokens.Advance(2);
 
-            if (tokens.CurrentToken.TokenType == RdTokenType.Argument &&
-                tokens.NextToken.TokenType == RdTokenType.CloseBrace &&
-                tokens.LookAhead(2).TokenType == RdTokenType.OpenBrace &&
-                tokens.LookAhead(3).TokenType == RdTokenType.Argument)
+            if (tokens.CurrentToken.TokenType == RdTokenType.CloseCurlyBrace &&
+                tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace &&
+                tokens.LookAhead(2).TokenType == RdTokenType.CloseCurlyBrace)
             {
                 tokens.Advance(3);
 
-                string suffix = context.TextProvider.GetText(tokens.CurrentToken).Trim();
-                tokens.MoveToNextToken();
+                TextRange range = TextRange.FromBounds(tokens.PreviousToken.End, tokens.CurrentToken.Start);
+                string suffix = context.TextProvider.GetText(range).Trim();
 
-                if (tokens.CurrentToken.TokenType == RdTokenType.CloseBrace &&
-                    tokens.NextToken.TokenType == RdTokenType.OpenBrace &&
-                    tokens.LookAhead(2).TokenType == RdTokenType.Argument)
+                tokens.MoveToNextToken(); // skip last }
+
+                int start = tokens.PreviousToken.End;
+                int end = FindEndOfSignature(context, start);
+                if (end >= 0)
                 {
-                    tokens.Advance(2);
-                    string signatureText = context.TextProvider.GetText(tokens.CurrentToken).Trim();
+                    // Advance token stream to be past the end of the signature
+                    while (!tokens.IsEndOfStream() && tokens.CurrentToken.Start < end)
+                    {
+                        tokens.MoveToNextToken();
+                    }
+
+                    range = TextRange.FromBounds(start, end);
+                    string signatureText = context.TextProvider.GetText(range).Trim();
+
                     return ParseSignature(signatureText);
                 }
             }
 
             return null;
+        }
+
+        private static int FindEndOfSignature(RdParseContext context, int start)
+        {
+            // Counting ( and ) find the end of the signature.
+            RdBraceCounter<char> braceCounter = new RdBraceCounter<char>('(', ')');
+            for (int i = start; i < context.TextProvider.Length; i++)
+            {
+                if (braceCounter.CountBrace(context.TextProvider[i]))
+                {
+                    if (braceCounter.Count == 0)
+                        return i + 1;
+                }
+            }
+
+            return -1;
         }
 
         public static SignatureInfo ParseSignature(string text, IReadOnlyDictionary<string, string> argumentsDescriptions = null)
@@ -144,7 +170,7 @@ namespace Microsoft.R.Support.RD.Parser
                     if (nameArg != null)
                     {
                         argName = textProvider.GetText(nameArg.NameRange);
-                        argDefaultValue = textProvider.GetText(nameArg.ArgumentValue);
+                        argDefaultValue = textProvider.GetText(nameArg.DefaultValue);
                     }
                     else
                     {
@@ -158,10 +184,11 @@ namespace Microsoft.R.Support.RD.Parser
                 }
 
                 ArgumentInfo argInfo = new ArgumentInfo(argName);
+                argInfo.DefaultValue = argDefaultValue;
                 argInfo.IsEllipsis = isEllipsis;
                 argInfo.IsOptional = isOptional; // TODO: actually parse
 
-                if(argumentsDescriptions != null)
+                if (argumentsDescriptions != null)
                 {
                     string description;
                     if (argumentsDescriptions.TryGetValue(argName, out description))

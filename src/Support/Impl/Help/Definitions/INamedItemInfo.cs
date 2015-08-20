@@ -1,6 +1,4 @@
-﻿using Microsoft.R.Support.Utility.Definitions;
-
-namespace Microsoft.R.Support.Help.Definitions
+﻿namespace Microsoft.R.Support.Help.Definitions
 {
     /// <summary>
     /// Represents deneric item that has name and description.

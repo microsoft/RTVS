@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Utility.Definitions;
 
 namespace Microsoft.R.Support.Utility
 {
@@ -52,8 +51,9 @@ namespace Microsoft.R.Support.Utility
         {
         }
 
-        public AsyncData(Action _dataReadyCallBack)
+        public AsyncData(Action<T> dataReadyCallBack)
         {
+            _dataReadyCallBack = dataReadyCallBack;
         }
 
         /// <summary>
