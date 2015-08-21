@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using Microsoft.R.Support.Engine;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Parser;
@@ -10,38 +9,57 @@ namespace Microsoft.R.Support.Help.Functions
     internal sealed class RdFunctionHelp
     {
         private EngineSession _session;
-        private ConcurrentDictionary<string, EngineResponse> _pendingRequests;
+        private string _currentFunctionName;
+        private EngineResponse _pendingResponse;
+        private object _objectLock = new object();
 
         public RdFunctionHelp()
         {
             _session = new EngineSession(Rd2FunctionInfoConverter);
-            _pendingRequests = new ConcurrentDictionary<string, EngineResponse>();
         }
 
-        public async Task<EngineResponse> GetFunctionRdHelp(string functionName, string packageName, Action<object> dataReadyCallback)
+        public void GetFunctionRdHelp(string functionName, string packageName, Action<object> dataReadyCallback)
         {
-            EngineResponse response;
-
-            if (_pendingRequests.TryGetValue(functionName, out response))
+            lock (_objectLock)
             {
-                return response;
-            }
+                try
+                {
+                    if (_pendingResponse != null)
+                    {
+                        if (_currentFunctionName == functionName)
+                        {
+                            return;
+                        }
 
-            string command = "x <- help(\"" + functionName;
-            if (string.IsNullOrEmpty(packageName))
-            {
-                command += "\");";
-            }
-            else
-            {
-                command += "\", \"" + packageName + "\");";
-            }
-            command += " utils:::.getHelpFile(x)";
+                        _pendingResponse.Dispose();
+                        _pendingResponse = null;
+                    }
 
-            response = await _session.SendCommand(command, functionName, dataReadyCallback);
-            _pendingRequests[functionName] = response;
+                    string command = "x <- help(\"" + functionName;
+                    if (string.IsNullOrEmpty(packageName))
+                    {
+                        command += "\");";
+                    }
+                    else
+                    {
+                        command += "\", \"" + packageName + "\");";
+                    }
 
-            return response;
+                    command += " utils:::.getHelpFile(x)";
+
+                    _pendingResponse = _session.SendCommand(command, functionName, dataReadyCallback);
+                    _currentFunctionName = functionName;
+                }
+                catch (Exception)
+                {
+                    if (_pendingResponse != null)
+                    {
+                        _pendingResponse.Dispose();
+                        _pendingResponse = null;
+                        _currentFunctionName = null;
+                    }
+                }
+            }
         }
 
         public void Dispose()
@@ -55,11 +73,31 @@ namespace Microsoft.R.Support.Help.Functions
 
         private object Rd2FunctionInfoConverter(string rdData, object parameter)
         {
-            IFunctionInfo info = RdParser.GetFunctionInfo(parameter as string, rdData);
-            EngineResponse value;
+            lock(_objectLock)
+            {
+                string functionName = parameter as string;
+                IFunctionInfo info = null;
 
-            _pendingRequests.TryRemove(info.Name, out value);
-            return info;
+                try
+                {
+                    info = RdParser.GetFunctionInfo(functionName, rdData);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Exception in parsing R engine RD response: {0}", ex.Message);
+                }
+                finally
+                {
+                    if (_pendingResponse != null)
+                    {
+                        _pendingResponse.Dispose();
+                        _pendingResponse = null;
+                        _currentFunctionName = null;
+                    }
+                }
+
+                return info;
+            }
         }
     }
 }

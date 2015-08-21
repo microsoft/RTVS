@@ -62,13 +62,6 @@ namespace Microsoft.R.Editor.Tree
                             }
                             break;
 
-                        //case TreeChangeType.ScopeChanged:
-                        //    {
-                        //        var c = change as EditorTreeChange_ScopeChanged;
-                        //        changesToFire.Add(new TreeChangeEventRecord(change.ChangeType, c.ScopeNode));
-                        //    }
-                        //    break;
-
                         default:
                             Debug.Fail("Unknown tree change");
                             break;

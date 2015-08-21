@@ -5,19 +5,10 @@ namespace Microsoft.R.Support.RD.Parser
 {
     static class RdParseUtility
     {
-        public static int FindRdKeywordArgumentBounds(TokenStream<RdToken> tokens)
+        public static bool GetKeywordArgumentBounds(TokenStream<RdToken> tokens, out int startTokenIndex, out int endTokenIndex)
         {
-            int start = tokens.Position;
-
-            int end = SkipAllBraces(tokens);
-            tokens.Position = start;
-
-            return end;
-        }
-
-        private static int SkipAllBraces(TokenStream<RdToken> tokens)
-        {
-            int end = tokens.Position;
+            startTokenIndex = -1;
+            endTokenIndex = -1;
 
             RdBraceCounter<RdToken> braceCounter = new RdBraceCounter<RdToken>(
                 new RdToken(RdTokenType.OpenCurlyBrace),
@@ -26,27 +17,26 @@ namespace Microsoft.R.Support.RD.Parser
                 new RdToken(RdTokenType.CloseSquareBracket)
                 );
 
-            tokens.MoveToNextToken();
-
-            while (!tokens.IsEndOfStream())
+            for (int pos = tokens.Position; pos < tokens.Length; pos++)
             {
-                if (braceCounter.CountBrace(tokens.CurrentToken))
+                RdToken token = tokens[pos];
+
+                if (braceCounter.CountBrace(token))
                 {
+                    if (startTokenIndex < 0)
+                    {
+                        startTokenIndex = pos;
+                    }
+
                     if (braceCounter.Count == 0)
+                    {
+                        endTokenIndex = pos;
                         break;
-                }
-                else
-                {
-                    tokens.MoveToNextToken();
+                    }
                 }
             }
 
-            if (braceCounter.Count == 0)
-            {
-                end = tokens.Position;
-            }
-
-            return end;
+            return startTokenIndex >= 0 && endTokenIndex >= 0 && startTokenIndex < endTokenIndex;
         }
     }
 }

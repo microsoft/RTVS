@@ -120,6 +120,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings\REditorSettings.cs" />
+    <Compile Include="Signatures\ParametersInfo.cs" />
     <Compile Include="Signatures\SignatureHelp.cs" />
     <Compile Include="Signatures\SignatureHelp2.cs" />
     <Compile Include="Signatures\SignatureHelpProvider.cs" />

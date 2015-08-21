@@ -67,6 +67,9 @@ namespace Microsoft.R.Support.RD.Tokens
 
         public int CompareTo(RdToken other)
         {
+            if (other == null)
+                return -1;
+
             if (this.TokenType == other.TokenType)
                 return 0;
 

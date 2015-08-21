@@ -66,11 +66,14 @@ namespace Microsoft.R.Editor.Tree
                 if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
                     throw new ThreadStateException("Method should only be called on the main thread. Use AcquireReadLock when accessing tree from a background thread.");
 
-                // Don't call ensure here since it causes performance issues.
-                // If caller needs up do date tree they should request it explicitly
-
+                this.EnsureTreeReady();
                 return _astRoot;
             }
+        }
+
+        internal AstRoot GetAstRootUnsafe()
+        {
+            return _astRoot;
         }
 
         /// <summary>
@@ -177,7 +180,7 @@ namespace Microsoft.R.Editor.Tree
         /// and all changes since the last update were processed. Blocks until 
         /// all changes have been processed. Does not pump messages.
         /// </summary>
-        public void EnsureTreeReady()
+        private void EnsureTreeReady()
         {
             if (TreeUpdateTask == null)
                 return;
@@ -330,9 +333,6 @@ namespace Microsoft.R.Editor.Tree
                     _astRoot.Errors.RemoveInRange(child);
                 }
 
-                // Set flag that will tell node comparison code in the incremental 
-                // tree updates that node needs to be reparsed/updated
-                node.IsDirty = true;
                 node.RemoveChildren(firstToRemove, lastToRemove - firstToRemove + 1);
             }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -22,11 +23,11 @@ namespace Microsoft.R.Editor.Signatures
 
         public string FunctionName { get; private set; }
 
-        public SignatureHelp(ISignatureHelpSession session, ITextBuffer subjectBuffer, string functionName, string doc)
+        public SignatureHelp(ISignatureHelpSession session, string functionName, string documentation)
         {
             FunctionName = functionName;
 
-            Documentation = doc;
+            Documentation = documentation;
             Parameters = null;
 
             Session = session;
@@ -35,20 +36,16 @@ namespace Microsoft.R.Editor.Signatures
             TextView = session.TextView;
             TextView.Caret.PositionChanged += OnCaretPositionChanged;
 
-            SubjectBuffer = subjectBuffer;
+            SubjectBuffer = TextView.TextBuffer;
             SubjectBuffer.Changed += OnSubjectBufferChanged;
         }
 
         internal static int ComputeCurrentParameter(ITextSnapshot snapshot, int position)
         {
-            string functionName;
-            int parameterIndex;
-            int signatureEnd;
+            EditorDocument document = EditorDocument.FromTextBuffer(snapshot.TextBuffer);
+            ParametersInfo parameterInfo = SignatureHelp.GetParametersInfoFromBuffer(document.EditorTree.AstRoot, snapshot, position);
 
-            SignatureHelp.GetParameterPositionsFromBuffer(EditorDocument.FromTextBuffer(snapshot.TextBuffer), position, 
-                out functionName, out parameterIndex, out signatureEnd);
-
-            return parameterIndex;
+            return parameterInfo != null ? parameterInfo.ParameterIndex : 0;
         }
 
         #region ISignature

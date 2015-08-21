@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Search;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;

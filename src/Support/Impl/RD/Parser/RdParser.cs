@@ -21,15 +21,17 @@ namespace Microsoft.R.Support.RD.Parser
         /// </summary>
         public static IFunctionInfo GetFunctionInfo(string functionName, string rdHelpData)
         {
-            var tokenizer = new RdTokenizer();
+            var tokenizer = new RdTokenizer(tokenizeRContent: false);
+
             ITextProvider textProvider = new TextStream(rdHelpData);
             IReadOnlyTextRangeCollection<RdToken> tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
-            return ParseFunction(functionName, tokens, textProvider);
+            RdParseContext context = new RdParseContext(tokens, textProvider);
+
+            return ParseFunction(functionName, context);
         }
 
-        private static IFunctionInfo ParseFunction(string functionName, IReadOnlyTextRangeCollection<RdToken> tokens, ITextProvider textProvider)
+        private static IFunctionInfo ParseFunction(string functionName, RdParseContext context)
         {
-            RdParseContext context = new RdParseContext(tokens, textProvider);
             FunctionInfo info = new FunctionInfo(functionName);
             List<string> aliases = new List<string>();
             IReadOnlyDictionary<string, string> argumentDescriptions = null;
@@ -38,14 +40,13 @@ namespace Microsoft.R.Support.RD.Parser
             {
                 RdToken token = context.Tokens.CurrentToken;
 
-                if (token.TokenType == RdTokenType.Keyword &&
-                    context.Tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace)
+                if (context.IsAtKeywordWithParameters())
                 {
-                    if (string.IsNullOrEmpty(info.Description) && token.IsKeywordText(textProvider, @"\description"))
+                    if (string.IsNullOrEmpty(info.Description) && context.IsAtKeyword(@"\description"))
                     {
                         info.Description = RdText.GetText(context);
                     }
-                    else if (token.IsKeywordText(textProvider, @"\alias"))
+                    else if (context.IsAtKeyword(@"\alias"))
                     {
                         string alias = RdText.GetText(context);
                         if (!string.IsNullOrEmpty(alias))
@@ -53,7 +54,7 @@ namespace Microsoft.R.Support.RD.Parser
                             aliases.Add(alias);
                         }
                     }
-                    else if (token.IsKeywordText(textProvider, @"\keyword"))
+                    else if (context.IsAtKeyword(@"\keyword"))
                     {
                         string keyword = RdText.GetText(context);
                         if (!string.IsNullOrEmpty(keyword) && keyword.Contains("internal"))
@@ -61,15 +62,15 @@ namespace Microsoft.R.Support.RD.Parser
                             info.IsInternal = true;
                         }
                     }
-                    else if (string.IsNullOrEmpty(info.ReturnValue) && token.IsKeywordText(textProvider, @"\value"))
+                    else if (string.IsNullOrEmpty(info.ReturnValue) && context.IsAtKeyword(@"\value"))
                     {
                         info.ReturnValue = RdText.GetText(context);
                     }
-                    else if (argumentDescriptions == null && token.IsKeywordText(textProvider, @"\arguments"))
+                    else if (argumentDescriptions == null && context.IsAtKeyword(@"\arguments"))
                     {
                         argumentDescriptions = RdArgumentDescription.ExtractArgumentDecriptions(context);
                     }
-                    else if (info.Signatures == null && token.IsKeywordText(textProvider, @"\usage"))
+                    else if (info.Signatures == null && context.IsAtKeyword(@"\usage"))
                     {
                         info.Signatures = RdFunctionSignature.ExtractSignatures(context);
                     }
@@ -78,8 +79,7 @@ namespace Microsoft.R.Support.RD.Parser
                         context.Tokens.Advance(2);
                     }
                 }
-
-                if (context.Tokens.CurrentToken.TokenType != RdTokenType.Keyword)
+                else
                 {
                     context.Tokens.MoveToNextToken();
                 }

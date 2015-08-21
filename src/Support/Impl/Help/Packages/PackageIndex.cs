@@ -70,7 +70,12 @@ namespace Microsoft.R.Support.Help.Packages
         public static IPackageInfo GetPackageByName(string packageName)
         {
             IPackageInfo package;
-            _packages.TryGetValue(packageName, out package);
+
+            package = _basePackages.Packages.FirstOrDefault((IPackageInfo p) => p.Name == packageName);
+            if (package == null)
+            {
+                _packages.TryGetValue(packageName, out package);
+            }
 
             return package;
         }

@@ -12,6 +12,24 @@ namespace Microsoft.R.Support.RD.Tokens
     /// </summary>
     internal class RdTokenizer : BaseTokenizer<RdToken>
     {
+        private bool _tokenizeRContent;
+
+        /// <summary>
+        /// Creates RD tokenizer.
+        /// </summary>
+        /// <param name="tokenizeRContent">
+        /// If true, RD tokenizer will use R rokenizer to process 
+        /// content in R-like sections such as \usage. This is 
+        /// the default behavior since it allows colorizer to
+        /// properly display strings and numbers. However, during
+        /// processing of RD data for the function signature help
+        /// and quick info tooltips plain text is preferred.
+        /// </param>
+        public RdTokenizer(bool tokenizeRContent = true)
+        {
+            _tokenizeRContent = tokenizeRContent;
+        }
+
         /// <summary>
         /// Main tokenization method. Responsible for adding next token
         /// to the list, if any. Returns if it is at the end of the 
@@ -91,13 +109,19 @@ namespace Microsoft.R.Support.RD.Tokens
                     string keyword = _cs.Text.GetText(TextRange.FromBounds(start, _cs.Position)).Trim();
                     BlockContentType contentType = RdBlockContentType.GetBlockContentType(keyword);
 
+                    if(!_tokenizeRContent && contentType == BlockContentType.R)
+                    {
+                        contentType = BlockContentType.Latex;
+                    }
+
                     // Handle argument sequence like \latex[0]{foo} or \item{}{}
                     while (_cs.CurrentChar == '{' || _cs.CurrentChar == '[')
                     {
                         HandleKeywordArguments(contentType);
                     }
-                    return true;
                 }
+
+                return true;
             }
 
             return false;
@@ -121,15 +145,13 @@ namespace Microsoft.R.Support.RD.Tokens
 
         private void HandleKeywordArguments(BlockContentType contentType)
         {
-            char closeBrace = GetMatchingBrace(_cs.CurrentChar);
-
             // Content type table can be found in 
             // https://developer.r-project.org/parseRd.pdf
 
             switch (contentType)
             {
                 case BlockContentType.R:
-                    HandleRContent(closeBrace);
+                    HandleRContent(GetMatchingBrace(_cs.CurrentChar));
                     break;
 
                 case BlockContentType.Verbatim:
@@ -220,7 +242,7 @@ namespace Microsoft.R.Support.RD.Tokens
                             // are typically very simple as R blocks are usually
                             // code examples and do not contain exotic sequences.
 
-                            if ((_cs.IsDecimal() || _cs.CurrentChar == '-' || _cs.CurrentChar == '.'))
+                            if (!char.IsLetter(_cs.PrevChar) && (_cs.IsDecimal() || _cs.CurrentChar == '-' || _cs.CurrentChar == '.'))
                             {
                                 int sequenceStart = _cs.Position;
                                 SkipToWhitespace();
@@ -268,9 +290,10 @@ namespace Microsoft.R.Support.RD.Tokens
             {
                 if (braceCounter.CountBrace(_cs.CurrentChar))
                 {
+                    AddBraceToken();
+
                     if (braceCounter.Count == 0)
                     {
-                        AddBraceToken();
                         break;
                     }
                 }

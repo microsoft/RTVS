@@ -52,41 +52,44 @@ namespace Microsoft.R.Support.Help.Functions
 
             try
             {
-                using (StreamReader sr = new StreamReader(IndexFilePath))
+                if (File.Exists(IndexFilePath))
                 {
-                    char[] separator = new char[] { '\t' };
-
-                    while (true)
+                    using (StreamReader sr = new StreamReader(IndexFilePath))
                     {
-                        string line = sr.ReadLine();
-                        if (line == null)
-                        {
-                            break;
-                        }
+                        char[] separator = new char[] { '\t' };
 
-                        string[] parts = line.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts.Length == 3)
+                        while (true)
                         {
-                            string functionName = parts[0];
-                            string packageName = parts[1];
-                            string functionDescription = parts[2];
-
-                            if (functionName == "completed" && packageName == "completed" && functionDescription == "completed")
+                            string line = sr.ReadLine();
+                            if (line == null)
                             {
-                                loaded = true;
                                 break;
                             }
 
-                            functionToPackageMap[functionName] = packageName;
-
-                            BlockingCollection<INamedItemInfo> functions;
-                            if (!packageToFunctionsMap.TryGetValue(packageName, out functions))
+                            string[] parts = line.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                            if (parts.Length == 3)
                             {
-                                functions = new BlockingCollection<INamedItemInfo>();
-                                packageToFunctionsMap[packageName] = functions;
-                            }
+                                string functionName = parts[0];
+                                string packageName = parts[1];
+                                string functionDescription = parts[2];
 
-                            functions.Add(new NamedItemInfo(functionName, functionDescription));
+                                if (functionName == "completed" && packageName == "completed" && functionDescription == "completed")
+                                {
+                                    loaded = true;
+                                    break;
+                                }
+
+                                functionToPackageMap[functionName] = packageName;
+
+                                BlockingCollection<INamedItemInfo> functions;
+                                if (!packageToFunctionsMap.TryGetValue(packageName, out functions))
+                                {
+                                    functions = new BlockingCollection<INamedItemInfo>();
+                                    packageToFunctionsMap[packageName] = functions;
+                                }
+
+                                functions.Add(new NamedItemInfo(functionName, functionDescription));
+                            }
                         }
                     }
                 }

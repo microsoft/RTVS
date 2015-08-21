@@ -483,7 +483,7 @@ namespace Microsoft.R.Editor.Tree
                     }
                     else
                     {
-                        rootNode = _editorTree.AstRoot;
+                        rootNode = _editorTree.GetAstRootUnsafe();
                     }
 
                     treeChanges = new EditorTreeChangeCollection(changeToProcess.Version, changeToProcess.FullParseRequired);

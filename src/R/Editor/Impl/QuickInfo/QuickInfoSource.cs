@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help.Definitions;
@@ -47,20 +48,15 @@ namespace Microsoft.R.Editor.QuickInfo
             ITextSnapshot snapshot = triggerPoint.Value.Snapshot;
             EditorDocument document = EditorDocument.FromTextBuffer(_subjectBuffer);
             int position = triggerPoint.Value;
-            string functionName;
             int signatureEnd = position;
-            int parameterIndex = 0;
 
             if (_lastPosition == position)
                 return;
 
             _lastPosition = position;
 
-            bool foundPositions = SignatureHelp.GetParameterPositionsFromBuffer(
-                                    document, position,
-                                    out functionName, out parameterIndex, out signatureEnd);
-
-            if (foundPositions && signatureEnd >= position)
+            string functionName = SignatureHelp.GetFunctionNameFromBuffer(document.EditorTree.AstRoot, position, out signatureEnd);
+            if (!string.IsNullOrEmpty(functionName))
             {
                 applicableToSpan = snapshot.CreateTrackingSpan(position, signatureEnd - position, SpanTrackingMode.EdgeInclusive);
 
@@ -80,7 +76,10 @@ namespace Microsoft.R.Editor.QuickInfo
                         }
                         else
                         {
-                            text = signatureString + "\r\n" + functionInfo.Description;
+                            /// VS may end showing very long tooltip so we need to keep 
+                            /// description reasonably short: typically about
+                            /// same length as the function signature.
+                            text = signatureString + "\r\n" + functionInfo.Description.Wrap(signatureString.Length);
                         }
 
                         quickInfoContent.Add(text);

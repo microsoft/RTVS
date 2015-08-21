@@ -35,10 +35,11 @@ namespace Microsoft.R.Editor.Signatures
         /// </summary>
         public Span PrettyPrintedLocus { get; protected set; }
 
-        public SignatureParameter(string documentation, Span locus, string name, ISignature signature)
+        public SignatureParameter(string documentation, Span locus, Span prettyPrintedLocus, string name, ISignature signature)
         {
             Documentation = documentation;
             Locus = locus;
+            PrettyPrintedLocus = prettyPrintedLocus;
             Name = name;
             Signature = signature;
         }

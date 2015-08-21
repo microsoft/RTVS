@@ -10,7 +10,7 @@ namespace Microsoft.R.Support.Engine
     /// An object that represents pending response from the R engine
     /// that is running in a separate process
     /// </summary>
-    public class EngineResponse : AsyncData<object>
+    public class EngineResponse : AsyncData<object>, IDisposable
     {
         /// <summary>
         /// R engine process
@@ -39,7 +39,13 @@ namespace Microsoft.R.Support.Engine
         private object _parameter;
 
         private StringBuilder _sb = new StringBuilder();
-        private DateTime _processingStartTime = DateTime.Now;
+
+        private object _objectLock = new object();
+
+        /// <summary>
+        /// Request creation time
+        /// </summary>
+        public DateTime CreationTime { get; private set; } = DateTime.Now;
 
         public EngineResponse(Process process, Action<object> dataReadyCallBack, Func<string, object, object> dataConverter, object p = null) :
             this(process, dataReadyCallBack)
@@ -53,6 +59,7 @@ namespace Microsoft.R.Support.Engine
         {
             _process = process;
             _process.OutputDataReceived += Process_OutputDataReceived;
+            _process.ErrorDataReceived += Process_ErrorDataReceived;
         }
 
         public EngineResponse(object data) :
@@ -62,38 +69,48 @@ namespace Microsoft.R.Support.Engine
 
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            // We want to collect full output, not just one line
-            if (e != null && e.Data != null)
+            lock (_objectLock)
             {
-                if (_lastOutputReceived == null)
+                // We want to collect full output, not just one line
+                if (e != null && e.Data != null)
                 {
-                    _lastOutputReceived = DateTime.Now;
-                    Task.Run(() => HeartbeatThread());
-                }
+                    if (_lastOutputReceived == null)
+                    {
+                        _lastOutputReceived = DateTime.Now;
+                        //Task.Run(() => HeartbeatThread());
+                    }
 
-                _sb.AppendLine(e.Data);
+                    _sb.AppendLine(e.Data);
+                }
             }
+        }
+
+        private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            Disconnect();
         }
 
         private void HeartbeatThread()
         {
-            while (true)
+            lock (_objectLock)
             {
-                TimeSpan ts = DateTime.Now - _lastOutputReceived.Value;
-                if (ts.Milliseconds > 50)
+                while (_process != null)
                 {
-                    Disconnect();
-                    break;
-                }
+                    TimeSpan ts = DateTime.Now - _lastOutputReceived.Value;
+                    if (ts.Milliseconds > 50)
+                    {
+                        Disconnect();
+                        break;
+                    }
 
-                Task.Delay(20).Wait();
+                    Task.Delay(20).Wait();
+                }
             }
         }
 
         private void Disconnect()
         {
-            _process.OutputDataReceived -= Process_OutputDataReceived;
-            _process = null;
+            DisconnectFromEvents();
 
             object data;
             if (_dataConverter != null)
@@ -108,7 +125,29 @@ namespace Microsoft.R.Support.Engine
             _sb = null;
 
             SetData(data);
-            Debug.WriteLine("R engine response time: {0} ms", (DateTime.Now - _processingStartTime).TotalMilliseconds);
+            Debug.WriteLine("R engine response time: {0} ms", (DateTime.Now - CreationTime).TotalMilliseconds);
+        }
+
+        private void DisconnectFromEvents()
+        {
+            if (_process != null)
+            {
+                // Usually called when request is canceled when user
+                // moves mouse away from the function and VS quick info
+                // tooltip session now is requesting information on 
+                // a different function.
+                _process.OutputDataReceived -= Process_OutputDataReceived;
+                _process.ErrorDataReceived -= Process_ErrorDataReceived;
+                _process = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            lock (_objectLock)
+            {
+                DisconnectFromEvents();
+            }
         }
     }
 }

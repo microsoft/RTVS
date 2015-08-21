@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Help.Definitions;
@@ -35,26 +36,21 @@ namespace Microsoft.R.Editor.Signatures
                 ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
                 int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
 
-                string functionName = string.Empty;
-                int signatureEnd = position;
-                int parameterIndex = 0;
-
                 // Retrieve parameter positions from the current text buffer snapshot
-                if (SignatureHelp.GetParameterPositionsFromBuffer(document, position, out functionName, out parameterIndex, out signatureEnd))
+                ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(document.EditorTree.AstRoot, snapshot, position);
+                if (parametersInfo != null)
                 {
-                    if (signatureEnd >= position)
-                    {
-                        ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(position, signatureEnd - position, SpanTrackingMode.EdgeInclusive);
+                    ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(position, parametersInfo.SignatureEnd - position, SpanTrackingMode.EdgeInclusive);
 
-                        // Get collection of function signatures from documentation (parsed RD file)
-                            IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName);
-                        if (functionInfo != null)
+                    // Get collection of function signatures from documentation (parsed RD file)
+                    IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName);
+                    if (functionInfo != null)
+                    {
+                        foreach (ISignatureInfo signatureInfo in functionInfo.Signatures)
                         {
-                            foreach (ISignatureInfo signatureInfo in functionInfo.Signatures)
-                            {
-                                var signature = CreateSignature(session, _textBuffer, functionInfo, signatureInfo, applicableToSpan, position);
-                                signatures.Add(signature);
-                            }
+                            ISignature signature = CreateSignature(session, functionInfo, signatureInfo, 
+                                                            parametersInfo, applicableToSpan, position);
+                            signatures.Add(signature);
                         }
                     }
                 }
@@ -84,30 +80,34 @@ namespace Microsoft.R.Editor.Signatures
         }
         #endregion
 
-        private SignatureHelp CreateSignature(ISignatureHelpSession session, ITextBuffer textBuffer,
-                                       IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
-                                       ITrackingSpan span, int position)
+        private ISignature CreateSignature(ISignatureHelpSession session,
+                                       IFunctionInfo functionInfo, ISignatureInfo signatureInfo, 
+                                       ParametersInfo parametersInfo, ITrackingSpan span, int position)
         {
-            SignatureHelp sig = new SignatureHelp(session, textBuffer, functionInfo.Name, functionInfo.Description);
+            SignatureHelp sig = new SignatureHelp(session, functionInfo.Name, string.Empty);
             List<IParameter> paramList = new List<IParameter>();
 
-            sig.ApplicableToSpan = span;
-
+            // Locus points in the pretty printed signature (the one displayed in the tooltip)
             var locusPoints = new List<int>();
             sig.Content = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
+            sig.ApplicableToSpan = span;
+
+            sig.Documentation = functionInfo.Description.Wrap(sig.Content.Length);
 
             Debug.Assert(locusPoints.Count == signatureInfo.Arguments.Count + 1);
-
             for (int i = 0; i < signatureInfo.Arguments.Count; i++)
             {
                 IArgumentInfo p = signatureInfo.Arguments[i];
                 if (p != null)
                 {
-                    var locusStart = locusPoints[i];
-                    var locusLength = locusPoints[i + 1] - locusStart - 2;
-                    var locus = new Span(locusStart, locusLength);
+                    int locusStart = locusPoints[i];
+                    int locusLength = locusPoints[i + 1] - locusStart - 2;
+                    Span locus = new Span(locusStart, locusLength);
 
-                    paramList.Add(new SignatureParameter(p.Description, locus, p.Name, sig));
+                    /// VS may end showing very long tooltip so we need to keep 
+                    /// description reasonably short: typically about
+                    /// same length as the function signature.
+                    paramList.Add(new SignatureParameter(p.Description.Wrap(sig.Content.Length), locus, locus, p.Name, sig));
                 }
             }
 

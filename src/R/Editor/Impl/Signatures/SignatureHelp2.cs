@@ -1,8 +1,9 @@
-﻿using Microsoft.R.Core.AST;
+﻿using Microsoft.Languages.Core.Text;
+using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Variables;
-using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree.Search;
 using Microsoft.VisualStudio.Text;
 
@@ -11,67 +12,115 @@ namespace Microsoft.R.Editor.Signatures
     public partial class SignatureHelp
     {
         /// <summary>
+        /// Given position in a text buffer finds method name.
+        /// </summary>
+        public static string GetFunctionNameFromBuffer(AstRoot astRoot, int position, out int signatureEnd)
+        {
+            FunctionCall functionCall;
+            Variable functionVariable;
+
+            signatureEnd = -1;
+
+            if (GetFunction(astRoot, position, out functionCall, out functionVariable))
+            {
+                signatureEnd = functionCall.CloseBrace != null ? functionCall.CloseBrace.End : functionCall.Arguments.End;
+                return functionVariable.Name;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Given position in a text buffer finds method name, 
         /// parameter index as well as where method signature ends.
         /// </summary>
-        public static bool GetParameterPositionsFromBuffer(EditorDocument editorDocument, int position, 
-                               out string functionName, out int parameterIndex, out int signatureEnd)
+        public static ParametersInfo GetParametersInfoFromBuffer(AstRoot astRoot, ITextSnapshot snapshot, int position)
         {
-            functionName = null;
-            parameterIndex = 0;
-            signatureEnd = -1;
+            FunctionCall functionCall;
+            Variable functionVariable;
+            int parameterIndex = -1;
 
-            ITextSnapshot treeSnapshot = editorDocument.EditorTree.TextSnapshot;
-            AstRoot ast = editorDocument.EditorTree.AstRoot;
-
-            FunctionCall functionCall = ast.GetNodeOfTypeFromPosition(position, (IAstNode node) =>
-                {
-                    return node.GetType() == typeof(FunctionCall);
-                }) as FunctionCall;
-
-            if(functionCall == null)
+            if (!GetFunction(astRoot, position, out functionCall, out functionVariable))
             {
-                return false;
+                return null;
             }
 
-            // Let's see if this is actually a function call of a call 
-            // operator applied to a return value or to an indexed argument 
-            // such as x[2](param) or a()(b)(param). In the latter case, 
-            // we'd need code evaluation to figure out the return type
-            // and the the function signature. Currently it is not supported.
-            // In the regular function call the preceding item in the 
-            // expression is a variable.
+            string functionName = functionVariable.Name;
+            int signatureEnd = functionCall.CloseBrace != null ? functionCall.CloseBrace.End : functionCall.Arguments.End;
+            int argCount = functionCall.Arguments.Count;
 
-            IAstNode parent = functionCall.Parent;
-            Variable functionVariable = null;
-
-            if (functionCall.Children.Count> 0)
+            if (argCount == 0)
             {
-                functionVariable = functionCall.Children[0] as Variable;
-                if (functionVariable != null)
-                {
-                    functionName = functionVariable.Name;
-                    signatureEnd = functionCall.CloseBrace != null ? functionCall.CloseBrace.End : functionCall.Arguments.End;
-                }
-
-                for (int i = 0; i < functionCall.Arguments.Count; i++)
+                parameterIndex = 0;
+            }
+            else
+            {
+                for (int i = 0; i < argCount; i++)
                 {
                     IAstNode arg = functionCall.Arguments[i];
-
-                    if (arg.Contains(position))
+                    if (position < arg.End)
                     {
                         parameterIndex = i;
                         break;
                     }
+                }
+            }
 
-                    if (arg.End <= position)
+            if (parameterIndex < 0)
+            {
+                // func(... |  % comment
+                if (functionCall.CloseBrace == null)
+                {
+                    ITextSnapshotLine textLine = snapshot.GetLineFromPosition(position);
+                    TextRange range = TextRange.FromBounds(functionCall.OpenBrace.End - textLine.Start, position - textLine.Start);
+
+                    string textBeforeCaret = textLine.GetText().Substring(range.Start, range.Length);
+                    if (string.IsNullOrWhiteSpace(textBeforeCaret))
                     {
-                        break;
+                        parameterIndex = functionCall.Arguments.Count;
+                    }
+                }
+                else if (position <= functionCall.CloseBrace.Start)
+                {
+                    if (argCount > 0)
+                    {
+                        CommaSeparatedItem lastArgument = functionCall.Arguments[argCount - 1] as CommaSeparatedItem;
+                        if (lastArgument.Comma != null && position >= lastArgument.Comma.End)
+                        {
+                            parameterIndex = argCount;
+                        }
+                        else
+                        {
+                            parameterIndex = argCount - 1;
+                        }
                     }
                 }
             }
 
-            return !string.IsNullOrEmpty(functionName);
+            if (!string.IsNullOrEmpty(functionName) && functionCall != null && parameterIndex >= 0)
+            {
+                return new ParametersInfo(functionName, functionCall, parameterIndex);
+            }
+
+            return null;
+        }
+
+        private static bool GetFunction(AstRoot astRoot, int position, out FunctionCall functionCall, out Variable functionVariable)
+        {
+            functionVariable = null;
+
+            functionCall = astRoot.GetNodeOfTypeFromPosition(position, (IAstNode node) =>
+            {
+                return node.GetType() == typeof(FunctionCall);
+            }) as FunctionCall;
+
+            if (functionCall != null && functionCall.Children.Count > 0)
+            {
+                functionVariable = functionCall.Children[0] as Variable;
+                return functionVariable != null;
+            }
+
+            return false;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Support.Help.Definitions;
@@ -35,51 +36,51 @@ namespace Microsoft.R.Support.RD.Parser
             //   }
             // }
 
+            Dictionary<string, string> argumentDescriptions = new Dictionary<string, string>();
             TokenStream<RdToken> tokens = context.Tokens;
 
             // '\arguments{' is expected
-            if (tokens.NextToken.TokenType != RdTokenType.OpenCurlyBrace)
+            Debug.Assert(tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace);
+            if (tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace)
             {
-                return null;
-            }
+                // Move past '\arguments'
+                tokens.MoveToNextToken();
 
-            tokens.MoveToNextToken();
-            Dictionary<string, string> argumentDescriptions = new Dictionary<string, string>();
-
-            int start = tokens.Position;
-            int end = RdParseUtility.FindRdKeywordArgumentBounds(tokens);
-
-            // Now that we know bounds of \arguments{...} go through 
-            // inner '\item' elements and fetch description and all
-            // argument names the description applies to.
-            //
-            // Example:
-            //
-            //    \item{start, param, eps, iter, print}{Arguments 
-            //    passed to \code{\link{ loglin} }.}
-            //
-            while (!tokens.IsEndOfStream() && tokens.Position < end)
-            {
-                RdToken token = tokens.CurrentToken;
-
-                if (token.IsKeywordText(context.TextProvider, @"\item") && tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace)
+                int startTokenIndex, endTokenIndex;
+                if (RdParseUtility.GetKeywordArgumentBounds(tokens, out startTokenIndex, out endTokenIndex))
                 {
-                    IEnumerable<IArgumentInfo> args = ParseArgumentItem(context);
-                    if (args == null)
+                    // Now that we know bounds of \arguments{...} go through 
+                    // inner '\item' elements and fetch description and all
+                    // argument names the description applies to.
+                    //
+                    // Example:
+                    //
+                    //    \item{start, param, eps, iter, print}{Arguments 
+                    //    passed to \code{\link{ loglin} }.}
+                    //
+                    while (!tokens.IsEndOfStream() && tokens.Position < endTokenIndex)
                     {
-                        tokens.Position = end;
-                        return null;
-                    }
+                        RdToken token = tokens.CurrentToken;
 
-                    foreach(var a in args)
-                    {
-                        argumentDescriptions[a.Name] = a.Description;
+                        if (context.IsAtKeyword(@"\item"))
+                        {
+                            IEnumerable<IArgumentInfo> args = ParseArgumentItem(context);
+                            if (args == null)
+                                break;
+
+                            foreach (var a in args)
+                            {
+                                argumentDescriptions[a.Name] = a.Description;
+                            }
+                        }
+                        else
+                        {
+                            tokens.MoveToNextToken();
+                        }
                     }
                 }
-                else
-                {
-                    tokens.MoveToNextToken();
-                }
+
+                tokens.Position = endTokenIndex;
             }
 
             return argumentDescriptions;
@@ -90,26 +91,41 @@ namespace Microsoft.R.Support.RD.Parser
             List<IArgumentInfo> arguments = null;
 
             TokenStream<RdToken> tokens = context.Tokens;
-            tokens.Advance(2);
+            tokens.Advance(1);
 
-            if (tokens.CurrentToken.TokenType == RdTokenType.CloseCurlyBrace)
+            // Past '\item'. Inside { } we can find any number of '\dots' which are keywords.
+            Debug.Assert(tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace);
+
+            if (tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace)
             {
-                TextRange range = TextRange.FromBounds(tokens.PreviousToken.End, tokens.CurrentToken.Start);
-
-                string argumentsText = context.TextProvider.GetText(range);
-                string[] argumentNames = argumentsText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                arguments = new List<IArgumentInfo>();
-
-                tokens.MoveToNextToken();
-
-                if (tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace)
+                int startTokenIndex, endTokenIndex;
+                if (RdParseUtility.GetKeywordArgumentBounds(tokens, out startTokenIndex, out endTokenIndex))
                 {
-                    string description = RdText.GetText(context);
+                    TextRange range = TextRange.FromBounds(tokens[startTokenIndex].End, tokens[endTokenIndex].Start);
+                    string argumentsText = context.TextProvider.GetText(range);
 
-                    foreach (string name in argumentNames)
+                    string[] argumentNames = argumentsText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    arguments = new List<IArgumentInfo>();
+
+                    // Move past \item{}
+                    tokens.Position = endTokenIndex + 1;
+                    Debug.Assert(tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace);
+
+                    if (tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace)
                     {
-                        ArgumentInfo info = new ArgumentInfo(name.Trim(), description.Trim());
-                        arguments.Add(info);
+                        string description = RdText.GetText(context);
+
+                        foreach (string n in argumentNames)
+                        {
+                            string name = n.Trim();
+                            if (name == @"\dots")
+                            {
+                                name = "...";
+                            }
+
+                            ArgumentInfo info = new ArgumentInfo(name, description.Trim());
+                            arguments.Add(info);
+                        }
                     }
                 }
             }

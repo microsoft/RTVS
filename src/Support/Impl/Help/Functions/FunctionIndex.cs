@@ -119,18 +119,21 @@ namespace Microsoft.R.Support.Help.Functions
             return null;
         }
 
-        private static Task GetFunctionInfoFromEngineAsync(string functionName, string packageName, 
+        private static void GetFunctionInfoFromEngineAsync(string functionName, string packageName, 
                                          Action<object> infoReadyCallback = null, object parameter = null)
         {
-            return Task.Run(async () =>
+            Task.Run(() =>
             {
-                EngineResponse response = await _rdFunctionHelp.GetFunctionRdHelp(
+                _rdFunctionHelp.GetFunctionRdHelp(
                     functionName, 
                     packageName,
                     (object o) =>
                     {
-                        OnFunctionInfoReady(o);
-                        infoReadyCallback(parameter);
+                        if (o != null)
+                        {
+                            OnFunctionInfoReady(o);
+                            infoReadyCallback(parameter);
+                        }
                     });
             });
         }

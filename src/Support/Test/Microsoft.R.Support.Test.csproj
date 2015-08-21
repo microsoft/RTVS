@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
+    <None Include="RD\Files\Help\01.rd" />
     <None Include="RD\Files\Tokenization\01.rd" />
     <None Include="RD\Files\Tokenization\01.rd.tokens" />
     <None Include="RD\Files\Tokenization\02.rd" />
@@ -92,7 +93,8 @@
     <None Include="RD\Files\Tokenization\10.rd.tokens" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RD\Tokens\TokenizeFilesTest.cs" />
+    <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
+    <Compile Include="RD\Tokens\TokenizeFiles.cs" />
     <Compile Include="RD\Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="RD\Tokens\TokenizeTest.cs" />
     <Compile Include="RD\Utility\RdTestFilesSetup.cs" />

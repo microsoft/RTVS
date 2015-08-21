@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.R.Support.Test.RD.Tokens
 {
     [ExcludeFromCodeCoverage]
-    public class TokenizeFiles
+    public static class TokenizeFiles
     {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;

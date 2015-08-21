@@ -130,10 +130,12 @@ namespace Microsoft.R.Support.Help.Packages
             try
             {
                 string htmlFile = Path.Combine(this.InstallPath, this.Name, "html", "00index.html");
-
-                using (StreamReader sr = new StreamReader(htmlFile, Encoding.UTF8))
+                if (File.Exists(htmlFile))
                 {
-                    content = sr.ReadToEnd();
+                    using (StreamReader sr = new StreamReader(htmlFile, Encoding.UTF8))
+                    {
+                        content = sr.ReadToEnd();
+                    }
                 }
             }
             catch (IOException) { }

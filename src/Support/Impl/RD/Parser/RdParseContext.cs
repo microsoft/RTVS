@@ -15,5 +15,25 @@ namespace Microsoft.R.Support.RD.Parser
             this.TextProvider = textProvider;
             this.Tokens = new TokenStream<RdToken>(tokens, RdToken.EndOfStreamToken);
         }
+
+        public bool IsAtKeywordWithParameters(string keyword)
+        {
+            return Tokens.CurrentToken.IsKeywordText(TextProvider, keyword) && 
+                   Tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace;
+        }
+        public bool IsAtKeywordWithParameters()
+        {
+            return Tokens.CurrentToken.TokenType == RdTokenType.Keyword &&
+                   Tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace;
+        }
+
+        public bool IsAtKeyword(string keyword)
+        {
+            return Tokens.CurrentToken.IsKeywordText(TextProvider, keyword);
+        }
+        public bool IsAtKeyword()
+        {
+            return Tokens.CurrentToken.TokenType == RdTokenType.Keyword;
+        }
     }
 }
