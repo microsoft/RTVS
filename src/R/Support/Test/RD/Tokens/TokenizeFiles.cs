@@ -33,7 +33,7 @@ namespace Microsoft.R.Support.Test.RD.Tokens
                 if (_regenerateBaselineFiles)
                 {
                     // Update this to your actual enlistment if you need to update baseline
-                    string enlistmentPath = @"F:\RTVS\src\Support\Test\RD\Files\Tokenization";
+                    string enlistmentPath = @"F:\RTVS\src\R\Support\Test\RD\Files\Tokenization";
                     baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
 
                     TestFiles.UpdateBaseline(baselineFile, actual);

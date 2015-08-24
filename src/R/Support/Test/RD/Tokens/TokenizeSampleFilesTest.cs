@@ -66,5 +66,17 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         {
             TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\10.rd");
         }
+
+        [TestMethod]
+        public void TokenizeSampleRdFile11()
+        {
+            TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\11.rd");
+        }
+
+        [TestMethod]
+        public void TokenizeSampleRdFile12()
+        {
+            TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\12.rd");
+        }
     }
 }

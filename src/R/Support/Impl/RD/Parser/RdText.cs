@@ -33,6 +33,13 @@ namespace Microsoft.R.Support.RD.Parser
                 string s = context.TextProvider.GetText(range);
 
                 s = CleanRawRdText(s);
+                if (!string.IsNullOrWhiteSpace(s) && 
+                    (sb.Length > 0 && !char.IsWhiteSpace(sb[sb.Length-1]) &&
+                    char.IsLetterOrDigit(s[0])))
+                {
+                    sb.Append(' ');
+                }
+
                 sb.Append(s);
             }
 
@@ -63,7 +70,7 @@ namespace Microsoft.R.Support.RD.Parser
                 }
             }
 
-            return sb.ToString();
+            return sb.ToString().TrimEnd();
         }
     }
 }

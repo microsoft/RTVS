@@ -57,7 +57,6 @@ namespace Microsoft.R.Support.RD.Tokens
                 switch (_cs.CurrentChar)
                 {
                     case '%':
-                        // RD Comments are from # to the end of the line
                         handled = HandleComment();
                         break;
 
@@ -109,7 +108,7 @@ namespace Microsoft.R.Support.RD.Tokens
                     string keyword = _cs.Text.GetText(TextRange.FromBounds(start, _cs.Position)).Trim();
                     BlockContentType contentType = RdBlockContentType.GetBlockContentType(keyword);
 
-                    if(!_tokenizeRContent && contentType == BlockContentType.R)
+                    if (!_tokenizeRContent && contentType == BlockContentType.R)
                     {
                         contentType = BlockContentType.Latex;
                     }
@@ -155,7 +154,7 @@ namespace Microsoft.R.Support.RD.Tokens
                     break;
 
                 case BlockContentType.Verbatim:
-                    HandleVerbatimContent();
+                    HandleVerbatimContent(GetMatchingBrace(_cs.CurrentChar));
                     break;
 
                 default:
@@ -168,7 +167,14 @@ namespace Microsoft.R.Support.RD.Tokens
         /// Handles R-like content in RD. This includes handling # and ##
         /// as comments, counting brace nesting, handling "..." as string
         /// (not true in plain RD LaTeX-like content) and colorizing numbers
-        /// by using actual R tokenizer.
+        /// by using actual R tokenizer. Now. there is a confusing part:
+        /// "There are two types of comments in R-like mode. As elsewhere in 
+        /// Rd ﬁles, Rd comments start with %, and run to the end of the line."
+        /// If that is so then $ in sprintf will beging RD comment which frankly
+        /// doesn't make any sense fron the authoring/editing point of view.
+        /// "% characters must be escaped even within strings, or they will be 
+        /// taken as Rd comments." Sure, but R engine doesn't do that when 
+        /// requesting help in Rd format.
         /// </summary>
         /// <param name="closeBrace"></param>
         private void HandleRContent(char closeBrace)
@@ -277,32 +283,79 @@ namespace Microsoft.R.Support.RD.Tokens
         }
 
         /// <summary>
-        /// Handles verbatim text content where there are no 
-        /// special characters apart from braces and pragmas. 
-        /// It does count brace nesting though so it can properly
-        /// determine where the verbatim content ends.
+        /// Handles verbatim text content where there are no special characters 
+        /// apart from braces and pragmas. 
+        /// 
+        /// Verbatim text within an Rd ﬁle is a pure stream of text, uninterpreted 
+        /// by the parser, with the exceptions that braces must balance or be escaped, 
+        /// and % comments are recognized, and backslashes that could be interpreted 
+        /// as escapes must themselves be escaped. No markup macros are recognized 
+        /// within verbatim text.
+        /// 
+        /// OK, here is a problem. "Could be interpreted as escapes". Such as when? 
+        /// What about % inside C-like printf formats? I think we just will ignore %
+        /// and handle \ as keywords...
+        /// 
+        /// NOTE: since % is confusing and can be a C-like format specification
+        /// in \examples{ } that as far as I can see don't get % escaped,
+        /// we won't be really handling % as comments here,
+        /// 
+        /// https://developer.r-project.org/parseRd.pdf
+        /// Verbatim text within an Rd ﬁle is a pure stream of text, uninterpreted 
+        /// by the parser, with the exceptions that braces must balance or be escaped, 
+        /// and % comments are recognized, and backslashes that could be interpreted 
+        /// as escapes must themselves be escaped. 
         /// </summary>
-        private void HandleVerbatimContent()
+        private void HandleVerbatimContent(char closeBrace)
         {
             RdBraceCounter<char> braceCounter = new RdBraceCounter<char>('{', '}', '[', ']');
 
             while (!_cs.IsEndOfStream())
             {
-                if (braceCounter.CountBrace(_cs.CurrentChar))
-                {
-                    AddBraceToken();
+                bool handled = false;
 
-                    if (braceCounter.Count == 0)
-                    {
+                switch (_cs.CurrentChar)
+                {
+                    case '\\':
+                        handled = IsEscape();
+                        if (handled)
+                        {
+                            _cs.Advance(2);
+                        }
+                        else
+                        {
+                            handled = HandleKeyword();
+                        }
                         break;
-                    }
-                }
-                else if (_cs.CurrentChar == '#' && HandlePragma())
-                {
-                    continue;
+
+                    case '%':
+                        // In 'verbatim' text we handke % as comment
+                        // when it is in the beginning of the file
+                        if (_cs.Position == 0 || _cs.PrevChar == '\r' || _cs.PrevChar == '\n')
+                        {
+                            handled = HandleComment();
+                        }
+                        break;
+
+                    default:
+                        if (braceCounter.CountBrace(_cs.CurrentChar))
+                        {
+                            handled = AddBraceToken();
+
+                            if (braceCounter.Count == 0)
+                                return;
+                        }
+                        else if (_cs.CurrentChar == '#' && HandlePragma())
+                        {
+                            continue;
+                        }
+                        break;
                 }
 
-                _cs.MoveToNextChar();
+                if (!handled)
+                {
+                    _cs.MoveToNextChar();
+                }
             }
         }
 

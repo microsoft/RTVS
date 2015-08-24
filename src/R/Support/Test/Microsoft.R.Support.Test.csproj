@@ -28,7 +28,7 @@
     <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,7 +40,7 @@
     <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -89,6 +89,10 @@
     <None Include="RD\Files\Tokenization\09.rd.tokens" />
     <None Include="RD\Files\Tokenization\10.rd" />
     <None Include="RD\Files\Tokenization\10.rd.tokens" />
+    <None Include="RD\Files\Tokenization\12.rd" />
+    <None Include="RD\Files\Tokenization\11.rd" />
+    <None Include="RD\Files\Tokenization\11.rd.tokens" />
+    <None Include="RD\Files\Tokenization\12.rd.tokens" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
