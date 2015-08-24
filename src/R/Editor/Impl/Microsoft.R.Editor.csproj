@@ -110,12 +110,22 @@
     <Compile Include="Outline\ROutlineRegionBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Document\EditorDocument.cs" />
+    <Compile Include="QuickInfo\QuickInfoController.cs" />
+    <Compile Include="QuickInfo\QuickInfoControllerProvider.cs" />
+    <Compile Include="QuickInfo\QuickInfoSource.cs" />
+    <Compile Include="QuickInfo\QuickInfoSourceProvider.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings\REditorSettings.cs" />
+    <Compile Include="Signatures\ParametersInfo.cs" />
+    <Compile Include="Signatures\SignatureHelp.cs" />
+    <Compile Include="Signatures\SignatureHelp2.cs" />
+    <Compile Include="Signatures\SignatureHelpProvider.cs" />
+    <Compile Include="Signatures\SignatureHelpSource.cs" />
+    <Compile Include="Signatures\SignatureParameter.cs" />
     <Compile Include="Tree\ApplyTreeChanges.cs" />
     <Compile Include="Tree\ChangeProcessor.cs" />
     <Compile Include="Tree\Debug.cs" />

@@ -169,6 +169,7 @@
     <Compile Include="Undo\TextUndoPrimitiveBase.cs" />
     <Compile Include="Undo\TextUndoTransactionThatRollsBackProperly.cs" />
     <Compile Include="Utility\GuardedOperations.cs" />
+    <Compile Include="Utility\StringUtility.cs" />
     <Compile Include="Workspace\IFile.cs" />
     <Compile Include="Workspace\IFileWatchService.cs" />
     <Compile Include="Workspace\IFileWatchServiceProvider.cs" />

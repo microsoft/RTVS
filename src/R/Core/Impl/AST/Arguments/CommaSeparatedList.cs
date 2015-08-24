@@ -8,9 +8,9 @@ using Microsoft.R.Core.Tokens;
 namespace Microsoft.R.Core.AST.Arguments
 {
     [DebuggerDisplay("[{Count}]")]
-    public abstract class CommaSeparatedList: AstNode, IReadOnlyCollection<IAstNode>
+    public abstract class CommaSeparatedList : AstNode, IReadOnlyList<IAstNode>
     {
-        private List<IAstNode> arguments = new List<IAstNode>(1);
+        private List<IAstNode> _arguments = new List<IAstNode>(1);
         private RTokenType terminatingTokenType;
 
         public CommaSeparatedList(RTokenType terminatingTokenType)
@@ -28,7 +28,7 @@ namespace Microsoft.R.Core.AST.Arguments
             {
                 if (context.Tokens.CurrentToken.TokenType == this.terminatingTokenType)
                 {
-                    if(context.Tokens.PreviousToken.TokenType == RTokenType.Comma)
+                    if (context.Tokens.PreviousToken.TokenType == RTokenType.Comma)
                     {
                         // In x[2,] final missing argument is NOT added
                         // to the tree since it has no text position.
@@ -50,9 +50,9 @@ namespace Microsoft.R.Core.AST.Arguments
                 if (item != null)
                 {
                     result = item.Parse(context, this);
-                    if(result)
+                    if (result)
                     {
-                        this.arguments.Add(item);
+                        _arguments.Add(item);
                     }
                     else
                     {
@@ -68,7 +68,7 @@ namespace Microsoft.R.Core.AST.Arguments
                 }
             }
 
-            if(result && Children.Count > 0)
+            if (result && Children.Count > 0)
             {
                 base.Parse(context, parent);
             }
@@ -76,19 +76,24 @@ namespace Microsoft.R.Core.AST.Arguments
             return result;
         }
 
-        #region IReadOnlyCollection
+        #region IReadOnlyList
         public int Count
         {
-            get { return this.arguments.Count; }
+            get { return _arguments.Count; }
+        }
+
+        public IAstNode this[int i]
+        {
+            get { return _arguments[i]; }
         }
 
         public IEnumerator<IAstNode> GetEnumerator()
         {
-            return this.arguments.GetEnumerator();
+            return _arguments.GetEnumerator();
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.arguments.GetEnumerator();
+            return _arguments.GetEnumerator();
         }
         #endregion
     }

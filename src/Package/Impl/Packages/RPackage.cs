@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Languages;
@@ -30,7 +31,19 @@ namespace Microsoft.VisualStudio.R.Packages
     internal sealed class RPackage : BasePackage<RLanguageService>
     {
         public const string OptionsDialogName = "R Tools";
-        
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+            FunctionIndex.BuildIndexAsync();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            //FunctionIndex.SaveIndexAsync();
+            base.Dispose(disposing);
+        }
+
         protected override IEnumerable<IVsEditorFactory> CreateEditorFactories()
         {
             yield return new REditorFactory(this);
@@ -57,5 +70,4 @@ namespace Microsoft.VisualStudio.R.Packages
             return base.GetAutomationObject(name);
         }
     }
-
 }

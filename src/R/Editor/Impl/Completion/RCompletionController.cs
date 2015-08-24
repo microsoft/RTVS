@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Languages.Editor;
+using Microsoft.Languages.Editor.Completion;
+using Microsoft.Languages.Editor.Completion.TypeThrough;
+using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.Languages.Editor;
-using Microsoft.Languages.Editor.Completion;
-using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Completion.TypeThrough;
-using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Settings;
 
 namespace Microsoft.R.Editor.Completion
 {
@@ -25,6 +24,7 @@ namespace Microsoft.R.Editor.Completion
         private List<ProvisionalText> _provisionalTexts = new List<ProvisionalText>();
         private char _eatNextQuote = '\0';
         private char _commitChar = '\0';
+        private int _nestedSessions = 0;
 
         private RCompletionController(
             ITextView textView,
@@ -234,6 +234,51 @@ namespace Microsoft.R.Editor.Completion
             return false;
         }
 
+        public override void OnPostTypeChar(char typedCharacter)
+        {
+            if (typedCharacter == '(' || (!this.HasActiveSignatureSession && typedCharacter == ','))
+            {
+                DismissAllSessions();
+
+                _nestedSessions = 1;
+                SignatureSession = SignatureBroker.TriggerSignatureHelp(TextView);
+            }
+            else if (this.HasActiveSignatureSession && typedCharacter == ')')
+            {
+                DismissAllSessions();
+
+                _nestedSessions--;
+
+                if (_nestedSessions > 0)
+                    SignatureSession = SignatureBroker.TriggerSignatureHelp(TextView);
+
+            }
+            else if (this.HasActiveSignatureSession && typedCharacter == '\n')
+            {
+                DismissAllSessions();
+                _nestedSessions = 0;
+
+                SignatureSession = SignatureBroker.TriggerSignatureHelp(TextView);
+            }
+            else if (this.HasActiveCompletionSession)
+            {
+                if (typedCharacter == ',')
+                {
+                    CompletionSession.Dismiss();
+                }
+                else if (typedCharacter == '\'' || typedCharacter == '\"')
+                {
+                    base.OnPostTypeChar(typedCharacter);
+
+                    DismissAllSessions();
+                    ShowCompletion(autoShownCompletion: true);
+                    return;
+                }
+            }
+
+            base.OnPostTypeChar(typedCharacter);
+        }
+
         public override bool CommitCompletionSession(char typedCharacter)
         {
             try
@@ -261,8 +306,7 @@ namespace Microsoft.R.Editor.Completion
             }
         }
 
-        public object TextChangeType { get; private set; }
-
+        #region Provisional text
         protected override void OnCompletionSessionDismissed(object sender, EventArgs eventArgs)
         {
             if (_commitChar == '\0')
@@ -313,6 +357,7 @@ namespace Microsoft.R.Editor.Completion
 
             return provisionalText;
         }
+        #endregion
 
         #region ICommandTarget
 

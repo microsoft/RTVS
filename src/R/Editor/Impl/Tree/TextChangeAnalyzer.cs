@@ -40,18 +40,19 @@ namespace Microsoft.R.Editor.Tree
 
         private static bool SafeWhiteSpaceChange(TextChangeContext context, IAstNode node, PositionType positionType)
         {
-            // In R there is no line continuation and expression hence
-            // adding or deleting line breaks may change expression syntax.
+            // In R there is no line continuation so expression may change
+            // when user adds or deletes line breaks.
 
             context.ChangedNode = node;
 
 
             if (string.IsNullOrWhiteSpace(context.OldText) && string.IsNullOrWhiteSpace(context.NewText))
             {
-                string oldLineText = context.OldTextProvider.GetCurrentLineText(context.OldStart);
-                string newLineText = context.NewTextProvider.GetCurrentLineText(context.Start);
+                string oldLineText = context.OldTextProvider.GetText(new TextRange(context.OldStart, context.OldLength));
+                string newLineText = context.NewTextProvider.GetText(new TextRange(context.Start, context.NewLength));
 
-                if(string.IsNullOrWhiteSpace(oldLineText) && string.IsNullOrWhiteSpace(newLineText))
+                if (string.IsNullOrWhiteSpace(oldLineText) && string.IsNullOrWhiteSpace(newLineText) &&
+                    oldLineText.IndexOfAny(_lineBreaks) < 0 && newLineText.IndexOfAny(_lineBreaks) < 0)
                 {
                     return true;
                 }

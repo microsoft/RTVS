@@ -56,12 +56,6 @@ namespace Microsoft.R.Core.AST
             get { return _children; }
         }
 
-        /// <summary>
-        /// Node content has been invalidated. Node and its children
-        /// collection will be updated on the next parser pass.
-        /// </summary>
-        public bool IsDirty { get; set; }
-
         public void AppendChild(IAstNode child)
         {
             if (child.Parent == null)

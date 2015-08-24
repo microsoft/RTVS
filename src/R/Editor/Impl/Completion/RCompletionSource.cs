@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Completion
         private static readonly char[] _codeChars = new char[] { ' ', '<', '>', '(', ')', '{', '}', ':', '\\', '/' };
 
         private ITextBuffer _textBuffer;
-        private ICompletionSession _asyncSession;
+        //private ICompletionSession _asyncSession;
 
         public RCompletionSource(ITextBuffer textBuffer)
         {
@@ -45,8 +45,8 @@ namespace Microsoft.R.Editor.Completion
         {
             Debug.Assert(EditorShell.IsUIThread);
 
-            if (_asyncSession != null)
-                return;
+            //if (_asyncSession != null)
+            //    return;
 
             EditorDocument doc = EditorDocument.FromTextBuffer(_textBuffer);
             if (doc == null)

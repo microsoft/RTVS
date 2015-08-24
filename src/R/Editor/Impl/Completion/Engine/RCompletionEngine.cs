@@ -8,7 +8,7 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
-using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion.Engine
@@ -16,7 +16,6 @@ namespace Microsoft.R.Editor.Completion.Engine
     internal static class RCompletionEngine
     {
         private static IEnumerable<Lazy<IRCompletionListProvider>> CompletionProviders { get; set; }
-        private static RHelpDataSource _helpDataSource;
 
         /// <summary>
         /// Provides list of completion entries for a given location in the AST.
@@ -59,20 +58,12 @@ namespace Microsoft.R.Editor.Completion.Engine
 
         public static void Initialize()
         {
-            if (_helpDataSource == null)
-            {
-                _helpDataSource = new RHelpDataSource();
-            }
+            FunctionIndex.Initialize();
 
             if (CompletionProviders == null)
             {
                 CompletionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany();
             }
-        }
-
-        public static RHelpDataSource HelpDataSource
-        {
-            get { return _helpDataSource; }
         }
 
         private static bool IsPackageListCompletion(ITextBuffer textBuffer, int position)
@@ -93,7 +84,7 @@ namespace Microsoft.R.Editor.Completion.Engine
 
             while (!tokens.IsEndOfStream())
             {
-                if(tokens.CurrentToken.Start >= linePosition)
+                if (tokens.CurrentToken.Start >= linePosition)
                 {
                     break;
                 }
@@ -108,7 +99,7 @@ namespace Microsoft.R.Editor.Completion.Engine
                         {
                             if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace)
                             {
-                                if(linePosition >= openBrace.End && linePosition <= tokens.CurrentToken.Start)
+                                if (linePosition >= openBrace.End && linePosition <= tokens.CurrentToken.Start)
                                 {
                                     return true;
                                 }

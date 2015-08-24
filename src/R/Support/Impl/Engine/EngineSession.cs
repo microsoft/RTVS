@@ -11,46 +11,54 @@ namespace Microsoft.R.Support.Engine
     {
         private Task _startingTask;
         private Process _rProcess;
+        private Func<string, object, object> _dataConverter;
+
+        public EngineSession(Func<string, object, object> dataConverter) :
+            this()
+        {
+            _dataConverter = dataConverter;
+        }
 
         public EngineSession()
         {
             EditorShell.OnIdle += OnIdle;
         }
 
-        public async Task<EngineResponse> SendCommand(string command)
+        public EngineResponse SendCommand(string command, object p, Action<object> dataReadyCallback)
         {
             EngineResponse response = null;
 
-            await EnsureEngineRunningAsync();
+            EnsureEngineRunning();
 
             if (_rProcess != null)
             {
-                response = new EngineResponse(_rProcess);
-                _rProcess.StandardInput.WriteLine(command);
+                response = new EngineResponse(_rProcess, dataReadyCallback, _dataConverter, p);
+
+                // $$$ trailer is to force error output which will help us
+                // to determine that the command output was fully received
+                _rProcess.StandardInput.WriteLine(command + "; $$$");
             }
 
             return response;
         }
 
-        private Task EnsureEngineRunningAsync()
+        private void EnsureEngineRunning()
         {
             EditorShell.OnIdle -= OnIdle;
 
             if (_rProcess == null || _rProcess.HasExited)
             {
-                return LaunchREngineAsync();
+                LaunchREngine();
             }
-
-            return Task.FromResult<object>(null);
         }
 
-        private async void OnIdle(object sender, EventArgs e)
+        private void OnIdle(object sender, EventArgs e)
         {
             EditorShell.OnIdle -= OnIdle;
-            await LaunchREngineAsync();
+            Task.Run(() => LaunchREngine());
         }
 
-        private Task LaunchREngineAsync()
+        private void LaunchREngine()
         {
             if (_startingTask == null)
             {
@@ -61,16 +69,10 @@ namespace Microsoft.R.Support.Engine
                     if (!string.IsNullOrEmpty(binPath))
                     {
                         string exePath = Path.Combine(binPath, "RTerm.exe");
-
-                        _startingTask = Task.Run(() =>
-                        {
-                            StartREngine(exePath);
-                        });
+                        StartREngine(exePath);
                     }
                 }
             }
-
-            return Task.FromResult<object>(null);
         }
 
         private void StartREngine(string exePath)
@@ -81,13 +83,16 @@ namespace Microsoft.R.Support.Engine
             info.RedirectStandardInput = true;
             info.RedirectStandardOutput = true;
             info.RedirectStandardError = true;
-            info.WindowStyle = ProcessWindowStyle.Minimized;
+            info.CreateNoWindow = true;
+            info.WindowStyle = ProcessWindowStyle.Hidden;
             info.UseShellExecute = false;
             info.FileName = exePath;
 
             _rProcess = Process.Start(info);
             _rProcess.Exited += OnProcessExited;
+
             _rProcess.BeginOutputReadLine();
+            _rProcess.BeginErrorReadLine();
 
             _startingTask = null;
         }

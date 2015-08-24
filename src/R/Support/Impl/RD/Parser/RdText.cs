@@ -1,50 +1,65 @@
-﻿using System.Text;
-using Microsoft.R.Support.RD.Tokens;
+﻿using System.Diagnostics;
+using System.Text;
+using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.R.Support.RD.Parser
 {
     internal static class RdText
     {
-        public static string GetText(ParseContext context)
+        public static string GetText(RdParseContext context)
         {
             string text = string.Empty;
 
-            int start = context.Tokens.Position;
-            int end = RdParseUtility.FindRdKeywordArgumentBounds(context.Tokens);
-            if (end > 0)
+            int startTokenIndex, endTokenIndex;
+            if (RdParseUtility.GetKeywordArgumentBounds(context.Tokens, out startTokenIndex, out endTokenIndex))
             {
-                text = RdText.FromTokens(context, start, end);
-                context.Tokens.Position = end;
+                text = RdText.FromTokens(context, startTokenIndex, endTokenIndex);
+                context.Tokens.Position = endTokenIndex;
             }
 
             return text;
         }
 
-        public static string FromTokens(ParseContext context, int start, int end)
+        public static string FromTokens(RdParseContext context, int startTokenIndex, int endTokenIndex)
         {
+            Debug.Assert(startTokenIndex >= 0 && startTokenIndex < endTokenIndex);
+
             // Clean descripton so it only consists of plain text
             var sb = new StringBuilder();
 
-            for (int i = start + 1; i < end; i++)
+            for (int i = startTokenIndex; i < endTokenIndex; i++)
             {
-                RdToken token = context.Tokens[i];
-                if (token.TokenType == RdTokenType.Argument)
+                TextRange range = TextRange.FromBounds(context.Tokens[i].End, context.Tokens[i + 1].Start);
+                string s = context.TextProvider.GetText(range);
+
+                s = CleanRawRdText(s);
+                sb.Append(s);
+            }
+
+            return sb.ToString();
+        }
+
+        public static string CleanRawRdText(string rawRdText)
+        {
+            var sb = new StringBuilder();
+
+            for (int i = 0; i < rawRdText.Length; i++)
+            {
+                char ch = rawRdText[i];
+
+                if (ch == '\n' || ch == '\r' || ch == '\t' || char.IsWhiteSpace(ch))
                 {
-                    string s = context.TextProvider.GetText(token);
-                    for (int j = 0; j < s.Length; j++)
-                    {
-                        char ch = s[j];
+                    ch = ' ';
+                }
 
-                        if (ch == '\n' || ch == '\r' || ch == '\t' || char.IsWhiteSpace(ch))
-                        {
-                            ch = ' ';
-                        }
+                if (ch == '\\')
+                {
+                    continue; // skip escapes
+                }
 
-                        if (ch != ' ' || (sb.Length > 0 && sb[sb.Length - 1] != ' '))
-                        {
-                            sb.Append(ch);
-                        }
-                    }
+                if (ch != ' ' || (sb.Length > 0 && sb[sb.Length - 1] != ' '))
+                {
+                    sb.Append(ch);
                 }
             }
 

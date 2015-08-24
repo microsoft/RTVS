@@ -16,16 +16,17 @@ namespace Microsoft.R.Support.RD.Classification
                     return PredefinedClassificationTypeNames.Keyword;
                 case RdTokenType.String:
                     return PredefinedClassificationTypeNames.String;
+                case RdTokenType.Number:
+                    return PredefinedClassificationTypeNames.Number;
 
                 case RdTokenType.Pragma:
                     return PredefinedClassificationTypeNames.PreprocessorKeyword;
 
-                case RdTokenType.OpenBrace:
-                case RdTokenType.CloseBrace:
+                case RdTokenType.OpenCurlyBrace:
+                case RdTokenType.CloseCurlyBrace:
+                case RdTokenType.OpenSquareBracket:
+                case RdTokenType.CloseSquareBracket:
                     return RdClassificationTypes.Braces;
-
-                case RdTokenType.Argument:
-                    return RdClassificationTypes.Argument;
 
                 default:
                     return "Default";

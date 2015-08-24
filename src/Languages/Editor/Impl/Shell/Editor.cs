@@ -79,10 +79,12 @@ namespace Microsoft.Languages.Editor.Shell
                             // should have called SetHost by now. If it didn't this is either VS or there is a bug.
 
                             string assemblyName = typeof(EditorShell).Assembly.FullName.Replace("Microsoft.Languages.Editor", "Microsoft.VisualStudio.R.Package");
-                            System.Reflection.Assembly htmlPackage = System.Reflection.Assembly.Load(assemblyName);
-                            Debug.Assert(htmlPackage != null);
+                            System.Reflection.Assembly package = System.Reflection.Assembly.Load(assemblyName);
+                            Debug.Assert(package != null);
 
-                            IEditorShell shell = htmlPackage.CreateInstance("Microsoft.VisualStudio.Html.Package.Shell.EditorShell") as IEditorShell;
+                            IEditorShell shell = package.CreateInstance("Microsoft.VisualStudio.R.Package.Shell.VsEditorShell") as IEditorShell;
+                            Debug.Assert(shell != null);
+
                             SetShell(shell);
                         }
                     }

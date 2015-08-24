@@ -68,14 +68,35 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
-    <None Include="RD\Files\Tokenization\1.rd" />
-    <None Include="RD\Files\Tokenization\1.rd.tokens" />
+    <None Include="RD\Files\Help\01.rd" />
+    <None Include="RD\Files\Tokenization\01.rd" />
+    <None Include="RD\Files\Tokenization\01.rd.tokens" />
+    <None Include="RD\Files\Tokenization\02.rd" />
+    <None Include="RD\Files\Tokenization\02.rd.tokens" />
+    <None Include="RD\Files\Tokenization\03.rd.tokens" />
+    <None Include="RD\Files\Tokenization\04.rd" />
+    <None Include="RD\Files\Tokenization\04.rd.tokens" />
+    <None Include="RD\Files\Tokenization\05.rd" />
+    <None Include="RD\Files\Tokenization\05.rd.tokens" />
+    <None Include="RD\Files\Tokenization\06.rd" />
+    <None Include="RD\Files\Tokenization\03.rd" />
+    <None Include="RD\Files\Tokenization\06.rd.tokens" />
+    <None Include="RD\Files\Tokenization\07.rd" />
+    <None Include="RD\Files\Tokenization\07.rd.tokens" />
+    <None Include="RD\Files\Tokenization\08.rd" />
+    <None Include="RD\Files\Tokenization\08.rd.tokens" />
+    <None Include="RD\Files\Tokenization\09.rd" />
+    <None Include="RD\Files\Tokenization\09.rd.tokens" />
+    <None Include="RD\Files\Tokenization\10.rd" />
+    <None Include="RD\Files\Tokenization\10.rd.tokens" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RD\Tokens\TokenizeFilesTest.cs" />
+    <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
+    <Compile Include="RD\Tokens\TokenizeFiles.cs" />
     <Compile Include="RD\Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="RD\Tokens\TokenizeTest.cs" />
     <Compile Include="RD\Utility\RdTestFilesSetup.cs" />
+    <Compile Include="RD\Utility\TokensCompare.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">

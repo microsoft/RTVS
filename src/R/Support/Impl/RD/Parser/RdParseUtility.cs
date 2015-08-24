@@ -1,67 +1,42 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using Microsoft.Languages.Core.Tokens;
+﻿using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
 {
     static class RdParseUtility
     {
-        public static int FindRdKeywordArgumentBounds(TokenStream<RdToken> tokens)
+        public static bool GetKeywordArgumentBounds(TokenStream<RdToken> tokens, out int startTokenIndex, out int endTokenIndex)
         {
-            int start = tokens.Position;
+            startTokenIndex = -1;
+            endTokenIndex = -1;
 
-            int end = SkipAllBraces(tokens);
-            tokens.Position = start;
+            RdBraceCounter<RdToken> braceCounter = new RdBraceCounter<RdToken>(
+                new RdToken(RdTokenType.OpenCurlyBrace),
+                new RdToken(RdTokenType.CloseCurlyBrace),
+                new RdToken(RdTokenType.OpenSquareBracket),
+                new RdToken(RdTokenType.CloseSquareBracket)
+                );
 
-            return end;
-        }
-
-        private static int SkipAllBraces(TokenStream<RdToken> tokens)
-        {
-            if (tokens.CurrentToken.TokenType != RdTokenType.OpenBrace && tokens.NextToken.TokenType == RdTokenType.OpenBrace)
+            for (int pos = tokens.Position; pos < tokens.Length; pos++)
             {
-                tokens.MoveToNextToken();
-            }
+                RdToken token = tokens[pos];
 
-            Debug.Assert(tokens.CurrentToken.TokenType == RdTokenType.OpenBrace);
-
-            Stack<RdToken> braces = new Stack<RdToken>();
-            int start = tokens.Position;
-            int end = -1;
-            int i;
-
-            braces.Push(tokens[start]);
-
-            for (i = start + 1; i < tokens.Length && braces.Count > 0; i++)
-            {
-                RdToken token = tokens[i];
-
-                switch (token.TokenType)
+                if (braceCounter.CountBrace(token))
                 {
-                    case RdTokenType.OpenBrace:
-                        braces.Push(token);
-                        break;
+                    if (startTokenIndex < 0)
+                    {
+                        startTokenIndex = pos;
+                    }
 
-                    case RdTokenType.CloseBrace:
-                        if (braces.Count > 0)
-                        {
-                            braces.Pop();
-                        }
-                        else
-                        {
-                            return -1;
-                        }
+                    if (braceCounter.Count == 0)
+                    {
+                        endTokenIndex = pos;
                         break;
+                    }
                 }
             }
 
-            if (braces.Count == 0)
-            {
-                end = i;
-            }
-
-            return end;
+            return startTokenIndex >= 0 && endTokenIndex >= 0 && startTokenIndex < endTokenIndex;
         }
     }
 }

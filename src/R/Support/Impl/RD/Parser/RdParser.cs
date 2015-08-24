@@ -1,38 +1,52 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.RD.Tokens;
 
 namespace Microsoft.R.Support.RD.Parser
 {
+    /// <summary>
+    /// Parser of the RD (R Documentation) file format. Primary usage 
+    /// of the parser is the extraction of information on functions 
+    /// and their parameters so we can show signature completion 
+    /// and quick info in the VS editor.
+    /// </summary>
     public static class RdParser
     {
-        public static RdFunctionInfo GetFunctionInfo(string name, string rdHelpData)
+        /// <summary>
+        /// Given RD data and function name parses the data and
+        /// creates structured information about the function.
+        /// </summary>
+        public static IFunctionInfo GetFunctionInfo(string functionName, string rdHelpData)
         {
-            var tokenizer = new RdTokenizer();
+            var tokenizer = new RdTokenizer(tokenizeRContent: false);
+
             ITextProvider textProvider = new TextStream(rdHelpData);
             IReadOnlyTextRangeCollection<RdToken> tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
-            return ParseFunction(name, tokens, textProvider);
+            RdParseContext context = new RdParseContext(tokens, textProvider);
+
+            return ParseFunction(functionName, context);
         }
 
-        public static RdFunctionInfo ParseFunction(string name, IReadOnlyTextRangeCollection<RdToken> tokens, ITextProvider textProvider)
+        private static IFunctionInfo ParseFunction(string functionName, RdParseContext context)
         {
-            ParseContext context = new ParseContext(tokens, textProvider);
-            RdFunctionInfo info = new RdFunctionInfo(name);
+            FunctionInfo info = new FunctionInfo(functionName);
             List<string> aliases = new List<string>();
             IReadOnlyDictionary<string, string> argumentDescriptions = null;
 
-            while (!context.Tokens.IsEndOfStream() && !info.IsComplete && argumentDescriptions == null)
+            while (!context.Tokens.IsEndOfStream() && argumentDescriptions == null)
             {
                 RdToken token = context.Tokens.CurrentToken;
 
-                if (token.TokenType == RdTokenType.Keyword &&
-                    context.Tokens.NextToken.TokenType == RdTokenType.OpenBrace)
+                if (context.IsAtKeywordWithParameters())
                 {
-                    if (string.IsNullOrEmpty(info.Description) && token.IsKeywordText(textProvider, @"\description"))
+                    if (string.IsNullOrEmpty(info.Description) && context.IsAtKeyword(@"\description"))
                     {
                         info.Description = RdText.GetText(context);
                     }
-                    else if (token.IsKeywordText(textProvider, @"\alias"))
+                    else if (context.IsAtKeyword(@"\alias"))
                     {
                         string alias = RdText.GetText(context);
                         if (!string.IsNullOrEmpty(alias))
@@ -40,7 +54,7 @@ namespace Microsoft.R.Support.RD.Parser
                             aliases.Add(alias);
                         }
                     }
-                    else if (token.IsKeywordText(textProvider, @"\keyword"))
+                    else if (context.IsAtKeyword(@"\keyword"))
                     {
                         string keyword = RdText.GetText(context);
                         if (!string.IsNullOrEmpty(keyword) && keyword.Contains("internal"))
@@ -48,25 +62,24 @@ namespace Microsoft.R.Support.RD.Parser
                             info.IsInternal = true;
                         }
                     }
-                    else if (string.IsNullOrEmpty(info.ReturnValue) && token.IsKeywordText(textProvider, @"\value"))
+                    else if (string.IsNullOrEmpty(info.ReturnValue) && context.IsAtKeyword(@"\value"))
                     {
                         info.ReturnValue = RdText.GetText(context);
                     }
-                    else if (argumentDescriptions == null && token.IsKeywordText(textProvider, @"\arguments"))
+                    else if (argumentDescriptions == null && context.IsAtKeyword(@"\arguments"))
                     {
-                        argumentDescriptions = FunctionArgumentDescriptions.ExtractArgumentDecriptions(context);
+                        argumentDescriptions = RdArgumentDescription.ExtractArgumentDecriptions(context);
                     }
-                    else if (info.Signatures == null && token.IsKeywordText(textProvider, @"\usage"))
+                    else if (info.Signatures == null && context.IsAtKeyword(@"\usage"))
                     {
-                        info.Signatures = FunctionSignature.ExtractSignatures(context);
+                        info.Signatures = RdFunctionSignature.ExtractSignatures(context);
                     }
                     else
                     {
                         context.Tokens.Advance(2);
                     }
                 }
-
-                if (context.Tokens.CurrentToken.TokenType != RdTokenType.Keyword)
+                else
                 {
                     context.Tokens.MoveToNextToken();
                 }
@@ -80,14 +93,16 @@ namespace Microsoft.R.Support.RD.Parser
                     foreach (var arg in sigInfo.Arguments)
                     {
                         string description;
-                        argumentDescriptions.TryGetValue(arg.Name, out description);
-                        arg.Description = description ?? string.Empty;
+                        if (argumentDescriptions.TryGetValue(arg.Name, out description))
+                        {
+                            ((NamedItemInfo)arg).Description = description ?? string.Empty;
+                        }
                     }
                 }
             }
 
             info.Aliases = aliases;
-            return (info.Signatures != null && info.Signatures.Count > 0) ? info : null;
+            return info;
         }
     }
 }

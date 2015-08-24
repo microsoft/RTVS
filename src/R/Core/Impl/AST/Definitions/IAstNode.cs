@@ -39,12 +39,6 @@ namespace Microsoft.R.Core.AST.Definitions
         void AppendChild(IAstNode node);
 
         /// <summary>
-        /// Node content has been invalidated. Node and its children
-        /// collection will be updated on the next parser pass.
-        /// </summary>
-        bool IsDirty { get; set; }
-
-        /// <summary>
         /// Removes one or more child nodes
         /// </summary>
         void RemoveChildren(int start, int count);
