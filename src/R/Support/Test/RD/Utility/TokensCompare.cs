@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Support.RD.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Support.Test.RD.Utility
 {
+    [ExcludeFromCodeCoverage]
     class TokenData
     {
         public RdTokenType TokenType;
@@ -18,6 +20,7 @@ namespace Microsoft.R.Support.Test.RD.Utility
         }
     }
 
+    [ExcludeFromCodeCoverage]
     static class TokensCompare
     {
         public static void Compare(IReadOnlyCollection<TokenData> expectedTokens, IReadOnlyCollection<RdToken> actualTokens)

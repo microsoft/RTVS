@@ -1,9 +1,11 @@
-﻿using Microsoft.Languages.Core.Test.Tokens;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class TokenizeExpressionsTest : TokenizeTestBase<RToken, RTokenType>
     {

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Test.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public class TextBufferMock : ITextBuffer
     {
         public TextBufferMock(string content, string contentTypeName)

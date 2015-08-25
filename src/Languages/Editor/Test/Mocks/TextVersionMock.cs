@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Test.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public class TextVersionMock : ITextVersion
     {
         TextChangeMock _change;

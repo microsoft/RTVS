@@ -1,7 +1,9 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Test.Text
 {
+    [ExcludeFromCodeCoverage]
     public class InclusiveTextRange : TextRange
     {
         private bool _allowZeroLength;

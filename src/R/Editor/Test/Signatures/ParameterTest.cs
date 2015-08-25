@@ -1,4 +1,5 @@
-﻿using Microsoft.Languages.Core.Test.Utility;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Test.Mocks;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
@@ -9,6 +10,7 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Test.Signatures
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class ParameterTest : UnitTestBase
     {

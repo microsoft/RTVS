@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -7,6 +8,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Test.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class SignatureHelpSessionMock : ISignatureHelpSession
     {
         public SnapshotPoint SnapshotPoint { get; set; }

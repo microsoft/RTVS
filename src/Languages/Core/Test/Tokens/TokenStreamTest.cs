@@ -1,9 +1,11 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Core.Test.Text
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class TokenStreamTest
     {
@@ -15,6 +17,7 @@ namespace Microsoft.Languages.Core.Test.Text
             EndOfStream
         }
 
+        [ExcludeFromCodeCoverage]
         class TestToken : Token<TestTokenType>
         {
             public TestToken(TestTokenType tokenType, ITextRange range):

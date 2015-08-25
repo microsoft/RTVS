@@ -95,6 +95,7 @@
     <None Include="RD\Files\Tokenization\12.rd.tokens" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Functions\FunctionIndexTest.cs" />
     <Compile Include="Packages\PackageIndexTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
     <Compile Include="RD\Tokens\TokenizeFiles.cs" />
@@ -112,6 +113,14 @@
     <ProjectReference Include="..\..\..\Languages\Core\Test\Microsoft.Languages.Core.Test.csproj">
       <Project>{ee2504a4-4666-460b-8552-5b342718cb02}</Project>
       <Name>Microsoft.Languages.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
+      <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
+      <Name>Microsoft.Languages.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Languages\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
+      <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
+      <Name>Microsoft.Languages.Editor.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>

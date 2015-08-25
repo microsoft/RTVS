@@ -1,10 +1,12 @@
-﻿using Microsoft.Languages.Core.Diagnostics;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Diagnostics;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
 namespace Microsoft.Languages.Core.Test.Tokens
 {
+    [ExcludeFromCodeCoverage]
     public class TokenizeTestBase<TTokenClass, TTokenType> : UnitTestBase where TTokenClass: IToken<TTokenType>
     {
         protected string TokenizeToString(string text, ITokenizer<TTokenClass> tokenizer)

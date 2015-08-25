@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Editor.Test.Text
 {
-    [TestClass()]
+    [ExcludeFromCodeCoverage]
+    [TestClass]
     public class TextChangesTest
     {
         [TestMethod()]

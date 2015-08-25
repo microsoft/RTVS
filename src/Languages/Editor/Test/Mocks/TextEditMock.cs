@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Test.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class TextEditMock : ITextEdit
     {
         List<TextChangeMock> _changes = new List<TextChangeMock>();

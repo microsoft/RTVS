@@ -1,10 +1,12 @@
-﻿using Microsoft.Languages.Core.Test.Utility;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Support.Test.RD.Help
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class GetFunctionInfoTest : UnitTestBase
     {

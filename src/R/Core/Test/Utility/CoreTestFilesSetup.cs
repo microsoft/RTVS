@@ -1,8 +1,10 @@
-﻿using Microsoft.Languages.Core.Test.Utility;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class CoreTestFilesSetup
     {

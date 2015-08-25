@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Test.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public class ContentTypeMock : IContentType
     {
         private static IContentType _textContentType;

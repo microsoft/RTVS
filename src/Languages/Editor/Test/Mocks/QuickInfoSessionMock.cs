@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -6,6 +7,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Test.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class QuickInfoSessionMock : IQuickInfoSession
     {
         public SnapshotPoint TriggerPoint { get; set; }

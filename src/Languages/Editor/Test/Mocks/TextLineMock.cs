@@ -1,10 +1,12 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Test.Mocks
 {
     /// <summary>
     /// Mock implementation of ITextSnapshotLine based on mock snapshot for unit tests.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class TextLineMock : ITextSnapshotLine
     {
         private int _lineNumber;

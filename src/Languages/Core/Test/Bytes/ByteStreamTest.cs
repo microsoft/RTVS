@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Languages.Core.Bytes;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Languages.Core.Test.Bytes
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class ByteStreamTest
     {

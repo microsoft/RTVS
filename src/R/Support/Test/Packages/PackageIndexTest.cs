@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Microsoft.Languages.Core.Test.Utility;
@@ -11,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Support.Test.Packages
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class PackageIndexTest : UnitTestBase
     {

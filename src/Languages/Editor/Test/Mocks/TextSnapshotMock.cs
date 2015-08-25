@@ -4,9 +4,11 @@ using System.Linq;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Languages.Core.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Languages.Editor.Test.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public class TextSnapshotMock : ITextSnapshot
     {
         public ITextProvider TextProvider { get; private set; }

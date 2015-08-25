@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Core.Test.Text
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class TextRangeTest
     {

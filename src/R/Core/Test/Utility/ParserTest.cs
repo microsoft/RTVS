@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
@@ -8,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     internal static class ParserTest
     {
         public static void VerifyParse(string expected, string expression)

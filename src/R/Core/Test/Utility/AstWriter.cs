@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using Microsoft.R.Core.AST;
@@ -6,6 +7,7 @@ using Microsoft.R.Core.AST.Definitions;
 
 namespace Microsoft.R.Core.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     internal class AstWriter
     {
         private int _indent = 0;

@@ -1,9 +1,11 @@
-﻿using Microsoft.Languages.Core.Test.Tokens;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Support.RD.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Support.Test.RD.Tokens
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class TokenizeSampleRdFilesTest : TokenizeTestBase<RdToken, RdTokenType>
     {

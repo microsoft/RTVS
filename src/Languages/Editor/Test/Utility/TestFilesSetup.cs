@@ -1,10 +1,14 @@
-﻿using Microsoft.Languages.Core.Test.Utility;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Editor.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
-    internal class TestFilesSetup
+    public class TestFilesSetup
     {
         static object _deploymentLock = new object();
         static bool _deployed = false;
@@ -17,6 +21,8 @@ namespace Microsoft.Languages.Editor.Test.Utility
                 if (!_deployed)
                 {
                     _deployed = true;
+
+                    EditorShell.SetShell(TestEditorShell.Create());
 
                     string srcFilesFolder;
                     string testFilesDir;

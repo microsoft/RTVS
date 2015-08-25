@@ -1,4 +1,5 @@
-﻿using Microsoft.Languages.Core.Test.Utility;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Expressions.Definitions;
@@ -11,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.AST
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class AstShiftTest : UnitTestBase
     {

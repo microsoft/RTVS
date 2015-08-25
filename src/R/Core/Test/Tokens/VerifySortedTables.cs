@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class VerifySortedTables : TokenizeTestBase<RToken, RTokenType>
     {

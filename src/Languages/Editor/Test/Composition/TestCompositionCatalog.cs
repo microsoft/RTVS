@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -11,6 +12,7 @@ using Microsoft.Win32;
 
 namespace Microsoft.Languages.Editor.Test.Composition
 {
+    [ExcludeFromCodeCoverage]
     public static class TestCompositionCatalog
     {
         private static CompositionContainer _container;
