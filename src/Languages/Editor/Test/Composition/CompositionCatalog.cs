@@ -22,7 +22,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
         private static string _webExtensionsPath;
         private static string _privatePath;
 
-        private static string[] _editorAssemblies = new string[] 
+        private static string[] _editorAssemblies = new string[]
         {
             "Microsoft.VisualStudio.CoreUtility.dll",
             "Microsoft.VisualStudio.Editor.dll",
@@ -34,25 +34,14 @@ namespace Microsoft.Languages.Editor.Test.Composition
             "Microsoft.VisualStudio.Text.UI.Wpf.dll",
         };
 
-        private static string[] _vsIdeMefAssemblies = new string[] 
+        private static string[] _rtvsMefAssemblies = new string[]
         {
-            @"CommonExtensions\Microsoft\Web\ASPX\Microsoft.VisualStudio.Web.HTML.Implementation.dll",
-            @"CommonExtensions\Microsoft\Web\Exports\Microsoft.VisualStudio.Web.Exports.dll",
-            @"Microsoft.VisualStudio.Web.HTML.dll",
-        };
-
-        private static string[] _webPlatformMefAssemblies = new string[] 
-        {
-            "Microsoft.Web.Editor.dll",
-            "Microsoft.CSS.Editor.dll",
-            "Microsoft.CSS.Editor.Test.dll",
-            "Microsoft.Html.Editor.dll",
-            "Microsoft.Html.Editor.Test.dll",
-            "Microsoft.VisualStudio.Web.Extensions.dll",
-            "Microsoft.Web.Editor.Application.dll",
-            "Microsoft.Web.Editor.Application.Test.dll",
-            "Microsoft.Web.Editor.Test.dll",
-            "Microsoft.Web.Languages.Test.dll",
+            "Microsoft.Languages.Editor.dll",
+            "Microsoft.Languages.Editor.Test.dll",
+            "Microsoft.R.Editor.dll",
+            "Microsoft.R.Editor.Test.dll",
+            "Microsoft.R.Support.dll",
+            "Microsoft.R.Support.Test.dll",
         };
 
         private static IEnumerable<string> _additionalMefAssemblies;
@@ -110,7 +99,6 @@ namespace Microsoft.Languages.Editor.Test.Composition
             foreach (string checkVersion in new string[]
             {
                 "14.0",
-                "12.0"
             })
             {
                 if (string.IsNullOrEmpty(version))
@@ -143,13 +131,9 @@ namespace Microsoft.Languages.Editor.Test.Composition
             _idePath = GetHostExePath();
             _editorPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Editor");
             _privatePath = Path.Combine(_idePath, @"PrivateAssemblies\");
-#if WEB_EDITORS_12
+
             _webEditorPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Web\Editor");
-            _webExtensionsPath = Path.Combine(_idePath, @"Extensions\Microsoft\Web Tools\Languages");
-#else
-            _webEditorPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Web\Editor");
-            _webExtensionsPath = Path.Combine(_idePath, @"Extensions\Microsoft\Web Tools\Editors"); 
-#endif
+            _webExtensionsPath = Path.Combine(_idePath, @"Extensions\Microsoft\Web Tools\Editors");
 
             AggregateCatalog aggregateCatalog = new AggregateCatalog();
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -163,16 +147,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
                 aggregateCatalog.Catalogs.Add(editorCatalog);
             }
 
-            foreach (string asmName in _vsIdeMefAssemblies)
-            {
-                string asmPath = Path.Combine(_idePath, asmName);
-                Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
-
-                AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
-                aggregateCatalog.Catalogs.Add(editorCatalog);
-            }
-
-            foreach (string assemblyName in _webPlatformMefAssemblies)
+            foreach (string assemblyName in _rtvsMefAssemblies)
             {
                 AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
             }

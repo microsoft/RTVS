@@ -10,7 +10,7 @@ namespace Microsoft.R.Support.Settings
     public static class RToolsSettings
     {
         // Exported by the host package
-        private static IRToolsSettings ToolsSettings { get; set; }
+        internal static IRToolsSettings ToolsSettings { get; set; }
 
         /// <summary>
         /// Retrieves path to the installed R engine root folder

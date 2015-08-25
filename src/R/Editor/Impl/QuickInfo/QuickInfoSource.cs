@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.R.Editor.QuickInfo
 {
-    sealed class QuickInfoSource : IQuickInfoSource
+    internal sealed class QuickInfoSource : IQuickInfoSource
     {
         [Import]
         internal ITextStructureNavigatorSelectorService NavigatorService { get; set; }
