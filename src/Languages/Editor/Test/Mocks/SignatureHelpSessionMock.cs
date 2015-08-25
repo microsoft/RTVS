@@ -24,11 +24,6 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public ITextView TextView { get; set; }
 
-        public event EventHandler Dismissed;
-        public event EventHandler PresenterChanged;
-        public event EventHandler Recalculated;
-        public event EventHandler<SelectedSignatureChangedEventArgs> SelectedSignatureChanged;
-
         public void Collapse() { }
 
         public void Dismiss() { }
@@ -55,5 +50,11 @@ namespace Microsoft.Languages.Editor.Test.Mocks
         public void Start()
         {
         }
+
+#pragma warning disable 67
+        public event EventHandler Dismissed;
+        public event EventHandler PresenterChanged;
+        public event EventHandler Recalculated;
+        public event EventHandler<SelectedSignatureChangedEventArgs> SelectedSignatureChanged;
     }
 }

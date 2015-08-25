@@ -26,11 +26,6 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public bool TrackMouse { get; set; }
 
-        public event EventHandler ApplicableToSpanChanged;
-        public event EventHandler Dismissed;
-        public event EventHandler PresenterChanged;
-        public event EventHandler Recalculated;
-
         public void Collapse()
         {
         }
@@ -61,5 +56,11 @@ namespace Microsoft.Languages.Editor.Test.Mocks
         public void Start()
         {
         }
+
+#pragma warning disable 67
+        public event EventHandler ApplicableToSpanChanged;
+        public event EventHandler Dismissed;
+        public event EventHandler PresenterChanged;
+        public event EventHandler Recalculated;
     }
 }
