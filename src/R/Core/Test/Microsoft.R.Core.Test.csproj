@@ -104,6 +104,7 @@
     <None Include="Files\Tokenization\Integers.r" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AST\RDataTypesTest.cs" />
     <Compile Include="AST\AstShiftTest.cs" />
     <Compile Include="Parser\ParseScopeTest.cs" />
     <Compile Include="Parser\ParseFunctionDefinitionTest.cs" />
