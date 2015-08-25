@@ -9,8 +9,8 @@ namespace Microsoft.R.Editor.ContentType
     public sealed class RContentTypeDefinition
     {
         public const string LanguageName = "R Language";
-        public const string ContentType = "R";
-        public const string FileExtension = ".R";
+        public const string ContentType = "R Language";
+        public const string FileExtension = ".r";
         public const string RStudioProjectExtension = "rproj";
 
         /// <summary>
@@ -18,8 +18,7 @@ namespace Microsoft.R.Editor.ContentType
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(RContentTypeDefinition.ContentType)]
-        [BaseDefinition("projection")]
-        [BaseDefinition("text")]
+        [BaseDefinition("code")]
         public ContentTypeDefinition IRContentType { get; set; }
 
         /// <summary>

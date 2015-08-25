@@ -12,8 +12,6 @@ namespace Microsoft.R.Core.Tokens
 
         internal static string[] _builtins = new string[]
         {
-            "as",
-            "is",
             "library",
             "switch",
             "typeof",

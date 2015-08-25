@@ -145,9 +145,6 @@
   <data name="ColorName_R_FunctionDefaultParameter" xml:space="preserve">
     <value>R Function Default Parameter</value>
   </data>
-  <data name="ColorName_R_FunctionDefinition" xml:space="preserve">
-    <value>R Function Definition</value>
-  </data>
   <data name="ColorName_R_FunctionReference" xml:space="preserve">
     <value>R Function Reference</value>
   </data>
@@ -165,12 +162,6 @@
   </data>
   <data name="ColorName_R_String" xml:space="preserve">
     <value>R String</value>
-  </data>
-  <data name="ColorName_R_VariableDefinition" xml:space="preserve">
-    <value>R Variable Definition</value>
-  </data>
-  <data name="ColorName_R_VariableReference" xml:space="preserve">
-    <value>R Variable Reference</value>
   </data>
   <data name="ParseError_CloseBraceExpected" xml:space="preserve">
     <value>) expected</value>
@@ -228,5 +219,8 @@
   </data>
   <data name="ParseError_FunctionBodyExpected" xml:space="preserve">
     <value>Function body expected</value>
+  </data>
+  <data name="ColorName_R_TypeFunction" xml:space="preserve">
+    <value>R Type Functions</value>
   </data>
 </root>

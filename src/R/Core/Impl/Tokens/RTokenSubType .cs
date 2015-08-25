@@ -19,5 +19,10 @@ namespace Microsoft.R.Core.Tokens
         /// recognized by the parser as built-in.
         /// </summary>
         BuiltinConstant,
+
+        /// <summary>
+        /// as.* and is.* functions
+        /// </summary>
+        TypeFunction,
     }
 }

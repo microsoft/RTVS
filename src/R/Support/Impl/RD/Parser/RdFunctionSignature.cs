@@ -2,6 +2,7 @@
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Arguments;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Support.Help.Definitions;
@@ -162,8 +163,10 @@ namespace Microsoft.R.Support.RD.Parser
             FunctionCall functionCall = new FunctionCall();
             functionCall.Parse(rParseContext, rParseContext.AstRoot);
 
-            foreach (var arg in functionCall.Arguments)
+            for (int i = 0; i < functionCall.Arguments.Count; i++)
             {
+                IAstNode arg = functionCall.Arguments[i];
+
                 string argName = null;
                 string argDefaultValue = null;
                 bool isEllipsis = false;
@@ -184,11 +187,19 @@ namespace Microsoft.R.Support.RD.Parser
                     }
                     else
                     {
-                        EllipsisArgument ellipsisArg = arg as EllipsisArgument;
-                        if (ellipsisArg != null)
+                        MissingArgument missingArg = arg as MissingArgument;
+                        if (missingArg != null)
                         {
-                            argName = "...";
-                            isEllipsis = true;
+                            argName = string.Empty;
+                        }
+                        else
+                        {
+                            EllipsisArgument ellipsisArg = arg as EllipsisArgument;
+                            if (ellipsisArg != null)
+                            {
+                                argName = "...";
+                                isEllipsis = true;
+                            }
                         }
                     }
                 }

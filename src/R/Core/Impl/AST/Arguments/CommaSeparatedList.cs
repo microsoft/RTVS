@@ -8,14 +8,15 @@ using Microsoft.R.Core.Tokens;
 namespace Microsoft.R.Core.AST.Arguments
 {
     [DebuggerDisplay("[{Count}]")]
-    public abstract class CommaSeparatedList : AstNode, IReadOnlyList<IAstNode>
+    public abstract class CommaSeparatedList : AstNode
     {
         private List<IAstNode> _arguments = new List<IAstNode>(1);
-        private RTokenType terminatingTokenType;
+        private RTokenType _terminatingTokenType;
+        private bool _missingLastArgument;
 
         public CommaSeparatedList(RTokenType terminatingTokenType)
         {
-            this.terminatingTokenType = terminatingTokenType;
+            _terminatingTokenType = terminatingTokenType;
         }
 
         protected abstract IAstNode CreateItem(IAstNode parent, ParseContext context);
@@ -26,18 +27,8 @@ namespace Microsoft.R.Core.AST.Arguments
 
             while (!context.Tokens.IsEndOfStream())
             {
-                if (context.Tokens.CurrentToken.TokenType == this.terminatingTokenType)
+                if (context.Tokens.CurrentToken.TokenType == _terminatingTokenType)
                 {
-                    if (context.Tokens.PreviousToken.TokenType == RTokenType.Comma)
-                    {
-                        // In x[2,] final missing argument is NOT added
-                        // to the tree since it has no text position.
-
-                        //MissingArgument ma = new MissingArgument();
-                        //ma.Parse(context, this);
-                        //this.arguments.Add(ma);
-                    }
-
                     break;
                 }
 
@@ -68,6 +59,18 @@ namespace Microsoft.R.Core.AST.Arguments
                 }
             }
 
+            // Handle final missing argument as in abc(,,) or abc(,,
+            // Note that the missing argument has same text position as 
+            // the closing brace of end of stream which presents a problem
+            // since all items must have distinct positions in the buffer.
+            // So we don't actually add item to the tree but instead cook up
+            // different count of arguments and handle enumeration properly.
+            if (context.Tokens.PreviousToken.TokenType == RTokenType.Comma &&
+                (context.Tokens.CurrentToken.TokenType == _terminatingTokenType || context.Tokens.IsEndOfStream()))
+            {
+                _missingLastArgument = true;
+            }
+
             if (result && Children.Count > 0)
             {
                 base.Parse(context, parent);
@@ -76,25 +79,22 @@ namespace Microsoft.R.Core.AST.Arguments
             return result;
         }
 
-        #region IReadOnlyList
         public int Count
         {
-            get { return _arguments.Count; }
+            get { return _missingLastArgument ? _arguments.Count + 1 : _arguments.Count; }
         }
 
         public IAstNode this[int i]
         {
-            get { return _arguments[i]; }
-        }
+            get
+            {
+                if (_missingLastArgument && i == _arguments.Count)
+                {
+                    return new MissingArgument();
+                }
 
-        public IEnumerator<IAstNode> GetEnumerator()
-        {
-            return _arguments.GetEnumerator();
+                return _arguments[i];
+            }
         }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _arguments.GetEnumerator();
-        }
-        #endregion
     }
 }

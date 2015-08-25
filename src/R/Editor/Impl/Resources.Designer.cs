@@ -142,15 +142,6 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Function Definition.
-        /// </summary>
-        internal static string ColorName_R_FunctionDefinition {
-            get {
-                return ResourceManager.GetString("ColorName_R_FunctionDefinition", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Function Reference.
         /// </summary>
         internal static string ColorName_R_FunctionReference {
@@ -205,20 +196,11 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Variable Definition.
+        ///   Looks up a localized string similar to R Type Functions.
         /// </summary>
-        internal static string ColorName_R_VariableDefinition {
+        internal static string ColorName_R_TypeFunction {
             get {
-                return ResourceManager.GetString("ColorName_R_VariableDefinition", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Variable Reference.
-        /// </summary>
-        internal static string ColorName_R_VariableReference {
-            get {
-                return ResourceManager.GetString("ColorName_R_VariableReference", resourceCulture);
+                return ResourceManager.GetString("ColorName_R_TypeFunction", resourceCulture);
             }
         }
         

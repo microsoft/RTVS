@@ -43,6 +43,10 @@ namespace Microsoft.R.Editor.Classification
                     {
                         return RClassificationTypes.BuiltinFunction;
                     }
+                    else if (t.SubType == RTokenSubType.TypeFunction)
+                    {
+                        return RClassificationTypes.TypeFunction;
+                    }
                     return "Default";
 
                 default:

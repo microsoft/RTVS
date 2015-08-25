@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Media;
-using Microsoft.R.Core.Classification;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
@@ -96,6 +95,23 @@ namespace Microsoft.R.Editor.Classification
         }
 
         [Export]
+        [Name("R Type Function")]
+        internal ClassificationTypeDefinition TypeFunctionClassificationType { get; set; }
+
+        [Export(typeof(EditorFormatDefinition))]
+        [UserVisible(true)]
+        [ClassificationType(ClassificationTypeNames = "R Type Functions")]
+        [Name("R Type Function")]
+        internal sealed class TypeFunctionClassificationFormat : ClassificationFormatDefinition
+        {
+            public TypeFunctionClassificationFormat()
+            {
+                ForegroundColor = Colors.Teal;
+                this.DisplayName = Resources.ColorName_R_TypeFunction;
+            }
+        }
+
+        [Export]
         [Name("R Function Default Parameter")]
         internal ClassificationTypeDefinition FunctionDefaultParameterClassificationType { get; set; }
 
@@ -113,23 +129,6 @@ namespace Microsoft.R.Editor.Classification
         }
 
         [Export]
-        [Name("R Function Definition")]
-        internal ClassificationTypeDefinition FunctionDefinitionClassificationType { get; set; }
-
-        [Export(typeof(EditorFormatDefinition))]
-        [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "R Function Definition")]
-        [Name("R Function Definition")]
-        internal sealed class FunctionDefinitionClassificationFormat : ClassificationFormatDefinition
-        {
-            public FunctionDefinitionClassificationFormat()
-            {
-                ForegroundColor = Colors.Maroon;
-                this.DisplayName = Resources.ColorName_R_FunctionDefinition;
-            }
-        }
-
-        [Export]
         [Name("R Function Reference")]
         internal ClassificationTypeDefinition FunctionReferenceClassificationType { get; set; }
 
@@ -143,40 +142,6 @@ namespace Microsoft.R.Editor.Classification
             {
                 ForegroundColor = Colors.Maroon;
                 this.DisplayName = Resources.ColorName_R_FunctionReference;
-            }
-        }
-
-        [Export]
-        [Name("R Variable Definition")]
-        internal ClassificationTypeDefinition VariableDefinitionClassificationType { get; set; }
-
-        [Export(typeof(EditorFormatDefinition))]
-        [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "R Variable Definition")]
-        [Name("R Variable Definition")]
-        internal sealed class VariableDefinitionClassificationFormat : ClassificationFormatDefinition
-        {
-            public VariableDefinitionClassificationFormat()
-            {
-                ForegroundColor = Colors.Teal;
-                this.DisplayName = Resources.ColorName_R_VariableDefinition;
-            }
-        }
-
-        [Export]
-        [Name("R Variable Reference")]
-        internal ClassificationTypeDefinition VariableReferenceClassificationType { get; set; }
-
-        [Export(typeof(EditorFormatDefinition))]
-        [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "R Variable Reference")]
-        [Name("R Variable Reference")]
-        internal sealed class VariableReferenceClassificationFormat : ClassificationFormatDefinition
-        {
-            public VariableReferenceClassificationFormat()
-            {
-                ForegroundColor = Colors.Teal;
-                this.DisplayName = Resources.ColorName_R_VariableReference;
             }
         }
     }

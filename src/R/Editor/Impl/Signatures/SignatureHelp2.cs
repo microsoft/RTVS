@@ -42,6 +42,29 @@ namespace Microsoft.R.Editor.Signatures
 
             if (!GetFunction(astRoot, position, out functionCall, out functionVariable))
             {
+                // Handle abc(,,, |
+                if (position == snapshot.Length || char.IsWhiteSpace(snapshot[position]))
+                {
+                    for (int i = position - 1; i >= 0; i--)
+                    {
+                        char ch = snapshot[i];
+
+                        if (!char.IsWhiteSpace(ch))
+                        {
+                            if (!GetFunction(astRoot, i, out functionCall, out functionVariable) || functionCall.CloseBrace != null)
+                            {
+                                return null;
+                            }
+
+                            position = (ch == ',' || ch == '(') ? i + 1 : i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(functionCall == null || functionVariable == null)
+            {
                 return null;
             }
 
@@ -58,7 +81,7 @@ namespace Microsoft.R.Editor.Signatures
                 for (int i = 0; i < argCount; i++)
                 {
                     IAstNode arg = functionCall.Arguments[i];
-                    if (position < arg.End)
+                    if (position < arg.End || (arg is MissingArgument && arg.Start == arg.End && arg.Start == 0))
                     {
                         parameterIndex = i;
                         break;

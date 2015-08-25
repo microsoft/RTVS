@@ -97,5 +97,26 @@ namespace Microsoft.R.Core.Test.Parser
 ";
             ParserTest.VerifyParse(expected, "x(a, b=NA, c=NULL, ...)");
         }
+
+        [TestMethod]
+        public void ParseFunctionsTest5()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x(,,]
+        Expression  [x(,,]
+            FunctionCall  [FunctionCall]
+                Variable  [x]
+                TokenNode  [( [1...2]]
+                ArgumentList  [ArgumentList]
+                    MissingArgument  [{Missing}]
+                        TokenNode  [, [2...3]]
+                    MissingArgument  [{Missing}]
+                        TokenNode  [, [3...4]]
+
+CloseBraceExpected AfterToken [3...4)
+";
+            ParserTest.VerifyParse(expected, "x(,, ");
+        }
     }
 }

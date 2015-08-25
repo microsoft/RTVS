@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Microsoft.Languages.Editor.Utility
 {
@@ -11,6 +12,8 @@ namespace Microsoft.Languages.Editor.Utility
         /// <returns></returns>
         public static string Wrap(this string s, int limit)
         {
+            limit = Math.Max(80, limit);
+
             StringBuilder sb = new StringBuilder();
             int count = 0;
 

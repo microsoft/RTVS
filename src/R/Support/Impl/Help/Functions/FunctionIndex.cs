@@ -132,7 +132,11 @@ namespace Microsoft.R.Support.Help.Functions
                         if (o != null)
                         {
                             OnFunctionInfoReady(o);
-                            infoReadyCallback(parameter);
+
+                            if (infoReadyCallback != null)
+                            {
+                                infoReadyCallback(parameter);
+                            }
                         }
                     });
             });

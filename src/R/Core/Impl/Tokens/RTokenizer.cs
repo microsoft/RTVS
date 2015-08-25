@@ -320,6 +320,10 @@ namespace Microsoft.R.Core.Tokens
                     {
                         subType = RTokenSubType.BuiltinFunction;
                     }
+                    else if (s.StartsWith("as.", StringComparison.Ordinal) || s.StartsWith("is.", StringComparison.Ordinal))
+                    {
+                        subType = RTokenSubType.TypeFunction;
+                    }
 
                     this.AddToken(RTokenType.Identifier, subType, start, s.Length);
                 }
