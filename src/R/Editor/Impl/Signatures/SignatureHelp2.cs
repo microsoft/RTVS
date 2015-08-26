@@ -69,7 +69,6 @@ namespace Microsoft.R.Editor.Signatures
             }
 
             string functionName = functionVariable.Name;
-            int signatureEnd = functionCall.CloseBrace != null ? functionCall.CloseBrace.End : functionCall.Arguments.End;
             int argCount = functionCall.Arguments.Count;
 
             if (argCount == 0)

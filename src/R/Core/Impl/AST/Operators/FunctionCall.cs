@@ -16,6 +16,23 @@ namespace Microsoft.R.Core.AST.Operators
         public ArgumentList Arguments { get; private set; }
 
         public TokenNode CloseBrace { get; private set; }
+
+        public int SignatureEnd
+        {
+            get
+            {
+                if (CloseBrace != null)
+                {
+                    return CloseBrace.End;
+                }
+                else if (Arguments.Count > 0)
+                {
+                    return Arguments.End;
+                }
+
+                return OpenBrace.End;
+            }
+        }
         #endregion
 
         #region IOperator

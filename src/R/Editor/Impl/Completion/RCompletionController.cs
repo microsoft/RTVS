@@ -18,8 +18,6 @@ namespace Microsoft.R.Editor.Completion
 
     public sealed class RCompletionController : CompletionController, ICommandTarget
     {
-        internal static readonly string DisableSpaceCommitKey = "NoCommitOnSpace";
-
         private ITextBuffer _textBuffer;
         private List<ProvisionalText> _provisionalTexts = new List<ProvisionalText>();
         private char _eatNextQuote = '\0';
@@ -189,7 +187,7 @@ namespace Microsoft.R.Editor.Completion
                         return true;
                 }
 
-                if (typedChar == ' ' && CompletionSession.Properties.ContainsProperty(RCompletionController.DisableSpaceCommitKey))
+                if (typedChar == ' ' && !REditorSettings.CommitOnSpace)
                     return false;
 
                 if (char.IsWhiteSpace(typedChar) || typedChar == '\n' || typedChar == '\t')
@@ -209,10 +207,18 @@ namespace Microsoft.R.Editor.Completion
                 switch (typedCharacter)
                 {
                     case '(':
+                        // If we are in a function signature we need 
+                        // to trigger parameter help
+                        //if(IsInFunctionSignature())
+                        //{
+
+                        //}
+                        return true;
+
                     //case '$':
                     //case '@':
-                    case ':':
-                        return true;
+                    //case ':':
+                        //return IsInNamespace();
 
                     default:
                         return Char.IsLetter(typedCharacter);
@@ -221,6 +227,16 @@ namespace Microsoft.R.Editor.Completion
 
             return false;
         }
+
+        //private bool IsInFunctionSignature()
+        //{
+
+        //}
+
+        //private bool IsInNamespace()
+        //{
+
+        //}
 
         protected override bool IsRetriggerChar(ICompletionSession session, char typedCharacter)
         {

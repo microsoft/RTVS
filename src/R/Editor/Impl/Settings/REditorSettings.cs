@@ -9,6 +9,7 @@ namespace Microsoft.R.Editor.Settings
     public static class REditorSettings
     {
         public const string FormatOnPasteKey = "FormatOnPaste";
+        public const string CommitOnSpaceKey = "CommitOnSpace";
 
         private static bool _initialized = false;
 
@@ -119,6 +120,20 @@ namespace Microsoft.R.Editor.Settings
             {
                 if (IsWritable)
                     WritableStorage.SetBoolean(FormatOnPasteKey, value);
+            }
+        }
+
+        public static bool CommitOnSpace
+        {
+            get
+            {
+                return Storage.GetBoolean(CommitOnSpaceKey, false);
+            }
+
+            set
+            {
+                if (IsWritable)
+                    WritableStorage.SetBoolean(CommitOnSpaceKey, value);
             }
         }
 

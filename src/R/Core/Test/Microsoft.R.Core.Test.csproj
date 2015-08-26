@@ -134,7 +134,6 @@
     <Compile Include="Tokens\TokenizeFilesTest.cs" />
     <Compile Include="Utility\ParserTest.cs" />
     <Compile Include="Utility\CoreTestFilesSetup.cs" />
-    <Compile Include="Utility\AstWriter.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

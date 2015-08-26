@@ -178,6 +178,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Commit on space key.
+        /// </summary>
+        internal static string Settings_CommitOnSpace {
+            get {
+                return ResourceManager.GetString("Settings_CommitOnSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commit intellisense selection when space key is pressed.
+        /// </summary>
+        internal static string Settings_CommitOnSpace_Description {
+            get {
+                return ResourceManager.GetString("Settings_CommitOnSpace_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Completion.
         /// </summary>
         internal static string Settings_CompletionCategory {

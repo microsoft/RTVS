@@ -13,10 +13,7 @@ namespace Microsoft.R.Editor.Signatures
 
         public int SignatureEnd
         {
-            get
-            {
-                return FunctionCall.CloseBrace != null ? FunctionCall.CloseBrace.End : FunctionCall.Arguments.End;
-            }
+            get { return FunctionCall.SignatureEnd; }
         }
 
         public ParametersInfo(string functionName, FunctionCall functionCall, int parameterIndex)

@@ -47,6 +47,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         }
 
         [LocCategory("Settings_IntellisenseCategory")]
+        [CustomLocDisplayName("Settings_CommitOnSpace")]
+        [LocDescription("Settings_CommitOnSpace_Description")]
+        [DefaultValue(false)]
+        public bool CommitOnSpace
+        {
+            get { return REditorSettings.CommitOnSpace; }
+            set { REditorSettings.CommitOnSpace = value; }
+        }
+
+        [LocCategory("Settings_IntellisenseCategory")]
         [CustomLocDisplayName("Settings_ShowTclFunctions")]
         [LocDescription("Settings_ShowTclFunctions_Description")]
         [DefaultValue(false)]

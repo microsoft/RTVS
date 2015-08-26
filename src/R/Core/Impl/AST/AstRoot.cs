@@ -7,6 +7,7 @@ using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.Evaluation;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Parser.Definitions;
+using Microsoft.R.Core.Utility;
 
 namespace Microsoft.R.Core.AST
 {
@@ -91,6 +92,12 @@ namespace Microsoft.R.Core.AST
             ShiftStartingFrom(start, offset);
 
             Comments.ReflectTextChange(start, oldLength, newLength);
+        }
+
+        public string WriteTree()
+        {
+            AstWriter writer = new AstWriter();
+            return writer.WriteTree(this);
         }
     }
 }

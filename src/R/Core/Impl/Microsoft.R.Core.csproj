@@ -85,6 +85,7 @@
     <Compile Include="AST\Statements\Definitions\IStatement.cs" />
     <Compile Include="AST\Statements\EmptyStatement.cs" />
     <Compile Include="AST\Statements\KeywordIdentifierStatement.cs" />
+    <Compile Include="AST\Utility\AstWriter.cs" />
     <Compile Include="AST\Values\MissingValue.cs" />
     <Compile Include="AST\Values\NullValue.cs" />
     <Compile Include="AST\Variables\Variable.cs" />

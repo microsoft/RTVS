@@ -14,13 +14,31 @@ namespace Microsoft.R.Core.AST.Functions
         #region IFunctionDefinition
         public TokenNode Keyword { get; private set; }
 
+        public IScope Scope { get; private set; }
+        #endregion
+
+        #region IFunction
         public TokenNode OpenBrace { get; private set; }
 
         public ArgumentList Arguments { get; private set; }
 
         public TokenNode CloseBrace { get; private set; }
+        public int SignatureEnd
+        {
+            get
+            {
+                if (CloseBrace != null)
+                {
+                    return CloseBrace.End;
+                }
+                else if (Arguments.Count > 0)
+                {
+                    return Arguments.End;
+                }
 
-        public IScope Scope { get; private set; }
+                return OpenBrace.End;
+            }
+        }
         #endregion
 
         public override bool Parse(ParseContext context, IAstNode parent)

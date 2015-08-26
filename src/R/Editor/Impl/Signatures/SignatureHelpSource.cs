@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
@@ -9,6 +10,7 @@ using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures
 {
@@ -43,18 +45,25 @@ namespace Microsoft.R.Editor.Signatures
                     ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(position, parametersInfo.SignatureEnd - position, SpanTrackingMode.EdgeInclusive);
 
                     // Get collection of function signatures from documentation (parsed RD file)
-                    IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName);
+                    IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, TriggerSignatureHelp, session.TextView);
                     if (functionInfo != null)
                     {
                         foreach (ISignatureInfo signatureInfo in functionInfo.Signatures)
                         {
-                            ISignature signature = CreateSignature(session, functionInfo, signatureInfo, 
+                            ISignature signature = CreateSignature(session, functionInfo, signatureInfo,
                                                             parametersInfo, applicableToSpan, position);
                             signatures.Add(signature);
                         }
                     }
                 }
             }
+        }
+
+        private void TriggerSignatureHelp(object o)
+        {
+            ISignatureHelpBroker signatureBroker = EditorShell.ExportProvider.GetExport<ISignatureHelpBroker>().Value;
+            signatureBroker.DismissAllSessions(o as ITextView);
+            signatureBroker.TriggerSignatureHelp(o as ITextView);
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session)
@@ -81,7 +90,7 @@ namespace Microsoft.R.Editor.Signatures
         #endregion
 
         private ISignature CreateSignature(ISignatureHelpSession session,
-                                       IFunctionInfo functionInfo, ISignatureInfo signatureInfo, 
+                                       IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
                                        ParametersInfo parametersInfo, ITrackingSpan span, int position)
         {
             SignatureHelp sig = new SignatureHelp(session, functionInfo.Name, string.Empty);
@@ -101,7 +110,9 @@ namespace Microsoft.R.Editor.Signatures
                 if (p != null)
                 {
                     int locusStart = locusPoints[i];
-                    int locusLength = locusPoints[i + 1] - locusStart - 2;
+                    int locusLength = locusPoints[i + 1] - locusStart;
+
+                    Debug.Assert(locusLength >= 0);
                     Span locus = new Span(locusStart, locusLength);
 
                     /// VS may end showing very long tooltip so we need to keep 

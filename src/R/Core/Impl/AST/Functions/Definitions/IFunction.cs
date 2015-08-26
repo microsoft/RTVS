@@ -9,5 +9,7 @@ namespace Microsoft.R.Core.AST.Functions.Definitions
         ArgumentList Arguments { get; }
 
         TokenNode CloseBrace { get; }
+
+        int SignatureEnd { get; }
     }
 }
