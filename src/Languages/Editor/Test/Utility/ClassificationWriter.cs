@@ -1,0 +1,29 @@
+﻿using System.Collections.Generic;
+using System.Text;
+using Microsoft.VisualStudio.Text.Classification;
+
+namespace Microsoft.Languages.Editor.Test.Utility
+{
+    public static class ClassificationWriter
+    {
+        public static string WriteClassifications(IList<ClassificationSpan> classifications)
+        {
+            var sb = new StringBuilder();
+
+            foreach (var c in classifications)
+            {
+                sb.Append('[');
+                sb.Append(c.Span.Start.Position.ToString());
+                sb.Append(':');
+                sb.Append(c.Span.Length);
+                sb.Append(']');
+                sb.Append(' ');
+                sb.Append(c.ClassificationType.Classification);
+                sb.Append('\r');
+                sb.Append('\n');
+            }
+
+            return sb.ToString();
+        }
+    }
+}

@@ -20,6 +20,8 @@ namespace Microsoft.R.Support.RD.Tokens
         {
         }
 
+        public bool ContentTypeChange { get; set; }
+
         public override bool IsComment
         {
             get

@@ -26,12 +26,12 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public string Classification
         {
-            get { return "mock"; }
+            get { return _type; }
         }
 
         public bool IsOfType(string type)
         {
-            if (String.Compare(type, "mock", StringComparison.OrdinalIgnoreCase) == 0)
+            if (String.Compare(type, _type, StringComparison.OrdinalIgnoreCase) == 0)
                 return true;
 
             foreach (var t in _baseTypes)

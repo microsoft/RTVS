@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Functions\FunctionIndexTest.cs" />
     <Compile Include="Packages\PackageIndexTest.cs" />
+    <Compile Include="RD\Classification\RdClassifierTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
     <Compile Include="RD\Tokens\TokenizeFiles.cs" />
     <Compile Include="RD\Tokens\TokenizeSampleFilesTest.cs" />

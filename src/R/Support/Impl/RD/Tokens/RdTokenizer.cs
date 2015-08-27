@@ -1,4 +1,5 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿using System.Diagnostics;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.Tokens;
 
@@ -13,6 +14,7 @@ namespace Microsoft.R.Support.RD.Tokens
     internal class RdTokenizer : BaseTokenizer<RdToken>
     {
         private bool _tokenizeRContent;
+        private BlockContentType _currentContentType = BlockContentType.Latex;
 
         /// <summary>
         /// Creates RD tokenizer.
@@ -28,6 +30,12 @@ namespace Microsoft.R.Support.RD.Tokens
         public RdTokenizer(bool tokenizeRContent = true)
         {
             _tokenizeRContent = tokenizeRContent;
+        }
+
+        public override IReadOnlyTextRangeCollection<RdToken> Tokenize(ITextProvider textProvider, int start, int length, bool excludePartialTokens)
+        {
+            _currentContentType = BlockContentType.Latex;
+            return base.Tokenize(textProvider, start, length, excludePartialTokens);
         }
 
         /// <summary>
@@ -111,6 +119,14 @@ namespace Microsoft.R.Support.RD.Tokens
                     if (!_tokenizeRContent && contentType == BlockContentType.R)
                     {
                         contentType = BlockContentType.Latex;
+                    }
+
+                    if(_currentContentType != contentType)
+                    {
+                        _currentContentType = contentType;
+
+                        Debug.Assert(_tokens[_tokens.Count - 1].TokenType == RdTokenType.Keyword);
+                        _tokens[_tokens.Count - 1].ContentTypeChange = true;
                     }
 
                     // Handle argument sequence like \latex[0]{foo} or \item{}{}

@@ -129,8 +129,8 @@ namespace Microsoft.Languages.Editor.Classification
                 Tokens.RemoveInRange(TextRange.FromBounds(_lastValidPosition, Tokens[Tokens.Count - 1].End), true);
 
             // In line-based tokenizers like SaSS or Jade we need to start at the beginning 
-            // of the line i.e. at 'anchor' position that is canculated depending on particular
-            // language syntax.
+            // of the line i.e. at 'anchor' position that is calculated depending on 
+            // the particular language syntax.
 
             _lastValidPosition = GetAnchorPosition(_lastValidPosition);
 

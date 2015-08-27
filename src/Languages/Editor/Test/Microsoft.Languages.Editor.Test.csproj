@@ -105,6 +105,7 @@
     <Compile Include="Shell\TestEditorShell.cs" />
     <Compile Include="Text\TextChangesTest.cs" />
     <Compile Include="Text\TextProviderTest.cs" />
+    <Compile Include="Utility\ClassificationWriter.cs" />
     <Compile Include="Utility\SequentialEditorTestExecutor.cs" />
     <Compile Include="Utility\TestFilesSetup.cs" />
   </ItemGroup>

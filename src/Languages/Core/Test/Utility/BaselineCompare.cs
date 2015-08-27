@@ -35,6 +35,16 @@ namespace Microsoft.Languages.Core.Test.Utility
             return result.ToString();
         }
 
+        public static void CompareStringLines(string expected, string actual)
+        {
+            string baseLine, newLine;
+            int line = CompareLines(expected, actual, out baseLine, out newLine);
+
+            Assert.AreEqual(0, line,
+                String.Format(
+                 CultureInfo.InvariantCulture, "\r\nDifferent at line {0}\r\n\tExpected:\t{1}\r\n\tActual:\t{2}\r\n", line, baseLine.Trim(), newLine.Trim()));
+        }
+
         public static int CompareLines(string expected, string actual, out string baseLine, out string newLine, bool ignoreCase = false)
         {
             var newReader = new StringReader(actual);

@@ -4,7 +4,7 @@ using Microsoft.R.Support.RD.Tokens;
 using Microsoft.R.Support.Test.RD.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Support.Test.Tokens
+namespace Microsoft.R.Support.Test.RD.Tokens
 {
     [ExcludeFromCodeCoverage]
     [TestClass]
