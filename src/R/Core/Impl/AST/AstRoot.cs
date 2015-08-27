@@ -53,6 +53,23 @@ namespace Microsoft.R.Core.AST
 
         #endregion
 
+        #region ITextRange
+        public override int Start
+        {
+            get { return 0; }
+        }
+
+        public override int End
+        {
+            get { return TextProvider.Length; }
+        }
+
+        public override bool Contains(int position)
+        {
+            return position >= Start && position <= End;
+        }
+        #endregion
+
         public override bool Parse(ParseContext context, IAstNode parent)
         {
             // Remove comments from the token stream

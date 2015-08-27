@@ -21,15 +21,5 @@ namespace Microsoft.R.Core.AST.Definitions
         /// Position is inside a comment or a string
         /// </summary>
         Token,
-
-        /// <summary>
-        /// Position is inside an identifier
-        /// </summary>
-        Identifier,
-
-        /// <summary>
-        /// Position is inside expression
-        /// </summary>
-        Expression
     }
 }

@@ -27,7 +27,7 @@ namespace Microsoft.R.Core.AST.DataTypes
             return x ? RLogical.TRUE : RLogical.FALSE;
         }
 
-        public static explicit operator bool(RLogical x)
+        public static implicit operator bool(RLogical x)
         {
             return x.Value;
         }

@@ -7,23 +7,26 @@ namespace Microsoft.R.Core.AST.DataTypes
     /// </summary>
     public abstract class RObject
     {
-        public bool IsScalar()
+        public bool IsScalar
         {
-            IRVector vector = this as IRVector;
-
-            if (vector != null && vector.Length == 1)
+            get
             {
-                switch(vector.Mode)
-                {
-                    case RMode.Character:
-                    case RMode.Complex:
-                    case RMode.Numeric:
-                    case RMode.Logical:
-                        return true;
-                }
-            }
+                IRVector vector = this as IRVector;
 
-            return false;
+                if (vector != null && vector.Length == 1)
+                {
+                    switch (vector.Mode)
+                    {
+                        case RMode.Character:
+                        case RMode.Complex:
+                        case RMode.Numeric:
+                        case RMode.Logical:
+                            return true;
+                    }
+                }
+
+                return false;
+            }
         }
 
         public bool IsNumber

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.AST.DataTypes;
@@ -11,6 +12,39 @@ namespace Microsoft.R.Core.Test.AST
     [TestClass]
     public class RDataTypesTest : UnitTestBase
     {
+        [TestMethod]
+        public void RObjectTest()
+        {
+            RNumber rn = new RNumber(1);
+            RLogical rl = new RLogical(false);
+            RString rs = new RString("abc");
+
+            RVector<RString> rvs = new RVector<RString>(RMode.Character, 1);
+            RVector<RNumber> rvn = new RVector<RNumber>(RMode.Numeric, 2);
+
+            Assert.IsTrue(rs.IsString);
+            Assert.IsFalse(rn.IsString);
+            Assert.IsFalse(rl.IsString);
+
+            Assert.IsFalse(rs.IsNumber);
+            Assert.IsTrue(rn.IsNumber);
+            Assert.IsFalse(rl.IsNumber);
+
+            Assert.IsTrue(rs.IsScalar);
+            Assert.IsTrue(rn.IsScalar);
+            Assert.IsTrue(rl.IsScalar);
+
+            Assert.IsFalse(rs.IsBoolean);
+            Assert.IsFalse(rn.IsBoolean);
+            Assert.IsTrue(rl.IsBoolean);
+
+            Assert.IsTrue(rvs.IsScalar);
+            Assert.IsFalse(rvn.IsScalar);
+
+            Assert.IsTrue(rvs.IsString);
+            Assert.IsFalse(rvn.IsNumber);
+        }
+
         [TestMethod]
         public void RLogicalTest()
         {
@@ -33,6 +67,18 @@ namespace Microsoft.R.Core.Test.AST
             Assert.IsFalse((bool)rlFalse1);
             Assert.AreEqual(rlFalse1, rlFalse2);
             Assert.AreNotEqual(rlFalse1, rlTrue1);
+
+            Assert.IsTrue(rlFalse1 == rlFalse2);
+            Assert.IsTrue(rlFalse1 != rlTrue1);
+            Assert.IsTrue(rlTrue1 == rlTrue2);
+
+            Assert.IsFalse(rlFalse1 & rlFalse2);
+            Assert.IsFalse(rlFalse1 & rlTrue1);
+            Assert.IsFalse(rlFalse1 | rlFalse2);
+            Assert.IsTrue(rlFalse1 | rlTrue1);
+
+            Assert.IsTrue(!rlFalse1);
+            Assert.IsFalse(!rlTrue1);
         }
 
         [TestMethod]
@@ -41,6 +87,28 @@ namespace Microsoft.R.Core.Test.AST
             RNumber rn1 = new RNumber(1);
             RNumber rn2 = new RNumber(1.0);
             RNumber rn3 = new RNumber(2.1);
+
+            Assert.AreEqual(RMode.Numeric, rn1.Mode);
+            Assert.IsTrue(rn1 == 1);
+            Assert.IsFalse(rn1 != 1);
+            Assert.IsFalse(rn1 == 2);
+            Assert.AreEqual(1, (double)rn1);
+            Assert.AreEqual(rn1, rn2);
+            Assert.AreNotEqual(rn2, rn3);
+            Assert.IsTrue(rn1 != rn3);
+
+            Assert.AreEqual(1, rn1 * rn2);
+            Assert.AreEqual(3.1, rn2 + rn3);
+            Assert.AreEqual(1.1, rn3 - rn1);
+            Assert.AreEqual(1.05, rn3 / 2);
+        }
+
+        [TestMethod]
+        public void RIntegerTest()
+        {
+            RInteger rn1 = new RInteger(1);
+            RInteger rn2 = new RInteger(1);
+            RInteger rn3 = new RInteger(2);
 
             Assert.AreEqual(RMode.Numeric, rn1.Mode);
             Assert.IsTrue(rn1 == 1);
@@ -135,6 +203,11 @@ namespace Microsoft.R.Core.Test.AST
             Assert.AreEqual(rs, en2.Current.Key);
             Assert.AreEqual(rv, en2.Current.Value);
             Assert.IsFalse(en2.MoveNext());
+
+            IEnumerator en3 = ((IEnumerable)rl).GetEnumerator();
+            Assert.IsNotNull(en3);
+            Assert.IsTrue(en3.MoveNext());
+            Assert.IsFalse(en3.MoveNext());
 
             Assert.IsTrue(rl.Remove(rs));
             Assert.AreEqual(0, rl.Count);

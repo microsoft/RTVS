@@ -63,7 +63,7 @@ namespace Microsoft.R.Core.AST.DataTypes
         {
             try
             {
-                return this.Value == ((RNumber)obj).Value;
+                return this.Value == ((RInteger)obj).Value;
             }
             catch
             {
