@@ -23,7 +23,7 @@
     <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,7 +36,7 @@
     <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-		<OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,9 +50,9 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-	<PropertyGroup>
-		<WebEditorFolderPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Editors\</WebEditorFolderPath>
-	</PropertyGroup>
+  <PropertyGroup>
+    <WebEditorFolderPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Editors\</WebEditorFolderPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="$(WebEditorFolderPath)\Microsoft.Html.Core.dll" />
     <Reference Include="$(WebEditorFolderPath)\Microsoft.Web.Core.dll" />
@@ -68,6 +68,10 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\NugetPackages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -79,6 +83,19 @@
     </Compile>
     <Compile Include="Engine\EngineSession.cs" />
     <Compile Include="Engine\EngineResponse.cs" />
+    <Compile Include="Engine\IRContext.cs" />
+    <Compile Include="Engine\IREndpoint.cs" />
+    <Compile Include="Engine\IRSession.cs" />
+    <Compile Include="Engine\IRSessionProvider.cs" />
+    <Compile Include="Engine\IRSessionRequest.cs" />
+    <Compile Include="Engine\RBeforeRequestEventArgs.cs" />
+    <Compile Include="Engine\RContextType.cs" />
+    <Compile Include="Engine\RErrorEventArgs.cs" />
+    <Compile Include="Engine\RException.cs" />
+    <Compile Include="Engine\RResponseEventArgs.cs" />
+    <Compile Include="Engine\RSession.cs" />
+    <Compile Include="Engine\RSessionRequest.cs" />
+    <Compile Include="Engine\RSessionRequestSource.cs" />
     <Compile Include="Help\Functions\FunctionIndexBuild.cs" />
     <Compile Include="Help\Functions\RdFunctionHelp.cs" />
     <Compile Include="Help\Packages\BasePackagesCollection.cs" />
