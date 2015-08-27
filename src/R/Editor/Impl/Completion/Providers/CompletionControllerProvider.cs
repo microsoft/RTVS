@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Html.Editor.Completion.Providers
+namespace Microsoft.R.Editor.Completion.Providers
 {
     /// <summary>
     /// Completion controller provider for Visual Studio core editor

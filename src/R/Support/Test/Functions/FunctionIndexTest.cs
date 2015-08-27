@@ -14,45 +14,48 @@ namespace Microsoft.R.Support.Test.Functions
 {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class FunctionIndexTest: UnitTestBase
+    public class FunctionIndexTest : UnitTestBase
     {
         [TestMethod]
         public void FunctionInfoTest1()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
-
-            ManualResetEventSlim evt = new ManualResetEventSlim();
-            RToolsSettings.ToolsSettings = new TestRToolsSettings();
-
-            FunctionIndex.Initialize();
-            FunctionIndex.BuildIndexAsync().Wait();
-
-            FunctionIndex.GetFunctionInfo("abs", (object o) =>
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) =>
             {
-                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo("abs");
-                Assert.IsNotNull(functionInfo);
+                object result = FunctionIndex.GetFunctionInfo("abs", (object o) =>
+                {
+                    FunctionInfoTest1_TestBody01(evt);
+                });
 
-                Assert.AreEqual("abs", functionInfo.Name);
-                Assert.IsTrue(functionInfo.Description.Length > 0);
-
-                Assert.AreEqual(2, functionInfo.Aliases.Count);
-                Assert.AreEqual("abs", functionInfo.Aliases[0]);
-                Assert.AreEqual("sqrt", functionInfo.Aliases[1]);
-
-                Assert.AreEqual(1, functionInfo.Signatures.Count);
-                Assert.AreEqual(1, functionInfo.Signatures[0].Arguments.Count);
-
-                List<int> locusPoints = new List<int>();
-                Assert.AreEqual("abs(x)", functionInfo.Signatures[0].GetSignatureString("abs", locusPoints));
-
-                Assert.AreEqual(2, locusPoints.Count);
-                Assert.AreEqual(4, locusPoints[0]);
-                Assert.AreEqual(5, locusPoints[1]);
-
-                evt.Set();
+                if (result != null && !evt.IsSet)
+                {
+                    FunctionInfoTest1_TestBody01(evt);
+                }
             });
+        }
 
-            evt.Wait();
+        private void FunctionInfoTest1_TestBody01(ManualResetEventSlim completed)
+        {
+            IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo("abs");
+            Assert.IsNotNull(functionInfo);
+
+            Assert.AreEqual("abs", functionInfo.Name);
+            Assert.IsTrue(functionInfo.Description.Length > 0);
+
+            Assert.AreEqual(2, functionInfo.Aliases.Count);
+            Assert.AreEqual("abs", functionInfo.Aliases[0]);
+            Assert.AreEqual("sqrt", functionInfo.Aliases[1]);
+
+            Assert.AreEqual(1, functionInfo.Signatures.Count);
+            Assert.AreEqual(1, functionInfo.Signatures[0].Arguments.Count);
+
+            List<int> locusPoints = new List<int>();
+            Assert.AreEqual("abs(x)", functionInfo.Signatures[0].GetSignatureString("abs", locusPoints));
+
+            Assert.AreEqual(2, locusPoints.Count);
+            Assert.AreEqual(4, locusPoints[0]);
+            Assert.AreEqual(5, locusPoints[1]);
+
+            completed.Set();
         }
     }
 }

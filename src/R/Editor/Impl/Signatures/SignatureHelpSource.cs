@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Help.Definitions;
@@ -35,28 +37,37 @@ namespace Microsoft.R.Editor.Signatures
 
             if (document != null)
             {
-                ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
-                int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
+                AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp);
+            }
+        }
 
-                // Retrieve parameter positions from the current text buffer snapshot
-                ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(document.EditorTree.AstRoot, snapshot, position);
-                if (parametersInfo != null)
+        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object> triggerSession)
+        {
+            ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
+            int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
+
+            // Retrieve parameter positions from the current text buffer snapshot
+            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
+            if (parametersInfo != null)
+            {
+                ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(position, parametersInfo.SignatureEnd - position, SpanTrackingMode.EdgeInclusive);
+
+                // Get collection of function signatures from documentation (parsed RD file)
+                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
+                if (functionInfo != null)
                 {
-                    ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(position, parametersInfo.SignatureEnd - position, SpanTrackingMode.EdgeInclusive);
-
-                    // Get collection of function signatures from documentation (parsed RD file)
-                    IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, TriggerSignatureHelp, session.TextView);
-                    if (functionInfo != null)
+                    foreach (ISignatureInfo signatureInfo in functionInfo.Signatures)
                     {
-                        foreach (ISignatureInfo signatureInfo in functionInfo.Signatures)
-                        {
-                            ISignature signature = CreateSignature(session, functionInfo, signatureInfo,
-                                                            parametersInfo, applicableToSpan, position);
-                            signatures.Add(signature);
-                        }
+                        ISignature signature = CreateSignature(session, functionInfo, signatureInfo,
+                                                               parametersInfo, applicableToSpan, ast, position);
+                        signatures.Add(signature);
                     }
+
+                    return true;
                 }
             }
+
+            return false;
         }
 
         private void TriggerSignatureHelp(object o)
@@ -91,7 +102,8 @@ namespace Microsoft.R.Editor.Signatures
 
         private ISignature CreateSignature(ISignatureHelpSession session,
                                        IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
-                                       ParametersInfo parametersInfo, ITrackingSpan span, int position)
+                                       ParametersInfo parametersInfo, ITrackingSpan span, 
+                                       AstRoot ast, int position)
         {
             SignatureHelp sig = new SignatureHelp(session, functionInfo.Name, string.Empty);
             List<IParameter> paramList = new List<IParameter>();
@@ -123,7 +135,7 @@ namespace Microsoft.R.Editor.Signatures
             }
 
             sig.Parameters = new ReadOnlyCollection<IParameter>(paramList);
-            sig.ComputeCurrentParameter(position);
+            sig.ComputeCurrentParameter(ast, position);
 
             return sig;
         }

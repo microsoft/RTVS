@@ -103,6 +103,7 @@
     <Compile Include="RD\Tokens\TokenizeTest.cs" />
     <Compile Include="RD\Utility\RdTestFilesSetup.cs" />
     <Compile Include="RD\Utility\TokensCompare.cs" />
+    <Compile Include="Utility\FunctionIndexTestExecutor.cs" />
     <Compile Include="Utility\TestRToolsSettings.cs" />
   </ItemGroup>
   <ItemGroup>

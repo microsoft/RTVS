@@ -27,8 +27,6 @@ namespace Microsoft.Languages.Editor.Completion
         protected ICompletionBroker CompletionBroker { get; set; }
         protected ISignatureHelpSession SignatureSession { get; set; }
 
-        private IntellisenseSuppressor _intellisenseSuppressor;
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         protected CompletionController(
             ITextView textView,
@@ -121,32 +119,10 @@ namespace Microsoft.Languages.Editor.Completion
 
         protected virtual void OnPreTypeCompletionChar(char typedCharacter)
         {
-            if (HasActiveCompletionSession && typedCharacter == 27) // ESC
-            {
-                if (_intellisenseSuppressor == null || !_intellisenseSuppressor.IsActive)
-                    _intellisenseSuppressor = IntellisenseSuppressor.Create(TextView);
-            }
         }
 
         protected virtual void OnPostTypeCompletionChar(char typedCharacter)
         {
-        }
-
-        protected bool IntellisenseSuppressed
-        {
-            get
-            {
-                bool result = false;
-
-                if (_intellisenseSuppressor != null)
-                {
-                    result = _intellisenseSuppressor.IsActive;
-                    if (!result)
-                        _intellisenseSuppressor = null;
-                }
-
-                return result;
-            }
         }
 
         /// <summary>
@@ -274,23 +250,20 @@ namespace Microsoft.Languages.Editor.Completion
                 return;
             }
 
-            if (!IntellisenseSuppressed)
+            if (!HasActiveCompletionSession && IsTriggerChar(typedCharacter))
             {
-                if (!HasActiveCompletionSession && IsTriggerChar(typedCharacter))
-                {
-                    triggerCompletion = true;
-                }
-                else if (HasActiveCompletionSession && IsRetriggerChar(CompletionSession, typedCharacter))
-                {
-                    DismissAllSessions();
+                triggerCompletion = true;
+            }
+            else if (HasActiveCompletionSession && IsRetriggerChar(CompletionSession, typedCharacter))
+            {
+                DismissAllSessions();
 
-                    triggerCompletion = true;
-                }
+                triggerCompletion = true;
+            }
 
-                if (triggerCompletion)
-                {
-                    ShowSignatureAndCompletion(autoShownSignature: true, autoShownCompletion: true);
-                }
+            if (triggerCompletion)
+            {
+                ShowSignatureAndCompletion(autoShownSignature: true, autoShownCompletion: true);
             }
 
             if (IsClosingChar(typedCharacter))

@@ -50,12 +50,6 @@ namespace Microsoft.Languages.Core.Text
         public int Count { get { return this.collection.Count; } }
 
         /// <summary>
-        /// Sorted list of comment tokens in the document.
-        /// A new readonly collection is generated on every call to this method
-        /// </summary>
-        public ReadOnlyCollection<T> Items { get { return new ReadOnlyCollection<T>(this.collection.Items); } }
-
-        /// <summary>
         /// Retrieves Nth item in the collection
         /// </summary>
         public T this[int index] { get { return this.collection[index]; } }

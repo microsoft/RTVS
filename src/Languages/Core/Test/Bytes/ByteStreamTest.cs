@@ -257,5 +257,23 @@ namespace Microsoft.Languages.Core.Test.Bytes
             target = new ByteStream(text);
             Assert.AreEqual(0, target.Position);
         }
+
+        [TestMethod]
+        public void ByteStream_StringEqualsTest()
+        {
+            ByteStream bs = new ByteStream(new byte[0]);
+            Assert.IsTrue(bs.CurrentStringEqualsTo("", 0));
+            Assert.IsTrue(bs.CurrentStringEqualsTo("a", 0));
+            Assert.IsFalse(bs.CurrentStringEqualsTo("abc", 3));
+
+            byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
+            bs = new ByteStream(text);
+
+            Assert.IsTrue(bs.CurrentStringEqualsTo("abcd", 4));
+            Assert.IsTrue(bs.CurrentStringEqualsTo("abcdef", 5));
+            Assert.IsFalse(bs.CurrentStringEqualsTo("abcdef", 6));
+            Assert.IsTrue(bs.CurrentStringEqualsTo("", 0));
+            Assert.IsFalse(bs.CurrentStringEqualsTo("", 1));
+        }
     }
 }

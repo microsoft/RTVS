@@ -7,6 +7,7 @@ namespace Microsoft.Languages.Core.Test.Utility
     /// This is the base class for all unit tests.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [TestClass]
     public class UnitTestBase
     {
         public TestContext TestContext { get; set; }

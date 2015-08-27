@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -40,11 +41,9 @@ namespace Microsoft.R.Editor.Signatures
             SubjectBuffer.Changed += OnSubjectBufferChanged;
         }
 
-        internal static int ComputeCurrentParameter(ITextSnapshot snapshot, int position)
+        internal static int ComputeCurrentParameter(ITextSnapshot snapshot, AstRoot ast, int position)
         {
-            EditorDocument document = EditorDocument.FromTextBuffer(snapshot.TextBuffer);
-            ParametersInfo parameterInfo = SignatureHelp.GetParametersInfoFromBuffer(document.EditorTree.AstRoot, snapshot, position);
-
+            ParametersInfo parameterInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
             return parameterInfo != null ? parameterInfo.ParameterIndex : 0;
         }
 
@@ -124,7 +123,8 @@ namespace Microsoft.R.Editor.Signatures
                 }
                 else
                 {
-                    ComputeCurrentParameter(position);
+                    EditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
+                    ComputeCurrentParameter(document.EditorTree.AstRoot, position);
                 }
             }
         }
@@ -134,7 +134,8 @@ namespace Microsoft.R.Editor.Signatures
             if (Session != null)
             {
                 var prevParameter = _currentParameter;
-                ComputeCurrentParameter(e.NewPosition.BufferPosition);
+                EditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
+                ComputeCurrentParameter(document.EditorTree.AstRoot, e.NewPosition.BufferPosition);
 
                 if (_currentParameter != prevParameter)
                 {
@@ -155,7 +156,7 @@ namespace Microsoft.R.Editor.Signatures
             SubjectBuffer = null;
         }
 
-        public virtual void ComputeCurrentParameter(int position)
+        public virtual void ComputeCurrentParameter(AstRoot ast, int position)
         {
             if (Parameters == null || Parameters.Count == 0)
             {
@@ -163,7 +164,7 @@ namespace Microsoft.R.Editor.Signatures
                 return;
             }
 
-            var parameterIndex = ComputeCurrentParameter(SubjectBuffer.CurrentSnapshot, position);
+            var parameterIndex = ComputeCurrentParameter(SubjectBuffer.CurrentSnapshot, ast, position);
 
             if (parameterIndex < Parameters.Count)
             {

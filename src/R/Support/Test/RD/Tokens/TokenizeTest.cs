@@ -148,7 +148,6 @@ namespace Microsoft.R.Support.Test.Tokens
             TokensCompare.Compare(expectedTokens, actualTokens);
         }
 
-        //   
         [TestMethod]
         public void TokenizeRdArguments05()
         {
@@ -161,6 +160,26 @@ namespace Microsoft.R.Support.Test.Tokens
                 new TokenData(RdTokenType.CloseCurlyBrace, 11, 1),
                 new TokenData(RdTokenType.OpenCurlyBrace, 12, 1),
                 new TokenData(RdTokenType.CloseCurlyBrace, 16, 1),
+            };
+
+            TokensCompare.Compare(expectedTokens, actualTokens);
+        }
+
+        [TestMethod]
+        public void TokenizeRdVerbationContent()
+        {
+            var actualTokens = this.Tokenize(
+@"\alias{\% \dots %foo}
+#ifdef
+%comment", new RdTokenizer());
+            var expectedTokens = new TokenData[]
+            {
+                new TokenData(RdTokenType.Keyword, 0, 6),
+                new TokenData(RdTokenType.OpenCurlyBrace, 6, 1),
+                new TokenData(RdTokenType.Keyword, 10, 5),
+                new TokenData(RdTokenType.CloseCurlyBrace, 20, 1),
+                new TokenData(RdTokenType.Pragma, 23, 6),
+                new TokenData(RdTokenType.Comment, 31, 8),
             };
 
             TokensCompare.Compare(expectedTokens, actualTokens);

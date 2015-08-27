@@ -33,33 +33,6 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             ITextSnapshot snapshot = trackingSpan.TextBuffer.CurrentSnapshot;
             return trackingSpan.GetText(snapshot);
         }
-
-        public static bool AreTrackingSpansEqual(ITrackingSpan lhs, ITrackingSpan rhs, ITextSnapshot snapshot)
-        {
-            if (lhs == null ^ rhs == null)
-            {
-                return false;
-            }
-            else if (lhs == null)
-            {
-                return true;
-            }
-
-            if (lhs.TextBuffer != rhs.TextBuffer)
-            {
-                return false;
-            }
-
-            if (snapshot == null)
-            {
-                snapshot = lhs.TextBuffer.CurrentSnapshot;
-            }
-
-            SnapshotSpan lhsSpan = lhs.GetSpan(snapshot);
-            SnapshotSpan rhsSpan = rhs.GetSpan(snapshot);
-
-            return lhsSpan.Equals(rhsSpan);
-        }
     }
 }
 

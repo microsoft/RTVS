@@ -6,7 +6,7 @@ using Microsoft.R.Support.RD.Parser;
 
 namespace Microsoft.R.Support.Help.Functions
 {
-    internal sealed class RdFunctionHelp
+    internal sealed class RdFunctionHelp: IDisposable
     {
         private EngineSession _session;
         private string _currentFunctionName;

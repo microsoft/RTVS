@@ -75,5 +75,15 @@ namespace Microsoft.R.Support.Test.Packages
                 i++;
             }
         }
+
+        [TestMethod]
+        public void PackageDescriptionTest()
+        {
+            RToolsSettings.ToolsSettings = new TestRToolsSettings();
+            IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
+
+            IPackageInfo pi = PackageIndex.GetPackageByName("base");
+            Assert.AreEqual("Base R functions.", pi.Description);
+        }
     }
 }

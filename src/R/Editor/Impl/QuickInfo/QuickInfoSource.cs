@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help.Definitions;
@@ -45,23 +47,33 @@ namespace Microsoft.R.Editor.QuickInfo
             if (!triggerPoint.HasValue)
                 return;
 
-            ITextSnapshot snapshot = triggerPoint.Value.Snapshot;
-            EditorDocument document = EditorDocument.FromTextBuffer(_subjectBuffer);
             int position = triggerPoint.Value;
-            int signatureEnd = position;
 
             if (_lastPosition == position)
                 return;
 
             _lastPosition = position;
+            ITextSnapshot snapshot = triggerPoint.Value.Snapshot;
+            EditorDocument document = EditorDocument.FromTextBuffer(_subjectBuffer);
 
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(document.EditorTree.AstRoot, position, out signatureEnd);
+            AugmentQuickInfoSession(document.EditorTree.AstRoot, position, 
+                                    session, quickInfoContent, out applicableToSpan,
+                                    (object o) => RetriggerQuickInfoSession(o as IQuickInfoSession));
+        }
+
+        internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session, 
+                                              IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
+                                              Action<object> retriggerAction)
+        {
+            int signatureEnd = position;
+            applicableToSpan = null;
+
+            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, position, out signatureEnd);
             if (!string.IsNullOrEmpty(functionName))
             {
-                applicableToSpan = snapshot.CreateTrackingSpan(position, signatureEnd - position, SpanTrackingMode.EdgeInclusive);
+                applicableToSpan = session.TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(position, signatureEnd - position, SpanTrackingMode.EdgeInclusive);
 
-                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName,
-                    (object o) => RetriggerQuickInfoSession(o as IQuickInfoSession), session);
+                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName, retriggerAction, session);
 
                 if (functionInfo != null && functionInfo.Signatures != null)
                 {
@@ -83,10 +95,12 @@ namespace Microsoft.R.Editor.QuickInfo
                         }
 
                         quickInfoContent.Add(text);
-                        break;
+                        return true;
                     }
                 }
             }
+
+            return false;
         }
         #endregion
 

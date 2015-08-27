@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FUNCTION_INDEX_CACHE
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -229,3 +230,4 @@ namespace Microsoft.R.Support.Help.Functions
         }
     }
 }
+#endif

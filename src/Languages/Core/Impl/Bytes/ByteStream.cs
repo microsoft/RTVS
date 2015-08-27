@@ -10,7 +10,6 @@ namespace Microsoft.Languages.Core.Bytes
 	/// </summary>
     public class ByteStream
     {
-        private bool? _hasExtendedCharacters;
         private byte[] _text = null;
         private int _textLength;
         private int _index = 0;
@@ -144,6 +143,12 @@ namespace Microsoft.Languages.Core.Bytes
 
         public bool CurrentStringEqualsTo(string s, int length)
         {
+            if (length > (_text.Length - _index))
+                return false;
+
+            if (s.Length < length && length < (_text.Length - _index))
+                return false;
+
             for (int i = 0; i < s.Length && i + _index < _text.Length; i++)
             {
                 if (s[i] != _text[i + _index])
@@ -153,17 +158,6 @@ namespace Microsoft.Languages.Core.Bytes
             }
 
             return true;
-        }
-
-        public bool HasExtendedCharacters
-        {
-            get
-            {
-                if (_hasExtendedCharacters == null)
-                    _hasExtendedCharacters = _text.Any(b => b > 0x7F);
-
-                return _hasExtendedCharacters.GetValueOrDefault();
-            }
         }
     }
 }

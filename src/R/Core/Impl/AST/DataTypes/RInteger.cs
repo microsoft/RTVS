@@ -18,5 +18,62 @@ namespace Microsoft.R.Core.AST.DataTypes
             base(value)
         {
         }
+
+        public static implicit operator RInteger(int x)
+        {
+            return new RInteger(x);
+        }
+
+        public static explicit operator int (RInteger ri)
+        {
+            return ri.Value;
+        }
+
+        public static bool operator ==(RInteger x, RInteger y)
+        {
+            return x.Value == y.Value;
+        }
+
+        public static bool operator !=(RInteger x, RInteger y)
+        {
+            return x.Value != y.Value;
+        }
+
+        public static RInteger operator +(RInteger x, RInteger y)
+        {
+            return new RInteger(x.Value + y.Value);
+        }
+
+        public static RInteger operator -(RInteger x, RInteger y)
+        {
+            return new RInteger(x.Value - y.Value);
+        }
+
+        public static RInteger operator *(RInteger x, RInteger y)
+        {
+            return new RInteger(x.Value * y.Value);
+        }
+
+        public static RInteger operator /(RInteger x, RInteger y)
+        {
+            return new RInteger(x.Value / y.Value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            try
+            {
+                return this.Value == ((RNumber)obj).Value;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Value.GetHashCode();
+        }
     }
 }

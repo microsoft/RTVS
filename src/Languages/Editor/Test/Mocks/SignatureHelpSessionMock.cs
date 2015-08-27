@@ -11,6 +11,11 @@ namespace Microsoft.Languages.Editor.Test.Mocks
     [ExcludeFromCodeCoverage]
     public sealed class SignatureHelpSessionMock : ISignatureHelpSession
     {
+        public SignatureHelpSessionMock(ITextBuffer textBuffer, int caretPosition)
+        {
+            this.TextView = new TextViewMock(textBuffer, caretPosition);
+        }
+
         public SnapshotPoint SnapshotPoint { get; set; }
         public ITrackingPoint TrackingPoint { get; set; }
 

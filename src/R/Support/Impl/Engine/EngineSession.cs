@@ -109,7 +109,15 @@ namespace Microsoft.R.Support.Engine
             {
                 _rProcess.Exited -= OnProcessExited;
 
+                _rProcess.CancelOutputRead();
+                _rProcess.CancelErrorRead();
+
+                _rProcess.CloseMainWindow();
                 _rProcess.Kill();
+                _rProcess.WaitForExit();
+
+                _rProcess.Dispose();
+
                 _rProcess = null;
             }
         }

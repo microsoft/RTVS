@@ -42,7 +42,7 @@ namespace Microsoft.R.Support.Help.Packages
             return libraryPath;
         }
 
-        private static string GetReducedVersion()
+        internal static string GetReducedVersion()
         {
             string rVersionPath = RToolsSettings.GetRVersionPath();
             string version = Path.GetFileName(rVersionPath);

@@ -68,6 +68,11 @@ namespace Microsoft.R.Support.Help.Packages
 
         public void Dispose()
         {
+            if (_directoriesEnumerator != null)
+            {
+                _directoriesEnumerator.Dispose();
+                _directoriesEnumerator = null;
+            }
         }
     }
 }

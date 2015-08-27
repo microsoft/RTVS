@@ -1093,6 +1093,7 @@ namespace Microsoft.Languages.Core.Text
             return TextRange.FromBounds(lowerBound, upperBound);
         }
 
+#if UNUSED
         /// <summary>
         /// Merges another collection into existing one. Only adds elements
         /// that are not present in this collection. Both collections must
@@ -1140,29 +1141,30 @@ namespace Microsoft.Languages.Core.Text
 
             this.Sort();
         }
+#endif
 
         class RangeItemComparer : IComparer<T>
         {
-            #region IComparer<T> Members
+#region IComparer<T> Members
             public int Compare(T x, T y)
             {
                 return x.Start - y.Start;
             }
-            #endregion
+#endregion
         }
 
-        #region IEnumerable<T> Members
+#region IEnumerable<T> Members
         public IEnumerator<T> GetEnumerator()
         {
             return this.items.GetEnumerator();
         }
-        #endregion
+#endregion
 
-        #region IEnumerable Members
+#region IEnumerable Members
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.items.GetEnumerator();
         }
-        #endregion
+#endregion
     }
 }

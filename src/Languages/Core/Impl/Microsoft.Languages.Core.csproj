@@ -86,15 +86,12 @@
     <Compile Include="Tokens\IToken.cs" />
     <Compile Include="Tokens\ITokenizer.cs" />
     <Compile Include="Tokens\NumberTokenizer.cs" />
-    <Compile Include="Tokens\RegExScanner.cs" />
     <Compile Include="Tokens\Token.cs" />
     <Compile Include="Tokens\BaseTokenizer.cs" />
     <Compile Include="Tokens\Tokenizer.cs" />
     <Compile Include="Tokens\TokenStream.cs" />
     <Compile Include="Utility\IPropertyOwner.cs" />
-    <Compile Include="Utility\ListHelpers.cs" />
     <Compile Include="Utility\PropertyDictionary.cs" />
-    <Compile Include="Utility\StringUtility.cs" />
     <Compile Include="Utility\TimeUtility.cs" />
   </ItemGroup>
   <ItemGroup>

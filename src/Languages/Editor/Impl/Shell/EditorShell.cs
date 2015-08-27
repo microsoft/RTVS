@@ -115,23 +115,6 @@ namespace Microsoft.Languages.Editor.Shell
             get { return Shell.ExportProvider; }
         }
 
-        private static Dictionary<Type, object> _cachedExports = new Dictionary<Type, object>();
-        public static T GetCachedExport<T>() where T : class
-        {
-            object cachedExport;
-            T typedCachedExport;
-
-            if (_cachedExports.TryGetValue(typeof(T), out cachedExport))
-                typedCachedExport = cachedExport as T;
-            else
-            {
-                typedCachedExport = Shell.ExportProvider.GetExport<T>().Value;
-                _cachedExports[typeof(T)] = typedCachedExport;
-            }
-
-            return typedCachedExport;
-        }
-
         public static Thread UIThread { get; set; }
 
         public static bool IsUIThread
@@ -261,7 +244,6 @@ namespace Microsoft.Languages.Editor.Shell
                     throw new ArgumentNullException("shell");
                 }
 
-                Debug.Assert(_shell == null, "Don't set the editor shell more than once");
                 if (_shell == null)
                 {
                     _shell = shell;
@@ -319,6 +301,11 @@ namespace Microsoft.Languages.Editor.Shell
 
         static void host_OnIdle(object sender, EventArgs eventArgs)
         {
+            DoIdle(sender, eventArgs);
+        }
+
+        internal static void DoIdle(object sender, EventArgs eventArgs)
+        { 
             if (_onIdleHandlers.Count > 0)
             {
                 Stopwatch sw = Stopwatch.StartNew();

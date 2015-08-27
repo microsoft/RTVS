@@ -10,6 +10,12 @@ namespace Microsoft.Languages.Editor.Test.Mocks
     [ExcludeFromCodeCoverage]
     public sealed class QuickInfoSessionMock : IQuickInfoSession
     {
+
+        public QuickInfoSessionMock(ITextBuffer textBuffer, int position)
+        {
+            this.TextView = new TextViewMock(textBuffer, position);
+        }
+
         public SnapshotPoint TriggerPoint { get; set; }
 
         public ITrackingPoint TrackingPoint { get; set; }

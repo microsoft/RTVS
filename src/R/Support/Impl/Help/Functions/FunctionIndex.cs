@@ -55,6 +55,15 @@ namespace Microsoft.R.Support.Help.Functions
             }
         }
 
+        public static void Terminate()
+        {
+            if (_rdFunctionHelp != null)
+            {
+                _rdFunctionHelp.Dispose();
+                _rdFunctionHelp = null;
+            }
+        }
+
         /// <summary>
         /// Given function name provides name of the containing package
         /// </summary>

@@ -61,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.Workspace
         }
         #endregion
 
-        #region IWebWorkspaceItem Members
+        #region IWorkspaceItem Members
 
         /// <summary>
         /// Item moniker. For a disk-based document the same as PhysicalPath.

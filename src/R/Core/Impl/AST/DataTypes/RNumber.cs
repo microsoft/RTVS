@@ -68,7 +68,6 @@ namespace Microsoft.R.Core.AST.DataTypes
                 return false;
             }
         }
-
         public override int GetHashCode()
         {
             return this.Value.GetHashCode();

@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Test.Signatures
     public class ParameterTest : UnitTestBase
     {
         [TestMethod]
-        public void ParameterTest1()
+        public void ParameterTest01()
         {
             string content = @"x <- foo(a,b,c,d)";
             AstRoot ast = RParser.Parse(content);
@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Test.Signatures
         }
 
         [TestMethod]
-        public void ParameterTest2()
+        public void ParameterTest02()
         {
             string content = @"x <- foo(,,,)";
             AstRoot ast = RParser.Parse(content);
@@ -68,7 +68,7 @@ namespace Microsoft.R.Editor.Test.Signatures
         }
 
         [TestMethod]
-        public void ParameterTest3()
+        public void ParameterTest03()
         {
             string content = @"x <- foo(,, ";
             ParametersInfo parametersInfo;
@@ -80,6 +80,22 @@ namespace Microsoft.R.Editor.Test.Signatures
             Assert.AreEqual(2, parametersInfo.ParameterIndex);
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 12);
             Assert.AreEqual(2, parametersInfo.ParameterIndex);
+        }
+
+        [TestMethod]
+        public void ParameterTest04()
+        {
+            string content = @"x <- abs(cos(";
+            AstRoot ast = RParser.Parse(content);
+
+            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length);
+
+            Assert.IsNotNull(parametersInfo);
+            Assert.IsNotNull(parametersInfo.FunctionCall);
+            Assert.AreEqual("cos", parametersInfo.FunctionName);
+            Assert.AreEqual(0, parametersInfo.ParameterIndex);
+            Assert.AreEqual(content.Length, parametersInfo.SignatureEnd);
         }
     }
 }

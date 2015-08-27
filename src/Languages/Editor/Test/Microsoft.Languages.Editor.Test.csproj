@@ -92,17 +92,20 @@
     <Compile Include="Mocks\QuickInfoSessionMock.cs" />
     <Compile Include="Mocks\SignatureHelpSessionMock.cs" />
     <Compile Include="Mocks\TextBufferMock.cs" />
+    <Compile Include="Mocks\TextCaretMock.cs" />
     <Compile Include="Mocks\TextChangeCollectionMock.cs" />
     <Compile Include="Mocks\TextChangeMock.cs" />
     <Compile Include="Mocks\TextEditMock.cs" />
     <Compile Include="Mocks\TextLineMock.cs" />
     <Compile Include="Mocks\TextSnapshotMock.cs" />
     <Compile Include="Mocks\TextVersionMock.cs" />
+    <Compile Include="Mocks\TextViewMock.cs" />
     <Compile Include="Mocks\TrackingPointMock.cs" />
     <Compile Include="Mocks\TrackingSpanMock.cs" />
     <Compile Include="Shell\TestEditorShell.cs" />
     <Compile Include="Text\TextChangesTest.cs" />
     <Compile Include="Text\TextProviderTest.cs" />
+    <Compile Include="Utility\SequentialEditorTestExecutor.cs" />
     <Compile Include="Utility\TestFilesSetup.cs" />
   </ItemGroup>
   <ItemGroup>

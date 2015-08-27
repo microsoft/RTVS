@@ -5,6 +5,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -44,6 +45,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
             "Microsoft.R.Editor.Test.dll",
             "Microsoft.R.Support.dll",
             "Microsoft.R.Support.Test.dll",
+            "Microsoft.Languages.Editor.Application.dll",
         };
 
         private static IEnumerable<string> _additionalMefAssemblies;
@@ -216,40 +218,47 @@ namespace Microsoft.Languages.Editor.Test.Composition
 
                 bool first = true;
 
-                parts.AppendLine("\t Export Definitions:\n -X-X-X-X-X-X-X-X-X-X-X-X-X-X");
-                foreach (ExportDefinition exportDefinition in part.ExportDefinitions)
+                if (part.ExportDefinitions.FirstOrDefault() != null)
                 {
-                    parts.AppendLine("\t" + exportDefinition.ContractName);
-                    foreach (KeyValuePair<string, object> kvp in exportDefinition.Metadata)
+                    parts.AppendLine("\t --- EXPORTS --");
+                    foreach (ExportDefinition exportDefinition in part.ExportDefinitions)
                     {
-                        string valueString = kvp.Value != null ? kvp.Value.ToString() : string.Empty;
-                        parts.AppendLine("\t" + kvp.Key + " : " + valueString);
-                    }
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        parts.AppendLine("------------------------------------------------------");
+                        parts.AppendLine("\t" + exportDefinition.ContractName);
+                        foreach (KeyValuePair<string, object> kvp in exportDefinition.Metadata)
+                        {
+                            string valueString = kvp.Value != null ? kvp.Value.ToString() : string.Empty;
+                            parts.AppendLine("\t" + kvp.Key + " : " + valueString);
+                        }
+
+                        if (first)
+                        {
+                            first = false;
+                        }
+                        else
+                        {
+                            parts.AppendLine("------------------------------------------------------");
+                        }
                     }
                 }
 
-                parts.AppendLine("\t Export Definitions:\n -I-I-I-I-I-I-I-I-I-I-I-I-I-I");
-
-                foreach (ImportDefinition importDefinition in part.ImportDefinitions)
+                if (part.ImportDefinitions.FirstOrDefault() != null)
                 {
-                    parts.AppendLine("\t" + importDefinition.ContractName);
-                    parts.AppendLine("\t" + importDefinition.Constraint.ToString());
-                    parts.AppendLine("\t" + importDefinition.Cardinality.ToString());
+                    parts.AppendLine("\t --- IMPORTS ---");
 
-                    if (first)
+                    foreach (ImportDefinition importDefinition in part.ImportDefinitions)
                     {
-                        first = false;
-                    }
-                    else
-                    {
-                        parts.AppendLine("------------------------------------------------------");
+                        parts.AppendLine("\t" + importDefinition.ContractName);
+                        parts.AppendLine("\t" + importDefinition.Constraint.ToString());
+                        parts.AppendLine("\t" + importDefinition.Cardinality.ToString());
+
+                        if (first)
+                        {
+                            first = false;
+                        }
+                        else
+                        {
+                            parts.AppendLine("------------------------------------------------------");
+                        }
                     }
                 }
             }

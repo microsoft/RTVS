@@ -23,18 +23,9 @@ namespace Microsoft.R.Support.Help.Functions
             {
                 _indexBuildingTask = Task.Run(() =>
                 {
-                    DateTime startIndexLoad = DateTime.Now;
-                    bool result = LoadIndex();
-                    if (result)
-                    {
-                        Debug.WriteLine("R functions index load time: {0} ms", (DateTime.Now - startIndexLoad).TotalMilliseconds);
-                    }
-                    else
-                    {
-                        DateTime startIndexBuild = DateTime.Now;
-                        BuildIndex();
-                        Debug.WriteLine("R functions index build time: {0} ms", (DateTime.Now - startIndexBuild).TotalMilliseconds);
-                    }
+                    DateTime startIndexBuild = DateTime.Now;
+                    BuildIndex();
+                    Debug.WriteLine("R functions index build time: {0} ms", (DateTime.Now - startIndexBuild).TotalMilliseconds);
                 });
 
                 return _indexBuildingTask;
@@ -62,7 +53,6 @@ namespace Microsoft.R.Support.Help.Functions
                 }
             }
         }
-
 
         private static void AddFunctionToPackage(string packageName, INamedItemInfo function)
         {

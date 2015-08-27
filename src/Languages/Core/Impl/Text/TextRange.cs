@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -12,7 +11,7 @@ namespace Microsoft.Languages.Core.Text
     /// range start positions. 
     /// </summary>
     [DebuggerDisplay("[{Start}...{End}), Length = {Length}")]
-    public class TextRange : IExpandableTextRange, ICloneable, IComparable
+    public class TextRange : IExpandableTextRange, ICloneable
     {
         private static TextRange _emptyRange = new TextRange(0, 0);
 
@@ -157,29 +156,6 @@ namespace Microsoft.Languages.Core.Text
         }
 
         /// <summary>
-        /// Determines if element contains one or more of the ranges
-        /// </summary>
-        /// <returns></returns>
-        public virtual bool Contains(IEnumerable<ITextRange> ranges)
-        {
-            if (ranges == null)
-                return false;
-
-            bool contains = false;
-
-            foreach (var range in ranges)
-            {
-                if (Contains(range))
-                {
-                    contains = true;
-                    break;
-                }
-            }
-
-            return contains;
-        }
-
-        /// <summary>
         /// Shifts text range by a given offset
         /// </summary>
         public virtual void Shift(int offset)
@@ -301,15 +277,6 @@ namespace Microsoft.Languages.Core.Text
         public static bool ContainsInclusiveEnd(ITextRange range, ITextRange other)
         {
             return range.Contains(other.Start) && (range.Contains(other.End) || range.End == other.End);
-        }
-
-        /// <summary>
-        /// Determines if range contains all ranges in a collection
-        /// </summary>
-        public static bool Contains(ITextRange range, IEnumerable<ITextRange> ranges)
-        {
-            var textRange = new TextRange(range);
-            return textRange.Contains(ranges);
         }
 
         /// <summary>
@@ -437,61 +404,6 @@ namespace Microsoft.Languages.Core.Text
         public virtual object Clone()
         {
             return this.MemberwiseClone();
-        }
-
-        public int CompareTo(object obj)
-        {
-            TextRange other = obj as TextRange;
-
-            if (other == null)
-                return -1;
-
-            return this.Start.CompareTo(other.Start);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-                return false;
-
-            return CompareTo(obj) == 0;
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public static bool operator ==(TextRange range1, TextRange range2)
-        {
-            if ((object)range1 == null && (object)range2 == null)
-                return true;
-
-            if ((object)range1 == null || (object)range2 == null)
-                return false;
-
-            return range1.Equals(range2);
-        }
-
-        public static bool operator !=(TextRange range1, TextRange range2)
-        {
-            return !(range1 == range2);
-        }
-
-        public static bool operator <(TextRange range1, TextRange range2)
-        {
-            if ((object)range1 == null || (object)range2 == null)
-                return false;
-
-            return range1.CompareTo(range2) < 0;
-        }
-
-        public static bool operator >(TextRange range1, TextRange range2)
-        {
-            if ((object)range1 == null || (object)range2 == null)
-                return false;
-
-            return range1.CompareTo(range2) > 0;
         }
     }
 }
