@@ -101,6 +101,7 @@
     <Compile Include="RD\Tokens\TokenizeFiles.cs" />
     <Compile Include="RD\Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="RD\Tokens\TokenizeTest.cs" />
+    <Compile Include="RD\Tokens\VerifySortedTables.cs" />
     <Compile Include="RD\Utility\RdTestFilesSetup.cs" />
     <Compile Include="RD\Utility\TokensCompare.cs" />
     <Compile Include="Utility\FunctionIndexTestExecutor.cs" />
