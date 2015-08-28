@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Statements;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Packages;
 
-namespace Microsoft.R.Editor.Tree.Search
+namespace Microsoft.R.Core.AST.Search
 {
-    public static class TreeSearch
+    public static class AstSearch
     {
         public static IAstNode FindFirstElement(this AstRoot tree, Func<IAstNode, bool> filter)
         {

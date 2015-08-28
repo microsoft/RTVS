@@ -98,6 +98,7 @@
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />
     <Compile Include="ContentType\RContentTypeDefinition.cs" />
+    <Compile Include="Document\Definitions\IREditorDocument.cs" />
     <Compile Include="Document\DocumentFactory.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstanceFactory.cs" />
@@ -129,10 +130,10 @@
     <Compile Include="Tree\ApplyTreeChanges.cs" />
     <Compile Include="Tree\ChangeProcessor.cs" />
     <Compile Include="Tree\Debug.cs" />
+    <Compile Include="Tree\Definitions\IEditorTree.cs" />
     <Compile Include="Tree\EditorTree.cs" />
     <Compile Include="Tree\EditorTreeChangeCollection.cs" />
     <Compile Include="Tree\TreeChangeType.cs" />
-    <Compile Include="Tree\TreeSearch.cs" />
     <Compile Include="Tree\EditorTreeChange.cs" />
     <Compile Include="Tree\TextChange.cs" />
     <Compile Include="Tree\TextChangeAnalyzer.cs" />

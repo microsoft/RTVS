@@ -180,14 +180,6 @@ namespace Microsoft.Languages.Core.Text
         }
 
         /// <summary>
-        /// Determines if current character starts a string (i.e. current character is a single or double quote).
-        /// </summary>
-        public bool IsAtString()
-        {
-            return (_currentChar == '\'' || _currentChar == '\"');
-        }
-
-        /// <summary>
         /// Determines if current character is a new line character
         /// </summary>
         public bool IsAtNewLine()

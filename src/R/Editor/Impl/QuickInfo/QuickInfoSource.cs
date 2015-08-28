@@ -5,6 +5,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
@@ -54,7 +55,7 @@ namespace Microsoft.R.Editor.QuickInfo
 
             _lastPosition = position;
             ITextSnapshot snapshot = triggerPoint.Value.Snapshot;
-            EditorDocument document = EditorDocument.FromTextBuffer(_subjectBuffer);
+            IREditorDocument document = EditorDocument.FromTextBuffer(_subjectBuffer);
 
             AugmentQuickInfoSession(document.EditorTree.AstRoot, position, 
                                     session, quickInfoContent, out applicableToSpan,

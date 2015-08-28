@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
@@ -26,8 +27,12 @@ namespace Microsoft.Languages.Editor.Outline
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;
 
-            BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction);
-            BackgroundTask.DoTaskOnIdle(300);
+            // Unit test case
+            if (EditorShell.IsUIThread)
+            {
+                BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction);
+                BackgroundTask.DoTaskOnIdle(300);
+            }
         }
 
         public virtual bool IsReady
@@ -106,7 +111,7 @@ namespace Microsoft.Languages.Editor.Outline
             }
         }
 
-        protected abstract bool BuildRegions(OutlineRegionCollection newRegions);
+        public abstract bool BuildRegions(OutlineRegionCollection newRegions);
 
         protected bool IsDisposed
         {

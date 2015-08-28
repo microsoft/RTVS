@@ -10,6 +10,7 @@ using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Definitions;
@@ -38,7 +39,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         internal ConcurrentQueue<IValidationError> ResultsQueue;
 
         ITextBuffer _textBuffer;
-        EditorDocument _document;
+        IREditorDocument _document;
         ErrorTagCollection _errorTags;
         private bool _fireCodeMarkerUponCompletion;
 
@@ -47,7 +48,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
             EditorShell.CompositionService.SatisfyImportsOnce(this);
 
             _document = EditorDocument.FromTextBuffer(textBuffer);
-            _document.OnDocumentClosing += OnDocumentClosing;
+            _document.DocumentClosing += OnDocumentClosing;
             _document.EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
             _document.EditorTree.NodesRemoved += OnNodesRemoved;
             _errorTags = new ErrorTagCollection(_document.EditorTree);
@@ -159,7 +160,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                 _document.EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
                 _document.EditorTree.NodesRemoved -= OnNodesRemoved;
 
-                _document.OnDocumentClosing -= OnDocumentClosing;
+                _document.DocumentClosing -= OnDocumentClosing;
                 _document = null;
 
                 _errorTags.Clear();

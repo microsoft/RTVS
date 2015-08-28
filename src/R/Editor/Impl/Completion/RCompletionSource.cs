@@ -16,11 +16,13 @@ namespace Microsoft.R.Editor.Completion
     using Engine;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
     using Languages.Editor.Completion;
+    using Core.AST;
+    using Document.Definitions;
 
     /// <summary>
     /// Provides actual content for the intellisense dropdown
     /// </summary>
-    public class RCompletionSource : ICompletionSource
+    public sealed class RCompletionSource : ICompletionSource
     {
         private ITextBuffer _textBuffer;
 
@@ -41,34 +43,27 @@ namespace Microsoft.R.Editor.Completion
             //if (_asyncSession != null)
             //    return;
 
-            EditorDocument doc = EditorDocument.FromTextBuffer(_textBuffer);
+            IREditorDocument doc = EditorDocument.FromTextBuffer(_textBuffer);
             if (doc == null)
                 return;
 
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(_textBuffer.CurrentSnapshot);
-            PopulateCompletionList(position, session, completionSets);
+            PopulateCompletionList(position, session, completionSets, doc.EditorTree.AstRoot);
         }
 
-        private void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets)
+        internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast)
         {
-            // If we ever get called on a background thread, something is drastically wrong.
-            Debug.Assert(EditorShell.IsUIThread);
-
-            EditorDocument doc = EditorDocument.FromTextBuffer(_textBuffer);
-            if (doc == null)
-                return;
-
             bool autoShownCompletion = true;
             if (session.TextView.Properties.ContainsProperty(CompletionController.AutoShownCompletion))
                 autoShownCompletion = session.TextView.Properties.GetProperty<bool>(CompletionController.AutoShownCompletion);
 
             IReadOnlyCollection<IRCompletionListProvider> providers =
-                RCompletionEngine.GetCompletionForLocation(doc.EditorTree.AstRoot, _textBuffer, position, autoShownCompletion);
+                RCompletionEngine.GetCompletionForLocation(ast, _textBuffer, position, autoShownCompletion);
 
             Span applicableSpan = GetApplicableSpan(position, session);
             ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan, SpanTrackingMode.EdgeInclusive);
             List<RCompletion> completions = new List<RCompletion>();
-            RCompletionContext context = new RCompletionContext(session, position);
+            RCompletionContext context = new RCompletionContext(session, ast, position);
 
             foreach (IRCompletionListProvider provider in providers)
             {
@@ -138,19 +133,12 @@ namespace Microsoft.R.Editor.Completion
         }
 
         #region Dispose
-        protected virtual void Dispose(bool disposing)
+        public void Dispose()
         {
             if (_textBuffer != null)
             {
-                //_textBuffer.Changed -= OnTextBufferChanged;
                 _textBuffer = null;
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
         #endregion
     }

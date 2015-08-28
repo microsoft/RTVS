@@ -23,57 +23,6 @@ namespace Microsoft.R.Core.Tokens
             this.SubType = subType;
         }
 
-        public override bool IsComment
-        {
-            get
-            {
-                return this.TokenType == RTokenType.Comment;
-            }
-        }
-
-        public override bool IsString
-        {
-            get
-            {
-                return this.TokenType == RTokenType.String;
-            }
-        }
-
-        public override bool IsNumber
-        {
-            get
-            {
-                return this.TokenType == RTokenType.Number || TokenType == RTokenType.Complex;
-            }
-        }
-        public override bool IsKeyword
-        {
-            get
-            {
-                return this.TokenType == RTokenType.Keyword;
-            }
-        }
-
-        public override bool IsPunctuation
-        {
-            get
-            {
-                return this.TokenType == RTokenType.Comma || this.TokenType == RTokenType.Semicolon;
-            }
-        }
-
-        public override bool IsOperator
-        {
-            get
-            {
-                return this.TokenType == RTokenType.Operator;
-            }
-        }
-
-        public bool IsBuiltin
-        {
-            get { return this.TokenType == RTokenType.Identifier && this.SubType == RTokenSubType.BuiltinFunction; }
-        }
 
         public bool IsKeywordText(ITextProvider textProvider, string keywordText)
         {

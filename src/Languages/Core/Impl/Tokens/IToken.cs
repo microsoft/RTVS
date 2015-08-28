@@ -14,10 +14,5 @@ namespace Microsoft.Languages.Core.Tokens
         /// Type of the token
         /// </summary>
         T TokenType { get; }
-
-        /// <summary>
-        /// Arbitrary data attached to the token
-        /// </summary>
-        object Tag { get; set; }
     }
 }

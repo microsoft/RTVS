@@ -3,8 +3,8 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.AST.Search;
 using Microsoft.R.Core.AST.Variables;
-using Microsoft.R.Editor.Tree.Search;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Signatures

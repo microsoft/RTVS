@@ -14,24 +14,24 @@ namespace Microsoft.Languages.Editor.Test.Text
         public void TextChanges_DeleteInMiddle()
         {
             IList<TextChange> changes = BuildChangeList("abc", "adc");
-            Assert.AreEqual(changes.Count, 1);
-            Assert.AreEqual(changes[0], new TextChange(1, 1, "d"));
+            Assert.AreEqual(1, changes.Count);
+            Assert.AreEqual(new TextChange(1, 1, "d"), changes[0]);
         }
 
         [TestMethod()]
         public void TextChanges_DontBreakCRNL()
         {
             IList<TextChange> changes = BuildChangeList(" \n\n ", " \r\n ");
-            Assert.AreEqual(changes.Count, 1);
-            Assert.AreEqual(changes[0], new TextChange(1, 2, "\r\n"));
+            Assert.AreEqual(1, changes.Count);
+            Assert.AreEqual(new TextChange(1, 2, "\r\n"), changes[0]);
         }
 
         [TestMethod()]
         public void TextChanges_DeleteOnlyAtStart()
         {
             IList<TextChange> changes = BuildChangeList("abc", "bc");
-            Assert.AreEqual(changes.Count, 1);
-            Assert.AreEqual(changes[0], new TextChange(0, 1, ""));
+            Assert.AreEqual(1, changes.Count);
+            Assert.AreEqual(new TextChange(0, 1, ""), changes[0]);
         }
 
         private IList<TextChange> BuildChangeList(string oldText, string newText)

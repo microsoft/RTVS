@@ -10,6 +10,7 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
+using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.R.Editor.Validation.Definitions;
 using Microsoft.R.Editor.Validation.Errors;
 using Microsoft.VisualStudio.Text;
@@ -47,7 +48,7 @@ namespace Microsoft.R.Editor.Validation
         /// </summary>
         internal ConcurrentQueue<IValidationError> ValidationResults { get; private set; }
 
-        private EditorTree _editorTree;
+        private IEditorTree _editorTree;
         private bool _validationEnabled = false;
         private bool _validationStarted = false;
 
@@ -61,7 +62,7 @@ namespace Microsoft.R.Editor.Validation
         public event EventHandler<EventArgs> Cleared;
 
         #region Constructors
-        public TreeValidator(EditorTree editorTree)
+        public TreeValidator(IEditorTree editorTree)
         {
 #if DEBUG
             TraceValidation.Enabled = false;
@@ -95,7 +96,7 @@ namespace Microsoft.R.Editor.Validation
         /// for the document that is associated with the text buffer
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
-        public static TreeValidator EnsureFromTextBuffer(ITextBuffer textBuffer, EditorTree editorTree)
+        public static TreeValidator EnsureFromTextBuffer(ITextBuffer textBuffer, IEditorTree editorTree)
         {
             TreeValidator validator = ServiceManager.GetService<TreeValidator>(textBuffer);
             if (validator == null)

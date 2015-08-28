@@ -13,7 +13,7 @@ namespace Microsoft.R.Editor.Completion.Providers
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Completion Source Provider")]
     [Order(Before = "default")]
-    internal class HtmlCompletionSourceProvider : ICompletionSourceProvider
+    internal class RCompletionSourceProvider : ICompletionSourceProvider
     {
         public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {

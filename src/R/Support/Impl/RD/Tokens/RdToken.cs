@@ -22,41 +22,6 @@ namespace Microsoft.R.Support.RD.Tokens
 
         public bool ContentTypeChange { get; set; }
 
-        public override bool IsComment
-        {
-            get
-            {
-                return this.TokenType == RdTokenType.Comment;
-            }
-        }
-
-        public override bool IsString
-        {
-            get
-            {
-                return this.TokenType == RdTokenType.String;
-            }
-        }
-
-        public override bool IsKeyword
-        {
-            get
-            {
-                return this.TokenType == RdTokenType.Keyword;
-            }
-        }
-
-        public override bool IsPunctuation
-        {
-            get
-            {
-                return this.TokenType == RdTokenType.OpenCurlyBrace ||
-                       this.TokenType == RdTokenType.CloseCurlyBrace ||
-                       this.TokenType == RdTokenType.OpenSquareBracket ||
-                       this.TokenType == RdTokenType.CloseSquareBracket;
-            }
-        }
-
         public bool IsKeywordText(ITextProvider textProvider, string keywordText)
         {
             if (this.TokenType == RdTokenType.Keyword)

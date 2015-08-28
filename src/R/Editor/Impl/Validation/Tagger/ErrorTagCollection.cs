@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Editor.Tree;
+using Microsoft.R.Editor.Tree.Definitions;
 
 namespace Microsoft.R.Editor.Validation.Tagger
 {
@@ -50,7 +51,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// <summary>
         /// Editor tree
         /// </summary>
-        private EditorTree _editorTree;
+        private IEditorTree _editorTree;
 
         /// <summary>
         /// Indicates if background task that is removing tags for 
@@ -58,7 +59,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// </summary>
         private long _taskRunning = 0;
 
-        public ErrorTagCollection(EditorTree editorTree)
+        public ErrorTagCollection(IEditorTree editorTree)
         {
             RemovedTags = new ConcurrentQueue<EditorErrorTag>();
 

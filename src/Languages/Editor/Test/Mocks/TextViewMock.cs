@@ -72,13 +72,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
             }
         }
 
-        public PropertyCollection Properties
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public PropertyCollection Properties { get; private set; } = new PropertyCollection();
 
         public ITrackingSpan ProvisionalTextHighlight
         {
@@ -105,7 +99,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
         {
             get
             {
-                throw new NotImplementedException();
+                return new TextSelectionMock(this, _caretPosition);
             }
         }
 

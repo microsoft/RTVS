@@ -3,14 +3,11 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
+using Microsoft.R.Core.AST.Search;
 using Microsoft.R.Editor.Completion.Definitions;
-using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Tree;
-using Microsoft.R.Editor.Tree.Search;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion.Providers
 {
@@ -28,14 +25,11 @@ namespace Microsoft.R.Editor.Completion.Providers
             List<RCompletion> completions = new List<RCompletion>();
             ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
 
-            ITextBuffer textBiffer = context.Session.TextView.TextBuffer;
-            EditorDocument document = EditorDocument.FromTextBuffer(textBiffer);
-
             // TODO: this is different in the console window where 
             // packages may have been loaded from the command line. 
             // We need an extensibility point here.
 
-            IEnumerable<string> filePackageNames = document.EditorTree.AstRoot.GetFilePackageNames();
+            IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
 
             List<IPackageInfo> filePackages = new List<IPackageInfo>();
             foreach(string packageName in filePackageNames)

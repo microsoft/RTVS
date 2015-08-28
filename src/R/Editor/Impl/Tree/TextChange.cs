@@ -101,9 +101,9 @@ namespace Microsoft.R.Editor.Tree
         /// <summary>
         /// True if no changes are pending.
         /// </summary>
-        public bool IsEmpty()
+        public bool IsEmpty
         {
-            return !FullParseRequired && (OldRange.Length == 0 && NewRange.Length == 0);
+            get { return !FullParseRequired && (OldRange.Length == 0 && NewRange.Length == 0); }
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         public void Combine(TextChange other)
         {
-            if (other.IsEmpty())
+            if (other.IsEmpty)
                 return;
 
             FullParseRequired |= other.FullParseRequired;

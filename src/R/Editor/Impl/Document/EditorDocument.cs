@@ -3,14 +3,14 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion.Engine;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree;
-using Microsoft.R.Editor.Validation;
+using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Document
@@ -18,30 +18,36 @@ namespace Microsoft.R.Editor.Document
     /// <summary>
     /// Main editor document for R language
     /// </summary>
-    public class EditorDocument : IEditorDocument
+    public class EditorDocument : IREditorDocument
     {
         [Import]
         private ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
-        [Import(AllowDefault = true)]
-        public IWorkspace Workspace { get; set; }
-
-        public EditorTree EditorTree { get; private set; }
-
-        public bool IsClosed { get; private set; }
-
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
+
+        [Import(AllowDefault = true)]
+        public IWorkspace Workspace { get; set; }
 
         public IWorkspaceItem WorkspaceItem { get; private set; }
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> Activated;
         public event EventHandler<EventArgs> Deactivated;
-        public event EventHandler<EventArgs> OnDocumentClosing;
+        public event EventHandler<EventArgs> DocumentClosing;
 #pragma warning restore 67
         #endregion
 
+        #region IREditorDocument
+        public IEditorTree EditorTree
+        {
+            get { return _editorTree; }
+        }
+
+        public bool IsClosed { get; private set; }
+        #endregion
+
+        private EditorTree _editorTree;
         //private TreeValidator _validator;
 
         #region Constructors
@@ -57,10 +63,10 @@ namespace Microsoft.R.Editor.Document
 
             ServiceManager.AddService<EditorDocument>(this, TextBuffer);
 
-            this.EditorTree = new EditorTree(textBuffer);
+            _editorTree = new EditorTree(textBuffer);
             //_validator = new TreeValidator(this.EditorTree);
 
-            this.EditorTree.Build();
+            _editorTree.Build();
 
             RCompletionEngine.Initialize();
         }
@@ -69,9 +75,9 @@ namespace Microsoft.R.Editor.Document
         /// <summary>
         /// Retrieves document instance from text buffer
         /// </summary>
-        public static EditorDocument FromTextBuffer(ITextBuffer textBuffer)
+        public static IREditorDocument FromTextBuffer(ITextBuffer textBuffer)
         {
-            EditorDocument document = TryFromTextBuffer(textBuffer);
+            IREditorDocument document = TryFromTextBuffer(textBuffer);
 
             Debug.Assert(document != null, "No editor document available");
             return document;
@@ -80,7 +86,7 @@ namespace Microsoft.R.Editor.Document
         /// <summary>
         /// Retrieves document instance from text buffer
         /// </summary>
-        public static EditorDocument TryFromTextBuffer(ITextBuffer textBuffer)
+        public static IREditorDocument TryFromTextBuffer(ITextBuffer textBuffer)
         {
             EditorDocument document = ServiceManager.GetService<EditorDocument>(textBuffer);
             if (document == null)
@@ -108,21 +114,21 @@ namespace Microsoft.R.Editor.Document
 
             TextDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
 
-            if (OnDocumentClosing != null)
-                OnDocumentClosing(this, null);
+            if (DocumentClosing != null)
+                DocumentClosing(this, null);
 
             if (EditorTree != null)
             {
-                EditorTree.Dispose(); // this will also remove event handlers
-                EditorTree = null;
+                _editorTree.Dispose(); // this will also remove event handlers
+                _editorTree = null;
             }
 
-            if (OnDocumentClosing != null)
+            if (DocumentClosing != null)
             {
-                foreach (EventHandler<EventArgs> eh in OnDocumentClosing.GetInvocationList())
+                foreach (EventHandler<EventArgs> eh in DocumentClosing.GetInvocationList())
                 {
                     Debug.Fail(String.Format(CultureInfo.CurrentCulture, "There are still listeners in the EditorDocument.OnDocumentClosing event list: {0}", eh.Target));
-                    OnDocumentClosing -= eh;
+                    DocumentClosing -= eh;
                 }
             }
 

@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Completion.AutoCompletion;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Commands
@@ -46,7 +47,7 @@ namespace Microsoft.R.Editor.Commands
 
         private void HandleCompletion(char typedChar)
         {
-            EditorDocument document = EditorDocument.FromTextBuffer(TextBuffer);
+            IREditorDocument document = EditorDocument.FromTextBuffer(TextBuffer);
             Debug.Assert(document != null);
 
             switch (typedChar)

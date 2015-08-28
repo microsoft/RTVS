@@ -11,10 +11,9 @@ namespace Microsoft.Languages.Editor.Test.Mocks
     {
         public TextBufferMock(string content, string contentTypeName)
         {
-            Properties = new PropertyCollection();
             ContentType = new ContentTypeMock(contentTypeName, new IContentType[] { ContentTypeMock.TextContentType });
             TextVersionMock initialVersion = new TextVersionMock(this, 0, content.Length);
-            CurrentSnapshot = new TextSnapshotMock(content, this, ContentType, initialVersion);
+            CurrentSnapshot = new TextSnapshotMock(content, this, initialVersion);
         }
 
         #region ITextBuffer Members
@@ -152,7 +151,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
         #endregion
 
         #region IPropertyOwner Members
-        public PropertyCollection Properties { get; private set; }
+        public PropertyCollection Properties { get; private set; } = new PropertyCollection();
         #endregion
 
         private void ApplyChange(TextSnapshotMock snapshot)

@@ -2,6 +2,7 @@
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -28,7 +29,7 @@ namespace Microsoft.R.Editor.Commands
             }
             else
             {
-                EditorDocument doc = EditorDocument.TryFromTextBuffer(textBuffer);
+                IREditorDocument doc = EditorDocument.TryFromTextBuffer(textBuffer);
                 if (doc != null)
                 {
                     doc.Dispose();

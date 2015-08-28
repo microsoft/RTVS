@@ -12,7 +12,7 @@ namespace Microsoft.Languages.Editor.EditorFactory
         /// <summary>
         /// Fires when document is closing.
         /// </summary>
-        event EventHandler<EventArgs> OnDocumentClosing; 
+        event EventHandler<EventArgs> DocumentClosing; 
 
         /// <summary>
         /// Fires when document is activated in the host IDE and its view is getting focus.

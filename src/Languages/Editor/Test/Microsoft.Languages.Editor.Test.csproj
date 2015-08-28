@@ -88,6 +88,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Mocks\ClassificationTypeMock.cs" />
     <Compile Include="Mocks\ClassificationTypeRegistryServiceMock.cs" />
+    <Compile Include="Mocks\CompletionSessionMock.cs" />
     <Compile Include="Mocks\ContentTypeMock.cs" />
     <Compile Include="Mocks\QuickInfoSessionMock.cs" />
     <Compile Include="Mocks\SignatureHelpSessionMock.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Mocks\TextChangeMock.cs" />
     <Compile Include="Mocks\TextEditMock.cs" />
     <Compile Include="Mocks\TextLineMock.cs" />
+    <Compile Include="Mocks\TextSelectionMock.cs" />
     <Compile Include="Mocks\TextSnapshotMock.cs" />
     <Compile Include="Mocks\TextVersionMock.cs" />
     <Compile Include="Mocks\TextViewMock.cs" />

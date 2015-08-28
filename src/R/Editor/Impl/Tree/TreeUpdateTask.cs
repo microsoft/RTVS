@@ -110,7 +110,7 @@ namespace Microsoft.R.Editor.Tree
         /// <returns></returns>
         internal bool ChangesPending
         {
-            get { return !_pendingChanges.IsEmpty(); }
+            get { return !_pendingChanges.IsEmpty; }
         }
 
         /// <summary>

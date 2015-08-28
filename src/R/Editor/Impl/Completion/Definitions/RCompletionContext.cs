@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
+﻿using Microsoft.R.Core.AST;
+using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completion.Definitions
 {
@@ -10,11 +11,13 @@ namespace Microsoft.R.Editor.Completion.Definitions
     {
         public int Position { get; set; }
         public ICompletionSession Session { get; private set; }
+        public AstRoot AstRoot { get; private set; }
 
-        public RCompletionContext(ICompletionSession session, int position)
+        public RCompletionContext(ICompletionSession session, AstRoot ast, int position)
         {
-            this.Session = session;
-            this.Position = position;
+            Session = session;
+            Position = position;
+            AstRoot = ast;
         }
     }
 }

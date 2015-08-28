@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -11,6 +12,7 @@ namespace Microsoft.R.Editor.Completion.Providers
     /// <summary>
     /// Completion controller provider for Visual Studio core editor
     /// </summary>
+    [ExcludeFromCodeCoverage]
     [Export(typeof(IIntellisenseControllerProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Completion Controller")]

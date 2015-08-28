@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
+using Microsoft.R.Editor.Tree.Definitions;
 
 namespace Microsoft.R.Editor.Validation.Tagger
 {
@@ -23,7 +24,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         private ITextBuffer _textBuffer;
         private ITextRange _range;
 
-        public EditorErrorTag(EditorTree editorTree, IValidationError error)
+        public EditorErrorTag(IEditorTree editorTree, IValidationError error)
             : base(GetErrorType(error), error.Message)
         {
             _textBuffer = editorTree.TextBuffer;

@@ -71,7 +71,7 @@ namespace Microsoft.R.Support.Help.Packages
         {
             IPackageInfo package;
 
-            package = _basePackages.Packages.FirstOrDefault((IPackageInfo p) => p.Name == packageName);
+            package = BasePackages.FirstOrDefault((IPackageInfo p) => p.Name == packageName);
             if (package == null)
             {
                 _packages.TryGetValue(packageName, out package);

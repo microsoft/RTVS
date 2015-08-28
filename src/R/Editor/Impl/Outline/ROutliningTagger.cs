@@ -12,7 +12,7 @@ namespace Microsoft.R.Editor.Outline
         public ROutliningTagger(EditorDocument document)
             : base(document.EditorTree.TextBuffer, new ROutlineRegionBuilder(document))
         {
-            document.OnDocumentClosing += OnDocumentClosing;
+            document.DocumentClosing += OnDocumentClosing;
 
             ServiceManager.AddService<ROutliningTagger>(this, document.EditorTree.TextBuffer);
         }
@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor.Outline
         private void OnDocumentClosing(object sender, EventArgs e)
         {
             EditorDocument document = (EditorDocument)sender;
-            document.OnDocumentClosing -= OnDocumentClosing;
+            document.DocumentClosing -= OnDocumentClosing;
 
             ServiceManager.RemoveService<ROutliningTagger>(document.EditorTree.TextBuffer);
         }

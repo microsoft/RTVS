@@ -13,7 +13,7 @@ namespace Microsoft.R.Editor.Tree
         private const string _threadContextInvalidMessage = 
             "Editor tree events must be fired on a main thread.";
 
-        #region Events
+        #region IEditorTree Events
         /// <summary>
         /// Event fires when there are text changes pending in the change queue.
         /// Tree users should stop using the tree and release read locks ASAP.

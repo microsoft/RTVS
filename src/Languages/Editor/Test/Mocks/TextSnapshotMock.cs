@@ -14,33 +14,33 @@ namespace Microsoft.Languages.Editor.Test.Mocks
         public ITextProvider TextProvider { get; private set; }
         public TextChangeMock Change { get; private set; }
         private TextVersionMock _version;
-
-        public TextSnapshotMock CreateNextSnapshot(string content, TextChangeMock change)
-        {
-            Change = change;
-            TextVersionMock nextVersion = _version.CreateNextVersion(change);
-            TextSnapshotMock nextSnapshot = new TextSnapshotMock(content, TextBuffer, ContentType, nextVersion);
-
-            return nextSnapshot;
-        }
-
-        private ITextBuffer _textBuffer;
         private ITextSnapshotLine[] _lines;
 
-        public TextSnapshotMock(string content, ITextBuffer textBuffer, IContentType contentType, TextVersionMock version)
+        public TextSnapshotMock(string content, ITextBuffer textBuffer, TextVersionMock version)
         {
-            ContentType = contentType;
             TextProvider = new TextStream(content);
-            _textBuffer = textBuffer;
+            TextBuffer = textBuffer;
             _lines = MakeLines(content);
             _version = version;
 
             Change = new TextChangeMock();
         }
 
+        public TextSnapshotMock CreateNextSnapshot(string content, TextChangeMock change)
+        {
+            Change = change;
+            TextVersionMock nextVersion = _version.CreateNextVersion(change);
+            TextSnapshotMock nextSnapshot = new TextSnapshotMock(content, TextBuffer, nextVersion);
+
+            return nextSnapshot;
+        }
+
         #region ITextSnapshot Members
 
-        public IContentType ContentType { get; private set; }
+        public IContentType ContentType
+        {
+            get { return TextBuffer.ContentType; }
+        }
 
         public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
         {
@@ -54,7 +54,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public ITrackingPoint CreateTrackingPoint(int position, PointTrackingMode trackingMode, TrackingFidelityMode trackingFidelity)
         {
-            return new TrackingPointMock(_textBuffer, position, trackingMode, trackingFidelity);
+            return new TrackingPointMock(TextBuffer, position, trackingMode, trackingFidelity);
         }
 
         public ITrackingPoint CreateTrackingPoint(int position, PointTrackingMode trackingMode)
@@ -64,7 +64,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public ITrackingSpan CreateTrackingSpan(int start, int length, SpanTrackingMode trackingMode, TrackingFidelityMode trackingFidelity)
         {
-            return new TrackingSpanMock(_textBuffer, new Span(start, length), trackingMode, trackingFidelity);
+            return new TrackingSpanMock(TextBuffer, new Span(start, length), trackingMode, trackingFidelity);
         }
 
         public ITrackingSpan CreateTrackingSpan(int start, int length, SpanTrackingMode trackingMode)
@@ -74,7 +74,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public ITrackingSpan CreateTrackingSpan(Span span, SpanTrackingMode trackingMode, TrackingFidelityMode trackingFidelity)
         {
-            return new TrackingSpanMock(_textBuffer, span, trackingMode, trackingFidelity);
+            return new TrackingSpanMock(TextBuffer, span, trackingMode, trackingFidelity);
         }
 
         public ITrackingSpan CreateTrackingSpan(Span span, SpanTrackingMode trackingMode)
@@ -105,6 +105,12 @@ namespace Microsoft.Languages.Editor.Test.Mocks
                         return _lines[i];
                 }
             }
+
+            if (position == 0)
+                return _lines[0];
+
+            if (position == _lines[_lines.Length - 1].EndIncludingLineBreak)
+                return _lines[_lines.Length - 1];
 
             return null;
         }
@@ -144,10 +150,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
             get { return _lines; }
         }
 
-        public ITextBuffer TextBuffer
-        {
-            get { return _textBuffer; }
-        }
+        public ITextBuffer TextBuffer { get; private set; }
 
         public char[] ToCharArray(int startIndex, int length)
         {
@@ -201,6 +204,9 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
             if (start < text.Length)
                 list.Add(new TextLineMock(this, start, text.Length - start, list.Count));
+
+            if (list.Count == 0)
+                list.Add(new TextLineMock(this, 0, 0, 0));
 
             return list.ToArray();
         }

@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Classification
                 int count = tokens.Count;
                 var token = tokens[count - 1];
 
-                if (token.IsNumber && token.End + 2 >= position)
+                if ((token.TokenType == RTokenType.Number || token.TokenType == RTokenType.Complex) && token.End + 2 >= position)
                 {
                     // This handles case when user types 1.23e1. In 1.23e case 'e' is not part 
                     // of the number since 1.23e is not a valid js number. However, 1.23e+1 is 

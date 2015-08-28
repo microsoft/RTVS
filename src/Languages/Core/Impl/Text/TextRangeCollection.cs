@@ -78,7 +78,6 @@ namespace Microsoft.Languages.Core.Text
         public IList<T> Items
         {
             get { return this.items; }
-            protected set { this.items = new List<T>(value); }
         }
 
         /// <summary>

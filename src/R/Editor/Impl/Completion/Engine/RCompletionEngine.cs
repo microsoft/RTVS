@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Completion.Engine
 {
     internal static class RCompletionEngine
     {
-        private static IEnumerable<Lazy<IRCompletionListProvider>> CompletionProviders { get; set; }
+        private static IEnumerable<Lazy<IRCompletionListProvider>> _completionProviders;
 
         /// <summary>
         /// Provides list of completion entries for a given location in the AST.
@@ -59,10 +59,18 @@ namespace Microsoft.R.Editor.Completion.Engine
         public static void Initialize()
         {
             FunctionIndex.Initialize();
+        }
 
-            if (CompletionProviders == null)
+        private static IEnumerable<Lazy<IRCompletionListProvider>> CompletionProviders
+        {
+            get
             {
-                CompletionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany();
+                if (_completionProviders == null)
+                {
+                    _completionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany();
+                }
+
+                return _completionProviders;
             }
         }
 
@@ -105,6 +113,10 @@ namespace Microsoft.R.Editor.Completion.Engine
                                 }
 
                                 return false;
+                            }
+                            else if(tokens.NextToken.TokenType == RTokenType.EndOfStream)
+                            {
+                                return true;
                             }
 
                             tokens.MoveToNextToken();

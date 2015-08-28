@@ -4,6 +4,7 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -123,7 +124,7 @@ namespace Microsoft.R.Editor.Signatures
                 }
                 else
                 {
-                    EditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
+                    IREditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
                     ComputeCurrentParameter(document.EditorTree.AstRoot, position);
                 }
             }
@@ -134,7 +135,7 @@ namespace Microsoft.R.Editor.Signatures
             if (Session != null)
             {
                 var prevParameter = _currentParameter;
-                EditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
+                IREditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
                 ComputeCurrentParameter(document.EditorTree.AstRoot, e.NewPosition.BufferPosition);
 
                 if (_currentParameter != prevParameter)

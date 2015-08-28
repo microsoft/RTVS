@@ -9,6 +9,7 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
+using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Tree
@@ -21,41 +22,13 @@ namespace Microsoft.R.Editor.Tree
     /// thread which should be creating editor tree, incremental parse thread and
     /// validation (syntx check) thread.
     /// </summary>
-    public partial class EditorTree : IDisposable
+    public partial class EditorTree : IEditorTree, IDisposable
     {
-        #region Properties
-
+        #region IEditorTree
         /// <summary>
         /// Visual Studio core editor text buffer
         /// </summary>
         public ITextBuffer TextBuffer { get; private set; }
-
-        /// <summary>
-        /// Last text snapshot associated with this tree
-        /// </summary>
-        public ITextSnapshot TextSnapshot
-        {
-            get
-            {
-                return _textSnapShot;
-            }
-            internal set
-            {
-                _textSnapShot = value;
-                if (_astRoot != null)
-                {
-                    _astRoot.TextProvider = new TextProvider(_textSnapShot, partial: true);
-                }
-            }
-        }
-
-        /// <summary>
-        /// True if tree is out of date and no longer matches current text buffer state
-        /// </summary>
-        public bool IsDirty
-        {
-            get { return TreeUpdateTask.ChangesPending; }
-        }
 
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "AcquireReadLock")]
         [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
@@ -69,11 +42,6 @@ namespace Microsoft.R.Editor.Tree
                 this.EnsureTreeReady();
                 return _astRoot;
             }
-        }
-
-        internal AstRoot GetAstRootUnsafe()
-        {
-            return _astRoot;
         }
 
         /// <summary>
@@ -94,9 +62,41 @@ namespace Microsoft.R.Editor.Tree
                 return true;
             }
         }
+
+        /// <summary>
+        /// Last text snapshot associated with this tree
+        /// </summary>
+        public ITextSnapshot TextSnapshot
+        {
+            get
+            {
+                return _textSnapShot;
+            }
+            internal set
+            {
+                _textSnapShot = value;
+                if (_astRoot != null)
+                {
+                    _astRoot.TextProvider = new TextProvider(_textSnapShot, partial: true);
+                }
+            }
+        }
         #endregion
 
+        /// <summary>
+        /// True if tree is out of date and no longer matches current text buffer state
+        /// </summary>
+        public bool IsDirty
+        {
+            get { return TreeUpdateTask.ChangesPending; }
+        }
+
         #region Internal members
+
+        internal AstRoot GetAstRootUnsafe()
+        {
+            return _astRoot;
+        }
 
         /// <summary>
         /// Async tree update task
