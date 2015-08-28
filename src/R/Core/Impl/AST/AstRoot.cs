@@ -7,6 +7,7 @@ using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.Evaluation;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Parser.Definitions;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Core.Utility;
 
 namespace Microsoft.R.Core.AST
@@ -17,7 +18,7 @@ namespace Microsoft.R.Core.AST
 
         public ITextProvider TextProvider { get; internal set; }
 
-        public TextRangeCollection<TokenNode> Comments { get; private set; }
+        public TextRangeCollection<RToken> Comments { get; private set; }
 
         public ICodeEvaluator CodeEvaluator { get; private set; }
 
@@ -31,7 +32,7 @@ namespace Microsoft.R.Core.AST
         public AstRoot(ITextProvider textProvider, ICodeEvaluator codeEvaluator)
         {
             TextProvider = textProvider;
-            Comments = new TextRangeCollection<TokenNode>();
+            Comments = new TextRangeCollection<RToken>();
             CodeEvaluator = codeEvaluator;
         }
 
@@ -74,6 +75,7 @@ namespace Microsoft.R.Core.AST
         {
             // Remove comments from the token stream
             context.RemoveCommentTokens();
+            this.Comments = new TextRangeCollection<RToken>(context.Comments);
 
             GlobalScope globalScope = new GlobalScope();
             return globalScope.Parse(context, this);

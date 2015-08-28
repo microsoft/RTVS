@@ -76,7 +76,7 @@ namespace Microsoft.R.Core.Test.AST
             Assert.AreEqual(PositionType.Node, startPositionType);
             Assert.IsTrue(startNode is IOperator);
 
-            Assert.AreEqual(PositionType.Node, endPositionType);
+            Assert.AreEqual(PositionType.Token, endPositionType);
             Assert.IsTrue(endNode is Variable);
 
             Assert.AreEqual("a123", ((Variable)endNode).Name);

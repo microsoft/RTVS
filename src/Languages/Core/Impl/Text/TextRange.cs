@@ -85,6 +85,7 @@ namespace Microsoft.Languages.Core.Text
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
+        [DebuggerStepThrough]
         public static TextRange FromBounds(int start, int end)
         {
             return new TextRange(start, end - start);
@@ -158,6 +159,7 @@ namespace Microsoft.Languages.Core.Text
         /// <summary>
         /// Shifts text range by a given offset
         /// </summary>
+        [DebuggerStepThrough]
         public virtual void Shift(int offset)
         {
             _start += offset;

@@ -197,7 +197,7 @@ namespace Microsoft.R.Core.AST
             }
 
             node = this;
-            return PositionType.Node;
+            return node is TokenNode ? PositionType.Token : PositionType.Node;
         }
 
         /// <summary>

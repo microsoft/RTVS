@@ -12,6 +12,11 @@ namespace Microsoft.R.Editor.Tree
         Trivial,
 
         /// <summary>
+        /// Change inside comment
+        /// </summary>
+        Comment,
+
+        /// <summary>
         /// Change inside expandable token node
         /// such as inside a string or a comment
         /// </summary>

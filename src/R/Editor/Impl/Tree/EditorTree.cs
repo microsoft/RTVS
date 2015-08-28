@@ -9,6 +9,7 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 
@@ -438,7 +439,7 @@ namespace Microsoft.R.Editor.Tree
         /// <returns>Text range of the found comment block or empty range if not found.</returns>
         public ITextRange GetCommentBlockContainingRange(ITextRange range)
         {
-            TextRangeCollection<TokenNode> comments = this.AstRoot.Comments;
+            TextRangeCollection<RToken> comments = this.AstRoot.Comments;
 
             var commentsInRange = comments.ItemsInRange(range);
             if (commentsInRange.Count == 1)

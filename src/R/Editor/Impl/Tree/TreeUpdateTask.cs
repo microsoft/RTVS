@@ -257,7 +257,7 @@ namespace Microsoft.R.Editor.Tree
 
             if (!elementsRemoved)
             {
-                if (context.ChangedNode != null)
+                if (context.ChangedNode != null || context.TextChange.TextChangeType == TextChangeType.Trivial)
                 {
                     _editorTree.FireOnPositionsOnlyChanged();
                 }
@@ -350,7 +350,11 @@ namespace Microsoft.R.Editor.Tree
             var changeType = textChange.TextChangeType;
             bool elementsChanged = false;
 
-            if (changeType == TextChangeType.Token)
+            if (changeType == TextChangeType.Comment)
+            {
+                context.ChangedComment.Expand(0, textChange.NewRange.Length - textChange.OldRange.Length);
+            }
+            else if (changeType == TextChangeType.Token)
             {
                 TokenNode tokenNode = context.ChangedNode as TokenNode;
                 tokenNode.Token.Expand(0, textChange.NewRange.Length - textChange.OldRange.Length);

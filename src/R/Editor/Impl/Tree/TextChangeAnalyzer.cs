@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Tree
         {
             if (SafeChangeInsideComment(change))
             {
-                change.TextChange.TextChangeType |= TextChangeType.Token;
+                change.TextChange.TextChangeType |= TextChangeType.Comment;
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace Microsoft.R.Editor.Tree
             {
                 if (context.NewText.IndexOf('#') < 0)
                 {
-                    context.ChangedNode = comments[index];
+                    context.ChangedComment = comments[index];
                     return true;
                 }
             }
@@ -107,7 +107,7 @@ namespace Microsoft.R.Editor.Tree
                 return false;
             }
 
-            context.ChangedNode = comments[index];
+            context.ChangedComment = comments[index];
             return true;
         }
 

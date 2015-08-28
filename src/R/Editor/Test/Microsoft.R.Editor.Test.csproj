@@ -132,6 +132,8 @@
     <Compile Include="Signatures\ParameterTest.cs" />
     <Compile Include="Signatures\SignatureHelpSourceTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
+    <Compile Include="Tree\EditorTreeTest.cs" />
+    <Compile Include="Tree\TreeChangeTypeTest.cs" />
     <Compile Include="Tree\TextChangeTest.cs" />
     <Compile Include="Utility\EditorTestFilesSetup.cs" />
   </ItemGroup>

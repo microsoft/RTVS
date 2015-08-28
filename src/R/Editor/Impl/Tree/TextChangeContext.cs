@@ -1,6 +1,7 @@
 ﻿using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Editor.Tree
 {
@@ -23,6 +24,7 @@ namespace Microsoft.R.Editor.Tree
 
         public TextChange TextChange { get; private set; }
         public IAstNode ChangedNode { get; set; }
+        public RToken ChangedComment { get; set; }
 
         private TextRange _oldRange;
         private TextRange _newRange;

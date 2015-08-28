@@ -12,6 +12,7 @@ namespace Microsoft.R.Core.Parser
     public sealed class ParseContext
     {
         private List<IParseError> _errors = new List<IParseError>();
+        private List<RToken> _comments = new List<RToken>();
 
         public AstRoot AstRoot { get; private set; }
 
@@ -24,6 +25,11 @@ namespace Microsoft.R.Core.Parser
         public IReadOnlyCollection<IParseError> Errors
         {
             get { return _errors; }
+        }
+
+        public IReadOnlyCollection<RToken> Comments
+        {
+            get { return _comments; }
         }
 
         public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens)
@@ -55,14 +61,14 @@ namespace Microsoft.R.Core.Parser
 
         public void RemoveCommentTokens()
         {
-            List<RToken> comments = new List<RToken>();
+            _comments = new List<RToken>();
             List<RToken> filteredStream = new List<RToken>();
 
             foreach (RToken token in this.Tokens)
             {
                 if (token.TokenType == RTokenType.Comment)
                 {
-                    comments.Add(token);
+                    _comments.Add(token);
                 }
                 else
                 {
