@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -59,7 +60,7 @@ namespace Microsoft.R.Support.Test.Packages
             Assert.AreEqual(30, basePackages.Count());
 
             string installPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), 
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                 @"R\R-3.2.0\library");
 
             int i = 0;
@@ -84,6 +85,27 @@ namespace Microsoft.R.Support.Test.Packages
 
             IPackageInfo pi = PackageIndex.GetPackageByName("base");
             Assert.AreEqual("Base R functions.", pi.Description);
+        }
+
+        [TestMethod]
+        public void UserPackagesIndex_Test01()
+        {
+            RToolsSettings.ToolsSettings = new TestRToolsSettings();
+
+            // make it broken and check that index doesn't throw
+            UserPackagesCollection.RLibraryPath = "NonExistentFolder";
+            string installPath = UserPackagesCollection.GetInstallPath();
+            string userDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            Assert.AreEqual(Path.Combine(userDocumentsPath, UserPackagesCollection.RLibraryPath), installPath);
+
+            var collection = new UserPackagesCollection();
+            Assert.IsNotNull(collection.Packages);
+
+            IEnumerator en = collection.Packages.GetEnumerator();
+            Assert.IsNotNull(en);
+            Assert.IsFalse(en.MoveNext());
+            Assert.IsNull(en.Current);
         }
     }
 }

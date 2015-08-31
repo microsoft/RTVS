@@ -37,7 +37,14 @@ namespace Microsoft.R.Support.Help.Packages
 
         public PackageEnumerator(string libraryPath)
         {
-            _directoriesEnumerator = Directory.EnumerateDirectories(libraryPath).GetEnumerator();
+            if (!string.IsNullOrEmpty(libraryPath) && Directory.Exists(libraryPath))
+            {
+                _directoriesEnumerator = Directory.EnumerateDirectories(libraryPath).GetEnumerator();
+            }
+            else
+            {
+                _directoriesEnumerator = (new List<string>()).GetEnumerator();
+            }
         }
 
         public IPackageInfo Current
@@ -45,9 +52,13 @@ namespace Microsoft.R.Support.Help.Packages
             get
             {
                 string directoryPath = _directoriesEnumerator.Current;
-                string name = Path.GetFileName(directoryPath).ToLowerInvariant();
+                if (!string.IsNullOrEmpty(directoryPath))
+                {
+                    string name = Path.GetFileName(directoryPath).ToLowerInvariant();
+                    return new PackageInfo(name, Path.GetDirectoryName(directoryPath));
+                }
 
-                return new PackageInfo(name, Path.GetDirectoryName(directoryPath));
+                return null;
             }
         }
 

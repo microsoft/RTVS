@@ -11,30 +11,39 @@ namespace Microsoft.R.Support.Help.Packages
     [Export(typeof(IPackageCollection))]
     public sealed class UserPackagesCollection : PackageCollection
     {
+        internal static string RLibraryPath { get; set; } = @"R\win-library";
+
         public UserPackagesCollection() :
             base(GetInstallPath())
         {
         }
 
-        private static string GetInstallPath()
+        internal static string GetInstallPath()
         {
             string libraryPath = string.Empty;
 
             try
             {
                 string userDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                libraryPath = Path.Combine(userDocumentsPath, @"R\win-library");
+                libraryPath = Path.Combine(userDocumentsPath, RLibraryPath);
 
-                IEnumerable<string> directories = Directory.EnumerateDirectories(libraryPath);
-                if (directories.Count() == 1)
+                if (Directory.Exists(libraryPath))
                 {
-                    // Most common case
-                    libraryPath = Path.Combine(libraryPath, directories.First());
-                }
-                else
-                {
-                    string version = GetReducedVersion();
-                    libraryPath = Path.Combine(libraryPath, version);
+                    IEnumerable<string> directories = Directory.EnumerateDirectories(libraryPath);
+                    if (directories.Count() == 1)
+                    {
+                        // Most common case
+                        libraryPath = Path.Combine(libraryPath, directories.First());
+                    }
+                    else
+                    {
+                        string version = GetReducedVersion();
+                        string path = Path.Combine(libraryPath, version);
+                        if (Directory.Exists(path))
+                        {
+                            libraryPath = path;
+                        }
+                    }
                 }
             }
             catch (IOException) { }
