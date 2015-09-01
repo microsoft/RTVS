@@ -88,5 +88,107 @@ namespace Microsoft.R.Core.Test.Formatting
 }";
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void Formatter_FormatNoCurlyConditionalTest01()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("if(true) x<-2");
+            string expected =
+@"if (true)
+    x <- 2";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatNoCurlyConditionalTest02()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("if(true) x<-2 else x<-1");
+            string expected =
+@"if (true) x <- 2 else x <- 1";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatNoCurlyRepeatTest01()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("repeat x<-2");
+            string expected =
+@"repeat
+    x <- 2";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_StatementTest01()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("x<-2");
+            string expected =
+@"x <- 2";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatFunction()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("function(a,b) {return(a+b)}");
+            string expected =
+@"function (a, b) {
+    return (a + b)
+}";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatInlineFunction()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("function(a,b) a+b");
+            string expected = @"function (a, b) a + b";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatFunctionAlignArguments()
+        {
+            RFormatter f = new RFormatter();
+            string original =
+@"x <- function (x,  
+ intercept=TRUE, tolerance =1e-07, 
+    yname = NULL)
+";
+            string actual = f.Format(original);
+            string expected =
+@"x <- function (x,
+ intercept = TRUE, tolerance = 1e-07,
+    yname = NULL)
+";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatConditionalAlignBraces()
+        {
+            RFormatter f = new RFormatter();
+            string original =
+@"
+    if (intercept) 
+	{
+        x <- cbind(1, x)
+    }
+";
+            string actual = f.Format(original);
+            string expected =
+@"
+if (intercept) {
+    x <- cbind(1, x)
+}
+";
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

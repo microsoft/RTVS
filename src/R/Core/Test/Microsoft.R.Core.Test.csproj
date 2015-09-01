@@ -89,6 +89,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
+    <None Include="Files\Formatting\lsfit.r" />
+    <None Include="Files\Formatting\lsfit.r.formatted" />
     <None Include="Files\Tokenization\Expressions.r.tokens" />
     <None Include="Files\Tokenization\Floats.r" />
     <None Include="Files\Tokenization\Expressions.r" />
@@ -109,6 +111,8 @@
     <Compile Include="AST\RDataTypesTest.cs" />
     <Compile Include="AST\AstShiftTest.cs" />
     <Compile Include="Formatting\FormatterTest.cs" />
+    <Compile Include="Formatting\FormatSamplesFilesTest.cs" />
+    <Compile Include="Formatting\FormatFilesFiles.cs" />
     <Compile Include="Parser\ParseScopeTest.cs" />
     <Compile Include="Parser\ParseFunctionDefinitionTest.cs" />
     <Compile Include="Parser\ParseExponentTest.cs" />
