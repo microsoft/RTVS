@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NOT_USED
+using System;
 
 namespace Microsoft.Languages.Editor.Text
 {
@@ -52,3 +53,4 @@ namespace Microsoft.Languages.Editor.Text
         }
     }
 }
+#endif

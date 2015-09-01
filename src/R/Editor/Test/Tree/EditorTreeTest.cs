@@ -11,6 +11,16 @@ namespace Microsoft.R.Editor.Test.Tree
     [ExcludeFromCodeCoverage]
     public static class EditorTreeTest
     {
+        public static EditorTree MakeTree(string expression)
+        {
+            TextBufferMock textBuffer = new TextBufferMock(expression, RContentTypeDefinition.ContentType);
+
+            EditorTree tree = new EditorTree(textBuffer);
+            tree.Build();
+
+            return tree;
+        }
+
         public static EditorTree ApplyTextChange(string expression, int start, int oldLength, int newLength, string newText)
         {
             TextBufferMock textBuffer = new TextBufferMock(expression, RContentTypeDefinition.ContentType);

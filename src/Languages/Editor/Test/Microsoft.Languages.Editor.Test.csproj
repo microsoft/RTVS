@@ -104,6 +104,7 @@
     <Compile Include="Mocks\TextViewMock.cs" />
     <Compile Include="Mocks\TrackingPointMock.cs" />
     <Compile Include="Mocks\TrackingSpanMock.cs" />
+    <Compile Include="Services\ServiceManagerTest.cs" />
     <Compile Include="Shell\TestEditorShell.cs" />
     <Compile Include="Text\TextChangesTest.cs" />
     <Compile Include="Text\TextProviderTest.cs" />

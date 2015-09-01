@@ -307,11 +307,19 @@ namespace Microsoft.R.Editor.Tree
                 {
                     bool childElementsChanged;
 
-                    fullParseRequired |= InvalidateInRange(child, range, out childElementsChanged);
-
-                    if (childElementsChanged)
+                    if (child is TokenNode)
                     {
+                        childElementsChanged = true;
+                        fullParseRequired = true;
                         nodesChanged = true;
+                    }
+                    else
+                    {
+                        fullParseRequired |= InvalidateInRange(child, range, out childElementsChanged);
+                        if (childElementsChanged)
+                        {
+                            nodesChanged = true;
+                        }
                     }
                 }
 

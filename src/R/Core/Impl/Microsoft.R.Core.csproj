@@ -135,6 +135,8 @@
     <Compile Include="AST\Values\LogicalValue.cs" />
     <Compile Include="AST\Operators\Indexer.cs" />
     <Compile Include="Evaluation\Evaluator.cs" />
+    <Compile Include="Formatting\RFormatOptions.cs" />
+    <Compile Include="Formatting\RFormatter.cs" />
     <Compile Include="Parser\Definitions\IParseError.cs" />
     <Compile Include="Parser\MissingItemParseError.cs" />
     <Compile Include="Parser\ErrorLocation.cs" />

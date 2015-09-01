@@ -99,6 +99,10 @@
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Core\Test\Microsoft.R.Core.Test.csproj">
+      <Project>{58d86be4-fa8b-4f59-91fe-a9b348c70ed2}</Project>
+      <Name>Microsoft.R.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
@@ -129,10 +133,13 @@
     <Compile Include="Outline\OutlineBuilderTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="QuickInfo\QuickInfoSourceTest.cs" />
+    <Compile Include="Settings\ParameterTest.cs" />
     <Compile Include="Signatures\ParameterTest.cs" />
     <Compile Include="Signatures\SignatureHelpSourceTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
     <Compile Include="Tree\EditorTreeTest.cs" />
+    <Compile Include="Tree\InvalidateTest.cs" />
+    <Compile Include="Tree\ProcessChangesTest.cs" />
     <Compile Include="Tree\TreeChangeTypeTest.cs" />
     <Compile Include="Tree\TextChangeTest.cs" />
     <Compile Include="Utility\EditorTestFilesSetup.cs" />

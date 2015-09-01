@@ -103,6 +103,7 @@
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstanceFactory.cs" />
     <Compile Include="EditorFactory\IDocumentCreationListener.cs" />
+    <Compile Include="Formatting\FormatDocumentCommand.cs" />
     <Compile Include="Outline\ROutlineTaggerProvider.cs" />
     <Compile Include="Outline\OutlineTagsCommandHandler.cs" />
     <Compile Include="Outline\ROutliningRegionTag.cs" />
@@ -120,6 +121,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Selection\RSelectionTracker.cs" />
     <Compile Include="Settings\REditorSettings.cs" />
     <Compile Include="Signatures\ParametersInfo.cs" />
     <Compile Include="Signatures\SignatureHelp.cs" />
@@ -145,6 +147,7 @@
     <Compile Include="Tree\TreeLock.cs" />
     <Compile Include="Tree\TreeUpdateTask.cs" />
     <Compile Include="Tree\TreeUpdateType.cs" />
+    <Compile Include="Undo\MassiveChange.cs" />
     <Compile Include="Validation\Definitions\IValidator.cs" />
     <Compile Include="Validation\Definitions\IValidatorProvider.cs" />
     <Compile Include="Validation\Definitions\IValidationError.cs" />
