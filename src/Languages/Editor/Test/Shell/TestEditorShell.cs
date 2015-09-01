@@ -67,18 +67,7 @@ namespace Microsoft.Languages.Editor.Tests.Shell
 
         public void DispatchOnUIThread(Action action, DispatcherPriority p)
         {
-            Dispatcher disp = Dispatcher.FromThread(_mainThread);
-            if (disp != null)
-            {
-                if (!disp.HasShutdownStarted)
-                {
-                    Dispatcher.FromThread(_mainThread).BeginInvoke(action, p);
-                }
-            }
-            else
-            {
-                action();
-            }
+            action();
         }
 
         public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer)

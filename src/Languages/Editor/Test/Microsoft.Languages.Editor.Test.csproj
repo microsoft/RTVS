@@ -96,12 +96,14 @@
     <Compile Include="Mocks\TextCaretMock.cs" />
     <Compile Include="Mocks\TextChangeCollectionMock.cs" />
     <Compile Include="Mocks\TextChangeMock.cs" />
+    <Compile Include="Mocks\TextDataModelMock.cs" />
     <Compile Include="Mocks\TextEditMock.cs" />
     <Compile Include="Mocks\TextLineMock.cs" />
     <Compile Include="Mocks\TextSelectionMock.cs" />
     <Compile Include="Mocks\TextSnapshotMock.cs" />
     <Compile Include="Mocks\TextVersionMock.cs" />
     <Compile Include="Mocks\TextViewMock.cs" />
+    <Compile Include="Mocks\TextViewModelMock.cs" />
     <Compile Include="Mocks\TrackingPointMock.cs" />
     <Compile Include="Mocks\TrackingSpanMock.cs" />
     <Compile Include="Services\ServiceManagerTest.cs" />

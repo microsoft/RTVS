@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
@@ -11,17 +12,17 @@ namespace Microsoft.Languages.Editor.Test.Mocks
     [ExcludeFromCodeCoverage]
     public class TextViewMock : ITextView
     {
-        private int _caretPosition = 0;
-
         public TextViewMock(ITextBuffer textBuffer)
         {
             TextBuffer = textBuffer;
+            Selection = new TextSelectionMock(this, new TextRange(0, 0));
+            TextDataModel = new TextDataModelMock(TextBuffer);
+            TextViewModel = new TextViewModelMock(textBuffer);
         }
 
         public TextViewMock(ITextBuffer textBuffer, int caretPosition) :
             this(textBuffer)
         {
-            _caretPosition = caretPosition;
         }
 
         public IBufferGraph BufferGraph
@@ -31,7 +32,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public ITextCaret Caret
         {
-            get { return new TextCaretMock(_caretPosition); }
+            get { return new TextCaretMock(Selection.Start.Position); }
         }
 
         public bool HasAggregateFocus
@@ -95,23 +96,11 @@ namespace Microsoft.Languages.Editor.Test.Mocks
             }
         }
 
-        public ITextSelection Selection
-        {
-            get
-            {
-                return new TextSelectionMock(this, _caretPosition);
-            }
-        }
+        public ITextSelection Selection { get; private set; }
 
         public ITextBuffer TextBuffer { get; private set; }
 
-        public ITextDataModel TextDataModel
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public ITextDataModel TextDataModel { get; private set; }
 
         public ITextSnapshot TextSnapshot
         {
@@ -126,13 +115,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
             }
         }
 
-        public ITextViewModel TextViewModel
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public ITextViewModel TextViewModel { get; private set; }
 
         public double ViewportBottom
         {

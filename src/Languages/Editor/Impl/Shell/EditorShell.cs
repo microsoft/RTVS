@@ -182,7 +182,7 @@ namespace Microsoft.Languages.Editor.Shell
         /// <returns>Undo action instance</returns>
         public static ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer)
         {
-            return new CompoundUndoAction(textView, textBuffer);
+            return Shell.CreateCompoundAction(textView, textBuffer);
         }
 
         public static bool ShowHelp(string topicName)

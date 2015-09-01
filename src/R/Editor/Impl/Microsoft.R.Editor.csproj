@@ -82,6 +82,9 @@
     <Compile Include="Commands\RMainController.cs" />
     <Compile Include="Commands\RTextViewConnectionListener.cs" />
     <Compile Include="Commands\RTypingCommandHandler.cs" />
+    <Compile Include="Comments\CommentCommand.cs" />
+    <Compile Include="Comments\RCommenter.cs" />
+    <Compile Include="Comments\UncommentCommand.cs" />
     <Compile Include="Completion\AutoCompletion\SeparatorCompletion.cs" />
     <Compile Include="Completion\Definitions\RCompletionProviderAttribute.cs" />
     <Compile Include="Completion\Definitions\IRQuickInfoProvider.cs" />

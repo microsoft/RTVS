@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.Text;
@@ -17,8 +18,8 @@ namespace Microsoft.R.Editor.Commands.Factory
         {
             List<ICommand> commands = new List<ICommand>();
 
-            //commands.Add(new CommentSelectionCommand(textView, textBuffer));
-            //commands.Add(new UncommentSelectionCommand(textView, textBuffer));
+            commands.Add(new CommentCommand(textView, textBuffer));
+            commands.Add(new UncommentCommand(textView, textBuffer));
             commands.Add(new FormatDocumentCommand(textView, textBuffer));
             //commands.Add(new FormatSelectionCommand(textView, textBuffer));
             commands.Add(new RTypingCommandHandler(textView));

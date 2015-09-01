@@ -28,6 +28,11 @@ namespace Microsoft.Languages.Editor.Test.Utility
         private static object _creatorLock = new object();
         private static Action _disposeAction;
 
+        public static void ExecuteTest(Action<ManualResetEventSlim> action)
+        {
+            ExecuteTest(action, null, null);
+        }
+
         public static void ExecuteTest(Action<ManualResetEventSlim> action, Action initAction, Action disposeAction)
         {
             lock (_creatorLock)
@@ -35,7 +40,11 @@ namespace Microsoft.Languages.Editor.Test.Utility
                 _disposeAction = disposeAction;
 
                 PrepareShell();
-                initAction();
+
+                if (initAction != null)
+                {
+                    initAction();
+                }
 
                 using (var evt = new ManualResetEventSlim())
                 {
@@ -49,7 +58,7 @@ namespace Microsoft.Languages.Editor.Test.Utility
 
         private static void CurrentDomain_DomainUnload(object sender, EventArgs e)
         {
-            if(_disposeAction != null)
+            if (_disposeAction != null)
             {
                 _disposeAction();
                 _disposeAction = null;

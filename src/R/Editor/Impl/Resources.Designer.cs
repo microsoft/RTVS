@@ -196,6 +196,15 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Comment selection.
+        /// </summary>
+        internal static string CommentSelection {
+            get {
+                return ResourceManager.GetString("CommentSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Format document.
         /// </summary>
         internal static string FormatDocument {
@@ -372,6 +381,15 @@ namespace Microsoft.R.Editor {
         internal static string ParseError_UnexpectedToken {
             get {
                 return ResourceManager.GetString("ParseError_UnexpectedToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uncomment selection.
+        /// </summary>
+        internal static string UncommentSelection {
+            get {
+                return ResourceManager.GetString("UncommentSelection", resourceCulture);
             }
         }
     }
