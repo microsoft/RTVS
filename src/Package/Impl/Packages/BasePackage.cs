@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -15,16 +16,16 @@ namespace Microsoft.VisualStudio.R.Package.Packages
         where TLanguageService : class, new()
     {
         private Dictionary<IVsProjectGenerator, uint> _projectFileGenerators;
-
         protected abstract IEnumerable<IVsEditorFactory> CreateEditorFactories();
         protected abstract IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators();
         protected abstract IEnumerable<IVsProjectFactory> CreateProjectFactories();
+		protected abstract IEnumerable<MenuCommand> CreateMenuCommands();
 
-        /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited, so this is the place
-        /// where you can put all the initialization code that relies on services provided by VisualStudio.
-        /// </summary>
-        protected override void Initialize()
+		/// <summary>
+		/// Initialization of the package; this method is called right after the package is sited, so this is the place
+		/// where you can put all the initialization code that relies on services provided by VisualStudio.
+		/// </summary>
+		protected override void Initialize()
         {
             base.Initialize();
 
@@ -33,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages
             IServiceContainer container = this;
             container.AddService(typeof(TLanguageService), new TLanguageService(), true);
 
-            foreach (var projectFactory in CreateProjectFactories())
+			foreach (var projectFactory in CreateProjectFactories())
             {
                 RegisterProjectFactory(projectFactory);
             }
@@ -47,6 +48,12 @@ namespace Microsoft.VisualStudio.R.Package.Packages
             {
                 RegisterEditorFactory(editorFactory);
             }
+
+			var menuCommandService = (IMenuCommandService)GetService(typeof(IMenuCommandService));
+			foreach (var commmand in CreateMenuCommands())
+			{
+				menuCommandService.AddCommand(commmand);
+			}
         }
 
         private void RegisterProjectFileGenerator(IVsProjectGenerator projectFileGenerator)

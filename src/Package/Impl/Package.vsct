@@ -47,6 +47,15 @@
           <ButtonText>Add &amp;Platform Specific Code</ButtonText>
         </Strings>
       </Button>
+
+			<Button guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" priority="0x0100" type="Button">
+				<Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>R Console Windows</ButtonText>
+				</Strings>
+			</Button>
     </Buttons>
 	</Commands>
 
@@ -79,9 +88,15 @@
     </CommandPlacement>
 	</CommandPlacements>
 
+	<VisibilityConstraints>
+		<VisibilityItem guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" context="RToolsPackage" />
+		<VisibilityItem guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" context="guidCpsProjectFactory" />
+	</VisibilityConstraints>
+	
 	<Symbols>
 		<!-- Package GUID -->
 		<GuidSymbol name="RToolsPackage" value="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" />
+		<GuidSymbol name="guidCpsProjectFactory" value="{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}" />
 
 		<!-- Command Ids must match those in CommonPackage\Commands -->
     <GuidSymbol name="guidRToolsCmdSet" value="{AD87578C-B324-44DC-A12A-B01A6ED5C6E3}">
@@ -101,6 +116,13 @@
       <!-- This value has to match PkgCmdIDList.cmdidAddPlatformCodeCommand -->
       <IDSymbol name="cmdidAddPlatformCodeCommand" value="0x0100" />
     </GuidSymbol>
+
+		<!-- Interactive Windows Commands -->
+		<GuidSymbol name="guidRInteractiveCommandSet" value="{E1B81198-F2CF-46EE-BAF1-ACB4AE066A5C}">
+			
+			<!-- Show Default Interactive Window -->
+			<IDSymbol name="cmdidShowDefaultInteractiveWindow" value="0x0100" />
+		</GuidSymbol>
 	</Symbols>
 
 	<UsedCommands>

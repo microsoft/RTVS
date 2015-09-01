@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Host {
+namespace Microsoft.R.Host.Client {
     class Program : IRCallbacks {
         static void Main() {
             var host = new RHost(new Program());
@@ -42,15 +40,22 @@ namespace Microsoft.R.Host {
 
         public async Task<YesNoCancel> YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s) {
             await Console.Error.WriteAsync(s);
-            while (true) {
+            while (true)
+            {
                 await Console.Error.WriteAsync(" [yes/no/cancel]> ");
                 string r = await Console.In.ReadLineAsync();
-                if (r.StartsWith("y", StringComparison.InvariantCultureIgnoreCase)) {
-                    return Host.YesNoCancel.Yes;
-                } else if (r.StartsWith("n", StringComparison.InvariantCultureIgnoreCase)) {
-                    return Host.YesNoCancel.No;
-                } else if (r.StartsWith("c", StringComparison.InvariantCultureIgnoreCase)) {
-                    return Host.YesNoCancel.Cancel;
+
+                if (r.StartsWith("y", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return Client.YesNoCancel.Yes;
+                }
+                if (r.StartsWith("n", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return Client.YesNoCancel.No;
+                }
+                if (r.StartsWith("c", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return Client.YesNoCancel.Cancel;
                 }
 
                 await Console.Error.WriteAsync("Invalid input, try again!");
