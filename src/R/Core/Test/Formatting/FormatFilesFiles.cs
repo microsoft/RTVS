@@ -19,13 +19,18 @@ namespace Microsoft.R.Core.Test.Tokens
 
         public static void FormatFile(TestContext context, string name)
         {
+            FormatFile(context, name, new RFormatOptions());
+        }
+
+        public static void FormatFile(TestContext context, string name, RFormatOptions options)
+        {
             try
             {
                 string testFile = TestFiles.GetTestFilePath(context, name);
                 string baselineFile = testFile + ".formatted";
 
                 string text = TestFiles.LoadFile(context, testFile);
-                RFormatter formatter = new RFormatter();
+                RFormatter formatter = new RFormatter(options);
 
                 string actual = formatter.Format(text);
                 if (_regenerateBaselineFiles)

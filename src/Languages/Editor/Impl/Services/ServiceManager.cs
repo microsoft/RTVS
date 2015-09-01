@@ -420,10 +420,7 @@ namespace Microsoft.Languages.Editor.Services
             {
                 _propertyOwner.Properties.RemoveProperty(typeof(ServiceManager));
 
-                Debug.Assert(_servicesByType.Count == 0);
                 _servicesByType.Clear();
-
-                Debug.Assert(_servicesByContentType.Count == 0);
                 _servicesByContentType.Clear();
 
                 _propertyOwner = null;

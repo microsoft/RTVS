@@ -432,6 +432,7 @@ namespace Microsoft.R.Core.Formatting
                     if(lastLineBreakIndex >= 0)
                     {
                         text = text.Substring(lastLineBreakIndex + 1);
+                        text = IndentBuilder.GetIndentString(text.Length, _indentBuilder.IndentType, _indentBuilder.TabSize);
                         _tb.AppendPreformattedText(text);
                     }
                 }

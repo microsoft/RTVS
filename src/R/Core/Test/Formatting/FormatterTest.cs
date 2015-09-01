@@ -155,7 +155,10 @@ namespace Microsoft.R.Core.Test.Formatting
         [TestMethod]
         public void Formatter_FormatFunctionAlignArguments()
         {
-            RFormatter f = new RFormatter();
+            RFormatOptions options = new RFormatOptions();
+            options.IndentType = IndentType.Tabs;
+
+            RFormatter f = new RFormatter(options);
             string original =
 @"x <- function (x,  
  intercept=TRUE, tolerance =1e-07, 
@@ -165,7 +168,7 @@ namespace Microsoft.R.Core.Test.Formatting
             string expected =
 @"x <- function (x,
  intercept = TRUE, tolerance = 1e-07,
-    yname = NULL)
+	yname = NULL)
 ";
             Assert.AreEqual(expected, actual);
         }
