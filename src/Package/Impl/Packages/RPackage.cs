@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Languages;
@@ -12,6 +15,8 @@ using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
 using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -28,9 +33,11 @@ namespace Microsoft.VisualStudio.R.Packages
     [ProvideLanguageService(typeof(RLanguageService), RContentTypeDefinition.LanguageName, 106)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideCpsProjectFactory(GuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
-    internal sealed class RPackage : BasePackage<RLanguageService>
+	[ProvideInteractiveWindow(GuidList.ReplWindowGuidString, Style = VsDockStyle.Linked, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
+	internal sealed class RPackage : BasePackage<RLanguageService>
     {
-        public const string OptionsDialogName = "R Tools";
+	    private RInteractiveWindowProvider _rInteractiveWindowProvider;
+	    public const string OptionsDialogName = "R Tools";
 
         protected override void Initialize()
         {
@@ -44,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Packages
             base.Dispose(disposing);
         }
 
-        protected override IEnumerable<IVsEditorFactory> CreateEditorFactories()
+	    protected override IEnumerable<IVsEditorFactory> CreateEditorFactories()
         {
             yield return new REditorFactory(this);
         }
@@ -59,6 +66,13 @@ namespace Microsoft.VisualStudio.R.Packages
             yield break;
         }
 
+	    protected override IEnumerable<MenuCommand> CreateMenuCommands()
+	    {
+			yield return new MenuCommand(
+				(sender, args) => GetInteractiveWindowProvider().Open(instanceId: 0, focus: true),
+				new CommandID(GuidList.RInteractiveCommandSetGuid, 0x0100));
+		}
+
         protected override object GetAutomationObject(string name)
         {
             if (name == RPackage.OptionsDialogName)
@@ -69,5 +83,21 @@ namespace Microsoft.VisualStudio.R.Packages
 
             return base.GetAutomationObject(name);
         }
+
+	    protected override int CreateToolWindow(ref Guid toolWindowType, int id)
+	    {
+			if (toolWindowType == GuidList.ReplWindowGuid)
+			{
+				var result = GetInteractiveWindowProvider().Create(id);
+				return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;
+			}
+
+			return base.CreateToolWindow(ref toolWindowType, id);
+		}
+
+	    private static IVsInteractiveWindowProvider GetInteractiveWindowProvider()
+	    {
+		    return AppShell.Current.ExportProvider.GetExportedValue<IVsInteractiveWindowProvider>();
+	    }
     }
 }

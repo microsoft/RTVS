@@ -106,6 +106,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Interactive.
+        /// </summary>
+        internal static string ReplWindowName {
+            get {
+                return ResourceManager.GetString("ReplWindowName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Language Files (*.r)|*.r|All Files (*.*)|*.*.
         /// </summary>
         internal static string SaveAsFilterR {

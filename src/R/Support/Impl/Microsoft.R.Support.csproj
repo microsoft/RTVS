@@ -83,19 +83,6 @@
     </Compile>
     <Compile Include="Engine\EngineSession.cs" />
     <Compile Include="Engine\EngineResponse.cs" />
-    <Compile Include="Engine\IRContext.cs" />
-    <Compile Include="Engine\IREndpoint.cs" />
-    <Compile Include="Engine\IRSession.cs" />
-    <Compile Include="Engine\IRSessionProvider.cs" />
-    <Compile Include="Engine\IRSessionRequest.cs" />
-    <Compile Include="Engine\RBeforeRequestEventArgs.cs" />
-    <Compile Include="Engine\RContextType.cs" />
-    <Compile Include="Engine\RErrorEventArgs.cs" />
-    <Compile Include="Engine\RException.cs" />
-    <Compile Include="Engine\RResponseEventArgs.cs" />
-    <Compile Include="Engine\RSession.cs" />
-    <Compile Include="Engine\RSessionRequest.cs" />
-    <Compile Include="Engine\RSessionRequestSource.cs" />
     <Compile Include="Help\Functions\FunctionIndexBuild.cs" />
     <Compile Include="Help\Functions\RdFunctionHelp.cs" />
     <Compile Include="Help\Packages\BasePackagesCollection.cs" />

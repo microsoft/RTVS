@@ -70,6 +70,9 @@
     <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
   </PropertyGroup>
+  <PropertyGroup>
+    <PrivateAssembliesFolderPath>$(DevEnvDir)\PrivateAssemblies\</PrivateAssembliesFolderPath>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -107,6 +110,10 @@
     <Compile Include="Options\R\VsRSettingsStorage.cs" />
     <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
     <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
+    <Compile Include="Repl\IVsInteractiveWindowProvider.cs" />
+    <Compile Include="Repl\RInteractiveEvaluator.cs" />
+    <Compile Include="Repl\RInteractiveWindowProvider.cs" />
+    <Compile Include="Repl\RSessionProvider.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -163,6 +170,8 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="$(MSBuildAssembly)" />
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll" />
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll" />
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost">
       <Private>True</Private>
     </Reference>
@@ -256,6 +265,14 @@
     <Folder Include="Telemetry\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
