@@ -12,6 +12,8 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Undo;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Shell
 {
@@ -170,6 +172,17 @@ namespace Microsoft.Languages.Editor.Shell
             {
                 action();
             }
+        }
+
+        /// <summary>
+        /// Creates compound undo action
+        /// </summary>
+        /// <param name="textView">Text view</param>
+        /// <param name="textBuffer">Text buffer</param>
+        /// <returns>Undo action instance</returns>
+        public static ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer)
+        {
+            return new CompoundUndoAction(textView, textBuffer);
         }
 
         public static bool ShowHelp(string topicName)

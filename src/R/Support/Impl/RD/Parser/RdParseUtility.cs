@@ -10,7 +10,7 @@ namespace Microsoft.R.Support.RD.Parser
             startTokenIndex = -1;
             endTokenIndex = -1;
 
-            RdBraceCounter<RdToken> braceCounter = new RdBraceCounter<RdToken>(
+            BraceCounter<RdToken> braceCounter = new BraceCounter<RdToken>(
                 new RdToken(RdTokenType.OpenCurlyBrace),
                 new RdToken(RdTokenType.CloseCurlyBrace),
                 new RdToken(RdTokenType.OpenSquareBracket),

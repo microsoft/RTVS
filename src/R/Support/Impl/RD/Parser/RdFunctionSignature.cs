@@ -121,7 +121,7 @@ namespace Microsoft.R.Support.RD.Parser
         private static int FindEndOfSignatureText(RdParseContext context, int start)
         {
             // Counting ( and ) find the end of the signature.
-            RdBraceCounter<char> braceCounter = new RdBraceCounter<char>('(', ')');
+            BraceCounter<char> braceCounter = new BraceCounter<char>('(', ')');
             for (int i = start; i < context.TextProvider.Length; i++)
             {
                 if (braceCounter.CountBrace(context.TextProvider[i]))

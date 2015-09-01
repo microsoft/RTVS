@@ -83,7 +83,7 @@ namespace Microsoft.Languages.Editor.Tests.Shell
 
         public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer)
         {
-            return new CompoundUndoAction(textView, textBuffer, false);
+            return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: false);
         }
 
         public int LocaleId

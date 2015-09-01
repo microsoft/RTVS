@@ -1,8 +1,8 @@
 ﻿using System;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.Languages.Editor.Selection
 {
@@ -36,7 +36,6 @@ namespace Microsoft.Languages.Editor.Selection
 
             ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
             _transaction = new TextUndoTransactionThatRollsBackProperly(innerTransaction);
-
             _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker));
 
             _selectionTracker.StartTracking(automaticTracking);

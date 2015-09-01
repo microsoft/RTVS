@@ -367,7 +367,7 @@ namespace Microsoft.R.Editor.Tree
         /// Removes all elements from the tree
         /// </summary>
         /// <returns>Number of removed elements</returns>
-        public int InvalidateAll()
+        public int Invalidate()
         {
             // make sure not to use RootNode property since
             // calling get; causes parse

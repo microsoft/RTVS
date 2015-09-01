@@ -19,6 +19,11 @@ namespace Microsoft.R.Editor.Test.Mocks
 
         public bool IsClosed { get; private set; }
 
+        public bool IsMassiveChangeInProgress
+        {
+            get { return false; }
+        }
+
         public ITextBuffer TextBuffer
         {
             get { return EditorTree.TextBuffer; }
@@ -38,9 +43,20 @@ namespace Microsoft.R.Editor.Test.Mocks
         public event EventHandler<EventArgs> Activated;
         public event EventHandler<EventArgs> Deactivated;
         public event EventHandler<EventArgs> DocumentClosing;
+        public event EventHandler<EventArgs> MassiveChangeBegun;
+        public event EventHandler<EventArgs> MassiveChangeEnded;
+
+        public void BeginMassiveChange()
+        {
+        }
 
         public void Dispose()
         {
+        }
+
+        public bool EndMassiveChange()
+        {
+            return true;
         }
     }
 }

@@ -305,7 +305,7 @@ namespace Microsoft.R.Editor.Tree
                     _editorTree.NotifyTextChange(context.Start, context.OldLength, context.NewLength);
 
                     // Remove al elements from the tree
-                    _editorTree.InvalidateAll();
+                    _editorTree.Invalidate();
                 }
                 else
                 {

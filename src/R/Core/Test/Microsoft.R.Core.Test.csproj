@@ -108,6 +108,7 @@
     <Compile Include="AST\AstNodeTest.cs" />
     <Compile Include="AST\RDataTypesTest.cs" />
     <Compile Include="AST\AstShiftTest.cs" />
+    <Compile Include="Formatting\FormatterTest.cs" />
     <Compile Include="Parser\ParseScopeTest.cs" />
     <Compile Include="Parser\ParseFunctionDefinitionTest.cs" />
     <Compile Include="Parser\ParseExponentTest.cs" />

@@ -207,4 +207,16 @@
   <data name="Settings_CommitOnSpace_Description" xml:space="preserve">
     <value>Commit intellisense selection when space key is pressed</value>
   </data>
+  <data name="Settings_SpaceAfterComma" xml:space="preserve">
+    <value>Space after comma</value>
+  </data>
+  <data name="Settings_SpaceAfterComma_Description" xml:space="preserve">
+    <value>Insert space after comma in function arguments</value>
+  </data>
+  <data name="Settings_SpaceAfterKeyword" xml:space="preserve">
+    <value>Space after keyword</value>
+  </data>
+  <data name="Settings_SpaceAfterKeyword_Description" xml:space="preserve">
+    <value>Insert space after keyword and before opening brace such as in case of 'if', 'while', 'repeat'</value>
+  </data>
 </root>

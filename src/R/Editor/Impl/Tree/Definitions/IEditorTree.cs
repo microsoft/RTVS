@@ -98,5 +98,13 @@ namespace Microsoft.R.Editor.Tree.Definitions
         /// <param name="treeUserId"></param>
         /// <returns>True if lock was released</returns>
         bool ReleaseReadLock(Guid treeUserId);
+
+        /// <summary>
+        /// Invalidates the entire tree. Typically used before massive
+        /// text replace operations in order to simplify life
+        /// of the background parser
+        /// </summary>
+        /// <returns></returns>
+        int Invalidate();
     }
 }

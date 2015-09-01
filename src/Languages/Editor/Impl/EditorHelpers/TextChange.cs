@@ -46,7 +46,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers
 
     public static class TextChanges
     {
-        public static IList<TextChange> BuildChangeList(string oldText, string newText, int maxMilliseconds, Func<char, bool> isDelimiter)
+        public static IList<TextChange> BuildChangeList(string oldText, string newText, int maxMilliseconds)
         {
             List<TextChange> changes = new List<TextChange>();
             var sw = new Stopwatch();
@@ -58,11 +58,11 @@ namespace Microsoft.Languages.Editor.EditorHelpers
 
             while (true)
             {
-                bool thereIsMore = NextChunk(oldText, ref oldIndex, newText, isDelimiter, ref newIndex, changes);
+                bool thereIsMore = NextChunk(oldText, ref oldIndex, newText, ref newIndex, changes);
                 if (!thereIsMore)
                     break;
 
-                thereIsMore = NextChunk(oldText, ref oldIndex, newText, isDelimiter, ref newIndex, changes);
+                thereIsMore = NextChunk(oldText, ref oldIndex, newText, ref newIndex, changes);
                 if (!thereIsMore)
                     break;
 
@@ -75,7 +75,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             return changes;
         }
 
-        static bool NextChunk(string oldText, ref int oldIndex, string newText, Func<char, bool> isDelimiter, ref int newIndex, List<TextChange> changes)
+        static bool NextChunk(string oldText, ref int oldIndex, string newText, ref int newIndex, List<TextChange> changes)
         {
             int oldLength = oldText.Length;
             int newLength = newText.Length;
@@ -127,13 +127,6 @@ namespace Microsoft.Languages.Editor.EditorHelpers
                 if (char.IsWhiteSpace(oldChar))
                     break;
 
-                if (isDelimiter(oldChar))
-                {
-                    if (oldChunkStart == oldIndex)
-                        oldStartsWithDelimiter = true;
-                    break;
-                }
-
                 oldIndex++;
             }
 
@@ -142,13 +135,6 @@ namespace Microsoft.Languages.Editor.EditorHelpers
                 char newChar = newText[newIndex];
                 if (char.IsWhiteSpace(newChar))
                     break;
-
-                if (isDelimiter(newChar))
-                {
-                    if (newChunkStart == newIndex)
-                        newStartsWithDelimiter = true;
-                    break;
-                }
 
                 newIndex++;
             }

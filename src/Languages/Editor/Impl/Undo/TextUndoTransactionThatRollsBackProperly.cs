@@ -13,7 +13,7 @@ namespace Microsoft.Languages.Editor.Undo
     /// on this forwards the cancellation to the inner transaction, and if it failed to roll back we
     /// do it ourselves.
     /// </summary>
-    internal sealed class TextUndoTransactionThatRollsBackProperly : ITextUndoTransaction
+    public sealed class TextUndoTransactionThatRollsBackProperly : ITextUndoTransaction
     {
         private readonly ITextUndoTransaction _innerTransaction;
         private readonly RollbackDetectingUndoPrimitive _undoPrimitive;

@@ -304,6 +304,42 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Space after comma.
+        /// </summary>
+        internal static string Settings_SpaceAfterComma {
+            get {
+                return ResourceManager.GetString("Settings_SpaceAfterComma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert space after comma in function arguments.
+        /// </summary>
+        internal static string Settings_SpaceAfterComma_Description {
+            get {
+                return ResourceManager.GetString("Settings_SpaceAfterComma_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Space after keyword.
+        /// </summary>
+        internal static string Settings_SpaceAfterKeyword {
+            get {
+                return ResourceManager.GetString("Settings_SpaceAfterKeyword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert space after keyword and before opening brace such as in case of &apos;if&apos;, &apos;while&apos;, &apos;repeat&apos;.
+        /// </summary>
+        internal static string Settings_SpaceAfterKeyword_Description {
+            get {
+                return ResourceManager.GetString("Settings_SpaceAfterKeyword_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Setting description.
         /// </summary>
         internal static string Temp_SettingDescription {

@@ -18,7 +18,7 @@ namespace Microsoft.Languages.Editor.Undo
         private bool _undoAfterClose;
         private bool _addRollbackOnCancel;
 
-        public CompoundUndoAction(ITextView textView, ITextBuffer textBuffer, bool addRollbackOnCancel)
+        public CompoundUndoAction(ITextView textView, ITextBuffer textBuffer, bool addRollbackOnCancel = true)
         {
             IEditorOperationsFactoryService operationsService = EditorShell.ExportProvider.GetExport<IEditorOperationsFactoryService>().Value;
             ITextBufferUndoManagerProvider undoProvider = EditorShell.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;

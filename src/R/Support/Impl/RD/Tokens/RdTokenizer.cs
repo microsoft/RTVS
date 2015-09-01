@@ -55,7 +55,7 @@ namespace Microsoft.R.Support.RD.Tokens
 
         private void HandleLatexContent(bool block)
         {
-            RdBraceCounter<char> braceCounter = block ? new RdBraceCounter<char>('{', '}', '[', ']') : null;
+            BraceCounter<char> braceCounter = block ? new BraceCounter<char>('{', '}', '[', ']') : null;
 
             while (!_cs.IsEndOfStream())
             {
@@ -195,7 +195,7 @@ namespace Microsoft.R.Support.RD.Tokens
         /// <param name="closeBrace"></param>
         private void HandleRContent(char closeBrace)
         {
-            RdBraceCounter<char> braceCounter = new RdBraceCounter<char>('{', '}', '[', ']');
+            BraceCounter<char> braceCounter = new BraceCounter<char>('{', '}', '[', ']');
             int start = _cs.Position;
 
             while (!_cs.IsEndOfStream())
@@ -324,7 +324,7 @@ namespace Microsoft.R.Support.RD.Tokens
         /// </summary>
         private void HandleVerbatimContent(char closeBrace)
         {
-            RdBraceCounter<char> braceCounter = new RdBraceCounter<char>('{', '}', '[', ']');
+            BraceCounter<char> braceCounter = new BraceCounter<char>('{', '}', '[', ']');
 
             while (!_cs.IsEndOfStream())
             {

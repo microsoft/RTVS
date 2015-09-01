@@ -2,6 +2,7 @@
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.ContentType;
 
 namespace Microsoft.R.Editor.Settings
@@ -12,6 +13,7 @@ namespace Microsoft.R.Editor.Settings
         public const string CommitOnSpaceKey = "CommitOnSpace";
 
         private static bool _initialized = false;
+        private static RFormatOptions _formatOptions = new RFormatOptions();
 
         private static IEditorSettingsStorage Storage
         {
@@ -57,6 +59,8 @@ namespace Microsoft.R.Editor.Settings
         {
             if (IsWritable)
                 WritableStorage.ResetSettings();
+
+            _formatOptions = new RFormatOptions();
         }
 
         private static void OnSettingsChanged(object sender, EventArgs e)
@@ -217,6 +221,18 @@ namespace Microsoft.R.Editor.Settings
             {
                 if (IsWritable)
                     WritableStorage.SetBoolean(CommonSettings.ShowTclFunctionsKey, value);
+            }
+        }
+
+        public static RFormatOptions FormatOptions
+        {
+            get
+            {
+                _formatOptions.IndentSize = REditorSettings.IndentSize;
+                _formatOptions.IndentType = REditorSettings.IndentType;
+                _formatOptions.TabSize = REditorSettings.TabSize;
+
+                return _formatOptions;
             }
         }
     }

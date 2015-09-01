@@ -117,10 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AsyncIntellisense" xml:space="preserve">
-    <value>Parsing document...</value>
-    <comment>Placeholder for the intellisense dropdown when document is still being processed</comment>
-  </data>
   <data name="ColorName_R_Assignment" xml:space="preserve">
     <value>R Assignment</value>
   </data>
@@ -222,5 +218,8 @@
   </data>
   <data name="ColorName_R_TypeFunction" xml:space="preserve">
     <value>R Type Functions</value>
+  </data>
+  <data name="FormatDocument" xml:space="preserve">
+    <value>Format document</value>
   </data>
 </root>

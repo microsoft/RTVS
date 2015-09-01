@@ -158,7 +158,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <returns>Undo action instance</returns>
         public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer)
         {
-            return new CompoundUndoAction(textView, textBuffer, true);
+            return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: true);
         }
 
         /// <summary>

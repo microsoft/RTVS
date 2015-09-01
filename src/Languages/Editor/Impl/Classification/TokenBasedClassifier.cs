@@ -15,7 +15,9 @@ namespace Microsoft.Languages.Editor.Classification
     /// </summary>
     public class TokenBasedClassifier<TTokenType, TTokenClass> : IClassifier where TTokenClass : IToken<TTokenType>
     {
-#pragma warning disable 67
+        private bool _suspended;
+
+        #pragma warning disable 67
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
 #pragma warning restore 67
 
@@ -155,7 +157,7 @@ namespace Microsoft.Languages.Editor.Classification
             List<ClassificationSpan> classifications = new List<ClassificationSpan>();
             ITextSnapshot textSnapshot = TextBuffer.CurrentSnapshot;
 
-            if (span.Length <= 2)
+            if (span.Length <= 2 || _suspended)
             {
                 string ws = textSnapshot.GetText(span);
                 if (String.IsNullOrWhiteSpace(ws))
@@ -240,6 +242,30 @@ namespace Microsoft.Languages.Editor.Classification
                     classifications.Add(cs);
                 }
 
+            }
+        }
+
+
+        public void Suspend()
+        {
+            _suspended = true;
+        }
+
+        public void Resume()
+        {
+            if (_suspended)
+            {
+                _suspended = false;
+                Recolorize();
+            }
+        }
+
+        protected void Recolorize()
+        {
+            if (ClassificationChanged != null)
+            {
+                var span = new SnapshotSpan(TextBuffer.CurrentSnapshot, 0, TextBuffer.CurrentSnapshot.Length);
+                ClassificationChanged(this, new ClassificationChangedEventArgs(span));
             }
         }
 

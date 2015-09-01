@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document.Definitions;
@@ -38,16 +42,8 @@ namespace Microsoft.R.Editor.Document
 #pragma warning restore 67
         #endregion
 
-        #region IREditorDocument
-        public IEditorTree EditorTree
-        {
-            get { return _editorTree; }
-        }
-
-        public bool IsClosed { get; private set; }
-        #endregion
-
         private EditorTree _editorTree;
+        private int _inMassiveChange;
         //private TreeValidator _validator;
 
         #region Constructors
@@ -154,6 +150,98 @@ namespace Microsoft.R.Editor.Document
                 Close();
             }
         }
+        #endregion
+
+        #region IREditorDocument
+        /// <summary>
+        /// Editor parse tree (object model)
+        /// </summary>
+        public IEditorTree EditorTree
+        {
+            get { return _editorTree; }
+        }
+
+        /// <summary>
+        /// If trie the document is closed.
+        /// </summary>
+        public bool IsClosed { get; private set; }
+
+        /// <summary>
+        /// Tells document that massive change to text buffer is about to commence.
+        /// Document will then stop tracking text buffer changes, will suspend
+        /// HTML parser anc classifier and remove all projections. HTML tree is
+        /// no longer valid after this call.
+        /// </summary>
+        public void BeginMassiveChange()
+        {
+            if (_inMassiveChange == 0)
+            {
+                _editorTree.TreeUpdateTask.Suspend();
+
+                RClassifier colorizer = ServiceManager.GetService<RClassifier>(TextBuffer);
+                if (colorizer != null)
+                    colorizer.Suspend();
+
+                if (MassiveChangeBegun != null)
+                    MassiveChangeBegun(this, EventArgs.Empty);
+            }
+
+            _inMassiveChange++;
+        }
+
+        /// <summary>
+        /// Tells document that massive change to text buffer is complete. Document will perform full parse, 
+        /// resume tracking of text buffer changes and classification (colorization).
+        /// </summary>
+        /// <returns>True if changes were made to the text buffer since call to BeginMassiveChange</returns>
+        public bool EndMassiveChange()
+        {
+            bool changed = _editorTree.TreeUpdateTask.TextBufferChangedSinceSuspend;
+
+            if (_inMassiveChange == 1)
+            {
+                RClassifier colorizer = ServiceManager.GetService<RClassifier>(TextBuffer);
+                if (colorizer != null)
+                    colorizer.Resume();
+
+                if (changed)
+                {
+                    TextChangeEventArgs textChange = new TextChangeEventArgs(0, 0, TextBuffer.CurrentSnapshot.Length, 0,
+                        new TextProvider(_editorTree.TextSnapshot, partial: true), new TextStream(string.Empty));
+
+                    List<TextChangeEventArgs> textChanges = new List<TextChangeEventArgs>();
+                    textChanges.Add(textChange);
+                    _editorTree.FireOnUpdatesPending(textChanges);
+
+                    _editorTree.FireOnUpdateBegin();
+                    _editorTree.FireOnUpdateCompleted(TreeUpdateType.NewTree);
+                }
+
+                _editorTree.TreeUpdateTask.Resume();
+
+                if (MassiveChangeEnded != null)
+                    MassiveChangeEnded(this, EventArgs.Empty);
+            }
+
+            if (_inMassiveChange > 0)
+                _inMassiveChange--;
+
+            return changed;
+        }
+
+        /// <summary>
+        /// Indicates if massive change to the document is in progress. If massive change
+        /// is in progress, tree updates and colorizer are suspended.
+        /// </summary>
+        public bool IsMassiveChangeInProgress
+        {
+            get { return _inMassiveChange > 0; }
+        }
+
+#pragma warning disable 67
+        public event EventHandler<EventArgs> MassiveChangeBegun;
+        public event EventHandler<EventArgs> MassiveChangeEnded;
+#pragma warning restore 67
         #endregion
     }
 }

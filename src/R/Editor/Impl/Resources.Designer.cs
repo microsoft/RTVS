@@ -61,15 +61,6 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parsing document....
-        /// </summary>
-        internal static string AsyncIntellisense {
-            get {
-                return ResourceManager.GetString("AsyncIntellisense", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Assignment.
         /// </summary>
         internal static string ColorName_R_Assignment {
@@ -201,6 +192,15 @@ namespace Microsoft.R.Editor {
         internal static string ColorName_R_TypeFunction {
             get {
                 return ResourceManager.GetString("ColorName_R_TypeFunction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Format document.
+        /// </summary>
+        internal static string FormatDocument {
+            get {
+                return ResourceManager.GetString("FormatDocument", resourceCulture);
             }
         }
         

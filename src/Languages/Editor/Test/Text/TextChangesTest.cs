@@ -36,10 +36,7 @@ namespace Microsoft.Languages.Editor.Test.Text
 
         private IList<TextChange> BuildChangeList(string oldText, string newText)
         {
-            Func<char, bool> isDelimiter = ((c) => { return false; });
-            int maxMilliseconds = Int32.MaxValue;
-
-            return TextChanges.BuildChangeList(oldText, newText, maxMilliseconds, isDelimiter);
+            return TextChanges.BuildChangeList(oldText, newText, Int32.MaxValue);
         }
     }
 }

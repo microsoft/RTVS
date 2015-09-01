@@ -66,6 +66,8 @@
     <Compile Include="Formatting\IndentState.cs" />
     <Compile Include="Formatting\IndentType.cs" />
     <Compile Include="Formatting\IntentStyle.cs" />
+    <Compile Include="Formatting\TextBuilder.cs" />
+    <Compile Include="Formatting\Whitespace.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Text\CharacterStream.cs" />
@@ -86,6 +88,7 @@
     <Compile Include="Tokens\IToken.cs" />
     <Compile Include="Tokens\ITokenizer.cs" />
     <Compile Include="Tokens\NumberTokenizer.cs" />
+    <Compile Include="Tokens\BraceCounter.cs" />
     <Compile Include="Tokens\Token.cs" />
     <Compile Include="Tokens\BaseTokenizer.cs" />
     <Compile Include="Tokens\Tokenizer.cs" />

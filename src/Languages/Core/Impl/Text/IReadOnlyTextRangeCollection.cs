@@ -26,5 +26,15 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="position">Position in a text buffer</param>
         /// <returns>Item index or -1 if not found</returns>
         int GetItemContaining(int position);
+
+        /// <summary>
+        /// Retrieves item that immediately precedes given position
+        /// </summary>
+        int GetFirstItemBeforePosition(int position);
+
+        /// <summary>
+        /// Retrieves item that is at or immediately follows the position
+        /// </summary>
+        int GetFirstItemAfterOrAtPosition(int position);
     }
 }
