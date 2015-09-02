@@ -21,8 +21,6 @@ namespace Microsoft.Languages.Editor.Test.Composition
 
         private static string _idePath;
         private static string _editorPath;
-        private static string _webEditorPath;
-        private static string _webExtensionsPath;
         private static string _privatePath;
 
         private static string[] _editorAssemblies = new string[]
@@ -45,7 +43,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
             "Microsoft.R.Editor.Test.dll",
             "Microsoft.R.Support.dll",
             "Microsoft.R.Support.Test.dll",
-            "Microsoft.Languages.Editor.Application.dll",
+            //"Microsoft.Languages.Editor.Application.dll",
         };
 
         private static IEnumerable<string> _additionalMefAssemblies;
@@ -136,9 +134,6 @@ namespace Microsoft.Languages.Editor.Test.Composition
             _editorPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Editor");
             _privatePath = Path.Combine(_idePath, @"PrivateAssemblies\");
 
-            _webEditorPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Web\Editor");
-            _webExtensionsPath = Path.Combine(_idePath, @"Extensions\Microsoft\Web Tools\Editors");
-
             AggregateCatalog aggregateCatalog = new AggregateCatalog();
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
@@ -175,8 +170,6 @@ namespace Microsoft.Languages.Editor.Test.Composition
             string[] paths = new string[]
             {
                     Path.Combine(assemblyLoc, assemblyName),
-                    Path.Combine(_webExtensionsPath, assemblyName),
-                    Path.Combine(_webEditorPath, assemblyName),
             };
 
             try

@@ -130,11 +130,13 @@
     </Compile>
     <Compile Include="Comments\CommenterTest.cs" />
     <Compile Include="Completions\RCompletionSourceTest.cs" />
+    <Compile Include="Formatting\RangeFormatterTest.cs" />
     <Compile Include="Mocks\EditorDocumentMock.cs" />
     <Compile Include="Outline\OutlineBuilderTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="QuickInfo\QuickInfoSourceTest.cs" />
     <Compile Include="Settings\ParameterTest.cs" />
+    <Compile Include="Settings\TestSettingsStorage.cs" />
     <Compile Include="Signatures\ParameterTest.cs" />
     <Compile Include="Signatures\SignatureHelpSourceTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />

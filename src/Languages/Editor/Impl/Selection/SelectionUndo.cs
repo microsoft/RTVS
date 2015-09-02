@@ -29,26 +29,32 @@ namespace Microsoft.Languages.Editor.Selection
 
         public SelectionUndo(ISelectionTracker selectionTracker, string transactionName, bool automaticTracking)
         {
-            _selectionTracker = selectionTracker;
+            if (!EditorShell.IsUnitTestEnvironment)
+            {
+                _selectionTracker = selectionTracker;
 
-            var undoManagerProvider = EditorShell.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
-            var undoManager = undoManagerProvider.GetTextBufferUndoManager(selectionTracker.TextView.TextBuffer);
+                var undoManagerProvider = EditorShell.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
+                var undoManager = undoManagerProvider.GetTextBufferUndoManager(selectionTracker.TextView.TextBuffer);
 
-            ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
-            _transaction = new TextUndoTransactionThatRollsBackProperly(innerTransaction);
-            _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker));
+                ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
+                _transaction = new TextUndoTransactionThatRollsBackProperly(innerTransaction);
+                _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker));
 
-            _selectionTracker.StartTracking(automaticTracking);
+                _selectionTracker.StartTracking(automaticTracking);
+            }
         }
 
         public void Dispose()
         {
-            _selectionTracker.EndTracking();
+            if (!EditorShell.IsUnitTestEnvironment)
+            {
+                _selectionTracker.EndTracking();
 
-            _transaction.AddUndo(new EndSelectionTrackingUndoUnit(_selectionTracker));
+                _transaction.AddUndo(new EndSelectionTrackingUndoUnit(_selectionTracker));
 
-            _transaction.Complete();
-            _transaction.Dispose();
+                _transaction.Complete();
+                _transaction.Dispose();
+            }
         }
     }
 

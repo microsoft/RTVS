@@ -1,18 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Expressions.Definitions;
-using Microsoft.R.Core.AST.Functions.Definitions;
-using Microsoft.R.Core.AST.Operators.Definitions;
-using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Statements.Definitions;
-using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Formatting;
-using Microsoft.R.Core.Parser;
-using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Formatting

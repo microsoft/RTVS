@@ -229,6 +229,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell
             get { return AppShell.Current.GlobalServiceProvider; }
         }
 
+        public bool IsUnitTestEnvironment
+        {
+            get { return false; }
+        }
+
+        public bool IsUITestEnvironment
+        {
+            // TODO: test for UI-drive VS tests
+            get { return false; }
+        }
         #endregion
 
         #region IDisposable

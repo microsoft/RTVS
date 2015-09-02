@@ -20,22 +20,24 @@ namespace Microsoft.Languages.Editor.Undo
 
         public CompoundUndoAction(ITextView textView, ITextBuffer textBuffer, bool addRollbackOnCancel = true)
         {
-            IEditorOperationsFactoryService operationsService = EditorShell.ExportProvider.GetExport<IEditorOperationsFactoryService>().Value;
-            ITextBufferUndoManagerProvider undoProvider = EditorShell.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
+            if (!EditorShell.IsUnitTestEnvironment)
+            {
+                IEditorOperationsFactoryService operationsService = EditorShell.ExportProvider.GetExport<IEditorOperationsFactoryService>().Value;
+                ITextBufferUndoManagerProvider undoProvider = EditorShell.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
 
-            _editorOperations = operationsService.GetEditorOperations(textView);
-            _undoManager = undoProvider.GetTextBufferUndoManager(_editorOperations.TextView.TextBuffer);
-            _addRollbackOnCancel = addRollbackOnCancel;
+                _editorOperations = operationsService.GetEditorOperations(textView);
+                _undoManager = undoProvider.GetTextBufferUndoManager(_editorOperations.TextView.TextBuffer);
+                _addRollbackOnCancel = addRollbackOnCancel;
+            }
         }
 
         public void Open(string name)
         {
             Debug.Assert(_undoTransaction == null);
 
-            if (_undoTransaction == null)
+            if (_undoTransaction == null && _undoManager != null && _editorOperations != null)
             {
                 _undoTransaction = _undoManager.TextBufferUndoHistory.CreateTransaction(name);
-
                 if (_addRollbackOnCancel)
                 {
                     // Some hosts (*cough* VS *cough*) don't properly implement ITextUndoTransaction such

@@ -103,6 +103,16 @@ namespace Microsoft.Languages.Editor.Tests.Shell
         public void ShowErrorMessage(string msg)
         {
         }
+
+        public bool IsUnitTestEnvironment
+        {
+            get { return true; }
+        }
+
+        public bool IsUITestEnvironment
+        {
+            get { return false; }
+        }
         #endregion
     }
 }

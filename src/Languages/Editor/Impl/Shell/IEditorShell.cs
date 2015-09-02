@@ -103,5 +103,15 @@ namespace Microsoft.Languages.Editor.Shell
         /// Host service provider (can be null).
         /// </summary>
         IServiceProvider ServiceProvider { get; }
+
+        /// <summary>
+        /// Tells if code runs in unit test environment
+        /// </summary>
+        bool IsUnitTestEnvironment { get; }
+
+        /// <summary>
+        /// Tells if code runs in UI test environment
+        /// </summary>
+        bool IsUITestEnvironment { get; }
     }
 }

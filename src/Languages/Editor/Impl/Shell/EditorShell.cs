@@ -285,6 +285,22 @@ namespace Microsoft.Languages.Editor.Shell
             }
         }
 
+        /// <summary>
+        /// Tells if code runs in unit test environment
+        /// </summary>
+        public static bool IsUnitTestEnvironment
+        {
+            get { return Shell.IsUnitTestEnvironment; }
+        }
+
+        /// <summary>
+        /// Tells if code runs in UI test environment
+        /// </summary>
+        public static bool IsUITestEnvironment
+        {
+            get { return Shell.IsUITestEnvironment; }
+        }
+
         private static void CacheHostProperties()
         {
             // Dev12 bug 786618 - Cache some host properties so that they can be accessed from background
@@ -318,7 +334,7 @@ namespace Microsoft.Languages.Editor.Shell
         }
 
         internal static void DoIdle(object sender, EventArgs eventArgs)
-        { 
+        {
             if (_onIdleHandlers.Count > 0)
             {
                 Stopwatch sw = Stopwatch.StartNew();
