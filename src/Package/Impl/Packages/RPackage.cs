@@ -36,7 +36,6 @@ namespace Microsoft.VisualStudio.R.Packages
 	[ProvideInteractiveWindow(GuidList.ReplWindowGuidString, Style = VsDockStyle.Linked, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
 	internal sealed class RPackage : BasePackage<RLanguageService>
     {
-	    private RInteractiveWindowProvider _rInteractiveWindowProvider;
 	    public const string OptionsDialogName = "R Tools";
 
         protected override void Initialize()

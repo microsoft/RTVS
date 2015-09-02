@@ -111,6 +111,20 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
+        public void Formatter_FormatNoCurlyConditionalTest03()
+        {
+            RFormatOptions options = new RFormatOptions();
+            options.IndentType = IndentType.Tabs;
+
+            RFormatter f = new RFormatter(options);
+            string actual = f.Format("if(true)    x<-2");
+            string expected =
+@"if (true)
+	x <- 2";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void Formatter_FormatNoCurlyRepeatTest01()
         {
             RFormatter f = new RFormatter();

@@ -17,16 +17,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
             this.SettingsRegistryPath = @"UserSettings\R_Advanced";
         }
 
-        [LocCategory("Settings_PasteCategory")]
-        [CustomLocDisplayName("Settings_FormatOnPaste")]
-        [LocDescription("Settings_FormatOnPaste_Description")]
-        [DefaultValue(true)]
-        public bool FormatOnPaste
-        {
-            get { return REditorSettings.FormatOnPaste; }
-            set { REditorSettings.FormatOnPaste = value; }
-        }
-
         [LocCategory("Settings_ValidationCategory")]
         [CustomLocDisplayName("Settings_EnableValidation")]
         [LocDescription("Settings_EnableValidation_Description")]
@@ -95,6 +85,26 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         {
             get { return REditorSettings.FormatOptions.SpaceAfterComma; }
             set { REditorSettings.FormatOptions.SpaceAfterComma = value; }
+        }
+
+        [LocCategory("Settings_FormattingCategory")]
+        [CustomLocDisplayName("Settings_FormatOnPaste")]
+        [LocDescription("Settings_FormatOnPaste_Description")]
+        [DefaultValue(true)]
+        public bool FormatOnPaste
+        {
+            get { return REditorSettings.FormatOnPaste; }
+            set { REditorSettings.FormatOnPaste = value; }
+        }
+
+        [LocCategory("Settings_FormattingCategory")]
+        [CustomLocDisplayName("Settings_AutoFormat")]
+        [LocDescription("Settings_AutoFormat_Description")]
+        [DefaultValue(true)]
+        public bool AutoFormat
+        {
+            get { return REditorSettings.AutoFormat; }
+            set { REditorSettings.AutoFormat = value; }
         }
 
         public override void ResetSettings()

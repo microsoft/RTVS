@@ -106,7 +106,10 @@
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstanceFactory.cs" />
     <Compile Include="EditorFactory\IDocumentCreationListener.cs" />
+    <Compile Include="Formatting\AutoFormat.cs" />
     <Compile Include="Formatting\FormatDocumentCommand.cs" />
+    <Compile Include="Formatting\FormatSelectionCommand.cs" />
+    <Compile Include="Formatting\RangeFormatter.cs" />
     <Compile Include="Outline\ROutlineTaggerProvider.cs" />
     <Compile Include="Outline\OutlineTagsCommandHandler.cs" />
     <Compile Include="Outline\ROutliningRegionTag.cs" />
