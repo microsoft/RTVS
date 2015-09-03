@@ -10,6 +10,7 @@ using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Search;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Selection;
+using Microsoft.R.Editor.SmartIndent;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -57,24 +58,32 @@ namespace Microsoft.R.Editor.Formatting
             string lineText = line.GetText();
 
             // Firgure out indent from the enclosing scope
-            IScope scope = ast.GetSpecificNodeFromPosition(position, (IAstNode n) =>
-            {
-                return n is IScope;
-            }) as IScope;
+            IScope scope = ast.GetSpecificNodeFromPosition(position, (IAstNode n) => { return n is IScope; }) as IScope;
 
-            int textIndentInSpaces = IndentSizeFromScope(textBuffer, scope, options);
+            int textIndentInSpaces = SmartIndenter.InnerIndentSizeFromScope(textBuffer, scope, options);
             string indentString = IndentBuilder.GetIndentString(textIndentInSpaces, options.IndentType, options.TabSize);
-            var sb = new StringBuilder();
+            int outerIndentInSpaces = SmartIndenter.OuterIndentSizeFromScope(textBuffer, scope, options);
+            string outerIndentString = IndentBuilder.GetIndentString(outerIndentInSpaces, options.IndentType, options.TabSize);
 
+            var sb = new StringBuilder();
             IList<string> lines = TextHelper.SplitTextIntoLines(formattedText);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 lineText = lines[i];
 
+                if(i == lines.Count-1 && lineText.Trim() == "}")
+                {
+                    sb.Append(outerIndentString);
+                    sb.Append('}');
+                    break;
+                }
+
                 // Leave empty lines alone
                 if (!string.IsNullOrWhiteSpace(lineText))
+                {
                     sb.Append(indentString);
+                 }
 
                 sb.Append(lineText);
 
@@ -83,22 +92,6 @@ namespace Microsoft.R.Editor.Formatting
             }
 
             return sb.ToString();
-        }
-
-        public static int IndentSizeFromScope(ITextBuffer textBuffer, IScope scope, RFormatOptions options)
-        {
-            if (scope != null && scope.OpenCurlyBrace != null)
-            {
-                ITextSnapshotLine scopeStartLine = textBuffer.CurrentSnapshot.GetLineFromPosition(scope.OpenCurlyBrace.Start);
-                string scopeLineText = scopeStartLine.GetText();
-
-                string leadingWhitespace = scopeLineText.Substring(0, scopeLineText.Length - scopeLineText.TrimStart().Length);
-                IndentBuilder indentbuilder = new IndentBuilder(options.IndentType, options.IndentSize, options.TabSize);
-
-                return IndentBuilder.TextIndentInSpaces(leadingWhitespace + indentbuilder.SingleIndentString, options.TabSize);
-            }
-
-            return 0;
         }
     }
 }

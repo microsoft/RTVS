@@ -30,10 +30,10 @@ namespace Microsoft.R.Editor.Commands
         {
             if (group == VSConstants.VSStd2K)
             {
-                var typedChar = GetTypedChar(group, id, inputArg);
+                char typedChar = GetTypedChar(group, id, inputArg);
 
                 AstRoot ast = EditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree.AstRoot;
-                AutoFormat.HandleAutoFormat(TextView, TextView.TextBuffer, ast);
+                AutoFormat.HandleAutoFormat(TextView, TextView.TextBuffer, ast, typedChar);
 
                 HandleCompletion(typedChar);
 

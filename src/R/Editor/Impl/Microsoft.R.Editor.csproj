@@ -135,6 +135,8 @@
     <Compile Include="Signatures\SignatureHelpProvider.cs" />
     <Compile Include="Signatures\SignatureHelpSource.cs" />
     <Compile Include="Signatures\SignatureParameter.cs" />
+    <Compile Include="SmartIndent\SmartIndenter.cs" />
+    <Compile Include="SmartIndent\SmartIndentProvider.cs" />
     <Compile Include="Tree\ApplyTreeChanges.cs" />
     <Compile Include="Tree\ChangeProcessor.cs" />
     <Compile Include="Tree\Debug.cs" />

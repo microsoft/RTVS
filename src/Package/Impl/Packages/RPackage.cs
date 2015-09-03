@@ -30,13 +30,13 @@ namespace Microsoft.VisualStudio.R.Packages
     [ProvideEditorFactory(typeof(REditorFactory), 20136, CommonPhysicalViewAttributes = 0x2, TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
     [ProvideEditorLogicalView(typeof(REditorFactory), VSConstants.LOGVIEWID.TextView_string)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
-    [ProvideLanguageService(typeof(RLanguageService), RContentTypeDefinition.LanguageName, 106)]
+    [ProvideLanguageService(typeof(RLanguageService), RContentTypeDefinition.LanguageName, 106, ShowSmartIndent = true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideCpsProjectFactory(GuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
-	[ProvideInteractiveWindow(GuidList.ReplWindowGuidString, Style = VsDockStyle.Linked, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
-	internal sealed class RPackage : BasePackage<RLanguageService>
+    [ProvideInteractiveWindow(GuidList.ReplWindowGuidString, Style = VsDockStyle.Linked, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
+    internal sealed class RPackage : BasePackage<RLanguageService>
     {
-	    public const string OptionsDialogName = "R Tools";
+        public const string OptionsDialogName = "R Tools";
 
         protected override void Initialize()
         {
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Packages
             base.Dispose(disposing);
         }
 
-	    protected override IEnumerable<IVsEditorFactory> CreateEditorFactories()
+        protected override IEnumerable<IVsEditorFactory> CreateEditorFactories()
         {
             yield return new REditorFactory(this);
         }
@@ -65,12 +65,12 @@ namespace Microsoft.VisualStudio.R.Packages
             yield break;
         }
 
-	    protected override IEnumerable<MenuCommand> CreateMenuCommands()
-	    {
-			yield return new MenuCommand(
-				(sender, args) => GetInteractiveWindowProvider().Open(instanceId: 0, focus: true),
-				new CommandID(GuidList.RInteractiveCommandSetGuid, 0x0100));
-		}
+        protected override IEnumerable<MenuCommand> CreateMenuCommands()
+        {
+            yield return new MenuCommand(
+                (sender, args) => GetInteractiveWindowProvider().Open(instanceId: 0, focus: true),
+                new CommandID(GuidList.RInteractiveCommandSetGuid, 0x0100));
+        }
 
         protected override object GetAutomationObject(string name)
         {
@@ -83,20 +83,20 @@ namespace Microsoft.VisualStudio.R.Packages
             return base.GetAutomationObject(name);
         }
 
-	    protected override int CreateToolWindow(ref Guid toolWindowType, int id)
-	    {
-			if (toolWindowType == GuidList.ReplWindowGuid)
-			{
-				var result = GetInteractiveWindowProvider().Create(id);
-				return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;
-			}
+        protected override int CreateToolWindow(ref Guid toolWindowType, int id)
+        {
+            if (toolWindowType == GuidList.ReplWindowGuid)
+            {
+                var result = GetInteractiveWindowProvider().Create(id);
+                return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;
+            }
 
-			return base.CreateToolWindow(ref toolWindowType, id);
-		}
+            return base.CreateToolWindow(ref toolWindowType, id);
+        }
 
-	    private static IVsInteractiveWindowProvider GetInteractiveWindowProvider()
-	    {
-		    return AppShell.Current.ExportProvider.GetExportedValue<IVsInteractiveWindowProvider>();
-	    }
+        private static IVsInteractiveWindowProvider GetInteractiveWindowProvider()
+        {
+            return AppShell.Current.ExportProvider.GetExportedValue<IVsInteractiveWindowProvider>();
+        }
     }
 }
