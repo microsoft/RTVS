@@ -132,11 +132,11 @@
   <data name="Settings_CompletionCategory" xml:space="preserve">
     <value>Completion</value>
   </data>
-  <data name="Settings_EnableValidation" xml:space="preserve">
-    <value>Enable validation</value>
+  <data name="Settings_EnableSyntaxCheck" xml:space="preserve">
+    <value>Enable syntax check</value>
   </data>
-  <data name="Settings_EnableValidation_Description" xml:space="preserve">
-    <value>Enable document validation and syntax checking</value>
+  <data name="Settings_EnableSyntaxCheck_Description" xml:space="preserve">
+    <value>Enable automatic syntax checking in the code</value>
   </data>
   <data name="Settings_FormattingCategory" xml:space="preserve">
     <value>Formatting</value>
@@ -145,25 +145,13 @@
     <value>Format on paste</value>
   </data>
   <data name="Settings_FormatOnPaste_Description" xml:space="preserve">
-    <value>Automatically format and indent HTML fragment on paste</value>
+    <value>Automatically format and indent code fragment on paste</value>
   </data>
-  <data name="Settings_PasteCategory" xml:space="preserve">
-    <value>Paste</value>
+  <data name="Settings_BracesExpanded" xml:space="preserve">
+    <value>Expanded braces</value>
   </data>
-  <data name="Settings_BracePositionStyle" xml:space="preserve">
-    <value>Brace positions</value>
-  </data>
-  <data name="Settings_BracePositionStyle_Description" xml:space="preserve">
-    <value>Defines curly brace positions during formatting</value>
-  </data>
-  <data name="Settings_BracePositionCompact" xml:space="preserve">
-    <value>Compact</value>
-  </data>
-  <data name="Settings_BracePositionExpanded" xml:space="preserve">
-    <value>Expanded</value>
-  </data>
-  <data name="Settings_BracePositionSemiExpanded" xml:space="preserve">
-    <value>Semi-expanded</value>
+  <data name="Settings_BracesExpanded_Description" xml:space="preserve">
+    <value>Place open curly brace on a new line</value>
   </data>
   <data name="Off" xml:space="preserve">
     <value>Off</value>
@@ -221,5 +209,8 @@
   </data>
   <data name="ReplWindowName" xml:space="preserve">
     <value>R Interactive</value>
+  </data>
+  <data name="Settings_SyntaxCheckCategory" xml:space="preserve">
+    <value>Syntax check</value>
   </data>
 </root>

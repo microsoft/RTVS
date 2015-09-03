@@ -6,7 +6,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
 {
     public class RToolsOptionsPage : DialogPage
 	{
-		private bool _someSetting;
+        public RToolsOptionsPage()
+        {
+            this.SettingsRegistryPath = @"UserSettings\R_Tools";
+        }
+
+        private bool _someSetting;
 
 		[Category("SettingCategory")]
 		[CustomLocDisplayName("Temp_SettingDisplayName")]

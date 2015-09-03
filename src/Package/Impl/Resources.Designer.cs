@@ -142,47 +142,20 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Compact.
+        ///   Looks up a localized string similar to Expanded braces.
         /// </summary>
-        internal static string Settings_BracePositionCompact {
+        internal static string Settings_BracesExpanded {
             get {
-                return ResourceManager.GetString("Settings_BracePositionCompact", resourceCulture);
+                return ResourceManager.GetString("Settings_BracesExpanded", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expanded.
+        ///   Looks up a localized string similar to Place open curly brace on a new line.
         /// </summary>
-        internal static string Settings_BracePositionExpanded {
+        internal static string Settings_BracesExpanded_Description {
             get {
-                return ResourceManager.GetString("Settings_BracePositionExpanded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Semi-expanded.
-        /// </summary>
-        internal static string Settings_BracePositionSemiExpanded {
-            get {
-                return ResourceManager.GetString("Settings_BracePositionSemiExpanded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Brace positions.
-        /// </summary>
-        internal static string Settings_BracePositionStyle {
-            get {
-                return ResourceManager.GetString("Settings_BracePositionStyle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Defines curly brace positions during formatting.
-        /// </summary>
-        internal static string Settings_BracePositionStyle_Description {
-            get {
-                return ResourceManager.GetString("Settings_BracePositionStyle_Description", resourceCulture);
+                return ResourceManager.GetString("Settings_BracesExpanded_Description", resourceCulture);
             }
         }
         
@@ -214,20 +187,20 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable validation.
+        ///   Looks up a localized string similar to Enable syntax check.
         /// </summary>
-        internal static string Settings_EnableValidation {
+        internal static string Settings_EnableSyntaxCheck {
             get {
-                return ResourceManager.GetString("Settings_EnableValidation", resourceCulture);
+                return ResourceManager.GetString("Settings_EnableSyntaxCheck", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable document validation and syntax checking.
+        ///   Looks up a localized string similar to Enable automatic syntax checking in the code.
         /// </summary>
-        internal static string Settings_EnableValidation_Description {
+        internal static string Settings_EnableSyntaxCheck_Description {
             get {
-                return ResourceManager.GetString("Settings_EnableValidation_Description", resourceCulture);
+                return ResourceManager.GetString("Settings_EnableSyntaxCheck_Description", resourceCulture);
             }
         }
         
@@ -241,7 +214,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Automatically format and indent HTML fragment on paste.
+        ///   Looks up a localized string similar to Automatically format and indent code fragment on paste.
         /// </summary>
         internal static string Settings_FormatOnPaste_Description {
             get {
@@ -264,15 +237,6 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Settings_IntellisenseCategory {
             get {
                 return ResourceManager.GetString("Settings_IntellisenseCategory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Paste.
-        /// </summary>
-        internal static string Settings_PasteCategory {
-            get {
-                return ResourceManager.GetString("Settings_PasteCategory", resourceCulture);
             }
         }
         
@@ -345,6 +309,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Settings_SpaceAfterKeyword_Description {
             get {
                 return ResourceManager.GetString("Settings_SpaceAfterKeyword_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syntax check.
+        /// </summary>
+        internal static string Settings_SyntaxCheckCategory {
+            get {
+                return ResourceManager.GetString("Settings_SyntaxCheckCategory", resourceCulture);
             }
         }
         
