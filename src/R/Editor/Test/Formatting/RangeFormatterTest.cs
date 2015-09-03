@@ -1,14 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Mocks;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Formatting;
-using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Formatting;
+using Microsoft.R.Editor.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -22,7 +18,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         public void RangeFormatter_EmptyFileTest()
         {
             AstRoot ast;
-            ITextView textView = MakeTextView(string.Empty, out ast);
+            ITextView textView = TextViewTest.MakeTextView(string.Empty, out ast);
 
             RangeFormatter.FormatRange(textView, TextRange.EmptyRange, ast, new RFormatOptions());
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -35,7 +31,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         {
             AstRoot ast;
             string original = "if(true){if(false){}}";
-            ITextView textView = MakeTextView(original, out ast);
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
 
             RangeFormatter.FormatRange(textView, new TextRange(4, 3), ast, new RFormatOptions());
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -57,7 +53,7 @@ namespace Microsoft.R.Editor.Test.Formatting
 @"if (a==a+((b +c) /x)){ 
 if(func(a,b,c +2, x =2,...)){}}";
 
-            ITextView textView = MakeTextView(original, out ast);
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
             RangeFormatter.FormatRange(textView, new TextRange(2,0), ast, new RFormatOptions());
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -78,7 +74,7 @@ if(func(a,b,c +2, x =2,...)){}}";
 x<-1
     }
 }";
-            ITextView textView = MakeTextView(original, out ast);
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
 
             RangeFormatter.FormatRange(textView, new TextRange(original.IndexOf('x'), 1), ast, new RFormatOptions());
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -90,15 +86,6 @@ x<-1
     }
 }";
             Assert.AreEqual(expected, actual);
-        }
-
-        private ITextView MakeTextView(string content, out AstRoot ast)
-        {
-            EditorShell.SetShell(TestEditorShell.Create());
-
-            ast = RParser.Parse(content);
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            return new TextViewMock(textBuffer);
         }
     }
 }

@@ -84,7 +84,7 @@ namespace Microsoft.R.Editor.Document
         /// </summary>
         public static IREditorDocument TryFromTextBuffer(ITextBuffer textBuffer)
         {
-            EditorDocument document = ServiceManager.GetService<EditorDocument>(textBuffer);
+            IREditorDocument document = ServiceManager.GetService<IREditorDocument>(textBuffer);
             if (document == null)
             {
                 TextViewData viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);

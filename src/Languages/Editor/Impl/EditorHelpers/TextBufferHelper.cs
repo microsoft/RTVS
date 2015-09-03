@@ -224,23 +224,26 @@ namespace Microsoft.Languages.Editor.EditorHelpers
 
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, Action<ITextBuffer> callback)
         {
-            ITextDocumentFactoryService textDocumentFactoryService = EditorShell.ExportProvider.GetExport<ITextDocumentFactoryService>().Value;
-            ITextDocument textDocument;
-
-            if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out textDocument))
+            if (EditorShell.Shell != null)
             {
-                EventHandler<TextDocumentEventArgs> onDocumentDisposed = null;
-                onDocumentDisposed = (object sender, TextDocumentEventArgs eventArgs) =>
+                ITextDocumentFactoryService textDocumentFactoryService = EditorShell.ExportProvider.GetExport<ITextDocumentFactoryService>().Value;
+                ITextDocument textDocument;
+
+                if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out textDocument))
                 {
-                    if (eventArgs.TextDocument == textDocument)
+                    EventHandler<TextDocumentEventArgs> onDocumentDisposed = null;
+                    onDocumentDisposed = (object sender, TextDocumentEventArgs eventArgs) =>
                     {
-                        textDocumentFactoryService.TextDocumentDisposed -= onDocumentDisposed;
+                        if (eventArgs.TextDocument == textDocument)
+                        {
+                            textDocumentFactoryService.TextDocumentDisposed -= onDocumentDisposed;
 
-                        callback(textBuffer);
-                    }
-                };
+                            callback(textBuffer);
+                        }
+                    };
 
-                textDocumentFactoryService.TextDocumentDisposed += onDocumentDisposed;
+                    textDocumentFactoryService.TextDocumentDisposed += onDocumentDisposed;
+                }
             }
         }
 

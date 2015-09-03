@@ -69,31 +69,7 @@ namespace Microsoft.Languages.Editor.Shell
         /// </summary>
         public static IEditorShell Shell
         {
-            get
-            {
-                if (_shell == null)
-                {
-                    lock (_lock)
-                    {
-                        if (_shell == null)
-                        {
-                            // Fall back to VS case. If code is being reused in another IDE, the host application
-                            // should have called SetHost by now. If it didn't this is either VS or there is a bug.
-
-                            string assemblyName = typeof(EditorShell).Assembly.FullName.Replace("Microsoft.Languages.Editor", "Microsoft.VisualStudio.R.Package");
-                            System.Reflection.Assembly package = System.Reflection.Assembly.Load(assemblyName);
-                            Debug.Assert(package != null);
-
-                            IEditorShell shell = package.CreateInstance("Microsoft.VisualStudio.R.Package.Shell.VsEditorShell") as IEditorShell;
-                            Debug.Assert(shell != null);
-
-                            SetShell(shell);
-                        }
-                    }
-                }
-
-                return _shell;
-            }
+            get { return _shell; }
         }
 
         public static bool HasShell

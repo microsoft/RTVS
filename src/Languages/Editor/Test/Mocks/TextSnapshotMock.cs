@@ -92,7 +92,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
             for (int i = 0; i < _lines.Length; i++)
             {
                 int start = _lines[i].Start.Position;
-                int length = _lines[i].LengthIncludingLineBreak;
+                int length = _lines[i].Length;
 
                 if (length == _lines[i].Length)
                 {
@@ -109,7 +109,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
             if (position == 0)
                 return _lines[0];
 
-            if (position == _lines[_lines.Length - 1].EndIncludingLineBreak)
+            if (position >= _lines[_lines.Length - 1].Length)
                 return _lines[_lines.Length - 1];
 
             return null;
@@ -197,16 +197,29 @@ namespace Microsoft.Languages.Editor.Test.Mocks
                     if (i < text.Length - 1 && (text[i + 1] == '\r' || text[i + 1] == '\n'))
                     {
                         i++;
-                        start = i + 1;
                     }
+
+                    start = i + 1;
                 }
             }
 
-            if (start < text.Length)
+            if (list.Count > 0 && list[list.Count - 1].End < text.Length)
+            {
+                start = list[list.Count - 1].End;
+
+                if (start < text.Length && (text[start] == '\n' || text[start] == '\r'))
+                    start++;
+
+                if (start < text.Length && (text[start] == '\n' || text[start] == '\r'))
+                    start++;
+
                 list.Add(new TextLineMock(this, start, text.Length - start, list.Count));
+            }
 
             if (list.Count == 0)
-                list.Add(new TextLineMock(this, 0, 0, 0));
+            {
+                list.Add(new TextLineMock(this, 0, text.Length, 0));
+            }
 
             return list.ToArray();
         }

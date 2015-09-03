@@ -130,8 +130,10 @@
     </Compile>
     <Compile Include="Comments\CommenterTest.cs" />
     <Compile Include="Completions\RCompletionSourceTest.cs" />
+    <Compile Include="Formatting\AutoFormatTest.cs" />
     <Compile Include="Formatting\RangeFormatterTest.cs" />
     <Compile Include="Mocks\EditorDocumentMock.cs" />
+    <Compile Include="Mocks\EditorTreeMock.cs" />
     <Compile Include="Outline\OutlineBuilderTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="QuickInfo\QuickInfoSourceTest.cs" />
@@ -146,6 +148,7 @@
     <Compile Include="Tree\TreeChangeTypeTest.cs" />
     <Compile Include="Tree\TextChangeTest.cs" />
     <Compile Include="Utility\EditorTestFilesSetup.cs" />
+    <Compile Include="Utility\TextViewTest.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -23,6 +23,8 @@ namespace Microsoft.Languages.Editor.Test.Mocks
         public TextViewMock(ITextBuffer textBuffer, int caretPosition) :
             this(textBuffer)
         {
+            Caret = new TextCaretMock(this, caretPosition);
+            Selection = new TextSelectionMock(this, new TextRange(caretPosition, 0));
         }
 
         public IBufferGraph BufferGraph
@@ -30,10 +32,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
             get { return null; }
         }
 
-        public ITextCaret Caret
-        {
-            get { return new TextCaretMock(Selection.Start.Position); }
-        }
+        public ITextCaret Caret { get; private set; }
 
         public bool HasAggregateFocus
         {

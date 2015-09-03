@@ -39,13 +39,18 @@ namespace Microsoft.R.Editor.SmartIndent
         #region ISmartIndent;
         public int? GetDesiredIndentation(ITextSnapshotLine line)
         {
+            return GetDesiredIndentation(line, REditorSettings.IndentStyle);
+        }
+
+        public int? GetDesiredIndentation(ITextSnapshotLine line, IndentStyle indentStyle)
+        {
             if (line != null)
             {
-                if (REditorSettings.IndentStyle == IndentStyle.Block)
+                if (indentStyle == IndentStyle.Block)
                 {
                     return GetBlockIndent(line);
                 }
-                else if (REditorSettings.IndentStyle == IndentStyle.Smart)
+                else if (indentStyle == IndentStyle.Smart)
                 {
                     return GetSmartIndent(line);
                 }
@@ -108,7 +113,7 @@ namespace Microsoft.R.Editor.SmartIndent
                 ITextSnapshotLine previousLine = line.Snapshot.GetLineFromLineNumber(lineNumber);
                 if (previousLine.Length > 0)
                 {
-                    return InnerIndentSizeFromLine(previousLine, REditorSettings.FormatOptions);
+                    return OuterIndentSizeFromLine(previousLine, REditorSettings.FormatOptions);
                 }
             }
 

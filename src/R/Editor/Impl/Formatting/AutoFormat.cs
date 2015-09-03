@@ -109,7 +109,7 @@ namespace Microsoft.R.Editor.Formatting
             textBuffer.Replace(Span.FromBounds(caretLine.Start, caretLine.End), 
                 innerIndentString + lineBreakText + braceindentString + "}");
 
-            textView.Caret.MoveTo(new VirtualSnapshotPoint(textBuffer.CurrentSnapshot, caretLine.Start + innerIndentString.Length));
+            textView.Caret.MoveTo(new VirtualSnapshotPoint(textBuffer.CurrentSnapshot, caretLine.Start.Position + innerIndentString.Length));
         }
     }
 }

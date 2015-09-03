@@ -10,9 +10,11 @@ namespace Microsoft.Languages.Editor.Test.Mocks
     public class TextCaretMock : ITextCaret
     {
         private int _position;
+        private ITextView _textView;
 
-        public TextCaretMock(int position)
+        public TextCaretMock(ITextView textView, int position)
         {
+            _textView = textView;
             _position = position;
         }
 
@@ -50,7 +52,13 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public CaretPosition Position
         {
-            get { return new CaretPosition(); }
+            get
+            {
+                return new CaretPosition(
+                    new VirtualSnapshotPoint(_textView.TextBuffer.CurrentSnapshot, _position),
+                    new MappingPointMock(_textView.TextBuffer, _position),
+                    PositionAffinity.Successor);
+            }
         }
 
         public double Right
@@ -74,27 +82,35 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition)
         {
-            throw new NotImplementedException();
+            return MoveTo(bufferPosition, PositionAffinity.Successor);
         }
 
         public CaretPosition MoveTo(SnapshotPoint bufferPosition)
         {
-            throw new NotImplementedException();
+            return MoveTo(bufferPosition, PositionAffinity.Successor);
         }
 
         public CaretPosition MoveTo(ITextViewLine textLine)
         {
-            throw new NotImplementedException();
+            return MoveTo(new SnapshotPoint(textLine.Snapshot, textLine.Start));
         }
 
         public CaretPosition MoveTo(SnapshotPoint bufferPosition, PositionAffinity caretAffinity)
         {
-            throw new NotImplementedException();
+            _position = bufferPosition.Position;
+
+            return new CaretPosition(new VirtualSnapshotPoint(bufferPosition),
+                  new MappingPointMock(bufferPosition.Snapshot.TextBuffer, bufferPosition.Position),
+                  caretAffinity);
         }
 
         public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition, PositionAffinity caretAffinity)
         {
-            throw new NotImplementedException();
+            _position = bufferPosition.Position.Position;
+
+            return new CaretPosition(bufferPosition,
+                  new MappingPointMock(bufferPosition.Position.Snapshot.TextBuffer, bufferPosition.Position),
+                  PositionAffinity.Successor);
         }
 
         public CaretPosition MoveTo(ITextViewLine textLine, double xCoordinate)
@@ -104,12 +120,12 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition, PositionAffinity caretAffinity, bool captureHorizontalPosition)
         {
-            throw new NotImplementedException();
+            return MoveTo(bufferPosition, caretAffinity);
         }
 
         public CaretPosition MoveTo(SnapshotPoint bufferPosition, PositionAffinity caretAffinity, bool captureHorizontalPosition)
         {
-            throw new NotImplementedException();
+            return MoveTo(bufferPosition, caretAffinity);
         }
 
         public CaretPosition MoveTo(ITextViewLine textLine, double xCoordinate, bool captureHorizontalPosition)

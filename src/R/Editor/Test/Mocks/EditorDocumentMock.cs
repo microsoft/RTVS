@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree.Definitions;
@@ -13,6 +14,7 @@ namespace Microsoft.R.Editor.Test.Mocks
         public EditorDocumentMock(IEditorTree tree)
         {
             EditorTree = tree;
+            ServiceManager.AddService<IREditorDocument>(this, tree.TextBuffer);
         }
 
         public IEditorTree EditorTree { get; private set; }

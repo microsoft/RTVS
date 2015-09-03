@@ -90,6 +90,7 @@
     <Compile Include="Mocks\ClassificationTypeRegistryServiceMock.cs" />
     <Compile Include="Mocks\CompletionSessionMock.cs" />
     <Compile Include="Mocks\ContentTypeMock.cs" />
+    <Compile Include="Mocks\MappingPointMock.cs" />
     <Compile Include="Mocks\QuickInfoSessionMock.cs" />
     <Compile Include="Mocks\SignatureHelpSessionMock.cs" />
     <Compile Include="Mocks\TextBufferMock.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Shell\TestEditorShell.cs" />
     <Compile Include="Text\TextChangesTest.cs" />
     <Compile Include="Text\TextProviderTest.cs" />
+    <Compile Include="Text\Typing.cs" />
     <Compile Include="Utility\ClassificationWriter.cs" />
     <Compile Include="Utility\SequentialEditorTestExecutor.cs" />
     <Compile Include="Utility\TestFilesSetup.cs" />
