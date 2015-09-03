@@ -50,7 +50,7 @@ namespace Microsoft.R.Editor.Tree
             get
             {
                 if (_oldRange == null)
-                    _oldRange = new TextRange(Start, OldLength);
+                    _oldRange = new TextRange(OldStart, OldLength);
 
                 return _oldRange;
             }
