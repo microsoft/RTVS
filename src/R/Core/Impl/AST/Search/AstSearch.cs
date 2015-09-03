@@ -75,15 +75,15 @@ namespace Microsoft.R.Core.AST.Search
         /// and contains given position in the text buffer
         /// </summary>
         /// <returns></returns>
-        public static IAstNode GetNodeOfTypeFromPosition(this AstRoot ast, int position, Func<IAstNode, bool> match)
+        public static IAstNode GetSpecificNodeFromPosition(this AstRoot ast, int position, Func<IAstNode, bool> match)
         {
             IAstNode deepestNode = null;
-            FindNodeOfType(ast, position, match, ref deepestNode);
+            FindSpecificNode(ast, position, match, ref deepestNode);
 
             return deepestNode;
         }
 
-        private static void FindNodeOfType(IAstNode node, int position, Func<IAstNode, bool> match, ref IAstNode deepestNode)
+        private static void FindSpecificNode(IAstNode node, int position, Func<IAstNode, bool> match, ref IAstNode deepestNode)
         {
             if (!node.Contains(position))
             {
@@ -101,7 +101,7 @@ namespace Microsoft.R.Core.AST.Search
 
                 if (child.Contains(position))
                 {
-                    FindNodeOfType(child, position, match, ref deepestNode);
+                    FindSpecificNode(child, position, match, ref deepestNode);
                 }
             }
         }

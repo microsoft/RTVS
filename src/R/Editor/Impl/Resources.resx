@@ -228,7 +228,7 @@
   <data name="UncommentSelection" xml:space="preserve">
     <value>Uncomment selection</value>
   </data>
-  <data name="Autoformat" xml:space="preserve">
+  <data name="AutoFormat" xml:space="preserve">
     <value>Automatic formatting</value>
   </data>
 </root>

@@ -184,7 +184,7 @@ namespace Microsoft.R.Editor.Completion
                     case ']':
                     case '}':
                     case ';':
-                        return true;
+                        return completionSet.SelectionStatus.IsUnique;
                 }
 
                 if (typedChar == ' ' && !REditorSettings.CommitOnSpace)

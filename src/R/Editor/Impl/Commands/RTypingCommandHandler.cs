@@ -4,10 +4,12 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Completion.AutoCompletion;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
+using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Commands
@@ -30,6 +32,9 @@ namespace Microsoft.R.Editor.Commands
             {
                 var typedChar = GetTypedChar(group, id, inputArg);
 
+                AstRoot ast = EditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree.AstRoot;
+                AutoFormat.HandleAutoFormat(TextView, TextView.TextBuffer, ast);
+
                 HandleCompletion(typedChar);
 
                 base.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
@@ -39,10 +44,7 @@ namespace Microsoft.R.Editor.Commands
 
         protected override CompletionController CompletionController
         {
-            get
-            {
-                return ServiceManager.GetService<RCompletionController>(TextView);
-            }
+            get { return ServiceManager.GetService<RCompletionController>(TextView); }
         }
 
         private void HandleCompletion(char typedChar)

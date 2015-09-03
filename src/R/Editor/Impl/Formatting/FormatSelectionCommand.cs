@@ -1,7 +1,11 @@
 ﻿using System;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.R.Core.AST;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -23,7 +27,26 @@ namespace Microsoft.R.Editor.Formatting
         {
             SnapshotSpan spanToFormat = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
 
-            RangeFormatter.FormatSpan(TextView, spanToFormat, REditorSettings.FormatOptions);
+            IREditorDocument document = EditorDocument.TryFromTextBuffer(_textBuffer);
+            AstRoot ast;
+            if (document == null)
+            {
+                // For unit test purposes
+                ast = inputArg as AstRoot;
+            }
+            else
+            {
+                ast = document.EditorTree.AstRoot;
+            }
+
+            if (ast != null)
+            {
+
+                RangeFormatter.FormatRange(TextView,
+                                           new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
+                                           ast, REditorSettings.FormatOptions);
+            }
+
             return new CommandResult(CommandStatus.Supported, 0);
         }
 

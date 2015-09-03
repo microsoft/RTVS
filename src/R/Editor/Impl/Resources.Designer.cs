@@ -63,9 +63,9 @@ namespace Microsoft.R.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Automatic formatting.
         /// </summary>
-        internal static string Autoformat {
+        internal static string AutoFormat {
             get {
-                return ResourceManager.GetString("Autoformat", resourceCulture);
+                return ResourceManager.GetString("AutoFormat", resourceCulture);
             }
         }
         
