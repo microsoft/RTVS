@@ -27,6 +27,7 @@ namespace Microsoft.R.Editor.Formatting
 
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             int position = textView.Caret.Position.BufferPosition;
+            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
             ITextRange formatRange;
 
             IScope scope = ast.GetSpecificNodeFromPosition(position, (IAstNode n) => { return n is IScope; }) as IScope;
@@ -34,6 +35,11 @@ namespace Microsoft.R.Editor.Formatting
             {
                 // If user typed } then fromat the enclosing scope.
                 formatRange = scope;
+            }
+            else if(typedChar == '\n' || typedChar == '\r')
+            {
+                position -= snapshot.GetLineFromPosition(line.LineNumber - 1).LineBreakLength;
+                formatRange = new TextRange(position, 0);
             }
             else
             {
@@ -66,7 +72,7 @@ namespace Microsoft.R.Editor.Formatting
 
                 snapshot = textBuffer.CurrentSnapshot;
                 position = textView.Caret.Position.BufferPosition;
-                ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
+                line = snapshot.GetLineFromPosition(position);
 
                 string textBeforeCaret = snapshot.GetText(Span.FromBounds(line.Start, position));
                 if (string.IsNullOrWhiteSpace(textBeforeCaret))

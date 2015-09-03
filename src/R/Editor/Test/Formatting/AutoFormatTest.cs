@@ -26,6 +26,7 @@ namespace Microsoft.R.Editor.Test.Formatting
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
             Assert.AreEqual("x <- 1\n", actual);
+            Assert.AreEqual(7, textView.Caret.Position.BufferPosition);
         }
 
         [TestMethod]
@@ -105,6 +106,13 @@ namespace Microsoft.R.Editor.Test.Formatting
             {
                 if (e.Changes[0].NewText.Length == 1)
                 {
+                    if (e.Changes[0].NewText[0] == '\r' || e.Changes[0].NewText[0] == '\n')
+                    {
+                        ITextSnapshotLine line = e.Before.GetLineFromPosition(position);
+                        position = line.Length + 1;
+                        textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
+                    }
+
                     AutoFormat.HandleAutoFormat(textView, textView.TextBuffer, ast, e.Changes[0].NewText[0]);
                 }
                 else

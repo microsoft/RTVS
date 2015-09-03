@@ -78,12 +78,29 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         public int LengthIncludingLineBreak
         {
-            get { return _start + _length + 2 <= _snapshot.Length ? _length + 2 : _length; }
+            get { return _length + LineBreakLength; }
         }
 
         public int LineBreakLength
         {
-            get { return _start + _length + 2 <= _snapshot.Length ? 2 : 0; }
+            get
+            {
+                int end = _start + _length;
+                int extra = 0;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    if (end < _snapshot.Length)
+                    {
+                        if (_snapshot[end] == '\n' || _snapshot[end] == '\r')
+                            extra++;
+
+                        end++;
+                    }
+                }
+
+                return extra;
+            }
         }
 
         public int LineNumber
