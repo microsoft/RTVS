@@ -29,13 +29,6 @@ namespace Microsoft.R.Editor.Test.Mocks
             get { return TextBuffer.CurrentSnapshot; }
         }
 
-        public event EventHandler<EventArgs> Closing;
-        public event EventHandler<TreeNodesRemovedEventArgs> NodesRemoved;
-        public event EventHandler<TreePositionsOnlyChangedEventArgs> PositionsOnlyChanged;
-        public event EventHandler<EventArgs> UpdateBegin;
-        public event EventHandler<TreeUpdatedEventArgs> UpdateCompleted;
-        public event EventHandler<TreeUpdatePendingEventArgs> UpdatesPending;
-
         public AstRoot AcquireReadLock(Guid treeUserId)
         {
             return AstRoot;
@@ -50,5 +43,13 @@ namespace Microsoft.R.Editor.Test.Mocks
         {
             return true;
         }
+
+#pragma warning disable 67
+        public event EventHandler<EventArgs> Closing;
+        public event EventHandler<TreeNodesRemovedEventArgs> NodesRemoved;
+        public event EventHandler<TreePositionsOnlyChangedEventArgs> PositionsOnlyChanged;
+        public event EventHandler<EventArgs> UpdateBegin;
+        public event EventHandler<TreeUpdatedEventArgs> UpdateCompleted;
+        public event EventHandler<TreeUpdatePendingEventArgs> UpdatesPending;
     }
 }
