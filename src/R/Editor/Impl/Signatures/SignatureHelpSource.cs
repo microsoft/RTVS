@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
@@ -63,6 +64,7 @@ namespace Microsoft.R.Editor.Signatures
                         signatures.Add(signature);
                     }
 
+                    session.Properties["functionInfo"] = functionInfo;
                     return true;
                 }
             }
@@ -73,7 +75,7 @@ namespace Microsoft.R.Editor.Signatures
         private void TriggerSignatureHelp(object o)
         {
             ISignatureHelpBroker signatureBroker = EditorShell.ExportProvider.GetExport<ISignatureHelpBroker>().Value;
-            signatureBroker.DismissAllSessions(o as ITextView);
+            CompletionController.DismissSignatureSession(o as ITextView);
             signatureBroker.TriggerSignatureHelp(o as ITextView);
         }
 

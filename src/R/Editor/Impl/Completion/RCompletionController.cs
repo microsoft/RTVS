@@ -8,13 +8,20 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Core.AST.Search;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion
 {
+    using Core.AST;
+    using Core.AST.Operators;
+    using Core.AST.Variables;
+    using Support.Help.Functions;
+    using Support.Help.Definitions;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
+    using Signatures;
 
     public sealed class RCompletionController : CompletionController, ICommandTarget
     {
@@ -22,7 +29,6 @@ namespace Microsoft.R.Editor.Completion
         private List<ProvisionalText> _provisionalTexts = new List<ProvisionalText>();
         private char _eatNextQuote = '\0';
         private char _commitChar = '\0';
-        private int _nestedSessions = 0;
 
         private RCompletionController(
             ITextView textView,
@@ -202,7 +208,7 @@ namespace Microsoft.R.Editor.Completion
                     //case '$':
                     //case '@':
                     //case ':':
-                        //return IsInNamespace();
+                    //return IsInNamespace();
 
                     default:
                         return Char.IsLetter(typedCharacter);
@@ -236,29 +242,29 @@ namespace Microsoft.R.Editor.Completion
 
         public override void OnPostTypeChar(char typedCharacter)
         {
-            if (typedCharacter == '(' || (!this.HasActiveSignatureSession && typedCharacter == ','))
+            if (typedCharacter == '(' || typedCharacter == ',')
             {
-                DismissAllSessions();
-
-                _nestedSessions = 1;
-                SignatureSession = SignatureBroker.TriggerSignatureHelp(TextView);
+                if (!IsSameSignatureContext())
+                {
+                    DismissAllSessions();
+                    SignatureBroker.TriggerSignatureHelp(TextView);
+                }
             }
-            else if (this.HasActiveSignatureSession && typedCharacter == ')')
+            else if (HasActiveSignatureSession(TextView) && typedCharacter == ')')
             {
                 DismissAllSessions();
 
-                _nestedSessions--;
-
-                if (_nestedSessions > 0)
-                    SignatureSession = SignatureBroker.TriggerSignatureHelp(TextView);
-
+                AstRoot ast = EditorDocument.FromTextBuffer(_textBuffer).EditorTree.AstRoot;
+                FunctionCall f = ast.GetNodeOfTypeFromPosition<FunctionCall>(TextView.Caret.Position.BufferPosition);
+                if (f != null)
+                {
+                    SignatureBroker.TriggerSignatureHelp(TextView);
+                }
             }
-            else if (this.HasActiveSignatureSession && typedCharacter == '\n')
+            else if (HasActiveSignatureSession(TextView) && typedCharacter == '\n')
             {
                 DismissAllSessions();
-                _nestedSessions = 0;
-
-                SignatureSession = SignatureBroker.TriggerSignatureHelp(TextView);
+                SignatureBroker.TriggerSignatureHelp(TextView);
             }
             else if (this.HasActiveCompletionSession)
             {
@@ -277,6 +283,31 @@ namespace Microsoft.R.Editor.Completion
             }
 
             base.OnPostTypeChar(typedCharacter);
+        }
+
+        private bool IsSameSignatureContext()
+        {
+            var sessions = SignatureBroker.GetSessions(TextView);
+            Debug.Assert(sessions.Count < 2);
+            if (sessions.Count == 1)
+            {
+                IFunctionInfo sessionFunctionInfo = null;
+                sessions[0].Properties.TryGetProperty<IFunctionInfo>("functionInfo", out sessionFunctionInfo);
+
+                if (sessionFunctionInfo != null)
+                {
+                    try
+                    {
+                        AstRoot ast = EditorDocument.FromTextBuffer(_textBuffer).EditorTree.AstRoot;
+                        ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, _textBuffer.CurrentSnapshot, TextView.Caret.Position.BufferPosition);
+                        
+                        return parametersInfo.FunctionName == sessionFunctionInfo.Name;
+                    }
+                    catch(Exception) { }
+                }
+            }
+
+            return false;
         }
 
         public override bool CommitCompletionSession(char typedCharacter)

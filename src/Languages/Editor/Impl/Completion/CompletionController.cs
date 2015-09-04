@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -25,7 +26,6 @@ namespace Microsoft.Languages.Editor.Completion
         protected IQuickInfoBroker QuickInfoBroker { get; set; }
         public ICompletionSession CompletionSession { get; protected set; }
         protected ICompletionBroker CompletionBroker { get; set; }
-        protected ISignatureHelpSession SignatureSession { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         protected CompletionController(
@@ -189,7 +189,7 @@ namespace Microsoft.Languages.Editor.Completion
         /// </summary>
         public virtual void OnShowSignatureHelp()
         {
-            DismissSignatureSession();
+            DismissSignatureSession(TextView);
             ShowSignature(autoShown: false);
         }
 
@@ -224,9 +224,9 @@ namespace Microsoft.Languages.Editor.Completion
                     CommitCompletionSession(typedCharacter);
                 }
 
-                if (HasActiveSignatureSession && CanDismissSignatureOnCommit())
+                if (HasActiveSignatureSession(TextView) && CanDismissSignatureOnCommit())
                 {
-                    DismissSignatureSession();
+                    DismissSignatureSession(TextView);
                 }
             }
 
@@ -285,9 +285,10 @@ namespace Microsoft.Languages.Editor.Completion
         /// <summary>
         /// Is there an active signature help session? (is the tooltip showing?)
         /// </summary>
-        public virtual bool HasActiveSignatureSession
+        public static bool HasActiveSignatureSession(ITextView textView)
         {
-            get { return SignatureSession != null && !SignatureSession.IsDismissed; }
+            ISignatureHelpBroker broker = EditorShell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+            return broker.IsSignatureHelpActive(textView);
         }
 
         /// <summary>
@@ -296,22 +297,17 @@ namespace Microsoft.Languages.Editor.Completion
         public virtual void DismissAllSessions()
         {
             DismissCompletionSession();
-            DismissSignatureSession();
-            DismissQuickInfoSession();
+            DismissSignatureSession(TextView);
+            DismissQuickInfoSession(TextView);
         }
 
-        public virtual void DismissQuickInfoSession()
+        public static void DismissQuickInfoSession(ITextView textView)
         {
-            if (QuickInfoBroker != null && QuickInfoBroker.IsQuickInfoActive(TextView))
+            IQuickInfoBroker broker = EditorShell.ExportProvider.GetExportedValue<IQuickInfoBroker>();
+            var sessions = broker.GetSessions(textView);
+            foreach (var s in sessions)
             {
-                var sessions = QuickInfoBroker.GetSessions(TextView);
-                if (sessions != null)
-                {
-                    foreach (var s in sessions)
-                    {
-                        s.Dismiss();
-                    }
-                }
+                s.Dismiss();
             }
         }
 
@@ -493,14 +489,12 @@ namespace Microsoft.Languages.Editor.Completion
         protected void ShowSignature(bool autoShown)
         {
             if ((!autoShown || AutoSignatureHelpEnabled) &&
-                !HasActiveSignatureSession &&
+                !HasActiveSignatureSession(TextView) &&
                 TextView.Selection.Mode != TextSelectionMode.Box &&
                 SignatureBroker != null)
             {
-                SignatureSession = SignatureBroker.TriggerSignatureHelp(TextView);
-
-                if (SignatureSession != null)
-                    SignatureSession.Dismissed += OnSignatureDismissed;
+                SignatureBroker.DismissAllSessions(TextView);
+                SignatureBroker.TriggerSignatureHelp(TextView);
             }
         }
 
@@ -514,11 +508,12 @@ namespace Microsoft.Languages.Editor.Completion
             ShowCompletion(autoShownCompletion);
         }
 
-        protected void DismissSignatureSession()
+        public static void DismissSignatureSession(ITextView textView)
         {
-            if (HasActiveSignatureSession)
+            if (HasActiveSignatureSession(textView))
             {
-                SignatureSession.Dismiss();
+                ISignatureHelpBroker broker = EditorShell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                broker.DismissAllSessions(textView);
             }
         }
 
@@ -553,15 +548,6 @@ namespace Microsoft.Languages.Editor.Completion
             }
 
             ClearCompletionSession();
-        }
-
-        private void OnSignatureDismissed(object sender, System.EventArgs eventArgs)
-        {
-            if (SignatureSession != null)
-            {
-                SignatureSession.Dismissed -= OnSignatureDismissed;
-                SignatureSession = null;
-            }
         }
     }
 }
