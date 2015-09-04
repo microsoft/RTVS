@@ -10,7 +10,7 @@ namespace Microsoft.R.Core.Test.Parser
     public class ParseFunctionDefinitionTest : UnitTestBase
     {
         [TestMethod]
-        public void ParseFunctionDefinitionTest1()
+        public void ParseFunctionDefinitionTest01()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -41,7 +41,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest2()
+        public void ParseFunctionDefinitionTest02()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -70,7 +70,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest3()
+        public void ParseFunctionDefinitionTest03()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -102,7 +102,7 @@ OperatorExpected Token [21...22)
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest4()
+        public void ParseFunctionDefinitionTest04()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -122,6 +122,67 @@ OperatorExpected Token [21...22)
 OperatorExpected Token [16...17)
 ";
             ParserTest.VerifyParse(expected, "x <- function(a b) { }");
+        }
+
+        [TestMethod]
+        public void ParseFunctionDefinitionTest05()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x <- function(a, b) a + b]
+        Expression  [x <- function(a, b) a + b]
+            TokenOperator  [<- [2...4]]
+                Variable  [x]
+                TokenNode  [<- [2...4]]
+                FunctionDefinition  [FunctionDefinition]
+                    TokenNode  [function [5...13]]
+                    TokenNode  [( [13...14]]
+                    ArgumentList  [ArgumentList]
+                        ExpressionArgument  [ExpressionArgument]
+                            Expression  [a]
+                                Variable  [a]
+                            TokenNode  [, [15...16]]
+                        ExpressionArgument  [ExpressionArgument]
+                            Expression  [b]
+                                Variable  [b]
+                    TokenNode  [) [18...19]]
+                    SimpleScope  [SimpleScope]
+                        ExpressionStatement  [a + b]
+                            Expression  [a + b]
+                                TokenOperator  [+ [22...23]]
+                                    Variable  [a]
+                                    TokenNode  [+ [22...23]]
+                                    Variable  [b]
+";
+            ParserTest.VerifyParse(expected, "x <- function(a, b) a + b");
+        }
+
+        [TestMethod]
+        public void ParseFunctionDefinitionTest06()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x <- function(a) -a]
+        Expression  [x <- function(a) -a]
+            TokenOperator  [<- [2...4]]
+                Variable  [x]
+                TokenNode  [<- [2...4]]
+                FunctionDefinition  [FunctionDefinition]
+                    TokenNode  [function [5...13]]
+                    TokenNode  [( [13...14]]
+                    ArgumentList  [ArgumentList]
+                        ExpressionArgument  [ExpressionArgument]
+                            Expression  [a]
+                                Variable  [a]
+                    TokenNode  [) [15...16]]
+                    SimpleScope  [SimpleScope]
+                        ExpressionStatement  [-a]
+                            Expression  [-a]
+                                TokenOperator  [- [17...18]]
+                                    TokenNode  [- [17...18]]
+                                    Variable  [a]
+";
+            ParserTest.VerifyParse(expected, "x <- function(a) -a");
         }
     }
 }
