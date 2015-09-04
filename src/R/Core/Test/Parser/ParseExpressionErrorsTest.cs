@@ -10,7 +10,7 @@ namespace Microsoft.R.Core.Test.Parser
     public class ParseExpressionErrorsTest : UnitTestBase
     {
         [TestMethod]
-        public void ParseIncompleteExpressionTest1()
+        public void ParseIncompleteExpressionTest01()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -21,7 +21,7 @@ OperandExpected AfterToken [0...1)
         }
 
         [TestMethod]
-        public void ParseIncompleteExpressionTest2()
+        public void ParseIncompleteExpressionTest02()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -32,7 +32,7 @@ OperandExpected AfterToken [1...2)
         }
 
         [TestMethod]
-        public void ParseIncompleteExpressionTest3()
+        public void ParseIncompleteExpressionTest03()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -43,7 +43,7 @@ OperatorExpected Token [2...3)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest1()
+        public void ParseMismatchBracesTest01()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -54,7 +54,7 @@ UnexpectedEndOfFile AfterToken [0...1)
             ParserTest.VerifyParse(expected, "(");
         }
         [TestMethod]
-        public void ParseMismatchBracesTest2()
+        public void ParseMismatchBracesTest02()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -65,7 +65,7 @@ UnexpectedToken Token [0...1)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest3()
+        public void ParseMismatchBracesTest03()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -77,7 +77,7 @@ UnexpectedEndOfFile AfterToken [3...4)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest4()
+        public void ParseMismatchBracesTest04()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -90,7 +90,7 @@ UnexpectedEndOfFile AfterToken [2...3)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest5()
+        public void ParseMismatchBracesTest05()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -101,7 +101,7 @@ OperandExpected AfterToken [5...6)
         }
 
         [TestMethod]
-        public void ParseMissingAssignmentTest1()
+        public void ParseMissingAssignmentTest01()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -110,6 +110,17 @@ OperatorExpected Token [2...10)
 FunctionBodyExpected Token [12...13)
 ";
             ParserTest.VerifyParse(expected, "x function(a)");
+        }
+
+        [TestMethod]
+        public void ParseIncompleteOperatorTest01()
+        {
+            string expected =
+@"GlobalScope  [Global]
+
+OperandExpected AfterToken [8...9)
+";
+            ParserTest.VerifyParse(expected, "y <- 2.5*");
         }
     }
 }

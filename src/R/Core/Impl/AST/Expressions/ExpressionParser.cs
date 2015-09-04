@@ -186,7 +186,8 @@ namespace Microsoft.R.Core.AST.Expressions
                         break;
                 }
 
-                if (_previousOperationType == currentOperationType && currentOperationType != OperationType.Function)
+                if ((_previousOperationType == currentOperationType && currentOperationType != OperationType.Function) ||
+                    currentOperationType == OperationType.BinaryOperator && tokens.IsEndOfStream())
                 {
                     // 'operator, operator' or 'identifier identifier' sequence is an error
                     switch (currentOperationType)
