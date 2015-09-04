@@ -50,9 +50,18 @@ namespace Microsoft.Languages.Core.Formatting
                 if (!Char.IsWhiteSpace(ch))
                     return count;
 
-                if (ch == '\r' || ch == '\n')
+                if (ch == '\r')
                 {
-                    if (i > 0 && (textProvider[i - 1] == '\r' || textProvider[i - 1] == '\n'))
+                    if (i > 0 && textProvider[i - 1] == '\n')
+                    {
+                        i--;
+                    }
+
+                    count++;
+                }
+                else if (ch == '\n')
+                {
+                    if (i > 0 && textProvider[i - 1] == '\r')
                     {
                         i--;
                     }
@@ -78,9 +87,18 @@ namespace Microsoft.Languages.Core.Formatting
                 if (!Char.IsWhiteSpace(ch))
                     return count;
 
-                if (ch == '\r' || ch == '\n')
+                if (ch == '\r')
                 {
-                    if (i < textProvider.Length - 1 && (textProvider[i + 1] == '\r' || textProvider[i + 1] == '\n'))
+                    if (i < textProvider.Length - 1 && textProvider[i + 1] == '\n')
+                    {
+                        i++;
+                    }
+
+                    count++;
+                }
+                else if (ch == '\n')
+                {
+                    if (i < textProvider.Length - 1 && textProvider[i + 1] == '\r')
                     {
                         i++;
                     }

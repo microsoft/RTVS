@@ -1,6 +1,5 @@
 x <- function (x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
-	yname = NULL)
-{
+	yname = NULL) {
 	x <- as.matrix(x)
 	y <- as.matrix(y)
 	xnames <- colnames(x)

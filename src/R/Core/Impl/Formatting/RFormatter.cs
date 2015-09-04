@@ -38,7 +38,7 @@ namespace Microsoft.R.Core.Formatting
             Tokenize(text);
 
             // Add everything in the global scope
-            AppendScope(stopAtLineBreak: false);
+            AppendScope(stopAtCloseCurly: false, stopAtLineBreak: false);
             // Append any trailing line breaks
             AppendTextBeforeToken();
 
@@ -53,18 +53,26 @@ namespace Microsoft.R.Core.Formatting
         /// simple conditional statements like 'if() stmt1 else stmt1' that
         /// should not be broken into multiple lines.
         /// </param>
-        private void AppendScope(bool stopAtLineBreak)
+        private void AppendScope(bool stopAtCloseCurly, bool stopAtLineBreak)
         {
             while (!_tokens.IsEndOfStream())
             {
-                AppendTextBeforeToken();
+                if (_tokens.CurrentToken.TokenType != RTokenType.OpenCurlyBrace)
+                {
+                    AppendTextBeforeToken();
+                }
+
+                AppendNextToken();
 
                 if (stopAtLineBreak && _tokens.IsLineBreakAfter(_textProvider, _tokens.Position))
                 {
                     break;
                 }
 
-                AppendNextToken();
+                if (stopAtCloseCurly && _tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace)
+                {
+                    break;
+                }
             }
         }
 
@@ -102,6 +110,14 @@ namespace Microsoft.R.Core.Formatting
             }
         }
 
+        /// <summary>
+        /// Appends keyword and its constructs such as condition that follows 'if' 
+        /// And the following scope controlling indentation as appropriate.
+        /// </summary>
+        /// <returns>
+        /// True if scope is closed and control flow should return 
+        /// to the outer scope and the indent level should decrease.
+        /// </returns>
         private void AppendKeyword()
         {
             string keyword = AppendToken();
@@ -113,7 +129,6 @@ namespace Microsoft.R.Core.Formatting
                 _tb.AppendSpace();
             }
 
-            // Handle braceless control blocks
             if (IsControlBlock(keyword))
             {
                 // Keyword defines optional condition
@@ -178,16 +193,21 @@ namespace Microsoft.R.Core.Formatting
             }
         }
 
+        /// <summary>
+        /// Appends statements inside scope that follows control block
+        /// such as if() { } or a single statement that follows
+        /// scope-less as in 'if() stmt' conditional.
+        /// </summary>
         private void AppendStatementsInBlock(string keyword)
         {
             // May or may not have curly braces
             if (_tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace)
             {
-                AppendOpenCurly();
-                AppendScope(stopAtLineBreak: false);
+                AppendScope(stopAtCloseCurly: true, stopAtLineBreak: false);
                 return;
             }
 
+            // No curly braces: single statement block
             bool foundSameLineElse = false;
 
             if (keyword == "if")
@@ -220,21 +240,21 @@ namespace Microsoft.R.Core.Formatting
             if (foundSameLineElse)
             {
                 _suppressLineBreaks = true;
-                AppendScope(stopAtLineBreak: true);
+                AppendScope(stopAtCloseCurly: false, stopAtLineBreak: true);
                 _suppressLineBreaks = false;
             }
             else
             {
                 if (_suppressLineBreaks)
                 {
-                    AppendScope(stopAtLineBreak: true);
+                    AppendScope(stopAtCloseCurly: true, stopAtLineBreak: true);
                 }
                 else
                 {
                     _tb.SoftLineBreak();
                     _tb.NewIndentLevel();
 
-                    AppendScope(stopAtLineBreak: true);
+                    AppendScope(stopAtCloseCurly: true, stopAtLineBreak: true);
                     _tb.CloseIndentLevel();
                 }
             }
@@ -411,9 +431,9 @@ namespace Microsoft.R.Core.Formatting
                 // We preserve user indentation of last token was 
                 // open brace, square bracket, comma or an operator
                 bool preserveUserIndent = false;
-                if(_tokens.Position > 0)
+                if (_tokens.Position > 0)
                 {
-                    switch(_tokens.PreviousToken.TokenType)
+                    switch (_tokens.PreviousToken.TokenType)
                     {
                         case RTokenType.OpenBrace:
                         case RTokenType.OpenSquareBracket:
@@ -426,10 +446,11 @@ namespace Microsoft.R.Core.Formatting
                 }
 
                 _tb.CopyPrecedingLineBreaks(_textProvider, end);
+
                 if (preserveUserIndent)
                 {
                     int lastLineBreakIndex = text.LastIndexOfAny(new char[] { '\r', '\n' });
-                    if(lastLineBreakIndex >= 0)
+                    if (lastLineBreakIndex >= 0)
                     {
                         text = text.Substring(lastLineBreakIndex + 1);
                         int textIndentInSpaces = IndentBuilder.TextIndentInSpaces(text, _options.TabSize);

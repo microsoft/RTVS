@@ -177,7 +177,7 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
-        public void Formatter_FormatConditionalAlignBraces()
+        public void Formatter_FormatConditionalAlignBraces01()
         {
             RFormatter f = new RFormatter();
             string original =
@@ -192,6 +192,92 @@ namespace Microsoft.R.Core.Test.Formatting
 @"
 if (intercept) {
     x <- cbind(1, x)
+}
+";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatConditionalAlignBraces02()
+        {
+            RFormatter f = new RFormatter();
+            string original =
+@"
+    if (intercept) 
+	{
+        if(x>1)
+x<- 1
+else
+if(x>2)
+{
+x<-3
+}
+    }
+";
+            string actual = f.Format(original);
+            string expected =
+@"
+if (intercept) {
+    if (x > 1)
+        x <- 1
+    else
+        if (x > 2) {
+            x <- 3
+        }
+}
+";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_PreserveEmptyLines()
+        {
+            RFormatter f = new RFormatter();
+            string original =
+@"
+    if (intercept) 
+	{
+x<- 1
+
+x<-3
+}
+";
+            string actual = f.Format(original);
+            string expected =
+@"
+if (intercept) {
+    x <- 1
+
+    x <- 3
+}
+";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_AlignComments()
+        {
+            RFormatter f = new RFormatter();
+            string original =
+@"
+        # comment1
+    if (intercept) 
+	{
+x<- 1
+
+# comment2
+x<-3
+}
+";
+            string actual = f.Format(original);
+            string expected =
+@"
+# comment1
+if (intercept) {
+    x <- 1
+
+    # comment2
+    x <- 3
 }
 ";
             Assert.AreEqual(expected, actual);
