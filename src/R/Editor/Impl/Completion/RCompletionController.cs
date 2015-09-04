@@ -22,6 +22,7 @@ namespace Microsoft.R.Editor.Completion
     using Support.Help.Definitions;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
     using Signatures;
+    using Definitions;
 
     public sealed class RCompletionController : CompletionController, ICommandTarget
     {
@@ -196,19 +197,10 @@ namespace Microsoft.R.Editor.Completion
             {
                 switch (typedCharacter)
                 {
-                    case '(':
-                        // If we are in a function signature we need 
-                        // to trigger parameter help
-                        //if(IsInFunctionSignature())
-                        //{
-
-                        //}
-                        return true;
-
                     //case '$':
                     //case '@':
-                    //case ':':
-                    //return IsInNamespace();
+                    case ':':
+                        return RCompletionContext.IsInNamespace(TextView);
 
                     default:
                         return Char.IsLetter(typedCharacter);
@@ -217,16 +209,6 @@ namespace Microsoft.R.Editor.Completion
 
             return false;
         }
-
-        //private bool IsInFunctionSignature()
-        //{
-
-        //}
-
-        //private bool IsInNamespace()
-        //{
-
-        //}
 
         protected override bool IsRetriggerChar(ICompletionSession session, char typedCharacter)
         {
@@ -300,10 +282,10 @@ namespace Microsoft.R.Editor.Completion
                     {
                         AstRoot ast = EditorDocument.FromTextBuffer(_textBuffer).EditorTree.AstRoot;
                         ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, _textBuffer.CurrentSnapshot, TextView.Caret.Position.BufferPosition);
-                        
+
                         return parametersInfo.FunctionName == sessionFunctionInfo.Name;
                     }
-                    catch(Exception) { }
+                    catch (Exception) { }
                 }
             }
 

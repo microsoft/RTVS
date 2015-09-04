@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Test.Completions
 {
+    using System;
     using Languages.Core.Text;
     using VisualStudio.Text;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
@@ -97,6 +98,21 @@ namespace Microsoft.R.Editor.Test.Completions
             Completion x = completionSets[0].Completions.FirstOrDefault((Completion c) => c.DisplayText == "base");
             Assert.IsNotNull(x);
             Assert.AreEqual("Base R functions.", x.Description);
+        }
+
+        [TestMethod]
+        public void RCompletionSource_SpecificPackageTest01()
+        {
+            EditorShell.SetShell(TestEditorShell.Create());
+
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("utils::", 7, completionSets);
+
+            Assert.AreEqual(1, completionSets.Count);
+
+            Completion x = completionSets[0].Completions.FirstOrDefault((Completion c) => c.DisplayText == "adist");
+            Assert.IsNotNull(x);
+            Assert.AreEqual("Approximate String Distances", x.Description);
         }
 
         private void GetCompletions(string content, int position, IList<CompletionSet> completionSets, ITextRange selectedRange = null)

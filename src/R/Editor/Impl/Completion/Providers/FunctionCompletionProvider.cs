@@ -8,6 +8,7 @@ using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion.Providers
 {
@@ -28,28 +29,10 @@ namespace Microsoft.R.Editor.Completion.Providers
             // TODO: this is different in the console window where 
             // packages may have been loaded from the command line. 
             // We need an extensibility point here.
+            IEnumerable<IPackageInfo> packages = GetPackages(context);
 
-            IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
-
-            List<IPackageInfo> filePackages = new List<IPackageInfo>();
-            foreach(string packageName in filePackageNames)
-            {
-                IPackageInfo p = PackageIndex.GetPackageByName(packageName);
-                // May be null if user mistyped package name in the library()
-                // statement or package is not installed.
-                if (p != null) 
-                {
-                    filePackages.Add(p);
-                }
-            }
-
-            IPackageInfo basePackage = PackageIndex.GetPackageByName("base");
-            Debug.Assert(basePackage != null, "Base package information is missing");
-
-            filePackages.Add(basePackage);
-            
             // Get list of functions in the package
-            foreach (IPackageInfo pkg in filePackages)
+            foreach (IPackageInfo pkg in packages)
             {
                 Debug.Assert(pkg != null);
 
@@ -58,8 +41,6 @@ namespace Microsoft.R.Editor.Completion.Providers
                 {
                     foreach (INamedItemInfo function in functions)
                     {
-                        Debug.Assert(function != null);
-
                         var completion = new RCompletion(function.Name, function.Name, function.Description, glyph);
                         completions.Add(completion);
                     }
@@ -69,5 +50,90 @@ namespace Microsoft.R.Editor.Completion.Providers
             return completions;
         }
         #endregion
+
+        private IEnumerable<IPackageInfo> GetPackages(RCompletionContext context)
+        {
+            if (context.IsInNameSpace())
+            {
+                return GetSpecificPackage(context);
+            }
+
+            return GetAllFilePackages(context);
+        }
+
+        private IEnumerable<IPackageInfo> GetSpecificPackage(RCompletionContext context)
+        {
+            List<IPackageInfo> packages = new List<IPackageInfo>();
+            ITextSnapshot snapshot = context.Session.TextView.TextBuffer.CurrentSnapshot;
+            int colons = 0;
+
+            for (int i = context.Position - 1; i >= 0; i--, colons++)
+            {
+                char ch = snapshot[i];
+                if (ch != ':')
+                {
+                    break;
+                }
+            }
+
+            if (colons > 1 && colons < 4)
+            {
+                string packageName = string.Empty;
+                int start = 0;
+                int end = context.Position - colons;
+
+                for (int i = end - 1; i >= 0; i--)
+                {
+                    char ch = snapshot[i];
+                    if (char.IsWhiteSpace(ch))
+                    {
+                        start = i + 1;
+                        break;
+                    }
+                }
+
+                if (start < end)
+                {
+                    packageName = snapshot.GetText(Span.FromBounds(start, end));
+                    if (packageName.Length > 0)
+                    {
+                        if (colons == 3)
+                            context.InternalFunctions = true;
+
+                        IPackageInfo package = PackageIndex.GetPackageByName(packageName);
+                        if (package != null)
+                        {
+                            packages.Add(package);
+                        }
+                    }
+                }
+            }
+
+            return packages;
+        }
+
+        private IEnumerable<IPackageInfo> GetAllFilePackages(RCompletionContext context)
+        {
+            List<IPackageInfo> packages = new List<IPackageInfo>();
+
+            IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
+            foreach (string packageName in filePackageNames)
+            {
+                IPackageInfo p = PackageIndex.GetPackageByName(packageName);
+                // May be null if user mistyped package name in the library()
+                // statement or package is not installed.
+                if (p != null)
+                {
+                    packages.Add(p);
+                }
+            }
+
+            IPackageInfo basePackage = PackageIndex.GetPackageByName("base");
+            Debug.Assert(basePackage != null, "Base package information is missing");
+
+            packages.Add(basePackage);
+
+            return packages;
+        }
     }
 }

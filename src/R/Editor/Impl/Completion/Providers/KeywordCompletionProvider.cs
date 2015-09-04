@@ -18,11 +18,14 @@ namespace Microsoft.R.Editor.Completion.Providers
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context)
         {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
 
-            foreach (string keyword in Keywords.KeywordList)
+            if (!context.IsInNameSpace())
             {
-                completions.Add(new RCompletion(keyword, keyword, string.Empty, glyph));
+                ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
+                foreach (string keyword in Keywords.KeywordList)
+                {
+                    completions.Add(new RCompletion(keyword, keyword, string.Empty, glyph));
+                }
             }
 
             return completions;
