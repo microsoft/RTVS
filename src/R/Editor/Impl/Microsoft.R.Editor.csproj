@@ -109,6 +109,7 @@
     <Compile Include="Formatting\AutoFormat.cs" />
     <Compile Include="Formatting\FormatDocumentCommand.cs" />
     <Compile Include="Formatting\FormatSelectionCommand.cs" />
+    <Compile Include="Formatting\FormatOnPasteCommand.cs" />
     <Compile Include="Formatting\RangeFormatter.cs" />
     <Compile Include="Outline\ROutlineTaggerProvider.cs" />
     <Compile Include="Outline\OutlineTagsCommandHandler.cs" />

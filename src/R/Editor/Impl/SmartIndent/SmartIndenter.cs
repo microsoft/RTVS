@@ -1,7 +1,6 @@
 ﻿using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Search;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -14,6 +13,9 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.SmartIndent
 {
+    /// <summary>
+    /// Provides block and smart indentation in R code
+    /// </summary>
     internal sealed class SmartIndenter : ISmartIndent
     {
         private ITextView _textView;

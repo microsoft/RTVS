@@ -22,6 +22,7 @@ namespace Microsoft.R.Editor.Commands.Factory
             commands.Add(new UncommentCommand(textView, textBuffer));
             commands.Add(new FormatDocumentCommand(textView, textBuffer));
             commands.Add(new FormatSelectionCommand(textView, textBuffer));
+            commands.Add(new FormatOnPasteCommand(textView, textBuffer));
             commands.Add(new RTypingCommandHandler(textView));
             commands.Add(new RCompletionCommandHandler(textView, textBuffer));
 

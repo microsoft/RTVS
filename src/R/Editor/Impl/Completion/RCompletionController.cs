@@ -67,13 +67,11 @@ namespace Microsoft.R.Editor.Completion
             base.DisconnectSubjectBuffer(subjectBuffer);
         }
 
-        // There are startup sequences (eg: rename txt->html) where the document hasn't been created yet. 
         private void OnDocumentReady(EditorDocument document)
         {
-            //document.HtmlEditorTree.UpdateCompleted += OnTreeUpdateCompleted;
-
-            // This object isn't released on content type changes, instead using the (Dis)ConnectSubjectBuffer
-            //   methods to control it's lifetime.
+            // This object isn't released on content type changes, 
+            // instead using the (Dis)ConnectSubjectBuffer
+            // methods to control it's lifetime.
             ServiceManager.AddService<RCompletionController>(this, TextView);
         }
 
@@ -104,20 +102,6 @@ namespace Microsoft.R.Editor.Completion
         {
             get { return REditorSettings.SignatureHelpEnabled; }
         }
-
-        //private void OnTreeUpdateCompleted(object sender, HtmlTreeUpdatedEventArgs e)
-        //{
-        //var tree = sender as HtmlEditorTree;
-        //if (tree.IsDirty && (tree.PendingChanges.TextChangeType & (TextChangeType.Comments | TextChangeType.Artifacts)) != 0)
-        //{
-        //    var sessions = CompletionBroker.GetSessions(TextView);
-        //    foreach (var s in sessions)
-        //    {
-        //        if (s.SelectedCompletionSet is RCompletionSet)
-        //            s.Dismiss();
-        //    }
-        //}
-        //}
 
         /// <summary>
         /// Should this key press commit a completion session?

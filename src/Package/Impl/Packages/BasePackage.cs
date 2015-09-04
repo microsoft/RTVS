@@ -93,9 +93,10 @@ namespace Microsoft.VisualStudio.R.Package.Packages
             IServiceContainer container = this;
             container.RemoveService(typeof(TLanguageService));
 
-            AppShell.Release();
-
+            // Base still needs shell to save settings
             base.Dispose(disposing);
+
+            AppShell.Release();
         }
 
         private void UnregisterProjectFileGenerators(Dictionary<IVsProjectGenerator, uint> projectFileGenerators)
