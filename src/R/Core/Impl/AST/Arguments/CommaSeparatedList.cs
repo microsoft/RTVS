@@ -57,6 +57,10 @@ namespace Microsoft.R.Core.AST.Arguments
                         }
                     }
                 }
+                else
+                {
+                    break; // unexpected item
+                }
             }
 
             // Handle final missing argument as in abc(,,) or abc(,,

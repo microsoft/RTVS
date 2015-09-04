@@ -239,5 +239,22 @@ namespace Microsoft.R.Core.Test.Parser
 
             ParserTest.VerifyParse(expected, "colnames(data)[colnames(data)==\"old_name\"] <- \"new_name\"");
         }
+
+        [TestMethod]
+        public void ParseIndexerTest11()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [append(]
+        Expression  [append(]
+            FunctionCall  [FunctionCall]
+                Variable  [append]
+                TokenNode  [( [6...7]]
+
+CloseSquareBracketExpected AfterToken [14...15)
+UnexpectedToken Token [15...16)
+";
+            ParserTest.VerifyParse(expected, "append(LETTERS[)");
+        }
     }
 }
