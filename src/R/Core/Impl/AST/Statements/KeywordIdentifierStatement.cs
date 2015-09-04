@@ -9,7 +9,7 @@ using Microsoft.R.Core.Tokens;
 namespace Microsoft.R.Core.AST.Statements
 {
     [DebuggerDisplay("[{Text}]")]
-    public sealed class KeywordIdentifierStatement : KeywordStatement
+    public class KeywordIdentifierStatement : KeywordStatement
     {
         public TokenNode OpenBrace { get; private set; }
         public TokenNode Identifier { get; private set; }
@@ -22,7 +22,9 @@ namespace Microsoft.R.Core.AST.Statements
                 this.OpenBrace = RParser.ParseOpenBraceSequence(context, this);
                 if (this.OpenBrace != null)
                 {
-                    if(context.Tokens.CurrentToken.TokenType == RTokenType.Identifier)
+                    RToken token = context.Tokens.CurrentToken;
+
+                    if (token.TokenType == RTokenType.Identifier || token.TokenType == RTokenType.String)
                     {
                         this.Identifier = RParser.ParseToken(context, this);
 

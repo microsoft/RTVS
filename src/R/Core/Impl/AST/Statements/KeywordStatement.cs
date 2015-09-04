@@ -73,7 +73,7 @@ namespace Microsoft.R.Core.AST.Statements
                     break;
 
                 case "library":
-                    statement = new KeywordIdentifierStatement();
+                    statement = new LibraryStatement();
                     break;
 
                 default:
