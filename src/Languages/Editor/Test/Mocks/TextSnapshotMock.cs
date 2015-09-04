@@ -96,7 +96,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
                 if (length == _lines[i].Length)
                 {
-                    if (start <= position && position <= start + length)
+                    if ((start <= position && position <= start + length) || start == position + 1)
                         return _lines[i];
                 }
                 else
@@ -184,6 +184,8 @@ namespace Microsoft.Languages.Editor.Test.Mocks
 
         private ITextSnapshotLine[] MakeLines(string text)
         {
+            // Only handles \n or \r\n
+
             var list = new List<ITextSnapshotLine>();
             int start = 0;
 
@@ -194,7 +196,7 @@ namespace Microsoft.Languages.Editor.Test.Mocks
                 {
                     list.Add(new TextLineMock(this, start, i - start, list.Count));
 
-                    if (i < text.Length - 1 && (text[i + 1] == '\r' || text[i + 1] == '\n'))
+                    if (ch == '\r' && i < text.Length - 1 && text[i + 1] == '\n')
                     {
                         i++;
                     }
@@ -208,10 +210,12 @@ namespace Microsoft.Languages.Editor.Test.Mocks
                 start = list[list.Count - 1].End;
 
                 if (start < text.Length && (text[start] == '\n' || text[start] == '\r'))
+                {
                     start++;
 
-                if (start < text.Length && (text[start] == '\n' || text[start] == '\r'))
-                    start++;
+                    if (text[start - 1] == '\r' && start < text.Length && text[start] == '\n')
+                        start++;
+                }
 
                 list.Add(new TextLineMock(this, start, text.Length - start, list.Count));
             }

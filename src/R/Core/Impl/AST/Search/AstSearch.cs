@@ -71,6 +71,15 @@ namespace Microsoft.R.Core.AST.Search
         }
 
         /// <summary>
+        /// Locates deepest node of a particular type 
+        /// </summary>
+        /// <returns></returns>
+        public static T GetNodeOfTypeFromPosition<T>(this AstRoot ast, int position) where T : class
+        {
+            return GetSpecificNodeFromPosition(ast, position, (IAstNode n) => { return n is T; }) as T;
+        }
+
+        /// <summary>
         /// Locates deepest node that matches partucular criteria 
         /// and contains given position in the text buffer
         /// </summary>

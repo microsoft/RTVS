@@ -4,6 +4,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Search;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
@@ -120,12 +121,27 @@ namespace Microsoft.R.Editor.SmartIndent
             return null;
         }
 
-        private int GetSmartIndent(ITextSnapshotLine line)
+        private int? GetSmartIndent(ITextSnapshotLine line)
         {
             IREditorDocument document = EditorDocument.FromTextBuffer(_textBuffer);
             AstRoot ast = document.EditorTree.AstRoot;
 
-            IScope scope = ast.GetSpecificNodeFromPosition(line.Start, (IAstNode n) => { return n is IScope; }) as IScope;
+            // Try conditional without scope first
+            if (line.LineNumber > 0)
+            {
+                ITextSnapshotLine prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
+
+                string prevLineText = prevLine.GetText();
+                int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
+
+                IKeywordScopeStatement scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(nonWsPosition);
+                if (scopeStatement != null && scopeStatement.Scope == null)
+                {
+                    return GetBlockIndent(line) + REditorSettings.IndentSize;
+                }
+            }
+
+            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(line.Start);
             if (scope != null && scope.OpenCurlyBrace != null)
             {
                 return InnerIndentSizeFromScope(_textBuffer, scope, REditorSettings.FormatOptions);

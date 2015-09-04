@@ -130,11 +130,7 @@ namespace Microsoft.R.Editor.Signatures
         private static bool GetFunction(AstRoot astRoot, int position, out FunctionCall functionCall, out Variable functionVariable)
         {
             functionVariable = null;
-
-            functionCall = astRoot.GetSpecificNodeFromPosition(position, (IAstNode node) =>
-            {
-                return node.GetType() == typeof(FunctionCall);
-            }) as FunctionCall;
+            functionCall = astRoot.GetNodeOfTypeFromPosition<FunctionCall>(position);
 
             if (functionCall != null && functionCall.Children.Count > 0)
             {

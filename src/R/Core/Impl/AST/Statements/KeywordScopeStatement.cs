@@ -29,9 +29,10 @@ namespace Microsoft.R.Core.AST.Statements
                 if (scope != null)
                 {
                     this.Scope = scope;
-                    this.Parent = parent;
-                    return true;
                 }
+
+                this.Parent = parent;
+                return true;
             }
 
             return false;

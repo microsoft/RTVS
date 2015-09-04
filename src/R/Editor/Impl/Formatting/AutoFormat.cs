@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Formatting
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
             ITextRange formatRange;
 
-            IScope scope = ast.GetSpecificNodeFromPosition(position, (IAstNode n) => { return n is IScope; }) as IScope;
+            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
             if (typedChar == '}' && scope != null && scope.OpenCurlyBrace != null)
             {
                 // If user typed } then fromat the enclosing scope.

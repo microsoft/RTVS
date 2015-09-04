@@ -85,18 +85,23 @@ namespace Microsoft.Languages.Editor.Test.Mocks
         {
             get
             {
+                // Mock only handles \n or \r\n
                 int end = _start + _length;
                 int extra = 0;
 
-                for (int i = 0; i < 2; i++)
+                if (end < _snapshot.Length)
                 {
-                    if (end < _snapshot.Length)
+                    if (_snapshot[end] == '\r')
                     {
-                        if (_snapshot[end] == '\n' || _snapshot[end] == '\r')
-                            extra++;
-
+                        extra++;
                         end++;
                     }
+                }
+
+                if (end < _snapshot.Length)
+                {
+                    if (_snapshot[end] == '\n')
+                        extra++;
                 }
 
                 return extra;

@@ -58,7 +58,7 @@ namespace Microsoft.R.Editor.Formatting
             string lineText = line.GetText();
 
             // Firgure out indent from the enclosing scope
-            IScope scope = ast.GetSpecificNodeFromPosition(position, (IAstNode n) => { return n is IScope; }) as IScope;
+            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
 
             int textIndentInSpaces = SmartIndenter.InnerIndentSizeFromScope(textBuffer, scope, options);
             string indentString = IndentBuilder.GetIndentString(textIndentInSpaces, options.IndentType, options.TabSize);
