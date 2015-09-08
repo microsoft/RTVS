@@ -47,6 +47,8 @@ namespace Microsoft.VisualStudio.R.Package.TaskList
 
                 this.Tasks.Add(vsTask);
             }
+
+            _dirty = true;
             ResumeRefresh();
         }
 
@@ -62,6 +64,8 @@ namespace Microsoft.VisualStudio.R.Package.TaskList
                     _itemMap.Remove(task);
                 }
             }
+
+            _dirty = true;
             ResumeRefresh();
         }
 
@@ -89,6 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList
         {
             Tasks.Clear();
             _itemMap.Clear();
+            _dirty = true;
         }
 
         protected override void Dispose(bool disposing)

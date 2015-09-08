@@ -138,12 +138,6 @@
     <Compile Include="TaskList\Definitions\IEditorTaskListItem.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskListItemSource.cs" />
     <Compile Include="TaskList\Definitions\TaskType.cs" />
-    <Compile Include="TaskList\TaskList.cs" />
-    <Compile Include="TaskList\TaskListEntry.cs" />
-    <Compile Include="TaskList\TaskListItemCollectionOperation.cs" />
-    <Compile Include="TaskList\TaskListItemSourceWrapper.cs" />
-    <Compile Include="TaskList\TaskListSourceEvent.cs" />
-    <Compile Include="TaskList\TaskListSourceEventType.cs" />
     <Compile Include="Tasks\CancellableTask.cs" />
     <Compile Include="Tasks\IdleTimeAction.cs" />
     <Compile Include="Tasks\IdleTimeAsyncTask.cs" />

@@ -15,6 +15,7 @@ using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
+using Microsoft.R.Editor.Validation;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Document
@@ -44,7 +45,7 @@ namespace Microsoft.R.Editor.Document
 
         private EditorTree _editorTree;
         private int _inMassiveChange;
-        //private TreeValidator _validator;
+        private TreeValidator _validator;
 
         #region Constructors
         public EditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem)
@@ -60,7 +61,7 @@ namespace Microsoft.R.Editor.Document
             ServiceManager.AddService<EditorDocument>(this, TextBuffer);
 
             _editorTree = new EditorTree(textBuffer);
-            //_validator = new TreeValidator(this.EditorTree);
+            _validator = new TreeValidator(this.EditorTree);
 
             _editorTree.Build();
 
