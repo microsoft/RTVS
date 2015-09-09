@@ -236,7 +236,7 @@ namespace Microsoft.R.Support.RD.Tokens
                                 // Heuristic is to treat text that contains {} or \
                                 // as NOT a comment.
                                 int commentStart = _cs.Position;
-                                SkipToEol();
+                                _cs.SkipToEol();
 
                                 string commentText = _cs.Text.GetText(TextRange.FromBounds(commentStart, _cs.Position));
                                 _cs.Position = commentStart;
@@ -267,7 +267,7 @@ namespace Microsoft.R.Support.RD.Tokens
                             if (!char.IsLetter(_cs.PrevChar) && (_cs.IsDecimal() || _cs.CurrentChar == '-' || _cs.CurrentChar == '.'))
                             {
                                 int sequenceStart = _cs.Position;
-                                SkipToWhitespace();
+                                _cs.SkipToWhitespace();
 
                                 if (_cs.Position > sequenceStart)
                                 {
@@ -498,28 +498,6 @@ namespace Microsoft.R.Support.RD.Tokens
                 if (_cs.CurrentChar == '%')
                     break;
 
-                _cs.MoveToNextChar();
-            }
-        }
-
-        /// <summary>
-        /// Skips content until the nearest whitespace
-        /// </summary>
-        internal void SkipToWhitespace()
-        {
-            while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace())
-            {
-                _cs.MoveToNextChar();
-            }
-        }
-
-        /// <summary>
-        /// Skips everything until the end of the line
-        /// </summary>
-        internal void SkipToEol()
-        {
-            while (!_cs.IsEndOfStream() && !_cs.IsAtNewLine())
-            {
                 _cs.MoveToNextChar();
             }
         }

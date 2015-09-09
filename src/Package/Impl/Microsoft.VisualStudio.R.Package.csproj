@@ -310,8 +310,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Package.ico" />
+    <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
+      <SubType>Designer</SubType>
+    </VSTemplate>
+    <None Include="Templates\ItemTemplates\EmptyMD\emptymd.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Templates\ItemTemplates\EmptyMD\markdown.md" />
     <None Include="Templates\ProjectTemplates\EmptyProject\.Rhistory" />
     <None Include="Templates\ProjectTemplates\EmptyProject\rproject.ico" />
     <None Include="Templates\ProjectTemplates\EmptyProject\rproject.Rproj" />

@@ -61,6 +61,87 @@ namespace Microsoft.R.Support {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Markdown Alt Text.
+        /// </summary>
+        internal static string ColorName_MD_AltText {
+            get {
+                return ResourceManager.GetString("ColorName_MD_AltText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown Blockquote.
+        /// </summary>
+        internal static string ColorName_MD_Blockquote {
+            get {
+                return ResourceManager.GetString("ColorName_MD_Blockquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown Bold Text.
+        /// </summary>
+        internal static string ColorName_MD_Bold {
+            get {
+                return ResourceManager.GetString("ColorName_MD_Bold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown Bold Italic Text.
+        /// </summary>
+        internal static string ColorName_MD_BoldItalic {
+            get {
+                return ResourceManager.GetString("ColorName_MD_BoldItalic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown Code Block.
+        /// </summary>
+        internal static string ColorName_MD_Code {
+            get {
+                return ResourceManager.GetString("ColorName_MD_Code", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown Heading.
+        /// </summary>
+        internal static string ColorName_MD_Heading {
+            get {
+                return ResourceManager.GetString("ColorName_MD_Heading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown Italic Text.
+        /// </summary>
+        internal static string ColorName_MD_Italic {
+            get {
+                return ResourceManager.GetString("ColorName_MD_Italic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown List Item.
+        /// </summary>
+        internal static string ColorName_MD_ListItem {
+            get {
+                return ResourceManager.GetString("ColorName_MD_ListItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown Monospace Text.
+        /// </summary>
+        internal static string ColorName_MD_Monospace {
+            get {
+                return ResourceManager.GetString("ColorName_MD_Monospace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to RD Argument.
         /// </summary>
         internal static string ColorName_RD_Argument {

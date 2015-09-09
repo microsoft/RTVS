@@ -192,6 +192,46 @@ namespace Microsoft.Languages.Core.Text
             return (currentCharacter == '\n' || currentCharacter == '\r');
         }
 
+        public void SkipLineBreak()
+        {
+            if (CurrentChar == '\n')
+            {
+                MoveToNextChar();
+                if (CurrentChar == '\r')
+                    MoveToNextChar();
+            }
+            else if(CurrentChar == '\r')
+            {
+                MoveToNextChar();
+                if (CurrentChar == '\n')
+                    MoveToNextChar();
+            }
+        }
+
+        public void SkipToEol()
+        {
+            while (!IsEndOfStream() && !IsAtNewLine())
+            {
+                MoveToNextChar();
+            }
+        }
+
+        public void SkipToWhitespace()
+        {
+            while (!IsEndOfStream() && !IsWhiteSpace())
+            {
+                MoveToNextChar();
+            }
+        }
+
+        public void SkipWhitespace()
+        {
+            while (!IsEndOfStream() && IsWhiteSpace())
+            {
+                MoveToNextChar();
+            }
+        }
+
         /// <summary>
         /// Determines if current character is an ANSI letter
         /// </summary>

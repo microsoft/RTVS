@@ -117,6 +117,33 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ColorName_MD_AltText" xml:space="preserve">
+    <value>Markdown Alt Text</value>
+  </data>
+  <data name="ColorName_MD_Blockquote" xml:space="preserve">
+    <value>Markdown Blockquote</value>
+  </data>
+  <data name="ColorName_MD_Bold" xml:space="preserve">
+    <value>Markdown Bold Text</value>
+  </data>
+  <data name="ColorName_MD_BoldItalic" xml:space="preserve">
+    <value>Markdown Bold Italic Text</value>
+  </data>
+  <data name="ColorName_MD_Code" xml:space="preserve">
+    <value>Markdown Code Block</value>
+  </data>
+  <data name="ColorName_MD_Heading" xml:space="preserve">
+    <value>Markdown Heading</value>
+  </data>
+  <data name="ColorName_MD_Italic" xml:space="preserve">
+    <value>Markdown Italic Text</value>
+  </data>
+  <data name="ColorName_MD_ListItem" xml:space="preserve">
+    <value>Markdown List Item</value>
+  </data>
+  <data name="ColorName_MD_Monospace" xml:space="preserve">
+    <value>Markdown Monospace Text</value>
+  </data>
   <data name="ColorName_RD_Argument" xml:space="preserve">
     <value>RD Argument</value>
   </data>
