@@ -63,6 +63,7 @@
     <Compile Include="AST\Arguments\MissingArgument.cs" />
     <Compile Include="AST\Arguments\ExpressionArgument.cs" />
     <Compile Include="AST\Arguments\NamedArgument.cs" />
+    <Compile Include="AST\Comments\CommentsCollection.cs" />
     <Compile Include="AST\DataTypes\RMissing.cs" />
     <Compile Include="AST\DataTypes\RNull.cs" />
     <Compile Include="AST\Definitions\PositionType.cs" />

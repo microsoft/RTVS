@@ -113,6 +113,7 @@
     <Compile Include="Formatting\FormatterTest.cs" />
     <Compile Include="Formatting\FormatSamplesFilesTest.cs" />
     <Compile Include="Formatting\FormatFilesFiles.cs" />
+    <Compile Include="Parser\ParseCommentsTest.cs" />
     <Compile Include="Parser\ParseScopeTest.cs" />
     <Compile Include="Parser\ParseFunctionDefinitionTest.cs" />
     <Compile Include="Parser\ParseExponentTest.cs" />

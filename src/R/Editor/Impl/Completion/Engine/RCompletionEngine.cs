@@ -114,7 +114,7 @@ namespace Microsoft.R.Editor.Completion.Engine
 
                                 return false;
                             }
-                            else if(tokens.NextToken.TokenType == RTokenType.EndOfStream)
+                            else if (tokens.NextToken.TokenType == RTokenType.EndOfStream)
                             {
                                 return true;
                             }

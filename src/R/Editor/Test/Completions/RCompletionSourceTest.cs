@@ -115,6 +115,30 @@ namespace Microsoft.R.Editor.Test.Completions
             Assert.AreEqual("Approximate String Distances", x.Description);
         }
 
+        [TestMethod]
+        public void RCompletionSource_CommentsTest01()
+        {
+            EditorShell.SetShell(TestEditorShell.Create());
+
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("#No", 3, completionSets);
+
+            Assert.AreEqual(1, completionSets.Count);
+            Assert.AreEqual(0, completionSets[0].Completions.Count);
+        }
+
+        [TestMethod]
+        public void RCompletionSource_CommentsTest02()
+        {
+            EditorShell.SetShell(TestEditorShell.Create());
+
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("#No", 0, completionSets);
+
+            Assert.AreEqual(1, completionSets.Count);
+            Assert.IsTrue(completionSets[0].Completions.Count > 0);
+        }
+
         private void GetCompletions(string content, int position, IList<CompletionSet> completionSets, ITextRange selectedRange = null)
         {
             AstRoot ast = RParser.Parse(content);

@@ -82,6 +82,7 @@
     <Compile Include="Text\TextHelper.cs" />
     <Compile Include="Text\TextProviderExtensions.cs" />
     <Compile Include="Text\TextRange.cs" />
+    <Compile Include="Text\DisjointTextRangeCollection.cs" />
     <Compile Include="Text\TextRangeCollection.cs" />
     <Compile Include="Text\TextRangeEx.cs" />
     <Compile Include="Text\TextStream.cs" />
