@@ -67,7 +67,7 @@ namespace Microsoft.Languages.Editor.Shell
         /// <summary>
         /// Web editor host application
         /// </summary>
-        public static IEditorShell Shell
+        public static IEditorShell Current
         {
             get { return _shell; }
         }
@@ -77,22 +77,6 @@ namespace Microsoft.Languages.Editor.Shell
             get { return _shell != null; }
         }
 
-        /// <summary>
-        /// Composition service provided by the host
-        /// </summary>
-        public static ICompositionService CompositionService
-        {
-            get { return Shell.CompositionService; }
-        }
-
-        /// <summary>
-        /// ExportProvider provided by the host
-        /// </summary>
-        public static ExportProvider ExportProvider
-        {
-            get { return Shell.ExportProvider; }
-        }
-
         public static Thread UIThread { get; set; }
 
         public static bool IsUIThread
@@ -100,25 +84,9 @@ namespace Microsoft.Languages.Editor.Shell
             get { return UIThread == Thread.CurrentThread; }
         }
 
-        /// <summary>
-        /// Composition service provided by the host
-        /// </summary>
-        public static ICommandTarget TranslateCommandTarget(ITextView textView, object target)
-        {
-            return Shell.TranslateCommandTarget(textView, target);
-        }
-
         public static void DispatchOnUIThread(Action action)
         {
             DispatchOnUIThread(action, DispatcherPriority.Normal);
-        }
-
-        /// <summary>
-        /// Composition service provided by the host
-        /// </summary>
-        public static object TranslateToHostCommandTarget(ITextView textView, object target)
-        {
-            return Shell.TranslateToHostCommandTarget(textView, target);
         }
 
         /// <summary>
@@ -142,28 +110,12 @@ namespace Microsoft.Languages.Editor.Shell
             }
             else if (HasShell) // Can be null in unit tests
             {
-                Shell.DispatchOnUIThread(action, priority);
+                Current.DispatchOnUIThread(action, priority);
             }
             else
             {
                 action();
             }
-        }
-
-        /// <summary>
-        /// Creates compound undo action
-        /// </summary>
-        /// <param name="textView">Text view</param>
-        /// <param name="textBuffer">Text buffer</param>
-        /// <returns>Undo action instance</returns>
-        public static ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer)
-        {
-            return Shell.CreateCompoundAction(textView, textBuffer);
-        }
-
-        public static bool ShowHelp(string topicName)
-        {
-            return Shell.ShowHelp(topicName);
         }
 
         public static IEditorSettingsStorage GetSettings(string contentTypeName)
@@ -180,7 +132,7 @@ namespace Microsoft.Languages.Editor.Shell
 
             // Need to find the settings using MEF (don't use MEF inside of other locks, that can lead to deadlock)
 
-            var contentTypeRegistry = EditorShell.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
+            var contentTypeRegistry = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
             var contentType = contentTypeRegistry.GetContentType(contentTypeName);
 
             settingsStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
@@ -261,29 +213,13 @@ namespace Microsoft.Languages.Editor.Shell
             }
         }
 
-        /// <summary>
-        /// Tells if code runs in unit test environment
-        /// </summary>
-        public static bool IsUnitTestEnvironment
-        {
-            get { return Shell.IsUnitTestEnvironment; }
-        }
-
-        /// <summary>
-        /// Tells if code runs in UI test environment
-        /// </summary>
-        public static bool IsUITestEnvironment
-        {
-            get { return Shell.IsUITestEnvironment; }
-        }
-
         private static void CacheHostProperties()
         {
             // Dev12 bug 786618 - Cache some host properties so that they can be accessed from background
             // threads even after the host has been cleaned up.
 
-            HostUserFolder = Shell.UserFolder;
-            HostLocaleId = Shell.LocaleId;
+            HostUserFolder = Current.UserFolder;
+            HostLocaleId = Current.LocaleId;
         }
 
         private static void DisposeSettings()

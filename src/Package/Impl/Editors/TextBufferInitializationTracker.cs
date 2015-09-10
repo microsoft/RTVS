@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors
             Guid languageServiceId,
             List<TextBufferInitializationTracker> trackers)
         {
-            EditorShell.CompositionService.SatisfyImportsOnce(this);
+            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             _documentName = documentName;
             _hierarchy = hierarchy;
@@ -61,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors
 
         public int OnLoadCompleted(int fReload)
         {
-            var adapterService = EditorShell.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
+            var adapterService = EditorShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
 
             // Set language service ID as early as possible, since it may change content type of the buffer,
             // e.g. in a weird scenario when someone does "Open With X Editor" on an Y file. Calling this
@@ -73,10 +73,10 @@ namespace Microsoft.VisualStudio.R.Package.Editors
 
             try
             {
-                var importComposer = new ContentTypeImportComposer<IEditorFactory>(EditorShell.CompositionService);
+                var importComposer = new ContentTypeImportComposer<IEditorFactory>(EditorShell.Current.CompositionService);
                 var factory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
 
-                var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(EditorShell.CompositionService);
+                var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(EditorShell.Current.CompositionService);
                 var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
 
                 IEditorInstance editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);

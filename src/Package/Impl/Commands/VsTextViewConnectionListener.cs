@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.PAckage.Commands
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
 
-                    IVsEditorAdaptersFactoryService adapterService = EditorShell.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
+                    IVsEditorAdaptersFactoryService adapterService = EditorShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
                     IVsTextView viewAdapter = adapterService.GetViewAdapter(textView);
 
                     if (viewAdapter != null)
@@ -61,7 +61,7 @@ namespace Microsoft.VisualStudio.R.PAckage.Commands
                         // nextOleTarget is typically a core editor wrapped into OLE layer.
                         // Create a wrapper that will present OLE target as ICommandTarget to
                         // HTML main controller so controller can operate in platform-agnostic way.
-                        ICommandTarget nextCommandTarget = EditorShell.TranslateCommandTarget(textView, nextOleTarget);
+                        ICommandTarget nextCommandTarget = EditorShell.Current.TranslateCommandTarget(textView, nextOleTarget);
 
                         mainController.ChainedController = nextCommandTarget;
                     }
@@ -99,7 +99,7 @@ namespace Microsoft.VisualStudio.R.PAckage.Commands
 
                 VsWorkspaceItem workspaceItem = new VsWorkspaceItem(textDocument.FilePath, textDocument.FilePath);
 
-                ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(EditorShell.CompositionService);
+                ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(EditorShell.Current.CompositionService);
                 IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
                 IEditorInstance editorInstance = factory.CreateEditorInstance(workspaceItem, textBuffer, new VsEditorDocumentFactory());

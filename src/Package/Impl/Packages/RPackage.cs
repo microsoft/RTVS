@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
@@ -41,6 +43,10 @@ namespace Microsoft.VisualStudio.R.Packages
         protected override void Initialize()
         {
             base.Initialize();
+
+            IComponentModel componentModel = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
+            RToolsSettings.VerifyRIsInstalled(componentModel.DefaultExportProvider);
+
             FunctionIndex.BuildIndexAsync();
         }
 

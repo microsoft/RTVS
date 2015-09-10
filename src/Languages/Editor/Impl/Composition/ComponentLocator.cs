@@ -13,14 +13,14 @@ namespace Microsoft.Languages.Editor.Composition
         public static TComponent Import()
         {
             SingleImporter importer = new SingleImporter();
-            EditorShell.CompositionService.SatisfyImportsOnce(importer);
+            EditorShell.Current.CompositionService.SatisfyImportsOnce(importer);
 
             return importer.Import;
         }
 
         public static IEnumerable<Lazy<TComponent>> ImportMany()
         {
-            return ImportMany(EditorShell.CompositionService);
+            return ImportMany(EditorShell.Current.CompositionService);
         }
 
         public static IEnumerable<Lazy<TComponent>> ImportMany(ICompositionService compositionService)
@@ -50,7 +50,7 @@ namespace Microsoft.Languages.Editor.Composition
     {
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany()
         {
-            return ImportMany(EditorShell.CompositionService);
+            return ImportMany(EditorShell.Current.CompositionService);
         }
 
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(ICompositionService compositionService)
@@ -77,7 +77,7 @@ namespace Microsoft.Languages.Editor.Composition
     {
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany()
         {
-            return ImportMany(EditorShell.CompositionService);
+            return ImportMany(EditorShell.Current.CompositionService);
         }
 
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(ICompositionService compositionService)
@@ -108,7 +108,7 @@ namespace Microsoft.Languages.Editor.Composition
         /// </summary>
         public static IEnumerable<Lazy<TComponent, TMetadata>> ReverseImportMany()
         {
-            return ReverseImportMany(EditorShell.CompositionService);
+            return ReverseImportMany(EditorShell.Current.CompositionService);
         }
 
         private class ManyImporter
@@ -169,10 +169,10 @@ namespace Microsoft.Languages.Editor.Composition
         /// </summary>
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(string contentTypeName)
         {
-            var contentTypeRegistry = EditorShell.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
+            var contentTypeRegistry = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
             var contentType = contentTypeRegistry.GetContentType(contentTypeName);
 
-            return ImportMany(EditorShell.CompositionService, contentType);
+            return ImportMany(EditorShell.Current.CompositionService, contentType);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Microsoft.Languages.Editor.Composition
         /// </summary>
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(IContentType contentType)
         {
-            return ImportMany(EditorShell.CompositionService, contentType);
+            return ImportMany(EditorShell.Current.CompositionService, contentType);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Microsoft.Languages.Editor.Composition
         /// </summary>
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportManyExact(IContentType contentType)
         {
-            return ImportManyExact(EditorShell.CompositionService, contentType);
+            return ImportManyExact(EditorShell.Current.CompositionService, contentType);
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Microsoft.Languages.Editor.Composition
         /// </summary>
         public static Lazy<TComponent, TMetadata> ImportOne(string contentTypeName)
         {
-            var contentTypeRegistry = EditorShell.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
+            var contentTypeRegistry = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
             var contentType = contentTypeRegistry.GetContentType(contentTypeName);
 
             return ImportOne(contentType);
@@ -345,7 +345,7 @@ namespace Microsoft.Languages.Editor.Composition
     {
         public static IEnumerable<Lazy<TComponent>> ImportMany(IContentType contentType)
         {
-            return ImportMany(EditorShell.CompositionService, contentType);
+            return ImportMany(EditorShell.Current.CompositionService, contentType);
         }
 
         public static IEnumerable<Lazy<TComponent>> ImportMany(ICompositionService compositionService, IContentType contentType)
@@ -375,7 +375,7 @@ namespace Microsoft.Languages.Editor.Composition
         /// </summary>
         public static TComponent FindFirstOrderedComponent(string contentTypeName)
         {
-            var contentTypeRegistryService = EditorShell.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
+            var contentTypeRegistryService = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
             var contentType = contentTypeRegistryService.GetContentType(contentTypeName);
 
             return FindFirstOrderedComponent(contentType);

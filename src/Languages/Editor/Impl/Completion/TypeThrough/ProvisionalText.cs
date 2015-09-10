@@ -162,8 +162,8 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
                     // of the current context. For example, if we are in style="" and overtyping
                     // closing quote, we need to dismiss CSS intellisense.
 
-                    var completionBroker = EditorShell.ExportProvider.GetExport<ICompletionBroker>().Value;
-                    var signatureBroker = EditorShell.ExportProvider.GetExport<ISignatureHelpBroker>().Value;
+                    var completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
+                    var signatureBroker = EditorShell.Current.ExportProvider.GetExport<ISignatureHelpBroker>().Value;
 
                     completionBroker.DismissAllSessions(_textView);
                     signatureBroker.DismissAllSessions(_textView);

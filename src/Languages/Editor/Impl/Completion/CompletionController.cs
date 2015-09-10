@@ -287,7 +287,7 @@ namespace Microsoft.Languages.Editor.Completion
         /// </summary>
         public static bool HasActiveSignatureSession(ITextView textView)
         {
-            ISignatureHelpBroker broker = EditorShell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+            ISignatureHelpBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
             return broker.IsSignatureHelpActive(textView);
         }
 
@@ -303,7 +303,7 @@ namespace Microsoft.Languages.Editor.Completion
 
         public static void DismissQuickInfoSession(ITextView textView)
         {
-            IQuickInfoBroker broker = EditorShell.ExportProvider.GetExportedValue<IQuickInfoBroker>();
+            IQuickInfoBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<IQuickInfoBroker>();
             var sessions = broker.GetSessions(textView);
             foreach (var s in sessions)
             {
@@ -512,7 +512,7 @@ namespace Microsoft.Languages.Editor.Completion
         {
             if (HasActiveSignatureSession(textView))
             {
-                ISignatureHelpBroker broker = EditorShell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                ISignatureHelpBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
                 broker.DismissAllSessions(textView);
             }
         }

@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Formatting
                 formatRange = new TextRange(position, 0);
             }
 
-            ICompoundUndoAction undoAction = EditorShell.CreateCompoundAction(textView, textView.TextBuffer);
+            ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
             undoAction.Open(Resources.AutoFormat);
             bool changed = false;
 

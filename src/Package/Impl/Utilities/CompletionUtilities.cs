@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
             Debug.Assert(textView != null, "Null Text View");
             if (textView != null)
             {
-                ICompletionBroker completionBroker = EditorShell.ExportProvider.GetExport<ICompletionBroker>().Value;
+                ICompletionBroker completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
                 Debug.Assert(completionBroker != null, "Null completion broker.");
                 if (completionBroker != null)
                 {
@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
             Debug.Assert(textView != null, "Null Text View");
             if (textView != null)
             {
-                ICompletionBroker completionBroker = EditorShell.ExportProvider.GetExport<ICompletionBroker>().Value;
+                ICompletionBroker completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
                 Debug.Assert(completionBroker != null, "Null completion broker.");
                 if (completionBroker != null && completionBroker.IsCompletionActive(textView))
                 {

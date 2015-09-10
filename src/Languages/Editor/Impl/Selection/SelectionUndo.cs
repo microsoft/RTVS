@@ -29,11 +29,11 @@ namespace Microsoft.Languages.Editor.Selection
 
         public SelectionUndo(ISelectionTracker selectionTracker, string transactionName, bool automaticTracking)
         {
-            if (!EditorShell.IsUnitTestEnvironment)
+            if (!EditorShell.Current.IsUnitTestEnvironment)
             {
                 _selectionTracker = selectionTracker;
 
-                var undoManagerProvider = EditorShell.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
+                var undoManagerProvider = EditorShell.Current.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
                 var undoManager = undoManagerProvider.GetTextBufferUndoManager(selectionTracker.TextView.TextBuffer);
 
                 ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
@@ -46,7 +46,7 @@ namespace Microsoft.Languages.Editor.Selection
 
         public void Dispose()
         {
-            if (!EditorShell.IsUnitTestEnvironment)
+            if (!EditorShell.Current.IsUnitTestEnvironment)
             {
                 _selectionTracker.EndTracking();
 

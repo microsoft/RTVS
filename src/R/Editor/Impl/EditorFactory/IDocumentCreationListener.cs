@@ -1,4 +1,4 @@
-﻿using Microsoft.R.Editor.Document;
+﻿using Microsoft.Languages.Editor.EditorFactory;
 
 namespace Microsoft.Html.Editor.EditorFactory
 {
@@ -8,6 +8,6 @@ namespace Microsoft.Html.Editor.EditorFactory
     /// </summary>
     public interface IDocumentCreationListener
     {
-        void DocumentCreated(EditorDocument document);
+        void DocumentCreated(IEditorDocument document);
     }
 }

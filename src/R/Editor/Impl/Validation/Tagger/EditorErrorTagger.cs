@@ -45,7 +45,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
         public EditorErrorTagger(ITextBuffer textBuffer)
         {
-            EditorShell.CompositionService.SatisfyImportsOnce(this);
+            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             _document = EditorDocument.FromTextBuffer(textBuffer);
             _document.DocumentClosing += OnDocumentClosing;

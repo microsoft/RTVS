@@ -40,7 +40,7 @@ namespace Microsoft.R.Support.Help.Packages
             get
             {
                 if (_collections == null)
-                    _collections = EditorShell.ExportProvider.GetExports<IPackageCollection>();
+                    _collections = EditorShell.Current.ExportProvider.GetExports<IPackageCollection>();
 
                 if (_collections != null)
                 {

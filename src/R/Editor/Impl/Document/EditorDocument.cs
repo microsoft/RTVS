@@ -50,7 +50,7 @@ namespace Microsoft.R.Editor.Document
         #region Constructors
         public EditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem)
         {
-            EditorShell.CompositionService.SatisfyImportsOnce(this);
+            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             this.TextBuffer = textBuffer;
             this.WorkspaceItem = workspaceItem;

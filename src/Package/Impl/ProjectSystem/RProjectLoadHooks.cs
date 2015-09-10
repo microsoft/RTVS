@@ -8,27 +8,27 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem
 {
-	[AppliesTo("RTools")]
-	internal sealed class RProjectLoadHooks
-	{
+    [AppliesTo("RTools")]
+    internal sealed class RProjectLoadHooks
+    {
         [Export(typeof(IFileSystemMirroringProjectTemporaryItems))]
-		private FileSystemMirroringProject Project { get; }
+        private FileSystemMirroringProject Project { get; }
 
-		private readonly MsBuildFileSystemWatcher _fileWatcher;
+        private readonly MsBuildFileSystemWatcher _fileWatcher;
 
-		[ImportingConstructor]
-		public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService)
-		{
-			_fileWatcher = new MsBuildFileSystemWatcher(unconfiguredProject.GetProjectDirectory(), "*", 25, new FileSystemProxy(), new RMsBuildFileSystemFilter());
+        [ImportingConstructor]
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService)
+        {
+            _fileWatcher = new MsBuildFileSystemWatcher(unconfiguredProject.GetProjectDirectory(), "*", 25, new FileSystemProxy(), new RMsBuildFileSystemFilter());
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher);
-		}
+        }
 
-		[AppliesTo("RTools")]
-		[UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
-		public async Task InitializeProjectFromDiskAsync()
-		{
-			await Project.CreateInMemoryImport();
-			_fileWatcher.Start();
-		}
-	}
+        [AppliesTo("RTools")]
+        [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
+        public async Task InitializeProjectFromDiskAsync()
+        {
+            await Project.CreateInMemoryImport();
+            _fileWatcher.Start();
+        }
+    }
 }

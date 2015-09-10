@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
             get
             {
                 if (_adaptersFactoryService == null)
-                    _adaptersFactoryService = EditorShell.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
+                    _adaptersFactoryService = EditorShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
 
                 return _adaptersFactoryService;
             }

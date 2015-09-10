@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Outline
             {
                 if (_outliningManager == null)
                 {
-                    IOutliningManagerService outliningManagerService = EditorShell.ExportProvider.GetExport<IOutliningManagerService>().Value;
+                    IOutliningManagerService outliningManagerService = EditorShell.Current.ExportProvider.GetExport<IOutliningManagerService>().Value;
                     _outliningManager = outliningManagerService.GetOutliningManager(TextView);
                 }
 

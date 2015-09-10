@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Signatures
 
         private void TriggerSignatureHelp(object o)
         {
-            ISignatureHelpBroker signatureBroker = EditorShell.ExportProvider.GetExport<ISignatureHelpBroker>().Value;
+            ISignatureHelpBroker signatureBroker = EditorShell.Current.ExportProvider.GetExport<ISignatureHelpBroker>().Value;
             CompletionController.DismissSignatureSession(o as ITextView);
             signatureBroker.TriggerSignatureHelp(o as ITextView);
         }

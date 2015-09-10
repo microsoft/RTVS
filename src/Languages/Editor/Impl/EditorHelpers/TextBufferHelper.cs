@@ -224,9 +224,9 @@ namespace Microsoft.Languages.Editor.EditorHelpers
 
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, Action<ITextBuffer> callback)
         {
-            if (EditorShell.Shell != null)
+            if (EditorShell.Current != null)
             {
-                ITextDocumentFactoryService textDocumentFactoryService = EditorShell.ExportProvider.GetExport<ITextDocumentFactoryService>().Value;
+                ITextDocumentFactoryService textDocumentFactoryService = EditorShell.Current.ExportProvider.GetExport<ITextDocumentFactoryService>().Value;
                 ITextDocument textDocument;
 
                 if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out textDocument))

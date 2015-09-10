@@ -186,7 +186,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
                     throw new InvalidOperationException("R Tools: AppShell.Initialize can't be called during shutdown.");
                 }
 
-                IEditorShell existingShell = EditorShell.HasShell ? EditorShell.Shell : null;
+                IEditorShell existingShell = EditorShell.HasShell ? EditorShell.Current : null;
                 _shell = existingShell as VsEditorShell;
 
                 // Don't create my own host if one has already been set (like during unit tests)

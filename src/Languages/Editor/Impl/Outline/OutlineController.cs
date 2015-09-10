@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Editor.Outline
 
         public OutlineController(ITextView textView)
         {
-            EditorShell.CompositionService.SatisfyImportsOnce(this);
+            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
             _textView = textView;
         } 
 

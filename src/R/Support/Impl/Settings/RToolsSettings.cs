@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Settings.Definitions;
@@ -12,6 +14,33 @@ namespace Microsoft.R.Support.Settings
         // Exported by the host package
         internal static IRToolsSettings ToolsSettings { get; set; }
 
+        public static void VerifyRIsInstalled(ExportProvider exportProvider)
+        {
+            Init(exportProvider);
+
+            string rPath = GetRVersionPath();
+            if(!string.IsNullOrEmpty(rPath))
+            {
+                bool rExeExists = File.Exists(Path.Combine(rPath, @"bin\R.exe"));
+                bool rTermExists = File.Exists(Path.Combine(rPath, @"bin\i386\RTerm.exe")) || File.Exists(Path.Combine(rPath, @"bin\x64\RTerm.exe"));
+
+                if(rExeExists && rTermExists)
+                {
+                    return;
+                }
+            }
+
+            string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled, rPath);
+            EditorShell.Current.ShowErrorMessage(message);
+
+            Process.Start("https://cran.r-project.org");
+        }
+
+        public static void GoToRInstallPage()
+        {
+            Process.Start("http://google.com");
+        }
+
         /// <summary>
         /// Retrieves path to the installed R engine root folder
         /// </summary>
@@ -19,7 +48,7 @@ namespace Microsoft.R.Support.Settings
         {
             string installPath = null;
 
-            Init();
+            Init(EditorShell.Current.ExportProvider);
 
             // First try user-specified options
             installPath = ToolsSettings.GetRVersionPath();
@@ -38,7 +67,7 @@ namespace Microsoft.R.Support.Settings
         {
             string binFolder = null;
 
-            Init();
+            Init(EditorShell.Current.ExportProvider);
 
             string installPath = RToolsSettings.GetRVersionPath();
 
@@ -63,11 +92,11 @@ namespace Microsoft.R.Support.Settings
             return binFolder;
         }
 
-        private static void Init()
+        private static void Init(ExportProvider exportProvider)
         {
             if (ToolsSettings == null)
             {
-                ToolsSettings = EditorShell.ExportProvider.GetExport<IRToolsSettings>().Value;
+                ToolsSettings = exportProvider.GetExport<IRToolsSettings>().Value;
                 Debug.Assert(ToolsSettings != null);
             }
         }

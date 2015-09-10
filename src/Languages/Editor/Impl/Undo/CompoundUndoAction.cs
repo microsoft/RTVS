@@ -20,10 +20,10 @@ namespace Microsoft.Languages.Editor.Undo
 
         public CompoundUndoAction(ITextView textView, ITextBuffer textBuffer, bool addRollbackOnCancel = true)
         {
-            if (!EditorShell.IsUnitTestEnvironment)
+            if (!EditorShell.Current.IsUnitTestEnvironment)
             {
-                IEditorOperationsFactoryService operationsService = EditorShell.ExportProvider.GetExport<IEditorOperationsFactoryService>().Value;
-                ITextBufferUndoManagerProvider undoProvider = EditorShell.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
+                IEditorOperationsFactoryService operationsService = EditorShell.Current.ExportProvider.GetExport<IEditorOperationsFactoryService>().Value;
+                ITextBufferUndoManagerProvider undoProvider = EditorShell.Current.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
 
                 _editorOperations = operationsService.GetEditorOperations(textView);
                 _undoManager = undoProvider.GetTextBufferUndoManager(_editorOperations.TextView.TextBuffer);

@@ -67,9 +67,9 @@ namespace Microsoft.Languages.Editor.Controller
             // It is allowed here not to have host. The reason is that we allow using controller classes
             // without host as long as derived controller is adding commands manually. Without host there is
             // no composition service and hence we are unable to import command factories.
-            if (EditorShell.CompositionService != null)
+            if (EditorShell.Current.CompositionService != null)
             {
-                var importComposer = new ContentTypeImportComposer<ICommandFactory>(EditorShell.CompositionService);
+                var importComposer = new ContentTypeImportComposer<ICommandFactory>(EditorShell.Current.CompositionService);
                 var commandFactories = importComposer.GetAll(TextBuffer.ContentType.TypeName);
 
                 foreach (var factory in commandFactories)
@@ -88,7 +88,7 @@ namespace Microsoft.Languages.Editor.Controller
                 foreach (var factory in controllerFactories)
                 {
                     // Unpleasant workaround to have TestWebApplication working...
-                    if (String.Equals(EditorShell.Shell.GetType().ToString(), "Microsoft.Web.Editor.Test.Host.WebEditorHost", StringComparison.OrdinalIgnoreCase) &&
+                    if (String.Equals(EditorShell.Current.GetType().ToString(), "Microsoft.Web.Editor.Test.Host.WebEditorHost", StringComparison.OrdinalIgnoreCase) &&
                        String.Equals(factory.Value.GetType().Assembly.GetName().Name, "Microsoft.VisualStudio.Html.Package", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;

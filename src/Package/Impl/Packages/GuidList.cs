@@ -2,7 +2,7 @@
 
 namespace Microsoft.VisualStudio.R.Package
 {
-    static class GuidList
+    public static class GuidList
     {
         public const string EditorFactoryGuidString = "EE606CC0-077A-4FDE-91C3-24EC012C8389";
         public const string LanguageServiceGuidString = "29C0D8E0-C01C-412B-BEE8-7A7A253A31E6";

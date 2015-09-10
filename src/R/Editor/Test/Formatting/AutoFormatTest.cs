@@ -83,7 +83,7 @@ namespace Microsoft.R.Editor.Test.Formatting
             ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
             var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));
 
-            ISmartIndentProvider provider = EditorShell.ExportProvider.GetExport<ISmartIndentProvider>().Value;
+            ISmartIndentProvider provider = EditorShell.Current.ExportProvider.GetExport<ISmartIndentProvider>().Value;
             SmartIndenter indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
 
             int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1), IndentStyle.Block);
@@ -116,7 +116,7 @@ namespace Microsoft.R.Editor.Test.Formatting
             ITextView textView = TextViewTest.MakeTextView(content, 0, out ast);
             var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));
 
-            ISmartIndentProvider provider = EditorShell.ExportProvider.GetExport<ISmartIndentProvider>().Value;
+            ISmartIndentProvider provider = EditorShell.Current.ExportProvider.GetExport<ISmartIndentProvider>().Value;
             ISmartIndent indenter = provider.CreateSmartIndent(textView);
 
             return indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber));

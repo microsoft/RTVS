@@ -17,7 +17,7 @@ namespace Microsoft.R.Editor.QuickInfo
 
         public QuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {
-            EditorShell.CompositionService.SatisfyImportsOnce(this);
+            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
             
             _textView = textView;
             _subjectBuffers = subjectBuffers;

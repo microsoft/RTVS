@@ -19,7 +19,7 @@ namespace Microsoft.R.Editor.Undo
         {
             _textBuffer = textBuffer;
 
-            var undoManagerProvider = EditorShell.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
+            var undoManagerProvider = EditorShell.Current.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
             var undoManager = undoManagerProvider.GetTextBufferUndoManager(textView.TextBuffer);
 
             ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(description);

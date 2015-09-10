@@ -1,143 +1,105 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-	<Extern href="stdidcmd.h" />
-	<Extern href="vsshlids.h" />
+  <Extern href="stdidcmd.h" />
+  <Extern href="vsshlids.h" />
 
-	<Commands package="RToolsPackage">
-		<Menus>
-			<!-- R code editor context menu -->
-			<Menu guid="guidRToolsCmdSet" id="rCodeEditorContextMenu" type="Context">
-				<Strings>
-					<ButtonText>R Context</ButtonText>
-				</Strings>
-			</Menu>
-		</Menus>
+  <Commands package="RToolsPackage">
+    <Menus>
+      <!-- R code editor context menu -->
+      <Menu guid="guidRToolsCmdSet" id="rCodeEditorContextMenu" type="Context">
+        <Strings>
+          <ButtonText>R Context</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
 
-		<!-- 
+    <!-- 
 		  In this section you can define new menu groups. A menu group is a container for 
 		  other menus or buttons (commands); from a visual point of view you can see the 
 		  group as the part of a menu contained between two lines. The parent of a group 
 		  must be a menu. 
 		-->
-		<Groups>
-			<!-- R code editor context menu groups -->
-			<!-- R Snippets -->
-			<Group guid="guidRToolsCmdSet" id="groupSnippets" priority="0x0200">
-				<Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
-			</Group>
-
-			<!-- R Formatting -->
-			<Group guid="guidRToolsCmdSet" id="groupFormat" priority="0x0800">
-				<Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
-			</Group>
-			<!-- End R code editor context menu groups -->
-
-      <Group guid="guidRToolsCmdSet" id="AddPlatformCodeMenuGroup" priority="0x0600">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_PROJECT"/>
+    <Groups>
+      <!-- R code editor context menu groups -->
+      <!-- R Formatting -->
+      <Group guid="guidRToolsCmdSet" id="groupFormat" priority="0x0800">
+        <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
-		</Groups>
+      <!-- End R code editor context menu groups -->
+    </Groups>
 
     <Buttons>
-      <Button guid="guidRToolsCmdSet" id="cmdidAddPlatformCodeCommand" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="AddPlatformCodeMenuGroup" />
+      <Button guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Add &amp;Platform Specific Code</ButtonText>
+          <ButtonText>R Console Windows</ButtonText>
         </Strings>
       </Button>
-
-			<Button guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" priority="0x0100" type="Button">
-				<Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-				<CommandFlag>DefaultInvisible</CommandFlag>
-				<CommandFlag>DynamicVisibility</CommandFlag>
-				<Strings>
-					<ButtonText>R Console Windows</ButtonText>
-				</Strings>
-			</Button>
     </Buttons>
-	</Commands>
+  </Commands>
 
-	<CommandPlacements>
-		<!-- R code editor context menu -->
-		<!-- Clipboard group -->
-		<CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
-			<Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
-		</CommandPlacement>
-
-		<!-- Snippets group -->
-		<CommandPlacement guid="guidVSStd2K" id="ECMD_INSERTSNIPPET" priority="0x0100">
-			<Parent guid="guidRToolsCmdSet" id="groupSnippets"/>
-		</CommandPlacement>
-		<CommandPlacement guid="guidVSStd2K" id="ECMD_SURROUNDWITH" priority="0x0200">
-			<Parent guid="guidRToolsCmdSet" id="groupSnippets"/>
-		</CommandPlacement>
-
-		<!-- Formatting group -->
-		<CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x400">
-			<Parent guid="guidRToolsCmdSet" id="groupFormat"/>
-		</CommandPlacement>
-		<CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATANDVALIDATION" priority="0x0500">
-			<Parent guid="guidRToolsCmdSet" id="groupFormat"/>
-		</CommandPlacement>
-		<!-- End HTML code editor context menu -->
-
-    <CommandPlacement guid="guidRToolsCmdSet" id="cmdidAddPlatformCodeCommand" priority="0x0310">
-      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_ADD_ITEMS"/>
+  <CommandPlacements>
+    <!-- R code editor context menu -->
+    <!-- Clipboard group -->
+    <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
-	</CommandPlacements>
 
-	<VisibilityConstraints>
-		<VisibilityItem guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" context="RToolsPackage" />
-		<VisibilityItem guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" context="guidCpsProjectFactory" />
-	</VisibilityConstraints>
-	
-	<Symbols>
-		<!-- Package GUID -->
-		<GuidSymbol name="RToolsPackage" value="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" />
-		<GuidSymbol name="guidCpsProjectFactory" value="{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}" />
+    <!-- Formatting group -->
+    <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x400">
+      <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATANDVALIDATION" priority="0x0500">
+      <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
+    </CommandPlacement>
+    <!-- End R code editor context menu -->
 
-		<!-- Command Ids must match those in CommonPackage\Commands -->
+  </CommandPlacements>
+
+  <VisibilityConstraints>
+    <VisibilityItem guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" context="RToolsPackage" />
+    <VisibilityItem guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" context="guidCpsProjectFactory" />
+  </VisibilityConstraints>
+
+  <Symbols>
+    <!-- Package GUID -->
+    <GuidSymbol name="RToolsPackage" value="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" />
+    <GuidSymbol name="guidCpsProjectFactory" value="{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}" />
+
+    <!-- Command Ids must match those in CommonPackage\Commands -->
     <GuidSymbol name="guidRToolsCmdSet" value="{AD87578C-B324-44DC-A12A-B01A6ED5C6E3}">
 
       <!-- Context menu ids. See Editor\ContextMenuId.cs -->
       <!-- R code editor context menu. -->
       <IDSymbol name="rCodeEditorContextMenu" value="100" />
 
-      <!-- Code snippets group in HTML code editor context menu: ECMD_INSERTSNIPPET, ECMD_SURROUNDWITH -->
-      <IDSymbol name="groupSnippets" value="110" />
-
       <!-- HTML code editor context menu formatting group: ECMD_FORMATSELECTION, ECMD_FORMATANDVALIDATION -->
       <IDSymbol name="groupFormat" value="120" />
 
-      <IDSymbol name="AddPlatformCodeMenuGroup" value="0x1020" />
-
-      <!-- This value has to match PkgCmdIDList.cmdidAddPlatformCodeCommand -->
-      <IDSymbol name="cmdidAddPlatformCodeCommand" value="0x0100" />
     </GuidSymbol>
 
-		<!-- Interactive Windows Commands -->
-		<GuidSymbol name="guidRInteractiveCommandSet" value="{E1B81198-F2CF-46EE-BAF1-ACB4AE066A5C}">
-			
-			<!-- Show Default Interactive Window -->
-			<IDSymbol name="cmdidShowDefaultInteractiveWindow" value="0x0100" />
-		</GuidSymbol>
-	</Symbols>
+    <!-- Interactive Windows Commands -->
+    <GuidSymbol name="guidRInteractiveCommandSet" value="{E1B81198-F2CF-46EE-BAF1-ACB4AE066A5C}">
 
-	<UsedCommands>
-		<UsedCommand guid="guidVSStd97" id="cmdidCut" />
-		<UsedCommand guid="guidVSStd97" id="cmdidCopy" />
-		<UsedCommand guid="guidVSStd97" id="cmdidPaste" />
-		<UsedCommand guid="guidVSStd97" id="cmdidDelete" />
-		<UsedCommand guid="guidVSStd2K" id="ECMD_INSERTSNIPPET" />
-		<UsedCommand guid="guidVSStd2K" id="ECMD_SURROUNDWITH" />
-		<UsedCommand guid="guidVSStd2K" id="ECMD_FORMATANDVALIDATION" />
-		<UsedCommand guid="guidVSStd2K" id="ECMD_FORMATDOCUMENT" />
-		<UsedCommand guid="guidVSStd2K" id="ECMD_FORMATSELECTION" />
-		<UsedCommand guid="guidVSStd2K" id="ECMD_HELP" />
-		<UsedCommand guid="guidVSStd2K" id="ECMD_HELPKEYWORD" />
-		<UsedCommand guid="guidVSStd97" id="cmdidF1Help" />
-	</UsedCommands>
+      <!-- Show Default Interactive Window -->
+      <IDSymbol name="cmdidShowDefaultInteractiveWindow" value="0x0100" />
+    </GuidSymbol>
+  </Symbols>
+
+  <UsedCommands>
+    <UsedCommand guid="guidVSStd97" id="cmdidCut" />
+    <UsedCommand guid="guidVSStd97" id="cmdidCopy" />
+    <UsedCommand guid="guidVSStd97" id="cmdidPaste" />
+    <UsedCommand guid="guidVSStd97" id="cmdidDelete" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATANDVALIDATION" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATDOCUMENT" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATSELECTION" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_HELP" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_HELPKEYWORD" />
+    <UsedCommand guid="guidVSStd97" id="cmdidF1Help" />
+  </UsedCommands>
 
 </CommandTable>

@@ -16,7 +16,7 @@ namespace Microsoft.Languages.Editor.Imaging
         {
             lock (_lock)
             {
-                var glyphService = EditorShell.ExportProvider.GetExport<IGlyphService>().Value;
+                var glyphService = EditorShell.Current.ExportProvider.GetExport<IGlyphService>().Value;
                 return glyphService.GetGlyph(group, item);
             }
         }

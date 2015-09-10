@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors
 
         public BaseEditorFactory(Package package, Guid editorFactoryId, Guid languageServiceId, bool encoding = false)
         {
-            EditorShell.CompositionService.SatisfyImportsOnce(this);
+            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
             Package = package;
             InitializationTrackers = new List<TextBufferInitializationTracker>();
             _editorFactoryId = editorFactoryId;

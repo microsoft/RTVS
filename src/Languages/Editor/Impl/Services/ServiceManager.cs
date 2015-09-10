@@ -399,7 +399,7 @@ namespace Microsoft.Languages.Editor.Services
         {
             if (ServiceAdded != null)
             {
-                Debug.Assert(Thread.CurrentThread == EditorShell.Shell.MainThread);
+                Debug.Assert(Thread.CurrentThread == EditorShell.Current.MainThread);
                 ServiceAdded(this, new ServiceManagerEventArgs(serviceType, serviceInstance));
             }
         }
@@ -408,7 +408,7 @@ namespace Microsoft.Languages.Editor.Services
         {
             if (ServiceRemoved != null)
             {
-                Debug.Assert(Thread.CurrentThread == EditorShell.Shell.MainThread);
+                Debug.Assert(Thread.CurrentThread == EditorShell.Current.MainThread);
                 ServiceRemoved(this, new ServiceManagerEventArgs(serviceType, serviceInstance));
             }
         }

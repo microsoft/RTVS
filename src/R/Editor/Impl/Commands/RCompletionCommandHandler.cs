@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Commands
             {
                 if (_completionBroker == null)
                 {
-                    _completionBroker = EditorShell.ExportProvider.GetExport<ICompletionBroker>().Value;
+                    _completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
                 }
 
                 return _completionBroker;

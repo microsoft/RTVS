@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Comments
             int startLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(range.Start);
             int endLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(range.End);
 
-            ICompoundUndoAction undoAction = EditorShell.CreateCompoundAction(textView, textBuffer);
+            ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textBuffer);
             undoAction.Open(actionName);
             bool changed = false;
             try

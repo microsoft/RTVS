@@ -52,7 +52,7 @@ namespace Microsoft.R.Editor.Commands
 
         private void DismissAllSessions()
         {
-            ICompletionBroker completionBroker = EditorShell.ExportProvider.GetExport<ICompletionBroker>().Value;
+            ICompletionBroker completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
             completionBroker.DismissAllSessions(TextView);
         }
 

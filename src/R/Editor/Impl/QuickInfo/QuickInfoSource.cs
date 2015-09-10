@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.QuickInfo
 
         public QuickInfoSource(ITextBuffer subjectBuffer)
         {
-            EditorShell.CompositionService.SatisfyImportsOnce(this);
+            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             _subjectBuffer = subjectBuffer;
             _subjectBuffer.Changed += OnTextBufferChanged;
@@ -113,7 +113,7 @@ namespace Microsoft.R.Editor.QuickInfo
             }
 
             _lastPosition = -1;
-            IQuickInfoBroker broker = EditorShell.ExportProvider.GetExport<IQuickInfoBroker>().Value;
+            IQuickInfoBroker broker = EditorShell.Current.ExportProvider.GetExport<IQuickInfoBroker>().Value;
             broker.TriggerQuickInfo(session.TextView, session.GetTriggerPoint(session.TextView.TextBuffer), session.TrackMouse);
         }
 

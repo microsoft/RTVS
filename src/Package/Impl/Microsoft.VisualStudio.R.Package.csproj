@@ -84,7 +84,7 @@
     <Compile Include="Document\IVsEditorDocumentFactory.cs" />
     <Compile Include="Document\VsEditorDocument.cs" />
     <Compile Include="Document\VsEditorDocumentFactory.cs" />
-    <Compile Include="Options\R\Tools\RToolsSettings.cs" />
+    <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
