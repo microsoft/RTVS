@@ -49,7 +49,10 @@ namespace Microsoft.R.Support.Markdown.Tokens
                         break;
 
                     case '_':
-                        handled = HandleItalic('_', MdTokenType.Italic);
+                        if (!char.IsWhiteSpace(_cs.NextChar))
+                        {
+                            handled = HandleItalic('_', MdTokenType.Italic);
+                        }
                         break;
 
                     case '>':
@@ -57,7 +60,7 @@ namespace Microsoft.R.Support.Markdown.Tokens
                         break;
 
                     case '`':
-                        handled = HandlePreformatted();
+                        handled = HandleBackTick();
                         break;
 
                     case '-':
@@ -152,239 +155,266 @@ namespace Microsoft.R.Support.Markdown.Tokens
             return true;
         }
 
-        private bool HandlePreformatted()
+        private bool HandleBackTick()
         {
-            int start = _cs.Position;
-            bool single = true;
-
             if (_cs.NextChar == '`' && _cs.LookAhead(2) == '`' && (_cs.Position == 0 || _cs.PrevChar == '\n' || _cs.PrevChar == '\r'))
             {
-                _cs.Advance(3);
-                single = false;
-            }
-            else
-            {
-                _cs.MoveToNextChar();
+                return HandleCode();
             }
 
-            while (!_cs.IsEndOfStream() && _cs.CurrentChar != '`')
-            {
-                _cs.MoveToNextChar();
-            }
+            return HandleMonospace();
+        }
 
-            while (!_cs.IsEndOfStream() && _cs.CurrentChar == '`')
-            {
-                _cs.MoveToNextChar();
-            }
+        private bool HandleCode()
+        {
+            int start = _cs.Position;
+            _cs.Advance(3);
 
-            if (_cs.Position > start)
+            while (!_cs.IsEndOfStream())
             {
-                AddToken(single ? MdTokenType.Monospace : MdTokenType.Code, start, _cs.Position - start);
-                return true;
+                if (_cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`')
+                {
+                    _cs.Advance(4);
+                    AddToken(MdTokenType.Code, start, _cs.Position - start);
+                    return true;
+                }
+
+                _cs.MoveToNextChar();
             }
 
             return false;
         }
 
-    private bool HandleStar()
-    {
-        int start = _cs.Position;
-
-        switch (_cs.NextChar)
+        private bool HandleMonospace()
         {
-            case '*':
-                if (!char.IsWhiteSpace(_cs.LookAhead(2)))
-                {
-                    return HandleBold(MdTokenType.Bold);
-                }
-                break;
-
-            case ' ':
-                return HandleListItem();
-
-            default:
-                if (!char.IsWhiteSpace(_cs.NextChar))
-                {
-                    return HandleItalic('*', MdTokenType.Italic);
-                }
-                break;
-        }
-
-        return false;
-    }
-
-    private bool HandleBold(MdTokenType tokenType)
-    {
-        int start = _cs.Position;
-
-        _cs.Advance(2);
-        while (!_cs.IsEndOfStream())
-        {
-            if (_cs.CurrentChar == '_' || (_cs.CurrentChar == '*' && _cs.NextChar != '*'))
-            {
-                int tokenCount = _tokens.Count;
-                AddToken(tokenType, start, _cs.Position - start);
-
-                int startOfItalic = _cs.Position;
-                if (HandleItalic(_cs.CurrentChar, MdTokenType.BoldItalic))
-                {
-                    start = _cs.Position;
-                }
-                else
-                {
-                    _tokens.RemoveRange(tokenCount, _tokens.Count - tokenCount);
-                    _cs.Position = startOfItalic;
-                    break;
-                }
-            }
-
-            if (_cs.CurrentChar == '*' && _cs.NextChar == '*')
-            {
-                _cs.Advance(2);
-                AddToken(tokenType, start, _cs.Position - start);
-                return true;
-            }
-
-            if (_cs.IsAtNewLine())
-                break;
-
+            int start = _cs.Position;
             _cs.MoveToNextChar();
-        }
 
-        return false;
-    }
-
-    private bool HandleItalic(char boundaryChar, MdTokenType tokenType)
-    {
-        int start = _cs.Position;
-
-        _cs.MoveToNextChar();
-
-        while (!_cs.IsEndOfStream())
-        {
-            if (_cs.CurrentChar == '*' && _cs.NextChar == '*')
+            while (!_cs.IsEndOfStream())
             {
-                int tokenCount = _tokens.Count;
-                AddToken(tokenType, start, _cs.Position - start);
-
-                int startOfBold = _cs.Position;
-                if (HandleBold(MdTokenType.BoldItalic))
+                if (_cs.CurrentChar == '`')
                 {
-                    start = _cs.Position;
+                    _cs.MoveToNextChar();
+                    AddToken(MdTokenType.Monospace, start, _cs.Position - start);
+                    return true;
                 }
-                else
-                {
-                    _tokens.RemoveRange(tokenCount, _tokens.Count - tokenCount);
-                    _cs.Position = startOfBold;
-                    break;
-                }
-            }
 
-            if (_cs.CurrentChar == boundaryChar)
-            {
                 _cs.MoveToNextChar();
-                AddToken(tokenType, start, _cs.Position - start);
-                return true;
             }
 
-            if (_cs.IsAtNewLine())
-                break;
-
-            _cs.MoveToNextChar();
+            return false;
         }
 
-        return false;
-    }
-
-    private bool HandleListItem()
-    {
-        // List item must start at the beginning of the line
-
-        for (int i = _cs.Position - 1; i >= 0; i--)
+        private bool HandleStar()
         {
-            char ch = _cs[i];
+            int start = _cs.Position;
 
-            if (!char.IsWhiteSpace(ch))
+            switch (_cs.NextChar)
             {
-                break;
+                case '*':
+                    if (!char.IsWhiteSpace(_cs.LookAhead(2)))
+                    {
+                        return HandleBold(MdTokenType.Bold);
+                    }
+                    break;
+
+                case ' ':
+                    return HandleListItem();
+
+                default:
+                    if (!char.IsWhiteSpace(_cs.NextChar))
+                    {
+                        return HandleItalic('*', MdTokenType.Italic);
+                    }
+                    break;
             }
 
-            if (ch == '\r' || ch == '\n')
+            return false;
+        }
+
+        private bool HandleBold(MdTokenType tokenType)
+        {
+            int start = _cs.Position;
+
+            _cs.Advance(2);
+            while (!_cs.IsEndOfStream())
+            {
+                if (_cs.CurrentChar == '_' || (_cs.CurrentChar == '*' && _cs.NextChar != '*'))
+                {
+                    int tokenCount = _tokens.Count;
+                    AddToken(tokenType, start, _cs.Position - start);
+
+                    int startOfItalic = _cs.Position;
+                    if (HandleItalic(_cs.CurrentChar, MdTokenType.BoldItalic))
+                    {
+                        start = _cs.Position;
+                    }
+                    else
+                    {
+                        _tokens.RemoveRange(tokenCount, _tokens.Count - tokenCount);
+                        _cs.Position = startOfItalic;
+                        break;
+                    }
+                }
+
+                if (_cs.CurrentChar == '*' && _cs.NextChar == '*')
+                {
+                    _cs.Advance(2);
+                    AddToken(tokenType, start, _cs.Position - start);
+                    return true;
+                }
+
+                if (_cs.IsAtNewLine())
+                    break;
+
+                _cs.MoveToNextChar();
+            }
+
+            return false;
+        }
+
+        private bool HandleItalic(char boundaryChar, MdTokenType tokenType)
+        {
+            int start = _cs.Position;
+
+            _cs.MoveToNextChar();
+
+            while (!_cs.IsEndOfStream())
+            {
+                if (_cs.CurrentChar == '*' && _cs.NextChar == '*')
+                {
+                    int tokenCount = _tokens.Count;
+                    AddToken(tokenType, start, _cs.Position - start);
+
+                    int startOfBold = _cs.Position;
+                    if (HandleBold(MdTokenType.BoldItalic))
+                    {
+                        start = _cs.Position;
+                    }
+                    else
+                    {
+                        _tokens.RemoveRange(tokenCount, _tokens.Count - tokenCount);
+                        _cs.Position = startOfBold;
+                        break;
+                    }
+                }
+
+                if (_cs.CurrentChar == boundaryChar)
+                {
+                    _cs.MoveToNextChar();
+                    AddToken(tokenType, start, _cs.Position - start);
+                    return true;
+                }
+
+                if (_cs.IsAtNewLine())
+                    break;
+
+                _cs.MoveToNextChar();
+            }
+
+            return false;
+        }
+
+        private bool HandleListItem()
+        {
+            // List item must start at the beginning of the line
+            bool atStartOfLine = _cs.Position == 0;
+
+            if (!atStartOfLine)
+            {
+                for (int i = _cs.Position - 1; i >= 0; i--)
+                {
+                    char ch = _cs[i];
+
+                    if (!char.IsWhiteSpace(ch))
+                    {
+                        break;
+                    }
+
+                    if (ch == '\r' || ch == '\n')
+                    {
+                        atStartOfLine = true;
+                        break;
+                    }
+                }
+            }
+
+            if (atStartOfLine)
             {
                 return HandleSequenceToEol(MdTokenType.ListItem);
             }
+
+            return false;
         }
 
-        return false;
-    }
-
-    private bool HandleNumberedListItem()
-    {
-        int start = _cs.Position;
-
-        while (!_cs.IsEndOfStream())
+        private bool HandleNumberedListItem()
         {
-            if (!_cs.IsDecimal())
+            int start = _cs.Position;
+
+            while (!_cs.IsEndOfStream())
             {
-                if (_cs.CurrentChar == '.' && char.IsWhiteSpace(_cs.NextChar))
+                if (!_cs.IsDecimal())
                 {
-                    return HandleSequenceToEol(MdTokenType.ListItem, start);
+                    if (_cs.CurrentChar == '.' && char.IsWhiteSpace(_cs.NextChar))
+                    {
+                        return HandleSequenceToEol(MdTokenType.ListItem, start);
+                    }
+
+                    break;
                 }
 
-                break;
+                _cs.MoveToNextChar();
             }
 
-            _cs.MoveToNextChar();
+            return false;
         }
 
-        return false;
-    }
-
-    private bool HandleSequenceToEol(MdTokenType tokeType, int startPosition = 0)
-    {
-        int start = startPosition > 0 ? startPosition : _cs.Position;
-        _cs.SkipToEol();
-
-        AddToken(tokeType, start, _cs.Position - start);
-        return true;
-    }
-
-    private bool HandleSequenceToEmptyLine(MdTokenType tokeType)
-    {
-        int start = _cs.Position;
-
-        _cs.SkipToEol();
-        int end = _cs.Position;
-
-        _cs.SkipLineBreak();
-
-        if (_cs.IsAtNewLine())
+        private bool HandleSequenceToEol(MdTokenType tokeType, int startPosition = -1)
         {
-            AddToken(tokeType, start, end - start);
+            int start = startPosition >= 0 ? startPosition : _cs.Position;
+            _cs.SkipToEol();
+
+            AddToken(tokeType, start, _cs.Position - start);
             return true;
         }
 
-        return false;
-    }
-
-    private void AddToken(MdTokenType type, int start, int length)
-    {
-        if (length > 0)
+        private bool HandleSequenceToEmptyLine(MdTokenType tokeType)
         {
-            var token = new MdToken(type, new TextRange(start, length));
-            _tokens.Add(token);
+            int start = _cs.Position;
+
+            while (!_cs.IsEndOfStream())
+            {
+                _cs.SkipToEol();
+                _cs.SkipLineBreak();
+
+                if (_cs.IsAtNewLine())
+                {
+                    break;
+                }
+            }
+
+            AddToken(tokeType, start, _cs.Position - start);
+            return true;
+        }
+
+        private void AddToken(MdTokenType type, int start, int length)
+        {
+            if (length > 0)
+            {
+                var token = new MdToken(type, new TextRange(start, length));
+                _tokens.Add(token);
+            }
+        }
+
+        /// <summary>
+        /// Skips content until the nearest whitespace
+        /// </summary>
+        internal void SkipToWhitespace()
+        {
+            while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace())
+            {
+                _cs.MoveToNextChar();
+            }
         }
     }
-
-    /// <summary>
-    /// Skips content until the nearest whitespace
-    /// </summary>
-    internal void SkipToWhitespace()
-    {
-        while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace())
-        {
-            _cs.MoveToNextChar();
-        }
-    }
-}
 }

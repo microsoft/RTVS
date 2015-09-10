@@ -96,6 +96,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Functions\FunctionIndexTest.cs" />
+    <Compile Include="Markdown\TokenizeBlockTest.cs" />
+    <Compile Include="Markdown\TokenizeListTest.cs" />
+    <Compile Include="Markdown\TokenizeLinkTest.cs" />
+    <Compile Include="Markdown\TokenizeStylesTest.cs" />
+    <Compile Include="Markdown\TokenizeQuoteTest.cs" />
+    <Compile Include="Markdown\TokenizeHeadingTest.cs" />
     <Compile Include="Packages\PackageIndexTest.cs" />
     <Compile Include="RD\Classification\RdClassifierTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
@@ -104,7 +110,6 @@
     <Compile Include="RD\Tokens\TokenizeTest.cs" />
     <Compile Include="RD\Tokens\VerifySortedTables.cs" />
     <Compile Include="RD\Utility\RdTestFilesSetup.cs" />
-    <Compile Include="RD\Utility\TokensCompare.cs" />
     <Compile Include="Utility\FunctionIndexTestExecutor.cs" />
     <Compile Include="Utility\TestRToolsSettings.cs" />
   </ItemGroup>

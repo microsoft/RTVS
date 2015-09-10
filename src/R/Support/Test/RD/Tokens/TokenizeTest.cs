@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Tokens;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Support.RD.Tokens;
-using Microsoft.R.Support.Test.RD.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Support.Test.RD.Tokens
@@ -70,19 +70,19 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         public void TokenizeRdArguments01()
         {
             var actualTokens = this.Tokenize(@"\a1{arg[text \a1[=a2]] text}", new RdTokenizer());
-            var expectedTokens = new TokenData[]
+            var expectedTokens = new TokenData<RdTokenType>[]
             {
-                new TokenData(RdTokenType.Keyword, 0, 3),
-                new TokenData(RdTokenType.OpenCurlyBrace, 3, 1),
-                new TokenData(RdTokenType.OpenSquareBracket, 7, 1),
-                new TokenData(RdTokenType.Keyword, 13, 3),
-                new TokenData(RdTokenType.OpenSquareBracket, 16, 1),
-                new TokenData(RdTokenType.CloseSquareBracket, 20, 1),
-                new TokenData(RdTokenType.CloseSquareBracket, 21, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 27, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 3),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 3, 1),
+                new TokenData<RdTokenType>(RdTokenType.OpenSquareBracket, 7, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 13, 3),
+                new TokenData<RdTokenType>(RdTokenType.OpenSquareBracket, 16, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseSquareBracket, 20, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseSquareBracket, 21, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 27, 1),
             };
 
-            TokensCompare.Compare(expectedTokens, actualTokens);
+            TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
 
 
@@ -90,79 +90,79 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         public void TokenizeRdArguments02()
         {
             var actualTokens = this.Tokenize(@"\method{as.matrix}{data.frame}(x)", new RdTokenizer());
-            var expectedTokens = new TokenData[]
+            var expectedTokens = new TokenData<RdTokenType>[]
             {
-                new TokenData(RdTokenType.Keyword, 0, 7),
-                new TokenData(RdTokenType.OpenCurlyBrace, 7, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 17, 1),
-                new TokenData(RdTokenType.OpenCurlyBrace, 18, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 29, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 7),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 7, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 17, 1),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 18, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 29, 1),
             };
 
-            TokensCompare.Compare(expectedTokens, actualTokens);
+            TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
 
         [TestMethod]
         public void TokenizeRdArguments03()
         {
             var actualTokens = this.Tokenize(@"\usage{\method{as.matrix}{data.frame}(x)}", new RdTokenizer());
-            var expectedTokens = new TokenData[]
+            var expectedTokens = new TokenData<RdTokenType>[]
             {
-                new TokenData(RdTokenType.Keyword, 0, 6),
-                new TokenData(RdTokenType.OpenCurlyBrace, 6, 1),
-                new TokenData(RdTokenType.Keyword, 7, 7),
-                new TokenData(RdTokenType.OpenCurlyBrace, 14, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 24, 1),
-                new TokenData(RdTokenType.OpenCurlyBrace, 25, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 36, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 40, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 6),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 6, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 7, 7),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 14, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 24, 1),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 25, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 36, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 40, 1),
             };
 
-            TokensCompare.Compare(expectedTokens, actualTokens);
+            TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
 
         [TestMethod]
         public void TokenizeRdArguments04()
         {
             var actualTokens = this.Tokenize(@"\ifelse{{latex}{\out[x]{~}}{ }}{}", new RdTokenizer());
-            var expectedTokens = new TokenData[]
+            var expectedTokens = new TokenData<RdTokenType>[]
             {
-                new TokenData(RdTokenType.Keyword, 0, 7),
-                new TokenData(RdTokenType.OpenCurlyBrace, 7, 1),
-                new TokenData(RdTokenType.OpenCurlyBrace, 8, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 14, 1),
-                new TokenData(RdTokenType.OpenCurlyBrace, 15, 1),
-                new TokenData(RdTokenType.Keyword, 16, 4),
-                new TokenData(RdTokenType.OpenSquareBracket, 20, 1),
-                new TokenData(RdTokenType.CloseSquareBracket, 22, 1),
-                new TokenData(RdTokenType.OpenCurlyBrace, 23, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 25, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 26, 1),
-                new TokenData(RdTokenType.OpenCurlyBrace, 27, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 29, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 30, 1),
-                new TokenData(RdTokenType.OpenCurlyBrace, 31, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 32, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 7),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 7, 1),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 8, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 14, 1),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 15, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 16, 4),
+                new TokenData<RdTokenType>(RdTokenType.OpenSquareBracket, 20, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseSquareBracket, 22, 1),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 23, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 25, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 26, 1),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 27, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 29, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 30, 1),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 31, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 32, 1),
             };
 
-            TokensCompare.Compare(expectedTokens, actualTokens);
+            TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
 
         [TestMethod]
         public void TokenizeRdArguments05()
         {
             var actualTokens = this.Tokenize(@"\item{\dots}{ A }", new RdTokenizer());
-            var expectedTokens = new TokenData[]
+            var expectedTokens = new TokenData<RdTokenType>[]
             {
-                new TokenData(RdTokenType.Keyword, 0, 5),
-                new TokenData(RdTokenType.OpenCurlyBrace, 5, 1),
-                new TokenData(RdTokenType.Keyword, 6, 5),
-                new TokenData(RdTokenType.CloseCurlyBrace, 11, 1),
-                new TokenData(RdTokenType.OpenCurlyBrace, 12, 1),
-                new TokenData(RdTokenType.CloseCurlyBrace, 16, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 5),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 5, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 6, 5),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 11, 1),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 12, 1),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 16, 1),
             };
 
-            TokensCompare.Compare(expectedTokens, actualTokens);
+            TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
 
         [TestMethod]
@@ -172,17 +172,17 @@ namespace Microsoft.R.Support.Test.RD.Tokens
 @"\alias{\% \dots %foo}
 #ifdef
 %comment", new RdTokenizer());
-            var expectedTokens = new TokenData[]
+            var expectedTokens = new TokenData<RdTokenType>[]
             {
-                new TokenData(RdTokenType.Keyword, 0, 6),
-                new TokenData(RdTokenType.OpenCurlyBrace, 6, 1),
-                new TokenData(RdTokenType.Keyword, 10, 5),
-                new TokenData(RdTokenType.CloseCurlyBrace, 20, 1),
-                new TokenData(RdTokenType.Pragma, 23, 6),
-                new TokenData(RdTokenType.Comment, 31, 8),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 6),
+                new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 6, 1),
+                new TokenData<RdTokenType>(RdTokenType.Keyword, 10, 5),
+                new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 20, 1),
+                new TokenData<RdTokenType>(RdTokenType.Pragma, 23, 6),
+                new TokenData<RdTokenType>(RdTokenType.Comment, 31, 8),
             };
 
-            TokensCompare.Compare(expectedTokens, actualTokens);
+            TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
     }
 }

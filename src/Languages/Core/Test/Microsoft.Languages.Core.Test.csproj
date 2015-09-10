@@ -84,6 +84,7 @@
     <Compile Include="Utility\TestFiles.cs" />
     <Compile Include="Utility\TestSetup.cs" />
     <Compile Include="Utility\TextRangeCollectionWriter.cs" />
+    <Compile Include="Utility\TokensCompare.cs" />
     <Compile Include="Utility\UnitTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
