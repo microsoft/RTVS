@@ -1,11 +1,11 @@
-﻿using Microsoft.Languages.Editor.Classification;
+﻿using Microsoft.Languages.Core.Classification;
 using Microsoft.R.Support.Markdown.Tokens;
 
 namespace Microsoft.R.Support.Markdown.Classification
 {
-    internal sealed class MdClassificationNameProvider: IClassificationContextNameProvider<MdToken>
+    internal sealed class MdClassificationNameProvider: IClassificationNameProvider<MdToken>
     {
-        public string GetClassificationContextName(MdToken t)
+        public string GetClassificationName(MdToken t)
         {
             switch (t.TokenType)
             {

@@ -2,11 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using Microsoft.Languages.Core.Diagnostics;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Formatting;
-using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens

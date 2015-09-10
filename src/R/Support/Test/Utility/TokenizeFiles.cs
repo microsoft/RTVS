@@ -2,13 +2,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using Microsoft.Languages.Core.Diagnostics;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Support.RD.Tokens;
+using Microsoft.Languages.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Support.Test.RD.Tokens
+namespace Microsoft.R.Support.Test.Utility
 {
     [ExcludeFromCodeCoverage]
     public static class TokenizeFiles
@@ -16,7 +15,9 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void TokenizeFile(TestContext context, string name)
+        public static void TokenizeFile<Token, TokenType, Tokenizer>(TestContext context, string name, string language) 
+            where Tokenizer: ITokenizer<Token>, new()
+            where Token: IToken<TokenType>
         {
             try
             {
@@ -25,15 +26,15 @@ namespace Microsoft.R.Support.Test.RD.Tokens
 
                 string text = TestFiles.LoadFile(context, testFile);
                 ITextProvider textProvider = new TextStream(text);
-                var tokenizer = new RdTokenizer();
+                var tokenizer = new Tokenizer();
 
                 var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
-                string actual = DebugWriter.WriteTokens<RdToken, RdTokenType>(tokens);
+                string actual = DebugWriter.WriteTokens<Token, TokenType>(tokens);
 
                 if (_regenerateBaselineFiles)
                 {
                     // Update this to your actual enlistment if you need to update baseline
-                    string enlistmentPath = @"F:\RTVS\src\R\Support\Test\RD\Files\Tokenization";
+                    string enlistmentPath = @"F:\RTVS\src\R\Support\Test\" + language + @"\Files\Tokenization";
                     baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
 
                     TestFiles.UpdateBaseline(baselineFile, actual);

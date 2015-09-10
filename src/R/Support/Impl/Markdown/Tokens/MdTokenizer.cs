@@ -170,12 +170,23 @@ namespace Microsoft.R.Support.Markdown.Tokens
             int start = _cs.Position;
             _cs.Advance(3);
 
+            bool rLanguage = _cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R') && (_cs.LookAhead(2) == '}' || _cs.LookAhead(2) == ',');
+
             while (!_cs.IsEndOfStream())
             {
                 if (_cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`')
                 {
                     _cs.Advance(4);
-                    AddToken(MdTokenType.Code, start, _cs.Position - start);
+
+                    if (rLanguage)
+                    {
+                        var token = new MdRCodeToken(start, _cs.Position - start, _cs.Text);
+                        _tokens.Add(token);
+                    }
+                    else
+                    {
+                        AddToken(MdTokenType.Code, start, _cs.Position - start);
+                    }
                     return true;
                 }
 

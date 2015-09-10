@@ -1,13 +1,26 @@
-﻿using Microsoft.Languages.Editor.Classification;
+﻿using System.ComponentModel.Composition;
+using Microsoft.Languages.Core.Classification;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Classification;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Language.StandardClassification;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.Classification
 {
-    internal sealed class RClassificationNameProvider: IClassificationContextNameProvider<RToken>
+    [Export(typeof(IClassificationNameProvider))]
+    [ContentType(RContentTypeDefinition.ContentType)]
+    internal sealed class RClassificationNameProvider: IClassificationNameProvider<RToken>, IClassificationNameProvider
     {
-        public string GetClassificationContextName(RToken t)
+        public string GetClassificationName(object o, out ITextRange range)
+        {
+            var token = (RToken)o;
+            range = token;
+            return GetClassificationName(token);
+        }
+
+        public string GetClassificationName(RToken t)
         {
             switch (t.TokenType)
             {

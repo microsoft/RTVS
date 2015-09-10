@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.Text;
@@ -28,13 +29,13 @@ namespace Microsoft.Languages.Editor.Classification
         protected ITextBuffer TextBuffer { get; set; }
         protected bool LineBasedClassification { get; set; }
 
-        IClassificationContextNameProvider<TTokenClass> _classificationNameProvider;
+        IClassificationNameProvider<TTokenClass> _classificationNameProvider;
 
         private int _lastValidPosition = 0;
 
         public TokenBasedClassifier(ITextBuffer textBuffer,
                                     ITokenizer<TTokenClass> tokenizer,
-                                    IClassificationContextNameProvider<TTokenClass> classificationNameProvider,
+                                    IClassificationNameProvider<TTokenClass> classificationNameProvider,
                                     IClassificationTypeRegistryService classificationRegistryService)
         {
             ClassificationRegistryService = classificationRegistryService;
@@ -197,14 +198,11 @@ namespace Microsoft.Languages.Editor.Classification
 
             foreach (var token in tokensInSpan)
             {
-                var compositeToken = token as ICompositeToken<TTokenClass>;
+                var compositeToken = token as ICompositeToken;
 
                 if (compositeToken != null)
                 {
-                    foreach (var internalToken in compositeToken.TokenList)
-                    {
-                        AddClassificationFromToken(classifications, textSnapshot, internalToken);
-                    }
+                    AddClassificationFromCompositeToken(classifications, textSnapshot, compositeToken);
                 }
                 else
                 {
@@ -229,7 +227,7 @@ namespace Microsoft.Languages.Editor.Classification
         private void AddClassificationFromToken(List<ClassificationSpan> classifications, ITextSnapshot textSnapshot, TTokenClass token)
         {
             // We don't necessarily map each token to a classification
-            string classificationName = _classificationNameProvider.GetClassificationContextName(token);
+            string classificationName = _classificationNameProvider.GetClassificationName(token);
 
             if (!string.IsNullOrEmpty(classificationName))
             {
@@ -245,6 +243,28 @@ namespace Microsoft.Languages.Editor.Classification
             }
         }
 
+        private void AddClassificationFromCompositeToken(List<ClassificationSpan> classifications, ITextSnapshot textSnapshot, ICompositeToken composite)
+        {
+            foreach (object token in composite.TokenList)
+            {
+                // We don't necessarily map each token to a classification
+                ITextRange range;
+                string classificationName = composite.ClassificationNameProvider.GetClassificationName(token, out range);
+
+                if (!string.IsNullOrEmpty(classificationName))
+                {
+                    IClassificationType ct = ClassificationRegistryService.GetClassificationType(classificationName);
+
+                    if (ct != null)
+                    {
+                        Span tokenSpan = new Span(range.Start, range.Length);
+                        ClassificationSpan cs = new ClassificationSpan(new SnapshotSpan(textSnapshot, tokenSpan), ct);
+                        classifications.Add(cs);
+                    }
+
+                }
+            }
+        }
 
         public void Suspend()
         {

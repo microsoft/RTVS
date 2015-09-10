@@ -81,15 +81,6 @@ namespace Microsoft.Languages.Core.Test.Utility
                             File.SetAttributes(dstPath, FileAttributes.Normal);
                         }
                     }
-
-                    // In case we deleted some files from the source, make sure they don't stick around in the destination
-                    HashSet<string> actualDestinationFileSet = new HashSet<string>(Directory.GetFiles(dst, searchPattern), StringComparer.OrdinalIgnoreCase);
-                    actualDestinationFileSet.ExceptWith(expectedDestinationFileSet);
-
-                    foreach (string staleFile in actualDestinationFileSet)
-                    {
-                        File.Delete(staleFile);
-                    }
                 }
             }
         }

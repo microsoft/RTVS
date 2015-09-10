@@ -6,7 +6,7 @@ namespace Microsoft.R.Support.Test.RD.Utility
 {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class RdTestFilesSetup
+    public class SupportTestFilesSetup
     {
         static object _deploymentLock = new object();
         static bool _deployed = false;
@@ -24,6 +24,9 @@ namespace Microsoft.R.Support.Test.RD.Utility
                     string testFilesDir;
 
                     TestSetup.GetTestFolders(@"R\Support\Test\RD\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetup.CopyDirectory(srcFilesFolder, testFilesDir);
+
+                    TestSetup.GetTestFolders(@"R\Support\Test\Markdown\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
                     TestSetup.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }

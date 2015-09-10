@@ -73,8 +73,6 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Classification\IClassificationContextNameProvider.cs" />
-    <Compile Include="Classification\ICompositeToken.cs" />
     <Compile Include="Classification\TokenBasedClassifier.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
     <Compile Include="EditorHelpers\TrackingHelper.cs" />

@@ -6,7 +6,7 @@ namespace Microsoft.Html.Editor.EditorFactory
     /// Exported via MEF. When document is created
     /// every exported listener will be called.
     /// </summary>
-    public interface IHtmlDocumentCreationListener
+    public interface IDocumentCreationListener
     {
         void DocumentCreated(EditorDocument document);
     }

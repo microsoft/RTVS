@@ -16,6 +16,11 @@ namespace Microsoft.R.Support.RD.Tokens
         private bool _tokenizeRContent;
         private BlockContentType _currentContentType = BlockContentType.Latex;
 
+        public RdTokenizer(): 
+            this(tokenizeRContent: true)
+        {
+        }
+
         /// <summary>
         /// Creates RD tokenizer.
         /// </summary>

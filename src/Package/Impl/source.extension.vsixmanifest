@@ -12,6 +12,8 @@
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
   </Dependencies>
   <Assets>
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Client.exe" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Common.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />

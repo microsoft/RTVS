@@ -1,12 +1,12 @@
-﻿using Microsoft.Languages.Editor.Classification;
+﻿using Microsoft.Languages.Core.Classification;
 using Microsoft.R.Support.RD.Tokens;
 using Microsoft.VisualStudio.Language.StandardClassification;
 
 namespace Microsoft.R.Support.RD.Classification
 {
-    internal sealed class RdClassificationNameProvider: IClassificationContextNameProvider<RdToken>
+    internal sealed class RdClassificationNameProvider: IClassificationNameProvider<RdToken>
     {
-        public string GetClassificationContextName(RdToken t)
+        public string GetClassificationName(RdToken t)
         {
             switch (t.TokenType)
             {

@@ -170,7 +170,7 @@ namespace Microsoft.R.Support.Markdown.Classification
         {
             public MdCodeClassificationFormat()
             {
-                ForegroundColor = Color.FromArgb(0xFF, 0x60, 0x60, 0x60);
+                ForegroundColor = Colors.DarkGray;
                 this.DisplayName = Resources.ColorName_MD_Code;
             }
         }
