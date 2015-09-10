@@ -282,5 +282,31 @@ if (intercept) {
 ";
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void Formatter_FormatForTest()
+        {
+            RFormatter f = new RFormatter();
+            string original = @"for (i in 1:6) x[, i] = rowMeans(fmri[[i]])";
+
+            string actual = f.Format(original);
+
+            string expected =
+@"for (i in 1:6)
+    x[, i] = rowMeans(fmri[[i]])";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatRandom01()
+        {
+            RFormatter f = new RFormatter();
+            string original = "a   b 1.  2 Inf\tNULL";
+
+            string actual = f.Format(original);
+
+            Assert.AreEqual(@"a b 1. 2 Inf NULL", actual);
+        }
     }
 }

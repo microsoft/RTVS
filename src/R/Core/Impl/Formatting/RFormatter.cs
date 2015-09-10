@@ -105,7 +105,40 @@ namespace Microsoft.R.Core.Formatting
                     break;
 
                 default:
+                    AppendConditionalSpace();
                     AppendToken();
+                    break;
+            }
+        }
+
+        private void AppendConditionalSpace()
+        {
+            switch (_tokens.PreviousToken.TokenType)
+            {
+                case RTokenType.OpenBrace:
+                case RTokenType.OpenSquareBracket:
+                case RTokenType.OpenDoubleSquareBracket:
+                case RTokenType.Operator:
+                    break;
+
+                default:
+                    switch (_tokens.CurrentToken.TokenType)
+                    {
+                        case RTokenType.OpenBrace: 
+                        case RTokenType.OpenSquareBracket:
+                        case RTokenType.OpenDoubleSquareBracket:
+                        case RTokenType.CloseBrace:
+                        case RTokenType.CloseSquareBracket:
+                        case RTokenType.CloseDoubleSquareBracket:
+                            break;
+
+                        default:
+                            if (!char.IsWhiteSpace(_tb.LastCharacter) && _tb.Length > 0)
+                            {
+                                _tb.AppendSpace();
+                            }
+                            break;
+                    }
                     break;
             }
         }
@@ -120,6 +153,11 @@ namespace Microsoft.R.Core.Formatting
         /// </returns>
         private void AppendKeyword()
         {
+            if (!char.IsWhiteSpace(_tb.LastCharacter) && _tb.Length > 0)
+            {
+                _tb.AppendSpace();
+            }
+
             string keyword = AppendToken();
 
             // Append space after the keyword as needed
@@ -187,6 +225,7 @@ namespace Microsoft.R.Core.Formatting
                         break;
 
                     default:
+                        AppendConditionalSpace();
                         AppendToken();
                         break;
                 }
