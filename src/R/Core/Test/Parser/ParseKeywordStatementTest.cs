@@ -82,5 +82,29 @@ namespace Microsoft.R.Core.Test.Parser
 ";
             ParserTest.VerifyParse(expected, "library('abind')");
         }
+
+        [TestMethod]
+        public void ParseLibraryTest03()
+        {
+            string expected =
+@"GlobalScope  [Global]
+
+IndentifierExpected Token [8...9)
+";
+            ParserTest.VerifyParse(expected, "library()");
+        }
+
+        [TestMethod]
+        public void ParseReturnTest01()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    KeywordExpressionStatement  []
+        TokenNode  [return [0...6]]
+        TokenNode  [( [6...7]]
+        TokenNode  [) [7...8]]
+";
+            ParserTest.VerifyParse(expected, "return()");
+        }
     }
 }

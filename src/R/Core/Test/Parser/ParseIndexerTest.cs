@@ -252,7 +252,6 @@ namespace Microsoft.R.Core.Test.Parser
                 TokenNode  [( [6...7]]
 
 CloseSquareBracketExpected AfterToken [14...15)
-UnexpectedToken Token [15...16)
 ";
             ParserTest.VerifyParse(expected, "append(LETTERS[)");
         }

@@ -5,6 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.R.Support.Settings;
@@ -21,6 +23,7 @@ namespace Microsoft.R.Support.Test.Packages
         public void BuildPackageIndexTest()
         {
             RToolsSettings.ToolsSettings = new TestRToolsSettings();
+            EditorShell.SetShell(TestEditorShell.Create());
 
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
             string[] packageNames = new string[]
@@ -81,6 +84,8 @@ namespace Microsoft.R.Support.Test.Packages
         public void PackageDescriptionTest()
         {
             RToolsSettings.ToolsSettings = new TestRToolsSettings();
+            EditorShell.SetShell(TestEditorShell.Create());
+
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
 
             IPackageInfo pi = PackageIndex.GetPackageByName("base");

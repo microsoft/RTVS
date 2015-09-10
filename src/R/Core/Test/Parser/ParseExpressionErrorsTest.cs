@@ -53,19 +53,9 @@ UnexpectedEndOfFile AfterToken [0...1)
 ";
             ParserTest.VerifyParse(expected, "(");
         }
+
         [TestMethod]
         public void ParseMismatchBracesTest02()
-        {
-            string expected =
-@"GlobalScope  [Global]
-
-UnexpectedToken Token [0...1)
-";
-            ParserTest.VerifyParse(expected, ")");
-        }
-
-        [TestMethod]
-        public void ParseMismatchBracesTest03()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -77,7 +67,7 @@ UnexpectedEndOfFile AfterToken [3...4)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest04()
+        public void ParseMismatchBracesTest03()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -90,7 +80,7 @@ UnexpectedEndOfFile AfterToken [2...3)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest05()
+        public void ParseMismatchBracesTest04()
         {
             string expected =
 @"GlobalScope  [Global]

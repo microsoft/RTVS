@@ -149,10 +149,10 @@ namespace Microsoft.R.Core.AST.Expressions
                     case RTokenType.CloseCurlyBrace:
                     case RTokenType.CloseSquareBracket:
                     case RTokenType.CloseDoubleSquareBracket:
-                        if (_previousOperationType == OperationType.None)
-                        {
-                            context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
-                        }
+                        //if (_previousOperationType == OperationType.None)
+                        //{
+                        //    context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
+                        //}
                         currentOperationType = OperationType.EndOfExpression;
                         endOfExpression = true;
                         break;
