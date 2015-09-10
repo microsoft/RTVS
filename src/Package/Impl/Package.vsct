@@ -38,7 +38,15 @@
           <ButtonText>R Console Windows</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidRToolsCmdSet" id="cmdidGoToFormattingOptions" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
+        <Strings>
+          <ButtonText>Formatting &amp;Options...</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
+
   </Commands>
 
   <CommandPlacements>
@@ -52,9 +60,7 @@
     <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x400">
       <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATANDVALIDATION" priority="0x0500">
-      <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
-    </CommandPlacement>
+
     <!-- End R code editor context menu -->
 
   </CommandPlacements>
@@ -69,21 +75,19 @@
     <GuidSymbol name="RToolsPackage" value="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" />
     <GuidSymbol name="guidCpsProjectFactory" value="{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}" />
 
-    <!-- Command Ids must match those in CommonPackage\Commands -->
+    <!-- Command Ids must match those in Microsoft.VisualStudio.R.Package\Commands -->
     <GuidSymbol name="guidRToolsCmdSet" value="{AD87578C-B324-44DC-A12A-B01A6ED5C6E3}">
-
-      <!-- Context menu ids. See Editor\ContextMenuId.cs -->
+      <!-- Context menu ids. See Microsoft.R.Editor\Commands -->
       <!-- R code editor context menu. -->
       <IDSymbol name="rCodeEditorContextMenu" value="100" />
-
-      <!-- HTML code editor context menu formatting group: ECMD_FORMATSELECTION, ECMD_FORMATANDVALIDATION -->
+      <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
       <IDSymbol name="groupFormat" value="120" />
-
+      <!-- See RPackageCommandId -->
+      <IDSymbol name="cmdidGoToFormattingOptions" value="500" />
     </GuidSymbol>
 
     <!-- Interactive Windows Commands -->
     <GuidSymbol name="guidRInteractiveCommandSet" value="{E1B81198-F2CF-46EE-BAF1-ACB4AE066A5C}">
-
       <!-- Show Default Interactive Window -->
       <IDSymbol name="cmdidShowDefaultInteractiveWindow" value="0x0100" />
     </GuidSymbol>
@@ -94,7 +98,6 @@
     <UsedCommand guid="guidVSStd97" id="cmdidCopy" />
     <UsedCommand guid="guidVSStd97" id="cmdidPaste" />
     <UsedCommand guid="guidVSStd97" id="cmdidDelete" />
-    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATANDVALIDATION" />
     <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATDOCUMENT" />
     <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATSELECTION" />
     <UsedCommand guid="guidVSStd2K" id="ECMD_HELP" />
