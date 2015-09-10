@@ -15,9 +15,21 @@ namespace Microsoft.R.Core.AST.Values
             string text = context.TextProvider.GetText(currentToken);
             double result;
 
-            Debug.Assert(currentToken.TokenType == RTokenType.Number);
+            Debug.Assert(currentToken.TokenType == RTokenType.Number || 
+                         currentToken.TokenType == RTokenType.Infinity ||
+                         currentToken.TokenType == RTokenType.NaN);
 
-            if (text[text.Length - 1] == 'L')
+            if(currentToken.TokenType == RTokenType.Infinity)
+            {
+                NodeValue = new RNumber(Double.PositiveInfinity);
+                return base.Parse(context, parent);
+            }
+            else if (currentToken.TokenType == RTokenType.NaN)
+            {
+                NodeValue = new RNumber(Double.NaN);
+                return base.Parse(context, parent);
+            }
+            else if (text[text.Length - 1] == 'L')
             {
                 int r;
                 if (Int32.TryParse(text.Substring(0, text.Length-1), out r))

@@ -10,7 +10,7 @@ namespace Microsoft.R.Core.Test.Parser
     public class ParseKnownConstantsTest : UnitTestBase
     {
         [TestMethod]
-        public void ParseKnownContstantsTest1()
+        public void ParseKnownContstantsTest01()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -23,6 +23,22 @@ namespace Microsoft.R.Core.Test.Parser
 ";
 
             ParserTest.VerifyParse(expected, "NULL + NA");
+        }
+
+        [TestMethod]
+        public void ParseKnownContstantsTest02()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [Inf + NaN]
+        Expression  [Inf + NaN]
+            TokenOperator  [+ [4...5]]
+                NumericalValue  [Inf [0...3]]
+                TokenNode  [+ [4...5]]
+                NumericalValue  [NaN [6...9]]
+";
+
+            ParserTest.VerifyParse(expected, "Inf + NaN");
         }
     }
 }

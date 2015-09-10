@@ -452,6 +452,8 @@ namespace Microsoft.R.Core.AST.Expressions
 
             switch (currentToken.TokenType)
             {
+                case RTokenType.NaN:
+                case RTokenType.Infinity:
                 case RTokenType.Number:
                     term = new NumericalValue();
                     break;
