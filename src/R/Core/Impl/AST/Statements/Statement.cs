@@ -1,4 +1,5 @@
-﻿using Microsoft.Languages.Core.Tokens;
+﻿using System.Diagnostics;
+using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
@@ -10,6 +11,7 @@ namespace Microsoft.R.Core.AST.Statements
     /// Represents statement: assignment, function definition,
     /// function call, conditional statement and so on.
     /// </summary>
+    [DebuggerDisplay("Statement, Children: {Children.Count}")]
     public abstract class Statement : AstNode, IStatement
     {
         /// <summary>

@@ -9,20 +9,49 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Functions
 {
+    /// <summary>
+    /// Represents code that defines a function such as
+    /// 'function(a, b) { }'
+    /// </summary>
+    [DebuggerDisplay("Function Definition [{Start}...{End})")]
     public sealed class FunctionDefinition : AstNode, IFunctionDefinition
     {
         #region IFunctionDefinition
+        /// <summary>
+        /// 'function' keyword. Always present.
+        /// </summary>
         public TokenNode Keyword { get; private set; }
 
+        /// <summary>
+        /// Function definition scope. Can be typical
+        /// { } scope or a simple scope as in
+        /// x &lt;- function(a) return(a+1)
+        /// </summary>
         public IScope Scope { get; private set; }
         #endregion
 
         #region IFunction
+        /// <summary>
+        /// Function arguments
+        /// </summary>
         public TokenNode OpenBrace { get; private set; }
 
+        /// <summary>
+        /// Function arguments
+        /// </summary>
         public ArgumentList Arguments { get; private set; }
 
+        /// <summary>
+        /// Closing brace. May be null if closing brace is missing.
+        /// </summary>
         public TokenNode CloseBrace { get; private set; }
+
+        /// <summary>
+        /// Returns end of a function signature (list of arguments).
+        /// In case closing brace is missing scope extends to a
+        /// nearest recovery point which may be an identifier
+        /// or a keyword (except inline 'if').
+        /// </summary>
         public int SignatureEnd
         {
             get

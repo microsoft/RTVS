@@ -1,6 +1,10 @@
 ﻿using Microsoft.Languages.Editor.Completion.TypeThrough;
 using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -30,6 +34,19 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion
             if (!TextViewHelpers.IsAutoInsertAllowed(textView))
             {
                 return;
+            }
+
+            // Do not complete '\"' in strings or at the end of a string token
+            if (typedChar == '\"' || typedChar == '\'')
+            {
+                AstRoot ast = EditorDocument.FromTextBuffer(textView.TextBuffer).EditorTree.AstRoot;
+                int position = textView.Selection.SelectedSpans[0].Start;
+
+                TokenNode node = ast.GetNodeOfTypeFromPosition<TokenNode>(position, includeEnd: true);
+                if (node != null && node.Token.TokenType == RTokenType.String)
+                {
+                    return;
+                }
             }
 
             SimpleComplete(textView, typedChar);

@@ -6,7 +6,6 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Search;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Selection;
 using Microsoft.R.Editor.SmartIndent;

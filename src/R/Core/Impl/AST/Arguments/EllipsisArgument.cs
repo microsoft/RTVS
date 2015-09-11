@@ -1,4 +1,5 @@
-﻿using Microsoft.R.Core.AST.Definitions;
+﻿using System.Diagnostics;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST.Arguments
@@ -7,6 +8,7 @@ namespace Microsoft.R.Core.AST.Arguments
     /// Represents '...' argument. Normally it is the last 
     /// one in the function definition.
     /// </summary>
+    [DebuggerDisplay("Ellipsis [{Start}...{End})")]
     public sealed class EllipsisArgument : CommaSeparatedItem
     {
         public TokenNode EllipsisToken { get; private set; }

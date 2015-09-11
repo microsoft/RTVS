@@ -5,7 +5,7 @@ using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST.Arguments
 {
-    [DebuggerDisplay("[{Name}]")]
+    [DebuggerDisplay("Expression Argument [{Start}...{End})")]
     public class ExpressionArgument : CommaSeparatedItem
     {
         public Expression ArgumentValue { get; private set; }

@@ -8,7 +8,6 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Core.AST.Search;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

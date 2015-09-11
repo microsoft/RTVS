@@ -14,12 +14,12 @@ namespace Microsoft.R.Core.Test.Parser
         {
             string expected =
 @"GlobalScope  [Global]
-    EmptyStatement  [EmptyStatement]
-        TokenNode  [; [0...1]]
-    EmptyStatement  [EmptyStatement]
-        TokenNode  [; [1...2]]
-    EmptyStatement  [EmptyStatement]
-        TokenNode  [; [2...3]]
+    EmptyStatement  [0...1)
+        TokenNode  [; [0...1)]
+    EmptyStatement  [1...2)
+        TokenNode  [; [1...2)]
+    EmptyStatement  [2...3)
+        TokenNode  [; [2...3)]
 ";
             ParserTest.VerifyParse(expected, ";;;");
         }

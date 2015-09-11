@@ -6,9 +6,12 @@ using Microsoft.R.Core.Tokens;
 namespace Microsoft.R.Core.AST.Arguments
 {
     /// <summary>
-    /// Argument to a function or to indexer
+    /// Arguments of a function or to indexer.
+    /// Does not include outer braces. Each argument is
+    /// an expression. Allows for missing arguments. 
+    /// Examples are 'a, b[3], c+2' or '1,,3,...'
     /// </summary>
-    [DebuggerDisplay("[{Count}]")]
+    [DebuggerDisplay("Arguments: {Count} [{Start}...{End})")]
     public sealed class ArgumentList : CommaSeparatedList
     {
         public ArgumentList(RTokenType terminatingTokenType) :
@@ -16,7 +19,7 @@ namespace Microsoft.R.Core.AST.Arguments
         {
         }
 
-        protected override IAstNode CreateItem(IAstNode parent, ParseContext context)
+        protected override CommaSeparatedItem CreateItem(IAstNode parent, ParseContext context)
         {
             RToken currentToken = context.Tokens.CurrentToken;
             RToken nextToken = context.Tokens.NextToken;

@@ -70,7 +70,23 @@ namespace Microsoft.R.Editor.Test.Signatures
         [TestMethod]
         public void ParameterTest03()
         {
-            string content = @"x <- foo(,, ";
+            string content = @"x <- foo(,,";
+            ParametersInfo parametersInfo;
+
+            AstRoot ast = RParser.Parse(content);
+            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+
+            parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 11);
+            Assert.AreEqual(2, parametersInfo.ParameterIndex);
+        }
+
+        [TestMethod]
+        public void ParameterTest04()
+        {
+            string content =
+@"x <- foo(,, 
+
+if(x > 1) {";
             ParametersInfo parametersInfo;
 
             AstRoot ast = RParser.Parse(content);
@@ -83,17 +99,41 @@ namespace Microsoft.R.Editor.Test.Signatures
         }
 
         [TestMethod]
-        public void ParameterTest04()
+        public void ParameterTest05()
         {
-            string content = @"x <- abs(cos(";
+            string content =
+@"x <- abs(cos(
+
+
+while";
             AstRoot ast = RParser.Parse(content);
 
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length);
+            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length - 5);
 
             Assert.IsNotNull(parametersInfo);
             Assert.IsNotNull(parametersInfo.FunctionCall);
             Assert.AreEqual("cos", parametersInfo.FunctionName);
+            Assert.AreEqual(0, parametersInfo.ParameterIndex);
+            Assert.AreEqual(content.Length - 5, parametersInfo.SignatureEnd);
+        }
+
+        [TestMethod]
+        public void ParameterTest06()
+        {
+            string content =
+@"x <- abs(
+
+function(a) {
+";
+            AstRoot ast = RParser.Parse(content);
+
+            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length - 1);
+
+            Assert.IsNotNull(parametersInfo);
+            Assert.IsNotNull(parametersInfo.FunctionCall);
+            Assert.AreEqual("abs", parametersInfo.FunctionName);
             Assert.AreEqual(0, parametersInfo.ParameterIndex);
             Assert.AreEqual(content.Length, parametersInfo.SignatureEnd);
         }

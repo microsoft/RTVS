@@ -7,7 +7,7 @@ using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST.Statements
 {
-    [DebuggerDisplay("[{Text}]")]
+    [DebuggerDisplay("[KeywordExpressionStatement: {Text}]")]
     public class KeywordExpressionStatement : KeywordStatement, IKeywordExpressionStatement
     {
         #region IKeywordExpressionStatement

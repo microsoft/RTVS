@@ -9,7 +9,7 @@ namespace Microsoft.R.Core.AST.Statements
     /// <summary>
     /// Statement with keyword and scope { } such as repeat { } and else { }
     /// </summary>
-    [DebuggerDisplay("[{Text}]")]
+    [DebuggerDisplay("[KeywordScopeStatement: {Text}]")]
     public sealed class KeywordScopeStatement : KeywordStatement, IKeywordScopeStatement
     {
         public IScope Scope { get; private set; }

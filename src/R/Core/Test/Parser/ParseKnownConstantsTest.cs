@@ -16,10 +16,10 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [NULL + NA]
         Expression  [NULL + NA]
-            TokenOperator  [+ [5...6]]
-                NullValue  [NULL [0...4]]
-                TokenNode  [+ [5...6]]
-                MissingValue  [NA [7...9]]
+            TokenOperator  [+ [5...6)]
+                NullValue  [NULL [0...4)]
+                TokenNode  [+ [5...6)]
+                MissingValue  [NA [7...9)]
 ";
 
             ParserTest.VerifyParse(expected, "NULL + NA");
@@ -32,10 +32,10 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [Inf + NaN]
         Expression  [Inf + NaN]
-            TokenOperator  [+ [4...5]]
-                NumericalValue  [Inf [0...3]]
-                TokenNode  [+ [4...5]]
-                NumericalValue  [NaN [6...9]]
+            TokenOperator  [+ [4...5)]
+                NumericalValue  [Inf [0...3)]
+                TokenNode  [+ [4...5)]
+                NumericalValue  [NaN [6...9)]
 ";
 
             ParserTest.VerifyParse(expected, "Inf + NaN");

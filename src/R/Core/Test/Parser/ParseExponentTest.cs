@@ -16,9 +16,9 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [a^b]
         Expression  [a^b]
-            TokenOperator  [^ [1...2]]
+            TokenOperator  [^ [1...2)]
                 Variable  [a]
-                TokenNode  [^ [1...2]]
+                TokenNode  [^ [1...2)]
                 Variable  [b]
 ";
             ParserTest.VerifyParse(expected, "a^b");
@@ -31,12 +31,12 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [a^b^c]
         Expression  [a^b^c]
-            TokenOperator  [^ [1...2]]
+            TokenOperator  [^ [1...2)]
                 Variable  [a]
-                TokenNode  [^ [1...2]]
-                TokenOperator  [^ [3...4]]
+                TokenNode  [^ [1...2)]
+                TokenOperator  [^ [3...4)]
                     Variable  [b]
-                    TokenNode  [^ [3...4]]
+                    TokenNode  [^ [3...4)]
                     Variable  [c]
 ";
             ParserTest.VerifyParse(expected, "a^b^c");
@@ -49,16 +49,16 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [a^(b+c)]
         Expression  [a^(b+c)]
-            TokenOperator  [^ [1...2]]
+            TokenOperator  [^ [1...2)]
                 Variable  [a]
-                TokenNode  [^ [1...2]]
+                TokenNode  [^ [1...2)]
                 Expression  [(b+c)]
-                    TokenNode  [( [2...3]]
-                    TokenOperator  [+ [4...5]]
+                    TokenNode  [( [2...3)]
+                    TokenOperator  [+ [4...5)]
                         Variable  [b]
-                        TokenNode  [+ [4...5]]
+                        TokenNode  [+ [4...5)]
                         Variable  [c]
-                    TokenNode  [) [6...7]]
+                    TokenNode  [) [6...7)]
 ";
             ParserTest.VerifyParse(expected, "a^(b+c)");
         }
@@ -70,12 +70,12 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [a^b::c]
         Expression  [a^b::c]
-            TokenOperator  [^ [1...2]]
+            TokenOperator  [^ [1...2)]
                 Variable  [a]
-                TokenNode  [^ [1...2]]
-                TokenOperator  [:: [3...5]]
+                TokenNode  [^ [1...2)]
+                TokenOperator  [:: [3...5)]
                     Variable  [b]
-                    TokenNode  [:: [3...5]]
+                    TokenNode  [:: [3...5)]
                     Variable  [c]
 ";
             ParserTest.VerifyParse(expected, "a^b::c");

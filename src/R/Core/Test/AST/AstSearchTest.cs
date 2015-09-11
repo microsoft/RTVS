@@ -6,7 +6,6 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Search;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

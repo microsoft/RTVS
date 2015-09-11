@@ -60,6 +60,8 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AST\Arguments\ErrorArgument.cs" />
+    <Compile Include="AST\Arguments\StubArgument.cs" />
     <Compile Include="AST\Arguments\MissingArgument.cs" />
     <Compile Include="AST\Arguments\ExpressionArgument.cs" />
     <Compile Include="AST\Arguments\NamedArgument.cs" />

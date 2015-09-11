@@ -3,7 +3,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
-using Microsoft.R.Core.AST.Search;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;

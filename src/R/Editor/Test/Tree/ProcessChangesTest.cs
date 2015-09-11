@@ -22,18 +22,18 @@ namespace Microsoft.R.Editor.Test.Tree
             string expected1 =
 @"GlobalScope  [Global]
     If  []
-        TokenNode  [if [0...2]]
-        TokenNode  [( [2...3]]
+        TokenNode  [if [0...2)]
+        TokenNode  [( [2...3)]
         Expression  [true]
             Variable  [true]
-        TokenNode  [) [7...8]]
-        SimpleScope  [SimpleScope]
+        TokenNode  [) [7...8)]
+        SimpleScope  [9...15)
             ExpressionStatement  [x <- 1]
                 Expression  [x <- 1]
-                    TokenOperator  [<- [11...13]]
+                    TokenOperator  [<- [11...13)]
                         Variable  [x]
-                        TokenNode  [<- [11...13]]
-                        NumericalValue  [1 [14...15]]
+                        TokenNode  [<- [11...13)]
+                        NumericalValue  [1 [14...15)]
 ";
             ParserTest.VerifyParse(expected1, expression);
 
@@ -44,18 +44,18 @@ namespace Microsoft.R.Editor.Test.Tree
             string expected2 =
 @"GlobalScope  [Global]
     If  []
-        TokenNode  [if [0...2]]
-        TokenNode  [( [2...3]]
+        TokenNode  [if [0...2)]
+        TokenNode  [( [2...3)]
         Expression  [false]
             Variable  [false]
-        TokenNode  [) [8...9]]
-        SimpleScope  [SimpleScope]
+        TokenNode  [) [8...9)]
+        SimpleScope  [10...16)
             ExpressionStatement  [x <- 1]
                 Expression  [x <- 1]
-                    TokenOperator  [<- [12...14]]
+                    TokenOperator  [<- [12...14)]
                         Variable  [x]
-                        TokenNode  [<- [12...14]]
-                        NumericalValue  [1 [15...16]]
+                        TokenNode  [<- [12...14)]
+                        NumericalValue  [1 [15...16)]
 ";
             ParserTest.CompareTrees(expected2, tree.AstRoot);
         }

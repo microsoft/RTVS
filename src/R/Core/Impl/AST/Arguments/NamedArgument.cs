@@ -8,7 +8,7 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Arguments
 {
-    [DebuggerDisplay("[{Name}]")]
+    [DebuggerDisplay("Named Argument [{Start}...{End})")]
     public class NamedArgument : CommaSeparatedItem
     {
         public ITextRange NameRange

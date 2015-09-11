@@ -15,7 +15,7 @@ namespace Microsoft.R.Core.Test.Parser
             string expected =
 @"GlobalScope  [Global]
 
-OperandExpected AfterToken [0...1)
+OperandExpected Token [0...1)
 ";
             ParserTest.VerifyParse(expected, "+");
         }
@@ -85,7 +85,7 @@ UnexpectedEndOfFile AfterToken [2...3)
             string expected =
 @"GlobalScope  [Global]
 
-OperandExpected AfterToken [5...6)
+OperandExpected Token [6...7)
 ";
             ParserTest.VerifyParse(expected, "(a+b)+)");
         }

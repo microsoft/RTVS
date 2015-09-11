@@ -269,7 +269,7 @@ namespace Microsoft.R.Core.AST
 
         public virtual bool Contains(int position)
         {
-            return Children.Contains(position);
+            return TextRange.Contains(this, position);
         }
 
         public virtual void Shift(int offset)

@@ -18,6 +18,15 @@ namespace Microsoft.R.Core.AST
     {
         public RToken Token { get; protected set; }
 
+        internal TokenNode()
+        {
+        }
+
+        internal TokenNode(RToken token)
+        {
+            Token = token;
+        }
+
         public override bool Parse(ParseContext context, IAstNode parent)
         {
             RToken currentToken = context.Tokens.CurrentToken;
@@ -75,14 +84,14 @@ namespace Microsoft.R.Core.AST
             StringBuilder sb = new StringBuilder();
 
             string name = (this.Root != null) ? 
-                this.Root.TextProvider.GetText(this.Token) : this.Token.ToString();
+                this.Root.TextProvider.GetText(this.Token) : "<???>";
 
             sb.Append(name);
             sb.Append(" [");
             sb.Append(this.Start);
             sb.Append("...");
             sb.Append(this.End);
-            sb.Append(']');
+            sb.Append(')');
 
             return sb.ToString();
         }

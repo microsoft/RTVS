@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
@@ -14,6 +15,7 @@ namespace Microsoft.R.Core.AST.Scopes
     /// actually have multiple children since single line statement
     /// can be followed by a comment as in 'for(...) statement # comment'
     /// </summary>
+    [DebuggerDisplay("Simple Scope, Children: {Children.Count} [{Start}...{End})")]
     public sealed class SimpleScope : AstNode, IScope
     {
         private IStatement _statement;

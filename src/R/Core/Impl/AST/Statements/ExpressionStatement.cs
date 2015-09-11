@@ -1,4 +1,5 @@
-﻿using Microsoft.R.Core.AST.Definitions;
+﻿using System.Diagnostics;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
 using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -11,6 +12,7 @@ namespace Microsoft.R.Core.AST.Statements
     /// can be mathematical, conditional, assignment, function 
     /// or operator definition.
     /// </summary>
+    [DebuggerDisplay("[ExpressionStatement, Children:{Children.Count}]")]
     public sealed class ExpressionStatement : Statement, IExpressionStatement
     {
         private string _terminatingKeyword;

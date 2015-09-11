@@ -2,7 +2,6 @@
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Search;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;

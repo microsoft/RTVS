@@ -1,9 +1,5 @@
-﻿using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Arguments;
-using Microsoft.R.Core.AST.Definitions;
+﻿using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Search;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.VisualStudio.Text;
 
@@ -23,7 +19,7 @@ namespace Microsoft.R.Editor.Signatures
 
             if (GetFunction(astRoot, position, out functionCall, out functionVariable))
             {
-                signatureEnd = functionCall.CloseBrace != null ? functionCall.CloseBrace.End : functionCall.Arguments.End;
+                signatureEnd = functionCall.End;
                 return functionVariable.Name;
             }
 
@@ -42,86 +38,14 @@ namespace Microsoft.R.Editor.Signatures
 
             if (!GetFunction(astRoot, position, out functionCall, out functionVariable))
             {
-                // Handle abc(,,, |
-                if (position == snapshot.Length || char.IsWhiteSpace(snapshot[position]))
-                {
-                    for (int i = position - 1; i >= 0; i--)
-                    {
-                        char ch = snapshot[i];
-
-                        if (!char.IsWhiteSpace(ch))
-                        {
-                            if (!GetFunction(astRoot, i, out functionCall, out functionVariable) || functionCall.CloseBrace != null)
-                            {
-                                return null;
-                            }
-
-                            position = (ch == ',' || ch == '(') ? i + 1 : i;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if(functionCall == null || functionVariable == null)
-            {
                 return null;
             }
 
-            string functionName = functionVariable.Name;
-            int argCount = functionCall.Arguments.Count;
+            parameterIndex = functionCall.GetParameterIndex(position);
 
-            if (argCount == 0)
+            if (!string.IsNullOrEmpty(functionVariable.Name) && functionCall != null && parameterIndex >= 0)
             {
-                parameterIndex = 0;
-            }
-            else
-            {
-                for (int i = 0; i < argCount; i++)
-                {
-                    IAstNode arg = functionCall.Arguments[i];
-                    if (position < arg.End || (arg is MissingArgument && arg.Start == arg.End && arg.Start == 0))
-                    {
-                        parameterIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            if (parameterIndex < 0)
-            {
-                // func(... |  % comment
-                if (functionCall.CloseBrace == null)
-                {
-                    ITextSnapshotLine textLine = snapshot.GetLineFromPosition(position);
-                    TextRange range = TextRange.FromBounds(functionCall.OpenBrace.End - textLine.Start, position - textLine.Start);
-
-                    string textBeforeCaret = textLine.GetText().Substring(range.Start, range.Length);
-                    if (string.IsNullOrWhiteSpace(textBeforeCaret))
-                    {
-                        parameterIndex = functionCall.Arguments.Count;
-                    }
-                }
-                else if (position <= functionCall.CloseBrace.Start)
-                {
-                    if (argCount > 0)
-                    {
-                        CommaSeparatedItem lastArgument = functionCall.Arguments[argCount - 1] as CommaSeparatedItem;
-                        if (lastArgument.Comma != null && position >= lastArgument.Comma.End)
-                        {
-                            parameterIndex = argCount;
-                        }
-                        else
-                        {
-                            parameterIndex = argCount - 1;
-                        }
-                    }
-                }
-            }
-
-            if (!string.IsNullOrEmpty(functionName) && functionCall != null && parameterIndex >= 0)
-            {
-                return new ParametersInfo(functionName, functionCall, parameterIndex);
+                return new ParametersInfo(functionVariable.Name, functionCall, parameterIndex);
             }
 
             return null;
@@ -131,6 +55,11 @@ namespace Microsoft.R.Editor.Signatures
         {
             functionVariable = null;
             functionCall = astRoot.GetNodeOfTypeFromPosition<FunctionCall>(position);
+
+            if (functionCall == null && position > 0)
+            {
+                functionCall = astRoot.GetNodeOfTypeFromPosition<FunctionCall>(position - 1, includeEnd: true);
+            }
 
             if (functionCall != null && functionCall.Children.Count > 0)
             {

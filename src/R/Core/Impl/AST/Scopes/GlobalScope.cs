@@ -1,7 +1,9 @@
-﻿using Microsoft.R.Core.AST.Definitions;
+﻿using System.Diagnostics;
+using Microsoft.R.Core.AST.Definitions;
 
 namespace Microsoft.R.Core.AST.Scopes
 {
+    [DebuggerDisplay("Global Scope, Children: {Children.Count} [{Start}...{End})")]
     public sealed class GlobalScope : Scope
     {
         public GlobalScope() :

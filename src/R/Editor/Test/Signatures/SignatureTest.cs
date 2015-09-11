@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Test.Signatures
             string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, 7, out signatureEnd);
 
             Assert.AreEqual("as.matrix", functionName);
-            Assert.AreEqual(16, signatureEnd);
+            Assert.AreEqual(18, signatureEnd);
         }
     }
 }

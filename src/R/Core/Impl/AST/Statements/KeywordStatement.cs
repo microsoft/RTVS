@@ -8,7 +8,7 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Statements
 {
-    [DebuggerDisplay("[{Text}]")]
+    [DebuggerDisplay("[KeywordStatement: {Text}]")]
     public class KeywordStatement : Statement, IKeywordStatement
     {
         public TokenNode Keyword { get; private set; }

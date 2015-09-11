@@ -5,7 +5,7 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Statements;
 
-namespace Microsoft.R.Core.AST.Search
+namespace Microsoft.R.Core.AST
 {
     public static class AstSearch
     {
@@ -73,28 +73,26 @@ namespace Microsoft.R.Core.AST.Search
         /// <summary>
         /// Locates deepest node of a particular type 
         /// </summary>
-        /// <returns></returns>
-        public static T GetNodeOfTypeFromPosition<T>(this AstRoot ast, int position) where T : class
+        public static T GetNodeOfTypeFromPosition<T>(this AstRoot ast, int position, bool includeEnd = false) where T : class
         {
-            return GetSpecificNodeFromPosition(ast, position, (IAstNode n) => { return n is T; }) as T;
+            return GetSpecificNodeFromPosition(ast, position, (IAstNode n) => { return n is T; }, includeEnd) as T;
         }
 
         /// <summary>
         /// Locates deepest node that matches partucular criteria 
         /// and contains given position in the text buffer
         /// </summary>
-        /// <returns></returns>
-        public static IAstNode GetSpecificNodeFromPosition(this AstRoot ast, int position, Func<IAstNode, bool> match)
+        public static IAstNode GetSpecificNodeFromPosition(this AstRoot ast, int position, Func<IAstNode, bool> match, bool includeEnd = false)
         {
             IAstNode deepestNode = null;
-            FindSpecificNode(ast, position, match, ref deepestNode);
+            FindSpecificNode(ast, position, match, ref deepestNode, includeEnd);
 
             return deepestNode;
         }
 
-        private static void FindSpecificNode(IAstNode node, int position, Func<IAstNode, bool> match, ref IAstNode deepestNode)
+        private static void FindSpecificNode(IAstNode node, int position, Func<IAstNode, bool> match, ref IAstNode deepestNode, bool includeEnd = false)
         {
-            if (!node.Contains(position))
+            if (!node.Contains(position) && !(includeEnd && node.End == position))
             {
                 return; // not this element
             }
@@ -106,12 +104,7 @@ namespace Microsoft.R.Core.AST.Search
 
             for (int i = 0; i < node.Children.Count && node.Children[i].Start <= position; i++)
             {
-                var child = node.Children[i];
-
-                if (child.Contains(position))
-                {
-                    FindSpecificNode(child, position, match, ref deepestNode);
-                }
+                FindSpecificNode(node.Children[i], position, match, ref deepestNode, includeEnd);
             }
         }
 

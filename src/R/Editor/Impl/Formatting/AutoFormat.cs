@@ -1,12 +1,9 @@
-﻿using System;
-using Microsoft.Languages.Core.Formatting;
+﻿using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Search;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.SmartIndent;

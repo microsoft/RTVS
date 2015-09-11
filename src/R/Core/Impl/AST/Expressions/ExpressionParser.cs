@@ -253,15 +253,6 @@ namespace Microsoft.R.Core.AST.Expressions
                 }
             }
 
-            if (errorType == ParseErrorType.None && _operators.Count > 1)
-            {
-                // If there are still operators to process,
-                // construct final node. After this only sentil
-                // operator should be in the operators stack
-                // and a single final root node in the operand stack.
-                errorType = this.ProcessHigherPrecendenceOperators(ExpressionParser.Sentinel);
-            }
-
             if (errorType != ParseErrorType.None)
             {
                 if (errorLocation == ErrorLocation.AfterToken)
@@ -272,19 +263,44 @@ namespace Microsoft.R.Core.AST.Expressions
                 {
                     context.AddError(new ParseError(errorType, ErrorLocation.Token, tokens.CurrentToken));
                 }
-                return null;
             }
 
-            Debug.Assert(_operators.Count == 1);
-
-            // If operand stack ie empty and there is no error
-            // then the expression is empty.
-            if (_operands.Count > 0)
+            if (_operators.Count > 1)
             {
-                Debug.Assert(_operands.Count == 1);
+                // If there are still operators to process,
+                // construct final node. After this only sentil
+                // operator should be in the operators stack
+                // and a single final root node in the operand stack.
+                errorType = this.ProcessHigherPrecendenceOperators(ExpressionParser.Sentinel);
+            }
 
-                result = _operands.Pop();
-                parent.AppendChild(result);
+            if (errorType != ParseErrorType.None)
+            {
+                context.AddError(new ParseError(errorType, ErrorLocation.Token, tokens.IsEndOfStream() ? tokens.PreviousToken : tokens.CurrentToken));
+
+                // Although there may be errors such as incomplete function
+                // we still want to include the result into the tree since
+                // even in the code like 'func(,,, for(' we want intellisense
+                // and parameter to work.
+                if (_operands.Count == 1)
+                {
+                    result = _operands.Pop();
+                    parent.AppendChild(result);
+                }
+            }
+            else
+            {
+                Debug.Assert(_operators.Count == 1);
+
+                // If operand stack ie empty and there is no error
+                // then the expression is empty.
+                if (_operands.Count > 0)
+                {
+                    Debug.Assert(_operands.Count == 1);
+
+                    result = _operands.Pop();
+                    parent.AppendChild(result);
+                }
             }
 
             return result;

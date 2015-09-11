@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
 
 namespace Microsoft.R.Core.Utility
@@ -54,7 +55,6 @@ namespace Microsoft.R.Core.Utility
             string name = type.Substring(type.LastIndexOf('.') + 1);
 
             _sb.Append(name);
-            _sb.Append("  [");
 
             string innerType = node.ToString();
 
@@ -67,14 +67,31 @@ namespace Microsoft.R.Core.Utility
                 innerType = innerType.Substring(type.LastIndexOf('.') + 1);
             }
 
-            _sb.Append(innerType);
-            _sb.AppendLine("]");
+            if (innerType != name)
+            {
+                _sb.Append("  [");
+                _sb.Append(innerType);
+                _sb.AppendLine("]");
+            }
+            else
+            {
+                _sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "  [{0}...{1})", node.Start, node.End));
+            }
 
             _indent++;
 
             foreach (IAstNode child in node.Children)
             {
                 WriteNode(child);
+            }
+
+            if(node is CommaSeparatedList)
+            {
+                var csl = node as CommaSeparatedList;
+                if(csl.Count > 0 && csl[csl.Count-1] is StubArgument)
+                {
+                    WriteNode(csl[csl.Count - 1]);
+                }
             }
 
             _indent--;

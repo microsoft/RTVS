@@ -16,17 +16,17 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- as.matrix(x)]
         Expression  [x <- as.matrix(x)]
-            TokenOperator  [<- [2...4]]
+            TokenOperator  [<- [2...4)]
                 Variable  [x]
-                TokenNode  [<- [2...4]]
-                FunctionCall  [FunctionCall]
+                TokenNode  [<- [2...4)]
+                FunctionCall  [5...17)
                     Variable  [as.matrix]
-                    TokenNode  [( [14...15]]
-                    ArgumentList  [ArgumentList]
-                        ExpressionArgument  [ExpressionArgument]
+                    TokenNode  [( [14...15)]
+                    ArgumentList  [15...16)
+                        ExpressionArgument  [15...16)
                             Expression  [x]
                                 Variable  [x]
-                    TokenNode  [) [16...17]]
+                    TokenNode  [) [16...17)]
 ";
             ParserTest.VerifyParse(expected, "x <- as.matrix(x)");
         }
@@ -38,16 +38,16 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [as.matrix(x) -> x]
         Expression  [as.matrix(x) -> x]
-            TokenOperator  [-> [13...15]]
-                FunctionCall  [FunctionCall]
+            TokenOperator  [-> [13...15)]
+                FunctionCall  [0...12)
                     Variable  [as.matrix]
-                    TokenNode  [( [9...10]]
-                    ArgumentList  [ArgumentList]
-                        ExpressionArgument  [ExpressionArgument]
+                    TokenNode  [( [9...10)]
+                    ArgumentList  [10...11)
+                        ExpressionArgument  [10...11)
                             Expression  [x]
                                 Variable  [x]
-                    TokenNode  [) [11...12]]
-                TokenNode  [-> [13...15]]
+                    TokenNode  [) [11...12)]
+                TokenNode  [-> [13...15)]
                 Variable  [x]
 ";
             ParserTest.VerifyParse(expected, "as.matrix(x) -> x");
@@ -60,16 +60,16 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- b <- c <- 0]
         Expression  [a <- b <- c <- 0]
-            TokenOperator  [<- [2...4]]
+            TokenOperator  [<- [2...4)]
                 Variable  [a]
-                TokenNode  [<- [2...4]]
-                TokenOperator  [<- [7...9]]
+                TokenNode  [<- [2...4)]
+                TokenOperator  [<- [7...9)]
                     Variable  [b]
-                    TokenNode  [<- [7...9]]
-                    TokenOperator  [<- [12...14]]
+                    TokenNode  [<- [7...9)]
+                    TokenOperator  [<- [12...14)]
                         Variable  [c]
-                        TokenNode  [<- [12...14]]
-                        NumericalValue  [0 [15...16]]
+                        TokenNode  [<- [12...14)]
+                        NumericalValue  [0 [15...16)]
 ";
             ParserTest.VerifyParse(expected, "a <- b <- c <- 0");
         }
@@ -81,12 +81,12 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [0 -> a -> b]
         Expression  [0 -> a -> b]
-            TokenOperator  [-> [7...9]]
-                TokenOperator  [-> [2...4]]
-                    NumericalValue  [0 [0...1]]
-                    TokenNode  [-> [2...4]]
+            TokenOperator  [-> [7...9)]
+                TokenOperator  [-> [2...4)]
+                    NumericalValue  [0 [0...1)]
+                    TokenNode  [-> [2...4)]
                     Variable  [a]
-                TokenNode  [-> [7...9]]
+                TokenNode  [-> [7...9)]
                 Variable  [b]
 ";
             ParserTest.VerifyParse(expected, "0 -> a -> b");
@@ -99,17 +99,17 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [z <- .Call(x)]
         Expression  [z <- .Call(x)]
-            TokenOperator  [<- [2...4]]
+            TokenOperator  [<- [2...4)]
                 Variable  [z]
-                TokenNode  [<- [2...4]]
-                FunctionCall  [FunctionCall]
+                TokenNode  [<- [2...4)]
+                FunctionCall  [5...13)
                     Variable  [.Call]
-                    TokenNode  [( [10...11]]
-                    ArgumentList  [ArgumentList]
-                        ExpressionArgument  [ExpressionArgument]
+                    TokenNode  [( [10...11)]
+                    ArgumentList  [11...12)
+                        ExpressionArgument  [11...12)
                             Expression  [x]
                                 Variable  [x]
-                    TokenNode  [) [12...13]]
+                    TokenNode  [) [12...13)]
 ";
             ParserTest.VerifyParse(expected, "z <- .Call(x)");
         }
@@ -132,23 +132,23 @@ UnexpectedToken Token [0...2)
 @"GlobalScope  [Global]
     ExpressionStatement  [StudentData$ScoreRounded<-round(StudentData$Score)]
         Expression  [StudentData$ScoreRounded<-round(StudentData$Score)]
-            TokenOperator  [<- [24...26]]
-                TokenOperator  [$ [11...12]]
+            TokenOperator  [<- [24...26)]
+                TokenOperator  [$ [11...12)]
                     Variable  [StudentData]
-                    TokenNode  [$ [11...12]]
+                    TokenNode  [$ [11...12)]
                     Variable  [ScoreRounded]
-                TokenNode  [<- [24...26]]
-                FunctionCall  [FunctionCall]
+                TokenNode  [<- [24...26)]
+                FunctionCall  [26...50)
                     Variable  [round]
-                    TokenNode  [( [31...32]]
-                    ArgumentList  [ArgumentList]
-                        ExpressionArgument  [ExpressionArgument]
+                    TokenNode  [( [31...32)]
+                    ArgumentList  [32...49)
+                        ExpressionArgument  [32...49)
                             Expression  [StudentData$Score]
-                                TokenOperator  [$ [43...44]]
+                                TokenOperator  [$ [43...44)]
                                     Variable  [StudentData]
-                                    TokenNode  [$ [43...44]]
+                                    TokenNode  [$ [43...44)]
                                     Variable  [Score]
-                    TokenNode  [) [49...50]]
+                    TokenNode  [) [49...50)]
 ";
             ParserTest.VerifyParse(expected, "StudentData$ScoreRounded<-round(StudentData$Score)");
         }

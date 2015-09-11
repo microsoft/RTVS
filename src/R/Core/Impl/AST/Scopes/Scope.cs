@@ -15,7 +15,7 @@ namespace Microsoft.R.Core.AST.Scopes
     /// Represents { } block. Scope may be standalone or be part
     /// of conditional or loop statement.
     /// </summary>
-    [DebuggerDisplay("[Scope: Name={Name}]")]
+    [DebuggerDisplay("Scope, Children: {Children.Count} [{Start}...{End})")]
     public class Scope : AstNode, IScope
     {
         private Dictionary<string, int> variables = new Dictionary<string, int>();

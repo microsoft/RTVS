@@ -5,7 +5,7 @@ using Microsoft.R.Core.AST.Operators.Definitions;
 
 namespace Microsoft.R.Core.AST.Operators
 {
-    [DebuggerDisplay("[{OperatorType}]")]
+    [DebuggerDisplay("[{OperatorType} [{Start}...{End})]")]
     public abstract class Operator : RValueNode<RObject>, IOperator
     {
         #region IOperator

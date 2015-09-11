@@ -8,6 +8,13 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Variables
 {
+    /// <summary>
+    /// Indexer operator. Applies to a variable if it is 
+    /// a direct call like name[1] or to a result
+    /// of another similar operator such as indexer
+    /// or function call as in x(a)[1] or x[1][a].
+    /// </summary>
+    [DebuggerDisplay("Indexer, Args:{Arguments.Count} [{Start}...{End})")]
     public sealed class Indexer : Operator
     {
         public TokenNode LeftBrackets { get; private set; }
@@ -48,20 +55,20 @@ namespace Microsoft.R.Core.AST.Variables
             RTokenType terminatingTokenType = RParser.GetTerminatingTokenType(this.LeftBrackets.Token.TokenType);
 
             this.Arguments = new ArgumentList(terminatingTokenType);
-            if (this.Arguments.Parse(context, this))
+            this.Arguments.Parse(context, this);
+
+            if (tokens.CurrentToken.TokenType == terminatingTokenType)
             {
-                if (tokens.CurrentToken.TokenType == terminatingTokenType)
-                {
-                    this.RightBrackets = RParser.ParseToken(context, this);
-                    return base.Parse(context, parent);
-                }
-                else
-                {
-                    context.AddError(new MissingItemParseError(ParseErrorType.CloseSquareBracketExpected, tokens.PreviousToken));
-                }
+                this.RightBrackets = RParser.ParseToken(context, this);
+                return base.Parse(context, parent);
+            }
+            else
+            {
+                context.AddError(new MissingItemParseError(ParseErrorType.CloseSquareBracketExpected, tokens.PreviousToken));
             }
 
-            return false;
+
+            return true;
         }
     }
 }

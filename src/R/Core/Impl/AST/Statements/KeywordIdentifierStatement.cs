@@ -8,7 +8,7 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Statements
 {
-    [DebuggerDisplay("[{Text}]")]
+    [DebuggerDisplay("[KeywordIdentifierStatement: {Text}]")]
     public class KeywordIdentifierStatement : KeywordStatement
     {
         public TokenNode OpenBrace { get; private set; }

@@ -117,9 +117,69 @@ namespace Microsoft.R.Core.Parser
             return RTokenType.Unknown;
         }
 
-        public static bool IsScopeSeparator(RTokenType tokenType)
+        public static RTokenType GetOpeningTokenType(RTokenType closingTokenType)
         {
-            if (tokenType == RTokenType.OpenCurlyBrace || tokenType == RTokenType.CloseCurlyBrace)
+            switch (closingTokenType)
+            {
+                case RTokenType.CloseBrace:
+                    return RTokenType.OpenBrace;
+
+                case RTokenType.CloseSquareBracket:
+                    return RTokenType.OpenSquareBracket;
+
+                case RTokenType.CloseDoubleSquareBracket:
+                    return RTokenType.OpenDoubleSquareBracket;
+
+                case RTokenType.CloseCurlyBrace:
+                    return RTokenType.OpenCurlyBrace;
+            }
+
+            return RTokenType.Unknown;
+        }
+
+        public static bool IsListTerminator(ParseContext context, RTokenType openingTokenType, RToken token)
+        {
+            RTokenType tokenType = token.TokenType;
+
+            if (tokenType == RTokenType.OpenCurlyBrace ||
+                tokenType == RTokenType.CloseCurlyBrace ||
+                tokenType == RTokenType.Semicolon)
+            {
+                return true;
+            }
+
+            switch (openingTokenType)
+            {
+                case RTokenType.OpenBrace:
+                    if (tokenType == RTokenType.CloseSquareBracket || tokenType == RTokenType.CloseDoubleSquareBracket)
+                    {
+                        return true;
+                    }
+                    break;
+
+                case RTokenType.OpenSquareBracket:
+                    if (tokenType == RTokenType.CloseBrace || tokenType == RTokenType.CloseDoubleSquareBracket)
+                    {
+                        return true;
+                    }
+                    break;
+
+                case RTokenType.OpenDoubleSquareBracket:
+                    if (tokenType == RTokenType.CloseBrace || tokenType == RTokenType.CloseSquareBracket)
+                    {
+                        return true;
+                    }
+                    break;
+            }
+
+            if (tokenType == RTokenType.Operator && token.IsKeywordText(context.TextProvider, "<-"))
+            {
+                return true;
+            }
+
+            if (tokenType == RTokenType.Keyword &&
+                !token.IsKeywordText(context.TextProvider, "if") &&
+                !token.IsKeywordText(context.TextProvider, "function"))
             {
                 return true;
             }

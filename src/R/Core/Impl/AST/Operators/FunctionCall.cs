@@ -8,15 +8,45 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Operators
 {
+    /// <summary>
+    /// Function call operator. Applies to a variable
+    /// if it is a direct call like name() or to result
+    /// of another similar operator such as indexer
+    /// or function call as in x[1](a, b) or func(a)(b)(c).
+    /// </summary>
+    [DebuggerDisplay("FunctionCall, Args:{Arguments.Count} [{Start}...{End})")]
     public sealed class FunctionCall : Operator, IFunction
     {
+        /// <summary>
+        /// 'virtual end' of the function call if closing
+        /// brace is missing. The virtual end includes range
+        /// after the last argument and up to the next recovery
+        /// point such as curly brace, a keyword of end of the file.
+        /// </summary>
+        private int _virtualEnd;
+
         #region IFunction
+        /// <summary>
+        /// Opening brace. Always present.
+        /// </summary>
         public TokenNode OpenBrace { get; private set; }
 
+        /// <summary>
+        /// Function arguments
+        /// </summary>
         public ArgumentList Arguments { get; private set; }
 
+        /// <summary>
+        /// Closing brace. May be null if closing brace is missing.
+        /// </summary>
         public TokenNode CloseBrace { get; private set; }
 
+        /// <summary>
+        /// Returns end of a function signature (list of arguments).
+        /// In case closing brace is missing scope extends to a
+        /// nearest recovery point which may be an identifier
+        /// or a keyword (except inline 'if').
+        /// </summary>
         public int SignatureEnd
         {
             get
@@ -25,12 +55,9 @@ namespace Microsoft.R.Core.AST.Operators
                 {
                     return CloseBrace.End;
                 }
-                else if (Arguments.Count > 0)
-                {
-                    return Arguments.End;
-                }
 
-                return OpenBrace.End;
+                Debug.Assert(_virtualEnd > 0);
+                return _virtualEnd;
             }
         }
         #endregion
@@ -57,6 +84,45 @@ namespace Microsoft.R.Core.AST.Operators
         }
         #endregion
 
+        #region ITextRange
+        public override int End
+        {
+            get { return SignatureEnd; }
+        }
+        #endregion
+
+        public int GetParameterIndex(int position)
+        {
+            if (position > End || position < OpenBrace.End)
+            {
+                return -1;
+            }
+
+            if (Arguments.Count == 0)
+            {
+                return 0;
+            }
+
+            for (int i = 0; i < Arguments.Count; i++)
+            {
+                IAstNode arg = Arguments[i];
+                if (!(arg is ErrorArgument))
+                {
+                    if (position < arg.End || (arg is MissingArgument && arg.Start == arg.End && arg.Start == 0))
+                    {
+                        return i;
+                    }
+                }
+                else
+                {
+                    Debug.Assert(i == Arguments.Count - 1, "Stub argument must be the last one");
+                    break;
+                }
+            }
+
+            return Arguments.Count - 1;
+        }
+
         public override bool Parse(ParseContext context, IAstNode parent)
         {
             TokenStream<RToken> tokens = context.Tokens;
@@ -65,18 +131,57 @@ namespace Microsoft.R.Core.AST.Operators
             this.OpenBrace = RParser.ParseToken(context, this);
 
             this.Arguments = new ArgumentList(RTokenType.CloseBrace);
-            if (this.Arguments.Parse(context, this))
+            bool argumentsParsed = this.Arguments.Parse(context, this);
+            if (argumentsParsed)
             {
                 if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace)
                 {
                     this.CloseBrace = RParser.ParseToken(context, this);
-                    return base.Parse(context, parent);
                 }
+            }
 
+            if (!argumentsParsed || this.CloseBrace == null)
+            {
+                CalculateVirtualEnd(context);
+            }
+
+            if (this.CloseBrace == null)
+            {
                 context.AddError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
             }
 
-            return false;
+            return base.Parse(context, parent);
+        }
+
+        private void CalculateVirtualEnd(ParseContext context)
+        {
+            int position = this.Arguments.Count > 0 ? this.Arguments.End : this.OpenBrace.End;
+            if (!context.Tokens.IsEndOfStream())
+            {
+                TokenStream<RToken> tokens = context.Tokens;
+
+                // Walk through tokens allowing numbers, identifiers and operators
+                // as part of the function signature. Stop at keywords (except 'if'),
+                // or curly braces.
+                int i = tokens.Position;
+                _virtualEnd = 0;
+
+                for (; i < tokens.Length; i++)
+                {
+                    RToken token = tokens[i];
+
+                    if (token.TokenType == RTokenType.Keyword || RParser.IsListTerminator(context, RTokenType.OpenBrace, token))
+                    {
+                        _virtualEnd = token.Start;
+                        break;
+                    }
+                }
+            }
+
+            if (_virtualEnd == 0)
+            {
+                _virtualEnd = context.TextProvider.Length;
+            }
         }
     }
 }

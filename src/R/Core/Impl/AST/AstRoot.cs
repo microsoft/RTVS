@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Comments;
 using Microsoft.R.Core.AST.Definitions;
@@ -8,11 +8,11 @@ using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.Evaluation;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Parser.Definitions;
-using Microsoft.R.Core.Tokens;
 using Microsoft.R.Core.Utility;
 
 namespace Microsoft.R.Core.AST
 {
+    [DebuggerDisplay("AstRoot, Comments: {Comments.Count}, Errors: {Errors.Count}")]
     public sealed class AstRoot : AstNode
     {
         private TextRangeCollection<IParseError> _errors = new TextRangeCollection<IParseError>();

@@ -15,7 +15,7 @@ namespace Microsoft.R.Core.Test.Parser
             string expected =
 @"GlobalScope  [Global]
     KeywordStatement  []
-        TokenNode  [break [0...5]]
+        TokenNode  [break [0...5)]
 ";
             ParserTest.VerifyParse(expected, "break");
         }
@@ -26,8 +26,8 @@ namespace Microsoft.R.Core.Test.Parser
             string expected =
 @"GlobalScope  [Global]
     KeywordStatement  [;]
-        TokenNode  [break [0...5]]
-        TokenNode  [; [5...6]]
+        TokenNode  [break [0...5)]
+        TokenNode  [; [5...6)]
 ";
             ParserTest.VerifyParse(expected, "break;");
         }
@@ -38,7 +38,7 @@ namespace Microsoft.R.Core.Test.Parser
             string expected =
 @"GlobalScope  [Global]
     KeywordStatement  []
-        TokenNode  [next [0...4]]
+        TokenNode  [next [0...4)]
 ";
             ParserTest.VerifyParse(expected, "next");
         }
@@ -49,8 +49,8 @@ namespace Microsoft.R.Core.Test.Parser
             string expected =
 @"GlobalScope  [Global]
     KeywordStatement  [;]
-        TokenNode  [next [0...4]]
-        TokenNode  [; [4...5]]
+        TokenNode  [next [0...4)]
+        TokenNode  [; [4...5)]
 ";
             ParserTest.VerifyParse(expected, "next;");
         }
@@ -61,10 +61,10 @@ namespace Microsoft.R.Core.Test.Parser
             string expected =
 @"GlobalScope  [Global]
     LibraryStatement  []
-        TokenNode  [library [0...7]]
-        TokenNode  [( [7...8]]
-        TokenNode  [abind [8...13]]
-        TokenNode  [) [13...14]]
+        TokenNode  [library [0...7)]
+        TokenNode  [( [7...8)]
+        TokenNode  [abind [8...13)]
+        TokenNode  [) [13...14)]
 ";
             ParserTest.VerifyParse(expected, "library(abind)");
         }
@@ -75,10 +75,10 @@ namespace Microsoft.R.Core.Test.Parser
             string expected =
 @"GlobalScope  [Global]
     LibraryStatement  []
-        TokenNode  [library [0...7]]
-        TokenNode  [( [7...8]]
-        TokenNode  ['abind' [8...15]]
-        TokenNode  [) [15...16]]
+        TokenNode  [library [0...7)]
+        TokenNode  [( [7...8)]
+        TokenNode  ['abind' [8...15)]
+        TokenNode  [) [15...16)]
 ";
             ParserTest.VerifyParse(expected, "library('abind')");
         }
@@ -100,9 +100,9 @@ IndentifierExpected Token [8...9)
             string expected =
 @"GlobalScope  [Global]
     KeywordExpressionStatement  []
-        TokenNode  [return [0...6]]
-        TokenNode  [( [6...7]]
-        TokenNode  [) [7...8]]
+        TokenNode  [return [0...6)]
+        TokenNode  [( [6...7)]
+        TokenNode  [) [7...8)]
 ";
             ParserTest.VerifyParse(expected, "return()");
         }
