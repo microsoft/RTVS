@@ -49,7 +49,7 @@ namespace Microsoft.R.Editor.Classification
                 case RTokenType.OpenBrace:
                 case RTokenType.CloseBrace:
                 case RTokenType.Ellipsis:
-                    return RClassificationTypes.Punctuation;
+                    return "Punctuation";
 
                 case RTokenType.Identifier:
                     if (t.SubType == RTokenSubType.BuiltinFunction || t.SubType == RTokenSubType.BuiltinConstant)

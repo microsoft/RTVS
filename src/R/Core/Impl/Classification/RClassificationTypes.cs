@@ -2,8 +2,6 @@
 {
     public static class RClassificationTypes
     {
-        public const string Assignment = "R Assignment";
-        public const string Punctuation = "R Punctuation";
         public const string BuiltinFunction = "R Builtin Function";
         public const string TypeFunction = "R Type Function";
         public const string DefaultParameter = "R Function Default Parameter";
