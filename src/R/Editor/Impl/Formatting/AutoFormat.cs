@@ -27,13 +27,18 @@ namespace Microsoft.R.Editor.Formatting
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
             ITextRange formatRange;
 
+            if (ast.Comments.Contains(position))
+            {
+                return;
+            }
+
             IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
             if (typedChar == '}' && scope != null && scope.OpenCurlyBrace != null)
             {
                 // If user typed } then fromat the enclosing scope.
                 formatRange = scope;
             }
-            else if(typedChar == '\n' || typedChar == '\r')
+            else if (typedChar == '\n' || typedChar == '\r')
             {
                 position -= snapshot.GetLineFromPosition(line.LineNumber - 1).LineBreakLength;
                 formatRange = new TextRange(position, 0);
@@ -109,7 +114,7 @@ namespace Microsoft.R.Editor.Formatting
             ITextSnapshotLine line = snapshot.GetLineFromPosition(scope.OpenCurlyBrace.Start);
             string lineBreakText = line.GetLineBreakText();
 
-            textBuffer.Replace(Span.FromBounds(caretLine.Start, caretLine.End), 
+            textBuffer.Replace(Span.FromBounds(caretLine.Start, caretLine.End),
                 innerIndentString + lineBreakText + braceindentString + "}");
 
             textView.Caret.MoveTo(new VirtualSnapshotPoint(textBuffer.CurrentSnapshot, caretLine.Start.Position + innerIndentString.Length));
