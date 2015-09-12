@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Formatting
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
         {
-            if (!REditorSettings.FormatOnPaste)
+            if (!REditorSettings.FormatOnPaste || TextView.Selection.Mode != TextSelectionMode.Stream)
             {
                 return CommandResult.NotSupported;
             }
@@ -45,14 +45,11 @@ namespace Microsoft.R.Editor.Formatting
 
             if (text != null)
             {
-                int insertionPoint = TextView.Caret.Position.BufferPosition.Position;
-                TextView.TextBuffer.Replace(new Span(insertionPoint, 0), text);
+                int insertionPoint = TextView.Selection.StreamSelectionSpan.SnapshotSpan.Start;
+                TextView.TextBuffer.Replace(TextView.Selection.StreamSelectionSpan.SnapshotSpan, text);
 
-                if (REditorSettings.FormatOnPaste)
-                {
-                    IREditorDocument document = EditorDocument.FromTextBuffer(TextView.TextBuffer);
-                    RangeFormatter.FormatRange(TextView, new TextRange(insertionPoint, text.Length), document.EditorTree.AstRoot, REditorSettings.FormatOptions);
-                }
+                IREditorDocument document = EditorDocument.FromTextBuffer(TextView.TextBuffer);
+                RangeFormatter.FormatRange(TextView, new TextRange(insertionPoint, text.Length), document.EditorTree.AstRoot, REditorSettings.FormatOptions);
             }
 
             return CommandResult.Executed;
