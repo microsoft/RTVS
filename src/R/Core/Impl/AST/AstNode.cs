@@ -87,7 +87,7 @@ namespace Microsoft.R.Core.AST
 
             if (Children.Count == count)
             {
-                _children = TextRangeCollection<IAstNode>.EmptyCollection;
+                _children = new TextRangeCollection<IAstNode>();
             }
             else
             {

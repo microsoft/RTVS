@@ -10,28 +10,6 @@ namespace Microsoft.Languages.Core.Test.Text
     [TestClass]
     public class TextRangeCollectionTest
     {
-        TextRangeCollection<TextRange> MakeInclusiveCollection()
-        {
-            TextRange[] ranges = new TextRange[3];
-
-            ranges[0] = new InclusiveTextRange(1, 3, true, false, false);
-            ranges[1] = new InclusiveTextRange(4, 3, true, true, true);
-            ranges[2] = new InclusiveTextRange(7, 3, true, false, false);
-
-            return new TextRangeCollection<TextRange>(ranges);
-        }
-
-        TextRangeCollection<TextRange> MakeInclusiveCollectionWithGaps()
-        {
-            TextRange[] ranges = new TextRange[3];
-
-            ranges[0] = new InclusiveTextRange(1, 3, true, false, false);
-            ranges[1] = new InclusiveTextRange(7, 3, true, true, true);
-            ranges[2] = new InclusiveTextRange(13, 3, true, false, false);
-
-            return new TextRangeCollection<TextRange>(ranges);
-        }
-
         private void AssertEquals(TextRangeCollection<TextRange> target, params int[] values)
         {
             Assert.AreEqual(target.Count, values.Length / 2);
@@ -40,78 +18,6 @@ namespace Microsoft.Languages.Core.Test.Text
                 Assert.AreEqual(values[i], target[i / 2].Start);
                 Assert.AreEqual(values[i + 1], target[i / 2].End);
             }
-        }
-
-        [TestMethod]
-        public void TextRangeCollection_InclusiveTestEditInMiddle()
-        {
-            TextRangeCollection<TextRange> target = MakeInclusiveCollection();
-            AssertEquals(target, 1, 4, 4, 7, 7, 10);
-
-            // Add text in middle of range
-            target.ReflectTextChange(5, 0, 1);
-            AssertEquals(target, 1, 4, 4, 8, 8, 11);
-
-            // Remove text in middle of range
-            target.ReflectTextChange(5, 1, 0);
-            AssertEquals(target, 1, 4, 4, 7, 7, 10);
-
-            // Add and Remove text in middle of range
-            target.ReflectTextChange(5, 1, 1);
-            AssertEquals(target, 1, 4, 4, 7, 7, 10);
-        }
-
-        [TestMethod]
-        public void TextRangeCollection_InclusiveTestEditOnSeam()
-        {
-            TextRangeCollection<TextRange> target = MakeInclusiveCollection();
-            AssertEquals(target, 1, 4, 4, 7, 7, 10);
-
-            // Add text at beginning of !IsStartInclusive
-            target.ReflectTextChange(1, 0, 1);
-            AssertEquals(target, 2, 5, 5, 8, 8, 11);
-
-            // Add text beween !IsEndInclusive, IsStartInclusive
-            target.ReflectTextChange(5, 0, 1);
-            AssertEquals(target, 2, 5, 5, 9, 9, 12);
-
-            // Add text beween IsEndInclusive, !IsStartInclusive
-            target.ReflectTextChange(9, 0, 1);
-            AssertEquals(target, 2, 5, 5, 10, 10, 13);
-
-            // Add text at end of !IsEndInclusive
-            target.ReflectTextChange(13, 0, 1);
-            AssertEquals(target, 2, 5, 5, 10, 10, 13);
-        }
-
-        [TestMethod]
-        public void TextRangeCollection_InclusiveTestDeleteZeroLength()
-        {
-            TextRangeCollection<TextRange> target = MakeInclusiveCollection();
-            AssertEquals(target, 1, 4, 4, 7, 7, 10);
-
-            // Delete range with !allowZeroLength
-            target.ReflectTextChange(1, 3, 0);
-            AssertEquals(target, 1, 4, 4, 7);
-
-            // Delete exact range with allowZeroLength
-            target.ReflectTextChange(1, 3, 0);
-            AssertEquals(target, 1, 1, 1, 4);
-
-            // Delete containing range with allowZeroLength
-            target.ReflectTextChange(0, 2, 0);
-            AssertEquals(target, 0, 2);
-        }
-
-        [TestMethod]
-        public void TextRangeCollection_DeleteBetweenRanges()
-        {
-            TextRangeCollection<TextRange> target = MakeInclusiveCollectionWithGaps();
-            AssertEquals(target, 1, 4, 7, 10, 13, 16);
-
-            // Delete range with !allowZeroLength
-            target.ReflectTextChange(6, 5, 0);
-            AssertEquals(target, 1, 4, 8, 11);
         }
 
         TextRangeCollection<TextRange> MakeCollection()
@@ -623,16 +529,16 @@ namespace Microsoft.Languages.Core.Test.Text
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.ReflectTextChange(3, 0, 3);
-            AssertEquals(target, 1, 2, 3, 8, 8, 10);
+            AssertEquals(target, 1, 2, 6, 8, 8, 10);
 
             target.ReflectTextChange(8, 1, 0);
-            AssertEquals(target, 1, 2, 3, 8, 8, 9);
+            AssertEquals(target, 1, 2, 6, 8, 8, 9);
 
             target.ReflectTextChange(8, 1, 0);
-            AssertEquals(target, 1, 2, 3, 8);
+            AssertEquals(target, 1, 2, 6, 8);
 
             target.ReflectTextChange(7, 1, 0);
-            AssertEquals(target, 1, 2, 3, 7);
+            AssertEquals(target, 1, 2, 6, 7);
         }
 
         [TestMethod]
@@ -654,7 +560,7 @@ namespace Microsoft.Languages.Core.Test.Text
             AssertEquals(target, 1, 2, 3, 5, 5, 7);
 
             target.ReflectTextChange(3, 0, 3);
-            AssertEquals(target, 1, 2, 3, 8, 8, 10);
+            AssertEquals(target, 1, 2, 6, 8, 8, 10);
         }
 
         [TestMethod]
@@ -673,80 +579,15 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ReplaceRangeTest()
-        {
-            TextRangeCollection<TextRange> target;
-            TextRangeCollection<TextRange> toInsert;
-
-            target = MakeCollection();
-            AssertEquals(target, 1, 2, 3, 5, 5, 7);
-
-            // test insertion at beginning
-            toInsert = MakeCollection(0, 1);
-            target.ReplaceRange(0, 0, toInsert);
-            AssertEquals(target, 0, 1, 1, 2, 3, 5, 5, 7);
-
-            // test insertion at end
-            toInsert = MakeCollection(8, 9);
-            target.ReplaceRange(4, 0, toInsert);
-            AssertEquals(target, 0, 1, 1, 2, 3, 5, 5, 7, 8, 9);
-
-            // test insertion in middle
-            toInsert = MakeCollection(2, 3);
-            target.ReplaceRange(2, 0, toInsert);
-            AssertEquals(target, 0, 1, 1, 2, 2, 3, 3, 5, 5, 7, 8, 9);
-
-            // test deletion at beginning
-            toInsert = new TextRangeCollection<TextRange>();
-            target.ReplaceRange(0, 1, toInsert);
-            AssertEquals(target, 1, 2, 2, 3, 3, 5, 5, 7, 8, 9);
-
-            // test deletion at end
-            toInsert = new TextRangeCollection<TextRange>();
-            target.ReplaceRange(4, 1, toInsert);
-            AssertEquals(target, 1, 2, 2, 3, 3, 5, 5, 7);
-
-            // test deletion in middle
-            toInsert = new TextRangeCollection<TextRange>();
-            target.ReplaceRange(1, 1, toInsert);
-            AssertEquals(target, 1, 2, 3, 5, 5, 7);
-
-            // test replace at beginning
-            toInsert = MakeCollection(0, 1);
-            target.ReplaceRange(0, 1, toInsert);
-            AssertEquals(target, 0, 1, 3, 5, 5, 7);
-
-            // test replace at end
-            toInsert = MakeCollection(8, 9);
-            target.ReplaceRange(2, 1, toInsert);
-            AssertEquals(target, 0, 1, 3, 5, 8, 9);
-
-            // test replace in middle
-            toInsert = MakeCollection(2, 6);
-            target.ReplaceRange(1, 1, toInsert);
-            AssertEquals(target, 0, 1, 2, 6, 8, 9);
-
-            // test replace with longer collection
-            toInsert = MakeCollection(2, 3, 3, 4, 4, 5, 5, 6);
-            target.ReplaceRange(1, 1, toInsert);
-            AssertEquals(target, 0, 1, 2, 3, 3, 4, 4, 5, 5, 6, 8, 9);
-
-            // test replace all
-            toInsert = MakeCollection(0, 9);
-            target.ReplaceRange(0, 6, toInsert);
-            AssertEquals(target, 0, 9);
-        }
-
-        [TestMethod]
         public void TextRangeCollection_RemoveLastItemZeroLength()
         {
             TextRangeCollection<TextRange> target;
 
-            target = MakeCollection(2, 2);
+            target = MakeCollection(1, 1);
 
             // testcase for deleting last range which was zero length
             target.ReflectTextChange(1, 1, 0);
-            AssertEquals(target);
+            Assert.AreEqual(0, target.Count);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Microsoft.R.Core.AST
 
             if (finder.Result.Count == 0)
             {
-                return ReadOnlyTextRangeCollection<IAstNode>.EmptyCollection;
+                return new IAstNode[0];
             }
 
             return new ReadOnlyCollection<IAstNode>(finder.Result);

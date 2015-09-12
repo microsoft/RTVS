@@ -1,58 +1,55 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Microsoft.Languages.Core.Text
 {
     public sealed class ReadOnlyTextRangeCollection<T> : IReadOnlyTextRangeCollection<T>, IEnumerable<T>, IEnumerable where T: ITextRange
     {
-        public static readonly IReadOnlyTextRangeCollection<T> EmptyCollection = TextRangeCollection<T>.EmptyCollection;
-
-        TextRangeCollection<T> collection;
+        private TextRangeCollection<T> _collection;
 
         public ReadOnlyTextRangeCollection(TextRangeCollection<T> collection)
         {
-            this.collection = collection;
+            _collection = collection;
         }
 
-        public int Start { get { return this.collection.Start; } }
-        public int End { get { return this.collection.End; } }
+        public int Start { get { return _collection.Start; } }
+        public int End { get { return _collection.End; } }
 
-        public int Length { get { return this.collection.Length; } }
+        public int Length { get { return _collection.Length; } }
 
-        public bool Contains(int position) { return this.collection.Contains(position); }
+        public bool Contains(int position) { return _collection.Contains(position); }
 
         public void Shift(int offset)
         {
-            this.collection.Shift(offset);
+            _collection.Shift(offset);
         }
 
         public void ShiftStartingFrom(int position, int offset)
         {
-            this.collection.ShiftStartingFrom(position, offset);
+            _collection.ShiftStartingFrom(position, offset);
         }
 
         public IReadOnlyList<T> ItemsInRange(ITextRange range)
         {
-            return this.collection.ItemsInRange(range);
+            return _collection.ItemsInRange(range);
         }
 
         public IReadOnlyList<T> ItemsInRange(int start)
         {
-            return this.collection.ItemsInRange(TextRange.FromBounds(start, start));
+            return _collection.ItemsInRange(TextRange.FromBounds(start, start));
         }
 
         public IReadOnlyList<int> GetItemsContainingInclusiveEnd(int position)
         {
-            return this.collection.GetItemsContainingInclusiveEnd(position);
+            return _collection.GetItemsContainingInclusiveEnd(position);
         }
 
-        public int Count { get { return this.collection.Count; } }
+        public int Count { get { return _collection.Count; } }
 
         /// <summary>
         /// Retrieves Nth item in the collection
         /// </summary>
-        public T this[int index] { get { return this.collection[index]; } }
+        public T this[int index] { get { return _collection[index]; } }
 
                 /// <summary>
         /// Returns index of item that starts at the given position if exists, -1 otherwise.
@@ -61,40 +58,40 @@ namespace Microsoft.Languages.Core.Text
         /// <returns>Item index or -1 if not found</returns>
         public int GetItemAtPosition(int position)
         {
-            return this.collection.GetItemAtPosition(position);
+            return _collection.GetItemAtPosition(position);
         }
 
         public int GetItemContaining(int position)
         {
-            return this.collection.GetItemContaining(position);
+            return _collection.GetItemContaining(position);
         }
 
         public int GetFirstItemBeforePosition(int position)
         {
-            return this.collection.GetFirstItemBeforePosition(position);
+            return _collection.GetFirstItemBeforePosition(position);
         }
 
         public int GetFirstItemAfterOrAtPosition(int position)
         {
-            return this.collection.GetFirstItemAfterOrAtPosition(position);
+            return _collection.GetFirstItemAfterOrAtPosition(position);
         }
 
         public T[] ToArray()
         {
-            return this.collection.ToArray();
+            return _collection.ToArray();
         }
 
         #region IEnumerable<T> Members
         public IEnumerator<T> GetEnumerator()
         {
-            return this.collection.GetEnumerator();
+            return _collection.GetEnumerator();
         }
         #endregion
 
         #region IEnumerable Members
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.collection.GetEnumerator();
+            return _collection.GetEnumerator();
         }
         #endregion
     }
