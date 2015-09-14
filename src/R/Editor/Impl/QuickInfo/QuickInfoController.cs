@@ -1,37 +1,35 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.QuickInfo
 {
-    sealed class QuickInfoController : IIntellisenseController
+    internal sealed class QuickInfoController : IIntellisenseController
     {
-        [Import]
-        IQuickInfoBroker QuickInfoBroker { get; set; }
+        private ITextView _textView;
+        private IList<ITextBuffer> _subjectBuffers;
+        private IQuickInfoBroker _quickInfoBroker;
 
-        ITextView _textView;
-        IList<ITextBuffer> _subjectBuffers;
-
-        public QuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers)
+        public QuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker)
         {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
-            
+            _quickInfoBroker = quickInfoBroker;
             _textView = textView;
             _subjectBuffers = subjectBuffers;
-            
+
             _textView.MouseHover += OnViewMouseHover;
             _textView.TextBuffer.Changing += OnTextBufferChanging;
+
+            ServiceManager.AddService<QuickInfoController>(this, textView);
         }
 
         private void OnTextBufferChanging(object sender, TextContentChangingEventArgs e)
         {
-            if(QuickInfoBroker.IsQuickInfoActive(_textView))
+            if (_quickInfoBroker.IsQuickInfoActive(_textView))
             {
-                var sessions = QuickInfoBroker.GetSessions(_textView);
-                
+                var sessions = _quickInfoBroker.GetSessions(_textView);
+
                 foreach (var session in sessions)
                     session.Dismiss();
             }
@@ -52,8 +50,8 @@ namespace Microsoft.R.Editor.QuickInfo
                 ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position,
                 PointTrackingMode.Positive);
 
-                if (!QuickInfoBroker.IsQuickInfoActive(_textView))
-                    QuickInfoBroker.TriggerQuickInfo(_textView, triggerPoint, true);
+                if (!_quickInfoBroker.IsQuickInfoActive(_textView))
+                    _quickInfoBroker.TriggerQuickInfo(_textView, triggerPoint, true);
             }
         }
 

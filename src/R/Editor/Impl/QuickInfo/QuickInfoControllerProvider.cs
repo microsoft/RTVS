@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -13,9 +14,18 @@ namespace Microsoft.R.Editor.QuickInfo
     [ContentType(RContentTypeDefinition.ContentType)]
     sealed class QuickInfoControllerProvider : IIntellisenseControllerProvider
     {
+        [Import]
+        private IQuickInfoBroker quickInfoBroker { get; set; }
+
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {
-            return new QuickInfoController(textView, subjectBuffers);
+            QuickInfoController quickInfoController = ServiceManager.GetService<QuickInfoController>(textView);
+            if (quickInfoController == null)
+            {
+                quickInfoController = new QuickInfoController(textView, subjectBuffers, quickInfoBroker);
+            }
+
+            return quickInfoController;
         }
     }
 }
