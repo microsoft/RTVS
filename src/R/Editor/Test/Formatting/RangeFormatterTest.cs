@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
@@ -85,6 +86,28 @@ x<-1
         x <- 1
     }
 }";
+            Assert.AreEqual(expected, actual);
+        }
+
+        // 
+        // 
+        // 
+        [TestMethod]
+        public void RangeFormatter_FormatOneLine()
+        {
+            AstRoot ast;
+            string original =
+@"foo(cache=TRUE)
+foo(cache=TRUE)
+";
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
+            RangeFormatter.FormatRange(textView, TextRange.FromBounds(0, original.LastIndexOf("foo", StringComparison.Ordinal)), ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+
+            string expected =
+@"foo(cache = TRUE)
+foo(cache=TRUE)
+";
             Assert.AreEqual(expected, actual);
         }
     }

@@ -41,7 +41,6 @@ namespace Microsoft.R.Editor.Formatting
 
             if (ast != null)
             {
-
                 RangeFormatter.FormatRange(TextView,
                                            new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
                                            ast, REditorSettings.FormatOptions);

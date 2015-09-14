@@ -21,9 +21,25 @@ namespace Microsoft.R.Editor.Formatting
             ITextBuffer textBuffer = textView.TextBuffer;
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
 
+            int end = range.End;
+
+            // When user clicks editor margin to select a line, selection actually
+            // ends in the beginning of the next line. In order to prevent formatting
+            // of the next line that user did not select, we need to shrink span to
+            // format and exclude the trailing line break.
+            ITextSnapshotLine line = snapshot.GetLineFromPosition(range.End);
+            if (line.Start.Position == range.End)
+            {
+                if (line.LineNumber > 0)
+                {
+                    line = snapshot.GetLineFromLineNumber(line.LineNumber - 1);
+                    end = line.End.Position;
+                }
+            }
+
             // Expand span to include the entire line
             ITextSnapshotLine startLine = snapshot.GetLineFromPosition(range.Start);
-            ITextSnapshotLine endLine = snapshot.GetLineFromPosition(range.End);
+            ITextSnapshotLine endLine = snapshot.GetLineFromPosition(end);
 
             Span spanToFormat = Span.FromBounds(startLine.Start, endLine.End);
             string spanText = snapshot.GetText(spanToFormat.Start, spanToFormat.Length).Trim();
