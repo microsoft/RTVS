@@ -124,7 +124,7 @@ namespace Microsoft.R.Core.Formatting
                 default:
                     switch (_tokens.CurrentToken.TokenType)
                     {
-                        case RTokenType.OpenBrace: 
+                        case RTokenType.OpenBrace:
                         case RTokenType.OpenSquareBracket:
                         case RTokenType.OpenDoubleSquareBracket:
                         case RTokenType.CloseBrace:
@@ -290,11 +290,28 @@ namespace Microsoft.R.Core.Formatting
                 }
                 else
                 {
-                    _tb.SoftLineBreak();
-                    _tb.NewIndentLevel();
+                    bool addLineBreak = true;
 
-                    AppendScope(stopAtCloseCurly: true, stopAtLineBreak: true);
-                    _tb.CloseIndentLevel();
+                    // Special case: preserve like break between 'else' and 'if'
+                    // if user put it there so 'else if' remains on one line
+                    // if user didn't put line break between them.
+                    if (keyword == "else" && _tokens.CurrentToken.IsKeywordText(_textProvider, "if") && !_tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1))
+                    {
+                        addLineBreak = false;
+                    }
+
+                    if (addLineBreak)
+                    {
+                        _tb.SoftLineBreak();
+                        _tb.NewIndentLevel();
+
+                        AppendScope(stopAtCloseCurly: true, stopAtLineBreak: true);
+                        _tb.CloseIndentLevel();
+                    }
+                    else
+                    {
+                        _tb.AppendSpace();
+                    }
                 }
             }
         }

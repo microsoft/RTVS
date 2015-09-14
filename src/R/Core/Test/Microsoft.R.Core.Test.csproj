@@ -89,6 +89,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
+    <None Include="Files\Formatting\ifelse.r" />
+    <None Include="Files\Formatting\ifelse.r.formatted" />
     <None Include="Files\Formatting\lsfit.r" />
     <None Include="Files\Formatting\lsfit.r.formatted" />
     <None Include="Files\Tokenization\Expressions.r.tokens" />

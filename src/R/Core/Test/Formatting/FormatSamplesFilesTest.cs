@@ -20,5 +20,14 @@ namespace Microsoft.R.Core.Test.Tokens
 
             FormatFilesFiles.FormatFile(this.TestContext, @"Formatting\lsfit.r", options);
         }
+
+        [TestMethod]
+        public void Formatter_FormatFile_IfElse()
+        {
+            RFormatOptions options = new RFormatOptions();
+            options.IndentSize = 2;
+
+            FormatFilesFiles.FormatFile(this.TestContext, @"Formatting\ifelse.r", options);
+        }
     }
 }
