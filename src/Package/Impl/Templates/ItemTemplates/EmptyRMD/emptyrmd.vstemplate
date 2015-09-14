@@ -5,7 +5,7 @@
     <Description>R Markdown</Description>
     <Icon>emptyrmd.ico</Icon>
     <TemplateID>Microsoft.RTools.EmptyRMD</TemplateID>
-    <ProjectType>R Language</ProjectType>
+    <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>

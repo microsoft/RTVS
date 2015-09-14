@@ -5,7 +5,7 @@
     <Description Package="{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}" ID="2317" />
     <Icon Package="{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}" ID="4536" />
     <TemplateID>Microsoft.RTools.TextFile</TemplateID>
-    <ProjectType>R Language</ProjectType>
+    <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>

@@ -5,7 +5,7 @@
     <Description>Dataset R Documentation File</Description>
     <Icon>datasetrd.ico</Icon>
     <TemplateID>Microsoft.RTools.DatasetRD</TemplateID>
-    <ProjectType>R Language</ProjectType>
+    <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>

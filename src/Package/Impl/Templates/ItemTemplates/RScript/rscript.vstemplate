@@ -5,7 +5,7 @@
     <Description>R Script</Description>
     <Icon>rscript.ico</Icon>
     <TemplateID>Microsoft.RTools.RScript</TemplateID>
-    <ProjectType>R Language</ProjectType>
+    <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>

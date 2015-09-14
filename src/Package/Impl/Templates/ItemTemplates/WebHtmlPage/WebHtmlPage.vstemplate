@@ -4,7 +4,7 @@
       <Description Package="{39c9c826-8ef8-4079-8c95-428f5b1c323f}" ID="3071"/>
       <Icon Package="{39c9c826-8ef8-4079-8c95-428f5b1c323f}" ID="4537"/>
       <TemplateID>Microsoft.RTools.HTMLPage</TemplateID>
-      <ProjectType>R Language</ProjectType>
+      <ProjectType>R</ProjectType>
       <ShowByDefault>false</ShowByDefault>
       <AppliesTo>RTools</AppliesTo>
       <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>

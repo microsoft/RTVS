@@ -5,7 +5,7 @@
     <Description>R Documentation File</Description>
     <Icon>emptyrd.ico</Icon>
     <TemplateID>Microsoft.RTools.EmptyRD</TemplateID>
-    <ProjectType>R Language</ProjectType>
+    <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>

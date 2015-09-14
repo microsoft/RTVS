@@ -8,7 +8,7 @@ namespace Microsoft.R.Editor.ContentType
     /// </summary>
     public sealed class RContentTypeDefinition
     {
-        public const string LanguageName = "R Language";
+        public const string LanguageName = "R";
         public const string ContentType = "R Language";
         public const string FileExtension = ".r";
         public const string RStudioProjectExtension = "rproj";
