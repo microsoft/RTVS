@@ -10,7 +10,7 @@ namespace Microsoft.R.Core.Test.Parser
     public class ParseSimpleExpressionsTest : UnitTestBase
     {
         [TestMethod]
-        public void ParseSimpleExpressions1()
+        public void ParseSimpleExpressions01()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -28,7 +28,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseSimpleExpressions2()
+        public void ParseSimpleExpressions02()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -49,7 +49,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseSimpleExpressions3()
+        public void ParseSimpleExpressions03()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -70,7 +70,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseSimpleExpressions4()
+        public void ParseSimpleExpressions04()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -87,7 +87,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseSimpleExpressions5()
+        public void ParseSimpleExpressions05()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -108,7 +108,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseSimpleExpressions6()
+        public void ParseSimpleExpressions06()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -122,7 +122,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseSimpleExpressions7()
+        public void ParseSimpleExpressions07()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -134,7 +134,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseSimpleExpressions8()
+        public void ParseSimpleExpressions08()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -143,7 +143,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseSimpleExpressions9()
+        public void ParseSimpleExpressions09()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -163,6 +163,21 @@ namespace Microsoft.R.Core.Test.Parser
             TokenNode  [) [10...11)]
 ";
             ParserTest.VerifyParse(expected, "((c+1)/2.0)");
+        }
+
+        [TestMethod]
+        public void ParseSimpleExpressions10()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [FALSE & TRUE]
+        Expression  [FALSE & TRUE]
+            TokenOperator  [& [6...7)]
+                LogicalValue  [FALSE [0...5)]
+                TokenNode  [& [6...7)]
+                LogicalValue  [TRUE [8...12)]
+";
+            ParserTest.VerifyParse(expected, "FALSE & TRUE");
         }
     }
 }

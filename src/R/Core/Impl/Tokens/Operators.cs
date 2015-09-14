@@ -104,6 +104,7 @@ namespace Microsoft.R.Core.Tokens
                 case '<':
                 case '>':
                 case '|':
+                case '&':
                 case '!':
                 case '=':
                 case '?':
