@@ -186,8 +186,12 @@ namespace Microsoft.R.Core.AST.Expressions
                         break;
                 }
 
+                // Binary operator followed by another binary like 'a +/ b' is an error.
+                // 'func()()' or 'func() +' is allowed but 'func() operand' is not. 
+                // Binary operator without anything behind it is an error;
                 if ((_previousOperationType == currentOperationType && currentOperationType != OperationType.Function) ||
-                    currentOperationType == OperationType.BinaryOperator && tokens.IsEndOfStream())
+                    (currentOperationType == OperationType.BinaryOperator && tokens.IsEndOfStream()) ||
+                    _previousOperationType == OperationType.Function && currentOperationType == OperationType.Operand)
                 {
                     // 'operator, operator' or 'identifier identifier' sequence is an error
                     switch (currentOperationType)

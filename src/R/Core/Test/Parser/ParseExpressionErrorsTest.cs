@@ -112,5 +112,27 @@ OperandExpected AfterToken [8...9)
 ";
             ParserTest.VerifyParse(expected, "y <- 2.5*");
         }
+
+        [TestMethod]
+        public void ParseMissingOperatorTest01()
+        {
+            string expected =
+@"GlobalScope  [Global]
+
+OperatorExpected Token [3...4)
+";
+            ParserTest.VerifyParse(expected, "a()b");
+        }
+
+        [TestMethod]
+        public void ParseMissingOperatorTest02()
+        {
+            string expected =
+@"GlobalScope  [Global]
+
+OperatorExpected Token [2...3)
+";
+            ParserTest.VerifyParse(expected, "a b");
+        }
     }
 }
