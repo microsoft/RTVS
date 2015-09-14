@@ -15,15 +15,15 @@
 [290:1] Default
 [292:2] operator
 [295:8] keyword
-[303:1] R Punctuation
+[303:1] Punctuation
 [304:1] Default
-[305:1] R Punctuation
+[305:1] Punctuation
 [307:6] keyword
-[313:1] R Punctuation
+[313:1] Punctuation
 [314:1] Default
 [315:1] operator
 [316:1] number
-[317:1] R Punctuation
+[317:1] Punctuation
 [320:3] Default
 [329:6] Markdown Alt Text
 [380:8] Markdown List Item
