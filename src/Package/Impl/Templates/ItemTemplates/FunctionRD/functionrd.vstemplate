@@ -5,7 +5,7 @@
     <Description>Function R Documentation File</Description>
     <Icon>functionrd.ico</Icon>
     <TemplateID>Microsoft.RTools.FunctionRD</TemplateID>
-    <ProjectType>R Language</ProjectType>
+    <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>

@@ -79,14 +79,15 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 					// The project didn’t already exist, so create it, and then mark the evaluated project dirty
 					// so that MSBuild will notice. This step isn’t necessary if the project was already in memory.
 					_inMemoryImport = CreateEmptyMsBuildProject(_inMemoryImportFullPath, access.ProjectCollection);
-				    _filesItemGroup = _inMemoryImport.AddItemGroup();
-                    _directoriesItemGroup = _inMemoryImport.AddItemGroup();
-                    _temporaryAddedItemGroup = _inMemoryImport.AddItemGroup();
 
                     // Note that we actually need to mark every project evaluation dirty that is already loaded.
                     await ReevaluateLoadedConfiguredProjects(_unloadCancellationToken, access);
 				}
-			}
+
+                _filesItemGroup = _inMemoryImport.AddItemGroup();
+                _directoriesItemGroup = _inMemoryImport.AddItemGroup();
+                _temporaryAddedItemGroup = _inMemoryImport.AddItemGroup();
+            }
 		}
 
 		public Task<IReadOnlyCollection<string>> AddTemporaryFiles(ConfiguredProject configuredProject, IEnumerable<string> filesToAdd)

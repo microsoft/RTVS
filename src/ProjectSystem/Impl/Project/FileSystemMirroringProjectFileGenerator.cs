@@ -57,9 +57,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 						new XDefaultValueProperty("Configuration", "Debug"),
 						new XDefaultValueProperty("Platform", "AnyCPU")
 					),
-					new XPropertyGroup(
-						new XProperty("ProjectUISubcaption", _projectUiSubcaption)
-					),
+                    CreateProjectUiSubcaption(),
 					new XProjElement("ProjectExtensions",
                         new XProjElement("VisualStudio",
 							new XProjElement("UserProperties")
@@ -81,7 +79,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 			}
         }
 
-	    private IEnumerable<XImport> CreateMsBuildExtensionXImports(string import)
+        private XPropertyGroup CreateProjectUiSubcaption()
+        {
+            return _projectUiSubcaption != null
+                ? new XPropertyGroup(new XProperty("ProjectUISubcaption", _projectUiSubcaption))
+                : null;
+        }
+
+        private IEnumerable<XImport> CreateMsBuildExtensionXImports(string import)
         {
             var msBuildImportExtensionPath = Invariant($@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\{import}");
             var msBuildImportUserExtensionPath = Invariant($@"$(MSBuildUserExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\{import}");
