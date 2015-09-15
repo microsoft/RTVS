@@ -2,15 +2,9 @@
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Mocks;
 using Microsoft.Languages.Editor.Tests.Shell;
-using Microsoft.R.Core.AST;
-using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Editor.Signatures;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Test.Signatures
 {

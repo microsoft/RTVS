@@ -76,6 +76,7 @@
     <Compile Include="AST\Functions\Definitions\IFunctionDefinition.cs" />
     <Compile Include="AST\Functions\Definitions\IFunction.cs" />
     <Compile Include="AST\Functions\FunctionDefinition.cs" />
+    <Compile Include="AST\Functions\Lambda.cs" />
     <Compile Include="AST\Operators\Definitions\IOperator.cs" />
     <Compile Include="AST\Operators\Association.cs" />
     <Compile Include="AST\Operands\InlineIf.cs" />

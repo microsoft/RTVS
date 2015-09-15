@@ -16,13 +16,22 @@ namespace Microsoft.R.Core.AST.Expressions
     public sealed partial class Expression : RValueNode<RObject>, IExpression
     {
         private string _terminatingKeyword;
+        private bool _inGroup;
 
         #region IExpression
         public IRValueNode Content { get; internal set; }
         #endregion
 
-        public Expression()
+        /// <summary>
+        /// Constructs an expression that will be parsed as it is
+        /// inside braces (in a group) so expression parsing
+        /// will continue even if there is a line break
+        /// that would normally terminate the expression.
+        /// </summary>
+        /// <param name="inGroup"></param>
+        public Expression(bool inGroup = false)
         {
+            _inGroup = inGroup;
         }
 
         public Expression(string terminatingKeyword)

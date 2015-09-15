@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Microsoft.R.Core.AST.Operators
+﻿namespace Microsoft.R.Core.AST.Operators
 {
     public enum OperatorType
     {

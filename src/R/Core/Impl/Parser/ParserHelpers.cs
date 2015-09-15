@@ -141,8 +141,7 @@ namespace Microsoft.R.Core.Parser
         {
             RTokenType tokenType = token.TokenType;
 
-            if (tokenType == RTokenType.OpenCurlyBrace ||
-                tokenType == RTokenType.CloseCurlyBrace ||
+            if (tokenType == RTokenType.CloseCurlyBrace ||
                 tokenType == RTokenType.Semicolon)
             {
                 return true;

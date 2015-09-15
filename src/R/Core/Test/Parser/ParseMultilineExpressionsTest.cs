@@ -10,7 +10,7 @@ namespace Microsoft.R.Core.Test.Parser
     public class ParseMultilineExpressionsTest : UnitTestBase
     {
         [TestMethod]
-        public void ParseMultilineExpressionsTest1()
+        public void ParseMultilineExpressionsTest01()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -35,7 +35,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseMultilineExpressionsTest2()
+        public void ParseMultilineExpressionsTest02()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -48,7 +48,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseMultilineExpressionsTest3()
+        public void ParseMultilineExpressionsTest03()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -69,7 +69,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseMultilineExpressionsTest4()
+        public void ParseMultilineExpressionsTest04()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -86,6 +86,25 @@ namespace Microsoft.R.Core.Test.Parser
                 NumericalValue  [2 [10...11)]
 ";
             ParserTest.VerifyParse(expected, "x + 1 \n + 2");
+        }
+
+        [TestMethod]
+        public void ParseMultilineExpressionsTest05()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [(x\n || y)]
+        Expression  [(x\n || y)]
+            Group  [0...9)
+                TokenNode  [( [0...1)]
+                Expression  [x\n || y]
+                    TokenOperator  [|| [4...6)]
+                        Variable  [x]
+                        TokenNode  [|| [4...6)]
+                        Variable  [y]
+                TokenNode  [) [8...9)]
+";
+            ParserTest.VerifyParse(expected, "(x\n || y)");
         }
     }
 }

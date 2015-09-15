@@ -56,6 +56,11 @@ namespace Microsoft.R.Core.AST.Scopes
         }
         #endregion
 
+        public Scope():
+            this("_Anonymous_")
+        {
+        }
+
         public Scope(string name)
         {
             this.Name = name;

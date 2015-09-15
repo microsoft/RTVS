@@ -51,7 +51,7 @@ namespace Microsoft.R.Core.AST.Variables
             Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.OpenBrace);
             this.OpenBrace = RParser.ParseToken(context, this);
 
-            this.Content = new Expression();
+            this.Content = new Expression(inGroup: true);
             this.Content.Parse(context, this);
 
             if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace)

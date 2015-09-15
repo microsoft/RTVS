@@ -87,6 +87,10 @@ namespace Microsoft.R.Core.AST.Expressions
                         currentOperationType = HandleOpenBrace(context, out errorType);
                         break;
 
+                    case RTokenType.OpenCurlyBrace:
+                        currentOperationType = HandleLambda(context, out errorType);
+                        break;
+
                     case RTokenType.OpenSquareBracket:
                     case RTokenType.OpenDoubleSquareBracket:
                         currentOperationType = HandleSquareBrackets(context, out errorType);
@@ -215,7 +219,10 @@ namespace Microsoft.R.Core.AST.Expressions
                 // continue if braces are not closed yet.
                 if (context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1))
                 {
-                    return true;
+                    if (!(_inGroup && context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace))
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -312,6 +319,17 @@ namespace Microsoft.R.Core.AST.Expressions
             variable.Parse(context, null);
 
             _operands.Push(variable);
+            return OperationType.Operand;
+        }
+
+        private OperationType HandleLambda(ParseContext context, out ParseErrorType errorType)
+        {
+            errorType = ParseErrorType.None;
+
+            Lambda lambda = new Lambda();
+            lambda.Parse(context, null);
+
+            _operands.Push(lambda);
             return OperationType.Operand;
         }
 

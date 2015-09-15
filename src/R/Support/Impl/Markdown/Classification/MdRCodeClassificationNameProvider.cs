@@ -11,7 +11,7 @@ namespace Microsoft.R.Support.Markdown.Classification
 
         public MdRCodeClassificationNameProvider()
         {
-            var providers = ComponentLocatorForContentType<IClassificationNameProvider, IComponentContentTypes>.ImportMany("R Language");
+            var providers = ComponentLocatorForContentType<IClassificationNameProvider, IComponentContentTypes>.ImportMany("R");
             if (providers != null)
             {
                 _nameProvider = providers.FirstOrDefault().Value;

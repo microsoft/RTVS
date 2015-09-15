@@ -23,6 +23,9 @@ namespace Microsoft.Languages.Editor.Test.Composition
         private static string _editorPath;
         private static string _privatePath;
 
+        private static string _partsData;
+        private static string _exportsData;
+
         private static string[] _editorAssemblies = new string[]
         {
             "Microsoft.VisualStudio.CoreUtility.dll",
@@ -65,13 +68,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
 
                 if (File.Exists(path))
                 {
-                    try
-                    {
-                        asm = Assembly.LoadFrom(path);
-                    }
-                    catch (IOException)
-                    {
-                    }
+                    asm = Assembly.LoadFrom(path);
                 }
             }
 
@@ -81,13 +78,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
 
                 if (File.Exists(path))
                 {
-                    try
-                    {
-                        asm = Assembly.LoadFrom(path);
-                    }
-                    catch (IOException)
-                    {
-                    }
+                    asm = Assembly.LoadFrom(path);
                 }
             }
 
@@ -169,7 +160,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
         {
             string[] paths = new string[]
             {
-                    Path.Combine(assemblyLoc, assemblyName),
+                Path.Combine(assemblyLoc, assemblyName),
             };
 
             try
@@ -204,23 +195,34 @@ namespace Microsoft.Languages.Editor.Test.Composition
             CompositionContainer container = new CompositionContainer(aggregateCatalog, isThreadSafe: true);
 
             StringBuilder parts = new StringBuilder();
+            StringBuilder exports = new StringBuilder();
+
             foreach (ComposablePartDefinition part in container.Catalog.Parts)
             {
                 parts.AppendLine("===============================================================");
                 parts.AppendLine(part.ToString());
+
+                exports.AppendLine("===============================================================");
+                exports.AppendLine(part.ToString());
 
                 bool first = true;
 
                 if (part.ExportDefinitions.FirstOrDefault() != null)
                 {
                     parts.AppendLine("\t --- EXPORTS --");
+                    exports.AppendLine("\t --- EXPORTS --");
+
                     foreach (ExportDefinition exportDefinition in part.ExportDefinitions)
                     {
                         parts.AppendLine("\t" + exportDefinition.ContractName);
+                        exports.AppendLine("\t" + exportDefinition.ContractName);
+
                         foreach (KeyValuePair<string, object> kvp in exportDefinition.Metadata)
                         {
                             string valueString = kvp.Value != null ? kvp.Value.ToString() : string.Empty;
+
                             parts.AppendLine("\t" + kvp.Key + " : " + valueString);
+                            exports.AppendLine("\t" + kvp.Key + " : " + valueString);
                         }
 
                         if (first)
@@ -230,6 +232,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
                         else
                         {
                             parts.AppendLine("------------------------------------------------------");
+                            exports.AppendLine("------------------------------------------------------");
                         }
                     }
                 }
@@ -256,7 +259,8 @@ namespace Microsoft.Languages.Editor.Test.Composition
                 }
             }
 
-            string partsData = parts.ToString();
+            _partsData = parts.ToString();
+            _exportsData = exports.ToString();
 
             return container;
         }

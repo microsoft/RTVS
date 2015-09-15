@@ -12,7 +12,7 @@ namespace Microsoft.R.Editor.Commands.Factory
 {
     [Export(typeof(ICommandFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal class HtmlCommandFactory: ICommandFactory
+    internal class RCommandFactory: ICommandFactory
     {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer)
         {
