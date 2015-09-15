@@ -39,6 +39,10 @@ namespace Microsoft.R.Editor.Test.Mocks
             return 1;
         }
 
+        public void EnsureTreeReady()
+        {
+        }
+
         public bool ReleaseReadLock(Guid treeUserId)
         {
             return true;
