@@ -9,11 +9,13 @@ using Microsoft.R.Core.Tokens;
 namespace Microsoft.R.Core.AST.Statements
 {
     [DebuggerDisplay("[KeywordStatement: {Text}]")]
-    public class KeywordStatement : Statement, IKeywordStatement
+    public class KeywordStatement : Statement, IKeyword, IStatement
     {
+        #region IKeyword
         public TokenNode Keyword { get; private set; }
 
         public string Text { get; private set; }
+        #endregion
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
@@ -74,6 +76,10 @@ namespace Microsoft.R.Core.AST.Statements
 
                 case "library":
                     statement = new LibraryStatement();
+                    break;
+
+                case "function":
+                    statement = new FunctionStatement();
                     break;
 
                 default:

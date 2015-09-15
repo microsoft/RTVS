@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Functions;
+using Microsoft.R.Core.AST.Operands;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.AST.Values;
@@ -17,7 +19,7 @@ namespace Microsoft.R.Core.AST.Expressions
     /// Implements shunting yard algorithm of expression parsing.
     /// https://en.wikipedia.org/wiki/Shunting-yard_algorithm
     /// </summary>
-    public sealed class ExpressionParser
+    public sealed partial class Expression
     {
         private static readonly IOperator Sentinel = new TokenOperator(OperatorType.Sentinel, false);
 
@@ -36,17 +38,11 @@ namespace Microsoft.R.Core.AST.Expressions
             EndOfExpression
         }
 
-        private Stack<IAstNode> _operands = new Stack<IAstNode>();
+        private Stack<IRValueNode> _operands = new Stack<IRValueNode>();
         private Stack<IOperator> _operators = new Stack<IOperator>();
         private OperationType _previousOperationType = OperationType.None;
-        private string _terminatingKeyword;
 
-        public ExpressionParser(string terminatingKeyword)
-        {
-            _terminatingKeyword = terminatingKeyword;
-        }
-
-        public IAstNode Parse(ParseContext context, IAstNode parent)
+        private bool Parse(ParseContext context)
         {
             // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
             // http://www.engr.mun.ca/~theo/Misc/exp_parsing.htm
@@ -58,10 +54,9 @@ namespace Microsoft.R.Core.AST.Expressions
             ParseErrorType errorType = ParseErrorType.None;
             ErrorLocation errorLocation = ErrorLocation.AfterToken;
             bool endOfExpression = false;
-            IAstNode result = null;
 
             // Push sentinel
-            _operators.Push(ExpressionParser.Sentinel);
+            _operators.Push(Expression.Sentinel);
 
             while (!tokens.IsEndOfStream() && errorType == ParseErrorType.None && !endOfExpression)
             {
@@ -78,81 +73,37 @@ namespace Microsoft.R.Core.AST.Expressions
                     case RTokenType.Missing:
                     case RTokenType.NaN:
                     case RTokenType.Infinity:
-                        IAstNode constant = ExpressionParser.CreateConstant(context);
-                        _operands.Push(constant);
-                        currentOperationType = OperationType.Operand;
+                        currentOperationType = HandleConstant(context);
                         break;
 
                     // Variables and function calls
                     case RTokenType.Identifier:
-                        Variable variable = new Variable();
-                        variable.Parse(context, null);
-                        _operands.Push(variable);
-                        currentOperationType = OperationType.Operand;
+                        currentOperationType = HandleIdentifier(context);
                         break;
 
                     // Nested expression such as a*(b+c) or a nameless 
                     // function call like a[2](x, y) or func(a, b)(c, d)
                     case RTokenType.OpenBrace:
-
-                        // Separate expression from function call. In case of 
-                        // function call previous token is either closing indexer 
-                        // brace or closing function brace. Identifier with brace 
-                        // is handled up above.
-
-                        if (tokens.PreviousToken.TokenType == RTokenType.CloseBrace ||
-                            tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
-                            tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
-                            tokens.PreviousToken.TokenType == RTokenType.Identifier)
-                        {
-                            FunctionCall functionCall = new FunctionCall();
-                            functionCall.Parse(context, null);
-
-                            errorType = HandleFunctionOrIndexer(functionCall);
-                            currentOperationType = OperationType.Function;
-                        }
-                        else
-                        {
-                            Expression exp = new Expression();
-                            if (exp.Parse(context, null))
-                            {
-                                _operands.Push(exp);
-                                currentOperationType = OperationType.Operand;
-                            }
-                        }
-
+                        currentOperationType = HandleOpenBrace(context, out errorType);
                         break;
 
                     case RTokenType.OpenSquareBracket:
                     case RTokenType.OpenDoubleSquareBracket:
-                        Indexer indexer = new Indexer();
-                        if (indexer.Parse(context, null))
-                        {
-                            errorType = HandleFunctionOrIndexer(indexer);
-                            currentOperationType = OperationType.Function;
-                        }
-                        else
-                        {
-                            return null;
-                        }
+                        currentOperationType = HandleSquareBrackets(context, out errorType);
                         break;
 
                     case RTokenType.Operator:
-                        {
-                            bool isUnary;
-                            errorType = this.HandleOperator(context, null, out isUnary);
-                            currentOperationType = isUnary ? OperationType.UnaryOperator : OperationType.BinaryOperator;
-                        }
+                        currentOperationType = HandleOperator(context, out errorType);
                         break;
 
                     case RTokenType.CloseBrace:
+                        currentOperationType = OperationType.EndOfExpression;
+                        endOfExpression = true;
+                        break;
+
                     case RTokenType.CloseCurlyBrace:
                     case RTokenType.CloseSquareBracket:
                     case RTokenType.CloseDoubleSquareBracket:
-                        //if (_previousOperationType == OperationType.None)
-                        //{
-                        //    context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
-                        //}
                         currentOperationType = OperationType.EndOfExpression;
                         endOfExpression = true;
                         break;
@@ -164,19 +115,7 @@ namespace Microsoft.R.Core.AST.Expressions
                         break;
 
                     case RTokenType.Keyword:
-                        string keyword = context.TextProvider.GetText(context.Tokens.CurrentToken);
-                        if (IsTerminatingKeyword(keyword))
-                        {
-                            currentOperationType = OperationType.EndOfExpression;
-                            endOfExpression = true;
-                            break;
-                        }
-
-                        errorType = HandleKeyword(context, keyword);
-                        if (errorType == ParseErrorType.None)
-                        {
-                            currentOperationType = OperationType.Operand;
-                        }
+                        currentOperationType = HandleKeyword(context, out errorType);
                         endOfExpression = true;
                         break;
 
@@ -186,43 +125,9 @@ namespace Microsoft.R.Core.AST.Expressions
                         break;
                 }
 
-                // Binary operator followed by another binary like 'a +/ b' is an error.
-                // 'func()()' or 'func() +' is allowed but 'func() operand' is not. 
-                // Binary operator without anything behind it is an error;
-                if ((_previousOperationType == currentOperationType && currentOperationType != OperationType.Function) ||
-                    (currentOperationType == OperationType.BinaryOperator && tokens.IsEndOfStream()) ||
-                    _previousOperationType == OperationType.Function && currentOperationType == OperationType.Operand)
+                if (errorType == ParseErrorType.None && !IsConsistentOperationSequence(context, currentOperationType))
                 {
-                    // 'operator, operator' or 'identifier identifier' sequence is an error
-                    switch (currentOperationType)
-                    {
-                        case OperationType.Operand:
-                            context.AddError(new ParseError(ParseErrorType.OperatorExpected, ErrorLocation.Token, token));
-                            break;
-
-                        case OperationType.None:
-                            if (tokens.IsEndOfStream())
-                            {
-                                context.AddError(new ParseError(ParseErrorType.UnexpectedEndOfFile, ErrorLocation.AfterToken, tokens.PreviousToken));
-                            }
-                            else
-                            {
-                                context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, token));
-                            }
-                            break;
-
-                        default:
-                            context.AddError(new MissingItemParseError(ParseErrorType.OperandExpected, token));
-                            break;
-                    }
-
-                    return null;
-                }
-                else if (_previousOperationType == OperationType.UnaryOperator && currentOperationType == OperationType.BinaryOperator)
-                {
-                    // unary followed by binary doesn't make sense 
-                    context.AddError(new MissingItemParseError(ParseErrorType.IndentifierExpected, token));
-                    return null;
+                    return false;
                 }
 
                 if (errorType != ParseErrorType.None || endOfExpression)
@@ -232,28 +137,9 @@ namespace Microsoft.R.Core.AST.Expressions
 
                 _previousOperationType = currentOperationType;
 
-                // In R there may not be explicit end of statement.
-                // Semicolon is optional and R console figures out if there is
-                // continuation from the context. For example, if statement is
-                // incomplete such as brace is not closed or last token in 
-                // the line is an operator, it continues with the next line.
-                // However, in 'x + 1 <line_break> + y' it stops expression
-                // parsing at the line break.
-
                 if (!endOfExpression)
                 {
-                    if (currentOperationType == OperationType.Function || (currentOperationType == OperationType.Operand && _previousOperationType != OperationType.None))
-                    {
-                        // Since we haven't seen explicit end of expression and 
-                        // the last operation was 'operand' which is a variable 
-                        // or a constant and there is a line break ahead of us
-                        // then the expression is complete. Outer parser may still
-                        // continue if braces are not closed yet.
-                        if (context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1))
-                        {
-                            endOfExpression = true;
-                        }
-                    }
+                    endOfExpression = CheckEndOfExpression(context, currentOperationType);
                 }
             }
 
@@ -275,12 +161,12 @@ namespace Microsoft.R.Core.AST.Expressions
                 // construct final node. After this only sentil
                 // operator should be in the operators stack
                 // and a single final root node in the operand stack.
-                errorType = this.ProcessHigherPrecendenceOperators(ExpressionParser.Sentinel);
+                errorType = this.ProcessHigherPrecendenceOperators(Expression.Sentinel);
             }
 
             if (errorType != ParseErrorType.None)
             {
-                context.AddError(new ParseError(errorType, ErrorLocation.Token, tokens.IsEndOfStream() ? tokens.PreviousToken : tokens.CurrentToken));
+                context.AddError(new ParseError(errorType, ErrorLocation.Token, GetErrorRange(context)));
 
                 // Although there may be errors such as incomplete function
                 // we still want to include the result into the tree since
@@ -288,8 +174,8 @@ namespace Microsoft.R.Core.AST.Expressions
                 // and parameter to work.
                 if (_operands.Count == 1)
                 {
-                    result = _operands.Pop();
-                    parent.AppendChild(result);
+                    Content = _operands.Pop();
+                    AppendChild(this.Content);
                 }
             }
             else
@@ -302,12 +188,195 @@ namespace Microsoft.R.Core.AST.Expressions
                 {
                     Debug.Assert(_operands.Count == 1);
 
-                    result = _operands.Pop();
-                    parent.AppendChild(result);
+                    Content = _operands.Pop();
+                    AppendChild(Content);
                 }
             }
 
-            return result;
+            return true;
+        }
+
+        private bool CheckEndOfExpression(ParseContext context, OperationType currentOperationType)
+        {
+            // In R there may not be explicit end of statement.
+            // Semicolon is optional and R console figures out if there is
+            // continuation from the context. For example, if statement is
+            // incomplete such as brace is not closed or last token in 
+            // the line is an operator, it continues with the next line.
+            // However, in 'x + 1 <line_break> + y' it stops expression
+            // parsing at the line break.
+
+            if (currentOperationType == OperationType.Function || (currentOperationType == OperationType.Operand && _previousOperationType != OperationType.None))
+            {
+                // Since we haven't seen explicit end of expression and 
+                // the last operation was 'operand' which is a variable 
+                // or a constant and there is a line break ahead of us
+                // then the expression is complete. Outer parser may still
+                // continue if braces are not closed yet.
+                if (context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsConsistentOperationSequence(ParseContext context, OperationType currentOperationType)
+        {
+            // Binary operator followed by another binary like 'a +/ b' is an error.
+            // 'func()()' or 'func() +' is allowed but 'func() operand' is not. 
+            // Binary operator without anything behind it is an error;
+            if ((_previousOperationType == OperationType.Function && currentOperationType == OperationType.Operand) ||
+                (_previousOperationType == currentOperationType && currentOperationType != OperationType.Function))
+            {
+                switch (currentOperationType)
+                {
+                    case OperationType.Operand:
+                        // 'operand operand' sequence is an error
+                        context.AddError(new ParseError(ParseErrorType.OperatorExpected, ErrorLocation.Token, GetOperandErrorRange(context)));
+                        break;
+
+                    default:
+                        // 'operator operator' sequence is an error
+                        context.AddError(new ParseError(ParseErrorType.OperandExpected, ErrorLocation.Token, GetOperatorErrorRange(context)));
+                        break;
+                }
+
+                return false;
+            }
+            else if (currentOperationType == OperationType.BinaryOperator && context.Tokens.IsEndOfStream())
+            {
+                // 'operator <EOF>' sequence is an error
+                context.AddError(new ParseError(ParseErrorType.OperandExpected, ErrorLocation.Token, GetOperatorErrorRange(context)));
+                return false;
+            }
+            else if (_previousOperationType == OperationType.UnaryOperator && currentOperationType == OperationType.BinaryOperator)
+            {
+                // unary followed by binary doesn't make sense 
+                context.AddError(new ParseError(ParseErrorType.IndentifierExpected, ErrorLocation.Token, GetOperatorErrorRange(context)));
+                return false;
+            }
+
+            return true;
+        }
+
+        private ITextRange GetErrorRange(ParseContext context)
+        {
+            return context.Tokens.IsEndOfStream() ? context.Tokens.PreviousToken : context.Tokens.CurrentToken;
+        }
+
+        private ITextRange GetOperandErrorRange(ParseContext context)
+        {
+            if (_operands.Count > 0)
+            {
+                IAstNode node = _operands.Peek();
+                if(node.Children.Count > 0)
+                {
+                    return node.Children[0];
+                }
+
+                return node;
+            }
+
+            return GetErrorRange(context);
+        }
+
+        private ITextRange GetOperatorErrorRange(ParseContext context)
+        {
+            if (_operators.Count > 0)
+            {
+                IAstNode node = _operators.Peek();
+                if (node.Children.Count > 0)
+                {
+                    return node.Children[0];
+                }
+
+                return node;
+            }
+
+            return GetErrorRange(context);
+        }
+
+        private OperationType HandleConstant(ParseContext context)
+        {
+            IRValueNode constant = Expression.CreateConstant(context);
+
+            _operands.Push(constant);
+            return OperationType.Operand;
+        }
+
+        private OperationType HandleIdentifier(ParseContext context)
+        {
+            Variable variable = new Variable();
+            variable.Parse(context, null);
+
+            _operands.Push(variable);
+            return OperationType.Operand;
+        }
+
+        private OperationType HandleOpenBrace(ParseContext context, out ParseErrorType errorType)
+        {
+            TokenStream<RToken> tokens = context.Tokens;
+            errorType = ParseErrorType.None;
+
+            // Separate expression from function call. In case of 
+            // function call previous token is either closing indexer 
+            // brace or closing function brace. Identifier with brace 
+            // is handled up above.
+
+            if (tokens.PreviousToken.TokenType == RTokenType.CloseBrace ||
+                tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
+                tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
+                tokens.PreviousToken.TokenType == RTokenType.Identifier)
+            {
+                FunctionCall functionCall = new FunctionCall();
+                functionCall.Parse(context, null);
+
+                errorType = HandleFunctionOrIndexer(functionCall);
+                return OperationType.Function;
+            }
+
+            Group group = new Group();
+            group.Parse(context, null);
+
+            _operands.Push(group);
+            return OperationType.Operand;
+        }
+
+        private OperationType HandleSquareBrackets(ParseContext context, out ParseErrorType errorType)
+        {
+            Indexer indexer = new Indexer();
+            indexer.Parse(context, null);
+
+            errorType = HandleFunctionOrIndexer(indexer);
+            return OperationType.Function;
+        }
+
+        private OperationType HandleOperator(ParseContext context, out ParseErrorType errorType)
+        {
+            bool isUnary;
+            errorType = this.HandleOperator(context, null, out isUnary);
+            return isUnary ? OperationType.UnaryOperator : OperationType.BinaryOperator;
+        }
+
+        private OperationType HandleKeyword(ParseContext context, out ParseErrorType errorType)
+        {
+            errorType = ParseErrorType.None;
+
+            string keyword = context.TextProvider.GetText(context.Tokens.CurrentToken);
+            if (IsTerminatingKeyword(keyword))
+            {
+                return OperationType.EndOfExpression;
+            }
+
+            errorType = HandleKeyword(context, keyword);
+            if (errorType == ParseErrorType.None)
+            {
+                return OperationType.Operand;
+            }
+
+            return _previousOperationType;
         }
 
         private ParseErrorType HandleKeyword(ParseContext context, string keyword)
@@ -323,6 +392,16 @@ namespace Microsoft.R.Core.AST.Expressions
                 // Add to the stack even if it has errors in order
                 // to avoid extra errors
                 _operands.Push(funcDef);
+            }
+            else if (keyword.Equals("if", StringComparison.Ordinal))
+            {
+                // Special case 'exp <- function(...) { }
+                InlineIf inlineIf = new InlineIf();
+                inlineIf.Parse(context, null);
+
+                // Add to the stack even if it has errors in order
+                // to avoid extra errors
+                _operands.Push(inlineIf);
             }
             else
             {
@@ -342,13 +421,13 @@ namespace Microsoft.R.Core.AST.Expressions
             return s.Equals(_terminatingKeyword, StringComparison.Ordinal);
         }
 
-        private ParseErrorType HandleFunctionOrIndexer(IAstNode operatorNode)
+        private ParseErrorType HandleFunctionOrIndexer(IRValueNode operatorNode)
         {
             // Indexing or function call is performed on the topmost operand which 
             // generally should be a variable or a node that evaluates to it.
             // However, we leave syntax check to separate code.
 
-            IAstNode operand = this.SafeGetOperand();
+            IRValueNode operand = this.SafeGetOperand();
             if (operand == null)
             {
                 // Oddly, no operand
@@ -427,7 +506,7 @@ namespace Microsoft.R.Core.AST.Expressions
         {
             IOperator operatorNode = _operators.Pop();
 
-            IAstNode rightOperand = this.SafeGetOperand();
+            IRValueNode rightOperand = this.SafeGetOperand();
             if (rightOperand == null)
             {
                 // Oddly, no operands
@@ -441,7 +520,7 @@ namespace Microsoft.R.Core.AST.Expressions
             }
             else
             {
-                IAstNode leftOperand = this.SafeGetOperand();
+                IRValueNode leftOperand = this.SafeGetOperand();
                 if (leftOperand == null)
                 {
                     return ParseErrorType.OperandExpected;
@@ -459,16 +538,16 @@ namespace Microsoft.R.Core.AST.Expressions
             return ParseErrorType.None;
         }
 
-        private IAstNode SafeGetOperand()
+        private IRValueNode SafeGetOperand()
         {
             return _operands.Count > 0 ? _operands.Pop() : null;
         }
 
-        private static IAstNode CreateConstant(ParseContext context)
+        private static IRValueNode CreateConstant(ParseContext context)
         {
             TokenStream<RToken> tokens = context.Tokens;
             RToken currentToken = tokens.CurrentToken;
-            IAstNode term = null;
+            IRValueNode term = null;
 
             switch (currentToken.TokenType)
             {

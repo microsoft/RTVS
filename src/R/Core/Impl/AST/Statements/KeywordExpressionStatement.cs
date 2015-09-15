@@ -8,9 +8,9 @@ using Microsoft.R.Core.Parser;
 namespace Microsoft.R.Core.AST.Statements
 {
     [DebuggerDisplay("[KeywordExpressionStatement: {Text}]")]
-    public class KeywordExpressionStatement : KeywordStatement, IKeywordExpressionStatement
+    public class KeywordExpressionStatement : KeywordStatement, IKeywordExpression
     {
-        #region IKeywordExpressionStatement
+        #region IKeywordExpression
         public TokenNode OpenBrace { get; private set; }
         public IExpression Expression { get; private set; }
         public TokenNode CloseBrace { get; private set; }

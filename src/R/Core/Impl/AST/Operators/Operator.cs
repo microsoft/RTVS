@@ -9,11 +9,11 @@ namespace Microsoft.R.Core.AST.Operators
     public abstract class Operator : RValueNode<RObject>, IOperator
     {
         #region IOperator
-        public IAstNode LeftOperand { get; set; }
+        public IRValueNode LeftOperand { get; set; }
 
         public virtual OperatorType OperatorType { get; private set; }
 
-        public IAstNode RightOperand { get; set; }
+        public IRValueNode RightOperand { get; set; }
 
         public virtual int Precedence { get; internal set; }
 

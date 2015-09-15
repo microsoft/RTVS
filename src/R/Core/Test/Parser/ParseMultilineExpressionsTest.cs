@@ -22,12 +22,13 @@ namespace Microsoft.R.Core.Test.Parser
                 TokenOperator  [* [7...8)]
                     NumericalValue  [1 [5...6)]
                     TokenNode  [* [7...8)]
-                    Expression  [( \r\n a + b)]
+                    Group  [9...20)
                         TokenNode  [( [9...10)]
-                        TokenOperator  [+ [16...17)]
-                            Variable  [a]
-                            TokenNode  [+ [16...17)]
-                            Variable  [b]
+                        Expression  [a + b]
+                            TokenOperator  [+ [16...17)]
+                                Variable  [a]
+                                TokenNode  [+ [16...17)]
+                                Variable  [b]
                         TokenNode  [) [19...20)]
 ";
             ParserTest.VerifyParse(expected, "x+ \n 1 * ( \r\n a + b)");

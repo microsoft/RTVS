@@ -9,7 +9,7 @@ namespace Microsoft.R.Core.AST.Definitions
     /// a right-hand assignment such as -&gt;&gt;. Typical example
     /// is a constant (number, string, logical) or a function call.
     /// </summary>
-    public interface IRValueNode: IParseItem
+    public interface IRValueNode: IAstNode
     {
         RObject GetValue();
     }

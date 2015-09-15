@@ -3,6 +3,7 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
+using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
@@ -24,7 +25,7 @@ namespace Microsoft.R.Core.AST.Arguments
 
         public TokenNode EqualsSign { get; private set; }
 
-        public Expression DefaultValue { get; private set; }
+        public IExpression DefaultValue { get; private set; }
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
@@ -33,13 +34,19 @@ namespace Microsoft.R.Core.AST.Arguments
             this.Identifier = RParser.ParseToken(context, this);
             this.EqualsSign = RParser.ParseToken(context, this);
 
-            Expression exp = new Expression();
-            if (!exp.Parse(context, this))
+            if (context.Tokens.CurrentToken.TokenType != RTokenType.Comma && context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace)
             {
-                return false;
+                Expression exp = new Expression();
+                if (exp.Parse(context, this))
+                {
+                    this.DefaultValue = exp;
+                }
+            }
+            else
+            {
+                this.DefaultValue = new NullExpression();
             }
 
-            this.DefaultValue = exp;
             return base.Parse(context, parent);
         }
     }

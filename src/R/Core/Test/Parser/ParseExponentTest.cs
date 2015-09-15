@@ -52,12 +52,13 @@ namespace Microsoft.R.Core.Test.Parser
             TokenOperator  [^ [1...2)]
                 Variable  [a]
                 TokenNode  [^ [1...2)]
-                Expression  [(b+c)]
+                Group  [2...7)
                     TokenNode  [( [2...3)]
-                    TokenOperator  [+ [4...5)]
-                        Variable  [b]
-                        TokenNode  [+ [4...5)]
-                        Variable  [c]
+                    Expression  [b+c]
+                        TokenOperator  [+ [4...5)]
+                            Variable  [b]
+                            TokenNode  [+ [4...5)]
+                            Variable  [c]
                     TokenNode  [) [6...7)]
 ";
             ParserTest.VerifyParse(expected, "a^(b+c)");

@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
@@ -9,7 +11,7 @@ namespace Microsoft.R.Core.AST.Variables
     /// Represents R variable.
     /// </summary>
     [DebuggerDisplay("[{Name} : {Start}...{End}), Length = {Length}")]
-    public sealed class Variable : TokenNode
+    public sealed class Variable : TokenNode, IRValueNode
     {
         public string Name { get; private set; }
 
@@ -27,6 +29,11 @@ namespace Microsoft.R.Core.AST.Variables
             context.Tokens.MoveToNextToken();
 
             return true;
+        }
+
+        public RObject GetValue()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()

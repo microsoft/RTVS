@@ -26,7 +26,7 @@ OperandExpected Token [0...1)
             string expected =
 @"GlobalScope  [Global]
 
-OperandExpected AfterToken [1...2)
+OperandExpected Token [1...2)
 ";
             ParserTest.VerifyParse(expected, "x+");
         }
@@ -47,9 +47,12 @@ OperatorExpected Token [2...3)
         {
             string expected =
 @"GlobalScope  [Global]
+    ExpressionStatement  [(]
+        Expression  [(]
+            Group  [0...1)
+                TokenNode  [( [0...1)]
 
 CloseBraceExpected AfterToken [0...1)
-UnexpectedEndOfFile AfterToken [0...1)
 ";
             ParserTest.VerifyParse(expected, "(");
         }
@@ -59,9 +62,18 @@ UnexpectedEndOfFile AfterToken [0...1)
         {
             string expected =
 @"GlobalScope  [Global]
+    ExpressionStatement  [((x)]
+        Expression  [((x)]
+            Group  [0...4)
+                TokenNode  [( [0...1)]
+                Expression  [(x)]
+                    Group  [1...4)
+                        TokenNode  [( [1...2)]
+                        Expression  [x]
+                            Variable  [x]
+                        TokenNode  [) [3...4)]
 
 CloseBraceExpected AfterToken [3...4)
-UnexpectedEndOfFile AfterToken [3...4)
 ";
             ParserTest.VerifyParse(expected, "((x)");
         }
@@ -71,10 +83,13 @@ UnexpectedEndOfFile AfterToken [3...4)
         {
             string expected =
 @"GlobalScope  [Global]
+    ExpressionStatement  [(]
+        Expression  [(]
+            Group  [0...1)
+                TokenNode  [( [0...1)]
 
-OperandExpected AfterToken [2...3)
+OperandExpected Token [2...3)
 CloseBraceExpected AfterToken [2...3)
-UnexpectedEndOfFile AfterToken [2...3)
 ";
             ParserTest.VerifyParse(expected, "(x+");
         }
@@ -108,7 +123,7 @@ FunctionBodyExpected Token [12...13)
             string expected =
 @"GlobalScope  [Global]
 
-OperandExpected AfterToken [8...9)
+OperandExpected Token [8...9)
 ";
             ParserTest.VerifyParse(expected, "y <- 2.5*");
         }

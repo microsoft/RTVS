@@ -30,7 +30,7 @@ namespace Microsoft.R.Core.AST.Statements
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            this.Expression = new Expression(true, _terminatingKeyword);
+            this.Expression = new Expression(_terminatingKeyword);
             if (this.Expression.Parse(context, this))
             {
                 if(this.Expression.Children.Count == 1 && this.Expression.Children[0] is Expression)

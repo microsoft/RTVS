@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Arguments;
+using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
@@ -14,14 +15,15 @@ namespace Microsoft.R.Core.AST.Functions
     /// 'function(a, b) { }'
     /// </summary>
     [DebuggerDisplay("Function Definition [{Start}...{End})")]
-    public sealed class FunctionDefinition : AstNode, IFunctionDefinition
+    public class FunctionDefinition : RValueNode<RFunction>, IFunctionDefinition
     {
-        #region IFunctionDefinition
-        /// <summary>
-        /// 'function' keyword. Always present.
-        /// </summary>
+        #region IKeyword
         public TokenNode Keyword { get; private set; }
 
+        public string Text { get; private set; }
+        #endregion
+
+        #region IFunctionDefinition
         /// <summary>
         /// Function definition scope. Can be typical
         /// { } scope or a simple scope as in
@@ -76,6 +78,7 @@ namespace Microsoft.R.Core.AST.Functions
 
             Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.Keyword);
             this.Keyword = RParser.ParseKeyword(context, this);
+            this.Text = context.TextProvider.GetText(this.Keyword);
 
             if (tokens.CurrentToken.TokenType == RTokenType.OpenBrace)
             {

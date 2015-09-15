@@ -13,7 +13,7 @@ namespace Microsoft.R.Core.AST
         protected T NodeValue { get; set; }
 
         #region IRValueNode
-        public RObject GetValue()
+        public virtual RObject GetValue()
         {
             if(NodeValue == null)
             {

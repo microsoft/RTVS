@@ -12,16 +12,6 @@ namespace Microsoft.R.Editor.Validation.Definitions
     public interface IValidationError: ITextRange
     {
         /// <summary>
-        /// Token the error applies to.
-        /// </summary>
-        RToken Token { get; }
-
-        /// <summary>
-        /// AST node the error applies to.
-        /// </summary>
-        IAstNode Node { get; }
-
-        /// <summary>
         /// Message to place in a task list and/or tooltip
         /// </summary>
         string Message { get; }

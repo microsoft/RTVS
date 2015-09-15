@@ -199,7 +199,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                 // Remove all tags for this node
                 for (int i = 0; i < _tags.Count; i++)
                 {
-                    if (_tags[i].Node == node)
+                    if (TextRange.ContainsInclusiveEnd(node, _tags[i]))
                     {
                         start = Math.Min(start, _tags[i].Start);
                         end = Math.Max(end, _tags[i].End);
@@ -217,7 +217,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
             return range;
         }
 
-        void OnTreeClosing(object sender, EventArgs e)
+        private void OnTreeClosing(object sender, EventArgs e)
         {
             if (_editorTree != null)
             {
@@ -229,12 +229,12 @@ namespace Microsoft.R.Editor.Validation.Tagger
             }
         }
 
-        void OnNewTree(object sender, EventArgs e)
+        private void OnNewTree(object sender, EventArgs e)
         {
             Clear();
         }
 
-        void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e)
+        private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e)
         {
             foreach (var node in e.Nodes)
             {
@@ -242,7 +242,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
             }
         }
 
-        void OnUpdateCompleted(object sender, TreeUpdatedEventArgs e)
+        private void OnUpdateCompleted(object sender, TreeUpdatedEventArgs e)
         {
             if (_nodesPendingRemoval.Count > 0)
             {
@@ -263,7 +263,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
             _nodesPendingRemoval.Enqueue(node);
         }
 
-        void ProcessPendingNodeRemoval()
+        private void ProcessPendingNodeRemoval()
         {
             int start = Int32.MaxValue;
             int end = 0;
@@ -280,7 +280,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                         {
                             for (int j = 0; j < _tags.Count; j++)
                             {
-                                if (_tags[j].Node == node || node.Parent == null)
+                                if (TextRange.ContainsInclusiveEnd(node, _tags[j]) || node.Parent == null)
                                 {
                                     start = Math.Min(start, _tags[j].Start);
                                     end = Math.Max(end, _tags[j].End);

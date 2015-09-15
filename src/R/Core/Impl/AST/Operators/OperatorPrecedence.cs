@@ -73,6 +73,9 @@
 
                 case OperatorType.Namespace: // :: or :::
                     return 160;
+
+                case OperatorType.Group: // ( ) around expression
+                    return 200;
             }
 
             return 1000;

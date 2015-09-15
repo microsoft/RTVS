@@ -93,12 +93,13 @@ namespace Microsoft.R.Core.Test.Parser
                             TokenOperator  [+ [4...5)]
                                 Variable  [a]
                                 TokenNode  [+ [4...5)]
-                                Expression  [(b*c)]
+                                Group  [5...10)
                                     TokenNode  [( [5...6)]
-                                    TokenOperator  [* [7...8)]
-                                        Variable  [b]
-                                        TokenNode  [* [7...8)]
-                                        Variable  [c]
+                                    Expression  [b*c]
+                                        TokenOperator  [* [7...8)]
+                                            Variable  [b]
+                                            TokenNode  [* [7...8)]
+                                            Variable  [c]
                                     TokenNode  [) [9...10)]
                 TokenNode  []] [10...12)]
 ";
@@ -263,6 +264,32 @@ namespace Microsoft.R.Core.Test.Parser
 CloseSquareBracketExpected AfterToken [14...15)
 ";
             ParserTest.VerifyParse(expected, "append(LETTERS[)");
+        }
+
+        [TestMethod]
+        public void ParseIndexerTest12()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [(a())[x]]
+        Expression  [(a())[x]]
+            Indexer  [0...8)
+                Group  [0...5)
+                    TokenNode  [( [0...1)]
+                    Expression  [a()]
+                        FunctionCall  [1...4)
+                            Variable  [a]
+                            TokenNode  [( [2...3)]
+                            TokenNode  [) [3...4)]
+                    TokenNode  [) [4...5)]
+                TokenNode  [[ [5...6)]
+                ArgumentList  [6...7)
+                    ExpressionArgument  [6...7)
+                        Expression  [x]
+                            Variable  [x]
+                TokenNode  [] [7...8)]
+";
+            ParserTest.VerifyParse(expected, "(a())[x]");
         }
     }
 }

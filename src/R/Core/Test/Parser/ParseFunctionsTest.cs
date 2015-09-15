@@ -10,7 +10,7 @@ namespace Microsoft.R.Core.Test.Parser
     public class ParseFunctionsTest : UnitTestBase
     {
         [TestMethod]
-        public void ParseFunctionsTest1()
+        public void ParseFunctionsTest01()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -25,7 +25,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionsTest2()
+        public void ParseFunctionsTest02()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -44,7 +44,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionsTest3()
+        public void ParseFunctionsTest03()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -67,7 +67,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionsTest4()
+        public void ParseFunctionsTest04()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -101,7 +101,7 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionsTest5()
+        public void ParseFunctionsTest05()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -123,7 +123,7 @@ CloseBraceExpected AfterToken [3...4)
         }
 
         [TestMethod]
-        public void ParseFunctionsTest6()
+        public void ParseFunctionsTest06()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -144,6 +144,74 @@ UnexpectedToken AfterToken [3...4)
 UnexpectedToken Token [5...8)
 OpenBraceExpected AfterToken [5...8)";
             ParserTest.VerifyParse(expected, "x(,, for");
+        }
+
+        [TestMethod]
+        public void ParseFunctionsTest07()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x(a=,b=)]
+        Expression  [x(a=,b=)]
+            FunctionCall  [0...8)
+                Variable  [x]
+                TokenNode  [( [1...2)]
+                ArgumentList  [2...7)
+                    NamedArgument  [2...5)
+                        TokenNode  [a [2...3)]
+                        TokenNode  [= [3...4)]
+                        TokenNode  [, [4...5)]
+                    NamedArgument  [5...7)
+                        TokenNode  [b [5...6)]
+                        TokenNode  [= [6...7)]
+                TokenNode  [) [7...8)]
+";
+            ParserTest.VerifyParse(expected, "x(a=,b=)");
+        }
+
+        [TestMethod]
+        public void ParseFunctionsTest08()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x(a=,)]
+        Expression  [x(a=,)]
+            FunctionCall  [0...6)
+                Variable  [x]
+                TokenNode  [( [1...2)]
+                ArgumentList  [2...5)
+                    NamedArgument  [2...5)
+                        TokenNode  [a [2...3)]
+                        TokenNode  [= [3...4)]
+                        TokenNode  [, [4...5)]
+                    StubArgument  [{Stub}]
+                TokenNode  [) [5...6)]
+";
+            ParserTest.VerifyParse(expected, "x(a=,)");
+        }
+
+        [TestMethod]
+        public void ParseFunctionsTest09()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x('s'=, 1.0='z')]
+        Expression  [x('s'=, 1.0='z')]
+            FunctionCall  [0...16)
+                Variable  [x]
+                TokenNode  [( [1...2)]
+                ArgumentList  [2...15)
+                    NamedArgument  [2...7)
+                        TokenNode  ['s' [2...5)]
+                        TokenNode  [= [5...6)]
+                        TokenNode  [, [6...7)]
+                    NamedArgument  [8...15)
+                        TokenNode  [1.0 [8...11)]
+                        TokenNode  [= [11...12)]
+                        Expression  ['z']
+                            StringValue  ['z' [12...15)]
+                TokenNode  [) [15...16)]";
+            ParserTest.VerifyParse(expected, "x(\'s\'=, 1.0='z')");
         }
     }
 }

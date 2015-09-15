@@ -257,7 +257,7 @@ namespace Microsoft.R.Editor.Validation
 
             // Adding sentinel will cause task list handler
             // to remove all results from the task list 
-            ValidationResults.Enqueue(new ValidationSentinel(new RToken(RTokenType.EndOfStream, TextRange.EmptyRange)));
+            ValidationResults.Enqueue(new ValidationSentinel());
         }
 
         private void QueueTreeForValidation()
@@ -265,7 +265,7 @@ namespace Microsoft.R.Editor.Validation
             // Transfer available errors from the tree right away
             foreach (ParseError e in _editorTree.AstRoot.Errors)
             {
-                ValidationResults.Enqueue(new ValidationError(e.Node, e.Token, ErrorText.GetText(e.ErrorType), e.Location));
+                ValidationResults.Enqueue(new ValidationError(e, ErrorText.GetText(e.ErrorType), e.Location));
             }
         }
     }

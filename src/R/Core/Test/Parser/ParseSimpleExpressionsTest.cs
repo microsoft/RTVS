@@ -58,12 +58,13 @@ namespace Microsoft.R.Core.Test.Parser
             TokenOperator  [* [1...2)]
                 Variable  [a]
                 TokenNode  [* [1...2)]
-                Expression  [(b+c)]
+                Group  [2...7)
                     TokenNode  [( [2...3)]
-                    TokenOperator  [+ [4...5)]
-                        Variable  [b]
-                        TokenNode  [+ [4...5)]
-                        Variable  [c]
+                    Expression  [b+c]
+                        TokenOperator  [+ [4...5)]
+                            Variable  [b]
+                            TokenNode  [+ [4...5)]
+                            Variable  [c]
                     TokenNode  [) [6...7)]
 ";
             ParserTest.VerifyParse(expected, "a*(b+c)");
@@ -76,12 +77,15 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [((x))]
         Expression  [((x))]
-            TokenNode  [( [0...1)]
-            Expression  [(x)]
-                TokenNode  [( [1...2)]
-                Variable  [x]
-                TokenNode  [) [3...4)]
-            TokenNode  [) [4...5)]
+            Group  [0...5)
+                TokenNode  [( [0...1)]
+                Expression  [(x)]
+                    Group  [1...4)
+                        TokenNode  [( [1...2)]
+                        Expression  [x]
+                            Variable  [x]
+                        TokenNode  [) [3...4)]
+                TokenNode  [) [4...5)]
 ";
             ParserTest.VerifyParse(expected, "((x))");
         }
@@ -94,12 +98,14 @@ namespace Microsoft.R.Core.Test.Parser
     ExpressionStatement  [((x))+1]
         Expression  [((x))+1]
             TokenOperator  [+ [5...6)]
-                Expression  [((x))]
+                Group  [0...5)
                     TokenNode  [( [0...1)]
                     Expression  [(x)]
-                        TokenNode  [( [1...2)]
-                        Variable  [x]
-                        TokenNode  [) [3...4)]
+                        Group  [1...4)
+                            TokenNode  [( [1...2)]
+                            Expression  [x]
+                                Variable  [x]
+                            TokenNode  [) [3...4)]
                     TokenNode  [) [4...5)]
                 TokenNode  [+ [5...6)]
                 NumericalValue  [1 [6...7)]
@@ -114,9 +120,11 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [(x)]
         Expression  [(x)]
-            TokenNode  [( [0...1)]
-            Variable  [x]
-            TokenNode  [) [2...3)]
+            Group  [0...3)
+                TokenNode  [( [0...1)]
+                Expression  [x]
+                    Variable  [x]
+                TokenNode  [) [2...3)]
 ";
             ParserTest.VerifyParse(expected, "(x)");
         }
@@ -149,18 +157,21 @@ namespace Microsoft.R.Core.Test.Parser
 @"GlobalScope  [Global]
     ExpressionStatement  [((c+1)/2.0)]
         Expression  [((c+1)/2.0)]
-            TokenNode  [( [0...1)]
-            TokenOperator  [/ [6...7)]
-                Expression  [(c+1)]
-                    TokenNode  [( [1...2)]
-                    TokenOperator  [+ [3...4)]
-                        Variable  [c]
-                        TokenNode  [+ [3...4)]
-                        NumericalValue  [1 [4...5)]
-                    TokenNode  [) [5...6)]
-                TokenNode  [/ [6...7)]
-                NumericalValue  [2.0 [7...10)]
-            TokenNode  [) [10...11)]
+            Group  [0...11)
+                TokenNode  [( [0...1)]
+                Expression  [(c+1)/2.0]
+                    TokenOperator  [/ [6...7)]
+                        Group  [1...6)
+                            TokenNode  [( [1...2)]
+                            Expression  [c+1]
+                                TokenOperator  [+ [3...4)]
+                                    Variable  [c]
+                                    TokenNode  [+ [3...4)]
+                                    NumericalValue  [1 [4...5)]
+                            TokenNode  [) [5...6)]
+                        TokenNode  [/ [6...7)]
+                        NumericalValue  [2.0 [7...10)]
+                TokenNode  [) [10...11)]
 ";
             ParserTest.VerifyParse(expected, "((c+1)/2.0)");
         }

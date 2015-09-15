@@ -7,9 +7,9 @@ namespace Microsoft.R.Core.AST.Operators.Definitions
     {
         OperatorType OperatorType { get; }
 
-        IAstNode LeftOperand { get; set; }
+        IRValueNode LeftOperand { get; set; }
 
-        IAstNode RightOperand { get; set; }
+        IRValueNode RightOperand { get; set; }
 
         int Precedence { get; }
 

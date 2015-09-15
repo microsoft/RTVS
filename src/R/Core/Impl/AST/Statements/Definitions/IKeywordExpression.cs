@@ -3,11 +3,11 @@
 namespace Microsoft.R.Core.AST.Statements.Definitions
 {
     /// <summary>
-    /// Represents statement that is based on a keyword
-    /// and has conditional or enumerable expression
-    /// such as while(...) or for(...) with { } scope.
+    /// Represents sequence that consists of a keyword
+    /// followed by braces and expression such as in
+    /// statements like while(...) or for(...).
     /// </summary>
-    public interface IKeywordExpressionStatement: IKeywordStatement
+    public interface IKeywordExpression: IKeyword
     {
         TokenNode OpenBrace { get; }
         IExpression Expression { get; }

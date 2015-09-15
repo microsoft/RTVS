@@ -192,5 +192,25 @@ OperatorExpected Token [16...17)
 ";
             ParserTest.VerifyParse(expected, "x <- function(a) -a");
         }
+
+        [TestMethod]
+        public void ParseFunctionDefinitionTest07()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    FunctionStatement  [0...14)
+        TokenNode  [function [0...8)]
+        TokenNode  [( [8...9)]
+        ArgumentList  [9...10)
+            ExpressionArgument  [9...10)
+                Expression  [a]
+                    Variable  [a]
+        TokenNode  [) [10...11)]
+        Scope  []
+            TokenNode  [{ [12...13)]
+            TokenNode  [} [13...14)]
+";
+            ParserTest.VerifyParse(expected, "function(a) {}");
+        }
     }
 }

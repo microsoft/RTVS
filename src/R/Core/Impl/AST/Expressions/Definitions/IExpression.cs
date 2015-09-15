@@ -10,8 +10,6 @@ namespace Microsoft.R.Core.AST.Expressions.Definitions
     /// </summary>
     public interface IExpression: IAstNode
     {
-        TokenNode OpenBrace { get; }
-        IAstNode Content { get; }
-        TokenNode CloseBrace { get;  }
+        IRValueNode Content { get; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Editor.Validation.Errors
 {
@@ -11,8 +11,8 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// <summary>
         /// Constructs 'barrier' pseudo error that clears all messages for a given node.
         /// </summary>
-        public ValidationSentinel(RToken token) :
-            base(null, token, String.Empty, ErrorLocation.Token, ErrorSeverity.Error)
+        public ValidationSentinel() :
+            base(TextRange.EmptyRange, String.Empty, ErrorLocation.Token, ErrorSeverity.Error)
         {
         }
     }

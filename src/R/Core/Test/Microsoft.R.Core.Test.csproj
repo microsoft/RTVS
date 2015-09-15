@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
+    <None Include="Files\Ast\Check.r" />
     <None Include="Files\Formatting\ifelse.r" />
     <None Include="Files\Formatting\ifelse.r.formatted" />
     <None Include="Files\Formatting\lsfit.r" />
@@ -116,6 +117,7 @@
     <Compile Include="Formatting\FormatSamplesFilesTest.cs" />
     <Compile Include="Formatting\FormatFilesFiles.cs" />
     <Compile Include="Parser\ParseCommentsTest.cs" />
+    <Compile Include="Parser\ParseInlineIfElseTest.cs" />
     <Compile Include="Parser\ParseScopeTest.cs" />
     <Compile Include="Parser\ParseFunctionDefinitionTest.cs" />
     <Compile Include="Parser\ParseExponentTest.cs" />

@@ -1,14 +1,10 @@
 ﻿using Microsoft.R.Core.AST.Scopes.Definitions;
+using Microsoft.R.Core.AST.Statements.Definitions;
 
 namespace Microsoft.R.Core.AST.Functions.Definitions
 {
-    public interface IFunctionDefinition: IFunction
+    public interface IFunctionDefinition: IFunction, IKeyword
     {
-        /// <summary>
-        /// 'function' keyword. Always present.
-        /// </summary>
-        TokenNode Keyword { get; }
-
         /// <summary>
         /// Function definition scope. Can be typical
         /// { } scope or a simple scope as in

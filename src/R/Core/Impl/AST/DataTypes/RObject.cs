@@ -46,12 +46,22 @@ namespace Microsoft.R.Core.AST.DataTypes
                 return vector != null && vector.Length == 1 && vector.Mode == RMode.Character;
             }
         }
+
         public bool IsBoolean
         {
             get
             {
                 IRVector vector = this as IRVector;
                 return vector != null && vector.Length == 1 && vector.Mode == RMode.Logical;
+            }
+        }
+
+        public bool IsFunction
+        {
+            get
+            {
+                IRVector vector = this as IRVector;
+                return vector != null && vector.Length == 1 && vector.Mode == RMode.Function;
             }
         }
     }

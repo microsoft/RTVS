@@ -227,7 +227,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                                 }
                             }
                         }
-                        else if ((error.Node != null && error.Node.Parent != null) || error.Token != null)
+                        else
                         {
                             EditorErrorTag tag = new EditorErrorTag(_document.EditorTree, error);
                             if (tag.Length > 0)

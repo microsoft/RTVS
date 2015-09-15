@@ -1,26 +1,15 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Validation.Definitions;
-using Microsoft.R.Core.Parser;
-using System;
 
 namespace Microsoft.R.Editor.Validation.Errors
 {
     [ExcludeFromCodeCoverage]
     public class ValidationErrorBase : TextRange, IValidationError
     {
-        /// <summary>
-        /// AST node in the parse tree
-        /// </summary>
-        public IAstNode Node { get; private set; }
-
-        /// <summary>
-        /// Token that produced the error.
-        /// </summary>
-        public RToken Token { get; private set; }
-
         /// <summary>
         /// Error or warning message.
         /// </summary>
@@ -36,12 +25,9 @@ namespace Microsoft.R.Editor.Validation.Errors
         /// </summary>
         public ErrorSeverity Severity { get; private set; }
 
-        public ValidationErrorBase(IAstNode node, RToken token, string message, ErrorLocation location, ErrorSeverity severity) :
-            base(GetLocationRange(node, token, location))
+        public ValidationErrorBase(ITextRange range, string message, ErrorLocation location, ErrorSeverity severity) :
+            base(range)
         {
-            Node = node;
-            Token = token;
-
             Message = message;
             Severity = severity;
             Location = location;

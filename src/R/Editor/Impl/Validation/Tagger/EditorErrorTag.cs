@@ -19,8 +19,6 @@ namespace Microsoft.R.Editor.Validation.Tagger
     /// </summary>
     internal class EditorErrorTag : ErrorTag, ITagSpan<IErrorTag>, IExpandableTextRange, IEditorTaskListItem
     {
-        public IAstNode Node { get; private set; }
-
         private ITextBuffer _textBuffer;
         private ITextRange _range;
 
@@ -29,7 +27,6 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             _textBuffer = editorTree.TextBuffer;
 
-            Node = error.Node;
             Description = error.Message;
             TaskType = GetTaskType(error);
 

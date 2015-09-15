@@ -12,7 +12,7 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
     /// http://cran.r-project.org/doc/manuals/r-release/R-lang.html#if
     /// </summary>
     [DebuggerDisplay("[If Statement]")]
-    public sealed class If : KeywordExpressionScopeStatement
+    public class If : KeywordExpressionScopeStatement
     {
         private const string _terminatingKeyword = "else";
 

@@ -24,26 +24,30 @@ namespace Microsoft.R.Core.AST.Arguments
             RToken currentToken = context.Tokens.CurrentToken;
             RToken nextToken = context.Tokens.NextToken;
 
-            if (currentToken.TokenType == RTokenType.Ellipsis)
+            switch (currentToken.TokenType)
             {
-                return new EllipsisArgument();
-            }
+                case RTokenType.Ellipsis:
+                    return new EllipsisArgument();
 
-            if (currentToken.TokenType == RTokenType.Comma)
-            {
-                return new MissingArgument();
-            }
+                case RTokenType.Comma:
+                    return new MissingArgument();
 
-            if (currentToken.TokenType == RTokenType.Identifier &&
-                nextToken.TokenType == RTokenType.Operator &&
-                context.TextProvider.GetText(nextToken) == "=")
-            {
-                return new NamedArgument();
-            }
+                case RTokenType.Identifier:
+                case RTokenType.String:
+                case RTokenType.Logical:
+                case RTokenType.Complex:
+                case RTokenType.NaN:
+                case RTokenType.Null:
+                case RTokenType.Number:
+                case RTokenType.Infinity:
+                    if (nextToken.TokenType == RTokenType.Operator && context.TextProvider.GetText(nextToken) == "=")
+                    {
+                        return new NamedArgument();
+                    }
+                    break;
 
-            if(currentToken.TokenType == RTokenType.CloseBrace)
-            {
-                return null; // no arguments supplied
+                case RTokenType.CloseBrace:
+                    return null; // no arguments supplied
             }
 
             return new ExpressionArgument();

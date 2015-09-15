@@ -6,7 +6,7 @@ using Microsoft.R.Core.Parser;
 namespace Microsoft.R.Core.AST.Statements
 {
     /// <summary>
-    /// Represents statement that consists of a simgle semicolon.
+    /// Represents statement that consists of a single semicolon.
     /// </summary>
     [DebuggerDisplay("[EmptyStatement]")]
     public class EmptyStatement : AstNode, IStatement

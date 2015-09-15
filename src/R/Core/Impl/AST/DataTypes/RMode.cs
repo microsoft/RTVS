@@ -35,5 +35,10 @@
         /// General list type
         /// </summary>
         List,
+
+        /// <summary>
+        /// Function type object
+        /// </summary>
+        Function
     }
 }
