@@ -140,6 +140,7 @@
     <Compile Include="Parser\ParseStringContstantsTest.cs" />
     <Compile Include="Parser\ParseLogicalContstantsTest.cs" />
     <Compile Include="Parser\ParseSimpleExpressionsTest.cs" />
+    <Compile Include="Tokens\TokenizeIdentifierTest.cs" />
     <Compile Include="Utility\ParseFiles.cs" />
     <Compile Include="Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="Tokens\TokenizeComplexTest.cs" />

@@ -221,7 +221,7 @@ namespace Microsoft.R.Core.Tokens
             // Letter may be starting keyword, function or a variable name. 
             // At this point we should be either right after whitespace or 
             // at the beginning of the file.
-            if (_cs.IsAnsiLetter() || _cs.CurrentChar == '.')
+            if (_cs.IsAnsiLetter() || _cs.CurrentChar == '.' || _cs.CurrentChar == '`')
             {
                 // If this is not a keyword or a function name candidate
                 HandleKeywordOrIdentifier();
@@ -288,29 +288,33 @@ namespace Microsoft.R.Core.Tokens
             string s = this.GetIdentifier();
             if (s.Length > 0)
             {
-                if (Keywords.IsKeyword(s))
+                if(s[0] == '`')
                 {
-                    this.AddToken(RTokenType.Keyword, start, s.Length);
+                    AddToken(RTokenType.Identifier, RTokenSubType.None, start, s.Length);
+                }
+                else if (Keywords.IsKeyword(s))
+                {
+                    AddToken(RTokenType.Keyword, start, s.Length);
                 }
                 else if (Logicals.IsLogical(s))
                 {
-                    this.AddToken(RTokenType.Logical, start, s.Length);
+                    AddToken(RTokenType.Logical, start, s.Length);
                 }
                 else if (s == "NULL")
                 {
-                    this.AddToken(RTokenType.Null, RTokenSubType.BuiltinConstant, start, s.Length);
+                    AddToken(RTokenType.Null, RTokenSubType.BuiltinConstant, start, s.Length);
                 }
                 else if (s == "NA")
                 {
-                    this.AddToken(RTokenType.Missing, RTokenSubType.BuiltinConstant, start, s.Length);
+                    AddToken(RTokenType.Missing, RTokenSubType.BuiltinConstant, start, s.Length);
                 }
                 else if (s == "Inf")
                 {
-                    this.AddToken(RTokenType.Infinity, RTokenSubType.BuiltinConstant, start, s.Length);
+                    AddToken(RTokenType.Infinity, RTokenSubType.BuiltinConstant, start, s.Length);
                 }
                 else if (s == "NaN")
                 {
-                    this.AddToken(RTokenType.NaN, RTokenSubType.BuiltinConstant, start, s.Length);
+                    AddToken(RTokenType.NaN, RTokenSubType.BuiltinConstant, start, s.Length);
                 }
                 else
                 {
@@ -325,14 +329,14 @@ namespace Microsoft.R.Core.Tokens
                         subType = RTokenSubType.TypeFunction;
                     }
 
-                    this.AddToken(RTokenType.Identifier, subType, start, s.Length);
+                    AddToken(RTokenType.Identifier, subType, start, s.Length);
                 }
 
                 return;
             }
             else
             {
-                this.AddToken(RTokenType.Unknown, start, 1);
+                AddToken(RTokenType.Unknown, start, 1);
             }
 
             _cs.MoveToNextChar();
@@ -406,10 +410,28 @@ namespace Microsoft.R.Core.Tokens
 
         internal void SkipIdentifier()
         {
-            Tokenizer.SkipIdentifier(
-                _cs, 
-                (CharacterStream cs) => { return (_cs.IsAnsiLetter() || _cs.CurrentChar == '.'); },
-                (CharacterStream cs) => { return IsIdentifierCharacter(cs); });
+            // Handle backticks first. `anything` allow identifiers
+            // to be of any syntax, not just standard names.
+            if (_cs.CurrentChar == '`')
+            {
+                _cs.MoveToNextChar();
+                while (!_cs.IsEndOfStream())
+                {
+                    if (_cs.CurrentChar == '`')
+                        break;
+
+                    _cs.MoveToNextChar();
+                }
+
+                _cs.MoveToNextChar();
+            }
+            else
+            {
+                Tokenizer.SkipIdentifier(
+                    _cs,
+                    (CharacterStream cs) => { return (_cs.IsAnsiLetter() || _cs.CurrentChar == '.'); },
+                    (CharacterStream cs) => { return IsIdentifierCharacter(cs); });
+            }
         }
 
         internal void SkipUnknown()
