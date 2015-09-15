@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.R.Support.Utility;
 
 namespace Microsoft.R.Support.Engine
@@ -90,23 +89,23 @@ namespace Microsoft.R.Support.Engine
             Disconnect();
         }
 
-        private void HeartbeatThread()
-        {
-            lock (_objectLock)
-            {
-                while (_process != null)
-                {
-                    TimeSpan ts = DateTime.Now - _lastOutputReceived.Value;
-                    if (ts.Milliseconds > 50)
-                    {
-                        Disconnect();
-                        break;
-                    }
+        //private void HeartbeatThread()
+        //{
+        //    lock (_objectLock)
+        //    {
+        //        while (_process != null)
+        //        {
+        //            TimeSpan ts = DateTime.Now - _lastOutputReceived.Value;
+        //            if (ts.Milliseconds > 5000)
+        //            {
+        //                Disconnect();
+        //                break;
+        //            }
 
-                    Task.Delay(20).Wait();
-                }
-            }
-        }
+        //            Task.Delay(20).Wait();
+        //        }
+        //    }
+        //}
 
         private void Disconnect()
         {

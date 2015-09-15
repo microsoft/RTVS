@@ -15,7 +15,7 @@
         MatrixProduct, // %*%
         OuterProduct, // %o%
         KroneckerProduct, // %x%
-        MatchingPperator, // %in%
+        MatchingOperator, // %in%
         Special, // %abc%
         GreaterThan,
         GreaterThanOrEquals,

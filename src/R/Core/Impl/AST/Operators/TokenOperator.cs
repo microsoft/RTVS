@@ -133,7 +133,7 @@ namespace Microsoft.R.Core.AST.Operators
                     return OperatorType.KroneckerProduct; // %x%
 
                 case "%in%":
-                    return OperatorType.MatchingPperator; // %in%
+                    return OperatorType.MatchingOperator; // %in%
 
                 case ">":
                     return OperatorType.GreaterThan;

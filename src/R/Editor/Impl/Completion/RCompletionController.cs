@@ -22,6 +22,7 @@ namespace Microsoft.R.Editor.Completion
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
     using Signatures;
     using Definitions;
+    using Document.Definitions;
 
     public sealed class RCompletionController : CompletionController, ICommandTarget
     {
@@ -279,10 +280,14 @@ namespace Microsoft.R.Editor.Completion
                 {
                     try
                     {
-                        AstRoot ast = EditorDocument.FromTextBuffer(_textBuffer).EditorTree.AstRoot;
-                        ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, _textBuffer.CurrentSnapshot, TextView.Caret.Position.BufferPosition);
+                        IREditorDocument document = EditorDocument.FromTextBuffer(_textBuffer);
+                        document.EditorTree.EnsureTreeReady();
 
-                        return parametersInfo.FunctionName == sessionFunctionInfo.Name;
+                        ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(
+                            document.EditorTree.AstRoot, _textBuffer.CurrentSnapshot, 
+                            TextView.Caret.Position.BufferPosition);
+
+                        return parametersInfo != null && parametersInfo.FunctionName == sessionFunctionInfo.Name;
                     }
                     catch (Exception) { }
                 }

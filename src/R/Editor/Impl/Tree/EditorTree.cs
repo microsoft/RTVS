@@ -40,7 +40,9 @@ namespace Microsoft.R.Editor.Tree
                 if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
                     throw new ThreadStateException("Method should only be called on the main thread. Use AcquireReadLock when accessing tree from a background thread.");
 
-                this.EnsureTreeReady();
+                // Do not call EnsureTreeReady here since it may slow down
+                // typing A LOT in large files. If some code needs up-to-date
+                // tree it has to call EnsureTreeReady explicitly.
                 return _astRoot;
             }
         }
@@ -81,6 +83,23 @@ namespace Microsoft.R.Editor.Tree
                     _astRoot.TextProvider = new TextProvider(_textSnapShot, partial: true);
                 }
             }
+        }
+
+        /// <summary>
+        /// Ensures tree is up to date, matches current text buffer snapshot
+        /// and all changes since the last update were processed. Blocks until 
+        /// all changes have been processed. Does not pump messages.
+        /// </summary>
+        public void EnsureTreeReady()
+        {
+            if (TreeUpdateTask == null)
+                return;
+
+            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+                throw new ThreadStateException("Method should only be called on the main thread");
+
+            // OK to run in sync if changes are pending since we need it updated now
+            TreeUpdateTask.EnsureProcessingComplete();
         }
         #endregion
 
@@ -174,23 +193,6 @@ namespace Microsoft.R.Editor.Tree
             FireOnUpdateCompleted(TreeUpdateType.NewTree);
 
             sw.Stop();
-        }
-
-        /// <summary>
-        /// Ensures tree is up to date, matches current text buffer snapshot
-        /// and all changes since the last update were processed. Blocks until 
-        /// all changes have been processed. Does not pump messages.
-        /// </summary>
-        private void EnsureTreeReady()
-        {
-            if (TreeUpdateTask == null)
-                return;
-
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
-                throw new ThreadStateException("Method should only be called on the main thread");
-
-            // OK to run in sync if changes are pending since we need it updated now
-            TreeUpdateTask.EnsureProcessingComplete();
         }
 
         /// <summary>

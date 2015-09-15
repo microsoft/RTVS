@@ -51,7 +51,7 @@
                 case OperatorType.MatrixProduct: // %*%
                 case OperatorType.OuterProduct: // %o%
                 case OperatorType.KroneckerProduct: // %x%
-                case OperatorType.MatchingPperator: // %in%
+                case OperatorType.MatchingOperator: // %in%
                 case OperatorType.Special: // %abc%
                     return 100;
 

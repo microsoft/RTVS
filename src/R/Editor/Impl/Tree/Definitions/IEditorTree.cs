@@ -106,5 +106,14 @@ namespace Microsoft.R.Editor.Tree.Definitions
         /// </summary>
         /// <returns></returns>
         int Invalidate();
+
+        /// <summary>
+        /// Ensures tree is up to date, matches current text buffer snapshot
+        /// and all changes since the last update were processed. Blocks until 
+        /// all changes have been processed. Does not pump Windows messages.
+        /// Warning: calling this method frequently or on a critical performance 
+        /// path (such as during typing) is highly not recommended.
+        /// </summary>
+        void EnsureTreeReady();
     }
 }

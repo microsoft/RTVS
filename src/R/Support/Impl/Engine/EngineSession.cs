@@ -36,7 +36,7 @@ namespace Microsoft.R.Support.Engine
 
                 // $$$ trailer is to force error output which will help us
                 // to determine that the command output was fully received
-                _rProcess.StandardInput.WriteLine(command + "; $$$");
+                _rProcess.StandardInput.WriteLine(command + ";\n $$$");
             }
 
             return response;

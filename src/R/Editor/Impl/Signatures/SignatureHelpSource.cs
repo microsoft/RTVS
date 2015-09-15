@@ -38,6 +38,7 @@ namespace Microsoft.R.Editor.Signatures
 
             if (document != null)
             {
+                document.EditorTree.EnsureTreeReady();
                 AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp);
             }
         }

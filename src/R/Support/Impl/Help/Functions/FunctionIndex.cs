@@ -101,7 +101,7 @@ namespace Microsoft.R.Support.Help.Functions
         /// <summary>
         /// Retrieves function information by name
         /// </summary>
-        public static IFunctionInfo GetFunctionInfo(string functionName, 
+        public static IFunctionInfo GetFunctionInfo(string functionName,
                                   Action<object> infoReadyCallback = null, object parameter = null)
         {
             if (_functionToInfoMap != null)
@@ -128,27 +128,24 @@ namespace Microsoft.R.Support.Help.Functions
             return null;
         }
 
-        private static void GetFunctionInfoFromEngineAsync(string functionName, string packageName, 
+        private static void GetFunctionInfoFromEngineAsync(string functionName, string packageName,
                                          Action<object> infoReadyCallback = null, object parameter = null)
         {
-            Task.Run(() =>
-            {
-                _rdFunctionHelp.GetFunctionRdHelp(
-                    functionName, 
-                    packageName,
-                    (object o) =>
+            _rdFunctionHelp.GetFunctionRdHelp(
+                functionName,
+                packageName,
+                (object o) =>
+                {
+                    if (o != null)
                     {
-                        if (o != null)
-                        {
-                            OnFunctionInfoReady(o);
+                        OnFunctionInfoReady(o);
 
-                            if (infoReadyCallback != null)
-                            {
-                                infoReadyCallback(parameter);
-                            }
+                        if (infoReadyCallback != null)
+                        {
+                            infoReadyCallback(parameter);
                         }
-                    });
-            });
+                    }
+                });
         }
 
         private static void OnFunctionInfoReady(object obj)
