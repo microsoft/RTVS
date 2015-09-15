@@ -89,11 +89,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
-    <None Include="Files\Ast\Check.r" />
+    <None Include="Files\Parser\Check.r" />
     <None Include="Files\Formatting\ifelse.r" />
     <None Include="Files\Formatting\ifelse.r.formatted" />
     <None Include="Files\Formatting\lsfit.r" />
     <None Include="Files\Formatting\lsfit.r.formatted" />
+    <None Include="Files\Parser\Check.r.tree" />
     <None Include="Files\Tokenization\Expressions.r.tokens" />
     <None Include="Files\Tokenization\Floats.r" />
     <None Include="Files\Tokenization\Expressions.r" />
@@ -116,6 +117,7 @@
     <Compile Include="Formatting\FormatterTest.cs" />
     <Compile Include="Formatting\FormatSamplesFilesTest.cs" />
     <Compile Include="Formatting\FormatFilesFiles.cs" />
+    <Compile Include="Parser\ParseFilesTest.cs" />
     <Compile Include="Parser\ParseCommentsTest.cs" />
     <Compile Include="Parser\ParseLambdaTest.cs" />
     <Compile Include="Parser\ParseInlineIfElseTest.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="Parser\ParseStringContstantsTest.cs" />
     <Compile Include="Parser\ParseLogicalContstantsTest.cs" />
     <Compile Include="Parser\ParseSimpleExpressionsTest.cs" />
+    <Compile Include="Utility\ParseFiles.cs" />
     <Compile Include="Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="Tokens\TokenizeComplexTest.cs" />
     <Compile Include="Tokens\VerifySortedTables.cs" />

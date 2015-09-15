@@ -48,7 +48,7 @@ namespace Microsoft.R.Core.AST.Statements
         /// </summary>
         protected virtual bool ParseExpression(ParseContext context, IAstNode parent)
         {
-            this.Expression = new Expression();
+            this.Expression = new Expression(inGroup: true);
             return this.Expression.Parse(context, this);
         }
     }

@@ -106,5 +106,23 @@ namespace Microsoft.R.Core.Test.Parser
 ";
             ParserTest.VerifyParse(expected, "(x\n || y)");
         }
+
+        [TestMethod]
+        public void ParseMultilineExpressionsTest06()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    If  []
+        TokenNode  [if [0...2)]
+        TokenNode  [( [2...3)]
+        Expression  [x\n || y]
+            TokenOperator  [|| [6...8)]
+                Variable  [x]
+                TokenNode  [|| [6...8)]
+                Variable  [y]
+        TokenNode  [) [10...11)]
+";
+            ParserTest.VerifyParse(expected, "if(x\n || y)");
+        }
     }
 }
