@@ -9,7 +9,7 @@
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>rproject</DefaultName>
     <ProvideDefaultName>true</ProvideDefaultName>
-  	<CreateInPlace>true</CreateInPlace>
+      <CreateInPlace>true</CreateInPlace>
   </TemplateData>
   <TemplateContent>
     <Project TargetFileName="$safeprojectname$.rproj" File="rproject.rproj" ReplaceParameters="true">
