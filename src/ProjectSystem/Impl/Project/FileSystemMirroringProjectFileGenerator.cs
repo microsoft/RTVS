@@ -11,19 +11,19 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
     public abstract class FileSystemMirroringProjectFileGenerator : IVsProjectGenerator
     {
         private readonly Guid _projectType;
-	    private readonly string _projectUiSubcaption;
-	    private readonly string _cpsProjExtension;
-	    private readonly IEnumerable<string> _msBuildImports;
+        private readonly string _projectUiSubcaption;
+        private readonly string _cpsProjExtension;
+        private readonly IEnumerable<string> _msBuildImports;
 
-	    protected FileSystemMirroringProjectFileGenerator(Guid projectType, string projectUiSubcaption, string cpsProjExtension, IEnumerable<string> msBuildImports)
-	    {
-		    _projectType = projectType;
-		    _projectUiSubcaption = projectUiSubcaption;
-		    _cpsProjExtension = cpsProjExtension;
-		    _msBuildImports = msBuildImports;
-	    }
+        protected FileSystemMirroringProjectFileGenerator(Guid projectType, string projectUiSubcaption, string cpsProjExtension, IEnumerable<string> msBuildImports)
+        {
+            _projectType = projectType;
+            _projectUiSubcaption = projectUiSubcaption;
+            _cpsProjExtension = cpsProjExtension;
+            _msBuildImports = msBuildImports;
+        }
 
-	    public void RunGenerator(string szSourceFileMoniker, out bool pfProjectIsGenerated, out string pbstrGeneratedFile, out Guid pGuidProjType)
+        public void RunGenerator(string szSourceFileMoniker, out bool pfProjectIsGenerated, out string pbstrGeneratedFile, out Guid pGuidProjType)
         {
             pfProjectIsGenerated = true;
             pbstrGeneratedFile = GetCpsProjFileName(szSourceFileMoniker);
@@ -42,41 +42,41 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
 
         private void EnsureCpsProjFile(string cpsProjFileName)
         {
-	        var fileInfo = new FileInfo(cpsProjFileName);
+            var fileInfo = new FileInfo(cpsProjFileName);
 
-	        var vsVersion = "14.0";
+            var vsVersion = "14.0";
             var inMemoryTargetsFile = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(cpsProjFileName);
 
-			var xProjDocument = new XProjDocument(
-				new XProject(vsVersion, "Build",
-					new XPropertyGroup("Globals", null,
-						new XProperty("ProjectGuid", Guid.NewGuid().ToString("D"))
-					),
-					new XPropertyGroup(
-						new XDefaultValueProperty("VisualStudioVersion", vsVersion),
-						new XDefaultValueProperty("Configuration", "Debug"),
-						new XDefaultValueProperty("Platform", "AnyCPU")
-					),
+            var xProjDocument = new XProjDocument(
+                new XProject(vsVersion, "Build",
+                    new XPropertyGroup("Globals", null,
+                        new XProperty("ProjectGuid", Guid.NewGuid().ToString("D"))
+                    ),
+                    new XPropertyGroup(
+                        new XDefaultValueProperty("VisualStudioVersion", vsVersion),
+                        new XDefaultValueProperty("Configuration", "Debug"),
+                        new XDefaultValueProperty("Platform", "AnyCPU")
+                    ),
                     CreateProjectUiSubcaption(),
-					new XProjElement("ProjectExtensions",
+                    new XProjElement("ProjectExtensions",
                         new XProjElement("VisualStudio",
-							new XProjElement("UserProperties")
-						)
-					),
-					_msBuildImports.SelectMany(CreateMsBuildExtensionXImports),
-					new XImportExisting(inMemoryTargetsFile)
-				)
-			);
+                            new XProjElement("UserProperties")
+                        )
+                    ),
+                    _msBuildImports.SelectMany(CreateMsBuildExtensionXImports),
+                    new XImportExisting(inMemoryTargetsFile)
+                )
+            );
 
             if (fileInfo.Exists)
             {
                 fileInfo.Delete();
             }
 
-			using (var writer = fileInfo.CreateText())
-			{
-				xProjDocument.Save(writer);
-			}
+            using (var writer = fileInfo.CreateText())
+            {
+                xProjDocument.Save(writer);
+            }
         }
 
         private XPropertyGroup CreateProjectUiSubcaption()

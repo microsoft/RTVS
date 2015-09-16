@@ -7,7 +7,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
     internal sealed class RProjectFileGenerator : FileSystemMirroringProjectFileGenerator
     {
         public RProjectFileGenerator() 
-			: base(GuidList.CpsProjectFactoryGuid, null, ".rxproj", new [] { @"RTVS\Rules\rtvs.rules.props" })
+            : base(GuidList.CpsProjectFactoryGuid, null, ".rxproj", new [] { @"RTVS\Rules\rtvs.rules.props" })
         {
         }
     }

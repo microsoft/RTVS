@@ -47,7 +47,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
@@ -67,11 +67,11 @@
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
   </ItemGroup>
-	<ItemGroup>
-		<Compile Include="..\..\..\GlobalAssemblyInfo.cs">
-			<Link>Properties\GlobalAssemblyInfo.cs</Link>
-		</Compile>
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
   </ItemGroup>
