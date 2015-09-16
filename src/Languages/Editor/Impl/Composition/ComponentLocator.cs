@@ -169,7 +169,10 @@ namespace Microsoft.Languages.Editor.Composition
         /// </summary>
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(string contentTypeName)
         {
-            var contentTypeRegistry = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
+            Lazy< IContentTypeRegistryService> lazy = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>();
+            Debug.Assert(lazy != null);
+
+            var contentTypeRegistry = lazy.Value;
             var contentType = contentTypeRegistry.GetContentType(contentTypeName);
 
             return ImportMany(EditorShell.Current.CompositionService, contentType);
@@ -252,7 +255,7 @@ namespace Microsoft.Languages.Editor.Composition
             return null;
         }
 
-        internal static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(ICompositionService compositionService, IContentType contentType)
+        public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(ICompositionService compositionService, IContentType contentType)
         {
             IEnumerable<Lazy<TComponent, TMetadata>> components =
                 ComponentLocatorWithMetadata<TComponent, TMetadata>.ImportMany(compositionService);
@@ -260,7 +263,7 @@ namespace Microsoft.Languages.Editor.Composition
             return FilterByContentType(contentType, components);
         }
 
-        internal static IEnumerable<Lazy<TComponent, TMetadata>> ImportManyExact(ICompositionService compositionService, IContentType contentType)
+        public static IEnumerable<Lazy<TComponent, TMetadata>> ImportManyExact(ICompositionService compositionService, IContentType contentType)
         {
             IEnumerable<Lazy<TComponent, TMetadata>> components =
                 ComponentLocatorWithMetadata<TComponent, TMetadata>.ImportMany(compositionService);
@@ -269,7 +272,7 @@ namespace Microsoft.Languages.Editor.Composition
         }
 
         //// The resultant enumerable has the more specific content type matches before less specific ones
-        internal static IEnumerable<Lazy<TComponent, TMetadata>> FilterByContentType(IContentType contentType, IEnumerable<Lazy<TComponent, TMetadata>> components)
+        public static IEnumerable<Lazy<TComponent, TMetadata>> FilterByContentType(IContentType contentType, IEnumerable<Lazy<TComponent, TMetadata>> components)
         {
             List<IContentType> allContentTypes;
             List<string> allContentTypeNames;
@@ -295,7 +298,7 @@ namespace Microsoft.Languages.Editor.Composition
         }
 
         //// The resultant enumerable has the more specific content type matches before less specific ones
-        internal static IEnumerable<Lazy<TComponent, TMetadata>> FilterByContentTypeExact(IContentType contentType, IEnumerable<Lazy<TComponent, TMetadata>> components)
+        public static IEnumerable<Lazy<TComponent, TMetadata>> FilterByContentTypeExact(IContentType contentType, IEnumerable<Lazy<TComponent, TMetadata>> components)
         {
             foreach (Lazy<TComponent, TMetadata> pair in components)
             {

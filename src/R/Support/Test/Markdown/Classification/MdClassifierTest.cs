@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -18,7 +19,7 @@ namespace Microsoft.R.Support.Test.Markdown.Classification
 {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class MArkdownClassifierTest : UnitTestBase
+    public class MarkdownClassifierTest : UnitTestBase
     {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
@@ -38,8 +39,12 @@ namespace Microsoft.R.Support.Test.Markdown.Classification
                 string content = TestFiles.LoadFile(context, fileName);
 
                 TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
-                ClassificationTypeRegistryServiceMock ctrs = new ClassificationTypeRegistryServiceMock();
-                MdClassifier cls = new MdClassifier(textBuffer, ctrs);
+
+                IEditorShell shell = TestEditorShell.Create();
+                MdClassifierProvider classifierProvider = new MdClassifierProvider();
+                shell.CompositionService.SatisfyImportsOnce(classifierProvider);
+
+                IClassifier cls = classifierProvider.GetClassifier(textBuffer);
 
                 IList<ClassificationSpan> spans = cls.GetClassificationSpans(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length)));
                 string actual = ClassificationWriter.WriteClassifications(spans);

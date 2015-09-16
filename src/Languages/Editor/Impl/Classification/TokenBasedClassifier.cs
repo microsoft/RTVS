@@ -1,44 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Classification
 {
     /// <summary>
     /// Implements <see cref="IClassifier"/> and provides classification using generic tokens
     /// </summary>
-    public class TokenBasedClassifier<TTokenType, TTokenClass> : IClassifier where TTokenClass : IToken<TTokenType>
+    public abstract class TokenBasedClassifier<TTokenType, TTokenClass> : IClassifier where TTokenClass : IToken<TTokenType>
     {
-        private bool _suspended;
-
         #pragma warning disable 67
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
-#pragma warning restore 67
+        #pragma warning restore 67
 
         public ITokenizer<TTokenClass> Tokenizer { get; private set; }
         public TextRangeCollection<TTokenClass> Tokens { get; protected set; }
 
         protected IClassificationTypeRegistryService ClassificationRegistryService { get; set; }
+        protected IContentTypeRegistryService ContentTypeRegistryService { get; set; }
+        protected IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> ClassificationNameProviders { get; set; }
         protected ITextBuffer TextBuffer { get; set; }
         protected bool LineBasedClassification { get; set; }
 
-        IClassificationNameProvider<TTokenClass> _classificationNameProvider;
-
-        private int _lastValidPosition = 0;
+        private Dictionary<string, IClassificationNameProvider> _compositeClassificationNameProviders = new Dictionary<string, IClassificationNameProvider>();
+        private IClassificationNameProvider<TTokenClass> _classificationNameProvider;
+        private int _lastValidPosition;
+        private bool _suspended;
 
         public TokenBasedClassifier(ITextBuffer textBuffer,
                                     ITokenizer<TTokenClass> tokenizer,
-                                    IClassificationNameProvider<TTokenClass> classificationNameProvider,
-                                    IClassificationTypeRegistryService classificationRegistryService)
+                                    IClassificationNameProvider<TTokenClass> classificationNameProvider)
         {
-            ClassificationRegistryService = classificationRegistryService;
             _classificationNameProvider = classificationNameProvider;
 
             Tokenizer = tokenizer;
@@ -245,11 +248,30 @@ namespace Microsoft.Languages.Editor.Classification
 
         private void AddClassificationFromCompositeToken(List<ClassificationSpan> classifications, ITextSnapshot textSnapshot, ICompositeToken composite)
         {
+            string contentTypeName = composite.ContentType;
+            IClassificationNameProvider compositeNameProvider;
+
+            if (!_compositeClassificationNameProviders.TryGetValue(contentTypeName, out compositeNameProvider))
+            {
+                IContentType contentType = ContentTypeRegistryService.GetContentType(contentTypeName);
+                var providers = ComponentLocatorForContentType<IClassificationNameProvider, IComponentContentTypes>.
+                                          FilterByContentTypeExact(contentType, ClassificationNameProviders);
+
+                var lazyProvider = providers.FirstOrDefault();
+                Debug.Assert(lazyProvider != null);
+
+                if (lazyProvider != null)
+                {
+                    compositeNameProvider = lazyProvider.Value;
+                    _compositeClassificationNameProviders[contentTypeName] = compositeNameProvider;
+                }
+            }
+
             foreach (object token in composite.TokenList)
             {
                 // We don't necessarily map each token to a classification
                 ITextRange range;
-                string classificationName = composite.ClassificationNameProvider.GetClassificationName(token, out range);
+                string classificationName = compositeNameProvider.GetClassificationName(token, out range);
 
                 if (!string.IsNullOrEmpty(classificationName))
                 {

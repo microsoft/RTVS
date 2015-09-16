@@ -4,7 +4,6 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Support.Markdown.Classification;
 
 namespace Microsoft.R.Support.Markdown.Tokens
 {
@@ -15,25 +14,33 @@ namespace Microsoft.R.Support.Markdown.Tokens
     public class MdRCodeToken : MdToken, ICompositeToken
     {
         private ITextProvider _textProvider;
+        private ReadOnlyCollection<object> _tokens;
 
         public MdRCodeToken(int start, int length, ITextProvider textProvider): 
             base(MdTokenType.Code, new TextRange(start, length))
         {
             _textProvider = textProvider;
-            ClassificationNameProvider = new MdRCodeClassificationNameProvider();
         }
 
         public ReadOnlyCollection<object> TokenList
         {
             get
             {
-                var rTokenizer = new RTokenizer();
-                var tokens = rTokenizer.Tokenize(_textProvider, Start, Length);
-                var list = new List<object>(tokens);
-                return new ReadOnlyCollection<object>(list);
+                if (_tokens == null)
+                {
+                    var rTokenizer = new RTokenizer();
+                    var tokens = rTokenizer.Tokenize(_textProvider, Start, Length);
+                    var list = new List<object>(tokens);
+                    _tokens = new ReadOnlyCollection<object>(list);
+                }
+
+                return _tokens;
             }
         }
 
-        public IClassificationNameProvider ClassificationNameProvider { get; private set; }
+        public string ContentType
+        {
+            get { return "R"; }
+        }
     }
 }

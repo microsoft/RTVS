@@ -90,6 +90,7 @@
     <Compile Include="Mocks\ClassificationTypeRegistryServiceMock.cs" />
     <Compile Include="Mocks\CompletionSessionMock.cs" />
     <Compile Include="Mocks\ContentTypeMock.cs" />
+    <Compile Include="Mocks\ContentTypeRegistryMock.cs" />
     <Compile Include="Mocks\MappingPointMock.cs" />
     <Compile Include="Mocks\QuickInfoSessionMock.cs" />
     <Compile Include="Mocks\SignatureHelpSessionMock.cs" />

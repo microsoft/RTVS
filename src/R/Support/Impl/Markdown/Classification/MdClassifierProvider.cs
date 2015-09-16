@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.Languages.Core.Classification;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Support.Markdown.ContentTypes;
 using Microsoft.VisualStudio.Text;
@@ -9,17 +13,23 @@ namespace Microsoft.R.Support.Markdown.Classification
 {
     [Export(typeof(IClassifierProvider))]
     [ContentType(MdContentTypeDefinition.ContentType)]
-    internal sealed class ClassifierProvider : IClassifierProvider
+    internal sealed class MdClassifierProvider : IClassifierProvider
     {
         [Import]
         public IClassificationTypeRegistryService ClassificationRegistryService { get; set; }
+
+        [Import]
+        private IContentTypeRegistryService ContentTypeRegistryService { get; set; }
+
+        [ImportMany]
+        private IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> ClassificationNameProviders { get; set; }
 
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
             MdClassifier classifier = ServiceManager.GetService<MdClassifier>(textBuffer);
             if (classifier == null)
             {
-                classifier = new MdClassifier(textBuffer, ClassificationRegistryService);
+                classifier = new MdClassifier(textBuffer, ClassificationRegistryService, ContentTypeRegistryService, ClassificationNameProviders);
             }
 
             return classifier;

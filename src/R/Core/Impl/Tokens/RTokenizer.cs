@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
@@ -11,6 +12,8 @@ namespace Microsoft.R.Core.Tokens
     /// </summary>
     public sealed class RTokenizer : BaseTokenizer<RToken>
     {
+        private Stack<RTokenType> _squareBraceScope = new Stack<RTokenType>();
+
         /// <summary>
         /// Main tokenization method. Responsible for adding next token
         /// to the list, if any. Returns if it is at the end of the 
@@ -70,29 +73,11 @@ namespace Microsoft.R.Core.Tokens
                     break;
 
                 case '[':
-                    if (_cs.NextChar == '[')
-                    {
-                        AddToken(RTokenType.OpenDoubleSquareBracket, _cs.Position, 2);
-                        _cs.Advance(2);
-                    }
-                    else
-                    {
-                        AddToken(RTokenType.OpenSquareBracket, _cs.Position, 1);
-                        _cs.MoveToNextChar();
-                    }
+                    HandleOpenSquareBracket();
                     break;
 
                 case ']':
-                    if (_cs.NextChar == ']')
-                    {
-                        AddToken(RTokenType.CloseDoubleSquareBracket, _cs.Position, 2);
-                        _cs.Advance(2);
-                    }
-                    else
-                    {
-                        AddToken(RTokenType.CloseSquareBracket, _cs.Position, 1);
-                        _cs.MoveToNextChar();
-                    }
+                    HandleCloseSquareBracket();
                     break;
 
                 case '{':
@@ -121,7 +106,7 @@ namespace Microsoft.R.Core.Tokens
                         AddToken(RTokenType.Ellipsis, _cs.Position, 3);
                         _cs.Advance(3);
                     }
-                    else if (_cs.CurrentChar == '=' &&_cs.NextChar != '=')
+                    else if (_cs.CurrentChar == '=' && _cs.NextChar != '=')
                     {
                         AddToken(RTokenType.Operator, _cs.Position, 1);
                         _cs.MoveToNextChar();
@@ -216,6 +201,52 @@ namespace Microsoft.R.Core.Tokens
             AddToken(RTokenType.Number, numberStart, length);
         }
 
+        private void HandleOpenSquareBracket()
+        {
+            RTokenType tokenType;
+            int length;
+
+            if (_cs.NextChar == '[')
+            {
+                tokenType = RTokenType.OpenDoubleSquareBracket;
+                length = 2;
+            }
+            else
+            {
+                tokenType = RTokenType.OpenSquareBracket;
+                length = 1;
+            }
+
+            AddToken(tokenType, _cs.Position, length);
+            _cs.Advance(length);
+
+            _squareBraceScope.Push(tokenType);
+        }
+
+        private void HandleCloseSquareBracket()
+        {
+            if (_cs.NextChar == ']')
+            {
+                // ]] candidate. We need to handle a[b[c]] 
+
+                if (_squareBraceScope.Count > 0 && _squareBraceScope.Peek() == RTokenType.OpenDoubleSquareBracket)
+                {
+                    AddToken(RTokenType.CloseDoubleSquareBracket, _cs.Position, 2);
+                    _cs.Advance(2);
+                    _squareBraceScope.Pop();
+                    return;
+                }
+            }
+
+            AddToken(RTokenType.CloseSquareBracket, _cs.Position, 1);
+            _cs.MoveToNextChar();
+
+            if (_squareBraceScope.Count > 0 && _squareBraceScope.Peek() == RTokenType.OpenSquareBracket)
+            {
+                _squareBraceScope.Pop();
+            }
+        }
+
         private void HandleOther()
         {
             // Letter may be starting keyword, function or a variable name. 
@@ -288,7 +319,7 @@ namespace Microsoft.R.Core.Tokens
             string s = this.GetIdentifier();
             if (s.Length > 0)
             {
-                if(s[0] == '`')
+                if (s[0] == '`')
                 {
                     AddToken(RTokenType.Identifier, RTokenSubType.None, start, s.Length);
                 }
@@ -320,7 +351,7 @@ namespace Microsoft.R.Core.Tokens
                 {
                     RTokenSubType subType = RTokenSubType.None;
 
-                    if(Builtins.IsBuiltin(s))
+                    if (Builtins.IsBuiltin(s))
                     {
                         subType = RTokenSubType.BuiltinFunction;
                     }

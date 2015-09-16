@@ -45,14 +45,16 @@ namespace Microsoft.Languages.Core.Test.Utility
 
         private static void WriteCompositeToken(ICompositeToken composite, StringBuilder sb)
         {
-            IClassificationNameProvider nameProvider = composite.ClassificationNameProvider;
-
             foreach (var token in composite.TokenList)
             {
-                ITextRange range;
-                string classificationName = nameProvider.GetClassificationName(token, out range);
+                ITextRange range = token as ITextRange;
+                Type tokenType = token.GetType();
+                Type genericToken = tokenType.BaseType;
 
-                sb.AppendFormat(CultureInfo.InvariantCulture, "Composite: {0} : {1} - {2}\t({3})\r\n", classificationName, range.Start, range.End, range.Length);
+                int intEnumCode = (int)genericToken.GetProperty("TokenType").GetValue(token);
+                string tokenTypeString = tokenType.ToString();
+                tokenTypeString = tokenTypeString.Substring(tokenTypeString.LastIndexOf('.') + 1);
+                sb.AppendFormat(CultureInfo.InvariantCulture, "Composite: {0} {1} : {2} - {3}\t({4})\r\n", tokenTypeString, intEnumCode, range.Start, range.End, range.Length);
             }
         }
     }

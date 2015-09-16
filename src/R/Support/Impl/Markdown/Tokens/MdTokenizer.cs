@@ -167,25 +167,39 @@ namespace Microsoft.R.Support.Markdown.Tokens
 
         private bool HandleCode()
         {
-            int start = _cs.Position;
+            int ticksStart = _cs.Position;
+            // Move past ```
             _cs.Advance(3);
+            bool rLanguage = _cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R');
 
-            bool rLanguage = _cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R') && (_cs.LookAhead(2) == '}' || _cs.LookAhead(2) == ',');
+            // Move past {
+            _cs.MoveToNextChar();
+            int codeStart = _cs.Position;
 
             while (!_cs.IsEndOfStream())
             {
+                // Find end of the block (closing ```)
                 if (_cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`')
                 {
+                    int codeEnd = _cs.Position;
+
                     _cs.Advance(4);
+                    int ticksEnd = _cs.Position;
 
                     if (rLanguage)
                     {
-                        var token = new MdRCodeToken(start, _cs.Position - start, _cs.Text);
+                        // code is inside ``` and after the language name.
+                        // We still want to colorize numbers in ```{r, x = 1.0, ...}
+                        AddToken(MdTokenType.Code, ticksStart, 3);
+
+                        var token = new MdRCodeToken(codeStart, codeEnd - codeStart, _cs.Text);
                         _tokens.Add(token);
+
+                        AddToken(MdTokenType.Code, ticksEnd-3, 3);
                     }
                     else
                     {
-                        AddToken(MdTokenType.Code, start, _cs.Position - start);
+                        AddToken(MdTokenType.Code, ticksStart, ticksEnd - ticksStart);
                     }
                     return true;
                 }

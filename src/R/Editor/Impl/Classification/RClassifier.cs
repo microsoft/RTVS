@@ -13,8 +13,9 @@ namespace Microsoft.R.Editor.Classification
     internal sealed class RClassifier : TokenBasedClassifier<RTokenType, RToken>
     {
         public RClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService classificationRegistryService) :
-            base(textBuffer, new RTokenizer(), new RClassificationNameProvider(), classificationRegistryService)
+            base(textBuffer, new RTokenizer(), new RClassificationNameProvider())
         {
+            ClassificationRegistryService = classificationRegistryService;
             ServiceManager.AddService<RClassifier>(this, textBuffer);
         }
 

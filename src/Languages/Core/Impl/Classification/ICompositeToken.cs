@@ -10,6 +10,6 @@ namespace Microsoft.Languages.Core.Classification
     public interface ICompositeToken
     {
         ReadOnlyCollection<object> TokenList { get; }
-        IClassificationNameProvider ClassificationNameProvider { get; }
+        string ContentType { get; }
     }
 }

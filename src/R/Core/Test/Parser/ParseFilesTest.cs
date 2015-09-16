@@ -14,5 +14,11 @@ namespace Microsoft.R.Core.Test.Parser
         {
             ParseFiles.ParseFile(this.TestContext, @"Parser\Check.r");
         }
+
+        [TestMethod]
+        public void ParseFile_FrametoolsR()
+        {
+            ParseFiles.ParseFile(this.TestContext, @"Parser\frametools.r");
+        }
     }
 }

@@ -12,8 +12,9 @@ namespace Microsoft.R.Support.RD.Classification
     internal sealed class RdClassifier : TokenBasedClassifier<RdTokenType, RdToken>
     {
         public RdClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService classificationRegistryService) :
-            base(textBuffer, new RdTokenizer(), new RdClassificationNameProvider(), classificationRegistryService)
+            base(textBuffer, new RdTokenizer(), new RdClassificationNameProvider())
         {
+            ClassificationRegistryService = classificationRegistryService;
         }
 
         protected override int GetAnchorPosition(int position)
