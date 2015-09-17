@@ -11,7 +11,7 @@ namespace Microsoft.R.Core.Test.Parser
     {
         [ExcludeFromCodeCoverage]
         [TestMethod]
-        public void ParseScopeTest1()
+        public void ParseScopeTest01()
         {
             string expected =
 @"GlobalScope  [Global]
@@ -46,23 +46,44 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseScopeTest2()
+        public void ParseScopeTest02()
         {
             string expected =
-@"
+@"GlobalScope  [Global]
+    Scope  []
+        TokenNode  [{ [0...1)]
+        Scope  []
+            TokenNode  [{ [1...2)]
+            TokenNode  [} [2...3)]
+
 CloseCurlyBraceExpected AfterToken [2...3)
 ";
             ParserTest.VerifyParse(expected, "{{}");
         }
 
         [TestMethod]
-        public void ParseScopeTest3()
+        public void ParseScopeTest03()
         {
             string expected =
-@"
+@"GlobalScope  [Global]
+    Scope  []
+        TokenNode  [{ [0...1)]
+
 CloseCurlyBraceExpected AfterToken [0...1)
 ";
             ParserTest.VerifyParse(expected, "{");
+        }
+
+        [TestMethod]
+        public void ParseScopeTest04()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    Scope  []
+        TokenNode  [{ [0...1)]
+        TokenNode  [} [1...2)]
+";
+            ParserTest.VerifyParse(expected, "{}");
         }
     }
 }

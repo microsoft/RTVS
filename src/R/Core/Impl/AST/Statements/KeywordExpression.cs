@@ -28,7 +28,8 @@ namespace Microsoft.R.Core.AST.Statements
                 this.OpenBrace = RParser.ParseOpenBraceSequence(context, this);
                 if (this.OpenBrace != null)
                 {
-                    this.ParseExpression(context, this);
+                    this.Expression = new Expression(inGroup: true);
+                    this.Expression.Parse(context, this);
 
                     // Even if expression is broken but we are at 
                     // the closing brace we want to recover and continue.
@@ -54,15 +55,6 @@ namespace Microsoft.R.Core.AST.Statements
             this.Text = context.TextProvider.GetText(this.Keyword);
 
             return true;
-        }
-
-        /// <summary>
-        /// Allows derived classes to parse expression inside braces
-        /// </summary>
-        protected virtual bool ParseExpression(ParseContext context, IAstNode parent)
-        {
-            this.Expression = new Expression();
-            return this.Expression.Parse(context, this);
         }
     }
 }

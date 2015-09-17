@@ -291,5 +291,46 @@ CloseSquareBracketExpected AfterToken [14...15)
 ";
             ParserTest.VerifyParse(expected, "(a())[x]");
         }
+
+        [TestMethod]
+        public void ParseIndexerTest13()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [topfiles <- topfiles[file.info(topfiles, extra_cols = FALSE)$ctime\r\n <= .unpack.time]]
+        Expression  [topfiles <- topfiles[file.info(topfiles, extra_cols = FALSE)$ctime\r\n <= .unpack.time]]
+            TokenOperator  [<- [9...11)]
+                Variable  [topfiles]
+                TokenNode  [<- [9...11)]
+                Indexer  [12...85)
+                    Variable  [topfiles]
+                    TokenNode  [[ [20...21)]
+                    ArgumentList  [21...84)
+                        ExpressionArgument  [21...84)
+                            Expression  [file.info(topfiles, extra_cols = FALSE)$ctime\r\n <= .unpack.time]
+                                TokenOperator  [<= [69...71)]
+                                    TokenOperator  [$ [60...61)]
+                                        FunctionCall  [21...60)
+                                            Variable  [file.info]
+                                            TokenNode  [( [30...31)]
+                                            ArgumentList  [31...59)
+                                                ExpressionArgument  [31...40)
+                                                    Expression  [topfiles]
+                                                        Variable  [topfiles]
+                                                    TokenNode  [, [39...40)]
+                                                NamedArgument  [41...59)
+                                                    TokenNode  [extra_cols [41...51)]
+                                                    TokenNode  [= [52...53)]
+                                                    Expression  [FALSE]
+                                                        LogicalValue  [FALSE [54...59)]
+                                            TokenNode  [) [59...60)]
+                                        TokenNode  [$ [60...61)]
+                                        Variable  [ctime]
+                                    TokenNode  [<= [69...71)]
+                                    Variable  [.unpack.time]
+                    TokenNode  [] [84...85)]
+";
+            ParserTest.VerifyParse(expected, "topfiles <- topfiles[file.info(topfiles, extra_cols = FALSE)$ctime\r\n <= .unpack.time]");
+        }
     }
 }

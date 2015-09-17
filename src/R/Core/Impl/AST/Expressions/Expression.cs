@@ -16,7 +16,6 @@ namespace Microsoft.R.Core.AST.Expressions
     public sealed partial class Expression : RValueNode<RObject>, IExpression
     {
         private string _terminatingKeyword;
-        private bool _inGroup;
 
         #region IExpression
         public IRValueNode Content { get; internal set; }
@@ -29,9 +28,9 @@ namespace Microsoft.R.Core.AST.Expressions
         /// that would normally terminate the expression.
         /// </summary>
         /// <param name="inGroup"></param>
-        public Expression(bool inGroup = false)
+        public Expression(bool inGroup)
         {
-            _inGroup = inGroup;
+            IsInGroup = inGroup;
         }
 
         public Expression(string terminatingKeyword)
@@ -41,7 +40,7 @@ namespace Microsoft.R.Core.AST.Expressions
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            if (Parse(context) && this.Children.Count > 0)
+            if (ParseExpression(context) && this.Children.Count > 0)
             {
                 return base.Parse(context, parent);
             }
@@ -58,6 +57,8 @@ namespace Microsoft.R.Core.AST.Expressions
 
             return base.GetValue();
         }
+
+        public bool IsInGroup { get; private set; }
 
         public override string ToString()
         {

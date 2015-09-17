@@ -12,7 +12,7 @@ namespace Microsoft.R.Core.AST.Arguments
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
-            this.ArgumentValue = new Expression();
+            this.ArgumentValue = new Expression(inGroup: true);
             if (this.ArgumentValue.Parse(context, this))
             {
                 return base.Parse(context, parent);

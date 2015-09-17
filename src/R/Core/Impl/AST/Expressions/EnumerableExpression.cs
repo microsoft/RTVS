@@ -32,7 +32,7 @@ namespace Microsoft.R.Core.AST.Expressions
                     this.InOperator = new TokenNode();
                     this.InOperator.Parse(context, this);
 
-                    this.Expression = new Expression();
+                    this.Expression = new Expression(inGroup: true);
                     if (this.Expression.Parse(context, this))
                     {
                         return base.Parse(context, parent);

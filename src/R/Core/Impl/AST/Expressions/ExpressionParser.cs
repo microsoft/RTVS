@@ -42,7 +42,21 @@ namespace Microsoft.R.Core.AST.Expressions
         private Stack<IOperator> _operators = new Stack<IOperator>();
         private OperationType _previousOperationType = OperationType.None;
 
-        private bool Parse(ParseContext context)
+        internal bool IsGroupOpen()
+        {
+            IOperator[] ops = _operators.ToArray();
+            for (int i = ops.Length - 1; i >= 1; i--)
+            {
+                if (ops[i].OperatorType == OperatorType.Group)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool ParseExpression(ParseContext context)
         {
             // https://en.wikipedia.org/wiki/Shunting-yard_algorithm
             // http://www.engr.mun.ca/~theo/Misc/exp_parsing.htm
@@ -219,10 +233,13 @@ namespace Microsoft.R.Core.AST.Expressions
                 // continue if braces are not closed yet.
                 if (context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1))
                 {
-                    if (!(_inGroup && context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace))
+                    // There is a line break before this token
+                    if (IsInGroup && context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace)
                     {
-                        return true;
+                        return false;
                     }
+
+                    return true;
                 }
             }
 
@@ -278,7 +295,7 @@ namespace Microsoft.R.Core.AST.Expressions
             if (_operands.Count > 0)
             {
                 IAstNode node = _operands.Peek();
-                if(node.Children.Count > 0)
+                if (node.Children.Count > 0)
                 {
                     return node.Children[0];
                 }
@@ -413,9 +430,15 @@ namespace Microsoft.R.Core.AST.Expressions
             }
             else if (keyword.Equals("if", StringComparison.Ordinal))
             {
-                // Special case 'exp <- function(...) { }
+                // If needs to know parent expression since
+                // it must figure out how to handle 'else'
+                // when if is without { }.
+                context.Expressions.Push(this);
+
                 InlineIf inlineIf = new InlineIf();
                 inlineIf.Parse(context, null);
+
+                context.Expressions.Pop();
 
                 // Add to the stack even if it has errors in order
                 // to avoid extra errors

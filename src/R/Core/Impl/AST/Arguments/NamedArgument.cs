@@ -36,7 +36,7 @@ namespace Microsoft.R.Core.AST.Arguments
 
             if (context.Tokens.CurrentToken.TokenType != RTokenType.Comma && context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace)
             {
-                Expression exp = new Expression();
+                Expression exp = new Expression(inGroup: true);
                 if (exp.Parse(context, this))
                 {
                     this.DefaultValue = exp;

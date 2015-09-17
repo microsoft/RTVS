@@ -102,9 +102,9 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void AutoFormat_SmartIndentNoScopeTest02()
+        public void AutoFormat_SmartIndentUnclosedScopeTest01()
         {
-            int? indent = GetSmartIndent("if (x > 1)\r\n    x <- 1\r\nelse\n", 3);
+            int? indent = GetSmartIndent("{if (x > 1)\r\n    x <- 1\r\nelse\n", 3);
 
             Assert.IsTrue(indent.HasValue);
             Assert.AreEqual(4, indent);

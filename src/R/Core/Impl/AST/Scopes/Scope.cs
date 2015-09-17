@@ -56,7 +56,7 @@ namespace Microsoft.R.Core.AST.Scopes
         }
         #endregion
 
-        public Scope():
+        public Scope() :
             this("_Anonymous_")
         {
         }
@@ -71,7 +71,9 @@ namespace Microsoft.R.Core.AST.Scopes
             TokenStream<RToken> tokens = context.Tokens;
             RToken currentToken = tokens.CurrentToken;
 
-            if (currentToken.TokenType == RTokenType.OpenCurlyBrace)
+            context.Scopes.Push(this);
+
+            if (!(this is GlobalScope) && currentToken.TokenType == RTokenType.OpenCurlyBrace)
             {
                 this.OpenCurlyBrace = RParser.ParseToken(context, this);
             }
@@ -140,10 +142,11 @@ namespace Microsoft.R.Core.AST.Scopes
                 }
             }
 
+            context.Scopes.Pop();
+
             if (this.OpenCurlyBrace != null && this.CloseCurlyBrace == null)
             {
                 context.AddError(new MissingItemParseError(ParseErrorType.CloseCurlyBraceExpected, context.Tokens.PreviousToken));
-                return false;
             }
 
             // TODO: process content and fill out declared variables 
