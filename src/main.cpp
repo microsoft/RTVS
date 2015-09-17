@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <cstdlib>
 #include <cstdio>
+#include "Rapi.h"
 
 namespace {
     const unsigned PORT = 5118;
@@ -196,14 +197,17 @@ namespace {
 
 
 int main(int argc, char** argv) {
+    // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
+    // To ensure that our code runs during shutdown, we need to use the corresponding atexit().
     auto msvcrt_atexit = reinterpret_cast<int(*)(void(*)())>(GetProcAddress(LoadLibrary(L"msvcrt.dll"), "atexit"));
+
     server_thread.reset(new std::thread(server_thread_func, PORT));
 
     fprintf(stderr, "Waiting for connection on port %u ...\n", PORT);
     ws_conn = ws_conn_promise.get_future().get();
 
     picojson::object obj;
-    obj["protocol_version"] = picojson::value((double)1);
+    obj["protocol_version"] = picojson::value(1.0);
     obj["R_version"] = picojson::value(getDLLVersion());
     std::string json = picojson::value(obj).serialize();
     ws_conn->send(json, websocketpp::frame::opcode::text);
@@ -215,8 +219,8 @@ int main(int argc, char** argv) {
     rp.rhome = get_R_HOME();
     rp.home = getRUser();
     rp.CharacterMode = LinkDLL;
-    rp.R_Quiet = TRUE;
-    rp.R_Interactive = TRUE;
+    rp.R_Quiet = R_TRUE;
+    rp.R_Interactive = R_TRUE;
     rp.RestoreAction = SA_RESTORE;
     rp.SaveAction = SA_NOSAVE;
 

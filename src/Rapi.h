@@ -15,7 +15,8 @@
 #include <setjmp.h>
 
 extern "C" {
-    typedef enum { FALSE = 0, TRUE /*, MAYBE */ } Rboolean;
+    // Renamed to R_FALSE and R_TRUE to avoid conflicts with Win32 TRUE and FALSE.
+    typedef enum { R_FALSE = 0, R_TRUE } Rboolean;
 
     typedef struct {
         jmp_buf buf;
@@ -57,18 +58,15 @@ extern "C" {
     typedef void (*blah2) (const char *, int);
     typedef void (*blah3) (void);
     typedef void (*blah4) (const char *);
-    /* Return value here is expected to be 1 for Yes, -1 for No and 0 for Cancel:
-       symbolic constants in graphapp.h */
     typedef int (*blah5) (const char *);
     typedef void (*blah6) (int);
     typedef void (*blah7) (const char *, int, int);
     typedef enum {RGui, RTerm, LinkDLL} UImode;
 
-    /* Startup Actions */
     typedef enum {
-        SA_NORESTORE,/* = 0 */
+        SA_NORESTORE,
         SA_RESTORE,
-        SA_DEFAULT,/* was === SA_RESTORE */
+        SA_DEFAULT,
         SA_NOSAVE,
         SA_SAVE,
         SA_SAVEASK,
@@ -79,7 +77,7 @@ extern "C" {
     {
         Rboolean R_Quiet;
         Rboolean R_Slave;
-            Rboolean R_Interactive;
+        Rboolean R_Interactive;
         Rboolean R_Verbose;
         Rboolean LoadSiteFile;
         Rboolean LoadInitFile;
@@ -93,9 +91,9 @@ extern "C" {
         size_t ppsize;
         int NoRenviron;
 
-    #ifdef Win32
-        char *rhome;               /* R_HOME */
-        char *home;                /* HOME  */
+#ifdef WIN32
+        char *rhome;
+        char *home;
         blah1 ReadConsole;
         blah2 WriteConsole;
         blah3 CallBack;
@@ -103,8 +101,8 @@ extern "C" {
         blah5 YesNoCancel;
         blah6 Busy;
         UImode CharacterMode;
-        blah7 WriteConsoleEx; /* used only if WriteConsole is NULL */
-    #endif
+        blah7 WriteConsoleEx;
+#endif
     } structRstart;
 
     typedef structRstart *Rstart;
