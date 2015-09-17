@@ -13,10 +13,11 @@ namespace Microsoft.R.Core.Test.Utility
     [ExcludeFromCodeCoverage]
     public static class ParserTest
     {
-        public static void VerifyParse(string expected, string expression)
+        public static AstRoot VerifyParse(string expected, string expression)
         {
             AstRoot ast = RParser.Parse(new TextStream(expression));
             ParserTest.CompareTrees(expected, ast);
+            return ast;
         }
 
         public static void CompareTrees(string expected, AstRoot actualTree)

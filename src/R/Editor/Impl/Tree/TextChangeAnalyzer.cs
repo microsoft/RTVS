@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Editor.Tree
@@ -13,69 +15,79 @@ namespace Microsoft.R.Editor.Tree
 
         public static void DetermineChangeType(TextChangeContext change)
         {
-            if (SafeChangeInsideComment(change))
+            change.TextChange.TextChangeType |= CheckChangeInsideComment(change);
+            if (change.TextChange.TextChangeType == TextChangeType.Comment)
             {
-                change.TextChange.TextChangeType |= TextChangeType.Comment;
                 return;
             }
-
-            IAstNode node;
-            PositionType positionType;
-
-            if (SafeChangeInsideString(change, out node, out positionType))
+            else if (change.TextChange.TextChangeType == TextChangeType.Trivial)
             {
-                change.TextChange.TextChangeType |= TextChangeType.Token;
-                return;
-            }
+                IAstNode node;
+                PositionType positionType;
 
-            if (SafeWhiteSpaceChange(change, node, positionType))
-            {
-                change.TextChange.TextChangeType = TextChangeType.Trivial;
-                return;
+                change.TextChange.TextChangeType |= CheckChangeInsideString(change, out node, out positionType);
+                if (change.TextChange.TextChangeType == TextChangeType.Token)
+                {
+                    return;
+                }
+                else if (change.TextChange.TextChangeType == TextChangeType.Trivial)
+                {
+                    change.TextChange.TextChangeType |= CheckWhiteSpaceChange(change, node, positionType);
+                    if (change.TextChange.TextChangeType == TextChangeType.Trivial)
+                    {
+                        return;
+                    }
+                }
             }
 
             change.TextChange.TextChangeType = TextChangeType.Structure;
             change.TextChange.FullParseRequired = true;
         }
 
-        private static bool SafeWhiteSpaceChange(TextChangeContext context, IAstNode node, PositionType positionType)
+        private static TextChangeType CheckWhiteSpaceChange(TextChangeContext context, IAstNode node, PositionType positionType)
         {
             // In R there is no line continuation so expression may change
             // when user adds or deletes line breaks.
 
             context.ChangedNode = node;
+            bool lineBreakSensitive = (node is If) && ((If)node).LineBreakSensitive;
 
-
-            if (string.IsNullOrWhiteSpace(context.OldText) && string.IsNullOrWhiteSpace(context.NewText))
+            if (lineBreakSensitive && string.IsNullOrWhiteSpace(context.OldText) && string.IsNullOrWhiteSpace(context.NewText))
             {
                 string oldLineText = context.OldTextProvider.GetText(new TextRange(context.OldStart, context.OldLength));
                 string newLineText = context.NewTextProvider.GetText(new TextRange(context.Start, context.NewLength));
 
-                if (string.IsNullOrWhiteSpace(oldLineText) && string.IsNullOrWhiteSpace(newLineText) &&
-                    oldLineText.IndexOfAny(_lineBreaks) < 0 && newLineText.IndexOfAny(_lineBreaks) < 0)
+                if (!string.IsNullOrWhiteSpace(oldLineText) || !string.IsNullOrWhiteSpace(newLineText) ||
+                    oldLineText.IndexOfAny(_lineBreaks) >= 0 || newLineText.IndexOfAny(_lineBreaks) >= 0)
                 {
-                    return true;
+                    return TextChangeType.Structure;
                 }
             }
 
-            return false;
+            return TextChangeType.Trivial;
         }
 
-        private static bool SafeChangeInsideComment(TextChangeContext context)
+        private static TextChangeType CheckChangeInsideComment(TextChangeContext context)
         {
             var comments = context.EditorTree.AstRoot.Comments;
 
-            int index = comments.GetItemContaining(context.Start);
-            if (index < 0)
+            IReadOnlyList<int> affectedComments = comments.GetItemsContainingInclusiveEnd(context.Start);
+            if (affectedComments.Count == 0)
             {
-                return false;
+                return TextChangeType.Trivial;
+            }
+
+            if (affectedComments.Count > 1)
+            {
+                return TextChangeType.Structure;
             }
 
             // Make sure user is not deleting leading # effectively 
             // destroying the comment
-            if (comments[index].Start == context.Start && context.OldLength > 0)
+            RToken comment = comments[affectedComments[0]];
+            if (comment.Start == context.Start && context.OldLength > 0)
             {
-                return false;
+                return TextChangeType.Structure;
             }
 
             // The collection will return a match if the comment starts 
@@ -83,18 +95,18 @@ namespace Microsoft.R.Editor.Tree
             // inside the comment if it's at the comment start and 
             // the old length of the change is zero.
 
-            if (comments[index].Start == context.Start && context.OldLength == 0)
+            if (comment.Start == context.Start && context.OldLength == 0)
             {
                 if (context.NewText.IndexOf('#') < 0)
                 {
-                    context.ChangedComment = comments[index];
-                    return true;
+                    context.ChangedComment = comment;
+                    return TextChangeType.Comment;
                 }
             }
 
             if (context.NewText.IndexOfAny(_lineBreaks) >= 0)
             {
-                return false;
+                return TextChangeType.Structure;
             }
 
             // The change is not safe if old or new text contains line breaks
@@ -104,42 +116,41 @@ namespace Microsoft.R.Editor.Tree
 
             if (context.OldText.IndexOfAny(_lineBreaks) >= 0)
             {
-                return false;
+                return TextChangeType.Structure;
             }
 
-            context.ChangedComment = comments[index];
-            return true;
+            context.ChangedComment = comment;
+            return TextChangeType.Comment;
         }
 
-        private static bool SafeChangeInsideString(TextChangeContext context, out IAstNode node, out PositionType positionType)
+        private static TextChangeType CheckChangeInsideString(TextChangeContext context, out IAstNode node, out PositionType positionType)
         {
             positionType = context.EditorTree.AstRoot.GetPositionNode(context.Start, out node);
 
-            if (positionType != PositionType.Token)
+            if (positionType == PositionType.Token)
             {
-                return false;
+                TokenNode tokenNode = node as TokenNode;
+                Debug.Assert(tokenNode != null);
+
+                if (tokenNode.Token.TokenType == RTokenType.String)
+                {
+
+                    if (context.OldText.IndexOfAny(_stringSensitiveCharacters) >= 0)
+                    {
+                        return TextChangeType.Structure;
+                    }
+
+                    if (context.NewText.IndexOfAny(_stringSensitiveCharacters) >= 0)
+                    {
+                        return TextChangeType.Structure;
+                    }
+
+                    context.ChangedNode = node;
+                    return TextChangeType.Token;
+                }
             }
 
-            TokenNode tokenNode = node as TokenNode;
-            Debug.Assert(tokenNode != null);
-
-            if (tokenNode.Token.TokenType != RTokenType.String)
-            {
-                return false;
-            }
-
-            if (context.OldText.IndexOfAny(_stringSensitiveCharacters) >= 0)
-            {
-                return false;
-            }
-
-            if (context.NewText.IndexOfAny(_stringSensitiveCharacters) >= 0)
-            {
-                return false;
-            }
-
-            context.ChangedNode = node;
-            return true;
+            return TextChangeType.Trivial;
         }
     }
 }

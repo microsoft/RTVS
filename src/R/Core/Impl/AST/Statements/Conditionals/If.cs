@@ -36,6 +36,12 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
 
         public KeywordScopeStatement Else { get; private set; }
 
+        /// <summary>
+        /// If true then if/else construct is sensitive to
+        /// changes in line breaks before 'else'.
+        /// </summary>
+        public bool LineBreakSensitive { get; private set; }
+
         public override bool Parse(ParseContext context, IAstNode parent)
         {
             // First parse base which should pick up keyword, braces, inner
@@ -73,6 +79,8 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
 
                 if (isSimpleScope && !allowLineBreak)
                 {
+                    LineBreakSensitive = true;
+
                     // Verify that there is no line break before the 'else'
                     if (context.Tokens.IsLineBreakAfter(context.TextProvider, tokens.Position - 1))
                     {

@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Test.Tree
             string expression = "x <- a + b";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "\n");
-            Assert.AreEqual(TextChangeType.Structure, tree.PendingChanges.TextChangeType);
+            Assert.AreEqual(TextChangeType.Trivial, tree.PendingChanges.TextChangeType);
         }
 
         [TestMethod]
