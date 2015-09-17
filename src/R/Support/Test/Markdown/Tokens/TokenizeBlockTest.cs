@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Support.Markdown.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -65,6 +66,19 @@ block
             Assert.AreEqual(MdTokenType.Code, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(content.Length - 2, tokens[0].Length);
+        }
+
+        [TestMethod]
+        public void TokenizeMd_Block06()
+        {
+            var tokens = this.Tokenize(@"`r x <- 1`", new MdTokenizer());
+            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(MdTokenType.Code, tokens[0].TokenType);
+            Assert.IsTrue(tokens[1] is MdRCodeToken);
+            Assert.AreEqual(MdTokenType.Code, tokens[2].TokenType);
+
+            ICompositeToken composite = tokens[1] as ICompositeToken;
+            Assert.AreEqual(3, composite.TokenList.Count);
         }
     }
 }

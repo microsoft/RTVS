@@ -159,18 +159,27 @@ namespace Microsoft.R.Support.Markdown.Tokens
         {
             if (_cs.NextChar == '`' && _cs.LookAhead(2) == '`' && (_cs.Position == 0 || _cs.PrevChar == '\n' || _cs.PrevChar == '\r'))
             {
-                return HandleCode();
+                return HandleCode(block: true);
+            }
+
+            if (_cs.NextChar == 'r')
+            {
+                return HandleCode(block: false);
             }
 
             return HandleMonospace();
         }
 
-        private bool HandleCode()
+        private bool HandleCode(bool block)
         {
             int ticksStart = _cs.Position;
-            // Move past ```
-            _cs.Advance(3);
-            bool rLanguage = _cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R');
+            int ticksLength;
+
+            ticksLength = block ? 3 : 1;
+            _cs.Advance(ticksLength);
+
+            bool rLanguage = block && (_cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R'));
+            rLanguage |= !block && (_cs.CurrentChar == 'r' || _cs.CurrentChar == 'R');
 
             // Move past {
             _cs.MoveToNextChar();
@@ -178,28 +187,36 @@ namespace Microsoft.R.Support.Markdown.Tokens
 
             while (!_cs.IsEndOfStream())
             {
+                bool endOfBlock = block && _cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`';
+                if (endOfBlock)
+                {
+                    _cs.SkipLineBreak();
+                }
+                else
+                {
+                    endOfBlock = !block && _cs.CurrentChar == '`';
+                }
+
                 // Find end of the block (closing ```)
-                if (_cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`')
+                if (endOfBlock)
                 {
                     int codeEnd = _cs.Position;
-
-                    _cs.Advance(4);
-                    int ticksEnd = _cs.Position;
+                    _cs.Advance(ticksLength);
 
                     if (rLanguage)
                     {
                         // code is inside ``` and after the language name.
                         // We still want to colorize numbers in ```{r, x = 1.0, ...}
-                        AddToken(MdTokenType.Code, ticksStart, 3);
+                        AddToken(MdTokenType.Code, ticksStart, ticksLength);
 
                         var token = new MdRCodeToken(codeStart, codeEnd - codeStart, _cs.Text);
                         _tokens.Add(token);
 
-                        AddToken(MdTokenType.Code, ticksEnd-3, 3);
+                        AddToken(MdTokenType.Code, codeEnd, _cs.Position - codeEnd);
                     }
                     else
                     {
-                        AddToken(MdTokenType.Code, ticksStart, ticksEnd - ticksStart);
+                        AddToken(MdTokenType.Code, ticksStart, _cs.Position - ticksStart);
                     }
                     return true;
                 }

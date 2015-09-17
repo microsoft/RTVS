@@ -14,9 +14,8 @@ namespace Microsoft.R.Support.Markdown.Tokens
     public class MdRCodeToken : MdToken, ICompositeToken
     {
         private ITextProvider _textProvider;
-        private ReadOnlyCollection<object> _tokens;
 
-        public MdRCodeToken(int start, int length, ITextProvider textProvider): 
+        public MdRCodeToken(int start, int length, ITextProvider textProvider) :
             base(MdTokenType.Code, new TextRange(start, length))
         {
             _textProvider = textProvider;
@@ -26,15 +25,10 @@ namespace Microsoft.R.Support.Markdown.Tokens
         {
             get
             {
-                if (_tokens == null)
-                {
-                    var rTokenizer = new RTokenizer();
-                    var tokens = rTokenizer.Tokenize(_textProvider, Start, Length);
-                    var list = new List<object>(tokens);
-                    _tokens = new ReadOnlyCollection<object>(list);
-                }
-
-                return _tokens;
+                var rTokenizer = new RTokenizer();
+                var tokens = rTokenizer.Tokenize(_textProvider, Start, Length);
+                var list = new List<object>(tokens);
+                return new ReadOnlyCollection<object>(list);
             }
         }
 
