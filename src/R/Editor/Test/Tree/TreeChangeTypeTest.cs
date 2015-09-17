@@ -103,5 +103,15 @@ namespace Microsoft.R.Editor.Test.Tree
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 9, 1, 0, string.Empty);
             Assert.AreEqual(TextChangeType.Structure, tree.PendingChanges.TextChangeType);
         }
+
+        [TestMethod]
+        public void TextChange_CurlyBrace()
+        {
+            string expression = "if(true) {x <- 1} else ";
+
+            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, expression.Length, 0, 1, "{");
+            Assert.IsTrue(tree.IsDirty);
+            Assert.AreEqual(TextChangeType.Structure, tree.PendingChanges.TextChangeType);
+        }
     }
 }

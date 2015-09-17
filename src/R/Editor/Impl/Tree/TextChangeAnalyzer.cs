@@ -46,25 +46,27 @@ namespace Microsoft.R.Editor.Tree
 
         private static TextChangeType CheckWhiteSpaceChange(TextChangeContext context, IAstNode node, PositionType positionType)
         {
-            // In R there is no line continuation so expression may change
-            // when user adds or deletes line breaks.
-
             context.ChangedNode = node;
-            bool lineBreakSensitive = (node is If) && ((If)node).LineBreakSensitive;
 
-            if (lineBreakSensitive && string.IsNullOrWhiteSpace(context.OldText) && string.IsNullOrWhiteSpace(context.NewText))
+            if (string.IsNullOrWhiteSpace(context.OldText) && string.IsNullOrWhiteSpace(context.NewText))
             {
-                string oldLineText = context.OldTextProvider.GetText(new TextRange(context.OldStart, context.OldLength));
-                string newLineText = context.NewTextProvider.GetText(new TextRange(context.Start, context.NewLength));
-
-                if (!string.IsNullOrWhiteSpace(oldLineText) || !string.IsNullOrWhiteSpace(newLineText) ||
-                    oldLineText.IndexOfAny(_lineBreaks) >= 0 || newLineText.IndexOfAny(_lineBreaks) >= 0)
+                // In R there is no line continuation so expression may change when user adds or deletes line breaks.
+                bool lineBreakSensitive = (node is If) && ((If)node).LineBreakSensitive;
+                if (lineBreakSensitive)
                 {
-                    return TextChangeType.Structure;
+                    string oldLineText = context.OldTextProvider.GetText(new TextRange(context.OldStart, context.OldLength));
+                    string newLineText = context.NewTextProvider.GetText(new TextRange(context.Start, context.NewLength));
+
+                    if (oldLineText.IndexOfAny(_lineBreaks) >= 0 || newLineText.IndexOfAny(_lineBreaks) >= 0)
+                    {
+                        return TextChangeType.Structure;
+                    }
                 }
+
+                return TextChangeType.Trivial;
             }
 
-            return TextChangeType.Trivial;
+            return TextChangeType.Structure;
         }
 
         private static TextChangeType CheckChangeInsideComment(TextChangeContext context)

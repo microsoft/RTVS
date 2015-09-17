@@ -10,6 +10,7 @@ using Microsoft.R.Editor.Completion.AutoCompletion;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Formatting;
+using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Commands
@@ -32,8 +33,12 @@ namespace Microsoft.R.Editor.Commands
             {
                 char typedChar = GetTypedChar(group, id, inputArg);
 
-                AstRoot ast = EditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree.AstRoot;
-                AutoFormat.HandleAutoFormat(TextView, TextView.TextBuffer, ast, typedChar);
+                if (AutoFormat.IsAutoformatTriggerCharacter(typedChar))
+                {
+                    IEditorTree tree = EditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree;
+                    tree.EnsureTreeReady();
+                    AutoFormat.HandleAutoFormat(TextView, TextView.TextBuffer, tree.AstRoot, typedChar);
+                }
 
                 HandleCompletion(typedChar);
 

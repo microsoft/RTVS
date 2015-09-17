@@ -14,10 +14,14 @@ namespace Microsoft.R.Editor.Formatting
 {
     internal static class AutoFormat
     {
+        public static bool IsAutoformatTriggerCharacter(char ch)
+        {
+            return ch == '\n' || ch == '\r' || ch == '}' || ch == ';';
+        }
+
         public static void HandleAutoFormat(ITextView textView, ITextBuffer textBuffer, AstRoot ast, char typedChar)
         {
-            bool triggerCharacter = typedChar == '\n' || typedChar == '\r' || typedChar == '}' || typedChar == ';';
-            if (!REditorSettings.AutoFormat || !triggerCharacter || textBuffer.CurrentSnapshot.Length == 0)
+            if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0 || !IsAutoformatTriggerCharacter(typedChar))
             {
                 return;
             }
@@ -80,7 +84,7 @@ namespace Microsoft.R.Editor.Formatting
                 if (string.IsNullOrWhiteSpace(textBeforeCaret))
                 {
                     string textAfterCaret = snapshot.GetText(Span.FromBounds(position, line.End)).TrimStart();
-                    if (textAfterCaret.Length == 1 && textAfterCaret[0] == '}' && scope != null)
+                    if (textAfterCaret.Length == 1 && textAfterCaret[0] == '}' && scope != null && scope.OpenCurlyBrace != null)
                     {
                         // Open curly brace must be on the previous line
                         int openCurlyLineNumber = snapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
