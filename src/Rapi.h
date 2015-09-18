@@ -12,7 +12,7 @@
 // - R_ext/RStartup.h
 
 #pragma once
-#include <setjmp.h>
+#include "stdafx.h"
 
 extern "C" {
     // Renamed to R_FALSE and R_TRUE to avoid conflicts with Win32 TRUE and FALSE.
@@ -91,7 +91,7 @@ extern "C" {
         size_t ppsize;
         int NoRenviron;
 
-#ifdef WIN32
+#ifdef _WIN32
         char *rhome;
         char *home;
         blah1 ReadConsole;
@@ -107,7 +107,7 @@ extern "C" {
 
     typedef structRstart *Rstart;
 
-#ifdef WIN32
+#ifdef _WIN32
     __declspec(dllimport) extern RCNTXT* R_GlobalContext;
     __declspec(dllimport) extern int R_DirtyImage;
     __declspec(dllimport) extern char *R_TempDir;    
@@ -140,7 +140,7 @@ extern "C" {
     extern void R_CleanTempDir(void);
     extern void R_SaveGlobalEnv(void);
 
-#ifdef WIN32
+#ifdef _WIN32
     extern char *getDLLVersion(void), *getRUser(void), *get_R_HOME(void);
     extern void setup_term_ui(void);
     extern Rboolean AllDevicesKilled;
