@@ -18,12 +18,69 @@ namespace rhost {
             ws_server_type::connection_ptr ws_conn;
             std::unique_ptr<std::promise<picojson::value>> response_promise;
 
+            picojson::object r_eval(const std::string& expr) {
+                picojson::object obj;
+                obj["event"] = picojson::value("eval");
+
+                SEXP sexp_expr = Rf_protect(Rf_allocVector3(STRSXP, 1, nullptr));
+                SET_STRING_ELT(sexp_expr, 0, Rf_mkChar(expr.c_str()));
+
+                ParseStatus ps;
+                SEXP sexp_parsed = Rf_protect(R_ParseVector(sexp_expr, -1, &ps, R_NilValue));
+                obj["ParseStatus"] = picojson::value(static_cast<double>(ps));
+
+                if (ps == PARSE_OK) {
+                    picojson::array results(Rf_length(sexp_parsed));
+                    for (int i = 0; i < results.size(); ++i) {
+                        picojson::object res;
+
+                        int has_error;
+                        SEXP sexp_result = R_tryEvalSilent(VECTOR_ELT(sexp_parsed, i), R_GlobalEnv, &has_error);
+                        if (has_error) {
+                            obj["error"] = picojson::value(R_curErrorBuf());
+                        }
+
+                        if (sexp_result) {
+                            sexp_result = Rf_protect(Rf_asChar(sexp_result));
+                            obj["result"] = picojson::value(R_CHAR(sexp_result));
+                            Rf_unprotect(1);
+                        }
+                    }
+                }
+
+                Rf_unprotect(2);
+                return obj;
+            }
+
             template<class F>
             picojson::value with_response(F&& f) {
                 response_promise = std::make_unique<std::promise<picojson::value>>();
                 f();
-                picojson::value r = response_promise->get_future().get();
-                response_promise = nullptr;
+
+                picojson::value r;
+                do {
+                    r = response_promise->get_future().get();
+                    response_promise = nullptr;
+
+                    if (r.is<picojson::object>()) {
+                        const auto& obj = r.get<picojson::object>();
+                        auto it = obj.find("command");
+                        if (it != obj.end() && it->second.is<std::string>() && it->second.get<std::string>() == "eval") {
+                            std::string expr;
+                            it = obj.find("expr");
+                            if (it != obj.end() && it->second.is<std::string>()) {
+                                expr = it->second.get<std::string>();
+                            }
+
+                            picojson::object result = r_eval(expr);
+                            std::string json = picojson::value(result).serialize();
+
+                            response_promise = std::make_unique<std::promise<picojson::value>>();
+                            ws_conn->send(json, websocketpp::frame::opcode::text);
+                        }
+                    }
+                } while (response_promise);
+
                 return r;
             }
 
@@ -133,12 +190,17 @@ namespace rhost {
 
             void on_ws_message(websocketpp::connection_hdl hdl, ws_server_type::message_ptr msg) {
                 if (!response_promise) {
-                    fprintf(stderr, "!!! UNEXPECTED MESSAGE: %s\n", msg->get_payload().c_str());
+                    fprintf(stderr, "Message received when no messages are expected: %s\n", msg->get_payload().c_str());
                     return;
                 }
 
                 picojson::value v;
-                picojson::parse(v, msg->get_payload());
+                std::string err = picojson::parse(v, msg->get_payload());
+                if (!err.empty()) {
+                    fprintf(stderr, "Couldn't parse message: %s\n%s", msg->get_payload().c_str(), err.c_str());
+                    return;
+                }
+
                 response_promise->set_value(v);
             }
 
