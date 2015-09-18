@@ -13,15 +13,19 @@ namespace Microsoft.R.Core.AST.Variables
     [DebuggerDisplay("[{Name} : {Start}...{End}), Length = {Length}")]
     public sealed class Variable : TokenNode, IRValueNode
     {
-        public string Name { get; private set; }
+        public string Name
+        {
+            get
+            {
+                return this.Root != null ? this.Root.TextProvider.GetText(this) : "<not_ready>";
+            }
+        }
+
 
         public override bool Parse(ParseContext context, IAstNode parent)
         {
             RToken currentToken = context.Tokens.CurrentToken;
-
             Debug.Assert(currentToken.TokenType == RTokenType.Identifier);
-
-            this.Name = context.TextProvider.GetText(currentToken);
 
             // Not calling base since expression parser will decide 
             // what parent node the variable belongs to.

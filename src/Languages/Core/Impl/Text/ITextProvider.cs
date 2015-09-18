@@ -24,6 +24,12 @@ namespace Microsoft.Languages.Core.Text
         /// <summary>Finds first index of a text sequence. Returns -1 if not found.</summary>
         int IndexOf(string text, int startPosition, bool ignoreCase);
 
+        /// <summary>Finds first index of a character. Returns -1 if not found.</summary>
+        int IndexOf(char ch, int startPosition);
+
+        /// <summary>Finds first index of a character within given range. Returns -1 if not found.</summary>
+        int IndexOf(char ch, ITextRange range);
+
         /// <summary>Finds first index of a text sequence. Returns -1 if not found.</summary>
         int IndexOf(string text, ITextRange range, bool ignoreCase);
 

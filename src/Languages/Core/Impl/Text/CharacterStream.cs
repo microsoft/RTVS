@@ -88,6 +88,11 @@ namespace Microsoft.Languages.Core.Text
             return _text.IndexOf(text, start, ignoreCase);
         }
 
+        public int IndexOf(char ch, int start)
+        {
+            return _text.IndexOf(ch, start);
+        }
+
         public bool CompareTo(int position, int length, string text, bool ignoreCase)
         {
             return _text.CompareTo(position, length, text, ignoreCase);
@@ -155,18 +160,20 @@ namespace Microsoft.Languages.Core.Text
 
         /// <summary>
         /// Moves position to the next character if possible.
+        /// Returns false if position is at the end of stream.
         /// </summary>
-        public void MoveToNextChar()
+        public bool MoveToNextChar()
         {
-            Advance(1);
-        }
+            if (_position < _range.End - 1)
+            {
+                // Most common case, no need to check bounds extensively
+                _position++;
+                _currentChar = _text[_position];
+                return true;
+            }
 
-        /// <summary>
-        /// Moves position to the previous character if possible.
-        /// </summary>
-        public void MoveToPrevChar()
-        {
-            Advance(-1);
+            Advance(1);
+            return !_isEndOfStream;
         }
 
         /// <summary>
@@ -200,7 +207,7 @@ namespace Microsoft.Languages.Core.Text
                 if (CurrentChar == '\r')
                     MoveToNextChar();
             }
-            else if(CurrentChar == '\r')
+            else if (CurrentChar == '\r')
             {
                 MoveToNextChar();
                 if (CurrentChar == '\n')

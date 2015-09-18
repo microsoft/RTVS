@@ -69,8 +69,14 @@ namespace Microsoft.Languages.Core.Tokens
 
         public void SkipWhitespace()
         {
-            while (!_cs.IsEndOfStream() && _cs.IsWhiteSpace())
-                _cs.MoveToNextChar();
+            if (_cs.IsEndOfStream())
+                return;
+
+            while (_cs.IsWhiteSpace())
+            {
+                if (!_cs.MoveToNextChar())
+                    break;
+            }
         }
     }
 }

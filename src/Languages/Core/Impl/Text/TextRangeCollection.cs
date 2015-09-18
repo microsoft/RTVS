@@ -35,21 +35,11 @@ namespace Microsoft.Languages.Core.Text
         #endregion
 
         #region ITextRange
+        public int Start { get; private set; }
 
-        public int Start
-        {
-            get { return Count > 0 ? this[0].Start : 0; }
-        }
+        public int End { get; private set; }
 
-        public int End
-        {
-            get { return Count > 0 ? this[Count - 1].End : 0; }
-        }
-
-        public int Length
-        {
-            get { return End - Start; }
-        }
+        public int Length { get; private set; }
 
         public virtual bool Contains(int position)
         {
@@ -62,11 +52,19 @@ namespace Microsoft.Languages.Core.Text
             {
                 ct.Shift(offset);
             }
+
+            UpdateBounds();
         }
         #endregion
 
-        #region ITextRangeCollection
+        private void UpdateBounds()
+        {
+            Start = Count > 0 ? this[0].Start : 0;
+            End = Count > 0 ? this[Count - 1].End : 0;
+            Length = End - Start;
+        }
 
+        #region ITextRangeCollection
         /// <summary>
         /// Number of comments in the collection.
         /// </summary>
@@ -83,21 +81,66 @@ namespace Microsoft.Languages.Core.Text
         public T this[int index] { get { return _items[index]; } }
 
         /// <summary>
-        /// Adds item to collection.
+        /// Appends text range to the collection. 
+        /// Collection is not automatically sorted.
         /// </summary>
-        /// <param name="item">Item to add</param>
         public virtual void Add(T item)
         {
             _items.Add(item);
+            UpdateBounds();
         }
 
         /// <summary>
-        /// Add a range of items to the collection
+        /// Appends collection of text ranges to the collection. 
+        /// Collection is not automatically sorted.
         /// </summary>
-        /// <param name="items">Items to add</param>
         public void Add(IEnumerable<T> items)
         {
             _items.AddRange(items);
+            UpdateBounds();
+        }
+
+        /// <summary>
+        /// Inserts text range into the collection in sorted order. 
+        /// The collection must be sorted or the result is undefined.
+        /// </summary>
+        public void AddSorted(T item)
+        {
+            if (_items.Count == 0)
+            {
+                _items.Add(item);
+
+                Start = item.Start;
+                End = item.End;
+                Length = item.Length;
+
+                return;
+            }
+
+            if (_items[_items.Count - 1].End <= item.Start)
+            {
+                _items.Add(item);
+
+                End = item.End;
+                Length = End - Start;
+
+                return;
+            }
+
+            if (item.End <= _items[0].Start)
+            {
+                _items.Insert(0, item);
+
+                Start = item.Start;
+                Length = End - Start;
+
+                return;
+            }
+
+            int nextItemIndex = GetFirstItemAfterOrAtPosition(item.End);
+            Debug.Assert(nextItemIndex >= 0);
+
+            _items.Insert(nextItemIndex, item);
         }
 
         /// <summary>
@@ -271,7 +314,7 @@ namespace Microsoft.Languages.Core.Text
         /// </summary>
         /// <param name="position">Position in a text buffer</param>
         /// <returns>Item index or -1 if not found</returns>
-        public virtual int GetLastItemBeforeOrAtPosition(int position)
+        private int GetLastItemBeforeOrAtPosition(int position)
         {
             if (Count == 0 || position < this[0].Start)
                 return -1;
@@ -559,6 +602,8 @@ namespace Microsoft.Languages.Core.Text
                     }
                 }
             }
+
+            UpdateBounds();
         }
         #endregion
 
@@ -620,7 +665,9 @@ namespace Microsoft.Languages.Core.Text
             int first = GetFirstItemAfterPosition(range.Start);
 
             if (first < 0 || (!inclusiveEnds && this[first].Start >= range.End) || (inclusiveEnds && this[first].Start > range.End))
+            { 
                 return removed;
+            }
 
             int lastCandidate = GetLastItemBeforeOrAtPosition(range.End);
             int last = -1;
@@ -661,28 +708,12 @@ namespace Microsoft.Languages.Core.Text
                 _items.RemoveRange(first, last - first + 1);
             }
 
-            return removed;
-        }
-
-        /// <summary>
-        /// Reflects multiple changes in text to the collection
-        /// Items are expanded and/or shifted according to the changes
-        /// passed. If change affects more than one range then affected items are removed
-        /// </summary>
-        /// <param name="changes">Collection of changes. Must be non-overlapping and sorted by position.</param>
-        /// <param name="startInclusive">True if insertion at range start falls inside the range rather than outside.</param>
-        /// <returns>Collection or removed blocks</returns>
-        public ICollection<T> ReflectTextChange(IEnumerable<TextChangeEventArgs> changes, bool startInclusive = false)
-        {
-            var list = new List<T>();
-
-            foreach (var change in changes)
+            if (removed.Count > 0)
             {
-                var removed = ReflectTextChange(change.Start, change.OldLength, change.NewLength, startInclusive);
-                list.AddRange(removed);
+                UpdateBounds();
             }
 
-            return list;
+            return removed;
         }
 
         /// <summary>
@@ -715,7 +746,7 @@ namespace Microsoft.Languages.Core.Text
             int indexEnd = GetItemContaining(start + oldLength);
             ICollection<T> removed = _emptyList;
 
-            if(indexStart >= 0 && indexEnd < 0 && start + oldLength == this[indexStart].End)
+            if (indexStart >= 0 && indexEnd < 0 && start + oldLength == this[indexStart].End)
             {
                 // Since GetItemContaining won't find position equal to the end
                 // as end is exclude. Example: start=5, length = 2 in [5, 7)
@@ -732,8 +763,8 @@ namespace Microsoft.Languages.Core.Text
                     indexEnd--;
             }
 
-            if (indexStart != indexEnd || 
-                (indexStart < 0 && indexEnd < 0) || 
+            if (indexStart != indexEnd ||
+                (indexStart < 0 && indexEnd < 0) ||
                 (indexStart == indexEnd && start == this[indexStart].Start && oldLength == this[indexStart].Length))
             {
                 removed = RemoveInRange(new TextRange(start, oldLength));
@@ -809,52 +840,26 @@ namespace Microsoft.Languages.Core.Text
                 }
             }
 
+            UpdateBounds();
             return removed;
-        }
-
-        public bool IsEqual(IEnumerable<T> other)
-        {
-            int otherCount = 0;
-
-            foreach (var item in other)
-                otherCount++;
-
-            if (this.Count != otherCount)
-                return false;
-
-            int i = 0;
-            foreach (var item in other)
-            {
-                if (this[i].Start != item.Start)
-                    return false;
-
-                if (this[i].Length != item.Length)
-                    return false;
-
-                i++;
-            }
-
-            return true;
         }
 
         public virtual void RemoveAt(int index)
         {
-            Items.RemoveAt(index);
+            _items.RemoveAt(index);
+            UpdateBounds();
         }
 
         public virtual void RemoveRange(int startIndex, int count)
         {
             _items.RemoveRange(startIndex, count);
+            UpdateBounds();
         }
 
         public virtual void Clear()
         {
             _items.Clear();
-        }
-
-        public virtual void ReplaceAt(int index, T newItem)
-        {
-            _items[index] = newItem;
+            UpdateBounds();
         }
 
         /// <summary>
@@ -863,6 +868,7 @@ namespace Microsoft.Languages.Core.Text
         public void Sort()
         {
             _items.Sort(new RangeItemComparer());
+            UpdateBounds();
         }
         #endregion
 
@@ -872,17 +878,6 @@ namespace Microsoft.Languages.Core.Text
         public T[] ToArray()
         {
             return _items.ToArray();
-        }
-
-        /// <summary>
-        /// Returns collection of items in a list
-        /// </summary>
-        public IList<T> ToList()
-        {
-            var list = new List<T>();
-
-            list.AddRange(_items);
-            return list;
         }
 
         /// <summary>
@@ -943,54 +938,6 @@ namespace Microsoft.Languages.Core.Text
                 return TextRange.FromBounds(start, end);
 
             return TextRange.FromBounds(lowerBound, upperBound);
-        }
-
-        /// <summary>
-        /// Merges another collection into existing one. Only adds elements
-        /// that are not present in this collection. Both collections must
-        /// be sorted by position for the method to work properly.
-        /// </summary>
-        /// <param name="other"></param>
-        public void Merge(TextRangeCollection<T> other)
-        {
-            int i = 0;
-            int j = 0;
-            int count = this.Count;
-
-            while (true)
-            {
-                if (i > count - 1)
-                {
-                    // Add elements remaining in the other collection
-                    for (; j < other.Count; j++)
-                    {
-                        this.Add(other[j]);
-                    }
-
-                    break;
-                }
-
-                if (j > other.Count - 1)
-                {
-                    break;
-                }
-
-                if (this[i].Start < other[j].Start)
-                {
-                    i++;
-                }
-                else if (other[j].Start < this[i].Start)
-                {
-                    this.Add(other[j++]);
-                }
-                else
-                {
-                    // Element is already in the collection
-                    j++;
-                }
-            }
-
-            this.Sort();
         }
 
         class RangeItemComparer : IComparer<T>

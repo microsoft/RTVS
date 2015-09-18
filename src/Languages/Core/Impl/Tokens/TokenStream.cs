@@ -18,6 +18,8 @@ namespace Microsoft.Languages.Core.Tokens
         private IReadOnlyTextRangeCollection<T> _tokens;
         private int _index;
         private T _endOfStreamToken;
+        private T _currentToken;
+        private bool _isEndOfStream;
 
         public TokenStream(IReadOnlyTextRangeCollection<T> tokens, T endOfStreamToken)
         {
@@ -29,6 +31,8 @@ namespace Microsoft.Languages.Core.Tokens
             _index = 0;
             _tokens = tokens;
             _endOfStreamToken = endOfStreamToken;
+            _isEndOfStream = tokens.Length == 0;
+            _currentToken = _isEndOfStream ? _endOfStreamToken : _tokens[0];
         }
 
         /// <summary>
@@ -37,14 +41,6 @@ namespace Microsoft.Languages.Core.Tokens
         public int Length
         {
             get { return _tokens.Count; }
-        }
-
-        /// <summary>
-        /// Resets stream position to the start.
-        /// </summary>
-        public void Reset()
-        {
-            _index = 0;
         }
 
         /// <summary>
@@ -59,19 +55,24 @@ namespace Microsoft.Languages.Core.Tokens
             get { return _index; }
             set
             {
-                if (value < 0)
-                {
-                    _index = 0;
-                }
-                else if (value >= _tokens.Count)
-                {
-                    _index = _tokens.Count;
-                }
-                else
-                {
-                    _index = value;
-                }
+                _index = value;
+                CheckBounds();
             }
+        }
+
+        private void CheckBounds()
+        {
+            if (_index < 0)
+            {
+                _index = 0;
+            }
+            else if (_index >= _tokens.Count)
+            {
+                _index = _tokens.Count;
+            }
+
+            _isEndOfStream = _index >= _tokens.Count;
+            _currentToken = _isEndOfStream ? _endOfStreamToken : _tokens[_index];
         }
 
         /// <summary>
@@ -81,15 +82,7 @@ namespace Microsoft.Languages.Core.Tokens
         /// </summary>
         public T CurrentToken
         {
-            get
-            {
-                if (_index >= 0 && _index < _tokens.Count)
-                {
-                    return _tokens[_index];
-                }
-
-                return _endOfStreamToken;
-            }
+            get { return _currentToken; }
         }
 
         /// <summary>
@@ -97,10 +90,7 @@ namespace Microsoft.Languages.Core.Tokens
         /// </summary>
         public T NextToken
         {
-            get
-            {
-                return LookAhead(1);
-            }
+            get { return LookAhead(1); }
         }
 
         /// <summary>
@@ -108,10 +98,7 @@ namespace Microsoft.Languages.Core.Tokens
         /// </summary>
         public T PreviousToken
         {
-            get
-            {
-                return LookAhead(-1);
-            }
+            get { return LookAhead(-1); }
         }
 
         /// <summary>
@@ -146,7 +133,7 @@ namespace Microsoft.Languages.Core.Tokens
 
         public bool IsEndOfStream()
         {
-            return _index >= _tokens.Count;
+            return _isEndOfStream;
         }
 
         /// <summary>
@@ -159,6 +146,13 @@ namespace Microsoft.Languages.Core.Tokens
         /// beyond the end of the stream</returns>
         public T MoveToNextToken()
         {
+            if (_index < _tokens.Count - 1)
+            {
+                _index++;
+                _currentToken = _tokens[_index];
+                return _currentToken;
+            }
+
             return Advance(1);
         }
 
@@ -175,18 +169,8 @@ namespace Microsoft.Languages.Core.Tokens
         /// beyond the end of the stream</returns>
         public T Advance(int count)
         {
-            if (_index + count >= _tokens.Count)
-            {
-                _index = _tokens.Count;
-            }
-            else if (_index + count < 0)
-            {
-                _index = -1;
-            }
-            else
-            {
-                _index = _index + count;
-            }
+            _index += count;
+            CheckBounds();
 
             return CurrentToken;
         }
@@ -244,7 +228,7 @@ namespace Microsoft.Languages.Core.Tokens
 
             if (tokenIndex < _tokens.Count - 1)
             {
-                T nextToken = GetTokenAt(tokenIndex + 1);
+                T nextToken = _tokens[tokenIndex + 1];
                 nextTokenStart = nextToken.Start;
             }
             else
@@ -252,7 +236,7 @@ namespace Microsoft.Languages.Core.Tokens
                 nextTokenStart = textProvider.Length;
             }
 
-            if (textProvider.IndexOf("\n", TextRange.FromBounds(currentTokenEnd, nextTokenStart), false) >= 0)
+            if (textProvider.IndexOf('\n', TextRange.FromBounds(currentTokenEnd, nextTokenStart)) >= 0)
             {
                 return true;
             }

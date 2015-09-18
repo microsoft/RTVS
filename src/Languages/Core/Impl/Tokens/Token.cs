@@ -14,7 +14,17 @@ namespace Microsoft.Languages.Core.Tokens
         /// <param name="tokenType">Token type</param>
         /// <param name="range">Token range in the text provider</param>
         public Token(T tokenType, ITextRange range)
-            : base(range)
+            : this(tokenType, range.Start, range.Length)
+        {
+        }
+
+        /// <summary>
+        /// Create token based on type and text range
+        /// </summary>
+        /// <param name="tokenType">Token type</param>
+        /// <param name="range">Token range in the text provider</param>
+        public Token(T tokenType, int start, int length)
+            : base(start, length)
         {
             this.TokenType = tokenType;
         }

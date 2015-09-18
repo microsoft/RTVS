@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
@@ -14,7 +15,6 @@ namespace Microsoft.R.Core.Parser
     public sealed class ParseContext
     {
         private List<IParseError> _errors = new List<IParseError>();
-        private List<RToken> _comments = new List<RToken>();
 
         public AstRoot AstRoot { get; private set; }
 
@@ -56,12 +56,9 @@ namespace Microsoft.R.Core.Parser
         /// <summary>
         /// Collection of comments in the file
         /// </summary>
-        public IReadOnlyCollection<RToken> Comments
-        {
-            get { return _comments; }
-        }
+        public IReadOnlyCollection<RToken> Comments { get; private set; }
 
-        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens)
+        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments)
         {
             this.AstRoot = new AstRoot(textProvider);
             this.TextProvider = textProvider;
@@ -69,6 +66,7 @@ namespace Microsoft.R.Core.Parser
             this.TextRange = range;
             this.Scopes = new Stack<IScope>();
             this.Expressions = new Stack<Expression>();
+            this.Comments = comments;
        }
 
         public void AddError(ParseError error)
@@ -88,28 +86,6 @@ namespace Microsoft.R.Core.Parser
             {
                 _errors.Add(error);
             }
-        }
-
-        public void RemoveCommentTokens()
-        {
-            _comments = new List<RToken>();
-            List<RToken> filteredStream = new List<RToken>();
-
-            foreach (RToken token in this.Tokens)
-            {
-                if (token.TokenType == RTokenType.Comment)
-                {
-                    _comments.Add(token);
-                }
-                else
-                {
-                    filteredStream.Add(token);
-                }
-            }
-
-            this.Tokens = new TokenStream<RToken>(new ReadOnlyTextRangeCollection<RToken>(
-                                                       new TextRangeCollection<RToken>(filteredStream)),
-                                                       RToken.EndOfStreamToken);
         }
     }
 }

@@ -13,6 +13,20 @@ namespace Microsoft.R.Core.Tokens
     public sealed class RTokenizer : BaseTokenizer<RToken>
     {
         private Stack<RTokenType> _squareBraceScope = new Stack<RTokenType>();
+        private List<RToken> _comments = new List<RToken>();
+        private bool _separateComments;
+
+        public IReadOnlyList<RToken> CommentTokens
+        {
+            get { return _comments; }
+        }
+
+        public RTokenizer(bool separateComments = false)
+        {
+            // R parser needs comments separately
+            // while colorizer all in one collection.
+            _separateComments = separateComments;
+        }
 
         /// <summary>
         /// Main tokenization method. Responsible for adding next token
@@ -395,7 +409,13 @@ namespace Microsoft.R.Core.Tokens
         /// </summary>
         private void HandleComment()
         {
-            Tokenizer.HandleEolComment(_cs, (start, length) => AddToken(RTokenType.Comment, start, length));
+            Tokenizer.HandleEolComment(_cs, (start, length) =>
+            {
+                if (_separateComments)
+                    _comments.Add(new RToken(RTokenType.Comment, start, length));
+                else
+                    AddToken(RTokenType.Comment, start, length);
+            });
         }
 
         /// <summary>
@@ -428,13 +448,13 @@ namespace Microsoft.R.Core.Tokens
 
         private void AddToken(RTokenType type, int start, int length)
         {
-            var token = new RToken(type, new TextRange(start, length));
+            var token = new RToken(type, start, length);
             _tokens.Add(token);
         }
 
         private void AddToken(RTokenType type, RTokenSubType subType, int start, int length)
         {
-            var token = new RToken(type, new TextRange(start, length));
+            var token = new RToken(type, start, length);
             token.SubType = subType;
             _tokens.Add(token);
         }
@@ -445,16 +465,15 @@ namespace Microsoft.R.Core.Tokens
             // to be of any syntax, not just standard names.
             if (_cs.CurrentChar == '`')
             {
-                _cs.MoveToNextChar();
-                while (!_cs.IsEndOfStream())
+                int closingBacktickIndex = _cs.IndexOf('`', _cs.Position + 1);
+                if (closingBacktickIndex >= 0)
                 {
-                    if (_cs.CurrentChar == '`')
-                        break;
-
-                    _cs.MoveToNextChar();
+                    _cs.Position = closingBacktickIndex + 1;
                 }
-
-                _cs.MoveToNextChar();
+                else
+                {
+                    _cs.Position = _cs.Length;
+                }
             }
             else
             {

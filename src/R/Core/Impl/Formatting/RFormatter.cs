@@ -533,7 +533,7 @@ namespace Microsoft.R.Core.Formatting
         {
             _textProvider = new TextStream(text);
 
-            var tokenizer = new RTokenizer();
+            var tokenizer = new RTokenizer(separateComments: false);
             var tokens = tokenizer.Tokenize(_textProvider, 0, _textProvider.Length);
             _tokens = new TokenStream<RToken>(tokens, RToken.EndOfStreamToken);
         }

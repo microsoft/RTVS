@@ -216,30 +216,26 @@ namespace Microsoft.R.Core.AST.Expressions
 
         private bool CheckEndOfExpression(ParseContext context, OperationType currentOperationType)
         {
-            // In R there may not be explicit end of statement.
-            // Semicolon is optional and R console figures out if there is
-            // continuation from the context. For example, if statement is
-            // incomplete such as brace is not closed or last token in 
-            // the line is an operator, it continues with the next line.
-            // However, in 'x + 1 <line_break> + y' it stops expression
-            // parsing at the line break.
+            // In R there may not be explicit end of statement. Semicolon is optional and 
+            // R console figures out if there is continuation from the context. For example, 
+            // if statement is incomplete such as brace is not closed or last token in  the line 
+            // is an operator, it continues with the next line. However, 
+            // in 'x + 1 <line_break> + y' it stops expression parsing at the line break.
 
             if (currentOperationType == OperationType.Function || (currentOperationType == OperationType.Operand && _previousOperationType != OperationType.None))
             {
-                // Since we haven't seen explicit end of expression and 
-                // the last operation was 'operand' which is a variable 
-                // or a constant and there is a line break ahead of us
-                // then the expression is complete. Outer parser may still
-                // continue if braces are not closed yet.
-                if (context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1))
-                {
-                    // There is a line break before this token
-                    if (IsInGroup && context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace)
-                    {
-                        return false;
-                    }
+                // Since we haven't seen explicit end of expression and the last operation
+                // was 'operand' which is a variable or a constant and there is a line break
+                // ahead of us then the expression is complete. Outer parser may still continue
+                // if braces are not closed yet.
 
-                    return true;
+                if (!IsInGroup || context.Tokens.CurrentToken.TokenType == RTokenType.CloseBrace)
+                {
+                    if (context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1))
+                    {
+                        // There is a line break before this token
+                        return true;
+                    }
                 }
             }
 

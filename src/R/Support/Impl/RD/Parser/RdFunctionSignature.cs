@@ -150,7 +150,7 @@ namespace Microsoft.R.Support.RD.Parser
 
             text = text.Substring(openBraceIndex);
 
-            RTokenizer tokenizer = new RTokenizer();
+            RTokenizer tokenizer = new RTokenizer(separateComments: true);
             IReadOnlyTextRangeCollection<RToken> collection = tokenizer.Tokenize(text);
             ITextProvider textProvider = new TextStream(text);
             TokenStream<RToken> tokens = new TokenStream<RToken>(collection, RToken.EndOfStreamToken);
@@ -158,7 +158,7 @@ namespace Microsoft.R.Support.RD.Parser
             SignatureInfo info = new SignatureInfo();
             List<IArgumentInfo> signatureArguments = new List<IArgumentInfo>();
 
-            var rParseContext = new Microsoft.R.Core.Parser.ParseContext(textProvider, new TextRange(0, text.Length), tokens);
+            var rParseContext = new Microsoft.R.Core.Parser.ParseContext(textProvider, new TextRange(0, text.Length), tokens, tokenizer.CommentTokens);
 
             FunctionCall functionCall = new FunctionCall();
             functionCall.Parse(rParseContext, rParseContext.AstRoot);

@@ -71,7 +71,29 @@ namespace Microsoft.Languages.Core.Text
         }
 
         /// <summary>
-        /// Searches text for a givne string starting at specified position
+        /// Searches text for a given character starting at specified position
+        /// </summary>
+        /// <param name="ch">Character to find</param>
+        /// <param name="startPosition">Starting position</param>
+        /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
+        public int IndexOf(char ch, int startPosition)
+        {
+            return _text.IndexOf(ch, startPosition);
+        }
+
+        /// <summary>
+        /// Searches text for a given character with the specified range
+        /// </summary>
+        /// <param name="ch">Character to find</param>
+        /// <param name="range">Range to search in</param>
+        /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
+        public int IndexOf(char ch, ITextRange range)
+        {
+            return _text.IndexOf(ch, range.Start, range.Length);
+        }
+
+        /// <summary>
+        /// Searches text for a given string starting at specified position
         /// </summary>
         /// <param name="stringToFind">String to find</param>
         /// <param name="startPosition">Starting position</param>

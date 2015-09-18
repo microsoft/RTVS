@@ -34,7 +34,10 @@ namespace Microsoft.Languages.Core.Tokens
 
             cs.MoveToNextChar();
 
-            while (!cs.IsEndOfStream())
+            if (cs.IsEndOfStream())
+                return;
+
+            while (true)
             {
                 if (cs.CurrentChar == openQuote)
                 {
@@ -42,7 +45,13 @@ namespace Microsoft.Languages.Core.Tokens
                     break;
                 }
 
-                cs.Advance(cs.CurrentChar == '\\' ? 2 : 1);
+                if (cs.CurrentChar == '\\')
+                {
+                    cs.MoveToNextChar();
+                }
+
+                if (!cs.MoveToNextChar())
+                    break;
             }
 
             int length = cs.Position - start;
@@ -57,12 +66,16 @@ namespace Microsoft.Languages.Core.Tokens
             if (!isIdentifierLeadCharacter(cs))
                 return;
 
-            while (!cs.IsEndOfStream() && !cs.IsWhiteSpace())
+            if (cs.IsEndOfStream())
+                return;
+
+            while (!cs.IsWhiteSpace())
             {
                 if (!isIdentifierCharacter(cs))
                     break;
 
-                cs.MoveToNextChar();
+                if (!cs.MoveToNextChar())
+                    break;
             }
         }
     }

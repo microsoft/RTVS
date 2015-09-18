@@ -98,6 +98,33 @@ namespace Microsoft.Languages.Editor.Text
             return GetText(range.Start, range.Length);
         }
 
+        public int IndexOf(char ch, int startPosition)
+        {
+            for(int i = startPosition; i < Length; i++)
+            {
+                if(this[i] == ch)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        public int IndexOf(char ch, ITextRange range)
+        {
+            int limit = Math.Min(Length, range.End);
+            for (int i = range.Start; i < limit; i++)
+            {
+                if (this[i] == ch)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         public int IndexOf(string text, int startPosition, bool ignoreCase)
         {
             return IndexOf(text, TextRange.FromBounds(startPosition, this.Length), ignoreCase);

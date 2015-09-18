@@ -13,17 +13,22 @@ namespace Microsoft.R.Core.Tokens
         public RTokenSubType SubType { get; set; }
 
         public RToken(RTokenType tokenType)
-            : this(tokenType, RTokenSubType.None, TextRange.EmptyRange)
+            : this(tokenType, RTokenSubType.None, 0, 0)
         {
         }
 
         public RToken(RTokenType tokenType, ITextRange range)
-            : this(tokenType, RTokenSubType.None, range)
+            : this(tokenType, RTokenSubType.None, range.Start, range.Length)
         {
         }
 
-        public RToken(RTokenType tokenType, RTokenSubType subType, ITextRange range)
-            : base(tokenType, range)
+        public RToken(RTokenType tokenType, int start, int length)
+            : this(tokenType, RTokenSubType.None, start, length)
+        {
+        }
+
+        public RToken(RTokenType tokenType, RTokenSubType subType, int start, int length)
+            : base(tokenType, start, length)
         {
             this.SubType = subType;
         }

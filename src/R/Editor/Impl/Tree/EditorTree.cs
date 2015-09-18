@@ -179,8 +179,15 @@ namespace Microsoft.R.Editor.Tree
 
             if (TextBuffer != null)
             {
+#if DEBUG
+                DateTime parseStartTime = DateTime.Now;
+#endif
                 TextSnapshot = TextBuffer.CurrentSnapshot;
                 _astRoot = RParser.Parse(new TextProvider(TextBuffer.CurrentSnapshot));
+
+#if DEBUG
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "Parse time: {0} ms", (DateTime.Now - parseStartTime).TotalMilliseconds));
+#endif
             }
 
             TreeUpdateTask.ClearChanges();

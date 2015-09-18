@@ -25,12 +25,12 @@ namespace Microsoft.R.Core.Parser
         /// <param name="range">Range to parse</param>
         public static AstRoot Parse(ITextProvider textProvider, ITextRange range)
         {
-            var tokenizer = new RTokenizer();
+            var tokenizer = new RTokenizer(separateComments: true);
 
             IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(textProvider, range.Start, range.Length);
             TokenStream<RToken>  tokenStream = new TokenStream<RToken>(tokens, new RToken(RTokenType.EndOfStream, TextRange.EmptyRange));
 
-            ParseContext context = new ParseContext(textProvider, range, tokenStream);
+            ParseContext context = new ParseContext(textProvider, range, tokenStream, tokenizer.CommentTokens);
 
             context.AstRoot.Parse(context, context.AstRoot);
             context.AstRoot.Errors = new TextRangeCollection<IParseError>(context.Errors);

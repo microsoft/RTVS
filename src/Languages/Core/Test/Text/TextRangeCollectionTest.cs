@@ -325,32 +325,6 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_IsEqualTest()
-        {
-            TextRangeCollection<TextRange> target1 = MakeCollection();
-            TextRangeCollection<TextRange> target2 = MakeCollection();
-
-            Assert.IsTrue(target1.IsEqual(target2));
-
-            target1.RemoveAt(2);
-            Assert.IsFalse(target1.IsEqual(target2));
-
-            target2.RemoveAt(2);
-            Assert.IsTrue(target1.IsEqual(target2));
-
-            target1[0].Shift(-1);
-            target2[0].Shift(-1);
-            Assert.IsTrue(target1.IsEqual(target2));
-
-            target1.RemoveAt(0);
-            target1.Add(TextRange.FromBounds(0, 1));
-            Assert.IsFalse(target1.IsEqual(target2));
-
-            target1.Sort();
-            Assert.IsTrue(target1.IsEqual(target2));
-        }
-
-        [TestMethod]
         public void TextRangeCollection_ItemsInRangeTest()
         {
             TextRangeCollection<TextRange> target = MakeCollection();
@@ -588,6 +562,38 @@ namespace Microsoft.Languages.Core.Test.Text
             // testcase for deleting last range which was zero length
             target.ReflectTextChange(1, 1, 0);
             Assert.AreEqual(0, target.Count);
+        }
+
+        [TestMethod]
+        public void TextRangeCollection_AddSorted()
+        {
+            ITextRange[] ranges = new ITextRange[3];
+
+            ranges[0] = TextRange.FromBounds(1, 2);
+            ranges[1] = TextRange.FromBounds(3, 5);
+            ranges[2] = TextRange.FromBounds(5, 7);
+
+            TextRangeCollection<ITextRange> target = new TextRangeCollection<ITextRange>();
+
+            Assert.AreEqual(0, target.Count);
+
+            target.Add(ranges[2]);
+            Assert.AreEqual(1, target.Count);
+
+            target.AddSorted(ranges[0]);
+            Assert.AreEqual(2, target.Count);
+            Assert.AreEqual(1, target.Start);
+            Assert.AreEqual(7, target.End);
+            Assert.AreEqual(1, target[0].Start);
+            Assert.AreEqual(5, target[1].Start);
+
+            target.AddSorted(ranges[1]);
+            Assert.AreEqual(3, target.Count);
+            Assert.AreEqual(1, target.Start);
+            Assert.AreEqual(7, target.End);
+            Assert.AreEqual(1, target[0].Start);
+            Assert.AreEqual(3, target[1].Start);
+            Assert.AreEqual(5, target[2].Start);
         }
     }
 }

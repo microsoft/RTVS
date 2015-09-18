@@ -47,13 +47,13 @@ namespace Microsoft.Languages.Core.Test.Text
 
             token = ts.Advance(-100);
             Assert.AreEqual(token.TokenType, TestTokenType.EndOfStream);
-            Assert.AreEqual(-1, ts.Position);
+            Assert.AreEqual(0, ts.Position);
 
             Assert.AreEqual(TestTokenType.EndOfStream, ts.CurrentToken.TokenType);
             Assert.AreEqual(TestTokenType.EndOfStream, ts.NextToken.TokenType);
             Assert.AreEqual(TestTokenType.EndOfStream, ts.PreviousToken.TokenType);
 
-            ts.Reset();
+            ts.Position = 0;
             Assert.IsTrue(ts.IsEndOfStream());
             Assert.AreEqual(0, ts.Position);
 

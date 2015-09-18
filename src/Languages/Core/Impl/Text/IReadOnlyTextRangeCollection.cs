@@ -36,5 +36,12 @@ namespace Microsoft.Languages.Core.Text
         /// Retrieves item that is at or immediately follows the position
         /// </summary>
         int GetFirstItemAfterOrAtPosition(int position);
+
+        /// <summary>
+        /// Finds items that overlap a text range
+        /// </summary>
+        /// <param name="range">Text range</param>
+        /// <returns>List of items that overlap the range</returns>
+        IReadOnlyList<T> ItemsInRange(ITextRange range);
     }
 }

@@ -338,10 +338,10 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             get
             {
-                var list = _errorTags.ToList();
+                var array = _errorTags.ToArray();
                 var tasks = new List<IEditorTaskListItem>();
 
-                tasks.AddRange(list);
+                tasks.AddRange(array);
                 return tasks;
             }
         }

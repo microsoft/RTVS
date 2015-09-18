@@ -70,16 +70,16 @@ namespace Microsoft.R.Editor.Validation.Tagger
             _editorTree.UpdateCompleted += OnUpdateCompleted;
         }
 
-        public IList<EditorErrorTag> ToList()
+        public EditorErrorTag[] ToArray()
         {
-            IList<EditorErrorTag> list;
+            EditorErrorTag[] array;
 
             lock (_lockObj)
             {
-                list = _tags.ToList();
+                array = _tags.ToArray();
             }
 
-            return list;
+            return array;
 
         }
 

@@ -70,8 +70,7 @@ namespace Microsoft.R.Core.AST
                     Debug.Assert(!TextRange.Intersect(c, child), "Children collection already contains overlapping node");
                 }
 #endif
-                _children.Add(child);
-                _children.Sort();
+                _children.AddSorted(child);
             }
             else
             {

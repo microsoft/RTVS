@@ -75,7 +75,6 @@ namespace Microsoft.R.Core.AST
         public override bool Parse(ParseContext context, IAstNode parent)
         {
             // Remove comments from the token stream
-            context.RemoveCommentTokens();
             this.Comments = new CommentsCollection(context.Comments);
 
             GlobalScope globalScope = new GlobalScope();
