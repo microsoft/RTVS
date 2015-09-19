@@ -63,8 +63,17 @@
     <Compile Include="Disposables\CountdownDisposable.cs" />
     <Compile Include="Disposables\DefaultDisposable.cs" />
     <Compile Include="Disposables\Disposable.cs" />
+    <Compile Include="IO\DirectoryInfoProxy.cs" />
+    <Compile Include="IO\FileInfoProxy.cs" />
+    <Compile Include="IO\FileSystemProxy.cs" />
+    <Compile Include="IO\FileSystemWatcherProxy.cs" />
+    <Compile Include="IO\IDirectoryInfo.cs" />
+    <Compile Include="IO\IFileInfo.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="ExceptionExtensions.cs" />
+    <Compile Include="IO\IFileSystem.cs" />
+    <Compile Include="IO\IFileSystemInfo.cs" />
+    <Compile Include="IO\IFileSystemWatcher.cs" />
     <Compile Include="StackExtensions.cs" />
     <Compile Include="StringBuilderExtensions.cs" />
     <Compile Include="TaskExtensions.cs" />

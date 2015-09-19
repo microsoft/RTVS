@@ -17,31 +17,15 @@ namespace Microsoft.Common.Core.Disposables
 
         public IDisposable Increment()
         {
-            Interlocked.Increment(ref this._count);
-            return new DecrementDisposable(this);
+            Interlocked.Increment(ref _count);
+            return Disposable.Create(Decrement);
         }
 
         private void Decrement()
         {
-            if (Interlocked.Decrement(ref this._count) == 0)
+            if (Interlocked.Decrement(ref _count) == 0)
             {
                 this._disposeAction();
-            }
-        }
-
-        private class DecrementDisposable : IDisposable
-        {
-            private CountdownDisposable _countdownDisposable;
-
-            public DecrementDisposable(CountdownDisposable countdownDisposable)
-            {
-                this._countdownDisposable = countdownDisposable;
-            }
-
-            public void Dispose()
-            {
-                CountdownDisposable countdown = Interlocked.Exchange(ref this._countdownDisposable, null);
-                countdown?.Decrement();
             }
         }
     }

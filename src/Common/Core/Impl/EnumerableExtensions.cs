@@ -16,7 +16,7 @@ namespace Microsoft.Common.Core
             return source as T[] ?? source.ToArray();
         }
 
-        public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T item)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> source, T item)
         {
             foreach (T sourceItem in source)
             {
@@ -62,15 +62,6 @@ namespace Microsoft.Common.Core
                 }
 
                 i++;
-            }
-        }
-
-        public static IEnumerable<T> Traverse<T>(this T start, Func<T, T> getNext)
-        {
-            while (start != null)
-            {
-                yield return start;
-                start = getNext(start);
             }
         }
 
