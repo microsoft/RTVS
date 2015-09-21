@@ -21,6 +21,7 @@ namespace Microsoft.R.Editor.Formatting
             ITextBuffer textBuffer = textView.TextBuffer;
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
 
+            int start = range.Start;
             int end = range.End;
 
             // When user clicks editor margin to select a line, selection actually
@@ -34,11 +35,12 @@ namespace Microsoft.R.Editor.Formatting
                 {
                     line = snapshot.GetLineFromLineNumber(line.LineNumber - 1);
                     end = line.End.Position;
+                    start = Math.Min(start, end);
                 }
             }
 
             // Expand span to include the entire line
-            ITextSnapshotLine startLine = snapshot.GetLineFromPosition(range.Start);
+            ITextSnapshotLine startLine = snapshot.GetLineFromPosition(start);
             ITextSnapshotLine endLine = snapshot.GetLineFromPosition(end);
 
             Span spanToFormat = Span.FromBounds(startLine.Start, endLine.End);

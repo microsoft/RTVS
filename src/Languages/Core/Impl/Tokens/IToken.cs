@@ -1,4 +1,5 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿using System;
+using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Tokens
 {

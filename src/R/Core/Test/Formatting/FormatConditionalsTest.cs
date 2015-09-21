@@ -8,29 +8,8 @@ namespace Microsoft.R.Core.Test.Formatting
 {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class FormatterTest : UnitTestBase
+    public class FormatConditionalsTest : UnitTestBase
     {
-        [TestMethod]
-        public void Formatter_EmptyFileTest()
-        {
-            RFormatter f = new RFormatter();
-            string s = f.Format(string.Empty);
-            Assert.AreEqual(0, s.Length);
-        }
-
-        [TestMethod]
-        public void Formatter_FormatSimpleScopesTest01()
-        {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("{{}}");
-            string expected =
-@"{
-    {
-    }
-}";
-            Assert.AreEqual(expected, actual);
-        }
-
         [TestMethod]
         public void Formatter_FormatConditionalTest01()
         {
@@ -79,6 +58,52 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
+        public void Formatter_FormatConditionalTest04()
+        {
+            RFormatOptions options = new RFormatOptions();
+            options.BracesOnNewLine = true;
+
+            RFormatter f = new RFormatter(options);
+            string actual = f.Format("if(TRUE) { 1 } else {2} x<-1");
+            string expected =
+@"if (TRUE)
+{
+    1
+}
+else
+{
+    2
+}
+x <- 1";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatConditionalTest05()
+        {
+            RFormatOptions options = new RFormatOptions();
+            options.BracesOnNewLine = true;
+
+            RFormatter f = new RFormatter(options);
+            string actual = f.Format("if(TRUE) { 1 } else if(FALSE) {2} else {3} x<-1");
+            string expected =
+@"if (TRUE)
+{
+    1
+}
+else if (FALSE)
+{
+    2
+}
+else
+{
+    3
+}
+x <- 1";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void Formatter_FormatNoCurlyConditionalTest01()
         {
             RFormatter f = new RFormatter();
@@ -114,6 +139,62 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
+        public void Formatter_FormatNoCurlyConditionalTest04()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("if(true) if(false)   x<-2");
+            string expected =
+@"if (true)
+    if (false)
+        x <- 2";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatNoCurlyConditionalTest05()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("if(true) if(false)   x<-2 else {1}");
+            string expected =
+@"if (true)
+    if (false) x <- 2 else {
+        1
+    }";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatNoCurlyConditionalTest06()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("if(true) repeat { x <-1; next;} else z");
+            string expected =
+@"if (true)
+    repeat {
+        x <- 1;
+        next;
+    }
+else
+    z";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void Formatter_FormatNoCurlyConditionalTest07()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("if(true) if(false) {  x<-2 } else 1");
+            string expected =
+@"if (true)
+    if (false) {
+        x <- 2
+    }
+    else
+        1";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void Formatter_FormatNoCurlyRepeatTest01()
         {
             RFormatter f = new RFormatter();
@@ -121,58 +202,6 @@ namespace Microsoft.R.Core.Test.Formatting
             string expected =
 @"repeat
     x <- 2";
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void Formatter_StatementTest01()
-        {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("x<-2");
-            string expected =
-@"x <- 2";
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void Formatter_FormatFunction()
-        {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("function(a,b) {return(a+b)}");
-            string expected =
-@"function (a, b) {
-    return (a + b)
-}";
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void Formatter_FormatInlineFunction()
-        {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("function(a,b) a+b");
-            string expected = @"function (a, b) a + b";
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void Formatter_FormatFunctionAlignArguments()
-        {
-            RFormatOptions options = new RFormatOptions();
-            options.IndentType = IndentType.Tabs;
-
-            RFormatter f = new RFormatter(options);
-            string original =
-@"x <- function (x,  
- intercept=TRUE, tolerance =1e-07, 
-    yname = NULL)
-";
-            string actual = f.Format(original);
-            string expected =
-@"x <- function (x,
- intercept = TRUE, tolerance = 1e-07,
-	yname = NULL)
-";
             Assert.AreEqual(expected, actual);
         }
 
@@ -296,17 +325,6 @@ if (intercept) {
     x[, i] = rowMeans(fmri[[i]])";
 
             Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void Formatter_FormatRandom01()
-        {
-            RFormatter f = new RFormatter();
-            string original = "a   b 1.  2 Inf\tNULL";
-
-            string actual = f.Format(original);
-
-            Assert.AreEqual(@"a b 1. 2 Inf NULL", actual);
         }
     }
 }

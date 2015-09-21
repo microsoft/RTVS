@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Languages.Core.Tokens
+namespace Microsoft.Languages.Core.Text
 {
-    public sealed class BraceCounter<T> where T : IComparable<T>
+    public class BraceCounter<T> where T : IComparable<T>
     {
         T _openBrace1;
         T _closeBrace1;
@@ -13,7 +13,7 @@ namespace Microsoft.Languages.Core.Tokens
         private Stack<T> _braces1 = new Stack<T>();
         private Stack<T> _braces2;
 
-        public BraceCounter(T openCurlyBrace, T closeCurlyBrace): 
+        public BraceCounter(T openCurlyBrace, T closeCurlyBrace) : 
             this(openCurlyBrace, closeCurlyBrace, default(T), default(T))
         {
         }
