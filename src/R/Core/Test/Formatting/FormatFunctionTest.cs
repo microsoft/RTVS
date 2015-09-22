@@ -65,6 +65,18 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
+        public void Formatter_FormatFunctionInlineScope02()
+        {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("x <- func({return(b)})");
+            string expected =
+@"x <- func({
+    return (b)
+})";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void Formatter_FormatFunctionInlineIf01()
         {
             RFormatter f = new RFormatter();

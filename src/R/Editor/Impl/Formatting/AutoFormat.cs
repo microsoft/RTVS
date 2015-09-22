@@ -84,7 +84,7 @@ namespace Microsoft.R.Editor.Formatting
                 if (string.IsNullOrWhiteSpace(textBeforeCaret))
                 {
                     string textAfterCaret = snapshot.GetText(Span.FromBounds(position, line.End)).TrimStart();
-                    if (textAfterCaret.Length == 1 && textAfterCaret[0] == '}' && scope != null && scope.OpenCurlyBrace != null)
+                    if (textAfterCaret.Length >= 1 && textAfterCaret[0] == '}' && scope != null && scope.OpenCurlyBrace != null)
                     {
                         // Open curly brace must be on the previous line
                         int openCurlyLineNumber = snapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);

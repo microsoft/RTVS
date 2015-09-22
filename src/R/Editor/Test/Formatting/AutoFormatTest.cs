@@ -93,6 +93,18 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
+        public void AutoFormat_SmartIndentTest06()
+        {
+            ITextView textView = TestAutoFormat(6, "\n", "func({})");
+
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected = "func({\n    \r\n}";
+
+            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(11, textView.Caret.Position.BufferPosition);
+        }
+
+        [TestMethod]
         public void AutoFormat_SmartIndentNoScopeTest01()
         {
             int? indent = GetSmartIndent("if (x > 1)\n", 1);

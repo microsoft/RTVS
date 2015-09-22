@@ -125,7 +125,10 @@ namespace Microsoft.R.Core.Formatting
             }
             else
             {
-                _tb.AppendSpace();
+                if (!IsOpenBraceToken(_tokens.PreviousToken.TokenType))
+                {
+                    _tb.AppendSpace();
+                }
             }
 
             AppendToken(leadingSpace: false, trailingSpace: false);
@@ -384,6 +387,20 @@ namespace Microsoft.R.Core.Formatting
             {
                 _tb.AppendSpace();
             }
+        }
+
+        private static bool IsOpenBraceToken(RTokenType tokenType)
+        {
+            switch (tokenType)
+            {
+                case RTokenType.OpenBrace:
+                case RTokenType.OpenCurlyBrace:
+                case RTokenType.OpenSquareBracket:
+                case RTokenType.OpenDoubleSquareBracket:
+                    return true;
+            }
+
+            return false;
         }
 
         private static bool IsClosingToken(RTokenType tokenType)
