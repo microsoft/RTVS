@@ -13,9 +13,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
 
         private bool _someSetting;
 
-		[Category("SettingCategory")]
-		[CustomLocDisplayName("Temp_SettingDisplayName")]
-		[LocDescription("Temp_SettingDescription")]
+		[Category("Settings_ReplCategory")]
+		[CustomLocDisplayName("Settings_SendToRepl")]
+		[LocDescription("Settings_SendToRepl_Description")]
 		public bool SomeSetting
 		{
 			get { return this._someSetting; }

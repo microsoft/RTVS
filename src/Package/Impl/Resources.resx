@@ -213,4 +213,13 @@
   <data name="Settings_SyntaxCheckCategory" xml:space="preserve">
     <value>Syntax check</value>
   </data>
+  <data name="Settings_ReplCategory" xml:space="preserve">
+    <value>Interactive window</value>
+  </data>
+  <data name="Settings_SendToRepl" xml:space="preserve">
+    <value>Use Control+Enter</value>
+  </data>
+  <data name="Settings_SendToRepl_Description" xml:space="preserve">
+    <value>Override editor 'insert empty line above' command and use Control+Enter for sending editor selection to R Console instead. Keyboard bindings can also be change in Tools &gt; Options &gt; Environment &gt; Keyboard.</value>
+  </data>
 </root>

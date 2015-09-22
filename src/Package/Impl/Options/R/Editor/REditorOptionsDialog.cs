@@ -104,6 +104,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
             set { REditorSettings.AutoFormat = value; }
         }
 
+        [LocCategory("Settings_ReplCategory")]
+        [CustomLocDisplayName("Settings_SendToRepl")]
+        [LocDescription("Settings_SendToRepl_Description")]
+        [DefaultValue(true)]
+        public bool SendToReplOnCtrlEnter
+        {
+            get { return REditorSettings.SendToReplOnCtrlEnter; }
+            set { REditorSettings.SendToReplOnCtrlEnter = value; }
+        }
+
         public override void ResetSettings()
         {
             REditorSettings.ResetSettings();

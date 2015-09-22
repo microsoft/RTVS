@@ -241,6 +241,33 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Interactive window.
+        /// </summary>
+        internal static string Settings_ReplCategory {
+            get {
+                return ResourceManager.GetString("Settings_ReplCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Control+Enter.
+        /// </summary>
+        internal static string Settings_SendToRepl {
+            get {
+                return ResourceManager.GetString("Settings_SendToRepl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Override editor &apos;insert empty line above&apos; command and use Control+Enter for sending editor selection to R Console instead. Keyboard bindings can also be change in Tools &gt; Options &gt; Environment &gt; Keyboard..
+        /// </summary>
+        internal static string Settings_SendToRepl_Description {
+            get {
+                return ResourceManager.GetString("Settings_SendToRepl_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show internal functions.
         /// </summary>
         internal static string Settings_ShowInternalFunctions {

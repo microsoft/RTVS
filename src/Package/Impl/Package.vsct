@@ -82,6 +82,24 @@
     <VisibilityItem guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" context="guidCpsProjectFactory" />
   </VisibilityConstraints>
 
+  <KeyBindings>
+    <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
+  </KeyBindings>
+
+  <UsedCommands>
+    <UsedCommand guid="guidVSStd97" id="cmdidCut" />
+    <UsedCommand guid="guidVSStd97" id="cmdidCopy" />
+    <UsedCommand guid="guidVSStd97" id="cmdidPaste" />
+    <UsedCommand guid="guidVSStd97" id="cmdidDelete" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATDOCUMENT" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATSELECTION" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_HELP" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_HELPKEYWORD" />
+    <UsedCommand guid="guidVSStd97" id="cmdidF1Help" />
+    <!-- ECMD_OPENLINEABOVE is usually bound to Ctrl+Enter which R users want for 'Send to REPL -->
+    <UsedCommand guid="guidVSStd2K" id="ECMD_OPENLINEABOVE"/> 
+  </UsedCommands>
+
   <Symbols>
     <!-- Package GUID -->
     <GuidSymbol name="RToolsPackage" value="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" />
@@ -110,22 +128,4 @@
     <!-- R Editor Factory Guid -->
     <GuidSymbol name="CMDUIGUID_R_EDITOR" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
   </Symbols>
-
-  <KeyBindings>
-    <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR"
-                key1="VK_RETURN" mod1="CONTROL" />
-  </KeyBindings>
-  
-  <UsedCommands>
-    <UsedCommand guid="guidVSStd97" id="cmdidCut" />
-    <UsedCommand guid="guidVSStd97" id="cmdidCopy" />
-    <UsedCommand guid="guidVSStd97" id="cmdidPaste" />
-    <UsedCommand guid="guidVSStd97" id="cmdidDelete" />
-    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATDOCUMENT" />
-    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATSELECTION" />
-    <UsedCommand guid="guidVSStd2K" id="ECMD_HELP" />
-    <UsedCommand guid="guidVSStd2K" id="ECMD_HELPKEYWORD" />
-    <UsedCommand guid="guidVSStd97" id="cmdidF1Help" />
-  </UsedCommands>
-
 </CommandTable>

@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Packages
     [ProvideLanguageService(typeof(RLanguageService), RContentTypeDefinition.LanguageName, 106, ShowSmartIndent = true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideCpsProjectFactory(GuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
-    [ProvideInteractiveWindow(GuidList.ReplWindowGuidString, Style = VsDockStyle.Linked, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
+    [ProvideInteractiveWindow(GuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow,  DocumentLikeTool = true)]
     internal sealed class RPackage : BasePackage<RLanguageService>
     {
         public const string OptionsDialogName = "R Tools";
@@ -91,9 +91,9 @@ namespace Microsoft.VisualStudio.R.Packages
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id)
         {
-            if (toolWindowType == GuidList.ReplWindowGuid)
+            if (toolWindowType == GuidList.ReplInteractiveWindowProviderGuid)
             {
-                var result = GetInteractiveWindowProvider().Create(id);
+                IVsInteractiveWindow result = GetInteractiveWindowProvider().Create(id);
                 return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;
             }
 
