@@ -23,7 +23,10 @@
     <Groups>
       <!-- R code editor context menu groups -->
       <!-- R Formatting -->
-      <Group guid="guidRToolsCmdSet" id="groupFormat" priority="0x0800">
+      <Group guid="guidRToolsCmdSet" id="groupRepl" priority="0x0800">
+        <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="groupFormat" priority="0x0810">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <!-- End R code editor context menu groups -->
@@ -43,6 +46,15 @@
         <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
         <Strings>
           <ButtonText>Formatting &amp;Options...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="cmdidSendToRepl" priority="0x0101" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="groupRepl"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Send to &amp;R Console</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -82,8 +94,11 @@
       <IDSymbol name="rCodeEditorContextMenu" value="100" />
       <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
       <IDSymbol name="groupFormat" value="120" />
+      <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
+      <IDSymbol name="groupRepl" value="122" />
       <!-- See RPackageCommandId -->
       <IDSymbol name="cmdidGoToFormattingOptions" value="500" />
+      <IDSymbol name="cmdidSendToRepl" value="501" />
     </GuidSymbol>
 
     <!-- Interactive Windows Commands -->
@@ -91,8 +106,16 @@
       <!-- Show Default Interactive Window -->
       <IDSymbol name="cmdidShowDefaultInteractiveWindow" value="0x0100" />
     </GuidSymbol>
+
+    <!-- R Editor Factory Guid -->
+    <GuidSymbol name="CMDUIGUID_R_EDITOR" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
   </Symbols>
 
+  <KeyBindings>
+    <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR"
+                key1="VK_RETURN" mod1="CONTROL" />
+  </KeyBindings>
+  
   <UsedCommands>
     <UsedCommand guid="guidVSStd97" id="cmdidCut" />
     <UsedCommand guid="guidVSStd97" id="cmdidCopy" />

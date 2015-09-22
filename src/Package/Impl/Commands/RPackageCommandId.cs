@@ -4,5 +4,6 @@
     {
         // GuidList.CmdSetGuid
         public const int icmdGoToFormattingOptions = 500;
+        public const int icmdSendToRepl = 501;
     }
 }

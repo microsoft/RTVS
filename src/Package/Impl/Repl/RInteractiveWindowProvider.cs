@@ -37,8 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl
                 evaluator.Dispose();
                 session.Dispose();
             };
-            var window = vsWindow.InteractiveWindow;
 
+            var window = vsWindow.InteractiveWindow;
             // fire and forget:
             window.InitializeAsync();
 
