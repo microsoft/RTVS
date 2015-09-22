@@ -42,7 +42,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="cmdidGoToFormattingOptions" priority="0x0100" type="Button">
+      <Button guid="guidRToolsCmdSet" id="cmdidGoToFormattingOptions" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
         <Strings>
           <ButtonText>Formatting &amp;Options...</ButtonText>
@@ -69,7 +69,7 @@
     </CommandPlacement>
 
     <!-- Formatting group -->
-    <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x400">
+    <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
     </CommandPlacement>
 
@@ -83,7 +83,8 @@
   </VisibilityConstraints>
 
   <KeyBindings>
-    <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
+<!--    <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" /> -->
+    <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="E" mod1="CONTROL" key2="E" mod2="CONTROL" />
   </KeyBindings>
 
   <UsedCommands>

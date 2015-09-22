@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands
 
             commands.Add(new ShowContextMenuCommand(textView, GuidList.PackageGuid, GuidList.CmdSetGuid, ContextMenuId.R));
             commands.Add(new GoToFormattingOptionsCommand(textView, textBuffer));
-            commands.Add(new SendtoReplCommand(textView, textBuffer));
+            commands.Add(new SendToReplCommand(textView, textBuffer));
 
             return commands;
         }

@@ -10,12 +10,12 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Commands
 {
-    public sealed class SendtoReplCommand : ViewCommand, IVsWindowFrameEvents
+    public sealed class SendToReplCommand : ViewCommand, IVsWindowFrameEvents
     {
         private uint _windowFrameEventsCookie;
         private IVsInteractiveWindow _lastUsedReplWindow;
 
-        public SendtoReplCommand(ITextView textView, ITextBuffer textBuffer) :
+        public SendToReplCommand(ITextView textView, ITextBuffer textBuffer) :
             base(textView, new CommandId[] {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OPENLINEABOVE),
                 new CommandId(GuidList.CmdSetGuid, RPackageCommandId.icmdSendToRepl)
@@ -45,12 +45,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands
             }
 
             ITextSelection selection = TextView.Selection;
+            ITextSnapshot snapshot = TextView.TextBuffer.CurrentSnapshot;
             string selectedText;
+            ITextSnapshotLine line = null;
 
             if (selection.StreamSelectionSpan.Length == 0)
             {
                 int position = selection.Start.Position;
-                ITextSnapshotLine line = TextView.TextBuffer.CurrentSnapshot.GetLineFromPosition(position);
+                line = snapshot.GetLineFromPosition(position);
                 selectedText = line.GetText();
             }
             else
@@ -65,12 +67,18 @@ namespace Microsoft.VisualStudio.R.Package.Commands
                 IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
                 Guid persistenceSlot = GuidList.ReplInteractiveWindowProviderGuid;
                 shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fForceCreate, ref persistenceSlot, out frame);
+                frame.Show();
             }
 
             if (_lastUsedReplWindow != null)
             {
                 _lastUsedReplWindow.InteractiveWindow.WriteLine(selectedText);
-                //_lastUsedReplWindow.Show(focus: true);
+
+                if (line != null && line.LineNumber < snapshot.LineCount - 1)
+                {
+                    ITextSnapshotLine nextLine = snapshot.GetLineFromLineNumber(line.LineNumber + 1);
+                    TextView.Caret.MoveTo(new SnapshotPoint(snapshot, nextLine.Start));
+                }
             }
 
             return CommandResult.Executed;
@@ -133,7 +141,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands
                     object docView;
                     frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView);
                     _lastUsedReplWindow = docView as IVsInteractiveWindow;
-                    return true;
+                    return _lastUsedReplWindow != null;
                 }
             }
 

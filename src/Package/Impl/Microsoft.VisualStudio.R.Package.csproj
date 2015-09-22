@@ -112,7 +112,7 @@
     <Compile Include="Options\R\VsRSettingsStorage.cs" />
     <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
     <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
-    <Compile Include="Repl\SendtoReplCommand.cs" />
+    <Compile Include="Repl\SendToReplCommand.cs" />
     <Compile Include="Repl\IVsInteractiveWindowProvider.cs" />
     <Compile Include="Repl\RInteractiveEvaluator.cs" />
     <Compile Include="Repl\RInteractiveWindowProvider.cs" />
