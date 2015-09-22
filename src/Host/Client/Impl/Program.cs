@@ -29,7 +29,7 @@ namespace Microsoft.R.Host.Client {
             return (await Console.In.ReadLineAsync()) + "\n";
         }
 
-        public async Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string message, MessageSeverity severity) {
+        public async Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string message) {
             await Console.Error.WriteLineAsync(message);
         }
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;
@@ -18,7 +17,6 @@ using Microsoft.VisualStudio.R.Package.Options.R.Editor;
 using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Repl;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -39,6 +37,8 @@ namespace Microsoft.VisualStudio.R.Packages
     internal sealed class RPackage : BasePackage<RLanguageService>
     {
         public const string OptionsDialogName = "R Tools";
+
+        private Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<Package.Repl.RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
 
         protected override void Initialize()
         {
@@ -74,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Packages
         protected override IEnumerable<MenuCommand> CreateMenuCommands()
         {
             yield return new MenuCommand(
-                (sender, args) => GetInteractiveWindowProvider().Open(instanceId: 0, focus: true),
+                (sender, args) => _interactiveWindowProvider.Value.Open(instanceId: 0, focus: true),
                 new CommandID(GuidList.RInteractiveCommandSetGuid, 0x0100));
         }
 
@@ -93,16 +93,11 @@ namespace Microsoft.VisualStudio.R.Packages
         {
             if (toolWindowType == GuidList.ReplInteractiveWindowProviderGuid)
             {
-                IVsInteractiveWindow result = GetInteractiveWindowProvider().Create(id);
+                IVsInteractiveWindow result = _interactiveWindowProvider.Value.Create(id);
                 return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;
             }
 
             return base.CreateToolWindow(ref toolWindowType, id);
-        }
-
-        private static IVsInteractiveWindowProvider GetInteractiveWindowProvider()
-        {
-            return AppShell.Current.ExportProvider.GetExportedValue<IVsInteractiveWindowProvider>();
         }
     }
 }

@@ -39,10 +39,7 @@ namespace Microsoft.R.Host.Client
 
             if(!File.Exists(rhostExe))
             {
-                await _callbacks.ShowMessage(new IRContext[0], Resources.Error_Microsoft_R_Host_Missing, MessageSeverity.Error);
-                // TODO: provide actual download link for Microsoft.R.Host.exe
-                Process.Start("https://cran.r-project.org");
-                return;
+                throw new MicrosoftRHostMissingException();
             }
 
             psi = psi ?? new ProcessStartInfo();
@@ -159,7 +156,7 @@ namespace Microsoft.R.Host.Client
                         break;
 
                     case "ShowMessage":
-                        await _callbacks.ShowMessage(contexts, (string)obj["s"], MessageSeverity.Info);
+                        await _callbacks.ShowMessage(contexts, (string)obj["s"]);
                         break;
 
                     case "Busy":

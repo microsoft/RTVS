@@ -82,6 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands
                 {
                     ITextSnapshotLine nextLine = snapshot.GetLineFromLineNumber(line.LineNumber + 1);
                     TextView.Caret.MoveTo(new SnapshotPoint(snapshot, nextLine.Start));
+                    TextView.Caret.EnsureVisible();
                 }
             }
 

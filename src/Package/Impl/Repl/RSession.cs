@@ -5,13 +5,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 
-namespace Microsoft.R.Host.Client
+namespace Microsoft.VisualStudio.R.Package.Repl
 {
     using Task = System.Threading.Tasks.Task;
-    using Package = Microsoft.VisualStudio.Shell.Package;
 
     internal sealed class RSession : IRSession, IRCallbacks
     {
@@ -52,7 +54,7 @@ namespace Microsoft.R.Host.Client
             {
                 requestSource = new RSessionRequestSource(isVisible, _contexts);
                 _pendingRequestSources.Enqueue(requestSource);
-                
+
             }
             else
             {
@@ -153,37 +155,21 @@ namespace Microsoft.R.Host.Client
             return Task.CompletedTask;
         }
 
-        public Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string message, MessageSeverity severity)
+        public async Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string message)
         {
-            OLEMSGICON icon;
-            switch(severity)
-            {
-                case MessageSeverity.Info:
-                    icon = OLEMSGICON.OLEMSGICON_INFO;
-                    break;
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
-                case MessageSeverity.Warning:
-                    icon = OLEMSGICON.OLEMSGICON_WARNING;
-                    break;
-
-                default:
-                    icon = OLEMSGICON.OLEMSGICON_CRITICAL;
-                    break;
-            }
-
-            IVsUIShell shell = Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
+            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             if (shell != null)
             {
                 int result;
-                shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, icon, 0, out result);
+                shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
             }
-
-            return Task.CompletedTask;
         }
 
         public Task<YesNoCancel> YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s)
         {
-            return Task.FromResult(Host.Client.YesNoCancel.Yes);
+            return Task.FromResult(Microsoft.R.Host.Client.YesNoCancel.Yes);
         }
 
         public Task Busy(IReadOnlyCollection<IRContext> contexts, bool which)

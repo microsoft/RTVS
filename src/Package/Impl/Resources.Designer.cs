@@ -79,6 +79,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
+        /// </summary>
+        internal static string Error_Microsoft_R_Host_Missing {
+            get {
+                return ResourceManager.GetString("Error_Microsoft_R_Host_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R.
         /// </summary>
         internal static string LanguageName {

@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.R.Host.Client
 {

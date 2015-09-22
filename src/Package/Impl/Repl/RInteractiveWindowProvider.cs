@@ -1,37 +1,34 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
-    [Export(typeof(IVsInteractiveWindowProvider))]
-    [AppliesTo("RTools")]
     internal sealed class RInteractiveWindowProvider : IVsInteractiveWindowProvider
     {
-        private readonly IRSessionProvider _sessionProvider;
-        private readonly IVsInteractiveWindowFactory _vsInteractiveWindowFactory;
-        private readonly IContentTypeRegistryService _contentTypeRegistry;
+        [Import]
+        private IContentTypeRegistryService ContentTypeRegistryService { get; set; }
 
-        [ImportingConstructor]
-        public RInteractiveWindowProvider(IRSessionProvider sessionProvider, IVsInteractiveWindowFactory vsInteractiveWindowFactory, IContentTypeRegistryService contentTypeRegistry)
+        [Import]
+        private IVsInteractiveWindowFactory VsInteractiveWindowFactory { get; set; }
+
+        private readonly IRSessionProvider _sessionProvider;
+
+        public RInteractiveWindowProvider()
         {
-            _sessionProvider = sessionProvider;
-            _vsInteractiveWindowFactory = vsInteractiveWindowFactory;
-            _contentTypeRegistry = contentTypeRegistry;
+            AppShell.Current.CompositionService.SatisfyImportsOnce(this);
+            _sessionProvider = new RSessionProvider();
         }
 
         public IVsInteractiveWindow Create(int instanceId)
         {
             var session = _sessionProvider.Create(instanceId);
             var evaluator = new RInteractiveEvaluator(session);
-            var vsWindow = _vsInteractiveWindowFactory.Create(GuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
-            vsWindow.SetLanguage(GuidList.LanguageServiceGuid, _contentTypeRegistry.GetContentType(RContentTypeDefinition.ContentType));
+            var vsWindow = VsInteractiveWindowFactory.Create(GuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
+            vsWindow.SetLanguage(GuidList.LanguageServiceGuid, ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType));
 
             vsWindow.InteractiveWindow.TextView.Closed += (_, __) =>
             {

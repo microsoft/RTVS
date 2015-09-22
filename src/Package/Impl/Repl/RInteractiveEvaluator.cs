@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
@@ -30,12 +34,32 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         {
             try
             {
+                TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
                 await _session.InitializeAsync();
                 return ExecutionResult.Success;
             }
             catch (Exception)
             {
                 return ExecutionResult.Failure;
+            }
+        }
+
+        private async void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
+
+            if (e.Exception.InnerException is MicrosoftRHostMissingException)
+            {
+                e.SetObserved();
+                IRCallbacks callbacks = _session as IRCallbacks;
+
+                Debug.Assert(callbacks != null);
+                if (callbacks != null)
+                {
+                    await callbacks.ShowMessage(new ReadOnlyCollection<IRContext>(new IRContext[0]), Resources.Error_Microsoft_R_Host_Missing);
+                    // TODO: actually provide download link for Microsoft.R.Host.exe
+                    Process.Start("http://www.microsoft.com");
+                }
             }
         }
 
@@ -75,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         }
 
         public IInteractiveWindow CurrentWindow { get; set; }
- 
+
         private void SessionOnBeforeRequest(object sender, RBeforeRequestEventArgs args)
         {
             _requestTcs.SetResult(ExecutionResult.Success);

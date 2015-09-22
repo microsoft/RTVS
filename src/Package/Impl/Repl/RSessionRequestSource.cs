@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client;
 
-namespace Microsoft.R.Host.Client
+namespace Microsoft.VisualStudio.R.Package.Repl
 {
     internal class RSessionRequestSource
     {
