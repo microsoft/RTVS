@@ -117,7 +117,9 @@
     <Compile Include="AST\AstNodeTest.cs" />
     <Compile Include="AST\RDataTypesTest.cs" />
     <Compile Include="AST\AstShiftTest.cs" />
-    <Compile Include="Formatting\FormatterTest.cs" />
+    <Compile Include="Formatting\FormatScopeTest.cs" />
+    <Compile Include="Formatting\FormatConditionalsTest.cs" />
+    <Compile Include="Formatting\FormatFunctionTest.cs" />
     <Compile Include="Formatting\FormatSamplesFilesTest.cs" />
     <Compile Include="Formatting\FormatFilesFiles.cs" />
     <Compile Include="Parser\ParseFilesTest.cs" />

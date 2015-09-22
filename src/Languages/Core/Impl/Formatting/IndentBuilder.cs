@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Formatting
 {
@@ -92,7 +93,7 @@ namespace Microsoft.Languages.Core.Formatting
 
             int baseIndentSize = TextIndentInSpaces(baseIndentString, TabSize);
             int newIndentLevel = (indentSize - baseIndentSize) / IndentSize;
-            
+
             IndentLevel = Math.Max(newIndentLevel, 0);
         }
 
@@ -101,6 +102,14 @@ namespace Microsoft.Languages.Core.Formatting
             return GetIndentString(size, IndentType, TabSize);
         }
 
+        /// <summary>
+        /// Calculates indentation string given indent size in characters, 
+        /// type of indent (tabs or spaces) and size of the tab,
+        /// </summary>
+        /// <param name="size">Desired indent size in characters</param>
+        /// <param name="indentType">Type of indent</param>
+        /// <param name="tabSize">Tab size</param>
+        /// <returns></returns>
         public static string GetIndentString(int size, IndentType indentType, int tabSize)
         {
             StringBuilder sb = new StringBuilder();
@@ -253,7 +262,7 @@ namespace Microsoft.Languages.Core.Formatting
             int length = 0;
             int spaces = 0;
 
-            for (int i = 0; i < text.Length; i++ )
+            for (int i = 0; i < text.Length; i++)
             {
                 char ch = text[i];
 
@@ -269,6 +278,14 @@ namespace Microsoft.Languages.Core.Formatting
             return length;
         }
 
+        /// <summary>
+        /// Given text string (typically content of a text buffer)
+        /// calculates size of indentation (length of the leading
+        /// whitespace in the line) in spaces.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="tabSize"></param>
+        /// <returns></returns>
         public static int TextIndentInSpaces(string text, int tabSize)
         {
             int spaces = 0;

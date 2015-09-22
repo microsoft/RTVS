@@ -129,6 +129,7 @@
     <Compile Include="RD\ContentType\RdContentTypeDefinition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RD\Tokens\RdBlockContentType.cs" />
+    <Compile Include="RD\Tokens\RdTokenTypeComparer.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
