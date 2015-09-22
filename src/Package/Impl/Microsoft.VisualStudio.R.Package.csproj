@@ -309,6 +309,10 @@
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Visualizer\Impl\Microsoft.R.Visualizer\Microsoft.R.Visualizer.csproj">
+      <Project>{7b41fc53-2216-4647-b4a7-f907a6e816f0}</Project>
+      <Name>Microsoft.R.Visualizer</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Package.ico" />

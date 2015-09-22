@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client.Test", "Host\Client\Test\Microsoft.R.Host.Client.Test.csproj", "{E1B1909E-3193-499B-91DB-1E13E6836929}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Visualizer", "Visualizer\Impl\Microsoft.R.Visualizer\Microsoft.R.Visualizer.csproj", "{7B41FC53-2216-4647-B4A7-F907A6E816F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,6 +207,14 @@ Global
 		{E1B1909E-3193-499B-91DB-1E13E6836929}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E1B1909E-3193-499B-91DB-1E13E6836929}.Release|x86.ActiveCfg = Release|Any CPU
 		{E1B1909E-3193-499B-91DB-1E13E6836929}.Release|x86.Build.0 = Release|Any CPU
+		{7B41FC53-2216-4647-B4A7-F907A6E816F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B41FC53-2216-4647-B4A7-F907A6E816F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B41FC53-2216-4647-B4A7-F907A6E816F0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7B41FC53-2216-4647-B4A7-F907A6E816F0}.Debug|x86.Build.0 = Debug|Any CPU
+		{7B41FC53-2216-4647-B4A7-F907A6E816F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B41FC53-2216-4647-B4A7-F907A6E816F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B41FC53-2216-4647-B4A7-F907A6E816F0}.Release|x86.ActiveCfg = Release|Any CPU
+		{7B41FC53-2216-4647-B4A7-F907A6E816F0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

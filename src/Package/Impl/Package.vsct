@@ -45,6 +45,15 @@
           <ButtonText>Formatting &amp;Options...</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidPlotWindowCommandSet" id="cmdidShowPlotWindow" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Show Plot Windows</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
   </Commands>
@@ -90,6 +99,13 @@
     <GuidSymbol name="guidRInteractiveCommandSet" value="{E1B81198-F2CF-46EE-BAF1-ACB4AE066A5C}">
       <!-- Show Default Interactive Window -->
       <IDSymbol name="cmdidShowDefaultInteractiveWindow" value="0x0100" />
+    </GuidSymbol>
+
+    <!-- Show Plot Commands 
+    TODO: is it the right and best place? -->
+    <GuidSymbol name="guidPlotWindowCommandSet" value="{FE3D0077-CFD8-4178-A755-9B98D0FB6458}">
+      <!-- Show Default Interactive Window -->
+      <IDSymbol name="cmdidShowPlotWindow" value="0x0100" />
     </GuidSymbol>
   </Symbols>
 
