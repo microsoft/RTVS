@@ -18,6 +18,7 @@ namespace Microsoft.Languages.Editor.Completion
     public abstract class CompletionController : IIntellisenseController
     {
         public const string AutoShownCompletion = "AutoShownCompletion";
+        public const string AutoShownSignature = "AutoShownSignature";
 
         public IList<ITextBuffer> SubjectBuffers { get; private set; }
         public ITextView TextView { get; private set; }
@@ -494,6 +495,10 @@ namespace Microsoft.Languages.Editor.Completion
                 SignatureBroker != null)
             {
                 SignatureBroker.DismissAllSessions(TextView);
+
+                TextView.Properties.RemoveProperty(CompletionController.AutoShownCompletion);
+                TextView.Properties.AddProperty(CompletionController.AutoShownCompletion, autoShown);
+
                 SignatureBroker.TriggerSignatureHelp(TextView);
             }
         }
