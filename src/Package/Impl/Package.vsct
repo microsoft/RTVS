@@ -12,6 +12,18 @@
           <ButtonText>R Context</ButtonText>
         </Strings>
       </Menu>
+
+      <Menu guid="guidPlotWindowCmdSet" id="menuIdPlotToolbar" type="ToolWindowToolbar">
+        <Parent guid="guidPlotWindowCmdSet" id="0"/>
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <CommandFlag>NoToolbarClose</CommandFlag>
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Plot Window</ButtonText>
+          <CommandName>Plot Window</CommandName>
+        </Strings>
+      </Menu>
     </Menus>
 
     <!-- 
@@ -27,6 +39,11 @@
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <!-- End R code editor context menu groups -->
+      
+      <!-- PlotWindow groups -->
+      <Group guid="guidPlotWindowCmdSet" id="plotToolbarGroup" priority="0x0000">
+        <Parent guid="guidPlotWindowCmdSet" id="menuIdPlotToolbar"/>
+      </Group>
     </Groups>
 
     <Buttons>
@@ -46,7 +63,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidPlotWindowCommandSet" id="cmdidShowPlotWindow" priority="0x0100" type="Button">
+      <Button guid="guidPlotWindowCmdSet" id="cmdidShowPlotWindow" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -54,8 +71,23 @@
           <ButtonText>Show Plot Windows</ButtonText>
         </Strings>
       </Button>
+      
+      <!-- Plot window toolbar -->
+      <Button guid="guidPlotWindowCmdSet" id="cmdidOpenPlot" priority="0x0100" type="Button">
+        <Parent guid="guidPlotWindowCmdSet" id="plotToolbarGroup"/>
+        <Icon guid="guidPlotToolbarImages" id="bmpOpenPlot"/>
+        <Strings>
+          <ButtonText>Open plot</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
+    <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
+    <Bitmaps>
+      <Bitmaps>
+        <Bitmap guid="guidPlotToolbarImages" href=".\Folder_6221_24.bmp" usedList="bmpOpenPlot" />
+      </Bitmaps>
+    </Bitmaps>
   </Commands>
 
   <CommandPlacements>
@@ -103,9 +135,20 @@
 
     <!-- Show Plot Commands 
     TODO: is it the right and best place? -->
-    <GuidSymbol name="guidPlotWindowCommandSet" value="{FE3D0077-CFD8-4178-A755-9B98D0FB6458}">
-      <!-- Show Default Interactive Window -->
+    <GuidSymbol name="guidPlotWindowCmdSet" value="{FE3D0077-CFD8-4178-A755-9B98D0FB6458}">
+      <!-- Commands -->
       <IDSymbol name="cmdidShowPlotWindow" value="0x0100" />
+      <IDSymbol name="cmdidOpenPlot" value="0x0110"/>
+
+      <!-- Groups -->
+      <IDSymbol name="plotToolbarGroup" value="0x1000" />
+
+      <!-- Menus -->
+      <IDSymbol name="menuIdPlotToolbar" value="0x2000" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidPlotToolbarImages" value="{4926B34F-1AE5-4CAE-BBD4-1548E77D2033}" >
+      <IDSymbol name="bmpOpenPlot" value="0x01" />
     </GuidSymbol>
   </Symbols>
 

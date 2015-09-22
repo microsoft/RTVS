@@ -87,6 +87,7 @@
     <Compile Include="Document\VsEditorDocument.cs" />
     <Compile Include="Document\VsEditorDocumentFactory.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
+    <Compile Include="Packages\CommandIDs.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
@@ -315,6 +316,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Folder_6221_24.bmp" />
     <Content Include="Resources\Package.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
       <SubType>Designer</SubType>

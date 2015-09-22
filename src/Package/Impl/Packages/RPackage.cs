@@ -79,6 +79,7 @@ namespace Microsoft.VisualStudio.R.Packages
                 (sender, args) => GetInteractiveWindowProvider().Open(instanceId: 0, focus: true),
                 new CommandID(GuidList.RInteractiveCommandSetGuid, 0x0100));
 
+            // TODO: abstract the pane. reference to PTVS
             yield return new MenuCommand(
                 (sender, args) => ShowWindowPane(typeof(PlotWindowPane), true),
                 new CommandID(GuidList.PlotWindowGuid, 0x0100));
@@ -111,7 +112,7 @@ namespace Microsoft.VisualStudio.R.Packages
             return AppShell.Current.ExportProvider.GetExportedValue<IVsInteractiveWindowProvider>();
         }
 
-        void ShowWindowPane(Type windowType, bool focus)
+        private void ShowWindowPane(Type windowType, bool focus)
         {
             var window = FindWindowPane(windowType, 0, true) as ToolWindowPane;
             if (window != null)
