@@ -5,14 +5,15 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.R.Visualizer
+namespace Microsoft.VisualStudio.R.Package.Plots
 {
-    [Guid("FE3D0077-CFD8-4178-A755-9B98D0FB6458")]  // Same value as in GuidList.PlotWindowGuidString, TODO: move to better place
-    public class PlotWindowPane : ToolWindowPane
+    public class PlotWindowPane : ToolWindowPane, IOleCommandTarget
     {
         public PlotWindowPane()
         {
@@ -50,5 +51,30 @@ Test test test
             Guid guidPlotMenuGroup = GuidList.PlotWindowGuid;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(tbh.AddToolbar(VSTWT_LOCATION.VSTWT_TOP, ref guidPlotMenuGroup, CommandIDs.menuIdPlotToolbar));
         }
+
+        #region IOleCommandTarget
+
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        {
+            if (pguidCmdGroup == GuidList.PlotWindowGuid)
+            {
+                switch (nCmdID)
+                {
+                    case CommandIDs.cmdidOpenPlot:
+                        // TODO: factor out as utility
+                        return VSConstants.S_OK;
+                }
+            }
+
+            var nextTarget = this.ToolBarCommandTarget;
+            if (nextTarget != null)
+            {
+                return nextTarget.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            }
+
+            return VSConstants.E_FAIL;
+        }
+
+        #endregion
     }
 }

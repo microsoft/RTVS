@@ -88,6 +88,10 @@
     <Compile Include="Document\VsEditorDocumentFactory.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
     <Compile Include="Packages\CommandIDs.cs" />
+    <Compile Include="Plots\PlotWindowPane.cs" />
+    <Compile Include="Plots\XamlPresenter.xaml.cs">
+      <DependentUpon>XamlPresenter.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
@@ -262,6 +266,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -309,10 +314,6 @@
     <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Visualizer\Impl\Microsoft.R.Visualizer\Microsoft.R.Visualizer.csproj">
-      <Project>{7b41fc53-2216-4647-b4a7-f907a6e816f0}</Project>
-      <Name>Microsoft.R.Visualizer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -424,6 +425,12 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Plots\XamlPresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
