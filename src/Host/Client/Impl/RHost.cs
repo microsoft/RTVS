@@ -6,6 +6,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.R.Support.Settings;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -37,6 +38,14 @@ namespace Microsoft.R.Host.Client
         {
             string rBinPath = RToolsSettings.GetBinariesFolder();
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), "Microsoft.R.Host.exe");
+
+            if(!File.Exists(rhostExe))
+            {
+                MessageBox.Show(Resources.Error_Microsoft_R_Host_Missing, "Microsoft Visual Studio", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // TODO: provide actual download link for Microsoft.R.Host.exe
+                Process.Start("https://cran.r-project.org");
+                return;
+            }
 
             psi = psi ?? new ProcessStartInfo();
             psi.FileName = rhostExe;
