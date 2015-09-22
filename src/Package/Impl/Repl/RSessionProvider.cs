@@ -1,9 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.R.Host.Client;
 
-namespace Microsoft.R.Host.Client
+namespace Microsoft.VisualStudio.R.Package.Repl
 {
     public class RSessionProvider : IRSessionProvider
     {
