@@ -65,9 +65,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands
             {
                 IVsWindowFrame frame;
                 IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+
                 Guid persistenceSlot = GuidList.ReplInteractiveWindowProviderGuid;
                 shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fForceCreate, ref persistenceSlot, out frame);
-                frame.Show();
+                if (frame != null)
+                {
+                    frame.Show();
+                }
             }
 
             if (_lastUsedReplWindow != null)
@@ -131,10 +135,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands
 
         private bool CheckReplFrame(IVsWindowFrame frame)
         {
-            Guid property;
-
             if (frame != null)
             {
+                Guid property;
                 frame.GetGuidProperty((int)__VSFPROPID.VSFPROPID_GuidPersistenceSlot, out property);
                 if (property == GuidList.ReplInteractiveWindowProviderGuid)
                 {
