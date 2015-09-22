@@ -6,9 +6,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Microsoft.R.Support.Settings;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -41,7 +39,7 @@ namespace Microsoft.R.Host.Client
 
             if(!File.Exists(rhostExe))
             {
-                MessageBox.Show(Resources.Error_Microsoft_R_Host_Missing, "Microsoft Visual Studio", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await _callbacks.ShowMessage(new IRContext[0], Resources.Error_Microsoft_R_Host_Missing, MessageSeverity.Error);
                 // TODO: provide actual download link for Microsoft.R.Host.exe
                 Process.Start("https://cran.r-project.org");
                 return;
@@ -161,7 +159,7 @@ namespace Microsoft.R.Host.Client
                         break;
 
                     case "ShowMessage":
-                        await _callbacks.ShowMessage(contexts, (string)obj["s"]);
+                        await _callbacks.ShowMessage(contexts, (string)obj["s"], MessageSeverity.Info);
                         break;
 
                     case "Busy":

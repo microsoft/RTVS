@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.R.Host.Client
 {

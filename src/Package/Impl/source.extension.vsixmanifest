@@ -9,7 +9,7 @@
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0]" />
   </Installation>
   <Assets>
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Client.exe" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Client.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Common.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Core.dll" />

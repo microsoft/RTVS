@@ -29,8 +29,8 @@ namespace Microsoft.R.Host.Client {
             return (await Console.In.ReadLineAsync()) + "\n";
         }
 
-        public async Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string s) {
-            await Console.Error.WriteLineAsync(s);
+        public async Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string message, MessageSeverity severity) {
+            await Console.Error.WriteLineAsync(message);
         }
 
         public async Task WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, string buf, OutputType otype) {

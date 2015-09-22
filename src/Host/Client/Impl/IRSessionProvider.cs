@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.R.Host.Client
 {

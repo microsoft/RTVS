@@ -5,9 +5,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.R.Host.Client
 {
+    using Task = System.Threading.Tasks.Task;
+    using Package = Microsoft.VisualStudio.Shell.Package;
+
     internal sealed class RSession : IRSession, IRCallbacks
     {
         private readonly RHost _host;
@@ -148,8 +153,31 @@ namespace Microsoft.R.Host.Client
             return Task.CompletedTask;
         }
 
-        public Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string s)
+        public Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string message, MessageSeverity severity)
         {
+            OLEMSGICON icon;
+            switch(severity)
+            {
+                case MessageSeverity.Info:
+                    icon = OLEMSGICON.OLEMSGICON_INFO;
+                    break;
+
+                case MessageSeverity.Warning:
+                    icon = OLEMSGICON.OLEMSGICON_WARNING;
+                    break;
+
+                default:
+                    icon = OLEMSGICON.OLEMSGICON_CRITICAL;
+                    break;
+            }
+
+            IVsUIShell shell = Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
+            if (shell != null)
+            {
+                int result;
+                shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, icon, 0, out result);
+            }
+
             return Task.CompletedTask;
         }
 
