@@ -5,15 +5,15 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
-    internal class RSessionInteraction : IRSessionInteraction
+    internal class RSessionInteraction : IRSessionInteraction, IRExpressionEvaluator
     {
         private readonly TaskCompletionSource<string> _requestTcs;
         private readonly TaskCompletionSource<string> _responseTcs;
+        private IRExpressionEvaluator _expressionEvaluator;
 
         public string Prompt { get; }
         public int MaxLength { get; }
         public IReadOnlyCollection<IRContext> Contexts { get; }
-        public IRExpressionEvaluator ExpressionEvaluator { get; }
 
         public RSessionInteraction(
             TaskCompletionSource<string> requestTcs,
@@ -25,16 +25,25 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         {
             _requestTcs = requestTcs;
             _responseTcs = responseTcs;
+            _expressionEvaluator = evaluator;
             Prompt = prompt;
             MaxLength = maxLength;
             Contexts = contexts;
-            ExpressionEvaluator = evaluator;
         }
 
         public Task<string> RespondAsync(string messageText)
         {
+            _expressionEvaluator = null;
             _requestTcs.SetResult(messageText);
             return _responseTcs.Task;
+        }
+
+        public Task<REvaluationResult> EvaluateAsync(string expression) {
+            if (_expressionEvaluator == null) {
+                throw new InvalidOperationException("EvaluateAsync cannot be used after RespondAsync was invoked.");
+            }
+
+            return _expressionEvaluator.EvaluateAsync(expression);
         }
     }
 }

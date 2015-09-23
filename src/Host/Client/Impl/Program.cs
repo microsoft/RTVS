@@ -65,9 +65,9 @@ namespace Microsoft.R.Host.Client {
                 await Console.Out.WriteAsync(prompt);
                 string s = await Console.In.ReadLineAsync();
 
-                if (s.StartsWith("==")) {
+                if (s.StartsWith("==", StringComparison.OrdinalIgnoreCase)) {
                     s = s.Remove(0, 1);
-                } else if (s.StartsWith("=")) {
+                } else if (s.StartsWith("=", StringComparison.OrdinalIgnoreCase)) {
                     s = s.Remove(0, 1);
                     var er = await evaluator.EvaluateAsync(s);
                     await Console.Out.WriteLineAsync(er.ToString());

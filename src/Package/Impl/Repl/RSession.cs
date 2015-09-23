@@ -23,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         private readonly TaskCompletionSource<object> _initializationTcs;
         private readonly ConcurrentQueue<RSessionRequestSource> _pendingRequestSources = new ConcurrentQueue<RSessionRequestSource>();
         private readonly Stack<RSessionRequestSource> _currentRequestSources = new Stack<RSessionRequestSource>();
+        private IRExpressionEvaluator _expressionEvaluator;
 
         public event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
         public event EventHandler<RResponseEventArgs> Response;
@@ -36,7 +37,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl
 
         public string Prompt { get; private set; } = "> ";
         public int MaxLength { get; private set; } = 0x1000;
-        public IRExpressionEvaluator ExpressionEvaluator { get; private set; }
 
         public RSession()
         {
@@ -62,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             else
             {
                 requestSource = new RSessionRequestSource(isVisible, _contexts, requestTcs);
-                requestSource.BeginInteractionAsync(Prompt, MaxLength, ExpressionEvaluator);
+                requestSource.BeginInteractionAsync(Prompt, MaxLength, _expressionEvaluator);
                 _currentRequestSources.Push(requestSource);
             }
 
@@ -115,9 +115,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             }
 
             _contexts = contexts;
+            _expressionEvaluator = evaluator;
             Prompt = prompt;
             MaxLength = len;
-            ExpressionEvaluator = evaluator;
 
             OnBeforeRequest(contexts, prompt, len, addToHistory);
 

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.Client {
     public interface IRExpressionEvaluator {
@@ -31,10 +33,10 @@ namespace Microsoft.R.Host.Client {
         public override string ToString() {
             var sb = new StringBuilder(Result);
             if (ParseStatus != RParseStatus.OK) {
-                sb.AppendFormat("; {0}", ParseStatus);
+                sb.AppendFormat(CultureInfo.InvariantCulture, "; {0}", ParseStatus);
             }
             if (Error != null) {
-                sb.AppendFormat("; '{0}'", Error);
+                sb.AppendFormat(CultureInfo.InvariantCulture, "; '{0}'", Error);
             }
             return sb.ToString();
         }
