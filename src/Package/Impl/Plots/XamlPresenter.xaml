@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.Plots"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border x:Name="RootContainer">
-        <TextBlock>Test test test</TextBlock>  
-    </Border>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Border x:Name="RootContainer">
+        </Border>
+    </ScrollViewer>
 </UserControl>

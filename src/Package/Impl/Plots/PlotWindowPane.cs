@@ -1,80 +1,149 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.Design;
+using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Plots
 {
-    public class PlotWindowPane : ToolWindowPane, IOleCommandTarget
+    public class PlotWindowPane : ToolWindowPane
     {
         public PlotWindowPane()
         {
-            SetContent();
+            Caption = "R Plot";
+            Content = new XamlPresenter();
+
+            InitializePresenter();
+
+            this.ToolBar = new CommandID(GuidList.PlotWindowGuid, CommandIDs.menuIdPlotToolbar);
+            this.ToolBarCommandTarget = new PlotWindowCommandTarget(this);
         }
 
-
-        public override void OnToolWindowCreated()
+        private void InitializePresenter()
         {
-            base.OnToolWindowCreated();
-
-            SetToolBar();
-        }
-
-        private void SetContent()
-        {
-            var xamlPresenter = new XamlPresenter();
-
-            xamlPresenter.LoadXaml(@"<TextBlock 
-xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006"">
-Test test test
-</TextBlock>");
-
-            Content = xamlPresenter;
-        }
-
-        private void SetToolBar()
-        {
-            var frame = (IVsWindowFrame)Frame;
-            object otbh;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_ToolbarHost, out otbh));
-            IVsToolWindowToolbarHost tbh = otbh as IVsToolWindowToolbarHost;
-            Guid guidPlotMenuGroup = GuidList.PlotWindowGuid;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(tbh.AddToolbar(VSTWT_LOCATION.VSTWT_TOP, ref guidPlotMenuGroup, CommandIDs.menuIdPlotToolbar));
-        }
-
-        #region IOleCommandTarget
-
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
-        {
-            if (pguidCmdGroup == GuidList.PlotWindowGuid)
+            var presenter = this.Content as XamlPresenter;
+            if (presenter != null)
             {
-                switch (nCmdID)
+                presenter.LoadXaml(@"<TextBlock xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+Please open a file to show XAML file here.
+</TextBlock>");
+            }
+        }
+
+        private void OpenPlotCommand()
+        {
+            string fileName = GetFileName();
+
+            var presenter = this.Content as XamlPresenter;
+            if (presenter != null)
+            {
+                presenter.LoadXamlFile(fileName);
+            }
+        }
+
+        // TODO: factor out to utility. Copied code from PTVS, Dialogs.cs
+        private string GetFileName()
+        {
+            return BrowseForFileOpen(
+                IntPtr.Zero,
+                "XAML Files (*.xaml)|*.xaml|All Files (*.*)|*.*",
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "Choose XAML File");
+        }
+
+        static string BrowseForFileOpen(
+            IntPtr owner,
+            string filter,
+            string initialPath = null,
+            string title = null)
+        {
+            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            if (uiShell != null)
+            {
+                if (owner == IntPtr.Zero)
                 {
-                    case CommandIDs.cmdidOpenPlot:
-                        // TODO: factor out as utility
-                        return VSConstants.S_OK;
+                    ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
+                }
+
+                VSOPENFILENAMEW[] openInfo = new VSOPENFILENAMEW[1];
+                openInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSOPENFILENAMEW));
+                openInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
+                openInfo[0].hwndOwner = owner;
+                openInfo[0].pwzDlgTitle = title;
+                openInfo[0].nMaxFileName = 260;
+                var pFileName = Marshal.AllocCoTaskMem(520);
+                openInfo[0].pwzFileName = pFileName;
+                openInfo[0].pwzInitialDir = Path.GetDirectoryName(initialPath);
+                var nameArray = (Path.GetFileName(initialPath) + "\0").ToCharArray();
+                Marshal.Copy(nameArray, 0, pFileName, nameArray.Length);
+                try
+                {
+                    int hr = uiShell.GetOpenFileNameViaDlg(openInfo);
+                    if (hr == VSConstants.OLE_E_PROMPTSAVECANCELLED)
+                    {
+                        return null;
+                    }
+                    ErrorHandler.ThrowOnFailure(hr);
+                    return Marshal.PtrToStringAuto(openInfo[0].pwzFileName);
+                }
+                finally
+                {
+                    if (pFileName != IntPtr.Zero)
+                    {
+                        Marshal.FreeCoTaskMem(pFileName);
+                    }
                 }
             }
 
-            var nextTarget = this.ToolBarCommandTarget;
-            if (nextTarget != null)
-            {
-                return nextTarget.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
-            }
-
-            return VSConstants.E_FAIL;
+            return null;
         }
 
-        #endregion
+        /// <summary>
+        /// internal class to handle Command
+        /// </summary>
+        class PlotWindowCommandTarget : IOleCommandTarget
+        {
+            private readonly PlotWindowPane _owner;
+            public PlotWindowCommandTarget(PlotWindowPane owner)
+            {
+                _owner = owner;
+            }
+
+            public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+            {
+                if (pguidCmdGroup == GuidList.PlotWindowGuid)
+                {
+                    switch (nCmdID)
+                    {
+                        case CommandIDs.cmdidOpenPlot:
+                            _owner.OpenPlotCommand();
+                            return VSConstants.S_OK;
+                    }
+                }
+
+                throw new InvalidOperationException();
+            }
+
+            public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+            {
+                if (pguidCmdGroup == GuidList.PlotWindowGuid)
+                {
+                    for (int i = 0; i < cCmds; i++)
+                    {
+                        switch(prgCmds[i].cmdID)
+                        {
+                            case CommandIDs.cmdidOpenPlot:
+                                prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_ENABLED | OLECMDF.OLECMDF_SUPPORTED);
+                                return VSConstants.S_OK;
+                        }
+                    }
+                }
+
+                throw new InvalidOperationException();
+            }
+        }
     }
 }

@@ -16,13 +16,23 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             InitializeComponent();
         }
 
+        public void LoadXamlFile(string fileName)
+        {
+            SetContainer(() => XamlServices.Load(fileName));
+        }
+
         public void LoadXaml(string xamlText)
+        {
+            SetContainer(() => XamlServices.Parse(xamlText));
+        }
+
+        private void SetContainer(Func<object> xamlObjectLoader)
         {
             object parsed = null;
 
             try
             {
-                parsed = XamlServices.Parse(xamlText);
+                parsed = xamlObjectLoader();
             }
             catch (Exception e)
             {
