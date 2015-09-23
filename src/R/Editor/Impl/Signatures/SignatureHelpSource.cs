@@ -92,7 +92,7 @@ namespace Microsoft.R.Editor.Signatures
                 {
                     var jsSig = sig as SignatureHelp;
 
-                    if (jsSig != null && jsSig.FunctionName.StartsWith(text))
+                    if (jsSig != null && jsSig.FunctionName.StartsWith(text, StringComparison.Ordinal))
                     {
                         return sig;
                     }
@@ -108,7 +108,7 @@ namespace Microsoft.R.Editor.Signatures
                                        ParametersInfo parametersInfo, ITrackingSpan span, 
                                        AstRoot ast, int position)
         {
-            SignatureHelp sig = new SignatureHelp(session, functionInfo.Name, string.Empty);
+            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionInfo.Name, string.Empty);
             List<IParameter> paramList = new List<IParameter>();
 
             // Locus points in the pretty printed signature (the one displayed in the tooltip)

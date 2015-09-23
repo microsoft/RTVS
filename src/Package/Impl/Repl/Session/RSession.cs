@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
 
-namespace Microsoft.VisualStudio.R.Package.Repl
+namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
     using Task = System.Threading.Tasks.Task;
 

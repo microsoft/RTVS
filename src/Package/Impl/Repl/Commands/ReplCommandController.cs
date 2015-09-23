@@ -2,36 +2,48 @@
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Commands
+namespace Microsoft.VisualStudio.R.Package.Repl.Commands
 {
     /// <summary>
-    /// Main R editor command controller
+    /// Main HTML editor command controller
     /// </summary>
-    public class RMainController : ViewController
+    public class ReplCommandController : ViewController
     {
-        public RMainController(ITextView textView, ITextBuffer textBuffer)
+        public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer)
         {
-            ServiceManager.AddService<RMainController>(this, textView);
+            ServiceManager.AddService<ReplCommandController>(this, textView);
         }
 
-        public static RMainController Attach(ITextView textView, ITextBuffer textBuffer)
+        public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer)
         {
-            RMainController controller = FromTextView(textView);
+            ReplCommandController controller = FromTextView(textView);
             if (controller == null)
             {
-                controller = new RMainController(textView, textBuffer);
+                controller = new ReplCommandController(textView, textBuffer);
             }
 
             return controller;
         }
 
-        public static RMainController FromTextView(ITextView textView)
+        public static ReplCommandController FromTextView(ITextView textView)
         {
-            return ServiceManager.GetService<RMainController>(textView);
+            return ServiceManager.GetService<ReplCommandController>(textView);
+        }
+
+        public override void BuildCommandSet()
+        {
+            if (EditorShell.Current.CompositionService != null)
+            {
+                var factory = new ReplCommandFactory();
+                var commands = factory.GetCommands(TextView, TextBuffer);
+                AddCommandSet(commands);
+            }
         }
 
         public override CommandStatus Status(Guid group, int id)
@@ -61,7 +73,7 @@ namespace Microsoft.R.Editor.Commands
         {
             if (TextView != null)
             {
-                ServiceManager.RemoveService<RMainController>(TextView);
+                ServiceManager.RemoveService<ReplCommandController>(TextView);
             }
 
             base.Dispose(disposing);

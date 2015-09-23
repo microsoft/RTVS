@@ -58,8 +58,13 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
             _fireCodeMarkerUponCompletion = true;
 
-            if (TaskList != null)
+            // Don't push syntax errors to the Error List in transient
+            // documents such as in document attached to a projected buffer
+            // in the R interactive window
+            if (TaskList != null && _document.WorkspaceItem != null && _document.WorkspaceItem.Path.Length > 0)
+            {
                 TaskList.AddTaskSource(this);
+            }
 
             TreeValidator validator = TreeValidator.EnsureFromTextBuffer(_textBuffer, _document.EditorTree);
 

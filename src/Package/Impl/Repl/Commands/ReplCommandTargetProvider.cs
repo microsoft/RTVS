@@ -1,0 +1,138 @@
+﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
+using System.Diagnostics;
+using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
+using Microsoft.VisualStudio.InteractiveWindow.Shell;
+using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.R.Package.Repl.Commands;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Projection;
+using Microsoft.VisualStudio.Utilities;
+
+namespace Microsoft.VisualStudio.R.Package.Repl
+{
+    [Export(typeof(IVsInteractiveWindowOleCommandTargetProvider))]
+    [ContentType(RContentTypeDefinition.ContentType)]
+    internal sealed class ReplCommandTargetProvider : IVsInteractiveWindowOleCommandTargetProvider
+    {
+        public IOleCommandTarget GetCommandTarget(IWpfTextView textView, IOleCommandTarget nextTarget)
+        {
+            IOleCommandTarget target = ServiceManager.GetService<IOleCommandTarget>(textView);
+            if (target == null)
+            {
+                ReplCommandController controller = ReplCommandController.Attach(textView, textView.TextBuffer);
+
+                // Wrap controller into OLE command target
+                target = EditorShell.Current.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
+                Debug.Assert(target != null);
+
+                ServiceManager.AddService<IOleCommandTarget>(target, textView);
+
+                // Wrap next OLE target in the chain into ICommandTarget so we can have 
+                // chain like: OLE Target -> Shim -> ICommandTarget -> Shim -> Next OLE target
+                ICommandTarget nextCommandTarget = EditorShell.Current.TranslateCommandTarget(textView, nextTarget);
+                controller.ChainedController = nextCommandTarget;
+
+                // We need to listed when R projected buffer is attached and 
+                // create R editor document over it.
+                textView.BufferGraph.GraphBuffersChanged += OnGraphBuffersChanged;
+                IProjectionBuffer pb = textView.TextBuffer as IProjectionBuffer;
+                if(pb != null)
+                {
+                    pb.SourceBuffersChanged += OnSourceBuffersChanged;
+                }
+
+                textView.Closed += TextView_Closed;
+            }
+
+            return target;
+        }
+
+        private void TextView_Closed(object sender, EventArgs e)
+        {
+            IWpfTextView textView = sender as IWpfTextView;
+            if(textView != null)
+            {
+                if(textView.BufferGraph != null)
+                {
+                    textView.BufferGraph.GraphBuffersChanged -= OnGraphBuffersChanged;
+                }
+
+                IProjectionBuffer pb = textView.TextBuffer as IProjectionBuffer;
+                if (pb != null)
+                {
+                    pb.SourceBuffersChanged -= OnSourceBuffersChanged;
+                }
+
+                textView.Closed -= TextView_Closed;
+                ReplCommandController controller = ReplCommandController.FromTextView(textView);
+                if(controller != null)
+                {
+                    controller.Dispose();
+                }
+            }
+        }
+
+        private void OnSourceBuffersChanged(object sender, ProjectionSourceBuffersChangedEventArgs e)
+        {
+            HandleAddRemoveBuffers(e.AddedBuffers, e.RemovedBuffers);
+        }
+
+        private void OnGraphBuffersChanged(object sender, GraphBuffersChangedEventArgs e)
+        {
+            HandleAddRemoveBuffers(e.AddedBuffers, e.RemovedBuffers);
+        }
+
+        private void HandleAddRemoveBuffers(ReadOnlyCollection<ITextBuffer> addedBuffers, ReadOnlyCollection<ITextBuffer> removedBuffers)
+        { 
+            foreach(ITextBuffer tb in addedBuffers)
+            {
+                if(tb.ContentType.IsOfType(RContentTypeDefinition.ContentType))
+                {
+                    IREditorDocument doc = EditorDocument.TryFromTextBuffer(tb);
+                    if (doc == null)
+                    {
+                        var editorDocument = new EditorDocument(tb, new ReplWorkspaceItem());
+                    }
+                }
+            }
+
+            foreach (ITextBuffer tb in removedBuffers)
+            {
+                if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType))
+                {
+                    IREditorDocument doc = EditorDocument.TryFromTextBuffer(tb);
+                    if (doc != null)
+                    {
+                        doc.Dispose();
+                    }
+                }
+            }
+        }
+
+        sealed class ReplWorkspaceItem : IWorkspaceItem
+        {
+            public string Moniker
+            {
+                get { return "Interactive Window"; }
+            }
+
+            public string Path
+            {
+                get { return string.Empty; }
+            }
+
+            public void Dispose()
+            {
+            }
+        }
+    }
+}

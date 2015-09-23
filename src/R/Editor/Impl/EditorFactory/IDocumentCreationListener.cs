@@ -1,6 +1,6 @@
 ﻿using Microsoft.Languages.Editor.EditorFactory;
 
-namespace Microsoft.Html.Editor.EditorFactory
+namespace Microsoft.R.Editor.EditorFactory
 {
     /// <summary>
     /// Exported via MEF. When document is created

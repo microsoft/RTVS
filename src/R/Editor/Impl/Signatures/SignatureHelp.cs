@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Signatures
 
         public string FunctionName { get; private set; }
 
-        public SignatureHelp(ISignatureHelpSession session, string functionName, string documentation)
+        public SignatureHelp(ISignatureHelpSession session, ITextBuffer subjectBuffer, string functionName, string documentation)
         {
             FunctionName = functionName;
 
@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Signatures
             TextView = session.TextView;
             TextView.Caret.PositionChanged += OnCaretPositionChanged;
 
-            SubjectBuffer = TextView.TextBuffer;
+            SubjectBuffer = subjectBuffer;
             SubjectBuffer.Changed += OnSubjectBufferChanged;
         }
 
@@ -124,8 +124,11 @@ namespace Microsoft.R.Editor.Signatures
                 }
                 else
                 {
-                    IREditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
-                    ComputeCurrentParameter(document.EditorTree.AstRoot, position);
+                    IREditorDocument document = EditorDocument.FromTextBuffer(e.After.TextBuffer);
+                    if (document != null)
+                    {
+                        ComputeCurrentParameter(document.EditorTree.AstRoot, position);
+                    }
                 }
             }
         }

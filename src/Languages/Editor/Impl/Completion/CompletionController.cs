@@ -438,6 +438,7 @@ namespace Microsoft.Languages.Editor.Completion
             {
                 try
                 {
+                    TextView.Properties.RemoveProperty(AutoShownCompletion);
                     TextView.Properties.AddProperty(AutoShownCompletion, autoShownCompletion);
 
                     CompletionSession = TriggerCompletion();

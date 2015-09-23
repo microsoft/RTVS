@@ -26,12 +26,13 @@ namespace Microsoft.VisualStudio.R.Package.TaskList
 
         public void RemoveTaskSource(IEditorTaskListItemSource source)
         {
-            Debug.Assert(_providerMap.ContainsKey(source));
+            if (_providerMap.ContainsKey(source))
+            {
+                var provider = _providerMap[source];
+                _providerMap.Remove(source);
 
-            var provider = _providerMap[source];
-            _providerMap.Remove(source);
-
-            provider.Dispose();
+                provider.Dispose();
+            }
         }
 
         internal static void StaticFlushTaskList()

@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl
+namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
     internal class RSessionRequestSource
     {

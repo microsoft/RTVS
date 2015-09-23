@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -102,7 +101,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl
 
         private void SessionOnBeforeRequest(object sender, RBeforeRequestEventArgs args)
         {
-            _requestTcs.SetResult(ExecutionResult.Success);
+            Debug.Assert(_requestTcs != null);
+            if (_requestTcs != null)
+            {
+                _requestTcs.SetResult(ExecutionResult.Success);
+            }
         }
 
         private void SessionOnResponse(object sender, RResponseEventArgs args)
@@ -113,7 +116,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         private void SessionOnError(object sender, RErrorEventArgs args)
         {
             CurrentWindow.WriteError(args.Message);
-            _requestTcs.SetResult(ExecutionResult.Failure);
+
+            Debug.Assert(_requestTcs != null);
+            if (_requestTcs != null)
+            {
+                _requestTcs.SetResult(ExecutionResult.Failure);
+            }
         }
     }
 }

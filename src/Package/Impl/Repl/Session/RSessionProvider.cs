@@ -1,9 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl
+namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
     public class RSessionProvider : IRSessionProvider
     {
@@ -15,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
 
             if (!_sessions.TryAdd(sessionId, session))
             {
-                Debug.Fail($"Session with id {sessionId} is created already");
+                Debug.Fail(string.Format(CultureInfo.InvariantCulture, "Session with id {0} is created already", sessionId));
                 return _sessions[sessionId];
             }
 

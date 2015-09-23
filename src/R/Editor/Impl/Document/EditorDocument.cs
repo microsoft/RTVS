@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
@@ -12,11 +13,13 @@ using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion.Engine;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.R.Editor.Validation;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.R.Editor.Document
 {
@@ -75,6 +78,15 @@ namespace Microsoft.R.Editor.Document
         public static IREditorDocument FromTextBuffer(ITextBuffer textBuffer)
         {
             IREditorDocument document = TryFromTextBuffer(textBuffer);
+            if (document == null)
+            {
+                // Try locating R buffer
+                ITextBuffer rBuffer = GetRTextBuffer(textBuffer);
+                if (rBuffer != null)
+                {
+                    document = TryFromTextBuffer(rBuffer);
+                }
+            }
 
             Debug.Assert(document != null, "No editor document available");
             return document;
@@ -101,6 +113,25 @@ namespace Microsoft.R.Editor.Document
 
             return document;
         }
+
+        public static ITextBuffer GetRTextBuffer(ITextBuffer viewBuffer)
+        {
+            if (viewBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType))
+            {
+                return viewBuffer;
+            }
+
+            // Try locating R buffer
+            ITextBuffer rBuffer = null;
+            IProjectionBuffer pb = viewBuffer as IProjectionBuffer;
+            if (pb != null)
+            {
+                rBuffer = pb.SourceBuffers.FirstOrDefault((ITextBuffer tb) => tb.ContentType.IsOfType(RContentTypeDefinition.ContentType));
+            }
+
+            return rBuffer;
+        }
+
 
         public virtual void Close()
         {
@@ -136,6 +167,7 @@ namespace Microsoft.R.Editor.Document
         #region IDisposable
         protected virtual void Dispose(bool disposing)
         {
+            Close();
         }
 
         public void Dispose()
