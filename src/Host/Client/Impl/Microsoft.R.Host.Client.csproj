@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="IRContext.cs" />
     <Compile Include="IRCallbacks.cs" />
+    <Compile Include="IRExpressionEvaluator.cs" />
     <Compile Include="IRSession.cs" />
     <Compile Include="IRSessionProvider.cs" />
     <Compile Include="IRSessionInteraction.cs" />

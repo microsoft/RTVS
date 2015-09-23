@@ -1,11 +1,11 @@
 using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
-using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
@@ -43,20 +43,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             }
         }
 
-        private async void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
             TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
 
             if (e.Exception.InnerException is MicrosoftRHostMissingException)
             {
                 e.SetObserved();
-                IRCallbacks callbacks = _session as IRCallbacks;
 
-                Debug.Assert(callbacks != null);
-                if (callbacks != null)
-                {
-                    await callbacks.ShowMessage(new ReadOnlyCollection<IRContext>(new IRContext[0]), Resources.Error_Microsoft_R_Host_Missing);
-                    // TODO: actually provide download link for Microsoft.R.Host.exe
+                IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                if (shell != null) {
+                    int result;
+                    shell.ShowMessageBox(0, Guid.Empty, null, Resources.Error_Microsoft_R_Host_Missing, null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
                     Process.Start("http://www.microsoft.com");
                 }
             }

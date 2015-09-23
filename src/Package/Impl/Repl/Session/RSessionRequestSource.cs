@@ -26,9 +26,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             Contexts = contexts;
         }
 
-        public Task<string> BeginInteractionAsync(string prompt, int maxLength)
+        public Task<string> BeginInteractionAsync(string prompt, int maxLength, IRExpressionEvaluator evaluator)
         {
-            var request = new RSessionInteraction(_requestTcs, _responseTcs, prompt, maxLength, Contexts);
+            var request = new RSessionInteraction(_requestTcs, _responseTcs, prompt, maxLength, Contexts, evaluator);
             _createRequestTcs.SetResult(request);
             return _requestTcs.Task;
         }
