@@ -18,7 +18,8 @@ namespace Microsoft.R.Editor.Test.Signatures
             AstRoot ast = RParser.Parse(content);
 
             int signatureEnd;
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, 7, out signatureEnd);
+            int position = 7;
+            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
 
             Assert.AreEqual("as.matrix", functionName);
             Assert.AreEqual(17, signatureEnd);
@@ -31,7 +32,8 @@ namespace Microsoft.R.Editor.Test.Signatures
             AstRoot ast = RParser.Parse(content);
 
             int signatureEnd;
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, 7, out signatureEnd);
+            int position = 7;
+            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
 
             Assert.AreEqual("as.matrix", functionName);
             Assert.AreEqual(16, signatureEnd);
@@ -44,7 +46,8 @@ namespace Microsoft.R.Editor.Test.Signatures
             AstRoot ast = RParser.Parse(content);
 
             int signatureEnd;
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, 7, out signatureEnd);
+            int position = 7;
+            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
 
             Assert.AreEqual("as.matrix", functionName);
             Assert.AreEqual(18, signatureEnd);
