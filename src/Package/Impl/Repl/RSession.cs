@@ -72,14 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         public async Task InitializeAsync()
         {
             var psi = new ProcessStartInfo { WorkingDirectory = RToolsSettings.GetBinariesFolder() };
-            var hostTask = _host.CreateAndRun(psi);
-            await Task.WhenAny(_initializationTcs.Task, hostTask);
-
-            // If hostTask is the one that has completed by now, it has probably faulted, so
-            // await it to let the exception bubble up - WhenAny always completes successfully.
-            if (hostTask.IsCompleted) {
-                await hostTask;
-            }
+            await Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun(psi)).Unwrap();
         }
 
         private TaskCompletionSource<string> GetRequestTcs()
