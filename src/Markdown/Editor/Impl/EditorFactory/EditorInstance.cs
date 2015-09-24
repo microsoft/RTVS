@@ -4,11 +4,11 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Workspace;
-using Microsoft.R.Editor.Commands;
+using Microsoft.Markdown.Editor.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.EditorFactory
+namespace Microsoft.Markdown.Editor.EditorFactory
 {
     internal class EditorInstance : IEditorInstance
     {
@@ -44,7 +44,7 @@ namespace Microsoft.R.Editor.EditorFactory
 
         public ICommandTarget GetCommandTarget(ITextView textView)
         {
-            return RMainController.FromTextView(textView);
+            return MdMainController.FromTextView(textView);
         }
 
         public string Caption

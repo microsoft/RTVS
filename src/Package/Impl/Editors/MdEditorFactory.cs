@@ -4,11 +4,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Editors
 {
-    [Guid(GuidList.MdEditorFactoryGuidString)]
+    [Guid(MdGuidList.MdEditorFactoryGuidString)]
     internal sealed class MdEditorFactory : BaseEditorFactory
     {
         public MdEditorFactory(Microsoft.VisualStudio.Shell.Package package) :
-            base(package, GuidList.MdEditorFactoryGuid, GuidList.MdLanguageServiceGuid)
+            base(package, MdGuidList.MdEditorFactoryGuid, MdGuidList.MdLanguageServiceGuid)
         {
         }
 

@@ -5,11 +5,11 @@ using Microsoft.VisualStudio.R.Package;
 
 namespace Microsoft.VisualStudio.R.Languages
 {
-    [Guid(GuidList.MdLanguageServiceGuidString)]
+    [Guid(MdGuidList.MdLanguageServiceGuidString)]
     internal sealed class MdLanguageService : BaseLanguageService
     {
         public MdLanguageService()
-            : base(GuidList.MdLanguageServiceGuid,
+            : base(MdGuidList.MdLanguageServiceGuid,
                    MdContentTypeDefinition.LanguageName,
                    MdContentTypeDefinition.FileExtension1 + ";" + MdContentTypeDefinition.FileExtension2)
         {

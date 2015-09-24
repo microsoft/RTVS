@@ -26,7 +26,7 @@ namespace Microsoft.R.Editor.Document
     /// <summary>
     /// Main editor document for R language
     /// </summary>
-    public class EditorDocument : IREditorDocument
+    public class REditorDocument : IREditorDocument
     {
         [Import]
         private ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
@@ -51,7 +51,7 @@ namespace Microsoft.R.Editor.Document
         private TreeValidator _validator;
 
         #region Constructors
-        public EditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem)
+        public REditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem)
         {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
@@ -61,7 +61,7 @@ namespace Microsoft.R.Editor.Document
             IsClosed = false;
             TextDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
 
-            ServiceManager.AddService<EditorDocument>(this, TextBuffer);
+            ServiceManager.AddService<REditorDocument>(this, TextBuffer);
 
             _editorTree = new EditorTree(textBuffer);
             _validator = new TreeValidator(this.EditorTree);
@@ -106,7 +106,7 @@ namespace Microsoft.R.Editor.Document
                     RMainController controller = RMainController.FromTextView(viewData.LastActiveView);
                     if (controller != null && controller.TextBuffer != null)
                     {
-                        document = ServiceManager.GetService<EditorDocument>(controller.TextBuffer);
+                        document = ServiceManager.GetService<REditorDocument>(controller.TextBuffer);
                     }
                 }
             }
@@ -192,7 +192,7 @@ namespace Microsoft.R.Editor.Document
                 }
             }
 
-            ServiceManager.RemoveService<EditorDocument>(TextBuffer);
+            ServiceManager.RemoveService<REditorDocument>(TextBuffer);
             TextBuffer = null;
         }
 

@@ -16,6 +16,7 @@ namespace Microsoft.Markdown.Editor.Commands
         {
             var commands = new List<ICommand>();
 
+            commands.Add(new KnitMenuCommand(textView));
             return commands;
         }
     }

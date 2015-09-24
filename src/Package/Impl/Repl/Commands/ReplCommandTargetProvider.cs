@@ -97,10 +97,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             {
                 if(tb.ContentType.IsOfType(RContentTypeDefinition.ContentType))
                 {
-                    IREditorDocument doc = EditorDocument.TryFromTextBuffer(tb);
+                    IREditorDocument doc = REditorDocument.TryFromTextBuffer(tb);
                     if (doc == null)
                     {
-                        var editorDocument = new EditorDocument(tb, new ReplWorkspaceItem());
+                        var editorDocument = new REditorDocument(tb, new ReplWorkspaceItem());
                     }
                 }
             }
@@ -109,7 +109,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             {
                 if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType))
                 {
-                    IREditorDocument doc = EditorDocument.TryFromTextBuffer(tb);
+                    IREditorDocument doc = REditorDocument.TryFromTextBuffer(tb);
                     if (doc != null)
                     {
                         doc.Close();

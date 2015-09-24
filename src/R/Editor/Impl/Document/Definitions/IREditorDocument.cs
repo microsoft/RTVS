@@ -12,11 +12,6 @@ namespace Microsoft.R.Editor.Document.Definitions
         IEditorTree EditorTree { get; }
 
         /// <summary>
-        /// Closes the document
-        /// </summary>
-        void Close();
-
-        /// <summary>
         /// If trie the document is closed.
         /// </summary>
         bool IsClosed { get; }

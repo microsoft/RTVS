@@ -9,7 +9,7 @@ using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Document;
+using Microsoft.VisualStudio.R.Package.Document.R;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Workspace;
@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.R.PAckage.Commands
+namespace Microsoft.VisualStudio.R.Package.Commands.R
 {
     [Export(typeof(IWpfTextViewConnectionListener))]
     [Export(typeof(IWpfTextViewCreationListener))]
@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.PAckage.Commands
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Name("Visual Studio R Editor Text View Connection Listener")]
     [Order(Before = "Default")]
-    internal sealed class VsHtmlTextViewConnectionListener : RTextViewConnectionListener
+    internal sealed class VsRTextViewConnectionListener : RTextViewConnectionListener
     {
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer)
         {
@@ -102,7 +102,7 @@ namespace Microsoft.VisualStudio.R.PAckage.Commands
                 ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(EditorShell.Current.CompositionService);
                 IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
-                IEditorInstance editorInstance = factory.CreateEditorInstance(workspaceItem, textBuffer, new VsEditorDocumentFactory());
+                IEditorInstance editorInstance = factory.CreateEditorInstance(workspaceItem, textBuffer, new VsREditorDocumentFactory());
             }
         }
     }

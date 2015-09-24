@@ -2,7 +2,7 @@
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.R.Package.Options.Common;
-using Microsoft.VisualStudio.R.Packages;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R
@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
     internal sealed class VsRSettingsStorage : LanguageSettingsStorageWithDialog
     {
         public VsRSettingsStorage()
-            : base(GuidList.RLanguageServiceGuid, GuidList.RPackageGuid, RPackage.OptionsDialogName)
+            : base(RGuidList.RLanguageServiceGuid, RGuidList.RPackageGuid, RPackage.OptionsDialogName)
         {
         }
     }

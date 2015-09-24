@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
-            _document = EditorDocument.FromTextBuffer(textBuffer);
+            _document = REditorDocument.FromTextBuffer(textBuffer);
             _document.DocumentClosing += OnDocumentClosing;
             _document.EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
             _document.EditorTree.NodesRemoved += OnNodesRemoved;

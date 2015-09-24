@@ -13,11 +13,11 @@ namespace Microsoft.VisualStudio.R.Package.Commands
     {
         private Guid _cmdSetGuid;
         private Guid _packageGuid;
-        private ContextMenuId _menuId;
+        private int _menuId;
         private IMenuCommandService _menuService;
         private bool _triedGetMenuService;
 
-        public ShowContextMenuCommand(ITextView textView, Guid packageGuid, Guid cmdSetGuid, ContextMenuId menuId)
+        public ShowContextMenuCommand(ITextView textView, Guid packageGuid, Guid cmdSetGuid, int menuId)
             : base(textView, new CommandId(VSConstants.VSStd2K, (int) VSConstants.VSStd2KCmdID.SHOWCONTEXTMENU), false)
         {
             _cmdSetGuid = cmdSetGuid;

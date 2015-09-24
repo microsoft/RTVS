@@ -124,7 +124,12 @@ namespace Microsoft.R.Editor.SmartIndent
 
         private int? GetSmartIndent(ITextSnapshotLine line)
         {
-            IREditorDocument document = EditorDocument.FromTextBuffer(_textBuffer);
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(_textBuffer);
+            if(document == null || document.IsTransient)
+            {
+                return 0;
+            }
+
             AstRoot ast = document.EditorTree.AstRoot;
 
             // Try conditional without scope first

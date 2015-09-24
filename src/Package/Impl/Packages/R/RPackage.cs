@@ -20,20 +20,20 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Packages
+namespace Microsoft.VisualStudio.R.Packages.R
 {
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [Guid(GuidList.RPackageGuidString)]
+    [Guid(RGuidList.RPackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideEditorExtension(typeof(REditorFactory), ".r", 0x32, NameResourceID = 106)]
     [ProvideEditorFactory(typeof(REditorFactory), 106, CommonPhysicalViewAttributes = 0x2, TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
     [ProvideEditorLogicalView(typeof(REditorFactory), VSConstants.LOGVIEWID.TextView_string)]
     [ProvideLanguageService(typeof(RLanguageService), RContentTypeDefinition.LanguageName, 106, ShowSmartIndent = true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
-    [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), GuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
-    [ProvideCpsProjectFactory(GuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
+    [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
+    [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
-    [ProvideInteractiveWindow(GuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow,  DocumentLikeTool = true)]
+    [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow,  DocumentLikeTool = true)]
     internal sealed class RPackage : BasePackage<RLanguageService>
     {
         public const string OptionsDialogName = "R Tools";
@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Packages
         {
             yield return new MenuCommand(
                 (sender, args) => _interactiveWindowProvider.Value.Open(instanceId: 0, focus: true),
-                new CommandID(GuidList.RInteractiveCommandSetGuid, 0x0100));
+                new CommandID(RGuidList.RInteractiveCommandSetGuid, 0x0100));
         }
 
         protected override object GetAutomationObject(string name)
@@ -91,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Packages
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id)
         {
-            if (toolWindowType == GuidList.ReplInteractiveWindowProviderGuid)
+            if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid)
             {
                 IVsInteractiveWindow result = _interactiveWindowProvider.Value.Create(id);
                 return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;

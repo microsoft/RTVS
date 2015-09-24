@@ -3,11 +3,11 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem
 {
-    [Guid(GuidList.ProjectFileGeneratorGuidString)]
+    [Guid(RGuidList.ProjectFileGeneratorGuidString)]
     internal sealed class RProjectFileGenerator : FileSystemMirroringProjectFileGenerator
     {
         public RProjectFileGenerator() 
-            : base(GuidList.CpsProjectFactoryGuid, null, ".rxproj", new [] { @"RTVS\Rules\rtvs.rules.props" })
+            : base(RGuidList.CpsProjectFactoryGuid, null, ".rxproj", new [] { @"RTVS\Rules\rtvs.rules.props" })
         {
         }
     }

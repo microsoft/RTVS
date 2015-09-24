@@ -28,8 +28,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         {
             var session = _sessionProvider.Create(instanceId);
             var evaluator = new RInteractiveEvaluator(session);
-            var vsWindow = VsInteractiveWindowFactory.Create(GuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
-            vsWindow.SetLanguage(GuidList.RLanguageServiceGuid, ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType));
+            var vsWindow = VsInteractiveWindowFactory.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
+            vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType));
 
             vsWindow.InteractiveWindow.TextView.Closed += (_, __) =>
             {

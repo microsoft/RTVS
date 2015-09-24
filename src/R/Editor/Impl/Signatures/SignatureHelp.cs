@@ -124,7 +124,7 @@ namespace Microsoft.R.Editor.Signatures
                 }
                 else
                 {
-                    IREditorDocument document = EditorDocument.FromTextBuffer(e.After.TextBuffer);
+                    IREditorDocument document = REditorDocument.FromTextBuffer(e.After.TextBuffer);
                     if (document != null)
                     {
                         ComputeCurrentParameter(document.EditorTree.AstRoot, position);
@@ -138,7 +138,7 @@ namespace Microsoft.R.Editor.Signatures
             if (Session != null)
             {
                 var prevParameter = _currentParameter;
-                IREditorDocument document = EditorDocument.TryFromTextBuffer(SubjectBuffer);
+                IREditorDocument document = REditorDocument.TryFromTextBuffer(SubjectBuffer);
                 if (document != null)
                 {
                     ComputeCurrentParameter(document.EditorTree.AstRoot, e.NewPosition.BufferPosition);

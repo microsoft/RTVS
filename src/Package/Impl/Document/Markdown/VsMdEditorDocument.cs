@@ -6,27 +6,28 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.Markdown.Editor.Document;
 
-namespace Microsoft.VisualStudio.R.Package.Document
+namespace Microsoft.VisualStudio.R.Package.Document.Markdown
 {
-    internal class VsEditorDocument : EditorDocument
+    internal class VsMdEditorDocument : MdEditorDocument
     {
         private IEditorInstance _editorInstance;
         private VsWorkspaceItem _workspaceItem;
 
-        public VsEditorDocument(IEditorInstance editorInstance)
+        public VsMdEditorDocument(IEditorInstance editorInstance)
             : base(editorInstance.ViewBuffer, editorInstance.WorkspaceItem)
         {
             _editorInstance = editorInstance;
             _workspaceItem = editorInstance.WorkspaceItem as VsWorkspaceItem;
 
             ServiceProvider = ServiceProvider.GlobalProvider;
-            ServiceManager.AddService<VsEditorDocument>(this, TextBuffer);
+            ServiceManager.AddService<VsMdEditorDocument>(this, TextBuffer);
         }
 
         public override void Close()
         {
-            ServiceManager.RemoveService<VsEditorDocument>(TextBuffer);
+            ServiceManager.RemoveService<VsMdEditorDocument>(TextBuffer);
 
             base.Close();
 

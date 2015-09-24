@@ -56,7 +56,7 @@ namespace Microsoft.R.Editor.QuickInfo
             _lastPosition = position;
             ITextSnapshot snapshot = triggerPoint.Value.Snapshot;
 
-            IREditorDocument document = EditorDocument.TryFromTextBuffer(_subjectBuffer);
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(_subjectBuffer);
             if (document != null)
             {
                 // Document may be null in REPL window as projections are not

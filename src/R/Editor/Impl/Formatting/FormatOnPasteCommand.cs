@@ -48,7 +48,7 @@ namespace Microsoft.R.Editor.Formatting
                 int insertionPoint = TextView.Selection.StreamSelectionSpan.SnapshotSpan.Start;
                 TextView.TextBuffer.Replace(TextView.Selection.StreamSelectionSpan.SnapshotSpan, text);
 
-                IREditorDocument document = EditorDocument.FromTextBuffer(TextView.TextBuffer);
+                IREditorDocument document = REditorDocument.FromTextBuffer(TextView.TextBuffer);
                 RangeFormatter.FormatRange(TextView, new TextRange(insertionPoint, text.Length), document.EditorTree.AstRoot, REditorSettings.FormatOptions);
             }
 

@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.Signatures
             if (!REditorSettings.SignatureHelpEnabled)
                 return;
 
-            var document = EditorDocument.FromTextBuffer(_textBuffer);
+            var document = REditorDocument.FromTextBuffer(_textBuffer);
             Debug.Assert(document != null);
 
             if (document != null)

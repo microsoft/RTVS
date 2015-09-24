@@ -212,7 +212,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             get
             {
-                var document = ServiceManager.GetService<EditorDocument>(_textBuffer);
+                var document = ServiceManager.GetService<REditorDocument>(_textBuffer);
                 if (document != null && document.WorkspaceItem != null)
                 {
                     return document.WorkspaceItem.Path;

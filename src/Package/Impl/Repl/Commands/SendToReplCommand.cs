@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands
         public SendToReplCommand(ITextView textView, ITextBuffer textBuffer) :
             base(textView, new CommandId[] {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OPENLINEABOVE),
-                new CommandId(GuidList.CmdSetGuid, RPackageCommandId.icmdSendToRepl)
+                new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendToRepl)
             }, false)
         {
             IVsUIShell7 shell = AppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
@@ -66,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands
                 IVsWindowFrame frame;
                 IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
-                Guid persistenceSlot = GuidList.ReplInteractiveWindowProviderGuid;
+                Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
                 shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fForceCreate, ref persistenceSlot, out frame);
                 if (frame != null)
                 {
@@ -140,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands
             {
                 Guid property;
                 frame.GetGuidProperty((int)__VSFPROPID.VSFPROPID_GuidPersistenceSlot, out property);
-                if (property == GuidList.ReplInteractiveWindowProviderGuid)
+                if (property == RGuidList.ReplInteractiveWindowProviderGuid)
                 {
                     object docView;
                     frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView);

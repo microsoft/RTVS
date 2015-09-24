@@ -9,11 +9,11 @@ using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Packages
+namespace Microsoft.VisualStudio.R.Packages.Markdown
 {
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [Guid(GuidList.MdPackageGuidString)]
-    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [Guid(MdGuidList.MdPackageGuidString)]
+    //[ProvideMenuResource("Menus.ctmenu", 1)]
     #region Markdown
     [ProvideEditorExtension(typeof(MdEditorFactory), ".md", 0x32, NameResourceID = 107)]
     [ProvideEditorExtension(typeof(MdEditorFactory), ".markdown", 0x32, NameResourceID = 107)]
