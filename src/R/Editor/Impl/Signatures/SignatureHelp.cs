@@ -138,13 +138,16 @@ namespace Microsoft.R.Editor.Signatures
             if (Session != null)
             {
                 var prevParameter = _currentParameter;
-                IREditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
-                ComputeCurrentParameter(document.EditorTree.AstRoot, e.NewPosition.BufferPosition);
-
-                if (_currentParameter != prevParameter)
+                IREditorDocument document = EditorDocument.TryFromTextBuffer(SubjectBuffer);
+                if (document != null)
                 {
-                    if (CurrentParameterChanged != null)
-                        CurrentParameterChanged(this, new CurrentParameterChangedEventArgs(prevParameter, _currentParameter));
+                    ComputeCurrentParameter(document.EditorTree.AstRoot, e.NewPosition.BufferPosition);
+
+                    if (_currentParameter != prevParameter)
+                    {
+                        if (CurrentParameterChanged != null)
+                            CurrentParameterChanged(this, new CurrentParameterChangedEventArgs(prevParameter, _currentParameter));
+                    }
                 }
             }
         }

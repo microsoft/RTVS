@@ -38,7 +38,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>R Console Windows</ButtonText>
+          <ButtonText>R Interactive Windows</ButtonText>
         </Strings>
       </Button>
 
@@ -57,6 +57,45 @@
           <ButtonText>Send to &amp;R Console</ButtonText>
         </Strings>
       </Button>
+
+      <!-- Knit menu item (in RD/RDM with akyout submenu -->
+      <Button guid="guidRToolsCmdSet" id="cmdidKnit" priority="0x0101" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="groupKnit"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Knit</ButtonText>
+        </Strings>
+      </Button>
+
+      <!-- Knit flyout menu items -->
+      <Button guid="guidRToolsCmdSet" id="cmdidSendToRepl" priority="0x0101" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="groupKnitSubmenu"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>HTML</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="cmdidSendToRepl" priority="0x0102" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="groupKnitSubmenu"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>PDF</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="cmdidSendToRepl" priority="0x0103" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="groupKnitSubmenu"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Word</ButtonText>
+        </Strings>
+      </Button>
+      <!-- End Knit flyout menu items -->
     </Buttons>
 
   </Commands>
@@ -72,9 +111,19 @@
     <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
     </CommandPlacement>
-
     <!-- End R code editor context menu -->
 
+    <!-- RD/RDM code editor context menu -->
+    <!-- Clipboard group -->
+    <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
+    </CommandPlacement>
+
+    <!-- Formatting group -->
+    <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
+    </CommandPlacement>
+    <!-- End R code editor context menu -->
   </CommandPlacements>
 
   <VisibilityConstraints>
@@ -115,9 +164,19 @@
       <IDSymbol name="groupFormat" value="120" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
       <IDSymbol name="groupRepl" value="122" />
+      <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
+      <IDSymbol name="groupKnit" value="130" />
+      <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
+      <IDSymbol name="groupKnitSubmenu" value="131" />
       <!-- See RPackageCommandId -->
       <IDSymbol name="cmdidGoToFormattingOptions" value="500" />
       <IDSymbol name="cmdidSendToRepl" value="501" />
+      
+      <!-- Knit in RD/RDM -->
+      <IDSymbol name="cmdidKnit" value="600" />
+      <IDSymbol name="cmdidKnitHtml" value="601" />
+      <IDSymbol name="cmdidKnitPdf" value="602" />
+      <IDSymbol name="cmdidKnitWord" value="603" />
     </GuidSymbol>
 
     <!-- Interactive Windows Commands -->

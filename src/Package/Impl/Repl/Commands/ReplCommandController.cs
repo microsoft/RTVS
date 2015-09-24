@@ -4,6 +4,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Commands;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -14,6 +15,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
     /// </summary>
     public class ReplCommandController : ViewController
     {
+        private ICompletionBroker _completionBroker;
+
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer)
         {
@@ -57,6 +60,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
             return base.Status(group, id);
         }
 
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
+        {
+            if(group == VSConstants.VSStd2K && id == (int)VSConstants.VSStd2KCmdID.TAB)
+            {
+                CompletionBroker.TriggerCompletion(TextView);
+                return CommandResult.Executed;
+            }
+
+            return base.Invoke(group, id, inputArg, ref outputArg);
+        }
+
         /// <summary>
         /// Determines if command is one of the completion commands
         /// </summary>
@@ -64,6 +78,19 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
         {
             ICommand cmd = Find(group, id);
             return cmd is RCompletionCommandHandler;
+        }
+
+        private ICompletionBroker CompletionBroker
+        {
+            get
+            {
+                if (_completionBroker == null)
+                {
+                    _completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
+                }
+
+                return _completionBroker;
+            }
         }
 
         /// <summary>

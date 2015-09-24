@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Commands
 {
-    internal class RCompletionCommandHandler : CompletionCommandHandler
+    internal sealed class RCompletionCommandHandler : CompletionCommandHandler
     {
         ITextBuffer _textBuffer;
         ICompletionBroker _completionBroker;
@@ -22,19 +22,6 @@ namespace Microsoft.R.Editor.Commands
         public override CompletionController CompletionController
         {
             get { return ServiceManager.GetService<RCompletionController>(TextView); }
-        }
-
-        private ICompletionBroker CompletionBroker
-        {
-            get
-            {
-                if (_completionBroker == null)
-                {
-                    _completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
-                }
-
-                return _completionBroker;
-            }
         }
     }
 }
