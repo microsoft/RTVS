@@ -120,6 +120,9 @@
   <data name="106" xml:space="preserve">
     <value>R</value>
   </data>
+  <data name="107" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
   <data name="150" xml:space="preserve">
     <value>Advanced</value>
   </data>

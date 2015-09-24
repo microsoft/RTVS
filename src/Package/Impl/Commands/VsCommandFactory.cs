@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands
         {
             var commands = new List<ICommand>();
 
-            commands.Add(new ShowContextMenuCommand(textView, GuidList.PackageGuid, GuidList.CmdSetGuid, ContextMenuId.R));
+            commands.Add(new ShowContextMenuCommand(textView, GuidList.RPackageGuid, GuidList.CmdSetGuid, ContextMenuId.R));
             commands.Add(new GoToFormattingOptionsCommand(textView, textBuffer));
             commands.Add(new SendToReplCommand(textView, textBuffer));
 

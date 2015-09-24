@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.Commands.Factory
             commands.Add(new FormatSelectionCommand(textView, textBuffer));
             commands.Add(new FormatOnPasteCommand(textView, textBuffer));
             commands.Add(new RTypingCommandHandler(textView));
-            commands.Add(new RCompletionCommandHandler(textView, textBuffer));
+            commands.Add(new RCompletionCommandHandler(textView));
 
             return commands;
         }

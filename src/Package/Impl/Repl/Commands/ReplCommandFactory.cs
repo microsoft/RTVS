@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
             List<ICommand> commands = new List<ICommand>();
 
             commands.Add(new RTypingCommandHandler(textView));
-            commands.Add(new RCompletionCommandHandler(textView, textBuffer));
+            commands.Add(new RCompletionCommandHandler(textView));
 
             return commands;
         }

@@ -12,6 +12,23 @@
           <ButtonText>R Context</ButtonText>
         </Strings>
       </Menu>
+      <!-- End R code editor context menu -->
+
+      <!-- RD editor context menu -->
+      <Menu guid="guidRToolsCmdSet" id="mdEditorContextMenu" type="Context">
+        <Strings>
+          <ButtonText>MD Context</ButtonText>
+        </Strings>
+      </Menu>
+      
+      <!-- Knit flyout -->
+      <Menu guid="guidRToolsCmdSet" id="knitSubMenu" type="Menu" priority="0x100">
+        <Parent guid="guidRToolsCmdSet" id="groupKnitSubmenu"/>
+        <Strings>
+          <ButtonText>Knit Submenu</ButtonText>
+        </Strings>
+      </Menu>
+      <!-- RD editor context menu -->
     </Menus>
 
     <!-- 
@@ -30,6 +47,16 @@
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <!-- End R code editor context menu groups -->
+
+      <!-- MD code editor context menu groups -->
+      <Group guid="guidRToolsCmdSet" id="groupKnit" priority="0x0810">
+        <Parent guid="guidRToolsCmdSet" id="mdEditorContextMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="groupKnitSubmenu" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="knitSubMenu"/>
+      </Group>
+      <!-- End MD code editor context menu groups -->
     </Groups>
 
     <Buttons>
@@ -58,7 +85,7 @@
         </Strings>
       </Button>
 
-      <!-- Knit menu item (in RD/RDM with akyout submenu -->
+      <!-- Knit menu item (in MD/RMD with flyout submenu -->
       <Button guid="guidRToolsCmdSet" id="cmdidKnit" priority="0x0101" type="Button">
         <Parent guid="guidRToolsCmdSet" id="groupKnit"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -116,7 +143,7 @@
     <!-- RD/RDM code editor context menu -->
     <!-- Clipboard group -->
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
-      <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
+      <Parent guid="guidRToolsCmdSet" id="mdEditorContextMenu"/>
     </CommandPlacement>
 
     <!-- Formatting group -->
@@ -165,12 +192,16 @@
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
       <IDSymbol name="groupRepl" value="122" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
-      <IDSymbol name="groupKnit" value="130" />
-      <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
-      <IDSymbol name="groupKnitSubmenu" value="131" />
+
       <!-- See RPackageCommandId -->
       <IDSymbol name="cmdidGoToFormattingOptions" value="500" />
       <IDSymbol name="cmdidSendToRepl" value="501" />
+
+      <!-- Markdown context menu -->
+      <IDSymbol name="mdEditorContextMenu" value="300" />
+      <IDSymbol name="knitSubMenu" value="130" />
+      <IDSymbol name="groupKnit" value="131" />
+      <IDSymbol name="groupKnitSubmenu" value="132" />
       
       <!-- Knit in RD/RDM -->
       <IDSymbol name="cmdidKnit" value="600" />

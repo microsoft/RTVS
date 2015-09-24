@@ -225,4 +225,7 @@
   <data name="Error_Microsoft_R_Host_Missing" xml:space="preserve">
     <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>
   </data>
+  <data name="SaveAsFilterMD" xml:space="preserve">
+    <value>Markdown Files (*.md;*.markdown)|*.md;*.markdown|All Files (*.*)|*.*</value>
+  </data>
 </root>

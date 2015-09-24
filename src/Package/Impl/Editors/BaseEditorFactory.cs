@@ -53,9 +53,9 @@ namespace Microsoft.VisualStudio.R.Package.Editors
            string physicalView,
            IVsHierarchy hierarchy,
            uint itemid,
-           System.IntPtr docDataExisting,
-           out System.IntPtr docView,
-           out System.IntPtr docData,
+           IntPtr docDataExisting,
+           out IntPtr docView,
+           out IntPtr docData,
            out string editorCaption,
            out Guid commandUIGuid,
            out int createDocumentWindowFlags)
@@ -70,10 +70,10 @@ namespace Microsoft.VisualStudio.R.Package.Editors
            string physicalView,
            IVsHierarchy hierarchy,
            uint itemid,
-           System.IntPtr docDataExisting,
+           IntPtr docDataExisting,
            Guid languageServiceId,
-           out System.IntPtr docView,
-           out System.IntPtr docData,
+           out IntPtr docView,
+           out IntPtr docData,
            out string editorCaption,
            out Guid commandUIGuid,
            out int createDocumentWindowFlags)
@@ -172,7 +172,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors
             return false;
         }
 
-        private IVsTextLines GetTextBuffer(System.IntPtr docDataExisting, Guid languageServiceId)
+        private IVsTextLines GetTextBuffer(IntPtr docDataExisting, Guid languageServiceId)
         {
             IVsTextLines textLines = null;
 

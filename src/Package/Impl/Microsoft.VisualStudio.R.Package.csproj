@@ -87,7 +87,10 @@
     <Compile Include="Document\IVsEditorDocumentFactory.cs" />
     <Compile Include="Document\VsEditorDocument.cs" />
     <Compile Include="Document\VsEditorDocumentFactory.cs" />
+    <Compile Include="Editors\MdEditorFactory.cs" />
+    <Compile Include="Languages\MdLanguageService.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
+    <Compile Include="Packages\MdPackage.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
@@ -320,6 +323,10 @@
       <Name>Microsoft.Languages.Editor</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
+      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
+      <Name>Microsoft.Markdown.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj">
       <Project>{41AA8769-0FBC-4A80-8498-21C833F0C2AC}</Project>

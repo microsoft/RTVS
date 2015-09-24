@@ -124,16 +124,6 @@
     <Compile Include="Help\Packages\PackageEnumeration.cs" />
     <Compile Include="Help\NamedItemInfo.cs" />
     <Compile Include="Help\Functions\ArgumentInfo.cs" />
-    <Compile Include="Markdown\Classification\MdClassificationNameProvider.cs" />
-    <Compile Include="Markdown\Classification\MdClassificationDefinitions.cs" />
-    <Compile Include="Markdown\Classification\MdClassificationTypes.cs" />
-    <Compile Include="Markdown\Classification\MdClassifierProvider.cs" />
-    <Compile Include="Markdown\Classification\MdClassifier.cs" />
-    <Compile Include="Markdown\ContentType\MdContentTypeDefinition.cs" />
-    <Compile Include="Markdown\Tokens\MdRCodeToken.cs" />
-    <Compile Include="Markdown\Tokens\MdToken.cs" />
-    <Compile Include="Markdown\Tokens\MdTokenType.cs" />
-    <Compile Include="Markdown\Tokens\MdTokenizer.cs" />
     <Compile Include="RD\Parser\RdFunctionSignature.cs" />
     <Compile Include="RD\Parser\RdArgumentDescription.cs" />
     <Compile Include="RD\Parser\RdParseContext.cs" />

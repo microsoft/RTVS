@@ -124,6 +124,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Markdown Files (*.md;*.markdown)|*.md;*.markdown|All Files (*.*)|*.*.
+        /// </summary>
+        internal static string SaveAsFilterMD {
+            get {
+                return ResourceManager.GetString("SaveAsFilterMD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Language Files (*.r)|*.r|All Files (*.*)|*.*.
         /// </summary>
         internal static string SaveAsFilterR {

@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
     internal sealed class VsRSettingsStorage : LanguageSettingsStorageWithDialog
     {
         public VsRSettingsStorage()
-            : base(GuidList.LanguageServiceGuid, GuidList.PackageGuid, RPackage.OptionsDialogName)
+            : base(GuidList.RLanguageServiceGuid, GuidList.RPackageGuid, RPackage.OptionsDialogName)
         {
         }
     }

@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands
             IVsShell shell = AppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
             IVsPackage package;
 
-            if (VSConstants.S_OK == shell.LoadPackage(GuidList.PackageGuid, out package))
+            if (VSConstants.S_OK == shell.LoadPackage(GuidList.RPackageGuid, out package))
             {
                 ((Microsoft.VisualStudio.Shell.Package)package).ShowOptionPage(typeof(REditorOptionsDialog));
             }

@@ -46,6 +46,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
             "Microsoft.R.Editor.Test.dll",
             "Microsoft.R.Support.dll",
             "Microsoft.R.Support.Test.dll",
+            "Microsoft.Markdown.Editor.dll",
             //"Microsoft.Languages.Editor.Application.dll",
         };
 
@@ -186,7 +187,7 @@ namespace Microsoft.Languages.Editor.Test.Composition
             }
             catch (Exception)
             {
-                Assert.Fail("Can't find web editor assembly: " + assemblyName);
+                Assert.Fail("Can't find editor assembly: " + assemblyName);
             }
         }
 
