@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -69,10 +69,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             return requestSource.CreateRequestTask;
         }
 
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             var psi = new ProcessStartInfo { WorkingDirectory = RToolsSettings.GetBinariesFolder() };
-            return Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun());
+            var hostTask = _host.CreateAndRun(psi);
+            await Task.WhenAny(_initializationTcs.Task, hostTask);
+
+            // If hostTask is the one that has completed by now, it has probably faulted, so
+            // await it to let the exception bubble up - WhenAny always completes successfully.
+            if (hostTask.IsCompleted) {
+                await hostTask;
+            }
         }
 
         private TaskCompletionSource<string> GetRequestTcs()
