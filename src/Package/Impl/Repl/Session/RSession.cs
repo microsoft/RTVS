@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             {
                 requestSource = new RSessionRequestSource(isVisible, _contexts);
                 _pendingRequestSources.Enqueue(requestSource);
-
+                
             }
             else
             {
@@ -69,14 +69,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             return requestSource.CreateRequestTask;
         }
 
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            var psi = new ProcessStartInfo();
-
-            psi.WorkingDirectory = RToolsSettings.GetBinariesFolder();
-            psi.EnvironmentVariables["R_HOME"] = psi.WorkingDirectory.Substring(0, psi.WorkingDirectory.IndexOf(@"\bin\"));
-
-            return Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun(psi));
+            var psi = new ProcessStartInfo { WorkingDirectory = RToolsSettings.GetBinariesFolder() };
+            await Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun(psi)).Unwrap();
         }
 
         private TaskCompletionSource<string> GetRequestTcs()
