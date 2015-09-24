@@ -211,10 +211,13 @@ namespace Microsoft.Languages.Editor.Services
 
         public static void RemoveService<T>(IPropertyOwner propertyOwner) where T : class
         {
-            var sm = ServiceManager.FromPropertyOwner(propertyOwner);
-            Debug.Assert(sm != null);
+            if (propertyOwner != null)
+            {
+                var sm = ServiceManager.FromPropertyOwner(propertyOwner);
+                Debug.Assert(sm != null);
 
-            sm.RemoveService<T>();
+                sm.RemoveService<T>();
+            }
         }
 
         public static void RemoveService<T>(IPropertyOwner propertyOwner, IContentType contentType) where T : class
@@ -364,7 +367,7 @@ namespace Microsoft.Languages.Editor.Services
             }
             else
             {
-                Debug.Assert(false, "Unable to find service " + typeof(T).Name + " to remove from the ServiceManager!");
+                //Debug.Assert(false, "Unable to find service " + typeof(T).Name + " to remove from the ServiceManager!");
             }
         }
 

@@ -76,7 +76,7 @@ namespace Microsoft.R.Host.Client
         {
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), "Microsoft.R.Host.exe");
 
-            if(!File.Exists(rhostExe))
+            if (!File.Exists(rhostExe))
             {
                 throw new MicrosoftRHostMissingException();
             }

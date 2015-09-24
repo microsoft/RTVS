@@ -19,12 +19,12 @@ namespace Microsoft.R.Support.Settings
             Init(exportProvider);
 
             string rPath = GetRVersionPath();
-            if(!string.IsNullOrEmpty(rPath))
+            if (!string.IsNullOrEmpty(rPath))
             {
                 bool rExeExists = File.Exists(Path.Combine(rPath, @"bin\R.exe"));
                 bool rTermExists = File.Exists(Path.Combine(rPath, @"bin\i386\RTerm.exe")) || File.Exists(Path.Combine(rPath, @"bin\x64\RTerm.exe"));
 
-                if(rExeExists && rTermExists)
+                if (rExeExists && rTermExists)
                 {
                     return;
                 }
@@ -124,6 +124,44 @@ namespace Microsoft.R.Support.Settings
                     {
                         enginePath = rKey.GetValue("InstallPath") as string;
                     }
+
+                    if (string.IsNullOrEmpty(enginePath))
+                    {
+                        Version highest = null;
+                        string highestVersionSubkeyName = null;
+
+                        string[] subkeyNames = rKey.GetSubKeyNames();
+                        foreach (string name in subkeyNames)
+                        {
+                            try
+                            {
+                                Version v = new Version(name);
+                                if (highest != null)
+                                {
+                                    if (v > highest)
+                                    {
+                                        highest = v;
+                                        highestVersionSubkeyName = name;
+                                    }
+                                }
+                                else
+                                {
+                                    highest = v;
+                                    highestVersionSubkeyName = name;
+                                }
+                            }
+                            catch (Exception) { }
+                        }
+
+                        if (!string.IsNullOrEmpty(highestVersionSubkeyName))
+                        {
+                            RegistryKey subKey = rKey.OpenSubKey(highestVersionSubkeyName);
+                            if (rKey != null)
+                            {
+                                enginePath = subKey.GetValue("InstallPath") as string;
+                            }
+                        }
+                    }
                 }
                 finally
                 {
@@ -134,6 +172,7 @@ namespace Microsoft.R.Support.Settings
                 }
             }
 
+            Debug.Assert(enginePath != null);
             return enginePath;
         }
     }

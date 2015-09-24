@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             {
                 requestSource = new RSessionRequestSource(isVisible, _contexts);
                 _pendingRequestSources.Enqueue(requestSource);
-                
+
             }
             else
             {
@@ -71,12 +71,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
         public Task InitializeAsync()
         {
-            var psi = new ProcessStartInfo { WorkingDirectory = RToolsSettings.GetBinariesFolder() };
-            return Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun());
+            var psi = new ProcessStartInfo();
+
+            psi.WorkingDirectory = RToolsSettings.GetBinariesFolder();
+            psi.EnvironmentVariables["R_HOME"] = psi.WorkingDirectory.Substring(0, psi.WorkingDirectory.IndexOf(@"\bin\") + 4);
+
+            return Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun(psi));
         }
 
         private TaskCompletionSource<string> GetRequestTcs()
         {
+            DateTime startTime = DateTime.Now;
             SpinWait spin = new SpinWait();
             while (true)
             {
@@ -93,6 +98,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
                 // There is either another request that is created or ReadConsole hasn't yet created request tcs for empty queue
                 spin.SpinOnce();
+
+                //if ((DateTime.Now - startTime).TotalSeconds >= 5)
+                //{
+                //    throw new TimeoutException("RSession");
+                //}
             }
         }
 
@@ -164,7 +174,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
             IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            if (shell != null) {
+            if (shell != null)
+            {
                 int result;
                 shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
             }
