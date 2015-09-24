@@ -133,6 +133,38 @@ namespace Microsoft.R.Editor.Document
         }
 
 
+        #region IDisposable
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void OnTextDocumentDisposed(object sender, TextDocumentEventArgs e)
+        {
+            if (e.TextDocument.TextBuffer == this.TextBuffer)
+            {
+                Close();
+            }
+        }
+        #endregion
+
+        #region IREditorDocument
+        /// <summary>
+        /// Editor parse tree (object model)
+        /// </summary>
+        public IEditorTree EditorTree
+        {
+            get { return _editorTree; }
+        }
+
+        /// <summary>
+        /// Closes the document
+        /// </summary>
         public virtual void Close()
         {
             if (IsClosed)
@@ -164,40 +196,20 @@ namespace Microsoft.R.Editor.Document
             TextBuffer = null;
         }
 
-        #region IDisposable
-        protected virtual void Dispose(bool disposing)
-        {
-            Close();
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        void OnTextDocumentDisposed(object sender, TextDocumentEventArgs e)
-        {
-            if (e.TextDocument.TextBuffer == this.TextBuffer)
-            {
-                Close();
-            }
-        }
-        #endregion
-
-        #region IREditorDocument
-        /// <summary>
-        /// Editor parse tree (object model)
-        /// </summary>
-        public IEditorTree EditorTree
-        {
-            get { return _editorTree; }
-        }
-
         /// <summary>
         /// If trie the document is closed.
         /// </summary>
         public bool IsClosed { get; private set; }
+
+        /// <summary>
+        /// Tells of document does not have associated disk file
+        /// such as when document is based off projection buffer
+        /// created elsewhere as in VS Interactive Window case.
+        /// </summary>
+        public bool IsTransient
+        {
+            get { return WorkspaceItem == null || WorkspaceItem.Path.Length == 0; }
+        }
 
         /// <summary>
         /// Tells document that massive change to text buffer is about to commence.

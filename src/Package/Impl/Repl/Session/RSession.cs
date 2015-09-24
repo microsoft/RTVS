@@ -71,7 +71,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
         public async Task InitializeAsync()
         {
-            var psi = new ProcessStartInfo { WorkingDirectory = RToolsSettings.GetBinariesFolder() };
+            var psi = new ProcessStartInfo();
+
+            psi.WorkingDirectory = RToolsSettings.GetBinariesFolder();
+            psi.EnvironmentVariables["R_HOME"] = psi.WorkingDirectory.Substring(0, psi.WorkingDirectory.IndexOf(@"\bin\"));
+            psi.UseShellExecute = false;
+
             await Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun(psi)).Unwrap();
         }
 

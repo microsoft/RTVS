@@ -35,8 +35,8 @@ namespace Microsoft.R.Editor.Commands
 
                 if (AutoFormat.IsAutoformatTriggerCharacter(typedChar))
                 {
-                    IREditorDocument document = EditorDocument.FromTextBuffer(TextView.TextBuffer);
-                    if (document != null)
+                    IREditorDocument document = EditorDocument.TryFromTextBuffer(TextView.TextBuffer);
+                    if (document != null && !document.IsTransient)
                     {
                         IEditorTree tree = document.EditorTree;
                         tree.EnsureTreeReady();

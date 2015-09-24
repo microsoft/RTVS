@@ -12,9 +12,21 @@ namespace Microsoft.R.Editor.Document.Definitions
         IEditorTree EditorTree { get; }
 
         /// <summary>
+        /// Closes the document
+        /// </summary>
+        void Close();
+
+        /// <summary>
         /// If trie the document is closed.
         /// </summary>
         bool IsClosed { get; }
+
+        /// <summary>
+        /// Tells of document does not have associated disk file
+        /// such as when document is based off projection buffer
+        /// created elsewhere as in VS Interactive Window case.
+        /// </summary>
+        bool IsTransient { get; }
 
         /// <summary>
         /// Tells document that massive change to text buffer is about to commence.

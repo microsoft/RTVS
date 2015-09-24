@@ -112,7 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
                     IREditorDocument doc = EditorDocument.TryFromTextBuffer(tb);
                     if (doc != null)
                     {
-                        doc.Dispose();
+                        doc.Close();
                     }
                 }
             }
