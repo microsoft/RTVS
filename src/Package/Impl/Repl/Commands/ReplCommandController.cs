@@ -64,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
         {
             if(group == VSConstants.VSStd2K && id == (int)VSConstants.VSStd2KCmdID.TAB)
             {
+                CompletionBroker.DismissAllSessions(TextView);
                 CompletionBroker.TriggerCompletion(TextView);
                 return CommandResult.Executed;
             }
