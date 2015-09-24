@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -66,9 +67,23 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public async Task<ExecutionResult> ExecuteCodeAsync(string text)
         {
             _requestTcs = new TaskCompletionSource<ExecutionResult>();
-
             var request = await _session.BeginInteractionAsync();
-            await request.RespondAsync(text);
+
+            System.Threading.Tasks.Task.Run(async () => {
+                try {
+                    await request.RespondAsync(text);
+                } catch (RException) {
+                    // It was already reported via RSession.Error and printed out; do nothing.
+                } catch (Exception ex) {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
+                    IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                    if (shell != null) {
+                        int result;
+                        shell.ShowMessageBox(0, Guid.Empty, null, ex.ToString(), null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
+                    }
+                }
+            }).DoNotWait();
+
             return await _requestTcs.Task;
         }
 
