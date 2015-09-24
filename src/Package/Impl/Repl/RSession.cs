@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -69,10 +69,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             return requestSource.CreateRequestTask;
         }
 
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             var psi = new ProcessStartInfo { WorkingDirectory = RToolsSettings.GetBinariesFolder() };
-            return Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun());
+            await Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun(psi)).Unwrap();
         }
 
         private TaskCompletionSource<string> GetRequestTcs()

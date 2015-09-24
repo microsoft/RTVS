@@ -6,12 +6,10 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Support.Settings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.R.Host.Client
-{
+namespace Microsoft.R.Host.Client {
     public sealed class RHost : IDisposable
     {
         private class RExpressionEvaluator : IRExpressionEvaluator {
@@ -76,7 +74,7 @@ namespace Microsoft.R.Host.Client
         {
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), "Microsoft.R.Host.exe");
 
-            if(!File.Exists(rhostExe))
+            if (!File.Exists(rhostExe))
             {
                 throw new MicrosoftRHostMissingException();
             }
