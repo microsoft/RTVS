@@ -74,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             var psi = new ProcessStartInfo();
 
             psi.WorkingDirectory = RToolsSettings.GetBinariesFolder();
-            psi.EnvironmentVariables["R_HOME"] = psi.WorkingDirectory.Substring(0, psi.WorkingDirectory.IndexOf(@"\bin\") + 4);
+            psi.EnvironmentVariables["R_HOME"] = psi.WorkingDirectory.Substring(0, psi.WorkingDirectory.IndexOf(@"\bin\"));
 
             return Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun(psi));
         }
@@ -99,10 +99,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
                 // There is either another request that is created or ReadConsole hasn't yet created request tcs for empty queue
                 spin.SpinOnce();
 
-                //if ((DateTime.Now - startTime).TotalSeconds >= 5)
-                //{
-                //    throw new TimeoutException("RSession");
-                //}
+                if ((DateTime.Now - startTime).TotalSeconds >= 5)
+                {
+                    throw new TimeoutException("RSession");
+                }
             }
         }
 
