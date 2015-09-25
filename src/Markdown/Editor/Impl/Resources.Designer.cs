@@ -140,5 +140,14 @@ namespace Microsoft.Markdown.Editor {
                 return ResourceManager.GetString("ColorName_MD_Monospace", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to run RScript.exe. Exception: {0}.
+        /// </summary>
+        internal static string Error_RScriptLaunchFailed {
+            get {
+                return ResourceManager.GetString("Error_RScriptLaunchFailed", resourceCulture);
+            }
+        }
     }
 }

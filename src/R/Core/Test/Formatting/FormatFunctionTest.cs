@@ -16,7 +16,7 @@ namespace Microsoft.R.Core.Test.Formatting
             RFormatter f = new RFormatter();
             string actual = f.Format("function(a,b) {return(a+b)}");
             string expected =
-@"function (a, b) {
+@"function(a, b) {
     return (a + b)
 }";
             Assert.AreEqual(expected, actual);
@@ -27,7 +27,7 @@ namespace Microsoft.R.Core.Test.Formatting
         {
             RFormatter f = new RFormatter();
             string actual = f.Format("function(a,b) a+b");
-            string expected = @"function (a, b) a + b";
+            string expected = @"function(a, b) a + b";
             Assert.AreEqual(expected, actual);
         }
 
@@ -45,7 +45,7 @@ namespace Microsoft.R.Core.Test.Formatting
 ";
             string actual = f.Format(original);
             string expected =
-@"x <- function (x,
+@"x <- function(x,
  intercept = TRUE, tolerance = 1e-07,
 	yname = NULL)
 ";

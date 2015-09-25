@@ -76,7 +76,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands
 
             if (_lastUsedReplWindow != null)
             {
-                _lastUsedReplWindow.InteractiveWindow.WriteLine(selectedText);
+                _lastUsedReplWindow.InteractiveWindow.AddInput(selectedText);
+                _lastUsedReplWindow.InteractiveWindow.Operations.ExecuteInput();
 
                 if (line != null && line.LineNumber < snapshot.LineCount - 1)
                 {
