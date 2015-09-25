@@ -360,10 +360,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Microsoft.R.Host.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="Resources\Package.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
       <SubType>Designer</SubType>
