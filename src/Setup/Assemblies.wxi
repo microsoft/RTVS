@@ -5,18 +5,29 @@
       <File Source="$(var.BinDir)\extension.vsixmanifest" />
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Editor.dll" />
+      <File Source="$(var.BinDir)\Microsoft.Markdown.Editor.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Support.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Common.Core.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Host.Client.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Host.exe" />
       <File Source="$(var.BinDir)\Microsoft.Languages.Editor.dll" />
+      <File Source="$(var.BinDir)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
       <File Source="$(var.BinDir)\Microsoft.Languages.Core.dll" />
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pkgdef" />
     </Component>
     <?ifdef Debug?>
     <Component Id="ProductAssembliesDebugData" Guid="{320E46DF-665F-492C-A0D6-9CE7DE21036D}">
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.Markdown.Editor.pdb" />
       <File Source="$(var.BinDir)\Microsoft.R.Editor.pdb" />
       <File Source="$(var.BinDir)\Microsoft.R.Core.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.R.Support.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.R.Common.Core.pdb" />
       <File Source="$(var.BinDir)\Microsoft.Languages.Editor.pdb" />
       <File Source="$(var.BinDir)\Microsoft.Languages.Core.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.R.Host.Client.pdb" />
+      <File Source="$(var.BinDir)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.pdb" />
     </Component>
     <?endif?>
   </DirectoryRef>

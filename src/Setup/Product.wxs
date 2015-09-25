@@ -10,7 +10,7 @@
            Language="1033"
            Version="$(var.MsiVersion)"
            Manufacturer="Microsoft Corporation"
-           UpgradeCode="{F8B68FDA-2C2A-4203-8793-4EEC88ECB015}">
+           UpgradeCode="{A33F0FD0-820C-4846-BB8C-4B40D4015A70}">
 
     <Package InstallerVersion="350" Compressed="yes" InstallScope="perMachine" />
 
@@ -18,8 +18,8 @@
     <Property Id="ARPPRODUCTICON" Value="ControlPanelIcon" />
 
     <!-- Uninstall Current MSI -->
-    <Upgrade Id="{F8B68FDA-2C2A-4203-8793-4EEC88ECB015}">
-      <UpgradeVersion IncludeMinimum="yes" Minimum="1.0.0.0" Property="VS2015_APACHECORDOVATOOLS" RemoveFeatures="ALL" />
+    <Upgrade Id="{A33F0FD0-820C-4846-BB8C-4B40D4015A70}">
+      <UpgradeVersion IncludeMinimum="yes" Minimum="1.0.0.0" Property="VS_R_TOOLS" RemoveFeatures="ALL" />
     </Upgrade>
 
     <MediaTemplate EmbedCab="yes" />
@@ -92,6 +92,7 @@
 
   <Fragment>
     <?include Assemblies.wxi ?>
+    <?include Rules.wxi ?>
 
     <?ifdef LabBuild?>
     <?include LocalizedResources.wxi ?>
