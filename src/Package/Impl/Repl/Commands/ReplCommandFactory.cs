@@ -12,6 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
         {
             List<ICommand> commands = new List<ICommand>();
 
+            commands.Add(new HistoryNavigationCommand(textView));
             commands.Add(new RTypingCommandHandler(textView));
             commands.Add(new RCompletionCommandHandler(textView));
 

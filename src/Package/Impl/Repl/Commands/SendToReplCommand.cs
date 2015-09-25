@@ -2,11 +2,11 @@
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Editor.Settings;
-using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Commands
+namespace Microsoft.VisualStudio.R.Package.Repl.Commands
 {
     public sealed class SendToReplCommand : ViewCommand
     {
