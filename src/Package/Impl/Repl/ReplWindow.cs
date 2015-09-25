@@ -1,7 +1,10 @@
 ﻿using System;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
@@ -35,8 +38,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             }
         }
 
-        public void ExecuteCurrentExpression()
+        public void ExecuteCurrentExpression(ITextView textView)
         {
+            ICompletionBroker broker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
+            broker.DismissAllSessions(textView);
+
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
             if (current != null)
             {

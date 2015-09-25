@@ -76,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                     // execute if the expression is complete
                     if (ReplWindow.Current != null)
                     {
-                        ReplWindow.Current.ExecuteCurrentExpression();
+                        ReplWindow.Current.ExecuteCurrentExpression(TextView);
                         return CommandResult.Executed;
                     }
                 }
