@@ -163,6 +163,10 @@ namespace Microsoft.R.Support.Settings
                         }
                     }
                 }
+                catch(Exception)
+                {
+                    return null;
+                }
                 finally
                 {
                     if (rKey != null)
