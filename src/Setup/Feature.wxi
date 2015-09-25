@@ -3,13 +3,17 @@
   <Feature Id="ProductFeature" Title="$(var.ProductName)">
 
     <?foreach Lang in $(var.LangList)?>
-
-    <?if $(var.Lang) != "ENU"?>
-    <ComponentRef Id="ProductLocalizedResources_$(var.Lang)" />
-    <?endif?>
-    
+      <?if $(var.Lang) != "ENU"?>
+        <ComponentRef Id="ProductLocalizedResources_$(var.Lang)" />
+      <?endif?>    
     <?endforeach?>
 
+    <?foreach Lcid in $(var.LcidList)?>
+      <ComponentRef Id="ItemTemplates_$(var.Lcid)" />
+      <ComponentRef Id="ProjectTemplates_$(var.Lcid)" />
+    <?endforeach?>
+    <ComponentRef Id="CpsRules" />
+    
     <ComponentRef Id="ProductAssemblies" />
     <?ifdef Debug?>
     <ComponentRef Id="ProductAssembliesDebugData" />
