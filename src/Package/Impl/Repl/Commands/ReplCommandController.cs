@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Languages.Editor;
+using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
@@ -62,11 +63,23 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
         {
-            if(group == VSConstants.VSStd2K && id == (int)VSConstants.VSStd2KCmdID.TAB)
+            if (group == VSConstants.VSStd2K)
             {
-                CompletionBroker.DismissAllSessions(TextView);
-                CompletionBroker.TriggerCompletion(TextView);
-                return CommandResult.Executed;
+                if (id == (int)VSConstants.VSStd2KCmdID.TAB)
+                {
+                    CompletionBroker.DismissAllSessions(TextView);
+                    CompletionBroker.TriggerCompletion(TextView);
+                    return CommandResult.Executed;
+                }
+                else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)
+                {
+                    // execute if the expression is complete
+                    if (ReplWindow.Current != null)
+                    {
+                        ReplWindow.Current.ExecuteCurrentExpression();
+                        return CommandResult.Executed;
+                    }
+                }
             }
 
             return base.Invoke(group, id, inputArg, ref outputArg);

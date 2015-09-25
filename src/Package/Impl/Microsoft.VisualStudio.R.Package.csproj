@@ -125,6 +125,7 @@
     <Compile Include="Repl\Commands\ReplCommandFactory.cs" />
     <Compile Include="Repl\Commands\ReplCommandTargetProvider.cs" />
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
+    <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Session\RSession.cs" />
     <Compile Include="Repl\Session\RSessionInteraction.cs" />
     <Compile Include="Repl\Session\RSessionRequestSource.cs" />

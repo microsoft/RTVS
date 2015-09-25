@@ -244,7 +244,7 @@ namespace Microsoft.R.Editor.Completion
             {
                 DismissAllSessions();
 
-                AstRoot ast = REditorDocument.FromTextBuffer(_textBuffer).EditorTree.AstRoot;
+                AstRoot ast = REditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree.AstRoot;
                 FunctionCall f = ast.GetNodeOfTypeFromPosition<FunctionCall>(TextView.Caret.Position.BufferPosition);
                 if (f != null)
                 {
@@ -288,7 +288,7 @@ namespace Microsoft.R.Editor.Completion
                 {
                     try
                     {
-                        IREditorDocument document = REditorDocument.FromTextBuffer(_textBuffer);
+                        IREditorDocument document = REditorDocument.FromTextBuffer(TextView.TextBuffer);
                         document.EditorTree.EnsureTreeReady();
 
                         ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(
