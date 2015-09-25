@@ -18,6 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendToRepl)
             }, false)
         {
+            ReplWindow.EnsureReplWindow();
             _replWindow = ReplWindow.Current;
         }
 

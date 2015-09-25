@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
     /// <summary>
     /// Tracks most recently active REPL window
     /// </summary>
-    internal sealed class ReplWindow: IVsWindowFrameEvents, IDisposable
+    internal sealed class ReplWindow : IVsWindowFrameEvents, IDisposable
     {
         private uint _windowFrameEventsCookie;
         private IVsInteractiveWindow _lastUsedReplWindow;
@@ -58,7 +58,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl
                 IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
                 Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
-                shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fForceCreate, ref persistenceSlot, out frame);
+
+                // First just find. If it exists, use it. 
+                shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fFindFirst, ref persistenceSlot, out frame);
+                if (frame != null)
+
+                    shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fForceCreate, ref persistenceSlot, out frame);
                 if (frame != null)
                 {
                     frame.Show();
@@ -66,6 +71,45 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             }
 
             return _lastUsedReplWindow;
+        }
+
+        public static bool ReplWindowExists()
+        {
+            IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
+            return frame != null;
+        }
+
+        public static void Show()
+        {
+            IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
+            if (frame != null)
+            {
+                frame.Show();
+            }
+        }
+
+        public static void EnsureReplWindow()
+        {
+            if (!ReplWindowExists())
+            {
+                IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fForceCreate);
+                if (frame != null)
+                {
+                    frame.Show();
+                }
+            }
+        }
+
+        public static IVsWindowFrame FindReplWindowFrame(__VSFINDTOOLWIN flags)
+        {
+            IVsWindowFrame frame;
+            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+
+            Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
+
+            // First just find. If it exists, use it. 
+            shell.FindToolWindow((uint)flags, ref persistenceSlot, out frame);
+            return frame;
         }
 
         #region IVsWindowFrameEvents

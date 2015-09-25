@@ -360,7 +360,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Microsoft.R.Host.exe" />
+    <None Include="Microsoft.R.Host.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Resources\Package.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
       <SubType>Designer</SubType>
@@ -462,10 +464,7 @@
     <Content Include="Rules\None.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Rules\ProjectItemsSchema.xaml">
-      <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
