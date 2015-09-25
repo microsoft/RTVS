@@ -89,10 +89,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project
         private IEnumerable<XImport> CreateMsBuildExtensionXImports(string import)
         {
             var msBuildImportExtensionPath = Invariant($@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\{import}");
+#if DEBUG
             var msBuildImportUserExtensionPath = Invariant($@"$(MSBuildUserExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\{import}");
 
             yield return new XImportExisting(msBuildImportUserExtensionPath);
             yield return new XImportExisting(msBuildImportExtensionPath, $"!Exists('{msBuildImportUserExtensionPath}')");
+#else
+            yield return new XImportExisting(msBuildImportExtensionPath);
+#endif
         }
     }
 }

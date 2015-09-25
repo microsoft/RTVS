@@ -43,7 +43,10 @@
     <Compile Include="Product.wxs" />
     <Content Include="35MSSharedLib1024.snk" />
     <Content Include="Assemblies.wxi" />
+    <Content Include="CpsRules.wxi" />
+    <Content Include="ItemTemplates.wxi" />
     <Content Include="LocalizedResources.wxi" />
+    <Content Include="ProjectTemplates.wxi" />
     <Content Include="vsicon.ico" />
     <Content Include="Feature.wxi" />
     <Content Include="Definitions.wxi" />
