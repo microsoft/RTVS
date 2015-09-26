@@ -17,6 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocCategory("Settings_SyntaxCheckCategory")]
         [CustomLocDisplayName("Settings_EnableSyntaxCheck")]
         [LocDescription("Settings_EnableSyntaxCheck_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
         public bool EnableValidation
         {
@@ -27,6 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocCategory("Settings_IntellisenseCategory")]
         [CustomLocDisplayName("Settings_ShowInternalFunctions")]
         [LocDescription("Settings_ShowInternalFunctions_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
         public bool ShowInternalFunctions
         {
@@ -37,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocCategory("Settings_IntellisenseCategory")]
         [CustomLocDisplayName("Settings_CommitOnSpace")]
         [LocDescription("Settings_CommitOnSpace_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(false)]
         public bool CommitOnSpace
         {
@@ -47,6 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocCategory("Settings_IntellisenseCategory")]
         [CustomLocDisplayName("Settings_ShowTclFunctions")]
         [LocDescription("Settings_ShowTclFunctions_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(false)]
         public bool ShowTclFunctions
         {
@@ -67,6 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocCategory("Settings_FormattingCategory")]
         [CustomLocDisplayName("Settings_SpaceAfterKeyword")]
         [LocDescription("Settings_SpaceAfterKeyword_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
         public bool SpaceAfterKeyword
         {
@@ -77,6 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocCategory("Settings_FormattingCategory")]
         [CustomLocDisplayName("Settings_SpaceAfterComma")]
         [LocDescription("Settings_SpaceAfterComma_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
         public bool SpaceAfterComma
         {
@@ -87,6 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocCategory("Settings_FormattingCategory")]
         [CustomLocDisplayName("Settings_FormatOnPaste")]
         [LocDescription("Settings_FormatOnPaste_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
         public bool FormatOnPaste
         {
@@ -97,6 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocCategory("Settings_FormattingCategory")]
         [CustomLocDisplayName("Settings_AutoFormat")]
         [LocDescription("Settings_AutoFormat_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
         public bool AutoFormat
         {
@@ -107,6 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocCategory("Settings_ReplCategory")]
         [CustomLocDisplayName("Settings_SendToRepl")]
         [LocDescription("Settings_SendToRepl_Description")]
+        [TypeConverter(typeof(ReplShortcutTypeConverter))]
         [DefaultValue(true)]
         public bool SendToReplOnCtrlEnter
         {

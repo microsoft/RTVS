@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using EnvDTE;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -17,6 +20,8 @@ using Microsoft.VisualStudio.R.Package.Options.R.Editor;
 using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.VisualStudio.R.Package.Repl.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -33,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
-    [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow,  DocumentLikeTool = true)]
+    [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
     internal sealed class RPackage : BasePackage<RLanguageService>
     {
         public const string OptionsDialogName = "R Tools";
@@ -46,6 +51,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
             IComponentModel componentModel = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
             RToolsSettings.VerifyRIsInstalled(componentModel.DefaultExportProvider);
+            ReplShortcutSetting.Initialize();
 
             FunctionIndex.BuildIndexAsync();
         }
@@ -53,6 +59,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
         protected override void Dispose(bool disposing)
         {
             //FunctionIndex.SaveIndexAsync();
+            ReplShortcutSetting.Close();
             base.Dispose(disposing);
         }
 

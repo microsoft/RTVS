@@ -133,7 +133,7 @@
     <value>Completion</value>
   </data>
   <data name="Settings_EnableSyntaxCheck" xml:space="preserve">
-    <value>Enable syntax check</value>
+    <value>Show syntax errors</value>
   </data>
   <data name="Settings_EnableSyntaxCheck_Description" xml:space="preserve">
     <value>Enable automatic syntax checking in the code</value>
@@ -217,7 +217,7 @@
     <value>Interactive window</value>
   </data>
   <data name="Settings_SendToRepl" xml:space="preserve">
-    <value>Use Control+Enter</value>
+    <value>'Send to R Console' shortcut</value>
   </data>
   <data name="Settings_SendToRepl_Description" xml:space="preserve">
     <value>Override editor 'insert empty line above' command and use Control+Enter for sending editor selection to R Console instead. Keyboard bindings can also be change in Tools &gt; Options &gt; Environment &gt; Keyboard.</value>
@@ -227,5 +227,11 @@
   </data>
   <data name="SaveAsFilterMD" xml:space="preserve">
     <value>Markdown Files (*.md;*.markdown)|*.md;*.markdown|All Files (*.*)|*.*</value>
+  </data>
+  <data name="CtrlECtrlE" xml:space="preserve">
+    <value>Contrl+E, Control+E</value>
+  </data>
+  <data name="CtrlEnter" xml:space="preserve">
+    <value>Control+Enter</value>
   </data>
 </root>

@@ -94,6 +94,7 @@
     <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
     <Compile Include="Editors\MdEditorFactory.cs" />
     <Compile Include="Languages\MdLanguageService.cs" />
+    <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
     <Compile Include="Packages\Markdown\MdPackage.cs" />
     <Compile Include="Packages\Markdown\MdGuidList.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Repl\Commands\ReplCommandTargetProvider.cs" />
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
     <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
+    <Compile Include="Repl\Commands\ReplShortcutSetting.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Session\RSession.cs" />
     <Compile Include="Repl\Session\RSessionInteraction.cs" />
@@ -199,6 +201,10 @@
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll">
       <Private>False</Private>
     </Reference>
+    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost">
       <Private>False</Private>
     </Reference>

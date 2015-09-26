@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
-        private static IWritableEditorSettingsStorage WritableStorage
+        public static IWritableEditorSettingsStorage WritableStorage
         {
             get { return Storage as IWritableEditorSettingsStorage; }
         }

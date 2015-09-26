@@ -70,6 +70,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Contrl+E, Control+E.
+        /// </summary>
+        internal static string CtrlECtrlE {
+            get {
+                return ResourceManager.GetString("CtrlECtrlE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Control+Enter.
+        /// </summary>
+        internal static string CtrlEnter {
+            get {
+                return ResourceManager.GetString("CtrlEnter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Language Editor.
         /// </summary>
         internal static string EditorName {
@@ -205,7 +223,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable syntax check.
+        ///   Looks up a localized string similar to Show syntax errors.
         /// </summary>
         internal static string Settings_EnableSyntaxCheck {
             get {
@@ -268,7 +286,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use Control+Enter.
+        ///   Looks up a localized string similar to &apos;Send to R Console&apos; shortcut.
         /// </summary>
         internal static string Settings_SendToRepl {
             get {

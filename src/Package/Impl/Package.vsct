@@ -85,7 +85,7 @@
       <Group guid="guidMdToolsCmdSet" id="groupKnit" priority="0x0200">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
-      
+
       <Group guid="guidMdToolsCmdSet" id="groupKnitSubMenu" priority="0x0100">
         <Parent guid="guidMdToolsCmdSet" id="knitSubMenu"/>
       </Group>
@@ -162,7 +162,7 @@
   -->
 
   <KeyBindings>
-    <!--    <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" /> -->
+    <!--<KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="guidTextEditor" key1="VK_RETURN" mod1="CONTROL" />-->
     <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="E" mod1="CONTROL" key2="E" mod2="CONTROL" />
     <KeyBinding guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL SHIFT" />
   </KeyBindings>

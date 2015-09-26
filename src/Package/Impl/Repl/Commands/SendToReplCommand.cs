@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -14,7 +13,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
 
         public SendToReplCommand(ITextView textView, ITextBuffer textBuffer) :
             base(textView, new CommandId[] {
-                new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OPENLINEABOVE),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendToRepl)
             }, false)
         {
@@ -24,23 +22,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
 
         public override CommandStatus Status(Guid group, int id)
         {
-            if (group == VSConstants.VSStd2K && id == (int)VSConstants.VSStd2KCmdID.OPENLINEABOVE)
-            {
-                if (!REditorSettings.SendToReplOnCtrlEnter)
-                    return CommandStatus.NotSupported;
-            }
-
             return (TextView.Selection.Mode == TextSelectionMode.Stream) ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
         {
-            if (group == VSConstants.VSStd2K && id == (int)VSConstants.VSStd2KCmdID.OPENLINEABOVE)
-            {
-                if (!REditorSettings.SendToReplOnCtrlEnter)
-                    return CommandResult.NotSupported;
-            }
-
             ITextSelection selection = TextView.Selection;
             ITextSnapshot snapshot = TextView.TextBuffer.CurrentSnapshot;
             string selectedText;
