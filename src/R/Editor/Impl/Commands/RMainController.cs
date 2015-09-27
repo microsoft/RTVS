@@ -2,21 +2,16 @@
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Editor.Completion;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Commands
 {
     /// <summary>
-    /// Main HTML editor command controller
+    /// Main R editor command controller
     /// </summary>
     public class RMainController : ViewController
     {
-        private RCompletionController _completionController;
-
         public RMainController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer)
         {
@@ -48,23 +43,6 @@ namespace Microsoft.R.Editor.Commands
             }
 
             return base.Status(group, id);
-        }
-
-        private void DismissAllSessions()
-        {
-            ICompletionBroker completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
-            completionBroker.DismissAllSessions(TextView);
-        }
-
-        private ICommandTarget CompletionController
-        {
-            get
-            {
-                if (_completionController == null)
-                    _completionController = ServiceManager.GetService<RCompletionController>(TextView);
-
-                return _completionController;
-            }
         }
 
         /// <summary>

@@ -10,6 +10,11 @@ namespace Microsoft.Languages.Editor.EditorFactory
     public interface IEditorDocument : IDisposable
     {
         /// <summary>
+        /// Closes the document
+        /// </summary>
+        void Close();
+
+        /// <summary>
         /// Fires when document is closing.
         /// </summary>
         event EventHandler<EventArgs> DocumentClosing; 

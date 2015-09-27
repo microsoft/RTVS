@@ -6,15 +6,52 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Support.Settings;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.R.Host.Client
-{
+namespace Microsoft.R.Host.Client {
     public sealed class RHost : IDisposable
     {
+        private class RExpressionEvaluator : IRExpressionEvaluator {
+            private readonly WebSocket _ws;
+            private readonly byte[] _buffer;
+            private readonly CancellationToken _ct;
+
+            public RExpressionEvaluator(WebSocket ws, byte[] buffer, CancellationToken ct) {
+                _ws = ws;
+                _buffer = buffer;
+                _ct = ct;
+            }
+
+            public async Task<REvaluationResult> EvaluateAsync(string expression) {
+                string request = JsonConvert.SerializeObject(new {
+                    command = "eval",
+                    expr = expression
+                });
+
+                int count = Encoding.UTF8.GetBytes(request, 0, request.Length, _buffer, 0);
+                await _ws.SendAsync(new ArraySegment<byte>(_buffer, 0, count), WebSocketMessageType.Text, true, _ct);
+
+                var wsrr = await _ws.ReceiveAsync(new ArraySegment<byte>(_buffer), _ct);
+                if (wsrr.CloseStatus != null) {
+                    throw new TaskCanceledException();
+                }
+
+                string response = Encoding.UTF8.GetString(_buffer, 0, wsrr.Count);
+                var obj = JObject.Parse(response);
+
+                JToken result, error, parseStatus;
+                obj.TryGetValue("result", out result);
+                obj.TryGetValue("error", out error);
+                obj.TryGetValue("ParseStatus", out parseStatus);
+
+                return new REvaluationResult(
+                    result != null ? (string)result : null,
+                    error != null ? (string)error : null,
+                    parseStatus != null ? (RParseStatus)(double)parseStatus : RParseStatus.Null);
+            }
+        }
+
         public const int DefaultPort = 5118;
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
@@ -35,12 +72,15 @@ namespace Microsoft.R.Host.Client
 
         public async Task CreateAndRun(ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken))
         {
-            string rBinPath = RToolsSettings.GetBinariesFolder();
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), "Microsoft.R.Host.exe");
+
+            if (!File.Exists(rhostExe))
+            {
+                throw new MicrosoftRHostMissingException();
+            }
 
             psi = psi ?? new ProcessStartInfo();
             psi.FileName = rhostExe;
-            psi.WorkingDirectory = rBinPath;
 
             using (_process = Process.Start(psi))
             {
@@ -121,6 +161,7 @@ namespace Microsoft.R.Host.Client
                 obj = JObject.Parse(s);
 
                 var contexts = GetContexts(obj);
+                var evaluator = new RExpressionEvaluator(ws, buffer, ct);
 
                 var evt = (string)obj["event"];
                 string response = null;
@@ -129,7 +170,7 @@ namespace Microsoft.R.Host.Client
                 {
                     case "YesNoCancel":
                         {
-                            YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"]);
+                            YesNoCancel input = await _callbacks.YesNoCancel(contexts, evaluator, (string)obj["s"]);
                             response = JsonConvert.SerializeObject((double)input);
                             break;
                         }
@@ -138,6 +179,7 @@ namespace Microsoft.R.Host.Client
                         {
                             string input = await _callbacks.ReadConsole(
                                 contexts,
+                                evaluator,
                                 (string)obj["prompt"],
                                 (string)obj["buf"],
                                 (int)(double)obj["len"],
@@ -148,15 +190,15 @@ namespace Microsoft.R.Host.Client
                         }
 
                     case "WriteConsoleEx":
-                        await _callbacks.WriteConsoleEx(contexts, (string)obj["buf"], (OutputType)(double)obj["otype"]);
+                        await _callbacks.WriteConsoleEx(contexts, evaluator, (string)obj["buf"], (OutputType)(double)obj["otype"]);
                         break;
 
                     case "ShowMessage":
-                        await _callbacks.ShowMessage(contexts, (string)obj["s"]);
+                        await _callbacks.ShowMessage(contexts, evaluator, (string)obj["s"]);
                         break;
 
                     case "Busy":
-                        await _callbacks.Busy(contexts, (bool)obj["which"]);
+                        await _callbacks.Busy(contexts, evaluator, (bool)obj["which"]);
                         break;
 
                     case "CallBack":

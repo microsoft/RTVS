@@ -1,8 +1,13 @@
 using System;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
@@ -33,6 +38,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl
                 await _session.InitializeAsync();
                 return ExecutionResult.Success;
             }
+            catch (MicrosoftRHostMissingException)
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
+                IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                if (shell != null)
+                {
+                    int result;
+                    shell.ShowMessageBox(0, Guid.Empty, null, Resources.Error_Microsoft_R_Host_Missing, null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
+                    Process.Start("http://www.microsoft.com");
+                }
+                return ExecutionResult.Failure;
+            }
             catch (Exception)
             {
                 return ExecutionResult.Failure;
@@ -52,9 +69,30 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         public async Task<ExecutionResult> ExecuteCodeAsync(string text)
         {
             _requestTcs = new TaskCompletionSource<ExecutionResult>();
-
             var request = await _session.BeginInteractionAsync();
-            request.RespondAsync(text).DoNotWait(); // TODO: Add logging for unexpected exceptions (exception from R host will be handled in SessionOnError)
+
+            System.Threading.Tasks.Task.Run(async () =>
+            {
+                try
+                {
+                    await request.RespondAsync(text);
+                }
+                catch (RException)
+                {
+                    // It was already reported via RSession.Error and printed out; do nothing.
+                }
+                catch (Exception ex)
+                {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
+                    IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                    if (shell != null)
+                    {
+                        int result;
+                        shell.ShowMessageBox(0, Guid.Empty, null, ex.ToString(), null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
+                    }
+                }
+            }).DoNotWait();
+
             return await _requestTcs.Task;
         }
 
@@ -75,10 +113,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         }
 
         public IInteractiveWindow CurrentWindow { get; set; }
- 
+
         private void SessionOnBeforeRequest(object sender, RBeforeRequestEventArgs args)
         {
-            _requestTcs.SetResult(ExecutionResult.Success);
+            if (_requestTcs != null)
+            {
+                _requestTcs.SetResult(ExecutionResult.Success);
+                _requestTcs = null;
+            }
         }
 
         private void SessionOnResponse(object sender, RResponseEventArgs args)
@@ -89,7 +131,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         private void SessionOnError(object sender, RErrorEventArgs args)
         {
             CurrentWindow.WriteError(args.Message);
-            _requestTcs.SetResult(ExecutionResult.Failure);
+            if (_requestTcs != null)
+            {
+                _requestTcs.SetResult(ExecutionResult.Failure);
+                _requestTcs = null;
+            }
         }
     }
 }

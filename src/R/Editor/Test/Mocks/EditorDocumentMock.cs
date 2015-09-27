@@ -19,6 +19,13 @@ namespace Microsoft.R.Editor.Test.Mocks
 
         public IEditorTree EditorTree { get; private set; }
 
+        public void Close() { }
+
+        public bool IsTransient
+        {
+            get { return false; }
+        }
+
         public bool IsClosed { get; private set; }
 
         public bool IsMassiveChangeInProgress

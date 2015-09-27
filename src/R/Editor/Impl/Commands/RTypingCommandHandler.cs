@@ -35,9 +35,13 @@ namespace Microsoft.R.Editor.Commands
 
                 if (AutoFormat.IsAutoformatTriggerCharacter(typedChar))
                 {
-                    IEditorTree tree = EditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree;
-                    tree.EnsureTreeReady();
-                    AutoFormat.HandleAutoFormat(TextView, TextView.TextBuffer, tree.AstRoot, typedChar);
+                    IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
+                    if (document != null && !document.IsTransient)
+                    {
+                        IEditorTree tree = document.EditorTree;
+                        tree.EnsureTreeReady();
+                        AutoFormat.HandleAutoFormat(TextView, TextView.TextBuffer, tree.AstRoot, typedChar);
+                    }
                 }
 
                 HandleCompletion(typedChar);
@@ -54,9 +58,6 @@ namespace Microsoft.R.Editor.Commands
 
         private void HandleCompletion(char typedChar)
         {
-            IREditorDocument document = EditorDocument.FromTextBuffer(TextBuffer);
-            Debug.Assert(document != null);
-
             switch (typedChar)
             {
                 case '\'':

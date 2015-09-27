@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Formatting
         {
             SnapshotSpan spanToFormat = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
 
-            IREditorDocument document = EditorDocument.TryFromTextBuffer(_textBuffer);
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(_textBuffer);
             AstRoot ast;
             if (document == null)
             {

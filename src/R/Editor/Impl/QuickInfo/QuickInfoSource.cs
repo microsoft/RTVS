@@ -55,11 +55,16 @@ namespace Microsoft.R.Editor.QuickInfo
 
             _lastPosition = position;
             ITextSnapshot snapshot = triggerPoint.Value.Snapshot;
-            IREditorDocument document = EditorDocument.FromTextBuffer(_subjectBuffer);
 
-            AugmentQuickInfoSession(document.EditorTree.AstRoot, position, 
-                                    session, quickInfoContent, out applicableToSpan,
-                                    (object o) => RetriggerQuickInfoSession(o as IQuickInfoSession));
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(_subjectBuffer);
+            if (document != null)
+            {
+                // Document may be null in REPL window as projections are not
+                // getting set immediately or may change as user moves mouse over.
+                AugmentQuickInfoSession(document.EditorTree.AstRoot, position,
+                                        session, quickInfoContent, out applicableToSpan,
+                                        (object o) => RetriggerQuickInfoSession(o as IQuickInfoSession));
+            }
         }
 
         internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session, 
@@ -69,7 +74,7 @@ namespace Microsoft.R.Editor.QuickInfo
             int signatureEnd = position;
             applicableToSpan = null;
 
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, position, out signatureEnd);
+            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
             if (!string.IsNullOrEmpty(functionName))
             {
                 applicableToSpan = session.TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(position, signatureEnd - position, SpanTrackingMode.EdgeInclusive);

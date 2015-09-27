@@ -22,15 +22,18 @@ namespace Microsoft.Languages.Core.Formatting
         /// </summary>
         public static bool IsNewLineBeforePosition(ITextProvider textProvider, int position)
         {
-            for (int i = position - 1; i >= 0; i--)
+            if (position > 0)
             {
-                char ch = textProvider[i];
+                for (int i = position - 1; i >= 0; i--)
+                {
+                    char ch = textProvider[i];
 
-                if (!Char.IsWhiteSpace(ch))
-                    return false;
+                    if (!Char.IsWhiteSpace(ch))
+                        return false;
 
-                if (ch == '\r' || ch == '\n')
-                    return true;
+                    if (ch == '\r' || ch == '\n')
+                        return true;
+                }
             }
 
             return false;
@@ -43,30 +46,33 @@ namespace Microsoft.Languages.Core.Formatting
         {
             int count = 0;
 
-            for (int i = position - 1; i >= 0; i--)
+            if (position > 0)
             {
-                char ch = textProvider[i];
-
-                if (!Char.IsWhiteSpace(ch))
-                    return count;
-
-                if (ch == '\r')
+                for (int i = position - 1; i >= 0; i--)
                 {
-                    if (i > 0 && textProvider[i - 1] == '\n')
-                    {
-                        i--;
-                    }
+                    char ch = textProvider[i];
 
-                    count++;
-                }
-                else if (ch == '\n')
-                {
-                    if (i > 0 && textProvider[i - 1] == '\r')
-                    {
-                        i--;
-                    }
+                    if (!Char.IsWhiteSpace(ch))
+                        return count;
 
-                    count++;
+                    if (ch == '\r')
+                    {
+                        if (i > 0 && textProvider[i - 1] == '\n')
+                        {
+                            i--;
+                        }
+
+                        count++;
+                    }
+                    else if (ch == '\n')
+                    {
+                        if (i > 0 && textProvider[i - 1] == '\r')
+                        {
+                            i--;
+                        }
+
+                        count++;
+                    }
                 }
             }
 

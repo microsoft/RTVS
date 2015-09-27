@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Commands
             }
             else
             {
-                IREditorDocument doc = EditorDocument.TryFromTextBuffer(textBuffer);
+                IREditorDocument doc = REditorDocument.TryFromTextBuffer(textBuffer);
                 if (doc != null)
                 {
                     doc.Dispose();

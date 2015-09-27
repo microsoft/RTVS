@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.EditorFactory
             ServiceManager.AddService<IEditorInstance>(this, ViewBuffer);
         }
 
-        #region IWebEditorInstance
+        #region IEditorInstance
         public object WpfControl
         {
             get { return null; }

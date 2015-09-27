@@ -23,7 +23,7 @@ namespace Microsoft.R.Editor.Outline
             var tagger = ServiceManager.GetService<ROutliningTagger>(buffer);
             if (tagger == null)
             {
-                var document = ServiceManager.GetService<EditorDocument>(buffer);
+                var document = ServiceManager.GetService<REditorDocument>(buffer);
                 if (document != null)
                     tagger = new ROutliningTagger(document);
             }

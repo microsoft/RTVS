@@ -14,9 +14,9 @@ namespace Microsoft.VisualStudio.R.Package.Packages
     {
         private Dictionary<IVsProjectGenerator, uint> _projectFileGenerators;
         protected abstract IEnumerable<IVsEditorFactory> CreateEditorFactories();
-        protected abstract IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators();
-        protected abstract IEnumerable<IVsProjectFactory> CreateProjectFactories();
-        protected abstract IEnumerable<MenuCommand> CreateMenuCommands();
+        protected virtual IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() { return new IVsProjectGenerator[0]; }
+        protected virtual IEnumerable<IVsProjectFactory> CreateProjectFactories() { return new IVsProjectFactory[0]; }
+        protected virtual IEnumerable<MenuCommand> CreateMenuCommands() { return new MenuCommand[0]; }
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place

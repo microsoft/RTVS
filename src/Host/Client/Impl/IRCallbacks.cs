@@ -7,10 +7,10 @@ namespace Microsoft.R.Host.Client
     {
         Task Connected(string rVersion);
         Task Disconnected();
-        Task<string> ReadConsole(IReadOnlyCollection<IRContext> contexts, string prompt, string buf, int len, bool addToHistory);
-        Task WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, string buf, OutputType otype);
-        Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string s);
-        Task<YesNoCancel> YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s);
-        Task Busy(IReadOnlyCollection<IRContext> contexts, bool which);
+        Task<string> ReadConsole(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string prompt, string buf, int len, bool addToHistory);
+        Task WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string buf, OutputType otype);
+        Task ShowMessage(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string s);
+        Task<YesNoCancel> YesNoCancel(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string s);
+        Task Busy(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, bool which);
     }
 }

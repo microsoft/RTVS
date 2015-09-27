@@ -286,16 +286,20 @@ namespace Microsoft.R.Core.Tokens
             int start = _cs.Position;
             if (Char.IsLetter(_cs.CurrentChar))
             {
-                AddIdentifier();
+                if (AddIdentifier())
+                {
+                    return;
+                }
+            }
+
+            SkipUnknown();
+            if (_cs.Position > start)
+            {
+                AddToken(RTokenType.Unknown, start, _cs.Position - start);
             }
             else
             {
-                SkipUnknown();
-
-                if (_cs.Position > start)
-                {
-                    AddToken(RTokenType.Unknown, start, _cs.Position - start);
-                }
+                _cs.MoveToNextChar();
             }
         }
 
@@ -427,7 +431,7 @@ namespace Microsoft.R.Core.Tokens
             Tokenizer.HandleString(openQuote, _cs, (start, length) => AddToken(RTokenType.String, start, length));
         }
 
-        private void AddIdentifier()
+        private bool AddIdentifier()
         {
             // 10.3.2 Identifiers
             // Identifiers consist of a sequence of letters, digits, the period (‘.’) and the underscore.
@@ -443,7 +447,10 @@ namespace Microsoft.R.Core.Tokens
             if (_cs.Position > start)
             {
                 AddToken(RTokenType.Identifier, start, _cs.Position - start);
+                return true;
             }
+
+            return false;
         }
 
         private void AddToken(RTokenType type, int start, int length)

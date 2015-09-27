@@ -70,11 +70,38 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Contrl+E, Control+E.
+        /// </summary>
+        internal static string CtrlECtrlE {
+            get {
+                return ResourceManager.GetString("CtrlECtrlE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Control+Enter.
+        /// </summary>
+        internal static string CtrlEnter {
+            get {
+                return ResourceManager.GetString("CtrlEnter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Language Editor.
         /// </summary>
         internal static string EditorName {
             get {
                 return ResourceManager.GetString("EditorName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
+        /// </summary>
+        internal static string Error_Microsoft_R_Host_Missing {
+            get {
+                return ResourceManager.GetString("Error_Microsoft_R_Host_Missing", resourceCulture);
             }
         }
         
@@ -111,6 +138,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string ReplWindowName {
             get {
                 return ResourceManager.GetString("ReplWindowName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown Files (*.md;*.markdown)|*.md;*.markdown|All Files (*.*)|*.*.
+        /// </summary>
+        internal static string SaveAsFilterMD {
+            get {
+                return ResourceManager.GetString("SaveAsFilterMD", resourceCulture);
             }
         }
         
@@ -187,7 +223,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable syntax check.
+        ///   Looks up a localized string similar to Show syntax errors.
         /// </summary>
         internal static string Settings_EnableSyntaxCheck {
             get {
@@ -237,6 +273,33 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Settings_IntellisenseCategory {
             get {
                 return ResourceManager.GetString("Settings_IntellisenseCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interactive window.
+        /// </summary>
+        internal static string Settings_ReplCategory {
+            get {
+                return ResourceManager.GetString("Settings_ReplCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Send to R Console&apos; shortcut.
+        /// </summary>
+        internal static string Settings_SendToRepl {
+            get {
+                return ResourceManager.GetString("Settings_SendToRepl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Override editor &apos;insert empty line above&apos; command and use Control+Enter for sending editor selection to R Console instead. Keyboard bindings can also be change in Tools &gt; Options &gt; Environment &gt; Keyboard..
+        /// </summary>
+        internal static string Settings_SendToRepl_Description {
+            get {
+                return ResourceManager.GetString("Settings_SendToRepl_Description", resourceCulture);
             }
         }
         

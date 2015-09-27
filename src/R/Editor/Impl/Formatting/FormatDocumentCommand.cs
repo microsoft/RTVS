@@ -50,7 +50,7 @@ namespace Microsoft.R.Editor.Formatting
                 {
                     using (var massiveChange = new MassiveChange(TextView, _textBuffer, Resources.FormatDocument))
                     {
-                        IREditorDocument document = EditorDocument.FromTextBuffer(_textBuffer);
+                        IREditorDocument document = REditorDocument.FromTextBuffer(_textBuffer);
 
                         document.EditorTree.Invalidate();
 

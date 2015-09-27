@@ -43,7 +43,7 @@ namespace Microsoft.R.Editor.Completion
             //if (_asyncSession != null)
             //    return;
 
-            IREditorDocument doc = EditorDocument.FromTextBuffer(_textBuffer);
+            IREditorDocument doc = REditorDocument.FromTextBuffer(_textBuffer);
             if (doc == null)
                 return;
 

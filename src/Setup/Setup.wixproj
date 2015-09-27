@@ -43,23 +43,42 @@
     <Compile Include="Product.wxs" />
     <Content Include="35MSSharedLib1024.snk" />
     <Content Include="Assemblies.wxi" />
+    <Content Include="CpsRules.wxi" />
+    <Content Include="ItemTemplates.wxi" />
     <Content Include="LocalizedResources.wxi" />
+    <Content Include="ProjectTemplates.wxi" />
     <Content Include="vsicon.ico" />
     <Content Include="Feature.wxi" />
     <Content Include="Definitions.wxi" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Core\Impl\Microsoft.Languages.Core.csproj">
-      <Name>Microsoft.Languages.Core</Name>
+    <ProjectReference Include="..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Name>Microsoft.Common.Core</Name>
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Editor\Impl\Microsoft.Languages.Editor.csproj">
+    <ProjectReference Include="..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Name>Microsoft.R.Host.Client</Name>
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
       <Name>Microsoft.Languages.Editor</Name>
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
+      <Name>Microsoft.Markdown.Editor</Name>
+      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
@@ -68,6 +87,14 @@
     <ProjectReference Include="..\Package\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Name>Microsoft.VisualStudio.R.Package</Name>
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj">
+      <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
+      <Project>{41aa8769-0fbc-4a80-8498-21c833f0c2ac}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
@@ -84,6 +111,14 @@
     <ProjectReference Include="..\R\Editor\Impl\Microsoft.R.Editor.csproj">
       <Name>Microsoft.R.Editor</Name>
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\R\Support\Impl\Microsoft.R.Support.csproj">
+      <Name>Microsoft.R.Support</Name>
+      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>

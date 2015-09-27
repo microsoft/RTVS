@@ -68,10 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
-    <None Include="Markdown\Files\Classification\01.md" />
-    <None Include="Markdown\Files\Classification\01.md.colors" />
-    <None Include="Markdown\Files\Tokenization\01.md" />
-    <None Include="Markdown\Files\Tokenization\01.md.tokens" />
     <None Include="RD\Files\Help\01.rd" />
     <None Include="RD\Files\Tokenization\01.rd" />
     <None Include="RD\Files\Tokenization\01.rd.tokens" />
@@ -100,14 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Functions\FunctionIndexTest.cs" />
-    <Compile Include="Markdown\Classification\MdClassifierTest.cs" />
-    <Compile Include="Markdown\Tokens\TokenizeBlockTest.cs" />
-    <Compile Include="Markdown\Tokens\TokenizeListTest.cs" />
-    <Compile Include="Markdown\Tokens\TokenizeLinkTest.cs" />
-    <Compile Include="Markdown\Tokens\TokenizeSampleFilesTest.cs" />
-    <Compile Include="Markdown\Tokens\TokenizeStylesTest.cs" />
-    <Compile Include="Markdown\Tokens\TokenizeQuoteTest.cs" />
-    <Compile Include="Markdown\Tokens\TokenizeHeadingTest.cs" />
     <Compile Include="Packages\PackageIndexTest.cs" />
     <Compile Include="RD\Classification\RdClassifierTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />

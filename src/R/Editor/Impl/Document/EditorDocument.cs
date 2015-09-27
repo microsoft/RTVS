@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
@@ -12,18 +13,20 @@ using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion.Engine;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.R.Editor.Validation;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.R.Editor.Document
 {
     /// <summary>
     /// Main editor document for R language
     /// </summary>
-    public class EditorDocument : IREditorDocument
+    public class REditorDocument : IREditorDocument
     {
         [Import]
         private ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
@@ -48,7 +51,7 @@ namespace Microsoft.R.Editor.Document
         private TreeValidator _validator;
 
         #region Constructors
-        public EditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem)
+        public REditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem)
         {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
@@ -58,7 +61,7 @@ namespace Microsoft.R.Editor.Document
             IsClosed = false;
             TextDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
 
-            ServiceManager.AddService<EditorDocument>(this, TextBuffer);
+            ServiceManager.AddService<REditorDocument>(this, TextBuffer);
 
             _editorTree = new EditorTree(textBuffer);
             _validator = new TreeValidator(this.EditorTree);
@@ -75,7 +78,6 @@ namespace Microsoft.R.Editor.Document
         public static IREditorDocument FromTextBuffer(ITextBuffer textBuffer)
         {
             IREditorDocument document = TryFromTextBuffer(textBuffer);
-
             Debug.Assert(document != null, "No editor document available");
             return document;
         }
@@ -88,13 +90,17 @@ namespace Microsoft.R.Editor.Document
             IREditorDocument document = ServiceManager.GetService<IREditorDocument>(textBuffer);
             if (document == null)
             {
-                TextViewData viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
-                if (viewData != null && viewData.LastActiveView != null)
+                document = FindInProjectedBuffers(textBuffer);
+                if (document == null)
                 {
-                    RMainController controller = RMainController.FromTextView(viewData.LastActiveView);
-                    if (controller != null && controller.TextBuffer != null)
+                    TextViewData viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
+                    if (viewData != null && viewData.LastActiveView != null)
                     {
-                        document = ServiceManager.GetService<EditorDocument>(controller.TextBuffer);
+                        RMainController controller = RMainController.FromTextView(viewData.LastActiveView);
+                        if (controller != null && controller.TextBuffer != null)
+                        {
+                            document = ServiceManager.GetService<REditorDocument>(controller.TextBuffer);
+                        }
                     }
                 }
             }
@@ -102,36 +108,37 @@ namespace Microsoft.R.Editor.Document
             return document;
         }
 
-        public virtual void Close()
+        public static IREditorDocument FindInProjectedBuffers(ITextBuffer viewBuffer)
         {
-            if (IsClosed)
-                return;
-
-            IsClosed = true;
-
-            TextDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
-
-            if (DocumentClosing != null)
-                DocumentClosing(this, null);
-
-            if (EditorTree != null)
+            IREditorDocument document = null;
+            if (viewBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType))
             {
-                _editorTree.Dispose(); // this will also remove event handlers
-                _editorTree = null;
+                return ServiceManager.GetService<REditorDocument>(viewBuffer);
             }
 
-            if (DocumentClosing != null)
+            // Try locating R buffer
+            ITextBuffer rBuffer = null;
+            IProjectionBuffer pb = viewBuffer as IProjectionBuffer;
+            if (pb != null)
             {
-                foreach (EventHandler<EventArgs> eh in DocumentClosing.GetInvocationList())
+                rBuffer = pb.SourceBuffers.FirstOrDefault((ITextBuffer tb) =>
                 {
-                    Debug.Fail(String.Format(CultureInfo.CurrentCulture, "There are still listeners in the EditorDocument.OnDocumentClosing event list: {0}", eh.Target));
-                    DocumentClosing -= eh;
-                }
+                    if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType))
+                    {
+                        document = ServiceManager.GetService<REditorDocument>(tb);
+                        if(document != null)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                });
             }
 
-            ServiceManager.RemoveService<EditorDocument>(TextBuffer);
-            TextBuffer = null;
+            return document;
         }
+
 
         #region IDisposable
         protected virtual void Dispose(bool disposing)
@@ -163,9 +170,53 @@ namespace Microsoft.R.Editor.Document
         }
 
         /// <summary>
+        /// Closes the document
+        /// </summary>
+        public virtual void Close()
+        {
+            if (IsClosed)
+                return;
+
+            IsClosed = true;
+
+            TextDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
+
+            if (DocumentClosing != null)
+                DocumentClosing(this, null);
+
+            if (EditorTree != null)
+            {
+                _editorTree.Dispose(); // this will also remove event handlers
+                _editorTree = null;
+            }
+
+            if (DocumentClosing != null)
+            {
+                foreach (EventHandler<EventArgs> eh in DocumentClosing.GetInvocationList())
+                {
+                    Debug.Fail(String.Format(CultureInfo.CurrentCulture, "There are still listeners in the EditorDocument.OnDocumentClosing event list: {0}", eh.Target));
+                    DocumentClosing -= eh;
+                }
+            }
+
+            ServiceManager.RemoveService<REditorDocument>(TextBuffer);
+            TextBuffer = null;
+        }
+
+        /// <summary>
         /// If trie the document is closed.
         /// </summary>
         public bool IsClosed { get; private set; }
+
+        /// <summary>
+        /// Tells of document does not have associated disk file
+        /// such as when document is based off projection buffer
+        /// created elsewhere as in VS Interactive Window case.
+        /// </summary>
+        public bool IsTransient
+        {
+            get { return WorkspaceItem == null || WorkspaceItem.Path.Length == 0; }
+        }
 
         /// <summary>
         /// Tells document that massive change to text buffer is about to commence.

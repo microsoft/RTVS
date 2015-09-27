@@ -33,8 +33,29 @@ namespace Microsoft.R.Editor.Comments
 
         public static void DoActionOnLines(ITextView textView, ITextBuffer textBuffer, ITextRange range, Func<ITextSnapshotLine, bool> action, string actionName)
         {
-            int startLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(range.Start);
-            int endLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(range.End);
+            // When user clicks editor margin to select a line, selection actually
+            // ends in the beginning of the next line. In order to prevent commenting
+            // of the next line that user did not select, we need to shrink span to
+            // format and exclude the trailing line break.
+
+            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
+            ITextSnapshotLine line = snapshot.GetLineFromPosition(range.End);
+
+            int start = range.Start;
+            int end = range.End;
+
+            if (line.Start.Position == range.End && range.Length > 0)
+            {
+                if (line.LineNumber > 0)
+                {
+                    line = snapshot.GetLineFromLineNumber(line.LineNumber - 1);
+                    end = line.End.Position;
+                    start = Math.Min(start, end);
+                }
+            }
+
+            int startLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(start);
+            int endLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(end);
 
             ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textBuffer);
             undoAction.Open(actionName);
@@ -43,7 +64,7 @@ namespace Microsoft.R.Editor.Comments
             {
                 for (int i = startLineNumber; i <= endLineNumber; i++)
                 {
-                    ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
+                    line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
                     changed |= action(line);
                 }
             }

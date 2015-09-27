@@ -5,11 +5,11 @@ using Microsoft.VisualStudio.R.Package;
 
 namespace Microsoft.VisualStudio.R.Languages
 {
-    [Guid(GuidList.LanguageServiceGuidString)]
+    [Guid(RGuidList.RLanguageServiceGuidString)]
     internal sealed class RLanguageService : BaseLanguageService
     {
         public RLanguageService()
-            : base(GuidList.LanguageServiceGuid, 
+            : base(RGuidList.RLanguageServiceGuid, 
                    RContentTypeDefinition.LanguageName, 
                    RContentTypeDefinition.FileExtension)
         {
@@ -17,10 +17,7 @@ namespace Microsoft.VisualStudio.R.Languages
 
         protected override string SaveAsFilter
         {
-            get
-            {
-                return Resources.SaveAsFilterR;
-            }
+            get { return Resources.SaveAsFilterR; }
         }
     }
 }

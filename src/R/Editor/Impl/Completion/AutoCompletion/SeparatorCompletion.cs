@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion
             // Do not complete '\"' in strings or at the end of a string token
             if (typedChar == '\"' || typedChar == '\'')
             {
-                AstRoot ast = EditorDocument.FromTextBuffer(textView.TextBuffer).EditorTree.AstRoot;
+                AstRoot ast = REditorDocument.FromTextBuffer(textView.TextBuffer).EditorTree.AstRoot;
                 int position = textView.Selection.SelectedSpans[0].Start;
 
                 TokenNode node = ast.GetNodeOfTypeFromPosition<TokenNode>(position, includeEnd: true);

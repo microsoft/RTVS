@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Formatting
             // of the next line that user did not select, we need to shrink span to
             // format and exclude the trailing line break.
             ITextSnapshotLine line = snapshot.GetLineFromPosition(range.End);
-            if (line.Start.Position == range.End)
+            if (line.Start.Position == range.End && range.Length > 0)
             {
                 if (line.LineNumber > 0)
                 {

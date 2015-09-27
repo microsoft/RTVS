@@ -12,6 +12,7 @@ namespace Microsoft.R.Editor.Settings
         public const string AutoFormatKey = "AutoFormat";
         public const string FormatOnPasteKey = "FormatOnPaste";
         public const string CommitOnSpaceKey = "CommitOnSpace";
+        public const string SendToReplOnCtrlEnterKey = "SendToReplOnCtrlEnterKey";
 
         private static bool _initialized = false;
         private static RFormatOptions _formatOptions = new RFormatOptions();
@@ -32,7 +33,7 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
-        private static IWritableEditorSettingsStorage WritableStorage
+        public static IWritableEditorSettingsStorage WritableStorage
         {
             get { return Storage as IWritableEditorSettingsStorage; }
         }
@@ -236,6 +237,20 @@ namespace Microsoft.R.Editor.Settings
             {
                 if (IsWritable)
                     WritableStorage.SetBoolean(CommonSettings.ShowTclFunctionsKey, value);
+            }
+        }
+
+        public static bool SendToReplOnCtrlEnter
+        {
+            get
+            {
+                return Storage.GetBoolean(REditorSettings.SendToReplOnCtrlEnterKey, true);
+            }
+
+            set
+            {
+                if (IsWritable)
+                    WritableStorage.SetBoolean(REditorSettings.SendToReplOnCtrlEnterKey, value);
             }
         }
 

@@ -41,14 +41,14 @@ namespace Microsoft.R.Editor.Completion
         {
             _textBuffer = subjectBuffers[0];
 
-            ServiceManager.AdviseServiceAdded<EditorDocument>(_textBuffer, OnDocumentReady);
+            ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
         }
 
         public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
             if (_textBuffer == subjectBuffer)
             {
-                ServiceManager.AdviseServiceAdded<EditorDocument>(_textBuffer, OnDocumentReady);
+                ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
             }
 
             base.ConnectSubjectBuffer(subjectBuffer);
@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Completion
             base.DisconnectSubjectBuffer(subjectBuffer);
         }
 
-        private void OnDocumentReady(EditorDocument document)
+        private void OnDocumentReady(REditorDocument document)
         {
             // This object isn't released on content type changes, 
             // instead using the (Dis)ConnectSubjectBuffer
@@ -182,7 +182,15 @@ namespace Microsoft.R.Editor.Completion
                     return false;
 
                 if (char.IsWhiteSpace(typedChar) || typedChar == '\n' || typedChar == '\t')
+                {
+                    IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
+                    if(document != null && document.IsTransient)
+                    {
+                        return false;
+                    }
+
                     return true;
+                }
             }
 
             return false;
@@ -236,7 +244,7 @@ namespace Microsoft.R.Editor.Completion
             {
                 DismissAllSessions();
 
-                AstRoot ast = EditorDocument.FromTextBuffer(_textBuffer).EditorTree.AstRoot;
+                AstRoot ast = REditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree.AstRoot;
                 FunctionCall f = ast.GetNodeOfTypeFromPosition<FunctionCall>(TextView.Caret.Position.BufferPosition);
                 if (f != null)
                 {
@@ -280,7 +288,7 @@ namespace Microsoft.R.Editor.Completion
                 {
                     try
                     {
-                        IREditorDocument document = EditorDocument.FromTextBuffer(_textBuffer);
+                        IREditorDocument document = REditorDocument.FromTextBuffer(TextView.TextBuffer);
                         document.EditorTree.EnsureTreeReady();
 
                         ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(

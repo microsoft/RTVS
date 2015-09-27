@@ -1,4 +1,4 @@
-x <- function (x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
+x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 	yname = NULL) {
 	x <- as.matrix(x)
 	y <- as.matrix(y)

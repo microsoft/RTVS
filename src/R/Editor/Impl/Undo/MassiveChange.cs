@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Undo
 
             _transaction.AddUndo(new StartMassiveChangeUndoUnit(_textBuffer));
 
-            IREditorDocument document = EditorDocument.FromTextBuffer(_textBuffer);
+            IREditorDocument document = REditorDocument.FromTextBuffer(_textBuffer);
             Debug.Assert(document != null);
 
             document.BeginMassiveChange();
@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.Undo
 
         public void Dispose()
         {
-            IREditorDocument document = EditorDocument.FromTextBuffer(_textBuffer);
+            IREditorDocument document = REditorDocument.FromTextBuffer(_textBuffer);
             Debug.Assert(document != null);
 
             bool changed = document.EndMassiveChange();
@@ -62,14 +62,14 @@ namespace Microsoft.R.Editor.Undo
 
         public override void Do()
         {
-            IREditorDocument document = EditorDocument.TryFromTextBuffer(TextBuffer);
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(TextBuffer);
             if (document != null)
                 document.BeginMassiveChange();
         }
 
         public override void Undo()
         {
-            IREditorDocument document = EditorDocument.TryFromTextBuffer(TextBuffer);
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(TextBuffer);
             if (document != null)
                 document.EndMassiveChange();
         }
@@ -84,14 +84,14 @@ namespace Microsoft.R.Editor.Undo
 
         public override void Do()
         {
-            var document = EditorDocument.TryFromTextBuffer(TextBuffer);
+            var document = REditorDocument.TryFromTextBuffer(TextBuffer);
             if (document != null)
                 document.EndMassiveChange();
         }
 
         public override void Undo()
         {
-            var document = EditorDocument.TryFromTextBuffer(TextBuffer);
+            var document = REditorDocument.TryFromTextBuffer(TextBuffer);
             if (document != null)
                 document.BeginMassiveChange();
         }

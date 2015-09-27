@@ -87,13 +87,6 @@ namespace Microsoft.Languages.Editor.Controller
             {
                 foreach (var factory in controllerFactories)
                 {
-                    // Unpleasant workaround to have TestWebApplication working...
-                    if (String.Equals(EditorShell.Current.GetType().ToString(), "Microsoft.Web.Editor.Test.Host.WebEditorHost", StringComparison.OrdinalIgnoreCase) &&
-                       String.Equals(factory.Value.GetType().Assembly.GetName().Name, "Microsoft.VisualStudio.Html.Package", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
                     _controllers.AddRange(factory.Value.GetControllers(TextView, TextBuffer));
                 }
             }

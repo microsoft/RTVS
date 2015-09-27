@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Signatures
 
         public string FunctionName { get; private set; }
 
-        public SignatureHelp(ISignatureHelpSession session, string functionName, string documentation)
+        public SignatureHelp(ISignatureHelpSession session, ITextBuffer subjectBuffer, string functionName, string documentation)
         {
             FunctionName = functionName;
 
@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Signatures
             TextView = session.TextView;
             TextView.Caret.PositionChanged += OnCaretPositionChanged;
 
-            SubjectBuffer = TextView.TextBuffer;
+            SubjectBuffer = subjectBuffer;
             SubjectBuffer.Changed += OnSubjectBufferChanged;
         }
 
@@ -124,8 +124,11 @@ namespace Microsoft.R.Editor.Signatures
                 }
                 else
                 {
-                    IREditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
-                    ComputeCurrentParameter(document.EditorTree.AstRoot, position);
+                    IREditorDocument document = REditorDocument.FromTextBuffer(e.After.TextBuffer);
+                    if (document != null)
+                    {
+                        ComputeCurrentParameter(document.EditorTree.AstRoot, position);
+                    }
                 }
             }
         }
@@ -135,13 +138,16 @@ namespace Microsoft.R.Editor.Signatures
             if (Session != null)
             {
                 var prevParameter = _currentParameter;
-                IREditorDocument document = EditorDocument.FromTextBuffer(Session.TextView.TextBuffer);
-                ComputeCurrentParameter(document.EditorTree.AstRoot, e.NewPosition.BufferPosition);
-
-                if (_currentParameter != prevParameter)
+                IREditorDocument document = REditorDocument.TryFromTextBuffer(SubjectBuffer);
+                if (document != null)
                 {
-                    if (CurrentParameterChanged != null)
-                        CurrentParameterChanged(this, new CurrentParameterChangedEventArgs(prevParameter, _currentParameter));
+                    ComputeCurrentParameter(document.EditorTree.AstRoot, e.NewPosition.BufferPosition);
+
+                    if (_currentParameter != prevParameter)
+                    {
+                        if (CurrentParameterChanged != null)
+                            CurrentParameterChanged(this, new CurrentParameterChangedEventArgs(prevParameter, _currentParameter));
+                    }
                 }
             }
         }

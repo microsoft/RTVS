@@ -10,14 +10,14 @@ namespace Microsoft.R.Editor.Signatures
         /// <summary>
         /// Given position in a text buffer finds method name.
         /// </summary>
-        public static string GetFunctionNameFromBuffer(AstRoot astRoot, int position, out int signatureEnd)
+        public static string GetFunctionNameFromBuffer(AstRoot astRoot, ref int position, out int signatureEnd)
         {
             FunctionCall functionCall;
             Variable functionVariable;
 
             signatureEnd = -1;
 
-            if (GetFunction(astRoot, position, out functionCall, out functionVariable))
+            if (GetFunction(astRoot, ref position, out functionCall, out functionVariable))
             {
                 signatureEnd = functionCall.End;
                 return functionVariable.Name;
@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Signatures
             Variable functionVariable;
             int parameterIndex = -1;
 
-            if (!GetFunction(astRoot, position, out functionCall, out functionVariable))
+            if (!GetFunction(astRoot, ref position, out functionCall, out functionVariable))
             {
                 return null;
             }
@@ -51,7 +51,7 @@ namespace Microsoft.R.Editor.Signatures
             return null;
         }
 
-        private static bool GetFunction(AstRoot astRoot, int position, out FunctionCall functionCall, out Variable functionVariable)
+        private static bool GetFunction(AstRoot astRoot, ref int position, out FunctionCall functionCall, out Variable functionVariable)
         {
             functionVariable = null;
             functionCall = astRoot.GetNodeOfTypeFromPosition<FunctionCall>(position);
@@ -59,6 +59,10 @@ namespace Microsoft.R.Editor.Signatures
             if (functionCall == null && position > 0)
             {
                 functionCall = astRoot.GetNodeOfTypeFromPosition<FunctionCall>(position - 1, includeEnd: true);
+                if(functionCall != null)
+                {
+                    position--;
+                }
             }
 
             if (functionCall != null && functionCall.Children.Count > 0)

@@ -9,7 +9,7 @@ namespace Microsoft.R.Editor.Outline
     internal sealed class ROutliningTagger : OutliningTagger
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public ROutliningTagger(EditorDocument document)
+        public ROutliningTagger(REditorDocument document)
             : base(document.EditorTree.TextBuffer, new ROutlineRegionBuilder(document))
         {
             document.DocumentClosing += OnDocumentClosing;
@@ -19,7 +19,7 @@ namespace Microsoft.R.Editor.Outline
 
         private void OnDocumentClosing(object sender, EventArgs e)
         {
-            EditorDocument document = (EditorDocument)sender;
+            REditorDocument document = (REditorDocument)sender;
             document.DocumentClosing -= OnDocumentClosing;
 
             ServiceManager.RemoveService<ROutliningTagger>(document.EditorTree.TextBuffer);
