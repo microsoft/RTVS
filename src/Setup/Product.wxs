@@ -44,11 +44,11 @@
 
     <CustomAction Id='VS2015UpdateConfiguration'
               Directory='CommonIdeFolder'
-              Execute="commit"
+              Execute="deferred"
               Impersonate="no"
               ExeCommand='[CommonIdeFolder]devenv.exe /UpdateConfiguration'
               Return='ignore' />
-
+    
     <CustomAction Id='VS2015InstallTemplates'
               Directory='CommonIdeFolder'
               Execute="deferred"
