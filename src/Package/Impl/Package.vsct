@@ -13,6 +13,18 @@
         </Strings>
       </Menu>
       <!-- End R code editor context menu -->
+
+      <Menu guid="guidPlotWindowCmdSet" id="menuIdPlotToolbar" type="ToolWindowToolbar">
+        <Parent guid="guidPlotWindowCmdSet" id="0"/>
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <CommandFlag>NoToolbarClose</CommandFlag>
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Plot Window</ButtonText>
+          <CommandName>Plot Window</CommandName>
+        </Strings>
+      </Menu>
     </Menus>
     <!-- 
       In this section you can define new menu groups. A menu group is a container for 
@@ -30,6 +42,11 @@
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <!-- End R code editor context menu groups -->
+      
+      <!-- PlotWindow groups -->
+      <Group guid="guidPlotWindowCmdSet" id="plotToolbarGroup" priority="0x0000">
+        <Parent guid="guidPlotWindowCmdSet" id="menuIdPlotToolbar"/>
+      </Group>
     </Groups>
 
     <Buttons>
@@ -57,6 +74,25 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Send to &amp;R Console</ButtonText>
+        </Strings>
+      </Button>
+
+      <!-- Plot window in Other Window -->
+      <Button guid="guidPlotWindowCmdSet" id="cmdidShowPlotWindow" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Show Plot Windows</ButtonText>
+        </Strings>
+      </Button>
+      
+      <!-- Plot window toolbar -->
+      <Button guid="guidPlotWindowCmdSet" id="cmdidOpenPlot" priority="0x0100" type="Button">
+        <Parent guid="guidPlotWindowCmdSet" id="plotToolbarGroup"/>
+        <Icon guid="guidPlotToolbarImages" id="bmpOpenPlot"/>
+        <Strings>
+          <ButtonText>Open plot</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -132,6 +168,13 @@
       </Button>
       <!-- End Knit flyout menu items -->
     </Buttons>
+
+    <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
+    <Bitmaps>
+      <Bitmaps>
+        <Bitmap guid="guidPlotToolbarImages" href=".\Folder_6221_24.bmp" usedList="bmpOpenPlot" />
+      </Bitmaps>
+    </Bitmaps>
   </Commands>
 
   <CommandPlacements>
@@ -223,10 +266,40 @@
       <!-- Show Default Interactive Window -->
       <IDSymbol name="cmdidShowDefaultInteractiveWindow" value="0x0100" />
     </GuidSymbol>
-
+    
     <!-- R Editor Factory Guid -->
     <GuidSymbol name="CMDUIGUID_R_EDITOR" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
     <!-- Markdown Editor Factory Guid -->
     <GuidSymbol name="CMDUIGUID_MD_EDITOR" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
+
+    <!-- Show Plot Commands 
+    TODO: is it the right and best place? -->
+    <GuidSymbol name="guidPlotWindowCmdSet" value="{FE3D0077-CFD8-4178-A755-9B98D0FB6458}">
+      <!-- Commands -->
+      <IDSymbol name="cmdidShowPlotWindow" value="0x0100" />
+      <IDSymbol name="cmdidOpenPlot" value="0x0110"/>
+
+      <!-- Groups -->
+      <IDSymbol name="plotToolbarGroup" value="0x1000" />
+
+      <!-- Menus -->
+      <IDSymbol name="menuIdPlotToolbar" value="0x2000" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidPlotToolbarImages" value="{4926B34F-1AE5-4CAE-BBD4-1548E77D2033}" >
+      <IDSymbol name="bmpOpenPlot" value="0x01" />
+    </GuidSymbol>
   </Symbols>
+
+  <UsedCommands>
+    <UsedCommand guid="guidVSStd97" id="cmdidCut" />
+    <UsedCommand guid="guidVSStd97" id="cmdidCopy" />
+    <UsedCommand guid="guidVSStd97" id="cmdidPaste" />
+    <UsedCommand guid="guidVSStd97" id="cmdidDelete" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATDOCUMENT" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATSELECTION" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_HELP" />
+    <UsedCommand guid="guidVSStd2K" id="ECMD_HELPKEYWORD" />
+    <UsedCommand guid="guidVSStd97" id="cmdidF1Help" />
+  </UsedCommands>
 </CommandTable>
