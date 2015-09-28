@@ -89,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
             // TODO: abstract the pane. reference to PTVS
             yield return new MenuCommand(
                 (sender, args) => ShowWindowPane(typeof(PlotWindowPane), true),
-                new CommandID(GuidList.PlotWindowGuid, 0x0100));
+                new CommandID(RGuidList.PlotWindowGuid, 0x0100));
         }
 
         protected override object GetAutomationObject(string name)

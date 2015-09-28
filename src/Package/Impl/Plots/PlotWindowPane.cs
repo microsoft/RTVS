@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
             InitializePresenter();
 
-            this.ToolBar = new CommandID(GuidList.PlotWindowGuid, CommandIDs.menuIdPlotToolbar);
+            this.ToolBar = new CommandID(RGuidList.PlotWindowGuid, CommandIDs.menuIdPlotToolbar);
             this.ToolBarCommandTarget = new PlotWindowCommandTarget(this);
         }
 
@@ -114,7 +114,7 @@ Please open a file to show XAML file here.
 
             public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
             {
-                if (pguidCmdGroup == GuidList.PlotWindowGuid)
+                if (pguidCmdGroup == RGuidList.PlotWindowGuid)
                 {
                     switch (nCmdID)
                     {
@@ -129,7 +129,7 @@ Please open a file to show XAML file here.
 
             public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
             {
-                if (pguidCmdGroup == GuidList.PlotWindowGuid)
+                if (pguidCmdGroup == RGuidList.PlotWindowGuid)
                 {
                     for (int i = 0; i < cCmds; i++)
                     {

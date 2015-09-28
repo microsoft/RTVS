@@ -77,6 +77,16 @@
         </Strings>
       </Button>
 
+      <!-- Plot window in Other Window -->
+      <Button guid="guidPlotWindowCmdSet" id="cmdidShowPlotWindow" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Show Plot Windows</ButtonText>
+        </Strings>
+      </Button>
+      
       <!-- Plot window toolbar -->
       <Button guid="guidPlotWindowCmdSet" id="cmdidOpenPlot" priority="0x0100" type="Button">
         <Parent guid="guidPlotWindowCmdSet" id="plotToolbarGroup"/>
