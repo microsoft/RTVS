@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
 using Microsoft.VisualStudio.R.Package.Packages;
+using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
@@ -39,6 +40,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
     [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
+    [ProvideToolWindow(typeof(PlotWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     internal sealed class RPackage : BasePackage<RLanguageService>
     {
         public const string OptionsDialogName = "R Tools";
@@ -83,6 +85,11 @@ namespace Microsoft.VisualStudio.R.Packages.R
             yield return new MenuCommand(
                 (sender, args) => _interactiveWindowProvider.Value.Open(instanceId: 0, focus: true),
                 new CommandID(RGuidList.RInteractiveCommandSetGuid, 0x0100));
+
+            // TODO: abstract the pane. reference to PTVS
+            yield return new MenuCommand(
+                (sender, args) => ShowWindowPane(typeof(PlotWindowPane), true),
+                new CommandID(RGuidList.PlotWindowGuid, 0x0100));
         }
 
         protected override object GetAutomationObject(string name)
@@ -105,6 +112,27 @@ namespace Microsoft.VisualStudio.R.Packages.R
             }
 
             return base.CreateToolWindow(ref toolWindowType, id);
+        }
+
+        private void ShowWindowPane(Type windowType, bool focus)
+        {
+            var window = FindWindowPane(windowType, 0, true) as ToolWindowPane;
+            if (window != null)
+            {
+                var frame = window.Frame as IVsWindowFrame;
+                if (frame != null)
+                {
+                    ErrorHandler.ThrowOnFailure(frame.Show());
+                }
+                if (focus)
+                {
+                    var content = window.Content as System.Windows.UIElement;
+                    if (content != null)
+                    {
+                        content.Focus();
+                    }
+                }
+            }
         }
     }
 }
