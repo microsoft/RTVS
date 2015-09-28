@@ -41,12 +41,33 @@
         <RegistryValue Root="HKLM" Key="Software\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS\RTVS" Name="Version" Type="string" Value="$(var.MsiVersion)" />
       </Component>
     </Feature>
+
+    <CustomAction Id='VS2015UpdateConfiguration'
+              Directory='CommonIdeFolder'
+              Execute="commit"
+              Impersonate="no"
+              ExeCommand='[CommonIdeFolder]devenv.exe /UpdateConfiguration'
+              Return='ignore' />
+
+    <CustomAction Id='VS2015InstallTemplates'
+              Directory='CommonIdeFolder'
+              Execute="deferred"
+              Impersonate="no"
+              ExeCommand='[CommonIdeFolder]devenv.exe /InstallVSTemplates'
+              Return='ignore'/>
+
+    <UI>
+      <ProgressText Action="VS2015InstallTemplates">Updating Visual Studio project templates... (this may take a few minutes).</ProgressText>
+    </UI>
     
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallInitialize" />
+      <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
+      <Custom Action="VS2015UpdateConfiguration" Before="InstallFinalize" />
     </InstallExecuteSequence>
-    
+
     <?include Feature.wxi ?>
+  
   </Product>
 
   <Fragment>
