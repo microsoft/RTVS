@@ -61,9 +61,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl
 
                 // First just find. If it exists, use it. 
                 shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fFindFirst, ref persistenceSlot, out frame);
-                if (frame != null)
-
+                if (frame == null)
+                {
                     shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fForceCreate, ref persistenceSlot, out frame);
+                }
+
                 if (frame != null)
                 {
                     frame.Show();
