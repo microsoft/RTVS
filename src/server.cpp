@@ -17,6 +17,7 @@ namespace rhost {
             std::promise<ws_server_type::connection_ptr> ws_conn_promise;
             ws_server_type::connection_ptr ws_conn;
             std::unique_ptr<std::promise<picojson::value>> response_promise;
+            bool terminateServer = false;
 
             picojson::object r_eval(const std::string& expr) {
                 picojson::object obj;
@@ -59,7 +60,20 @@ namespace rhost {
 
                 picojson::value r;
                 do {
-                    r = response_promise->get_future().get();
+                    std::future<picojson::value> future = response_promise->get_future();
+                    while (true) {
+                        std::future_status status = future.wait_for(std::chrono::seconds(5));
+                        if (status == std::future_status::timeout) {
+                            if (terminateServer) {
+                                return picojson::value("q()");
+                            }
+                        }
+                        else {
+                            break;
+                        }
+                    }
+
+                    r = future.get();
                     response_promise = nullptr;
 
                     if (r.is<picojson::object>()) {
@@ -95,6 +109,10 @@ namespace rhost {
             }
 
             extern "C" int ReadConsole(const char* prompt, char* buf, int len, int addToHistory) {
+                if (terminateServer) {
+                    return 1;
+                }
+
                 picojson::object obj;
                 add_context(obj);
 
@@ -122,6 +140,10 @@ namespace rhost {
             }
 
             extern "C" void WriteConsoleEx(const char* buf, int len, int otype) {
+                if (terminateServer) {
+                    return;
+                }
+
                 picojson::object obj;
                 add_context(obj);
 
@@ -178,6 +200,10 @@ namespace rhost {
             }
 
             extern "C" void Busy(int which) {
+                if (terminateServer) {
+                    return;
+                }
+
                 picojson::object obj;
                 add_context(obj);
 
@@ -205,11 +231,18 @@ namespace rhost {
             }
 
             extern "C" void on_exit() {
-                picojson::object obj;
-                obj["event"] = picojson::value("exit");
-                std::string json = picojson::value(obj).serialize();
-                ws_conn->send(json, websocketpp::frame::opcode::text);
-                server_thread->join();
+                if (!terminateServer) {
+                    picojson::object obj;
+                    obj["event"] = picojson::value("exit");
+                    std::string json = picojson::value(obj).serialize();
+                    ws_conn->send(json, websocketpp::frame::opcode::text);
+                    server_thread->join();
+                }
+            }
+
+            void connection_close_handler(websocketpp::connection_hdl h)
+            {
+                terminateServer = true;
             }
 
             void thread_func(unsigned port) {
@@ -218,6 +251,7 @@ namespace rhost {
                     ws_conn_promise.set_value(server.get_con_from_hdl(hdl));
                 });
                 server.set_message_handler(on_ws_message);
+                server.set_close_handler(connection_close_handler);
 
                 server.init_asio();
                 server.listen(port);
