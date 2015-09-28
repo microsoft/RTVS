@@ -8,7 +8,6 @@ int main(int argc, char** argv) {
     fprintf(stderr, "Waiting for connection on port %u ...\n", PORT);
     rhost::server::wait_for_client(PORT);
 
-
     R_setStartTime();
     structRstart rp = {};
     R_DefParams(&rp);
