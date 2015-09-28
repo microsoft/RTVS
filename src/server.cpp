@@ -17,7 +17,7 @@ namespace rhost {
             std::promise<ws_server_type::connection_ptr> ws_conn_promise;
             ws_server_type::connection_ptr ws_conn;
             std::unique_ptr<std::promise<picojson::value>> response_promise;
-            bool terminateServer = false;
+            bool connectionClosed = false;
 
             picojson::object r_eval(const std::string& expr) {
                 picojson::object obj;
@@ -64,7 +64,7 @@ namespace rhost {
                     while (true) {
                         std::future_status status = future.wait_for(std::chrono::seconds(5));
                         if (status == std::future_status::timeout) {
-                            if (terminateServer) {
+                            if (connectionClosed) {
                                 return picojson::value("q()");
                             }
                         }
@@ -109,7 +109,7 @@ namespace rhost {
             }
 
             extern "C" int ReadConsole(const char* prompt, char* buf, int len, int addToHistory) {
-                if (terminateServer) {
+                if (connectionClosed) {
                     return 1;
                 }
 
@@ -140,7 +140,7 @@ namespace rhost {
             }
 
             extern "C" void WriteConsoleEx(const char* buf, int len, int otype) {
-                if (terminateServer) {
+                if (connectionClosed) {
                     return;
                 }
 
@@ -168,6 +168,10 @@ namespace rhost {
             }
 
             extern "C" void ShowMessage(const char* s) {
+                if (connectionClosed) {
+                    return;
+                }
+
                 picojson::object obj;
                 add_context(obj);
 
@@ -179,6 +183,10 @@ namespace rhost {
             }
 
             extern "C" int YesNoCancel(const char* s) {
+                if (connectionClosed) {
+                    return 0;
+                }
+
                 picojson::object obj;
                 obj["event"] = picojson::value("YesNoCancel");
                 obj["s"] = picojson::value(to_utf8(s));
@@ -200,7 +208,7 @@ namespace rhost {
             }
 
             extern "C" void Busy(int which) {
-                if (terminateServer) {
+                if (connectionClosed) {
                     return;
                 }
 
@@ -231,7 +239,7 @@ namespace rhost {
             }
 
             extern "C" void on_exit() {
-                if (!terminateServer) {
+                if (!connectionClosed) {
                     picojson::object obj;
                     obj["event"] = picojson::value("exit");
                     std::string json = picojson::value(obj).serialize();
@@ -242,7 +250,7 @@ namespace rhost {
 
             void connection_close_handler(websocketpp::connection_hdl h)
             {
-                terminateServer = true;
+                connectionClosed = true;
             }
 
             void thread_func(unsigned port) {
