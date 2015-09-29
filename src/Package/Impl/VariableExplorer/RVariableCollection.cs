@@ -50,7 +50,10 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
             for (int i = 0; i < lines.Length; i++)
             {
                 RVariable variable = ParseOneLine(lines[i]);
-                collection._variables.Add(variable);
+                if (variable != null)
+                {
+                    collection._variables.Add(variable);
+                }
             }
 
             return collection;
@@ -58,6 +61,12 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
 
         private static RVariable ParseOneLine(string line)
         {
+            line = line.TrimStart();    // remove indentation
+            if (line[0] == '$') 
+            {
+                return null;    // TODO: multiple level support
+            }
+
             int nameDelimiterIndex = line.IndexOf(':');
             if (nameDelimiterIndex < 1)
             {
@@ -67,16 +76,24 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
             string name = line.Substring(0, nameDelimiterIndex - 1).Trim();
             string value = line.Substring(nameDelimiterIndex + 1).TrimStart();
 
-            return new RVariable(name, value);
+            string typeName = GetTypeName(value);
+
+            var variable = new RVariable(typeName, name, value);
+            return variable;
         }
 
-        /*
         private static string GetTypeName(string valueExpression)
         {
             if (valueExpression.StartsWith("chr")) return "character";
             else if (valueExpression.StartsWith("num")) return "numeric";
             else if (valueExpression.StartsWith("'data.frame'")) return "data.frame";
-            else if (valueExpression.StartsWith(""))
-        }*/
+            else if (valueExpression.StartsWith("int")) return "integer";
+            else if (valueExpression.StartsWith("function")) return "function";
+            else if (valueExpression.StartsWith("Factor")) return "factor";
+            else if (valueExpression.StartsWith("Ord.factor")) return "ordered factor";
+
+            // TODO: it throws to detect more format. Later it must fall back onto default value instead of throwing
+            throw new FormatException("Can't understand the value expression");
+        }
     }
 }

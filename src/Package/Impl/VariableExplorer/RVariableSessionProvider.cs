@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
                 for (int i = 0; i < count; i++)
                 {
                     var variable = await variableCollection.GetAsync(i, CancellationToken.None);
-                    Debug.WriteLine("Variable: {0} {1} {2}", variable.Expression, variable.TypeName);
+                    Debug.WriteLine("Variable: {0} {1}", variable.Expression, variable.TypeName);
                 }
             }
         }

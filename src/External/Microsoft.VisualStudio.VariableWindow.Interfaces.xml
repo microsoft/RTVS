@@ -1,0 +1,374 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.VisualStudio.VariableWindow.Interfaces</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.VisualStudio.VariableWindow.EmptyImmutableVariableCollection">
+            <summary>
+            Provides a singleton instance of an empty collection.
+            </summary>
+        </member>
+        <member name="F:Microsoft.VisualStudio.VariableWindow.EmptyImmutableVariableCollection.Instance">
+            <summary>
+            An instance of an empty collection.
+            </summary>
+        </member>
+        <member name="T:Microsoft.VisualStudio.VariableWindow.IExpression">
+            <summary>
+            <para>Represents a modifiable variable.</para>
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IExpression.SetExpressionAsync(System.String)">
+            <summary>
+            Updates the expression.
+            </summary>
+            <param name="expression">The new expression.</param>
+            <exception cref="T:System.NotSupportedException">This expression cannot be
+            modified.</exception>
+            <remarks>
+            When an expression is set, the session should raise
+            <see cref="E:Microsoft.VisualStudio.VariableWindow.IVariableSession.VariablesChanged"/> to alert all views.
+            The event should be raised before this task completes.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.VisualStudio.VariableWindow.IVariable">
+            <summary>
+            <para>Represents a single variable with one value. See
+            <see cref="T:Microsoft.VisualStudio.VariableWindow.IVariableViewProvider"/> for details on how this value may
+            be rendered using different views.</para>
+            <para>Expressions are also represented as instances of
+            <see cref="T:Microsoft.VisualStudio.VariableWindow.IVariable"/>, as the interface is identical.</para>
+            <para>Reference equality is used on <see cref="T:Microsoft.VisualStudio.VariableWindow.IVariable"/> instances
+            to identify duplicates.</para>
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariable.TypeName">
+            <summary>
+            The name of the type of this variable. This should use the user's
+            current UI culture.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariable.Expression">
+            <summary>
+            A string representation of the variable's name. This should use a
+            format that can be evaluated by
+            <see cref="M:Microsoft.VisualStudio.VariableWindow.IVariableSession.GetExpressionAsync(System.String,System.Threading.CancellationToken)"/>,
+            and may include multiple lines.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariable.SetValueAsync(System.String)">
+            <summary>
+            Changes the value of the variable based on an expression. The
+            meaning of the expression is defined by the implementation of the
+            variable, but it is intended to update the actual state that the
+            session is viewing.
+            </summary>
+            <param name="valueExpression">
+            The expression representing the new value.
+            </param>
+            <exception cref="T:System.NotSupportedException">
+            This variable cannot have its value changed.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            The expression does not result in a value that can be assigned to
+            the variable. If this is thrown, the value of the variable is
+            assumed to be unchanged.
+            </exception>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariable.IsValueReadOnly">
+            <summary>
+            Returns <c>true</c> if <see cref="M:Microsoft.VisualStudio.VariableWindow.IVariable.SetValueAsync(System.String)"/> is known
+            to raise <see cref="T:System.NotSupportedException"/> for all values.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariable.GetChildrenAsync(System.Threading.CancellationToken)">
+            <summary>
+            Returns a collection representing the children of this variable.
+            If <see cref="P:Microsoft.VisualStudio.VariableWindow.IVariable.HasNoChildren"/> is <c>true</c>, may return
+            <c>null</c> rather than an empty collection.
+            </summary>
+            <param name="cancellationToken">Cancellation token</param>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariable.HasNoChildren">
+            <summary>
+            Returns <c>true</c> if <see cref="M:Microsoft.VisualStudio.VariableWindow.IVariable.GetChildrenAsync(System.Threading.CancellationToken)"/> is known to
+            return <c>null</c> or an empty collection.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariable.ToPlainTextAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Returns a plain-text representation of the value of this variable.
+            This should use the user's current UI culture.
+            </summary>
+            <param name="maximumLength">
+            The desired maximum length of the result. If zero or negative, any
+            length string may be returned.
+            </param>
+            <param name="cancellationToken">Cancellation token</param>
+            <remarks>
+            This is a simplification of <see cref="T:Microsoft.VisualStudio.VariableWindow.IVariableViewProvider"/> that
+            all variables are expected to implement. If no views are available
+            or the context is unsuitable, this function may be called.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariable.ImageMonikerGuid">
+            <summary>
+            Identifies an image collection to use for identifying this variable.
+            </summary>
+            <remarks>
+            To render a blank space, return <see cref="F:System.Guid.Empty"/>.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariable.ImageMonikerId">
+            <summary>
+            Identifies an image to use for identifying this variable.
+            </summary>
+            <remarks>
+            If <see cref="P:Microsoft.VisualStudio.VariableWindow.IVariable.ImageMonikerGuid"/> returns <see cref="F:System.Guid.Empty"/>,
+            this property is ignored.
+            </remarks>
+        </member>
+        <member name="T:Microsoft.VisualStudio.VariableWindow.IImmutableVariableCollection">
+            <summary>
+            Represents an immutable collection of variables.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IImmutableVariableCollection.Count">
+            <summary>
+            The number of variables in this collection.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IImmutableVariableCollection.GetAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Returns the requested variable.
+            </summary>
+            <param name="index">The index of the requested variable</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <exception cref="T:System.IndexOutOfRangeException">
+            <paramref name="index"/> is not within the valid range.
+            </exception>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IImmutableVariableCollection.GetManyAsync(System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Returns a sequence of contiguous variables.
+            </summary>
+            <param name="firstIndex">The first index to return</param>
+            <param name="count">The number of variables to return</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <exception cref="T:System.IndexOutOfRangeException">
+            <paramref name="firstIndex"/> is not within the valid range, or
+            <paramref name="count"/> extends beyond the valid range.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="count"/> is less than or equal to zero.
+            </exception>
+        </member>
+        <member name="T:Microsoft.VisualStudio.VariableWindow.ITestVariableSessionManager">
+            <summary>
+            Implemented by a service that can provide fake variable sessions.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.ITestVariableSessionManager.CreateTestSession(System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Adds a fake session to the session provider.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.ITestVariableSessionManager.ClearTestSessions">
+            <summary>
+            Removes all active sessions.
+            </summary>
+        </member>
+        <member name="T:Microsoft.VisualStudio.VariableWindow.IVariableData">
+            <summary>
+            May be implemented on <see cref="T:Microsoft.VisualStudio.VariableWindow.IVariable"/> instances to provide
+            generic data support. This may enable a range of view providers for the
+            variable.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariableData.SupportsContentType(System.String)">
+            <summary>
+            Returns whether the specified content type is supported by this
+            variable.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariableData.GetDataAsync(System.String)">
+            <summary>
+            Returns a stream of data for the specified content type.
+            </summary>
+            <param name="contentType">The content type.</param>
+            <exception cref="T:System.NotSupportedException">
+            <paramref name="contentType"/> is not supported by this variable.
+            </exception>
+        </member>
+        <member name="T:Microsoft.VisualStudio.VariableWindow.IVariableSession">
+            <summary>
+            <para>Represents a variable session, which is a source for a list of
+            variables and expressions.</para>
+            </summary>
+            <remarks>
+            Sessions are compared for equality using reference equality.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariableSession.SessionDisplayName">
+            <summary>
+            The string displayed to users when selecting between sessions. This
+            should use the user's current UI culture.
+            </summary>
+            <remarks>
+            Sessions with identical <see cref="P:Microsoft.VisualStudio.VariableWindow.IVariableSession.SessionDisplayName"/> values
+            may be merged in some UI views, with variable collections
+            concatenated in <see cref="P:Microsoft.VisualStudio.VariableWindow.IVariableSession.Priority"/> order.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariableSession.Priority">
+            <summary>
+            A value for ordering sessions, where lower values sort earlier.
+            When two sessions have the same value, they are ordered by
+            <see cref="P:Microsoft.VisualStudio.VariableWindow.IVariableSession.SessionDisplayName"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariableSession.GetVariablesAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets a collection of variables contained by this session.
+            </summary>
+            <param name="cancellationToken">Cancellation token</param>
+            <exception cref="T:System.ObjectDisposedException">
+            The session has been closed.
+            </exception>
+            <remarks>
+            This collection should be sorted.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariableSession.GetExpressionAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets a mutable variable representing the given expression. If the
+            expression is invalid, the returned value should reflect that in its
+            visualizations rather than causing this method to fail.
+            </summary>
+            <remarks>
+            Expressions behave identically to variables, but may be created from
+            user-provided text.
+            </remarks>
+            <param name="expression">The expression</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <exception cref="T:System.ObjectDisposedException">
+            The session has been closed.
+            </exception>
+        </member>
+        <member name="E:Microsoft.VisualStudio.VariableWindow.IVariableSession.VariablesChanged">
+            <summary>
+            Raised when the collection of variables has changed. This implies
+            that listeners should call <see cref="M:Microsoft.VisualStudio.VariableWindow.IVariableSession.GetVariablesAsync(System.Threading.CancellationToken)"/> again,
+            and reevaluate all other variables and expressions associated with
+            this session.
+            </summary>
+            <remarks>
+            <para>The session is not required to invalidate its own caching (if
+            any) if it is aware that not all variables have changed. However,
+            listeners to this event must assume that all variables may have
+            changed and need to be reevaluated.</para>
+            <para>This event should be raised from a background thread.</para>
+            </remarks>
+        </member>
+        <member name="E:Microsoft.VisualStudio.VariableWindow.IVariableSession.SessionClosed">
+            <summary>
+            Raised when the session is invalidated and should no longer be
+            offered to the user.
+            </summary>
+            <remarks>
+            <para>When this event is raised, all variables associated with this
+            session are assumed to have been destroyed. Subsequent calls into
+            this session may raise <see cref="T:System.ObjectDisposedException"/>.</para>
+            <para>This event should be raised from a background thead.</para>
+            </remarks>
+        </member>
+        <member name="T:Microsoft.VisualStudio.VariableWindow.IVariableSessionProvider">
+            <summary>
+            Implemented by services that can provide a set of active variable
+            sessions. Extensions should export their service using MEF with this
+            interface as the contract.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariableSessionProvider.GetSessions">
+            <summary>
+            Returns a sequence of available variable sessions.
+            </summary>
+        </member>
+        <member name="E:Microsoft.VisualStudio.VariableWindow.IVariableSessionProvider.SessionsChanged">
+            <summary>
+            Raised when the available sessions have changed.
+            </summary>
+        </member>
+        <member name="T:Microsoft.VisualStudio.VariableWindow.IVariableViewProvider">
+            <summary>
+            Implemented by services that can provide a view over certain variables.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariableViewProvider.DisplayName">
+            <summary>
+            A user-friendly string describing the type of view. This should use
+            the user's current UI culture.
+            </summary>
+        </member>
+        <member name="P:Microsoft.VisualStudio.VariableWindow.IVariableViewProvider.Priority">
+            <summary>
+            A value for ordering views, where lower values sort earlier.
+            When two views have the same value, they are ordered by
+            <see cref="P:Microsoft.VisualStudio.VariableWindow.IVariableViewProvider.DisplayName"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariableViewProvider.IsSupported(Microsoft.VisualStudio.VariableWindow.IVariableSession,Microsoft.VisualStudio.VariableWindow.IVariable,System.Boolean)">
+            <summary>
+            Determines whether the view provider supports the specified
+            variable.
+            </summary>
+            <param name="session">
+            The session that owns the variable.
+            </param>
+            <param name="variable">
+            The variable to view.
+            </param>
+            <param name="interactive">
+            <c>true</c> if the UI is allowed to be interactive. If <c>false</c>,
+            the variable should only be supported if a static view can be
+            provided.
+            </param>
+            <returns>
+            <c>true</c> if the view provider supports the variable.
+            </returns>
+        </member>
+        <member name="M:Microsoft.VisualStudio.VariableWindow.IVariableViewProvider.GetUIElementAsync(Microsoft.VisualStudio.VariableWindow.IVariableSession,Microsoft.VisualStudio.VariableWindow.IVariable,System.Drawing.Size,System.Boolean)">
+            <summary>
+            <para>Gets a UI view for the specified variable. Returns <c>null</c>
+            if the variable is not supported.</para>
+            <para>While the UI element may change over time for a specific
+            variable, if the UI element is not changing then the original
+            instance should be returned again. The view provider is responsible
+            for preserving object identity for variables until the session is
+            closed.</para>
+            </summary>
+            <param name="session">
+            The session that owns the variable.
+            </param>
+            <param name="variable">
+            The variable to view.
+            </param>
+            <param name="bounds">
+            The approximate allocated space for the view. The returned UI is
+            responsible for detecting and handling resize.
+            </param>
+            <param name="interactive">
+            <c>true</c> if the UI is allowed to be interactive. If <c>false</c>,
+            the returned element should not accept focus or respond to input
+            events.
+            </param>
+            <remarks>
+            This function is initially called from off the UI thread, to allow
+            implementations to determine whether they support the variable. When
+            instantiating the return value, the implementation is responsible
+            for mashalling to the UI thread.
+            </remarks>
+        </member>
+    </members>
+</doc>
