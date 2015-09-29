@@ -30,19 +30,10 @@ namespace Microsoft.Markdown.Editor.Classification
 
         protected override void RemoveSensitiveTokens(int position, TextRangeCollection<MdToken> tokens)
         {
-            for (int i = tokens.Count - 1; i >= 1; i--)
+            int last = tokens.Count - 1;
+            if (last >= 0 && tokens[last].TokenType == MdTokenType.Code)
             {
-                if (tokens[i] is MdRCodeToken)
-                {
-                    tokens.RemoveRange(i - 1, 2);
-                    break;
-                }
-
-                if (tokens[i].TokenType == MdTokenType.Code && tokens[i - 1] is MdRCodeToken)
-                {
-                    tokens.RemoveRange(i - 2, 3);
-                    break;
-                }
+                tokens.RemoveAt(last);
             }
 
             base.RemoveSensitiveTokens(position, tokens);

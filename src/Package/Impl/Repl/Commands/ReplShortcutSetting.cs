@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                 // Find and save existing binding
                 foreach (Command c in dte.Commands)
                 {
-                    object[] commandBindings = c.Bindings;
+                    object[] commandBindings = c.Bindings as object[];
                     if (commandBindings != null && commandBindings.Length > 0)
                     {
                         string commandName = c.Name;

@@ -59,9 +59,9 @@ namespace Microsoft.R.Editor.Signatures
             if (functionCall == null && position > 0)
             {
                 functionCall = astRoot.GetNodeOfTypeFromPosition<FunctionCall>(position - 1, includeEnd: true);
-                if(functionCall != null)
+                if(functionCall != null && position > functionCall.SignatureEnd)
                 {
-                    position--;
+                    position = functionCall.SignatureEnd;
                 }
             }
 
