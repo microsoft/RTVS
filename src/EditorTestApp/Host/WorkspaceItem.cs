@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Workspace;
 
 namespace Microsoft.Languager.Editor.Application
 {
+    [ExcludeFromCodeCoverage]
     public class WorkspaceItem : IWorkspaceItem
     {
         public WorkspaceItem(string moniker, string path)

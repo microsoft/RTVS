@@ -610,6 +610,7 @@ namespace Microsoft.R.Core.Formatting
             switch (text)
             {
                 case "library":
+                case "require":
                 case "function":
                 case "typeof":
                     return true;

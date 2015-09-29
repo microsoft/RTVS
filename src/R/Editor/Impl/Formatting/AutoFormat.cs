@@ -44,7 +44,7 @@ namespace Microsoft.R.Editor.Formatting
             }
             else if (typedChar == '\n' || typedChar == '\r')
             {
-                position -= snapshot.GetLineFromPosition(line.LineNumber - 1).LineBreakLength;
+                position = snapshot.GetLineFromLineNumber(line.LineNumber - 1).Start;
                 formatRange = new TextRange(position, 0);
             }
             else

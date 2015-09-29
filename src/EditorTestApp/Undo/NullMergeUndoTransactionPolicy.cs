@@ -3,12 +3,14 @@
 // ****************************************************************************
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.VisualStudio.Text.Operations.Standalone
 {
     /// <summary>
     /// Represents an empty <see cref="IMergeTextUndoTransactionPolicy"/> implementation, which disallows merging between transactions.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public sealed class NullMergeUndoTransactionPolicy : IMergeTextUndoTransactionPolicy
     {
         #region Private Fields

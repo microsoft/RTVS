@@ -131,7 +131,9 @@ namespace Microsoft.R.Core.AST
                 KeywordIdentifierStatement kis = node as KeywordIdentifierStatement;
                 if (kis != null)
                 {
-                    if (kis.Keyword.Token.IsKeywordText(node.Root.TextProvider, "library") && kis.Identifier != null)
+                    if ((kis.Keyword.Token.IsKeywordText(node.Root.TextProvider, "library") ||
+                        kis.Keyword.Token.IsKeywordText(node.Root.TextProvider, "require")) && 
+                        kis.Identifier != null)
                     {
                         string packageName = node.Root.TextProvider.GetText(kis.Identifier.Token);
                         this.PackageNames.Add(packageName);

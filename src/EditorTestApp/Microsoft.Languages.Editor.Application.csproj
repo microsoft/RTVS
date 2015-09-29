@@ -36,7 +36,6 @@
     <Compile Include="Packages\RPackage.cs" />
     <Compile Include="Packages\SettingsStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\RToolsSettings.cs" />
     <Compile Include="Undo\AutoEnclose.cs" />
     <Compile Include="Undo\CatchOperationsFromHistoryForDelegatedPrimitive.cs" />
     <Compile Include="Undo\CompoundAction.cs" />

@@ -75,6 +75,7 @@ namespace Microsoft.R.Core.AST.Statements
                     break;
 
                 case "library":
+                case "require":
                     statement = new LibraryStatement();
                     break;
 

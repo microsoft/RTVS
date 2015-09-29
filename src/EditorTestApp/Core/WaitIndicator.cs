@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.VisualStudio.Language.Intellisense.Utilities;
 
 namespace Microsoft.Languages.Editor.Application.Core
 {
     [Export(typeof(IWaitIndicator))]
+    [ExcludeFromCodeCoverage]
     public sealed class WaitIndicator : IWaitIndicator
     {
         public IWaitContext StartWait(string title, string message, bool allowCancel)

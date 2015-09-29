@@ -89,9 +89,6 @@ x<-1
             Assert.AreEqual(expected, actual);
         }
 
-        // 
-        // 
-        // 
         [TestMethod]
         public void RangeFormatter_FormatOneLine()
         {
@@ -109,6 +106,18 @@ foo(cache=TRUE)
 foo(cache=TRUE)
 ";
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void RangeFormatter_FormatSimpleScope()
+        {
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView("{}", out ast);
+
+            RangeFormatter.FormatRange(textView, TextRange.FromBounds(0, 1), ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+
+            Assert.AreEqual("{\r\n}", actual);
         }
     }
 }

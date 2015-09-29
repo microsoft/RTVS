@@ -72,11 +72,23 @@ namespace Microsoft.R.Editor.Formatting
         {
             ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromPosition(position);
             string lineText = line.GetText();
+            int textIndentInSpaces;
 
-            // Firgure out indent from the enclosing scope
+            // Figure out indent from the enclosing scope
             IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
 
-            int textIndentInSpaces = SmartIndenter.InnerIndentSizeFromScope(textBuffer, scope, options);
+            // Check if position is actually inside the scope.
+            // In range formatting it may be outside as in |{...}|
+            // and in this case we want one level less of indentation.
+            if (scope != null && scope.OpenCurlyBrace != null && position >= scope.OpenCurlyBrace.End)
+            {
+                textIndentInSpaces = SmartIndenter.InnerIndentSizeFromScope(textBuffer, scope, options);
+            }
+            else
+            {
+                textIndentInSpaces = SmartIndenter.OuterIndentSizeFromScope(textBuffer, scope, options);
+            }
+
             string indentString = IndentBuilder.GetIndentString(textIndentInSpaces, options.IndentType, options.TabSize);
             int outerIndentInSpaces = SmartIndenter.OuterIndentSizeFromScope(textBuffer, scope, options);
             string outerIndentString = IndentBuilder.GetIndentString(outerIndentInSpaces, options.IndentType, options.TabSize);
