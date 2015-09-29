@@ -5,7 +5,7 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
-    internal class RSessionRequestSource
+    internal sealed class RSessionRequestSource
     {
         private readonly TaskCompletionSource<string> _requestTcs;
         private readonly TaskCompletionSource<IRSessionInteraction> _createRequestTcs;
@@ -23,12 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             _responseTcs = new TaskCompletionSource<string>();
 
             IsVisible = isVisible;
-            Contexts = contexts;
+            Contexts = contexts ?? new[] { RHost.TopLevelContext };
         }
 
-        public Task<string> BeginInteractionAsync(string prompt, int maxLength, IRExpressionEvaluator evaluator)
+        public Task<string> BeginInteractionAsync(string prompt, int maxLength)
         {
-            var request = new RSessionInteraction(_requestTcs, _responseTcs, prompt, maxLength, Contexts, evaluator);
+            var request = new RSessionInteraction(_requestTcs, _responseTcs, prompt, maxLength, Contexts);
             _createRequestTcs.SetResult(request);
             return _requestTcs.Task;
         }

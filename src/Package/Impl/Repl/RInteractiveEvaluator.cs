@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
@@ -22,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             _session.BeforeRequest += SessionOnBeforeRequest;
             _session.Response += SessionOnResponse;
             _session.Error += SessionOnError;
+            _session.Disconnected += SessionOnDisconnected;
         }
 
         public void Dispose()
@@ -29,13 +31,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             _session.BeforeRequest -= SessionOnBeforeRequest;
             _session.Response -= SessionOnResponse;
             _session.Error -= SessionOnError;
+            _session.Disconnected -= SessionOnDisconnected;
         }
 
         public async Task<ExecutionResult> InitializeAsync()
         {
             try
             {
-                await _session.InitializeAsync();
+                await _session.StartHostAsync();
                 return ExecutionResult.Success;
             }
             catch (MicrosoftRHostMissingException)
@@ -56,9 +59,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             }
         }
 
-        public Task<ExecutionResult> ResetAsync(bool initialize = true)
+        public async Task<ExecutionResult> ResetAsync(bool initialize = true)
         {
-            throw new NotImplementedException();
+            CurrentWindow.WriteLine("Stoping R Host");
+            await _session.StopHostAsync();
+
+            if (initialize)
+            {
+                return await InitializeAsync();
+            }
+
+            return ExecutionResult.Success;
         }
 
         public bool CanExecuteCode(string text)
@@ -71,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             _requestTcs = new TaskCompletionSource<ExecutionResult>();
             var request = await _session.BeginInteractionAsync();
 
-            System.Threading.Tasks.Task.Run(async () =>
+            Task.Run(async () =>
             {
                 try
                 {
@@ -134,6 +145,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             if (_requestTcs != null)
             {
                 _requestTcs.SetResult(ExecutionResult.Failure);
+                _requestTcs = null;
+            }
+        }
+
+        private void SessionOnDisconnected(object sender, EventArgs args)
+        {
+            CurrentWindow.WriteLine(Resources.MicrosoftRHostStopped);
+
+            if (_requestTcs != null)
+            {
+                _requestTcs.SetResult(ExecutionResult.Success);
                 _requestTcs = null;
             }
         }

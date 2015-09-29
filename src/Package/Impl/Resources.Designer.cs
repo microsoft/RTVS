@@ -115,6 +115,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Host process is stopped. Click Reset to start a new one..
+        /// </summary>
+        internal static string MicrosoftRHostStopped {
+            get {
+                return ResourceManager.GetString("MicrosoftRHostStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Off.
         /// </summary>
         internal static string Off {
