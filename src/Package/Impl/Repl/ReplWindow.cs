@@ -1,9 +1,12 @@
 ﻿using System;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
@@ -46,7 +49,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
             if (current != null)
             {
-                current.InteractiveWindow.Operations.ExecuteInput();
+                IREditorDocument document = REditorDocument.FindInProjectedBuffers(textView.TextBuffer);
+                ITextBuffer documentBuffer = document.TextBuffer;
+                if (documentBuffer.CurrentSnapshot.Length == 0)
+                {
+                    current.InteractiveWindow.Operations.Return();
+                }
+                else
+                {
+                    current.InteractiveWindow.Operations.ExecuteInput();
+                }
             }
         }
 
