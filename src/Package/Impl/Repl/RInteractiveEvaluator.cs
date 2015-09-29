@@ -3,11 +3,13 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
@@ -22,6 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             _session.BeforeRequest += SessionOnBeforeRequest;
             _session.Response += SessionOnResponse;
             _session.Error += SessionOnError;
+            _session.Disconnected += SessionOnDisconnected;
         }
 
         public void Dispose()
@@ -29,25 +32,20 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             _session.BeforeRequest -= SessionOnBeforeRequest;
             _session.Response -= SessionOnResponse;
             _session.Error -= SessionOnError;
+            _session.Disconnected -= SessionOnDisconnected;
         }
 
         public async Task<ExecutionResult> InitializeAsync()
         {
             try
             {
-                await _session.InitializeAsync();
+                await _session.StartHostAsync();
                 return ExecutionResult.Success;
             }
             catch (MicrosoftRHostMissingException)
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-                IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                if (shell != null)
-                {
-                    int result;
-                    shell.ShowMessageBox(0, Guid.Empty, null, Resources.Error_Microsoft_R_Host_Missing, null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
-                    Process.Start("http://www.microsoft.com");
-                }
+                EditorShell.Current.ShowErrorMessage(Resources.Error_Microsoft_R_Host_Missing);
                 return ExecutionResult.Failure;
             }
             catch (Exception)
@@ -56,9 +54,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             }
         }
 
-        public Task<ExecutionResult> ResetAsync(bool initialize = true)
+        public async Task<ExecutionResult> ResetAsync(bool initialize = true)
         {
-            throw new NotImplementedException();
+            CurrentWindow.WriteLine(Resources.MicrosoftRHostStopping);
+            await _session.StopHostAsync();
+
+            if (initialize)
+            {
+                return await InitializeAsync();
+            }
+
+            return ExecutionResult.Success;
         }
 
         public bool CanExecuteCode(string text)
@@ -71,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             _requestTcs = new TaskCompletionSource<ExecutionResult>();
             var request = await _session.BeginInteractionAsync();
 
-            System.Threading.Tasks.Task.Run(async () =>
+            Task.Run(async () =>
             {
                 try
                 {
@@ -84,12 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
                 catch (Exception ex)
                 {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-                    IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                    if (shell != null)
-                    {
-                        int result;
-                        shell.ShowMessageBox(0, Guid.Empty, null, ex.ToString(), null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
-                    }
+                    EditorShell.Current.ShowErrorMessage(ex.ToString());
                 }
             }).DoNotWait();
 
@@ -134,6 +135,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             if (_requestTcs != null)
             {
                 _requestTcs.SetResult(ExecutionResult.Failure);
+                _requestTcs = null;
+            }
+        }
+
+        private void SessionOnDisconnected(object sender, EventArgs args)
+        {
+            CurrentWindow.WriteLine(Resources.MicrosoftRHostStopped);
+
+            if (_requestTcs != null)
+            {
+                _requestTcs.SetResult(ExecutionResult.Success);
                 _requestTcs = null;
             }
         }

@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
             if (current != null)
             {
-                current.InteractiveWindow.Operations.ExecuteInput();
+                current.InteractiveWindow.Operations.Return();
             }
         }
 

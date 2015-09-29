@@ -57,6 +57,7 @@
     <Compile Include="IRCallbacks.cs" />
     <Compile Include="IRExpressionEvaluator.cs" />
     <Compile Include="IRSession.cs" />
+    <Compile Include="IRSessionEvaluation.cs" />
     <Compile Include="IRSessionProvider.cs" />
     <Compile Include="IRSessionInteraction.cs" />
     <Compile Include="MicrosoftRHostMissingException.cs" />
