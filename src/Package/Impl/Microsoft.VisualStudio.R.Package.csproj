@@ -135,6 +135,9 @@
     <Compile Include="Repl\Commands\ReplShortcutSetting.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Session\RSession.cs" />
+    <Compile Include="Repl\Session\RSessionCommands.cs" />
+    <Compile Include="Repl\Session\RSessionEvaluation.cs" />
+    <Compile Include="Repl\Session\RSessionEvaluationSource.cs" />
     <Compile Include="Repl\Session\RSessionInteraction.cs" />
     <Compile Include="Repl\Session\RSessionRequestSource.cs" />
     <Compile Include="Repl\Commands\SendToReplCommand.cs" />
@@ -189,6 +192,7 @@
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
@@ -496,6 +500,7 @@
       <VSIXSourceItem Include="$(OutputPath)\ProjectTemplates\**\*.*">
         <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.exe" />
     </ItemGroup>
   </Target>
   <Target Name="AfterBuild">

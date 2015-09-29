@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.R.Host.Client {
+namespace Microsoft.R.Host.Client
+{
     public sealed class RHost : IDisposable
     {
         private class RExpressionEvaluator : IRExpressionEvaluator {
@@ -53,6 +54,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         public const int DefaultPort = 5118;
+        public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly IRCallbacks _callbacks;
@@ -62,8 +64,6 @@ namespace Microsoft.R.Host.Client {
         {
             _callbacks = callbacks;
         }
-
-        public Process Process => _process;
 
         public void Dispose()
         {
@@ -137,68 +137,81 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task Run(WebSocket ws, CancellationToken ct = default(CancellationToken))
+        private async Task Run(WebSocket webSocket, CancellationToken ct)
         {
             var buffer = new byte[0x10000];
 
-            var wsrr = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
-            string s = Encoding.UTF8.GetString(buffer, 0, wsrr.Count);
-            var obj = JObject.Parse(s);
-            int protocolVersion = (int)(double)obj["protocol_version"];
-            Debug.Assert(protocolVersion == 1);
-            string rVersion = (string)obj["R_version"];
-            await _callbacks.Connected(rVersion);
+            try
+            {
+                var webSocketReceiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
+                string s = Encoding.UTF8.GetString(buffer, 0, webSocketReceiveResult.Count);
+                var obj = JObject.Parse(s);
+                int protocolVersion = (int) (double) obj["protocol_version"];
+                Debug.Assert(protocolVersion == 1);
+                string rVersion = (string) obj["R_version"];
+                await _callbacks.Connected(rVersion);
 
+                await RunLoop(webSocket, ct, buffer);
+            }
+            finally
+            {
+                await _callbacks.Disconnected();
+            }
+        }
+
+        private async Task RunLoop(WebSocket webSocket, CancellationToken ct, byte[] buffer)
+        {
             for (bool done = false; !done && !ct.IsCancellationRequested;)
             {
-                wsrr = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
-                if (wsrr.CloseStatus != null)
+                var webSocketReceiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
+                if (webSocketReceiveResult.CloseStatus != null)
                 {
                     break;
                 }
 
-                s = Encoding.UTF8.GetString(buffer, 0, wsrr.Count);
-                obj = JObject.Parse(s);
+                var s = Encoding.UTF8.GetString(buffer, 0, webSocketReceiveResult.Count);
+                var obj = JObject.Parse(s);
 
                 var contexts = GetContexts(obj);
-                var evaluator = new RExpressionEvaluator(ws, buffer, ct);
+                var evaluator = new RExpressionEvaluator(webSocket, buffer, ct);
 
-                var evt = (string)obj["event"];
+                var evt = (string) obj["event"];
                 string response = null;
+
+                await _callbacks.Evaluate(contexts, evaluator);
 
                 switch (evt)
                 {
                     case "YesNoCancel":
-                        {
-                            YesNoCancel input = await _callbacks.YesNoCancel(contexts, evaluator, (string)obj["s"]);
-                            response = JsonConvert.SerializeObject((double)input);
-                            break;
-                        }
+                    {
+                        YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string) obj["s"]);
+                        response = JsonConvert.SerializeObject((double) input);
+                        break;
+                    }
 
                     case "ReadConsole":
-                        {
-                            string input = await _callbacks.ReadConsole(
-                                contexts,
-                                evaluator,
-                                (string)obj["prompt"],
-                                (string)obj["buf"],
-                                (int)(double)obj["len"],
-                                (bool)obj["addToHistory"]);
-                            input = input.Replace("\r\n", "\n");
-                            response = JsonConvert.SerializeObject(input);
-                            break;
-                        }
+                    {
+                        string input = await _callbacks.ReadConsole(
+                            contexts,
+                            (string) obj["prompt"],
+                            (string) obj["buf"],
+                            (int) (double) obj["len"],
+                            (bool) obj["addToHistory"]);
+                        input = input.Replace("\r\n", "\n");
+                        response = JsonConvert.SerializeObject(input);
+                        break;
+                    }
 
                     case "WriteConsoleEx":
-                        await _callbacks.WriteConsoleEx(contexts, evaluator, (string)obj["buf"], (OutputType)(double)obj["otype"]);
+                        await _callbacks.WriteConsoleEx(contexts, (string) obj["buf"], (OutputType) (double) obj["otype"]);
                         break;
 
                     case "ShowMessage":
-                        await _callbacks.ShowMessage(contexts, evaluator, (string)obj["s"]);
+                        await _callbacks.ShowMessage(contexts, (string) obj["s"]);
                         break;
 
                     case "Busy":
-                        await _callbacks.Busy(contexts, evaluator, (bool)obj["which"]);
+                        await _callbacks.Busy(contexts, (bool) obj["which"]);
                         break;
 
                     case "CallBack":
@@ -215,11 +228,9 @@ namespace Microsoft.R.Host.Client {
                 if (response != null)
                 {
                     int count = Encoding.UTF8.GetBytes(response, 0, response.Length, buffer, 0);
-                    await ws.SendAsync(new ArraySegment<byte>(buffer, 0, count), WebSocketMessageType.Text, true, ct);
+                    await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, count), WebSocketMessageType.Text, true, ct);
                 }
             }
-
-            await _callbacks.Disconnected();
         }
 
         private static RContext[] GetContexts(JObject obj)

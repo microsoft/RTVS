@@ -45,13 +45,13 @@ namespace Microsoft.VisualStudio.R.Packages.R
     {
         public const string OptionsDialogName = "R Tools";
 
-        private Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<Package.Repl.RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
+        private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
 
         protected override void Initialize()
         {
             base.Initialize();
 
-            IComponentModel componentModel = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
+            IComponentModel componentModel = GetGlobalService(typeof(SComponentModel)) as IComponentModel;
             RToolsSettings.VerifyRIsInstalled(componentModel.DefaultExportProvider);
             ReplShortcutSetting.Initialize();
 

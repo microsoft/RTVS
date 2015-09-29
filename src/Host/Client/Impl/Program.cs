@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
     class Program : IRCallbacks {
+        private IRExpressionEvaluator _evaluator;
+
         static void Main() {
             var host = new RHost(new Program());
             host.CreateAndRun().GetAwaiter().GetResult();
@@ -12,36 +14,42 @@ namespace Microsoft.R.Host.Client {
         public void Dispose() {
         }
 
-        public Task Busy(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, bool which) {
+        public Task Busy(IReadOnlyCollection<IRContext> contexts, bool which) {
             return Task.FromResult(true);
+        }
+
+        public Task Evaluate(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator)
+        {
+            _evaluator = evaluator;
+            return Task.CompletedTask;
         }
 
         public Task Connected(string rVersion) {
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         }
 
         public Task Disconnected() {
-            return Task.FromResult(true);
+            return Task.CompletedTask;
         }
 
-        public async Task<string> ReadConsole(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string prompt, string buf, int len, bool addToHistory) {
-            return (await ReadLineAsync(prompt, evaluator)) + "\n";
+        public async Task<string> ReadConsole(IReadOnlyCollection<IRContext> contexts, string prompt, string buf, int len, bool addToHistory) {
+            return (await ReadLineAsync(prompt)) + "\n";
         }
 
-        public async Task ShowMessage(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string s) {
+        public async Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string s) {
             await Console.Error.WriteLineAsync(s);
         }
 
-        public async Task WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string buf, OutputType otype) {
+        public async Task WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, string buf, OutputType otype) {
             var writer = otype == OutputType.Output ? Console.Out : Console.Error;
             await writer.WriteAsync(buf);
         }
 
-        public async Task<YesNoCancel> YesNoCancel(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string s) {
+        public async Task<YesNoCancel> YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s) {
             await Console.Error.WriteAsync(s);
             while (true)
             {
-                string r = await ReadLineAsync(" [yes/no/cancel]> ", evaluator);
+                string r = await ReadLineAsync(" [yes/no/cancel]> ");
 
                 if (r.StartsWith("y", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -60,7 +68,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task<string> ReadLineAsync(string prompt, IRExpressionEvaluator evaluator) {
+        private async Task<string> ReadLineAsync(string prompt) {
             while (true) {
                 await Console.Out.WriteAsync(prompt);
                 string s = await Console.In.ReadLineAsync();
@@ -69,7 +77,7 @@ namespace Microsoft.R.Host.Client {
                     s = s.Remove(0, 1);
                 } else if (s.StartsWith("=", StringComparison.OrdinalIgnoreCase)) {
                     s = s.Remove(0, 1);
-                    var er = await evaluator.EvaluateAsync(s);
+                    var er = await _evaluator.EvaluateAsync(s);
                     await Console.Out.WriteLineAsync(er.ToString());
                     continue;
                 }

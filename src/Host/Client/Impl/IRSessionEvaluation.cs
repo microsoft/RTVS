@@ -4,11 +4,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client
 {
-    public interface IRSessionInteraction : IDisposable
+    public interface IRSessionEvaluation : IDisposable
     {
-        string Prompt { get; }
-        int MaxLength { get; }
         IReadOnlyCollection<IRContext> Contexts { get; }
-        Task<string> RespondAsync(string messageText);
+        Task<REvaluationResult> EvaluateAsync(string expression);
     }
 }
