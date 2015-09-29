@@ -69,6 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
                 if (frame != null)
                 {
                     frame.Show();
+                    CheckReplFrame(frame);
                 }
             }
 

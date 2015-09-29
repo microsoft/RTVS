@@ -74,11 +74,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                 else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)
                 {
                     // execute if the expression is complete
-                    if (ReplWindow.Current != null)
-                    {
-                        ReplWindow.Current.ExecuteCurrentExpression(TextView);
-                        return CommandResult.Executed;
-                    }
+                    ReplWindow.Current.ExecuteCurrentExpression(TextView);
+                    return CommandResult.Executed;
                 }
             }
 

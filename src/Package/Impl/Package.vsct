@@ -207,7 +207,7 @@
   <KeyBindings>
     <!--<KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="guidTextEditor" key1="VK_RETURN" mod1="CONTROL" />-->
     <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="E" mod1="CONTROL" key2="E" mod2="CONTROL" />
-    <KeyBinding guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
   </KeyBindings>
 
   <UsedCommands>
