@@ -229,12 +229,15 @@
     <value>Markdown Files (*.md;*.markdown)|*.md;*.markdown|All Files (*.*)|*.*</value>
   </data>
   <data name="CtrlECtrlE" xml:space="preserve">
-    <value>Contrl+E, Control+E</value>
+    <value>Control+E, Control+E</value>
   </data>
   <data name="CtrlEnter" xml:space="preserve">
     <value>Control+Enter</value>
   </data>
   <data name="MicrosoftRHostStopped" xml:space="preserve">
     <value>R Host process is stopped. Click Reset to start a new one.</value>
+  </data>
+  <data name="MicrosoftRHostStopping" xml:space="preserve">
+    <value>Stopping R Host process...</value>
   </data>
 </root>

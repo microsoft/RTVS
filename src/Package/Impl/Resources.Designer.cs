@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Contrl+E, Control+E.
+        ///   Looks up a localized string similar to Control+E, Control+E.
         /// </summary>
         internal static string CtrlECtrlE {
             get {
@@ -120,6 +120,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string MicrosoftRHostStopped {
             get {
                 return ResourceManager.GetString("MicrosoftRHostStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stopping R Host process....
+        /// </summary>
+        internal static string MicrosoftRHostStopping {
+            get {
+                return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
             }
         }
         
