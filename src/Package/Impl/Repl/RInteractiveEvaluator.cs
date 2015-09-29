@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
 
         public async Task<ExecutionResult> ResetAsync(bool initialize = true)
         {
-            CurrentWindow.WriteLine("Stoping R Host");
+            CurrentWindow.WriteLine(Resources.MicrosoftRHostStopping);
             await _session.StopHostAsync();
 
             if (initialize)
