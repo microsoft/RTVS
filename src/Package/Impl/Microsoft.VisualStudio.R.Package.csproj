@@ -87,6 +87,18 @@
     <Compile Include="Commands\ShowContextMenuCommand.cs" />
     <Compile Include="Commands\R\VsRCommandFactory.cs" />
     <Compile Include="Commands\R\VsRTextViewConnectionListener.cs" />
+    <Compile Include="VariableExplorer\Interface\EmptyImmutableVariableCollection.cs" />
+    <Compile Include="VariableExplorer\Interface\IExpression.cs" />
+    <Compile Include="VariableExplorer\Interface\IImmutableVariableCollection.cs" />
+    <Compile Include="VariableExplorer\Interface\IVariable.cs" />
+    <Compile Include="VariableExplorer\Interface\IVariableData.cs" />
+    <Compile Include="VariableExplorer\Interface\IVariableSession.cs" />
+    <Compile Include="VariableExplorer\Interface\IVariableSessionProvider.cs" />
+    <Compile Include="VariableExplorer\Interface\IVariableViewProvider.cs" />
+    <Compile Include="VariableExplorer\RVariable.cs" />
+    <Compile Include="VariableExplorer\RVariableCollection.cs" />
+    <Compile Include="VariableExplorer\RVariableSession.cs" />
+    <Compile Include="VariableExplorer\RVariableSessionProvider.cs" />
     <Compile Include="Document\IVsEditorDocumentFactory.cs" />
     <Compile Include="Document\Markdown\VsMdEditorDocument.cs" />
     <Compile Include="Document\Markdown\VsMdEditorDocumentFactory.cs" />
@@ -377,6 +389,7 @@
     <None Include="Microsoft.R.Host.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="VariableExplorer\Interface\ReadMe.txt" />
     <Content Include="Resources\Package.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
       <SubType>Designer</SubType>

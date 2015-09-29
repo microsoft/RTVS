@@ -1,9 +1,12 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.VariableExplorer;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -35,13 +38,16 @@ Please open a file to show XAML file here.
 
         private void OpenPlotCommand()
         {
+            RVariableSessionProvider.foo();
+
+            /*
             string fileName = GetFileName();
 
             var presenter = this.Content as XamlPresenter;
             if (presenter != null)
             {
                 presenter.LoadXamlFile(fileName);
-            }
+            }*/
         }
 
         // TODO: factor out to utility. Copied code from PTVS, Dialogs.cs
