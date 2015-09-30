@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Windows.Threading;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -109,8 +111,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             }
         }
 
-        public static void EnsureReplWindow()
+        public static async void EnsureReplWindow()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             if (!ReplWindowExists())
             {
                 IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fForceCreate);

@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem
 {
@@ -21,6 +22,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
         {
             _fileWatcher = new MsBuildFileSystemWatcher(unconfiguredProject.GetProjectDirectory(), "*", 25, new FileSystemProxy(), new RMsBuildFileSystemFilter());
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher);
+
+            // Force REPL window up
+            ReplWindow.EnsureReplWindow();
         }
 
         [AppliesTo("RTools")]
