@@ -54,6 +54,11 @@ namespace Microsoft.Languages.Editor.Test.Composition
             "Microsoft.Languages.Editor.Application.dll"
         };
 
+        public static CompositionContainer Container
+        {
+            get { return _container; }
+        }
+
         static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             string name = args.Name.Substring(0, args.Name.IndexOf(',')) + ".dll";
@@ -80,6 +85,12 @@ namespace Microsoft.Languages.Editor.Test.Composition
             }
 
             return asm;
+        }
+
+        public static void ReInitialize(IEnumerable<string> additionalAssemblies)
+        {
+            _container = null;
+            _additionalMefAssemblies = additionalAssemblies;
         }
 
         private static string GetHostVersion()
