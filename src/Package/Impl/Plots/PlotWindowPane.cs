@@ -38,16 +38,13 @@ Please open a file to show XAML file here.
 
         private void OpenPlotCommand()
         {
-            RVariableSessionProvider.foo();
-
-            /*
             string fileName = GetFileName();
 
             var presenter = this.Content as XamlPresenter;
             if (presenter != null)
             {
                 presenter.LoadXamlFile(fileName);
-            }*/
+            }
         }
 
         // TODO: factor out to utility. Copied code from PTVS, Dialogs.cs
