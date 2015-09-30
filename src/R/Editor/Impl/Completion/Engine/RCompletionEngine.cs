@@ -97,9 +97,11 @@ namespace Microsoft.R.Editor.Completion.Engine
                     break;
                 }
 
-                if (tokens.CurrentToken.IsKeywordText(textProvider, "library"))
+                if (tokens.CurrentToken.IsKeywordText(textProvider, "library") ||
+                    tokens.CurrentToken.IsKeywordText(textProvider, "require"))
                 {
                     tokens.MoveToNextToken();
+
                     if (tokens.CurrentToken.TokenType == RTokenType.OpenBrace)
                     {
                         RToken openBrace = tokens.CurrentToken;

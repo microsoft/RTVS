@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Text.Operations.Standalone
 {
+    [ExcludeFromCodeCoverage]
     internal class UndoHistoryImpl : ITextUndoHistory
     {
         public event EventHandler<TextUndoRedoEventArgs> UndoRedoHappened;

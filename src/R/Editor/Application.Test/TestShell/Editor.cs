@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
@@ -10,6 +11,7 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Application.Test.TestShell
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public sealed class EditorTest
     {

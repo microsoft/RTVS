@@ -20,6 +20,17 @@ namespace Microsoft.R.Editor.Completion.Providers
     [Export(typeof(IRCompletionListProvider))]
     public class FunctionCompletionProvider : IRCompletionListProvider
     {
+        private static readonly string[] _preloadPackages = new string[]
+        {
+            "stats",
+            "graphics",
+            "grdevices",
+            "utils",
+            "datasets",
+            "methods",
+            "base"
+        };
+
         #region IRCompletionListProvider
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context)
         {
@@ -128,10 +139,16 @@ namespace Microsoft.R.Editor.Completion.Providers
                 }
             }
 
-            IPackageInfo basePackage = PackageIndex.GetPackageByName("base");
-            Debug.Assert(basePackage != null, "Base package information is missing");
-
-            packages.Add(basePackage);
+            // By default functions from all R built-in packages are available
+            foreach (string packageName in _preloadPackages)
+            {
+                IPackageInfo p = PackageIndex.GetPackageByName(packageName);
+                Debug.Assert(p != null, "Can't find preloaded package " + packageName);
+                if (p != null)
+                {
+                    packages.Add(p);
+                }
+            }
 
             return packages;
         }

@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.Text.Editor;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Application.Core
 {
+    [ExcludeFromCodeCoverage]
     internal class DefaultTextViewRoleSet : TextViewRoleSet
     {
         static private readonly string[] _predefinedRoles = 

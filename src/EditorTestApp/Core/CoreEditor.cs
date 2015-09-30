@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -24,7 +26,8 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Application.Core
 {
-    public class CoreEditor
+    [ExcludeFromCodeCoverage]
+    public sealed class CoreEditor
     {
         public ICommandTarget BaseController { get; private set; }
 
@@ -66,8 +69,6 @@ namespace Microsoft.Languages.Editor.Application.Core
 
         public CoreEditor(string text, string filePath, string contentTypeName)
         {
-            _compositionService = TestCompositionCatalog.CompositionService;
-
             if (_editorShell == null)
             {
                 _editorShell = TestEditorShell.Create();
@@ -76,10 +77,11 @@ namespace Microsoft.Languages.Editor.Application.Core
                 EditorShell.UIThread = Thread.CurrentThread;
             }
 
+            _compositionService = EditorShell.Current.CompositionService;
             _compositionService.SatisfyImportsOnce(this);
             _filePath = filePath;
 
-            if (String.IsNullOrEmpty(_filePath))
+            if (string.IsNullOrEmpty(_filePath) || Path.GetExtension(_filePath).Length == 0)
             {
                 if (contentTypeName == null)
                     throw new ArgumentNullException("contentTypeName");

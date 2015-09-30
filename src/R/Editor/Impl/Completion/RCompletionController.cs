@@ -141,7 +141,8 @@ namespace Microsoft.R.Editor.Completion
                         return true;
                 }
 
-                if (completionText == "if" || completionText == "for" || completionText == "while" || completionText == "return" || completionText == "library")
+                if (completionText == "if" || completionText == "for" || completionText == "while" || 
+                    completionText == "return" || completionText == "library" || completionText == "require")
                 {
                     if (typedChar == '(')
                         return true;
@@ -209,6 +210,9 @@ namespace Microsoft.R.Editor.Completion
                     //case '@':
                     case ':':
                         return RCompletionContext.IsInNamespace(TextView);
+
+                    case '(':
+                        return RCompletionContext.IsInLibraryStatement(TextView);
 
                     default:
                         return Char.IsLetter(typedCharacter);

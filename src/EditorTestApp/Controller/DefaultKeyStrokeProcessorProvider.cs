@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Application.Controller
 {
+    [ExcludeFromCodeCoverage]
     [Export(typeof(IKeyProcessorProvider))]
     [Name("DefaultKeyProcessor")]
     [ContentType("text")]

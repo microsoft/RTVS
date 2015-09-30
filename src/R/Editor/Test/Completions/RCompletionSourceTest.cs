@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Mocks;
@@ -10,13 +9,11 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.ContentType;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Test.Completions
 {
-    using System;
     using Languages.Core.Text;
     using VisualStudio.Text;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
@@ -34,7 +31,7 @@ namespace Microsoft.R.Editor.Test.Completions
             GetCompletions("", 0, completionSets);
 
             Assert.AreEqual(1, completionSets.Count);
-            Assert.AreEqual(1023, completionSets[0].Completions.Count);
+            Assert.AreEqual(2315, completionSets[0].Completions.Count);
 
             Completion x = completionSets[0].Completions.FirstOrDefault((Completion c) => c.DisplayText == "abbreviate");
             Assert.IsNotNull(x);
@@ -54,18 +51,15 @@ namespace Microsoft.R.Editor.Test.Completions
             Assert.AreEqual(1, completionSets.Count);
 
             completionSets[0].Filter();
-            Assert.AreEqual(55, completionSets[0].Completions.Count);
+            Assert.AreEqual(106, completionSets[0].Completions.Count);
 
             Assert.AreEqual("F", completionSets[0].Completions[0].DisplayText);
             Assert.AreEqual("Logical Vectors", completionSets[0].Completions[0].Description);
 
-            Assert.AreEqual("factor", completionSets[0].Completions[1].DisplayText);
-            Assert.AreEqual("Factors", completionSets[0].Completions[1].Description);
+            Assert.AreEqual("factanal", completionSets[0].Completions[1].DisplayText);
+            Assert.AreEqual("Factor Analysis", completionSets[0].Completions[1].Description);
 
-            Assert.AreEqual("factorial", completionSets[0].Completions[2].DisplayText);
-
-            Assert.AreEqual("FALSE", completionSets[0].Completions[3].DisplayText);
-            Assert.AreEqual("Logical Vectors", completionSets[0].Completions[3].Description);
+            Assert.AreEqual("factor", completionSets[0].Completions[2].DisplayText);
         }
 
         [TestMethod]
@@ -79,7 +73,7 @@ namespace Microsoft.R.Editor.Test.Completions
             Assert.AreEqual(1, completionSets.Count);
 
             completionSets[0].Filter();
-            Assert.AreEqual(55, completionSets[0].Completions.Count);
+            Assert.AreEqual(106, completionSets[0].Completions.Count);
 
             Completion x = completionSets[0].Completions.FirstOrDefault((Completion c) => c.DisplayText == "for");
             Assert.IsNotNull(x);

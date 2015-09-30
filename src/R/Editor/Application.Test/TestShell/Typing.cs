@@ -5,14 +5,16 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
 {
     public partial class TestScript
     {
-        private static int _idleSleepTimeout = 25;
+        private int _idleSleepTimeout = 25;
 
         /// <summary>
         /// Simulates typing in the editor
         /// </summary>
         /// <param name="textToType"></param>
-        public void Type(string textToType)
+        public void Type(string textToType, int idleTime = 10)
         {
+            _idleSleepTimeout = idleTime;
+
             for (int i = 0; i < textToType.Length; i++)
             {
                 char ch = textToType[i];
@@ -24,8 +26,11 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
                 }
                 else
                 {
-                    Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.TYPECHAR, ch, _idleSleepTimeout);
-                    DoIdle(10);
+                    Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.TYPECHAR, ch, idleTime);
+                    if (idleTime > 0)
+                    {
+                        DoIdle(idleTime);
+                    }
                 }
             }
         }

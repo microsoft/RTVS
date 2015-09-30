@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Application.Core
 {
+    [ExcludeFromCodeCoverage]
     [DebuggerDisplay("ContentType={ContentType}")]
     internal class TextDataModel : ITextDataModel
     {

@@ -5,10 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text.Utilities.Local;
 
 namespace Microsoft.VisualStudio.Text.Operations.Standalone
 {
+    [ExcludeFromCodeCoverage]
     [Export(typeof(ITextUndoHistoryRegistry))]
     [Export(typeof(UndoHistoryRegistryImpl))]
     internal class UndoHistoryRegistryImpl : ITextUndoHistoryRegistry

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.VisualStudio.Text.Editor;
@@ -8,6 +9,7 @@ using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.Languages.Editor.Application.Controller
 {
+    [ExcludeFromCodeCoverage]
     internal class BaseController : ICommandTarget
     {
         private ITextView _view;

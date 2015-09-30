@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation Inc. All rights reserved
 //********************************************************************************
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Microsoft.VisualStudio.Text.Operations.Standalone
 {
     /// <summary>
