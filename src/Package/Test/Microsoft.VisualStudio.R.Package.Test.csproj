@@ -158,12 +158,17 @@
     <Compile Include="Commands\CommandFactoryTest.cs" />
     <Compile Include="Commands\ReplCommandTest.cs" />
     <Compile Include="Mocks\ComponentModelMock.cs" />
+    <Compile Include="Mocks\ConnectionPointMock.cs" />
     <Compile Include="Mocks\MenuCommandServiceMock.cs" />
+    <Compile Include="Mocks\VsCodeWindowMock.cs" />
     <Compile Include="Mocks\VsEditorAdaptersFactoryServiceMock.cs" />
     <Compile Include="Mocks\VsRegisterEditorsMock.cs" />
     <Compile Include="Mocks\VsRegisterProjectGeneratorsMock.cs" />
+    <Compile Include="Mocks\VsTextBufferMock.cs" />
     <Compile Include="Mocks\VsTextLinesMock.cs" />
+    <Compile Include="Mocks\VsTextViewMock.cs" />
     <Compile Include="Package\RPackageTest.cs" />
+    <Compile Include="Utility\TestInstanceFactory.cs" />
     <Compile Include="Utility\TestPackage.cs" />
     <Compile Include="Utility\TestServiceProvider.cs" />
   </ItemGroup>

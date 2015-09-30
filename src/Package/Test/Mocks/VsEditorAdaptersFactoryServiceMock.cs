@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
@@ -11,24 +12,39 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks
     [Export(typeof(IVsEditorAdaptersFactoryService))]
     public sealed class VsEditorAdaptersFactoryServiceMock : IVsEditorAdaptersFactoryService
     {
+        private Dictionary<ITextBuffer, IVsTextBuffer> _textBufferAdapters = new Dictionary<ITextBuffer, IVsTextBuffer>();
+        private Dictionary<IVsTextBuffer, ITextBuffer> _vsTextBufferAdapters = new Dictionary<IVsTextBuffer, ITextBuffer>();
+
+        private Dictionary<ITextView, IVsTextView> _textViewAdapters = new Dictionary<ITextView, IVsTextView>();
+        private Dictionary<IVsTextView, ITextView> _vsTextViewAdapters = new Dictionary<IVsTextView, ITextView>();
+
         public IVsCodeWindow CreateVsCodeWindowAdapter(OLE.Interop.IServiceProvider serviceProvider)
         {
-            throw new NotImplementedException();
+            return new VsCodeWindowMock();
         }
 
         public IVsTextBuffer CreateVsTextBufferAdapter(OLE.Interop.IServiceProvider serviceProvider)
         {
-            throw new NotImplementedException();
+            VsTextBufferMock tb = new VsTextBufferMock();
+            _textBufferAdapters[tb.TextBuffer] = tb;
+            _vsTextBufferAdapters[tb] = tb.TextBuffer;
+            return tb;
         }
 
         public IVsTextBuffer CreateVsTextBufferAdapter(OLE.Interop.IServiceProvider serviceProvider, IContentType contentType)
         {
-            throw new NotImplementedException();
+            VsTextBufferMock tb = new VsTextBufferMock(contentType);
+            _textBufferAdapters[tb.TextBuffer] = tb;
+            _vsTextBufferAdapters[tb] = tb.TextBuffer;
+            return tb;
         }
 
         public IVsTextBuffer CreateVsTextBufferAdapterForSecondaryBuffer(OLE.Interop.IServiceProvider serviceProvider, ITextBuffer secondaryBuffer)
         {
-            throw new NotImplementedException();
+            VsTextBufferMock tb = new VsTextBufferMock(secondaryBuffer);
+            _textBufferAdapters[tb.TextBuffer] = tb;
+            _vsTextBufferAdapters[tb] = tb.TextBuffer;
+            return tb;
         }
 
         public IVsTextBufferCoordinator CreateVsTextBufferCoordinatorAdapter()
@@ -38,37 +54,52 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks
 
         public IVsTextView CreateVsTextViewAdapter(OLE.Interop.IServiceProvider serviceProvider)
         {
-            throw new NotImplementedException();
+            VsTextViewMock tv = new VsTextViewMock();
+            _textViewAdapters[tv.TextView] = tv;
+            _vsTextViewAdapters[tv] = tv.TextView;
+            return tv;
         }
 
         public IVsTextView CreateVsTextViewAdapter(OLE.Interop.IServiceProvider serviceProvider, ITextViewRoleSet roles)
         {
-            throw new NotImplementedException();
+            return CreateVsTextViewAdapter(serviceProvider);
         }
 
         public IVsTextBuffer GetBufferAdapter(ITextBuffer textBuffer)
         {
-            throw new NotImplementedException();
+            IVsTextBuffer adapter = null;
+            _textBufferAdapters.TryGetValue(textBuffer, out adapter);
+
+            return adapter;
         }
 
         public ITextBuffer GetDataBuffer(IVsTextBuffer bufferAdapter)
         {
-            throw new NotImplementedException();
+            ITextBuffer tb = null;
+            _vsTextBufferAdapters.TryGetValue(bufferAdapter, out tb);
+
+            return tb;
         }
 
         public ITextBuffer GetDocumentBuffer(IVsTextBuffer bufferAdapter)
         {
-            throw new NotImplementedException();
+            return GetDataBuffer(bufferAdapter);
         }
 
         public IVsTextView GetViewAdapter(ITextView textView)
         {
-            throw new NotImplementedException();
+            IVsTextView tv = null;
+            _textViewAdapters.TryGetValue(textView, out tv);
+
+            return tv;
         }
 
         public IWpfTextView GetWpfTextView(IVsTextView viewAdapter)
         {
-            throw new NotImplementedException();
+            ITextView tv = null;
+            _vsTextViewAdapters.TryGetValue(viewAdapter, out tv);
+
+            return tv as IWpfTextView;
         }
 
         public IWpfTextViewHost GetWpfTextViewHost(IVsTextView viewAdapter)
@@ -78,7 +109,25 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks
 
         public void SetDataBuffer(IVsTextBuffer bufferAdapter, ITextBuffer dataBuffer)
         {
-            throw new NotImplementedException();
+            IVsTextBuffer vsBuffer;
+            if(_textBufferAdapters.TryGetValue(dataBuffer, out vsBuffer))
+            {
+                _vsTextBufferAdapters.Remove(vsBuffer);
+                _textBufferAdapters.Remove(dataBuffer);
+            }
+
+            ITextBuffer tb;
+            if (_vsTextBufferAdapters.TryGetValue(bufferAdapter, out tb))
+            {
+                _vsTextBufferAdapters.Remove(bufferAdapter);
+                _textBufferAdapters.Remove(tb);
+            }
+
+            VsTextBufferMock mock = bufferAdapter as VsTextBufferMock;
+            mock.TextBuffer = dataBuffer;
+
+            _vsTextBufferAdapters[bufferAdapter] = dataBuffer;
+            _textBufferAdapters[dataBuffer] = bufferAdapter;
         }
     }
 }

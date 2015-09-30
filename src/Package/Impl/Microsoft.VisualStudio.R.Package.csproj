@@ -92,6 +92,7 @@
     <Compile Include="Document\Markdown\VsMdEditorDocumentFactory.cs" />
     <Compile Include="Document\R\VsREditorDocument.cs" />
     <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
+    <Compile Include="Editors\IObjectInstanceFactory.cs" />
     <Compile Include="Editors\MdEditorFactory.cs" />
     <Compile Include="Languages\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
