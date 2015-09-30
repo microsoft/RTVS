@@ -19,6 +19,7 @@ using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.R.Editor.Validation;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.R.Editor.Document
@@ -139,6 +140,20 @@ namespace Microsoft.R.Editor.Document
             return document;
         }
 
+        public static SnapshotPoint? MapCaretPositionFromView(ITextView textView)
+        {
+            int caretPosition = textView.Caret.Position.BufferPosition;
+            var caretPoint = new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, caretPosition);
+            return MapPointFromView(textView, caretPoint);
+        }
+
+        public static SnapshotPoint? MapPointFromView(ITextView textView, SnapshotPoint point)
+        {
+            IREditorDocument document = REditorDocument.FindInProjectedBuffers(textView.TextBuffer);
+            ITextBuffer documentBuffer = document.TextBuffer;
+            SnapshotPoint? documentPoint = textView.BufferGraph.MapDownToBuffer(point, PointTrackingMode.Positive, documentBuffer, PositionAffinity.Predecessor);
+            return documentPoint;
+        }
 
         #region IDisposable
         protected virtual void Dispose(bool disposing)

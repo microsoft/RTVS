@@ -49,15 +49,21 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
             if (current != null)
             {
-                IREditorDocument document = REditorDocument.FindInProjectedBuffers(textView.TextBuffer);
-                ITextBuffer documentBuffer = document.TextBuffer;
-                if (documentBuffer.CurrentSnapshot.Length == 0)
+                SnapshotPoint? documentPoint = REditorDocument.MapCaretPositionFromView(textView);
+                if (!documentPoint.HasValue)
                 {
                     current.InteractiveWindow.Operations.Return();
                 }
                 else
                 {
-                    current.InteractiveWindow.Operations.ExecuteInput();
+                    if (documentPoint.Value == documentPoint.Value.Snapshot.Length || documentPoint.Value.Snapshot.Length == 0)
+                    {
+                        current.InteractiveWindow.Operations.Return();
+                    }
+                    else
+                    {
+                        current.InteractiveWindow.Operations.ExecuteInput();
+                    }
                 }
             }
         }
