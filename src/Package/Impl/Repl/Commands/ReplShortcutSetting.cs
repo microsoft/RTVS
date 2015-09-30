@@ -34,6 +34,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
             DTE dte = AppShell.Current.GetGlobalService<DTE>();
             string binding;
 
+            if(dte == null)
+            {
+                return;
+            }
+
             if (REditorSettings.SendToReplOnCtrlEnter)
             {
                 binding = "Text Editor::ctrl+enter";
