@@ -22,9 +22,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
         {
             _fileWatcher = new MsBuildFileSystemWatcher(unconfiguredProject.GetProjectDirectory(), "*", 25, new FileSystemProxy(), new RMsBuildFileSystemFilter());
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher);
-
-            // Force REPL window up
-            ReplWindow.EnsureReplWindow();
         }
 
         [AppliesTo("RTools")]
@@ -33,6 +30,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
         {
             await Project.CreateInMemoryImport();
             _fileWatcher.Start();
+
+            // Force REPL window up
+            ReplWindow.EnsureReplWindow();
         }
     }
 }
