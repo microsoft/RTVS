@@ -257,7 +257,7 @@ namespace Microsoft.R.Editor.Tree
 
             if (!elementsRemoved)
             {
-                if (context.ChangedNode != null || context.TextChange.TextChangeType == TextChangeType.Trivial)
+                if (context.ChangedNode != null || context.PendingChanges.TextChangeType == TextChangeType.Trivial)
                 {
                     _editorTree.FireOnPositionsOnlyChanged();
                 }
@@ -302,7 +302,7 @@ namespace Microsoft.R.Editor.Tree
                     textChange.OldRange = TextRange.FromBounds(0, context.OldText.Length);
                     textChange.NewRange = TextRange.FromBounds(0, context.NewText.Length);
 
-                    _editorTree.NotifyTextChange(context.Start, context.OldLength, context.NewLength);
+                    _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
 
                     // Remove al elements from the tree
                     _editorTree.Invalidate();
@@ -346,23 +346,14 @@ namespace Microsoft.R.Editor.Tree
             if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
-            TextChange textChange = context.TextChange;
+            TextChange textChange = context.PendingChanges;
             var changeType = textChange.TextChangeType;
             bool elementsChanged = false;
 
-            if (changeType == TextChangeType.Comment)
-            {
-                context.ChangedComment.Expand(0, textChange.NewRange.Length - textChange.OldRange.Length);
-            }
-            else if (changeType == TextChangeType.Token)
-            {
-                TokenNode tokenNode = context.ChangedNode as TokenNode;
-                tokenNode.Token.Expand(0, textChange.NewRange.Length - textChange.OldRange.Length);
-            }
-            else
+            if (changeType == TextChangeType.Structure)
             {
                 IAstNode changedElement = context.ChangedNode;
-                int start = context.Start;
+                int start = context.NewStart;
 
                 // We delete change nodes unless node is a token node 
                 // which range can be modified such as string or comment
@@ -371,7 +362,7 @@ namespace Microsoft.R.Editor.Tree
                 if (changedElement != null)
                 {
                     IAstNode node;
-                    positionType = changedElement.GetPositionNode(context.Start, out node);
+                    positionType = changedElement.GetPositionNode(context.NewStart, out node);
                 }
 
                 bool deleteElements = (context.OldLength > 0) || (positionType != PositionType.Token);
@@ -388,7 +379,7 @@ namespace Microsoft.R.Editor.Tree
                 }
             }
 
-            _editorTree.NotifyTextChange(context.Start, context.OldLength, context.NewLength);
+            _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
 
             return elementsChanged;
         }

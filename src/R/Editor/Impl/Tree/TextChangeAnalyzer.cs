@@ -15,33 +15,33 @@ namespace Microsoft.R.Editor.Tree
 
         public static void DetermineChangeType(TextChangeContext change)
         {
-            change.TextChange.TextChangeType |= CheckChangeInsideComment(change);
-            if (change.TextChange.TextChangeType == TextChangeType.Comment)
+            change.PendingChanges.TextChangeType |= CheckChangeInsideComment(change);
+            if (change.PendingChanges.TextChangeType == TextChangeType.Comment)
             {
                 return;
             }
-            else if (change.TextChange.TextChangeType == TextChangeType.Trivial)
+            else if (change.PendingChanges.TextChangeType == TextChangeType.Trivial)
             {
                 IAstNode node;
                 PositionType positionType;
 
-                change.TextChange.TextChangeType |= CheckChangeInsideString(change, out node, out positionType);
-                if (change.TextChange.TextChangeType == TextChangeType.Token)
+                change.PendingChanges.TextChangeType |= CheckChangeInsideString(change, out node, out positionType);
+                if (change.PendingChanges.TextChangeType == TextChangeType.Token)
                 {
                     return;
                 }
-                else if (change.TextChange.TextChangeType == TextChangeType.Trivial)
+                else if (change.PendingChanges.TextChangeType == TextChangeType.Trivial)
                 {
-                    change.TextChange.TextChangeType |= CheckWhiteSpaceChange(change, node, positionType);
-                    if (change.TextChange.TextChangeType == TextChangeType.Trivial)
+                    change.PendingChanges.TextChangeType |= CheckWhiteSpaceChange(change, node, positionType);
+                    if (change.PendingChanges.TextChangeType == TextChangeType.Trivial)
                     {
                         return;
                     }
                 }
             }
 
-            change.TextChange.TextChangeType = TextChangeType.Structure;
-            change.TextChange.FullParseRequired = true;
+            change.PendingChanges.TextChangeType = TextChangeType.Structure;
+            change.PendingChanges.FullParseRequired = true;
         }
 
         private static TextChangeType CheckWhiteSpaceChange(TextChangeContext context, IAstNode node, PositionType positionType)
@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Tree
                 if (lineBreakSensitive)
                 {
                     string oldLineText = context.OldTextProvider.GetText(new TextRange(context.OldStart, context.OldLength));
-                    string newLineText = context.NewTextProvider.GetText(new TextRange(context.Start, context.NewLength));
+                    string newLineText = context.NewTextProvider.GetText(new TextRange(context.NewStart, context.NewLength));
 
                     if (oldLineText.IndexOfAny(_lineBreaks) >= 0 || newLineText.IndexOfAny(_lineBreaks) >= 0)
                     {
@@ -73,7 +73,7 @@ namespace Microsoft.R.Editor.Tree
         {
             var comments = context.EditorTree.AstRoot.Comments;
 
-            IReadOnlyList<int> affectedComments = comments.GetItemsContainingInclusiveEnd(context.Start);
+            IReadOnlyList<int> affectedComments = comments.GetItemsContainingInclusiveEnd(context.NewStart);
             if (affectedComments.Count == 0)
             {
                 return TextChangeType.Trivial;
@@ -87,7 +87,7 @@ namespace Microsoft.R.Editor.Tree
             // Make sure user is not deleting leading # effectively 
             // destroying the comment
             RToken comment = comments[affectedComments[0]];
-            if (comment.Start == context.Start && context.OldLength > 0)
+            if (comment.Start == context.NewStart && context.OldLength > 0)
             {
                 return TextChangeType.Structure;
             }
@@ -97,7 +97,7 @@ namespace Microsoft.R.Editor.Tree
             // inside the comment if it's at the comment start and 
             // the old length of the change is zero.
 
-            if (comment.Start == context.Start && context.OldLength == 0)
+            if (comment.Start == context.NewStart && context.OldLength == 0)
             {
                 if (context.NewText.IndexOf('#') < 0)
                 {
@@ -127,7 +127,7 @@ namespace Microsoft.R.Editor.Tree
 
         private static TextChangeType CheckChangeInsideString(TextChangeContext context, out IAstNode node, out PositionType positionType)
         {
-            positionType = context.EditorTree.AstRoot.GetPositionNode(context.Start, out node);
+            positionType = context.EditorTree.AstRoot.GetPositionNode(context.NewStart, out node);
 
             if (positionType == PositionType.Token)
             {
