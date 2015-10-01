@@ -57,10 +57,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             }
 
             [CompositeTest]
-            [InlineData(new[] {@"Z:\abc\abc"}, new[] {"abc"})]
-            [InlineData(new[] {@"Z:\abc\abc.cs"}, new[] {"abc.cs"})]
-            [InlineData(new[] {@"Z:\abc\a\abc.cs", @"Z:\abc\a\def.cs", @"Z:\abc\a.cs"},
-                        new[] {@"a\abc.cs", @"a\def.cs", "a.cs"})]
+            [InlineData(new[] { @"Z:\abc\abc" }, new[] { "abc" })]
+            [InlineData(new[] { @"Z:\abc\abc.cs" }, new[] { "abc.cs" })]
+            [InlineData(new[] { @"Z:\abc\a\abc.cs", @"Z:\abc\a\def.cs", @"Z:\abc\a.cs" },
+                        new[] { @"a\abc.cs", @"a\def.cs", "a.cs" })]
             public async Task FileAdded(string[] addedFiles, string[] expected)
             {
                 using (_taskScheduler.Pause())
@@ -81,12 +81,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             }
 
             [CompositeTest]
-            [InlineData(new[] {@"Z:\abc\a\abc.cs", @"Z:\abc\a\def.cs"},
-                        new[] {@"Z:\abc\a\def.cs"},
-                        new[] {@"a\def.cs"})]
-            [InlineData(new[] {@"Z:\abc\a\abc.cs", @"Z:\abc\a\def.cs", @"Z:\abc\a.cs"},
-                        new[] {@"Z:\abc\a\def.cs", @"Z:\abc\a.cs"},
-                        new[] {@"a\def.cs", "a.cs"})]
+            [InlineData(new[] { @"Z:\abc\a\abc.cs", @"Z:\abc\a\def.cs" },
+                        new[] { @"Z:\abc\a\def.cs" },
+                        new[] { @"a\def.cs" })]
+            [InlineData(new[] { @"Z:\abc\a\abc.cs", @"Z:\abc\a\def.cs", @"Z:\abc\a.cs" },
+                        new[] { @"Z:\abc\a\def.cs", @"Z:\abc\a.cs" },
+                        new[] { @"a\def.cs", "a.cs" })]
             public async Task FileAdded_SomeFilesMissing(string[] addedFiles, string[] existingFiles, string[] expected)
             {
                 foreach (var path in addedFiles)
@@ -132,12 +132,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             }
 
             [CompositeTest]
-            [InlineData(new[] {@"Z:\abc\abc", @"Z:\abc\abc.cs"}, new[] {@"Z:\abc\abc"},
-                        new[] {"abc.cs"}, new[] {@"abc"})]
-            [InlineData(new[] {@"Z:\abc\a\x.r", @"Z:\abc\a\y.r"}, new[] {@"Z:\abc\a\z.r", @"Z:\abc\a\y.r"},
-                        new[] {@"a\x.r"}, new[] {@"a\y.r", @"a\z.r"})]
-            [InlineData(new[] {@"Z:\abc\a\x.r", @"Z:\abc\a\y.r"}, new[] {@"Z:\abc\a\z.r", @"Z:\abc\a\w.r"},
-                        new[] {@"a\x.r", @"a\y.r"}, new[] {@"a\z.r", @"a\w.r"})]
+            [InlineData(new[] { @"Z:\abc\abc", @"Z:\abc\abc.cs" }, new[] { @"Z:\abc\abc" },
+                        new[] { "abc.cs" }, new[] { @"abc" })]
+            [InlineData(new[] { @"Z:\abc\a\x.r", @"Z:\abc\a\y.r" }, new[] { @"Z:\abc\a\z.r", @"Z:\abc\a\y.r" },
+                        new[] { @"a\x.r" }, new[] { @"a\y.r", @"a\z.r" })]
+            [InlineData(new[] { @"Z:\abc\a\x.r", @"Z:\abc\a\y.r" }, new[] { @"Z:\abc\a\z.r", @"Z:\abc\a\w.r" },
+                        new[] { @"a\x.r", @"a\y.r" }, new[] { @"a\z.r", @"a\w.r" })]
             public async Task FileAdded_ThenRemoved(string[] createdFiles, string[] deletedFiles, string[] expectedAdded, string[] expectedRemoved)
             {
                 using (_taskScheduler.Pause())
@@ -171,7 +171,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                         new[] { @"b\y.r", }, new[] { @"a\" })]
             [InlineData(new[] { @"Z:\abc\a\x.r", @"Z:\abc\a\y.r", @"Z:\abc\a\b\z.r" }, new string[0], new[] { @"Z:\abc\a" },
                         new string[0], new[] { @"a\" })]
-            public async Task FileAdded_DirectoryRemoved(string [] addedFiles, string[] existingFiles, string[] deletedDirectories, string[] expectedFiles, string[] expectedDirectories)
+            public async Task FileAdded_DirectoryRemoved(string[] addedFiles, string[] existingFiles, string[] deletedDirectories, string[] expectedFiles, string[] expectedDirectories)
             {
                 using (_taskScheduler.Pause())
                 {
@@ -205,10 +205,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             }
 
             [CompositeTest]
-            [InlineData(new[] {@"Z:\abc\abc"}, new[] {@"abc\"})]
-            [InlineData(new[] {@"Z:\abc\abc.cs"}, new[] {@"abc.cs\"})]
-            [InlineData(new[] {@"Z:\abc\a\abc", @"Z:\abc\b\abc", @"Z:\abc\a\bef"},
-                        new[] {@"a\abc\", @"b\abc\", @"a\bef\"})]
+            [InlineData(new[] { @"Z:\abc\abc" }, new[] { @"abc\" })]
+            [InlineData(new[] { @"Z:\abc\abc.cs" }, new[] { @"abc.cs\" })]
+            [InlineData(new[] { @"Z:\abc\a\abc", @"Z:\abc\b\abc", @"Z:\abc\a\bef" },
+                        new[] { @"a\abc\", @"b\abc\", @"a\bef\" })]
             public async Task DirectoryAdded(string[] addedDirectories, string[] expected)
             {
                 using (_taskScheduler.Pause())
@@ -229,12 +229,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             }
 
             [CompositeTest]
-            [InlineData(new[] {@"Z:\abc\a\abc.cs", @"Z:\abc\a\def"},
-                        new[] {@"Z:\abc\a\def"},
-                        new[] {@"a\def\"})]
-            [InlineData(new[] {@"Z:\abc\a\abc", @"Z:\abc\b\abc", @"Z:\abc\a\bef"},
-                        new[] {@"Z:\abc\b\abc", @"Z:\abc\a\bef"},
-                        new[] {@"b\abc\", @"a\bef\"})]
+            [InlineData(new[] { @"Z:\abc\a\abc.cs", @"Z:\abc\a\def" },
+                        new[] { @"Z:\abc\a\def" },
+                        new[] { @"a\def\" })]
+            [InlineData(new[] { @"Z:\abc\a\abc", @"Z:\abc\b\abc", @"Z:\abc\a\bef" },
+                        new[] { @"Z:\abc\b\abc", @"Z:\abc\a\bef" },
+                        new[] { @"b\abc\", @"a\bef\" })]
             public async Task DirectoryAdded_SomeDirectoriesMissing(string[] addedDirectories, string[] existingDirectories, string[] expected)
             {
                 foreach (var path in existingDirectories)
@@ -259,12 +259,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             }
 
             [CompositeTest]
-            [InlineData(new[] {@"Z:\abc\a\abc", @"Z:\abc\a\def"},
-                        new[] {@"a\def\", @"a\def\z.r\"},
-                        new[] {@"a\def\x.r", @"a\def\y.r"})]
-            [InlineData(new[] {@"Z:\abc\b\", @"Z:\abc\b\abc"},
-                        new[] {@"b\", @"b\abc\"},
-                        new[] {@"b\z.r"})]
+            [InlineData(new[] { @"Z:\abc\a\abc", @"Z:\abc\a\def" },
+                        new[] { @"a\def\", @"a\def\z.r\" },
+                        new[] { @"a\def\x.r", @"a\def\y.r" })]
+            [InlineData(new[] { @"Z:\abc\b\", @"Z:\abc\b\abc" },
+                        new[] { @"b\", @"b\abc\" },
+                        new[] { @"b\z.r" })]
             public async Task DirectoryAdded_DirectoryWithContent(string[] addedDirectories, string[] expectedDirectories, string[] expectedFiles)
             {
                 const string projectDirectorySubtree = @"
@@ -324,7 +324,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             [InlineData(new[] { @"Z:\abc\a", @"Z:\abc\a\b", @"Z:\abc\c" }, new[] { @"Z:\abc\a", @"Z:\abc\c" },
                         new string[0], new[] { @"a\", @"c\" })]
             [InlineData(new[] { @"Z:\abc\a", @"Z:\abc\a\b", @"Z:\abc\c" }, new[] { @"Z:\abc\c", @"Z:\abc\f" },
-                        new[] { @"a\", @"a\b\"}, new[] { @"c\", @"f\" })]
+                        new[] { @"a\", @"a\b\" }, new[] { @"c\", @"f\" })]
             public async Task DirectoryAdded_ThenRemoved(string[] addedDirectories, string[] deletedDirectories, string[] expectedAdded, string[] expectedRemoved)
             {
                 using (_taskScheduler.Pause())
@@ -551,10 +551,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             }
 
             [CompositeTest]
-            [InlineData(new[] { @"Z:\abc\abc", @"Z:\abc\abc.cs" }, new[] { @"Z:\abc\a"},
-                        new[] { @"abc", @"abc.cs" }, new[] { @"a\", @"a\def\", @"a\def\z.r\" }, new [] { @"a\def\x.r", @"a\def\y.r" })]
+            [InlineData(new[] { @"Z:\abc\abc", @"Z:\abc\abc.cs" }, new[] { @"Z:\abc\a" },
+                        new[] { @"abc", @"abc.cs" }, new[] { @"a\", @"a\def\", @"a\def\z.r\" }, new[] { @"a\def\x.r", @"a\def\y.r" })]
             [InlineData(new[] { @"Z:\abc\b\y.r", @"Z:\abc\b\z.r" }, new[] { @"Z:\abc\b" },
-                        new[] { @"b\y.r" }, new[] { @"b\", @"b\abc\" }, new string [0])]
+                        new[] { @"b\y.r" }, new[] { @"b\", @"b\abc\" }, new string[0])]
             public async Task FileRemoved_DirectoryAdded(string[] deletedFiles, string[] createdDirectories, string[] expectedRemovedFiles, string[] expectedAddedDirectories, string[] expectedAddedFiles)
             {
                 const string projectDirectorySubtree = @"

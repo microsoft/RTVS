@@ -61,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         protected override void Dispose(bool disposing)
         {
-            if(_indexBuildingTask != null)
+            if (_indexBuildingTask != null)
             {
                 _indexBuildingTask.Wait(2000);
                 _indexBuildingTask = null;

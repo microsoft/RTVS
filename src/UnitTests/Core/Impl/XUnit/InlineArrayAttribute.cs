@@ -18,7 +18,7 @@ namespace Microsoft.UnitTests.Core.XUnit
 
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            yield return new object[]{ _array };
+            yield return new object[] { _array };
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
 
             fileSystem.GetDirectoryInfo(path).Returns(di);
             fileSystem.DirectoryExists(path).Returns(true);
-                            
+
             fileSystem.GetDirectoryInfo(path + Path.DirectorySeparatorChar).Returns(di);
             fileSystem.DirectoryExists(path + Path.DirectorySeparatorChar).Returns(true);
 
@@ -38,7 +38,7 @@ namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
 
             fileSystem.GetDirectoryInfo(path).Returns(di);
             fileSystem.DirectoryExists(path).Returns(false);
-                            
+
             fileSystem.GetDirectoryInfo(path + Path.DirectorySeparatorChar).Returns(di);
             fileSystem.DirectoryExists(path + Path.DirectorySeparatorChar).Returns(false);
 
@@ -106,7 +106,7 @@ namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
 
         private static void AddToDirectory(IDirectoryInfo directory, IFileSystemInfo child)
         {
-            var children = (List<IFileSystemInfo>) directory.EnumerateFileSystemInfos();
+            var children = (List<IFileSystemInfo>)directory.EnumerateFileSystemInfos();
             int index = children.BinarySearch(child, Comparer<IFileSystemInfo>.Create((x, y) => string.Compare(x.FullName, y.FullName, StringComparison.OrdinalIgnoreCase)));
             if (index >= 0)
             {
@@ -121,13 +121,13 @@ namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
             var directoryChild = child as IDirectoryInfo;
             if (directoryChild != null)
             {
-                var oldParent = (List<IFileSystemInfo>) directoryChild.Parent?.EnumerateFileSystemInfos();
+                var oldParent = (List<IFileSystemInfo>)directoryChild.Parent?.EnumerateFileSystemInfos();
                 oldParent?.Remove(directoryChild);
                 directoryChild.Parent.Returns(directory);
             }
             else
             {
-                var fileChild = (IFileInfo) child;
+                var fileChild = (IFileInfo)child;
                 var oldParent = (List<IFileSystemInfo>)fileChild.Directory?.EnumerateFileSystemInfos();
                 oldParent?.Remove(fileChild);
                 fileChild.Directory.Returns(directory);
