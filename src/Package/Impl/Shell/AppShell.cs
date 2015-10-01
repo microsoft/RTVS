@@ -159,7 +159,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
             {
                 AssemblyName assemblyName = asm.GetName();
                 string name = assemblyName.Name;
-                return name.IndexOf("apex", StringComparison.OrdinalIgnoreCase) >= 0 || name.IndexOf(".test", StringComparison.OrdinalIgnoreCase) >= 0;
+                return name.IndexOf("apex", StringComparison.OrdinalIgnoreCase) >= 0 || name.IndexOf("r.editor.test.", StringComparison.OrdinalIgnoreCase) >= 0;
             });
 
             this.IsTestEnvironment = testAssembly != null;

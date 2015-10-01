@@ -36,6 +36,6 @@ namespace Microsoft.Languages.Editor.Selection
         /// <summary>
         /// Moves caret to 'after changes' position
         /// </summary>
-        void MoveToAfterChanges();
+        void MoveToAfterChanges(int virtualSpaces = 0);
     }
 }
