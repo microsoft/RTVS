@@ -173,7 +173,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             {
                 try
                 {
-                    return await ReadNextRequest(contexts, prompt, len);
+                    string response = await ReadNextRequest(contexts, prompt, len);
+                    Debug.Assert(response.Length < len); // len includes null terminator
+                    if (response.Length >= len) {
+                        response = response.Substring(0, len - 1);
+                    }
+                    return response;
                 }
                 catch (TaskCanceledException)
                 {
