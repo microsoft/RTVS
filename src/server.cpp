@@ -120,23 +120,31 @@ namespace rhost {
                 obj["prompt"] = picojson::value(prompt);
                 obj["len"] = picojson::value(static_cast<double>(len));
                 obj["addToHistory"] = picojson::value(addToHistory ? true : false);
-                std::string json = picojson::value(obj).serialize();
 
-                picojson::value resp = with_response([&] {
-                    ws_conn->send(json, websocketpp::frame::opcode::text);
-                });
+                for (;;) {
+                    std::string json = picojson::value(obj).serialize();
 
-                if (resp.is<picojson::null>()) {
-                    return 0;
+                    picojson::value resp = with_response([&] {
+                        ws_conn->send(json, websocketpp::frame::opcode::text);
+                    });
+
+                    if (resp.is<picojson::null>()) {
+                        return 0;
+                    }
+                    if (!resp.is<std::string>()) {
+                        fprintf(stderr, "!!! ERROR: expected string, got %s\n", resp.to_str().c_str());
+                        return 0;
+                    }
+
+                    std::string s = from_utf8(resp.get<std::string>());
+                    if (s.size() >= len) {
+                        obj["retryReason"] = picojson::value("BUFFER_OVERFLOW");
+                        continue;
+                    }
+
+                    strcpy_s(buf, len, s.c_str());
+                    return 1;
                 }
-                if (!resp.is<std::string>()) {
-                    fprintf(stderr, "!!! ERROR: expected string, got %s\n", resp.to_str().c_str());
-                    return 0;
-                }
-
-                std::string s = from_utf8(resp.get<std::string>());
-                strcpy_s(buf, len, s.c_str());
-                return 1;
             }
 
             extern "C" void WriteConsoleEx(const char* buf, int len, int otype) {
