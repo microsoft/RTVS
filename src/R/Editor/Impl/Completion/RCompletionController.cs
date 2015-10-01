@@ -6,23 +6,21 @@ using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Completion.TypeThrough;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor.Signatures;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion
 {
-    using Core.AST;
-    using Core.AST.Operators;
-    using Core.AST.Variables;
-    using Support.Help.Functions;
-    using Support.Help.Definitions;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
-    using Signatures;
-    using Definitions;
-    using Document.Definitions;
 
     public sealed class RCompletionController : CompletionController, ICommandTarget
     {
@@ -98,6 +96,11 @@ namespace Microsoft.R.Editor.Completion
             }
 
             return completionController;
+        }
+
+        public static RCompletionController FromTextView(ITextView textView)
+        {
+            return ServiceManager.GetService<RCompletionController>(textView);
         }
 
         protected override bool AutoCompletionEnabled

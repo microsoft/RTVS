@@ -5,6 +5,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Commands;
+using Microsoft.R.Editor.Completion;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -67,8 +68,21 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
             {
                 if (id == (int)VSConstants.VSStd2KCmdID.TAB)
                 {
-                    CompletionBroker.DismissAllSessions(TextView);
-                    CompletionBroker.TriggerCompletion(TextView);
+                    RCompletionController controller = RCompletionController.FromTextView(TextView);
+                    if (controller != null)
+                    {
+                        // If completion is up, commit it else trigger it
+                        if (controller.HasActiveCompletionSession)
+                        {
+                            controller.CommitCompletionSession();
+                        }
+                        else
+                        {
+                            controller.DismissAllSessions();
+                            controller.ShowCompletion(autoShownCompletion: true);
+                        }
+                    }
+
                     return CommandResult.Executed;
                 }
                 else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)
