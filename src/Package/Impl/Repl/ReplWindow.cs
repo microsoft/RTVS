@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Threading;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
@@ -13,6 +14,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
+    using Task = System.Threading.Tasks.Task;
+
     /// <summary>
     /// Tracks most recently active REPL window
     /// </summary>
@@ -31,6 +34,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         public static ReplWindow Current
         {
             get { return _instance.Value; }
+        }
+
+        public Task SubmitAsync(IEnumerable<string> input)
+        {
+            IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
+            if (current != null)
+            {
+                return current.InteractiveWindow.SubmitAsync(input);
+            }
+
+            return Task.CompletedTask;
         }
 
         public void ExecuteCode(string code)
