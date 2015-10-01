@@ -14,15 +14,47 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
 {
     class RVariableSession : IVariableSession
     {
-        private readonly IRSession _rSession;
+        private IRSession _rSession;
+        private IImmutableVariableCollection _variables;
 
         public RVariableSession(IRSession rSession)
         {
             _rSession = rSession;
+            _variables = EmptyImmutableVariableCollection.Instance;
 
             this.Priority = 0;
             this.SessionDisplayName = "Global Envrironment";    // TODO: for now, global environment
+
+            rSession.BeforeRequest += RSession_BeforeRequest;   // TODO: when to remove the event handler? watch out memory leak
+            rSession.Disconnected += RSession_Disconnected;
         }
+
+        #region RSession event handler
+
+        private async void RSession_BeforeRequest(object sender, RBeforeRequestEventArgs e)
+        {
+            // await cause thie event handler returns and let event raiser run through
+            // but it wait internally for varaible evaluation request to be processed
+            await RefreshVariableCollection();
+            if (VariablesChanged != null)
+            {
+                VariablesChanged(this, EventArgs.Empty);
+            }
+        }
+
+        private void RSession_Disconnected(object sender, EventArgs e)
+        {
+            if (SessionClosed != null)
+            {
+                SessionClosed(this, EventArgs.Empty);
+            }
+
+            _rSession.BeforeRequest -= RSession_BeforeRequest;
+            _rSession.Disconnected -= RSession_Disconnected;
+            _rSession = null;   // TODO: add validation logic and prevent null reference exception
+        }
+
+        #endregion
 
         #region IVariableSession Support
 
@@ -46,14 +78,30 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
             throw new NotImplementedException();
         }
 
-        public async Task<IImmutableVariableCollection> GetVariablesAsync(CancellationToken cancellationToken)
+        public Task<IImmutableVariableCollection> GetVariablesAsync(CancellationToken cancellationToken)
         {
+            return Task.FromResult(_variables);
+        }
+
+        
+        private async Task RefreshVariableCollection()
+        {
+#if false
             using (var interactor = await _rSession.BeginInteractionAsync(false))
             {
                 var response = await interactor.RespondAsync("ls.str(.GlobalEnv)\r\n");  // TODO: for now, global environment
-                var variableCollection = RVariableCollection.Parse(response);
-                return variableCollection;
+                _variables =  RVariableCollection.Parse(response);  // TODO: BUGBUG: make thread safe!
             }
+#else
+            using (var interactor = await _rSession.BeginEvaluationAsync())
+            {
+                var response = await interactor.EvaluateAsync("x\r\n");
+                if (response.ParseStatus == RParseStatus.OK)
+                {
+                    _variables = RVariableCollection.Parse(response.Result);  // TODO: BUGBUG: make thread safe!
+                }
+            }
+#endif
         }
 
         #endregion
