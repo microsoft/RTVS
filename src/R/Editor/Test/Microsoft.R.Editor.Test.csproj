@@ -134,6 +134,7 @@
     </Compile>
     <Compile Include="Comments\CommenterTest.cs" />
     <Compile Include="Completions\RCompletionSourceTest.cs" />
+    <Compile Include="Formatting\SmartIndentTest.cs" />
     <Compile Include="Formatting\AutoFormatTest.cs" />
     <Compile Include="Formatting\RangeFormatterTest.cs" />
     <Compile Include="Mocks\EditorDocumentMock.cs" />

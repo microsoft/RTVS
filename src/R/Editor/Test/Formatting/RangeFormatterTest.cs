@@ -90,6 +90,22 @@ x<-1
         }
 
         [TestMethod]
+        public void RangeFormatter_FormatConditionalTest04()
+        {
+            AstRoot ast;
+            string original = "if (x > 1)\r\ny<-2";
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
+
+            RangeFormatter.FormatRange(textView, new TextRange(original.IndexOf('y'), 0), ast, new RFormatOptions());
+
+            string expected = "if (x > 1)\r\n    y <- 2";
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        [TestMethod]
         public void RangeFormatter_FormatOneLine()
         {
             AstRoot ast;
