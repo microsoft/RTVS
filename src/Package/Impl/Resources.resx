@@ -240,4 +240,7 @@
   <data name="MicrosoftRHostStopping" xml:space="preserve">
     <value>Stopping R Host process...</value>
   </data>
+  <data name="InputIsTooLong" xml:space="preserve">
+    <value>Input is too long - no more than {0} characters expected.</value>
+  </data>
 </root>

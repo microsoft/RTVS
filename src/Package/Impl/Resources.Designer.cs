@@ -106,6 +106,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
+        /// </summary>
+        internal static string InputIsTooLong {
+            get {
+                return ResourceManager.GetString("InputIsTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R.
         /// </summary>
         internal static string LanguageName {
