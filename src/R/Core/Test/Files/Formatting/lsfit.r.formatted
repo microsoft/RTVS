@@ -20,8 +20,8 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 	if (any(!good)) {
 		warning(sprintf(ngettext(sum(!good), "%d missing value deleted",
 			"%d missing values deleted"), sum(!good)), domain = NA)
-		x <- as.matrix(x)[good, , drop = FALSE]
-		y <- as.matrix(y)[good, , drop = FALSE]
+		x <- as.matrix(x)[good,, drop = FALSE]
+		y <- as.matrix(y)[good,, drop = FALSE]
 		wt <- wt[good]
 	}
 	nrx <- NROW(x)
@@ -46,8 +46,8 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 				nwts, nry), domain = NA)
 		wtmult <- wt ^ 0.5
 		if (any(wt == 0)) {
-			xzero <- as.matrix(x)[wt == 0, ]
-			yzero <- as.matrix(y)[wt == 0, ]
+			xzero <- as.matrix(x)[wt == 0,]
+			yzero <- as.matrix(y)[wt == 0,]
 		}
 		x <- x * wtmult
 		y <- y * wtmult
@@ -62,11 +62,11 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 				fitted.zeros <- xzero * z$coefficients
 			else
 				fitted.zeros <- xzero %*% z$coefficients
-			z$residuals[wt == 0, ] <- yzero - fitted.zeros
+			z$residuals[wt == 0,] <- yzero - fitted.zeros
 		}
 		z$residuals <- z$residuals * invmult
 	}
-	resids[good, ] <- z$residuals
+	resids[good,] <- z$residuals
 	if (dimy[2L] == 1 && is.null(yname)) {
 		resids <- drop(resids)
 		names(z$coefficients) <- xnames

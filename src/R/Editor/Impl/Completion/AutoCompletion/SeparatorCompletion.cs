@@ -117,12 +117,14 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion
         public static void CreateProvisionalText(ITextView textView, Span range, char eatNextQuote)
         {
             var completionController = ServiceManager.GetService<RCompletionController>(textView);
-
-            var provisionalText = completionController.CreateProvisionalText(range, eatNextQuote);
-            if (provisionalText != null)
+            if (completionController != null)
             {
-                provisionalText.Overtyping += OnProvisionalTextOvertype;
-                textView.Caret.PositionChanged += OnCaretPositionChanged;
+                var provisionalText = completionController.CreateProvisionalText(range, eatNextQuote);
+                if (provisionalText != null)
+                {
+                    provisionalText.Overtyping += OnProvisionalTextOvertype;
+                    textView.Caret.PositionChanged += OnCaretPositionChanged;
+                }
             }
         }
 
