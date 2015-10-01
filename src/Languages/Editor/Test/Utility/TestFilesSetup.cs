@@ -22,7 +22,7 @@ namespace Microsoft.Languages.Editor.Test.Utility
                 {
                     _deployed = true;
 
-                    EditorShell.SetShell(TestEditorShell.Create());
+                    EditorShell.SetShell(TestEditorShell.Create(EditorTestCompositionCatalog.Current));
 
                     string srcFilesFolder;
                     string testFilesDir;

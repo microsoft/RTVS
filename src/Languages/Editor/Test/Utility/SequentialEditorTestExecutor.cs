@@ -73,7 +73,7 @@ namespace Microsoft.Languages.Editor.Test.Utility
         {
             if (_shell == null)
             {
-                _shell = TestEditorShell.Create();
+                _shell = TestEditorShell.Create(EditorTestCompositionCatalog.Current);
                 EditorShell.SetShell(_shell);
             }
         }

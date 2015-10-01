@@ -22,16 +22,5 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility
         {
             return _serviceProvider.GetService(serviceType);
         }
-
-        public static IEnumerable<string> PackageMefAssemblies { get; } = new string[]
-        {
-            "Microsoft.VisualStudio.R.Package.Test.dll",
-            "Microsoft.VisualStudio.R.Package.dll"
-        };
-
-        public static IEnumerable<string> TestMefAssemblies { get; } = new string[]
-        {
-            "Microsoft.VisualStudio.R.Package.Test.dll",
-        };
     }
 }

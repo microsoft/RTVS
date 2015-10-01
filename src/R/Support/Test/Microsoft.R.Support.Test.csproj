@@ -99,6 +99,7 @@
     <Compile Include="Packages\PackageIndexTest.cs" />
     <Compile Include="RD\Classification\RdClassifierTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
+    <Compile Include="Utility\RSupportTestCompositionCatalog.cs" />
     <Compile Include="Utility\TokenizeFiles.cs" />
     <Compile Include="RD\Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="RD\Tokens\TokenizeTest.cs" />
@@ -123,6 +124,10 @@
     <ProjectReference Include="..\..\..\Languages\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>

@@ -95,6 +95,10 @@
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
@@ -147,6 +151,7 @@
     <Compile Include="Tree\ProcessChangesTest.cs" />
     <Compile Include="Tree\TreeChangeTypeTest.cs" />
     <Compile Include="Tree\TextChangeTest.cs" />
+    <Compile Include="Utility\REditorTestCompositionCatalog.cs" />
     <Compile Include="Utility\EditorTestFilesSetup.cs" />
     <Compile Include="Utility\TextViewTest.cs" />
   </ItemGroup>

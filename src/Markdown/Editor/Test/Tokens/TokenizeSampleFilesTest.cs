@@ -2,6 +2,7 @@
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tests.Shell;
+using Microsoft.Markdown.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,7 +16,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         [TestMethod]
         public void TokenizeSampleMdFile01()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(MarkdownTestCompositionCatalog.Current));
             TokenizeFiles.TokenizeFile<MdToken, MdTokenType, MdTokenizer>(this.TestContext, @"Tokenization\01.md", "Markdown");
         }
     }

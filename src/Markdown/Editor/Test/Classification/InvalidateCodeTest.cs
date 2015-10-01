@@ -3,17 +3,16 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Mocks;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Markdown.Editor.Classification;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Test.Utility;
+using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.Test.Classification
 {
@@ -27,7 +26,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification
             string content = "```'{r}\n#R\n```";
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
-            IEditorShell shell = TestEditorShell.Create();
+            IEditorShell shell = TestEditorShell.Create(MarkdownTestCompositionCatalog.Current);
             MdClassifierProvider classifierProvider = new MdClassifierProvider();
             shell.CompositionService.SatisfyImportsOnce(classifierProvider);
             IClassifier cls = classifierProvider.GetClassifier(textBuffer);

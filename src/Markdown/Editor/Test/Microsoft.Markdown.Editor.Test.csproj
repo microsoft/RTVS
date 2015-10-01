@@ -93,6 +93,10 @@
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
@@ -117,6 +121,7 @@
     <Compile Include="Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="Tokens\TokenizeStylesTest.cs" />
     <Compile Include="Utility\MarkdownTestFilesSetup.cs" />
+    <Compile Include="Utility\MarkdownTestCompositionCatalog.cs" />
     <Compile Include="Utility\TextViewTest.cs" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

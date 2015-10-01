@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands
         [TestMethod]
         public void Package_CommandFactoryImportTest()
         {
-            EditorShell.SetShell(TestEditorShell.Create(TestRPackage.PackageMefAssemblies));
+            EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
 
             var importComposer = new ContentTypeImportComposer<ICommandFactory>(EditorShell.Current.CompositionService);
             ICollection<ICommandFactory> factories = importComposer.GetAll(RContentTypeDefinition.ContentType);

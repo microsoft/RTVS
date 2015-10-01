@@ -42,21 +42,31 @@ namespace Microsoft.VisualStudio.R.Packages.R
         public const string OptionsDialogName = "R Tools";
 
         private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
+        private System.Threading.Tasks.Task _indexBuildingTask;
+
+        public static RPackage Current { get; private set; }
 
         protected override void Initialize()
         {
+            Current = this;
+
             base.Initialize();
 
             IComponentModel componentModel = GetService(typeof(SComponentModel)) as IComponentModel;
             RToolsSettings.VerifyRIsInstalled(componentModel.DefaultExportProvider);
             ReplShortcutSetting.Initialize();
 
-            FunctionIndex.BuildIndexAsync();
+            _indexBuildingTask = FunctionIndex.BuildIndexAsync();
         }
 
         protected override void Dispose(bool disposing)
         {
-            //FunctionIndex.SaveIndexAsync();
+            if(_indexBuildingTask != null)
+            {
+                _indexBuildingTask.Wait(2000);
+                _indexBuildingTask = null;
+            }
+
             ReplShortcutSetting.Close();
             base.Dispose(disposing);
         }

@@ -4,11 +4,11 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Outline;
-using Microsoft.Languages.Editor.Test.Mocks;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
+using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Test.Outline

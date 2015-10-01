@@ -47,6 +47,7 @@
     <Compile Include="Undo\UndoHistoryRegistryImpl.cs" />
     <Compile Include="Undo\UndoTransactionImpl.cs" />
     <Compile Include="Undo\WeakReferenceForKey.cs" />
+    <Compile Include="Utility\AppCompositionCatalog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
@@ -60,6 +61,10 @@
     <ProjectReference Include="..\Languages\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>

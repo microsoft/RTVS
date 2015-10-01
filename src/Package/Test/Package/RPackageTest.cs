@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands
         [TestMethod]
         public void RPackage_ConstructionTest()
         {
-            EditorShell.SetShell(TestEditorShell.Create(TestRPackage.TestMefAssemblies));
+            EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
 
             var package = new TestRPackage();
             package.Init();
@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands
         [TestMethod]
         public void RPackage_EditorFactoryTest()
         {
-            EditorShell.SetShell(TestEditorShell.Create(TestRPackage.TestMefAssemblies));
+            EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
 
             var package = new TestRPackage();
             package.Init();
@@ -43,6 +43,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands
 
             editorFactory.CreateEditorInstance(VSConstants.CEF_OPENFILE, "file.r", string.Empty, null, 0, IntPtr.Zero,
                 out docView, out docData, out caption, out commandUiGuid, out flags);
+
+            package.Close();
         }
     }
 }
