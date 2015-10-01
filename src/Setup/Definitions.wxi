@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
-  <?define ProductName="Microsoft Visual Studio Tools for R" ?>
+  <?define ProductName="R Tools for Visual Studio" ?>
   <?define VSRegVer="14.0" ?>
   
   <!-- 
