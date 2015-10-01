@@ -240,4 +240,10 @@
   <data name="MicrosoftRHostStopping" xml:space="preserve">
     <value>Stopping R Host process...</value>
   </data>
+  <data name="Settings_ReplSyntaxCheck" xml:space="preserve">
+    <value>Syntax check in R Console</value>
+  </data>
+  <data name="Settings_ReplSyntaxCheck_Description" xml:space="preserve">
+    <value>Turns on or off live code syntax check in R Console window. Syntax check may not work correctly in multi-line statements.</value>
+  </data>
 </root>

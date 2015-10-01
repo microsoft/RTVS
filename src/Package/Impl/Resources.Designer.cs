@@ -304,6 +304,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Syntax check in R Console.
+        /// </summary>
+        internal static string Settings_ReplSyntaxCheck {
+            get {
+                return ResourceManager.GetString("Settings_ReplSyntaxCheck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Turns on or off live code syntax check in R Console window. Syntax check may not work correctly in multi-line statements..
+        /// </summary>
+        internal static string Settings_ReplSyntaxCheck_Description {
+            get {
+                return ResourceManager.GetString("Settings_ReplSyntaxCheck_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;Send to R Console&apos; shortcut.
         /// </summary>
         internal static string Settings_SendToRepl {

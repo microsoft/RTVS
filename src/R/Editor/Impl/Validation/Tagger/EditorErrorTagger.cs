@@ -121,7 +121,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
         {
-            if (REditorSettings.ValidationEnabled && e.Changes.Count > 0)
+            if (REditorSettings.SyntaxCheck && e.Changes.Count > 0)
             {
                 var changes = TextUtility.ConvertToRelative(e);
                 foreach (var change in changes)
@@ -192,7 +192,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// <param name="eventArgs"></param>
         private void OnIdle(object sender, EventArgs eventArgs)
         {
-            if (REditorSettings.ValidationEnabled && _textBuffer != null)
+            if (REditorSettings.SyntaxCheck && _textBuffer != null)
             {
                 if (ResultsQueue.Count > 0)
                 {
@@ -314,7 +314,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             List<ITagSpan<IErrorTag>> tags = new List<ITagSpan<IErrorTag>>();
 
-            if (REditorSettings.ValidationEnabled && _errorTags != null)
+            if (REditorSettings.SyntaxCheck && _errorTags != null)
             {
                 foreach (var span in spans)
                 {

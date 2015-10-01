@@ -3,6 +3,7 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
+using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
@@ -19,7 +20,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
             IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
             EditorErrorTagger tagger = null;
 
-            if (document != null && !document.IsTransient)
+            if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer))
             {
                 tagger = ServiceManager.GetService<EditorErrorTagger>(textBuffer);
                 if (tagger == null)
