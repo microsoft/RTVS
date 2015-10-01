@@ -3,6 +3,7 @@
 // ****************************************************************************
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Microsoft.VisualStudio.Text.Utilities.Local
@@ -13,6 +14,7 @@ namespace Microsoft.VisualStudio.Text.Utilities.Local
     /// WeakReferences are placed within a dictionary, as key values, they are properly recognized as references to objects
     /// that are the different (or the same).
     /// </summary>
+    [ExcludeFromCodeCoverage]
     [Serializable]
     public class WeakReferenceForDictionaryKey : WeakReference
     {

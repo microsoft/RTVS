@@ -47,15 +47,16 @@ namespace Microsoft.Languages.Editor.Test.Composition
             "Microsoft.R.Support.dll",
             "Microsoft.R.Support.Test.dll",
             "Microsoft.Markdown.Editor.dll",
-            //"Microsoft.Languages.Editor.Application.dll",
         };
 
-        private static IEnumerable<string> _additionalMefAssemblies;
-
-        public static void ReInitialize(IEnumerable<string> additionalAssemblies)
+        private static IEnumerable<string> _additionalMefAssemblies = new string[]
         {
-            _container = null;
-            _additionalMefAssemblies = additionalAssemblies;
+            "Microsoft.Languages.Editor.Application.dll"
+        };
+
+        public static CompositionContainer Container
+        {
+            get { return _container; }
         }
 
         static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -84,6 +85,12 @@ namespace Microsoft.Languages.Editor.Test.Composition
             }
 
             return asm;
+        }
+
+        public static void ReInitialize(IEnumerable<string> additionalAssemblies)
+        {
+            _container = null;
+            _additionalMefAssemblies = additionalAssemblies;
         }
 
         private static string GetHostVersion()

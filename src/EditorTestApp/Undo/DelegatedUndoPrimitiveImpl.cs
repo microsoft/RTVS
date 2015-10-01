@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.VisualStudio.Text.Operations.Standalone
 {
@@ -11,6 +12,7 @@ namespace Microsoft.VisualStudio.Text.Operations.Standalone
     /// This is the implementation of a primitive to support inverse operations, where the user does not supply their own
     /// primitives. Rather, the user calls "AddUndo" on the history and we build the primitive for them.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal class DelegatedUndoPrimitiveImpl : ITextUndoPrimitive
     {
         private Stack<UndoableOperationCurried> redoOperations;

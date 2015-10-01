@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 
-namespace Microsoft.R.Host.Client {
-    public interface IRExpressionEvaluator {
+namespace Microsoft.R.Host.Client
+{
+    public interface IRExpressionEvaluator
+    {
         Task<REvaluationResult> EvaluateAsync(string expression);
     }
 
-    public enum RParseStatus {
+    public enum RParseStatus
+    {
         Null,
         OK,
         Incomplete,
@@ -19,7 +18,8 @@ namespace Microsoft.R.Host.Client {
         EOF
     }
 
-    public struct REvaluationResult {
+    public struct REvaluationResult
+    {
         public string Result { get; }
         public string Error { get; }
         public RParseStatus ParseStatus { get; }

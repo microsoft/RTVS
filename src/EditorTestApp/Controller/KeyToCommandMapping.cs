@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Windows.Input;
@@ -7,6 +8,7 @@ using Microsoft.Languages.Editor.Controller.Constants;
 
 namespace Microsoft.Languages.Editor.Application.Controller
 {
+    [ExcludeFromCodeCoverage]
     internal class KeyToVS2KCommandMapping
     {
         static private KeyToVS2KCommandMapping _instance;

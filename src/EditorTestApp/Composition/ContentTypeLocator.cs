@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Application.Composition
 {
-    internal class ContentTypeLocator
+    [ExcludeFromCodeCoverage]
+    internal sealed class ContentTypeLocator
     {
         [Import]
         IContentTypeRegistryService ContentTypeRegistryService { get; set; }

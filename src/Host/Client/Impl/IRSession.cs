@@ -8,10 +8,14 @@ namespace Microsoft.R.Host.Client
         event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
         event EventHandler<RResponseEventArgs> Response;
         event EventHandler<RErrorEventArgs> Error;
+        event EventHandler<EventArgs> Disconnected;
 
         string Prompt { get; }
+        bool HostIsRunning { get; }
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true);
-        Task InitializeAsync();
+        Task<IRSessionEvaluation> BeginEvaluationAsync();
+        Task StartHostAsync();
+        Task StopHostAsync();
     }
 }

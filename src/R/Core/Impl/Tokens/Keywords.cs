@@ -26,6 +26,7 @@ namespace Microsoft.R.Core.Tokens
             "library",
             "next",
             "repeat",
+            "require",
             "return",
             "while",
         };

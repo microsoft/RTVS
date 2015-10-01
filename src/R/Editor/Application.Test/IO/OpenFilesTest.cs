@@ -1,21 +1,21 @@
-﻿using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Editor.Application.Test.TestShell;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Application.Test.IO
 {
-    [TestClass()]
+    [ExcludeFromCodeCoverage]
+    [TestClass]
     public class OpenFilesTest: UnitTestBase
     {
-        //[TestMethod()]
+        //[TestMethod]
         public void OpenFile_R()
         {
             OpenFileInEditor("lsfit.r");
         }
 
-        //[TestMethod()]
+        //[TestMethod]
         public void OpenFile_RD()
         {
             OpenFileInEditor("01.rd");

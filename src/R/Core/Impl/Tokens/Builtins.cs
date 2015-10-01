@@ -13,6 +13,7 @@ namespace Microsoft.R.Core.Tokens
         internal static string[] _builtins = new string[]
         {
             "library",
+            "require",
             "switch",
             "typeof",
         };

@@ -3,6 +3,7 @@
 //********************************************************************************
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.VisualStudio.Text.Operations.Standalone
 {
@@ -11,6 +12,7 @@ namespace Microsoft.VisualStudio.Text.Operations.Standalone
     /// is in progress--it is called from DelegatedUndoPrimitive.Undo and .Redo with the IDispose
     /// using pattern to set up the history to send operations our way.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal class CatchOperationsFromHistoryForDelegatedPrimitive : IDisposable
     {
         private UndoHistoryImpl history;

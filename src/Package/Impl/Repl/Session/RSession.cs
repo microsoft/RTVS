@@ -6,47 +6,41 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Threading;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
-    using Task = System.Threading.Tasks.Task;
-
     internal sealed class RSession : IRSession, IRCallbacks
     {
-        private readonly RHost _host;
-        private readonly TaskCompletionSource<object> _initializationTcs;
         private readonly ConcurrentQueue<RSessionRequestSource> _pendingRequestSources = new ConcurrentQueue<RSessionRequestSource>();
+        private readonly ConcurrentQueue<RSessionEvaluationSource> _pendingEvaluationSources = new ConcurrentQueue<RSessionEvaluationSource>();
         private readonly Stack<RSessionRequestSource> _currentRequestSources = new Stack<RSessionRequestSource>();
-        private IRExpressionEvaluator _expressionEvaluator;
 
         public event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
         public event EventHandler<RResponseEventArgs> Response;
         public event EventHandler<RErrorEventArgs> Error;
+        public event EventHandler<EventArgs> Disconnected;
 
         /// <summary>
         /// ReadConsole requires a task even if there are no pending requests
         /// </summary>
         private TaskCompletionSource<string> _nextRequestTcs;
         private IReadOnlyCollection<IRContext> _contexts;
+        private RHost _host;
+        private Task _hostRunTask;
+        private TaskCompletionSource<object> _initializationTcs;
 
         public string Prompt { get; private set; } = "> ";
         public int MaxLength { get; private set; } = 0x1000;
-
-        public RSession()
-        {
-            _host = new RHost(this);
-            _initializationTcs = new TaskCompletionSource<object>();
-        }
+        public bool HostIsRunning => _hostRunTask != null && !_hostRunTask.IsCompleted;
 
         public void Dispose()
         {
-            _host.Dispose();
+            _host?.Dispose();
         }
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true)
@@ -57,32 +51,66 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             {
                 requestSource = new RSessionRequestSource(isVisible, _contexts);
                 _pendingRequestSources.Enqueue(requestSource);
-                
             }
             else
             {
                 requestSource = new RSessionRequestSource(isVisible, _contexts, requestTcs);
-                requestSource.BeginInteractionAsync(Prompt, MaxLength, _expressionEvaluator);
+                requestSource.BeginInteractionAsync(Prompt, MaxLength);
                 _currentRequestSources.Push(requestSource);
             }
 
             return requestSource.CreateRequestTask;
         }
 
-        public async Task InitializeAsync()
+        public Task<IRSessionEvaluation> BeginEvaluationAsync()
         {
-            var psi = new ProcessStartInfo();
+            var source = new RSessionEvaluationSource();
+            _pendingEvaluationSources.Enqueue(source);
+            return source.Task;
+        }
 
-            psi.WorkingDirectory = RToolsSettings.GetBinariesFolder();
+        public Task StartHostAsync()
+        {
+            if (_hostRunTask != null && !_hostRunTask.IsCompleted)
+            {
+                throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
+            }
+
+            var psi = new ProcessStartInfo
+            {
+                WorkingDirectory = RToolsSettings.GetBinariesFolder(),
+                UseShellExecute = false
+            };
+
             psi.EnvironmentVariables["R_HOME"] = psi.WorkingDirectory.Substring(0, psi.WorkingDirectory.IndexOf(@"\bin\"));
-            psi.UseShellExecute = false;
 
-            await Task.WhenAny(_initializationTcs.Task, _host.CreateAndRun(psi)).Unwrap();
+            _host = new RHost(this);
+            _initializationTcs = new TaskCompletionSource<object>();
+            _hostRunTask = _host.CreateAndRun(psi);
+
+            return Task.WhenAny(_initializationTcs.Task, _hostRunTask).Unwrap();
+        }
+
+        public async Task StopHostAsync()
+        {
+            if (_hostRunTask.IsCompleted)
+            {
+                return;
+            }
+
+            var request = await BeginInteractionAsync(false);
+            if (_hostRunTask.IsCompleted)
+            {
+                request.Dispose();
+                return;
+            }
+
+            await request.Quit();
+            await _hostRunTask;
         }
 
         private TaskCompletionSource<string> GetRequestTcs()
         {
-            DateTime startTime = DateTime.Now;
             SpinWait spin = new SpinWait();
             while (true)
             {
@@ -97,13 +125,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
                     return null;
                 }
 
+                // If R host isn't connected yet, return null
+                if (_contexts == null)
+                {
+                    return null;
+                }
+
                 // There is either another request that is created or ReadConsole hasn't yet created request tcs for empty queue
                 spin.SpinOnce();
-
-                if ((DateTime.Now - startTime).TotalSeconds >= 5)
-                {
-                    throw new TimeoutException("RSession");
-                }
             }
         }
 
@@ -115,10 +144,19 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
         Task IRCallbacks.Disconnected()
         {
+            while (_currentRequestSources.Count > 0)
+            {
+                var requestSource = _currentRequestSources.Pop();
+                requestSource.Complete();
+            }
+            
+            _contexts = null;
+
+            OnDisconnected();
             return Task.CompletedTask;
         }
 
-        Task<string> IRCallbacks.ReadConsole(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string prompt, string buf, int len, bool addToHistory)
+        async Task<string> IRCallbacks.ReadConsole(IReadOnlyCollection<IRContext> contexts, string prompt, string buf, int len, bool addToHistory)
         {
             foreach (var rsToCompleter in _currentRequestSources.PopWhile(rs => rs.Contexts.Count >= contexts.Count))
             {
@@ -126,18 +164,32 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             }
 
             _contexts = contexts;
-            _expressionEvaluator = evaluator;
             Prompt = prompt;
             MaxLength = len;
 
             OnBeforeRequest(contexts, prompt, len, addToHistory);
 
+            while (true)
+            {
+                try
+                {
+                    return await ReadNextRequest(contexts, prompt, len);
+                }
+                catch (TaskCanceledException)
+                {
+                    //If request was cancelled, peek the next one
+                }
+            }
+        }
+
+        private Task<string> ReadNextRequest(IReadOnlyCollection<IRContext> contexts, string prompt, int len)
+        {
             RSessionRequestSource requestSource;
             if (_pendingRequestSources.TryPeek(out requestSource) && requestSource.Contexts.SequenceEqual(contexts))
             {
                 _pendingRequestSources.TryDequeue(out requestSource);
                 _currentRequestSources.Push(requestSource);
-                return requestSource.BeginInteractionAsync(prompt, len, evaluator);
+                return requestSource.BeginInteractionAsync(prompt, len);
             }
 
             // If there are no pending requests, create tcs that will be used by the first newly added request
@@ -145,7 +197,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             return _nextRequestTcs.Task;
         }
 
-        Task IRCallbacks.WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string buf, OutputType otype)
+        Task IRCallbacks.WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, string buf, OutputType otype)
         {
             if (otype == OutputType.Error)
             {
@@ -170,26 +222,29 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.ShowMessage(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string message)
+        async Task IRCallbacks.ShowMessage(IReadOnlyCollection<IRContext> contexts, string message)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-
-            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            if (shell != null)
-            {
-                int result;
-                shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
-            }
+            EditorShell.Current.ShowErrorMessage(message);
         }
 
-        Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, string s)
+        Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s)
         {
-            return Task.FromResult(Microsoft.R.Host.Client.YesNoCancel.Yes);
+            return Task.FromResult(YesNoCancel.Yes);
         }
 
-        Task IRCallbacks.Busy(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, bool which)
+        Task IRCallbacks.Busy(IReadOnlyCollection<IRContext> contexts, bool which)
         {
             return Task.CompletedTask;
+        }
+
+        async Task IRCallbacks.Evaluate(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator)
+        {
+            RSessionEvaluationSource source;
+            while (_pendingEvaluationSources.TryDequeue(out source))
+            {
+                await source.BeginEvaluationAsync(contexts, evaluator);
+            }
         }
 
         private void OnBeforeRequest(IReadOnlyCollection<IRContext> contexts, string prompt, int maxLength, bool addToHistoty)
@@ -208,7 +263,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             if (handlers != null && _currentRequestSources.All(rs => rs.IsVisible))
             {
                 var args = new RResponseEventArgs(contexts, message);
-                Task.Run(() => handlers(this, args));
+                handlers(this, args);
             }
         }
 
@@ -218,7 +273,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             if (handlers != null && _currentRequestSources.All(rs => rs.IsVisible))
             {
                 var args = new RErrorEventArgs(contexts, message);
-                Task.Run(() => handlers(this, args));
+                handlers(this, args);
+            }
+        }
+
+        private void OnDisconnected()
+        {
+            var handlers = Disconnected;
+            if (handlers != null)
+            {
+                var args = new EventArgs();
+                handlers(this, args);
             }
         }
     }

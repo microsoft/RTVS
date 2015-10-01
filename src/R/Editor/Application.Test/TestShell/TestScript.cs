@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Editor.Application.Test.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
 namespace Microsoft.R.Editor.Application.Test.TestShell
 {
+    [ExcludeFromCodeCoverage]
     public partial class TestScript
     {
         /// <summary>
@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
         #region Constructors
         public TestScript(string contentType)
         {
-            EditorWindow.Create(String.Empty, String.Empty);
+            EditorWindow.Create(string.Empty, "filename", contentType);
         }
 
         /// <summary>
@@ -45,14 +45,14 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
         /// </summary>
         public TestScript(string text, string contentType)
         {
-            EditorWindow.Create(text, String.Empty, contentType);
+            EditorWindow.Create(text, "filename", contentType);
         }
 
         /// <summary>
         /// Create script that opens a disk file in an editor window
         /// </summary>
         /// <param name="fileName">File name</param>
-        public TestScript(TestContext context, string fileName)
+        public TestScript(TestContext context, string fileName, bool unused)
         {
             OpenFile(context, fileName);
         }
@@ -142,7 +142,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
 
         public IList<ClassificationSpan> GetClassificationSpans()
         {
-            var classifierAggregator = EditorShell.ExportProvider.GetExport<IClassifierAggregatorService>().Value;
+            var classifierAggregator = EditorShell.Current.ExportProvider.GetExport<IClassifierAggregatorService>().Value;
             var textBuffer = EditorWindow.CoreEditor.View.TextBuffer;
             var classifier = classifierAggregator.GetClassifier(textBuffer);
             var snapshot = textBuffer.CurrentSnapshot;

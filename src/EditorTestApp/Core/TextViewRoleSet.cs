@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Application.Core
 {
+    [ExcludeFromCodeCoverage]
     internal class TextViewRoleSet : ITextViewRoleSet
     {
         private HashSet<string> _roles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

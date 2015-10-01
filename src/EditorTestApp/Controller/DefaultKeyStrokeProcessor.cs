@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Input;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Controller.Constants;
@@ -9,6 +10,7 @@ using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.Languages.Editor.Application.Controller
 {
+    [ExcludeFromCodeCoverage]
     internal sealed class DefaultKeyProcessor : KeyProcessor
     {
         private IWpfTextView _textView;

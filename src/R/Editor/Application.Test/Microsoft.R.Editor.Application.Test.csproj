@@ -37,6 +37,14 @@
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
+      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
+      <Name>Microsoft.Markdown.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Markdown\Editor\Test\Microsoft.Markdown.Editor.Test.csproj">
+      <Project>{56534417-6c60-48a5-b355-12225c70431e}</Project>
+      <Name>Microsoft.Markdown.Editor.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
@@ -80,16 +88,18 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Scripts\ProvisionalTextTest.cs" />
+    <Compile Include="Completion\ProvisionalTextTest.cs" />
     <Compile Include="EditorAppTestFilesSetup.cs" />
+    <Compile Include="Formatting\SmartIndentTest.cs" />
+    <Compile Include="Formatting\AutoFormatTest.cs" />
     <Compile Include="TestShell\Editor.cs" />
-    <Compile Include="Scripts\IntellisenseTest.cs" />
-    <Compile Include="Scripts\RTestScript.cs" />
+    <Compile Include="Completion\IntellisenseTest.cs" />
     <Compile Include="IO\OpenFilesTest.cs" />
     <Compile Include="TestShell\Navigation.cs" />
     <Compile Include="TestShell\TestScript.cs" />
     <Compile Include="TestShell\Typing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Typing\TypeFileTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

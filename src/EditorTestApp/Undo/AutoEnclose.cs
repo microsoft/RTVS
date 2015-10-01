@@ -3,11 +3,13 @@
 // ****************************************************************************
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.VisualStudio.Text.Operations.Standalone
 {
     internal delegate void AutoEncloseDelegate();
 
+    [ExcludeFromCodeCoverage]
     internal class AutoEnclose : IDisposable 
     {
         private AutoEncloseDelegate end;

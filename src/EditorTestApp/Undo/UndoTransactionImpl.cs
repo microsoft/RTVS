@@ -4,9 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.VisualStudio.Text.Operations.Standalone
 {
+    [ExcludeFromCodeCoverage]
     internal class UndoTransactionImpl : ITextUndoTransaction
     {
         #region Private Fields

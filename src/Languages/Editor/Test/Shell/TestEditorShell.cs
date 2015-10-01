@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
@@ -21,12 +22,17 @@ namespace Microsoft.Languages.Editor.Tests.Shell
         private static IEditorShell _instance;
         private static object _lock = new object();
 
-        public static IEditorShell Create()
+        public static IEditorShell Create(IEnumerable<string> additionalAssemblies = null)
         {
             lock (_lock)
             {
                 if (_instance == null)
                 {
+                    if (additionalAssemblies != null)
+                    {
+                        TestCompositionCatalog.ReInitialize(additionalAssemblies);
+                    }
+
                     var compositionService = TestCompositionCatalog.CompositionService;
                     var exportProvider = TestCompositionCatalog.ExportProvider;
 
