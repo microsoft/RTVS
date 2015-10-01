@@ -100,8 +100,11 @@ namespace Microsoft.R.Editor.QuickInfo
                             text = signatureString + "\r\n" + functionInfo.Description.Wrap(signatureString.Length);
                         }
 
-                        quickInfoContent.Add(text);
-                        return true;
+                        if (text.Length > 0)
+                        {
+                            quickInfoContent.Add(text);
+                            return true;
+                        }
                     }
                 }
             }
