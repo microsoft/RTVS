@@ -59,8 +59,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             CurrentWindow.WriteLine(Resources.MicrosoftRHostStopping);
             await _session.StopHostAsync();
 
-            _requestTcs = null;
-
             if (initialize)
             {
                 return await InitializeAsync();
