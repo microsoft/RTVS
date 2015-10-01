@@ -100,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         protected override object GetAutomationObject(string name)
         {
-            if (name == RPackage.OptionsDialogName)
+            if (name == OptionsDialogName)
             {
                 DialogPage page = GetDialogPage(typeof(REditorOptionsDialog));
                 return page.AutomationObject;

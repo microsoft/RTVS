@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem
+namespace Microsoft.Common.Core.IO
 {
 	public interface IFileSystemWatcher : IDisposable
 	{

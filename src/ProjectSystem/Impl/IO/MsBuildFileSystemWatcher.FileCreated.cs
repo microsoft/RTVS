@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem;
+﻿using Microsoft.Common.Core.IO;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 {

@@ -1,8 +1,8 @@
 using System.IO;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem
+namespace Microsoft.Common.Core.IO
 {
-	public class FileSystemProxy : IFileSystem
+	public sealed class FileSystem : IFileSystem
 	{
 		public IFileSystemWatcher CreateFileSystemWatcher(string path, string filter)
 		{
@@ -17,6 +17,11 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem
 		public bool FileExists(string path)
 		{
 			return File.Exists(path);
+		}
+
+		public bool DirectoryExists(string path)
+		{
+			return Directory.Exists(path);
 		}
 
 		public FileAttributes GetFileAttributes(string path)

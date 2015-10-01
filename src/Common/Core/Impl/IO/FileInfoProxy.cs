@@ -1,8 +1,8 @@
 using System.IO;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem
+namespace Microsoft.Common.Core.IO
 {
-	internal class FileInfoProxy : IFileInfo
+	internal sealed class FileInfoProxy : IFileInfo
 	{
 		private readonly FileInfo _fileInfo;
 
@@ -14,5 +14,16 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem
 		public bool Exists => _fileInfo.Exists;
 		public string FullName => _fileInfo.FullName;
 		public FileAttributes Attributes => _fileInfo.Attributes;
-	}
+		public IDirectoryInfo Directory => _fileInfo.Directory != null ? new DirectoryInfoProxy(_fileInfo.Directory) : null;
+
+	    public StreamWriter CreateText()
+	    {
+	        return _fileInfo.CreateText();
+	    }
+
+        public void Delete()
+        {
+            _fileInfo.Delete();
+        }
+    }
 }

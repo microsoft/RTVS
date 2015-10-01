@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem
+namespace Microsoft.Common.Core.IO
 {
 	public interface IDirectoryInfo : IFileSystemInfo
 	{
-		IEnumerable<IFileSystemInfo> EnumerateFileSystemInfos();
+        IDirectoryInfo Parent { get; }
+
+        IEnumerable<IFileSystemInfo> EnumerateFileSystemInfos();
 	}
 }

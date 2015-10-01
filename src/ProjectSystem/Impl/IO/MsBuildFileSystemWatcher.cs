@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem;
+using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
@@ -18,7 +18,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 		private readonly int _delayMilliseconds;
 		private readonly IFileSystem _fileSystem;
 		private readonly IMsBuildFileSystemFilter _fileSystemFilter;
-		private readonly BroadcastBlock<Changeset> _broadcastBlock;
+	    private readonly TaskScheduler _taskScheduler;
+	    private readonly BroadcastBlock<Changeset> _broadcastBlock;
 		private IFileSystemWatcher _fileWatcher;
 		private IFileSystemWatcher _directoryWatcher;
 		private IFileSystemWatcher _attributesWatcher;
@@ -26,16 +27,23 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 
 		public IReceivableSourceBlock<Changeset> SourceBlock { get; }
 
-		public MsBuildFileSystemWatcher(string directory, string filter, int delayMilliseconds, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter)
+		public MsBuildFileSystemWatcher(string directory, string filter, int delayMilliseconds, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, TaskScheduler taskScheduler = null)
 		{
+            Requires.NotNullOrWhiteSpace(directory, nameof(directory));
+            Requires.NotNullOrWhiteSpace(filter, nameof(filter));
+            Requires.Range(delayMilliseconds >= 0, nameof(delayMilliseconds));
+            Requires.NotNull(fileSystem, nameof(fileSystem));
+            Requires.NotNull(fileSystemFilter, nameof(fileSystemFilter));
+
 			_directory = directory;
 			_filter = filter;
 			_delayMilliseconds = delayMilliseconds;
 			_fileSystem = fileSystem;
 			_fileSystemFilter = fileSystemFilter;
+		    _taskScheduler = taskScheduler ?? TaskScheduler.Default;
 
-			_queue = new ConcurrentQueue<IFileSystemChange>();
-			_broadcastBlock = new BroadcastBlock<Changeset>(b => b);
+		    _queue = new ConcurrentQueue<IFileSystemChange>();
+			_broadcastBlock = new BroadcastBlock<Changeset>(b => b, new DataflowBlockOptions {TaskScheduler = _taskScheduler});
 			SourceBlock = _broadcastBlock.SafePublicize();
 			_fileSystemFilter.Seal();
 		}
@@ -75,7 +83,9 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 		{
 			if (Interlocked.Exchange(ref _consumerIsWorking, 1) == 0)
 			{
-				Task.Run(async () => await ConsumeWaitPublish());
+				Task.Factory
+                    .StartNew(async () => await ConsumeWaitPublish(), CancellationToken.None, Task.Factory.CreationOptions, _taskScheduler)
+                    .Unwrap();
 			}
 		}
 
@@ -88,8 +98,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 				await Task.Delay(_delayMilliseconds);
 			}
 
-			_broadcastBlock.Post(changeset);
-			_consumerIsWorking = 0;
+		    if (!changeset.IsEmpty())
+		    {
+		        _broadcastBlock.Post(changeset);
+		    }
+
+		    _consumerIsWorking = 0;
 			if (!_queue.IsEmpty)
 			{
 				StartConsumer();
@@ -140,6 +154,16 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 			public HashSet<string> RemovedDirectories { get; } = new HashSet<string>(StringComparer.Ordinal);
 			public Dictionary<string, string> RenamedFiles { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
 			public Dictionary<string, string> RenamedDirectories { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
+
+		    public bool IsEmpty()
+		    {
+		        return AddedFiles.Count == 0
+                    && AddedDirectories.Count == 0
+                    && RemovedFiles.Count == 0
+                    && RemovedDirectories.Count == 0
+                    && RenamedFiles.Count == 0
+                    && RenamedDirectories.Count == 0;
+            }
 		}
 	
 	}

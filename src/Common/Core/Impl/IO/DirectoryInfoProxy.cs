@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem
+namespace Microsoft.Common.Core.IO
 {
-	internal class DirectoryInfoProxy : IDirectoryInfo
+	internal sealed class DirectoryInfoProxy : IDirectoryInfo
 	{
 		private readonly DirectoryInfo _directoryInfo;
 
@@ -21,8 +21,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem
 		public bool Exists => _directoryInfo.Exists;
 		public string FullName => _directoryInfo.FullName;
 		public FileAttributes Attributes => _directoryInfo.Attributes;
+        public IDirectoryInfo Parent => _directoryInfo.Parent != null ? new DirectoryInfoProxy(_directoryInfo.Parent) : null;
 
-		public IEnumerable<IFileSystemInfo> EnumerateFileSystemInfos()
+        public void Delete()
+	    {
+	        _directoryInfo.Delete();
+	    }
+
+	    public IEnumerable<IFileSystemInfo> EnumerateFileSystemInfos()
 		{
 			return _directoryInfo
 				.EnumerateFileSystemInfos()

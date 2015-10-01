@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem;
+using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
@@ -40,7 +40,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
                     return;
                 }
 
-                var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
+                newRelativePath = PathHelper.EnsureTrailingSlash(newRelativePath);
+                var oldRelativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _oldFullPath));
 
 				// If directory with the oldRelativePath was previously added, remove it from the AddedDirectories, add newRelativePath and change all its content paths:
 				if (changeset.AddedDirectories.Contains(oldRelativePath))

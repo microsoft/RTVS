@@ -24,18 +24,20 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 					return;
 				}
 
-				var relativePath = PathHelper.MakeRelative(_rootDirectory, _fullPath);
+				var relativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _fullPath));
 
-				// If directory was previously added to AddedDirectories, we need to remove all its content as well
-				if (changeset.AddedDirectories.Remove(relativePath))
+                // Remove all the files and directories that start with relativePath
+                changeset.AddedDirectories.RemoveWhere(d => d.StartsWith(relativePath, StringComparison.OrdinalIgnoreCase));
+                changeset.AddedFiles.RemoveWhere(f => f.StartsWith(relativePath, StringComparison.OrdinalIgnoreCase));
+
+                // If directory was previously added to AddedDirectories, we need to remove all its content as well
+                if (changeset.AddedDirectories.Remove(relativePath))
 				{
-					changeset.AddedDirectories.RemoveWhere(d => d.StartsWith(relativePath, StringComparison.OrdinalIgnoreCase));
-					changeset.AddedFiles.RemoveWhere(f => f.StartsWith(relativePath, StringComparison.OrdinalIgnoreCase));
 					return;
 				}
 
 				// If directory was renamed into relativePath, put the oldRelativePath into RemovedFiles instead.
-				var oldRelativePath = changeset.RenamedFiles.GetFirstKeyByValueIgnoreCase(relativePath);
+				var oldRelativePath = changeset.RenamedDirectories.GetFirstKeyByValueIgnoreCase(relativePath);
 				if (oldRelativePath != null)
 				{
 					changeset.RenamedDirectories.Remove(oldRelativePath);

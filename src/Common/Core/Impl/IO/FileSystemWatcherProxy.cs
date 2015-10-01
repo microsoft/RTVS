@@ -1,8 +1,8 @@
 using System.IO;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO.FileSystem
+namespace Microsoft.Common.Core.IO
 {
-	internal class FileSystemWatcherProxy : IFileSystemWatcher
+	internal sealed class FileSystemWatcherProxy : IFileSystemWatcher
 	{
 		private readonly FileSystemWatcher _fileSystemWatcher;
 
