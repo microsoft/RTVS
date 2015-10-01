@@ -48,10 +48,12 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
 
         public async Task<IImmutableVariableCollection> GetVariablesAsync(CancellationToken cancellationToken)
         {
-            var interaction = await _rSession.BeginInteractionAsync(false);
-            var response = await interaction.RespondAsync("ls.str(.GlobalEnv)\r\n");    // TODO: for now, global environment
-            var variableCollection = RVariableCollection.Parse(response);
-            return variableCollection;
+            using (var interactor = await _rSession.BeginInteractionAsync(false))
+            {
+                var response = await interactor.RespondAsync("ls.str(.GlobalEnv)\r\n");  // TODO: for now, global environment
+                var variableCollection = RVariableCollection.Parse(response);
+                return variableCollection;
+            }
         }
 
         #endregion

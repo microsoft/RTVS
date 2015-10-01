@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,24 @@ using Microsoft.VisualStudio.VariableWindow;
 
 namespace Microsoft.VisualStudio.R.Package.VariableExplorer
 {
+    [Export(typeof(IVariableSessionProvider))]
     class RVariableSessionProvider : IVariableSessionProvider
     {
         private List<RVariableSession> _variableSessions;
+        private IRSession _rSession;
+
+        public RVariableSessionProvider()
+        {
+            _variableSessions = new List<RVariableSession>();
+
+            var sessionProvider = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
+            sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
+            _rSession = sessionProvider.Current;
+            if (_rSession != null)
+            {
+                _variableSessions.Add(new RVariableSession(_rSession));
+            }
+        }
 
         #region IVariableSessionProvider Support
 
@@ -21,56 +37,30 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
 
         public IEnumerable<IVariableSession> GetSessions()
         {
-            EnsureRSession();
-
-            if (_variableSessions == null)
-            {
-                // Supports single session for now
-                _variableSessions = new List<RVariableSession>() { new RVariableSession(_session) };
-            }
-
             return _variableSessions;
         }
 
         #endregion
 
-        private IRSessionProvider _sessionProvider;
-        private IRSession _session;
-        private IRSession EnsureRSession()
+        private void RSessionProvider_CurrentChanged(object sender, EventArgs e)
         {
-            if (_session == null)
+            var sessionProvider = sender as IRSessionProvider;
+            Debug.Assert(sessionProvider != null);
+
+            if (sessionProvider != null)
             {
-                if (_sessionProvider == null)
+                var session = sessionProvider.Current;
+                if (!object.Equals(session, _rSession))
                 {
-                    _sessionProvider = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
-                }
+                    _rSession = session;
 
-                _session = _sessionProvider.Current;
-                if (_session == null)
-                {
-                    _session = _sessionProvider.Create(0); // TODO: fow now, only single R session supported. Hard-coded 0
-                }
-            }
-
-            Debug.Assert(_session != null);
-            return _session;
-        }
-
-
-        public static async void foo()  // temporary method to call in VS IDE
-        {
-            var variableSessionProvider = new RVariableSessionProvider();
-            var sessions = variableSessionProvider.GetSessions();
-
-            foreach (var session in sessions)
-            {
-                var variableCollection = await session.GetVariablesAsync(CancellationToken.None);  // TODO: no cancellation for now
-                int count = variableCollection.Count;
-
-                for (int i = 0; i < count; i++)
-                {
-                    var variable = await variableCollection.GetAsync(i, CancellationToken.None);
-                    Debug.WriteLine("Variable: {0} {1}", variable.Expression, variable.TypeName);
+                    // for now, supports only single session
+                    _variableSessions.Clear();
+                    _variableSessions.Add(new RVariableSession(_rSession));
+                    if (SessionsChanged != null)
+                    {
+                        SessionsChanged(this, EventArgs.Empty);
+                    }
                 }
             }
         }

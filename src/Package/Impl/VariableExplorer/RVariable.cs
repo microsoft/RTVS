@@ -48,7 +48,8 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
         {
             get
             {
-                throw new NotImplementedException();
+                // TODO: get real value
+                return new Guid("{4926B34F-1AE5-4CAE-BBD4-1548E77D2033}");
             }
         }
 
@@ -56,7 +57,8 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
         {
             get
             {
-                throw new NotImplementedException();
+                // TODO: get real value
+                return 1;
             }
         }
 
