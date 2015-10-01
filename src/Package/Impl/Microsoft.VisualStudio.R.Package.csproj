@@ -104,6 +104,7 @@
     </Compile>
     <Compile Include="Packages\Markdown\MdPackage.cs" />
     <Compile Include="Packages\Markdown\MdGuidList.cs" />
+    <Compile Include="ProjectSystem\FileSystemExport.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />

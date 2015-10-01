@@ -54,15 +54,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="IO\FileSystem\DirectoryInfoProxy.cs" />
-    <Compile Include="IO\FileSystem\FileInfoProxy.cs" />
-    <Compile Include="IO\FileSystem\FileSystemProxy.cs" />
-    <Compile Include="IO\FileSystem\FileSystemWatcherProxy.cs" />
-    <Compile Include="IO\FileSystem\IDirectoryInfo.cs" />
-    <Compile Include="IO\FileSystem\IFileInfo.cs" />
-    <Compile Include="IO\FileSystem\IFileSystem.cs" />
-    <Compile Include="IO\FileSystem\IFileSystemInfo.cs" />
-    <Compile Include="IO\FileSystem\IFileSystemWatcher.cs" />
     <Compile Include="IO\IMsBuildFileSystemFilter.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcher.AttributesChanged.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcher.DirectoryCreated.cs" />
@@ -205,7 +196,12 @@
     <Analyzer Include="..\..\..\NugetPackages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc1\tools\analyzers\C#\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
     <Analyzer Include="..\..\..\NugetPackages\Microsoft.CodeAnalysis.Analyzers.1.0.0-rc1\tools\analyzers\Microsoft.CodeAnalysis.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VisualStudio.SDK.VsixSuppression.14.0.50430-pre\build\Microsoft.VisualStudio.SDK.VsixSuppression.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VisualStudio.SDK.VsixSuppression.14.0.50430-pre\build\Microsoft.VisualStudio.SDK.VsixSuppression.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
