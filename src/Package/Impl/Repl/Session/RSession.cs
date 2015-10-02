@@ -11,6 +11,9 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.VisualStudio.R.Package.Plots;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
@@ -245,6 +248,34 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             {
                 await source.BeginEvaluationAsync(contexts, evaluator);
             }
+        }
+
+        async Task IRCallbacks.PlotXaml(IReadOnlyCollection<IRContext> contexts, string xamlFilePath)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
+
+            var frame = FindPlotWindow(0);
+            if (frame != null)
+            {
+                object docView;
+                ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
+                if (docView != null)
+                {
+                    PlotWindowPane pane = (PlotWindowPane)docView;
+                    pane.DisplayXamlFile(xamlFilePath);
+                }
+            }
+        }
+
+        private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags)
+        {
+            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+
+            // First just find. If it exists, use it. 
+            IVsWindowFrame frame;
+            Guid persistenceSlot = typeof(PlotWindowPane).GUID;
+            shell.FindToolWindow((uint)flags, ref persistenceSlot, out frame);
+            return frame;
         }
 
         private void OnBeforeRequest(IReadOnlyCollection<IRContext> contexts, string prompt, int maxLength, bool addToHistoty)

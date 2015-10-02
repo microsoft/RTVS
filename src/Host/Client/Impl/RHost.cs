@@ -73,7 +73,6 @@ namespace Microsoft.R.Host.Client
         public async Task CreateAndRun(ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken))
         {
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), "Microsoft.R.Host.exe");
-
             if (!File.Exists(rhostExe))
             {
                 throw new MicrosoftRHostMissingException();
@@ -215,6 +214,10 @@ namespace Microsoft.R.Host.Client
                         break;
 
                     case "CallBack":
+                        break;
+
+                    case "PlotXaml":
+                        await _callbacks.PlotXaml(contexts, (string)obj["filepath"]);
                         break;
 
                     case "exit":

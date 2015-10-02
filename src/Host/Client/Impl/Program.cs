@@ -68,6 +68,11 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
+        public async Task PlotXaml(IReadOnlyCollection<IRContext> contexts, string xamlFilePath)
+        {
+            await Console.Error.WriteLineAsync(xamlFilePath);
+        }
+
         private async Task<string> ReadLineAsync(string prompt) {
             while (true) {
                 await Console.Out.WriteAsync(prompt);
