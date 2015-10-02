@@ -79,17 +79,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
-            var psi = new ProcessStartInfo
-            {
-                WorkingDirectory = RToolsSettings.GetBinariesFolder(),
-                UseShellExecute = false
-            };
-
-            psi.EnvironmentVariables["R_HOME"] = psi.WorkingDirectory.Substring(0, psi.WorkingDirectory.IndexOf(@"\bin\"));
-
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
-            _hostRunTask = _host.CreateAndRun(psi);
+            _hostRunTask = _host.CreateAndRun(RToolsSettings.GetRVersionPath());
 
             return Task.WhenAny(_initializationTcs.Task, _hostRunTask).Unwrap();
         }
@@ -176,7 +168,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             {
                 try
                 {
-                    return await ReadNextRequest(contexts, prompt, len);
+                    string response = await ReadNextRequest(contexts, prompt, len);
+                    Debug.Assert(response.Length < len); // len includes null terminator
+                    if (response.Length >= len) {
+                        response = response.Substring(0, len - 1);
+                    }
+                    return response;
                 }
                 catch (TaskCanceledException)
                 {

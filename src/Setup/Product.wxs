@@ -48,7 +48,7 @@
               Impersonate="no"
               ExeCommand='[CommonIdeFolder]devenv.exe /UpdateConfiguration'
               Return='ignore' />
-    
+
     <CustomAction Id='VS2015InstallTemplates'
               Directory='CommonIdeFolder'
               Execute="deferred"
@@ -59,7 +59,7 @@
     <UI>
       <ProgressText Action="VS2015InstallTemplates">Updating Visual Studio project templates... (this may take a few minutes).</ProgressText>
     </UI>
-    
+
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallInitialize" />
       <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
@@ -67,7 +67,7 @@
     </InstallExecuteSequence>
 
     <?include Feature.wxi ?>
-  
+
   </Product>
 
   <Fragment>
@@ -81,7 +81,7 @@
                   <Directory Id="MicrosoftFolder" Name="Microsoft">
                     <Directory Id="INSTALLFOLDER" Name="R Tools for Visual Studio">
 
-                    <?ifdef LabBuild?>
+                      <?ifdef LabBuild?>
                       <Directory Id="CHS_Satellites" Name="zh-cn" />
                       <Directory Id="CHT_Satellites" Name="zh-tw" />
                       <Directory Id="CSY_Satellites" Name="cs" />
@@ -95,27 +95,23 @@
                       <Directory Id="PTB_Satellites" Name="pt" />
                       <Directory Id="RUS_Satellites" Name="ru" />
                       <Directory Id="TRK_Satellites" Name="tr" />
-                    <?endif?>
+                      <?endif?>
 
                     </Directory>
                   </Directory>
                 </Directory>
                 <Directory Id="ItemTemplatesFolder" Name="ItemTemplates">
-                  <Directory Id="ItemTemplatesRFolder" Name="R">
-                    <Directory Id="ItemTemplatesInstallFolder" Name="R Tools for Visual Studio">
-                      <?foreach Lcid in $(var.LcidList)?>
-                        <Directory Id="ItemTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
-                      <?endforeach?>
-                    </Directory>
+                  <Directory Id="ItemTemplatesInstallFolder" Name="R">
+                    <?foreach Lcid in $(var.LcidList)?>
+                    <Directory Id="ItemTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
+                    <?endforeach?>
                   </Directory>
                 </Directory>
                 <Directory Id="ProjectTemplatesFolder" Name="ProjectTemplates">
-                  <Directory Id="ProjectTemplatesRFolder" Name="R">
-                    <Directory Id="ProjectTemplatesInstallFolder" Name="R Tools for Visual Studio">
-                      <?foreach Lcid in $(var.LcidList)?>
-                        <Directory Id="ProjectTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
-                      <?endforeach?>
-                    </Directory>
+                  <Directory Id="ProjectTemplatesInstallFolder" Name="R">
+                    <?foreach Lcid in $(var.LcidList)?>
+                    <Directory Id="ProjectTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
+                    <?endforeach?>
                   </Directory>
                 </Directory>
               </Directory>

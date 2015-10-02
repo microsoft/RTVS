@@ -11,10 +11,10 @@ using Microsoft.Languager.Editor.Application;
 using Microsoft.Languages.Editor.Application.Composition;
 using Microsoft.Languages.Editor.Application.Controller;
 using Microsoft.Languages.Editor.Application.Host;
+using Microsoft.Languages.Editor.Application.Utility;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Composition;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.VisualStudio.Text;
@@ -71,7 +71,7 @@ namespace Microsoft.Languages.Editor.Application.Core
         {
             if (_editorShell == null)
             {
-                _editorShell = TestEditorShell.Create();
+                _editorShell = TestEditorShell.Create(AppCompositionCatalog.Current);
                 EditorShell.SetShell(_editorShell);
 
                 EditorShell.UIThread = Thread.CurrentThread;

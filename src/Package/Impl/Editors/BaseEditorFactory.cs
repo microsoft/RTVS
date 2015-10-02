@@ -28,7 +28,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors
         protected Guid LanguageServiceId { get; private set; }
 
         private Guid _editorFactoryId;
-
         private bool _encoding;
 
         public BaseEditorFactory(Package package, Guid editorFactoryId, Guid languageServiceId, bool encoding = false)
@@ -41,6 +40,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors
             LanguageServiceId = languageServiceId;
 
         }
+
+        internal IObjectInstanceFactory InstanceFactory { get; set; }
 
         public void SetEncoding(bool value)
         {
@@ -180,9 +181,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors
             {
                 // Create a new IVsTextLines buffer.
                 Type textLinesType = typeof(IVsTextLines);
-                Guid riid = textLinesType.GUID;
                 Guid clsid = typeof(VsTextBufferClass).GUID;
-                textLines = Package.CreateInstance(ref clsid, ref riid, textLinesType) as IVsTextLines;
+                textLines = CreateInstance< IVsTextLines>(ref clsid);
 
                 // set the buffer's site
                 ((IObjectWithSite)textLines).SetSite(VsServiceProvider);
@@ -330,6 +330,18 @@ namespace Microsoft.VisualStudio.R.Package.Editors
 
             // E_NOTIMPL must be returned for any unrecognized rguidLogicalView values
             return VSConstants.E_NOTIMPL;
+        }
+
+        protected T CreateInstance<T>(ref Guid clsid) where T : class
+        {
+            Guid riid = typeof(T).GUID;
+
+            if (InstanceFactory != null)
+            {
+                return InstanceFactory.CreateInstance(ref clsid, ref riid, typeof(T)) as T;
+            }
+
+            return Package.CreateInstance(ref clsid, ref riid, typeof(T)) as T;
         }
 
         #region IDisposable

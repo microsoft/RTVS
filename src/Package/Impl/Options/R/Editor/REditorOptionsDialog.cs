@@ -21,8 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [DefaultValue(true)]
         public bool EnableValidation
         {
-            get { return REditorSettings.ValidationEnabled; }
-            set { REditorSettings.ValidationEnabled = value; }
+            get { return REditorSettings.SyntaxCheck; }
+            set { REditorSettings.SyntaxCheck = value; }
         }
 
         [LocCategory("Settings_IntellisenseCategory")]
@@ -121,6 +121,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         {
             get { return REditorSettings.SendToReplOnCtrlEnter; }
             set { REditorSettings.SendToReplOnCtrlEnter = value; }
+        }
+
+        [LocCategory("Settings_ReplCategory")]
+        [CustomLocDisplayName("Settings_ReplSyntaxCheck")]
+        [LocDescription("Settings_ReplSyntaxCheck_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(false)]
+        public bool SyntaxCheckInRepl
+        {
+            get { return REditorSettings.SyntaxCheckInRepl; }
+            set { REditorSettings.SyntaxCheckInRepl = value; }
         }
 
         public override void ResetSettings()

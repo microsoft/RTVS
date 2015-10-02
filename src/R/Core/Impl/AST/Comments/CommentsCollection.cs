@@ -39,5 +39,14 @@ namespace Microsoft.R.Core.AST.Comments
             return false;
         }
         #endregion
+
+        public override int GetItemContaining(int position)
+        {
+            // Comments contain end position
+            IReadOnlyList<int> items = GetItemsContainingInclusiveEnd(position);
+            Debug.Assert(items.Count <= 1);
+
+            return items.Count > 0 ? items[0] : -1;
+        }
     }
 }

@@ -1,13 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Test.Mocks;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VisualStudio.Text;
-using TextChange = Microsoft.R.Editor.Tree.TextChange;
 
 namespace Microsoft.R.Editor.Test.Tree
 {

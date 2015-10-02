@@ -1,4 +1,5 @@
-﻿using Microsoft.Languages.Core.Formatting;
+﻿using System;
+using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;

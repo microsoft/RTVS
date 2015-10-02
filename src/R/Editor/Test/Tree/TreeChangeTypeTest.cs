@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Test.Mocks;
-using Microsoft.Languages.Editor.Text;
-using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Expressions.Definitions;
+using Microsoft.R.Core.AST.Scopes.Definitions;
+using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VisualStudio.Text;
-using TextChange = Microsoft.R.Editor.Tree.TextChange;
 
 namespace Microsoft.R.Editor.Test.Tree
 {
@@ -69,6 +68,29 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
+        public void TextChange_EditString04()
+        {
+            string expression = "\"boo\"";
+
+            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "a");
+            Assert.AreEqual(TextChangeType.Trivial, tree.PendingChanges.TextChangeType);
+
+            IScope scope = tree.AstRoot.Children[0] as IScope;
+            Assert.AreEqual(1, scope.Children.Count);
+
+            IStatement s = scope.Children[0] as IStatement;
+            Assert.AreEqual(1, s.Children.Count);
+
+            IExpression exp = s.Children[0] as IExpression;
+            Assert.AreEqual(1, exp.Children.Count);
+
+            TokenNode node = exp.Children[0] as TokenNode;
+            Assert.AreEqual(RTokenType.String, node.Token.TokenType);
+            Assert.AreEqual(0, node.Token.Start);
+            Assert.AreEqual(6, node.Token.Length);
+        }
+
+        [TestMethod]
         public void TextChange_EditComment01()
         {
             string expression = "x <- a + b # comment";
@@ -102,6 +124,19 @@ namespace Microsoft.R.Editor.Test.Tree
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 9, 1, 0, string.Empty);
             Assert.AreEqual(TextChangeType.Structure, tree.PendingChanges.TextChangeType);
+        }
+
+        [TestMethod]
+        public void TextChange_EditComment05()
+        {
+            string expression = "#";
+
+            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "a");
+            Assert.AreEqual(TextChangeType.Trivial, tree.PendingChanges.TextChangeType);
+
+            Assert.AreEqual(1, tree.AstRoot.Comments.Count);
+            Assert.AreEqual(0, tree.AstRoot.Comments[0].Start);
+            Assert.AreEqual(2, tree.AstRoot.Comments[0].Length);
         }
 
         [TestMethod]

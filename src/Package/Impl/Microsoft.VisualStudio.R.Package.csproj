@@ -92,17 +92,20 @@
     <Compile Include="Document\Markdown\VsMdEditorDocumentFactory.cs" />
     <Compile Include="Document\R\VsREditorDocument.cs" />
     <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
+    <Compile Include="Editors\IObjectInstanceFactory.cs" />
     <Compile Include="Editors\MdEditorFactory.cs" />
     <Compile Include="Languages\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
     <Compile Include="Packages\CommandIDs.cs" />
+    <Compile Include="Packages\ShowBraceCompletionAttribute.cs" />
     <Compile Include="Plots\PlotWindowPane.cs" />
     <Compile Include="Plots\XamlPresenter.xaml.cs">
       <DependentUpon>XamlPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Packages\Markdown\MdPackage.cs" />
     <Compile Include="Packages\Markdown\MdGuidList.cs" />
+    <Compile Include="ProjectSystem\FileSystemExport.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />

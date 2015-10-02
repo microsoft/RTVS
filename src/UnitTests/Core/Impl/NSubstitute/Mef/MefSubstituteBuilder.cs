@@ -90,7 +90,7 @@ namespace Microsoft.UnitTests.Core.NSubstitute.Mef
                 .ToList();
 
             IList<ExportDefinition> exports = originalPartDefinition.ExportDefinitions
-                .Concat(contractExport)
+                .Append(contractExport)
                 .ToList();
 
             IDictionary<string, object> metadata = originalPartDefinition.Metadata;

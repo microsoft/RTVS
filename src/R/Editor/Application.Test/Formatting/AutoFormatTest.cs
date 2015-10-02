@@ -76,6 +76,28 @@ namespace Microsoft.R.Editor.Application.Test.Formatting
         }
 
         [TestMethod]
+        public void R_AutoFormatIfNoScope()
+        {
+            var script = new TestScript(RContentTypeDefinition.ContentType);
+
+            try
+            {
+                script.Type("if(x>1)");
+                script.DoIdle(300);
+                script.Type("{ENTER}a");
+
+                string expected = "if (x > 1)\r\n    a";
+                string actual = script.EditorText;
+
+                Assert.AreEqual(expected, actual);
+            }
+            finally
+            {
+                script.Close();
+            }
+        }
+
+        [TestMethod]
         public void R_AutoFormatFuncionDefinition01()
         {
             var script = new TestScript(RContentTypeDefinition.ContentType);

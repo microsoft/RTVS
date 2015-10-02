@@ -83,7 +83,7 @@ namespace Microsoft.R.Core.Formatting
                     break;
 
                 case RTokenType.Comma:
-                    AppendToken(leadingSpace: false, trailingSpace: _options.SpaceAfterComma);
+                    AppendComma();
                     break;
 
                 case RTokenType.Semicolon:
@@ -691,6 +691,21 @@ namespace Microsoft.R.Core.Formatting
                 // If there is unrecognized text between tokens, append it verbatim
                 _tb.AppendPreformattedText(text);
             }
+        }
+
+        private void AppendComma()
+        {
+            bool trailingSpace;
+            if (IsClosingToken(_tokens.NextToken.TokenType))
+            {
+                trailingSpace = false;
+            }
+            else
+            {
+                trailingSpace = _options.SpaceAfterComma;
+            }
+
+            AppendToken(leadingSpace: false, trailingSpace: trailingSpace);
         }
 
         private bool ShouldAppendTextBeforeToken()

@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Mocks;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
@@ -15,6 +14,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.R.Editor.Test.Completions
 {
     using Languages.Core.Text;
+    using Utility;
+    using VisualStudio.Editor.Mocks;
     using VisualStudio.Text;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
@@ -25,7 +26,7 @@ namespace Microsoft.R.Editor.Test.Completions
         [TestMethod]
         public void RCompletionSource_BaseFunctionsTest01()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
 
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("", 0, completionSets);
@@ -43,7 +44,7 @@ namespace Microsoft.R.Editor.Test.Completions
         [TestMethod]
         public void RCompletionSource_BaseFunctionsTest02()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
 
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("f", 1, completionSets, new TextRange(0, 1));
@@ -65,7 +66,7 @@ namespace Microsoft.R.Editor.Test.Completions
         [TestMethod]
         public void RCompletionSource_KeywordsTest01()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
 
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("f", 1, completionSets, new TextRange(0, 1));
@@ -82,7 +83,7 @@ namespace Microsoft.R.Editor.Test.Completions
         [TestMethod]
         public void RCompletionSource_PackagesTest01()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
 
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("library(", 8, completionSets);
@@ -97,7 +98,7 @@ namespace Microsoft.R.Editor.Test.Completions
         [TestMethod]
         public void RCompletionSource_SpecificPackageTest01()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
 
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("utils::", 7, completionSets);
@@ -112,7 +113,7 @@ namespace Microsoft.R.Editor.Test.Completions
         [TestMethod]
         public void RCompletionSource_CommentsTest01()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
 
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("#No", 3, completionSets);
@@ -124,13 +125,64 @@ namespace Microsoft.R.Editor.Test.Completions
         [TestMethod]
         public void RCompletionSource_CommentsTest02()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
 
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("#No", 0, completionSets);
 
             Assert.AreEqual(1, completionSets.Count);
             Assert.IsTrue(completionSets[0].Completions.Count > 0);
+        }
+
+        [TestMethod]
+        public void RCompletionSource_FunctionDefinitionTest01()
+        {
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
+
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("x <- function()", 14, completionSets);
+
+            Assert.AreEqual(1, completionSets.Count);
+            Assert.AreEqual(0, completionSets[0].Completions.Count);
+        }
+
+        [TestMethod]
+        public void RCompletionSource_FunctionDefinitionTest02()
+        {
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
+
+            for (int i = 14; i <= 18; i++)
+            {
+                List<CompletionSet> completionSets = new List<CompletionSet>();
+                GetCompletions("x <- function(a, b)", i, completionSets);
+
+                Assert.AreEqual(1, completionSets.Count);
+                Assert.AreEqual(0, completionSets[0].Completions.Count);
+            }
+        }
+
+        [TestMethod]
+        public void RCompletionSource_FunctionDefinitionTest03()
+        {
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
+
+            for (int i = 14; i <= 19; i++)
+            {
+                List<CompletionSet> completionSets = new List<CompletionSet>();
+                GetCompletions("x <- function(a, b = x+y)", i, completionSets);
+
+                Assert.AreEqual(1, completionSets.Count);
+                Assert.AreEqual(0, completionSets[0].Completions.Count);
+            }
+
+            for (int i = 20; i <= 24; i++)
+            {
+                List<CompletionSet> completionSets = new List<CompletionSet>();
+                GetCompletions("x <- function(a, b = x+y)", i, completionSets);
+
+                Assert.AreNotEqual(0, completionSets.Count);
+                Assert.AreNotEqual(0, completionSets[0].Completions.Count);
+            }
         }
 
         private void GetCompletions(string content, int position, IList<CompletionSet> completionSets, ITextRange selectedRange = null)
@@ -140,7 +192,7 @@ namespace Microsoft.R.Editor.Test.Completions
             TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             TextViewMock textView = new TextViewMock(textBuffer, position);
 
-            if(selectedRange != null)
+            if (selectedRange != null)
             {
                 textView.Selection.Select(new SnapshotSpan(textBuffer.CurrentSnapshot, selectedRange.Start, selectedRange.Length), false);
             }

@@ -4,6 +4,8 @@ using System.ComponentModel.Design;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell.Mocks;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Utility
 {
@@ -16,7 +18,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility
             _services.Add(typeof(SVsRegisterProjectTypes), new VsRegisterProjectGeneratorsMock());
             _services.Add(typeof(SVsRegisterEditors), new VsRegisterEditorsMock());
             _services.Add(typeof(IMenuCommandService), new MenuCommandServiceMock());
-            _services.Add(typeof(SComponentModel), new ComponentModelMock());
+            _services.Add(typeof(SComponentModel), new ComponentModelMock(RPackageTestCompositionCatalog.Current));
+            _services.Add(typeof(SVsTextManager), new TextManagerMock());
         }
 
         public object GetService(Type serviceType)

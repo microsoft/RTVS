@@ -7,8 +7,8 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Composition;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -22,25 +22,26 @@ namespace Microsoft.Languages.Editor.Tests.Shell
         private static IEditorShell _instance;
         private static object _lock = new object();
 
-        public static IEditorShell Create(IEnumerable<string> additionalAssemblies = null)
+        public static IEditorShell Create(ITestCompositionCatalog catalog)
         {
             lock (_lock)
             {
                 if (_instance == null)
                 {
-                    if (additionalAssemblies != null)
-                    {
-                        TestCompositionCatalog.ReInitialize(additionalAssemblies);
-                    }
 
-                    var compositionService = TestCompositionCatalog.CompositionService;
-                    var exportProvider = TestCompositionCatalog.ExportProvider;
+                    var compositionService = catalog.CompositionService;
+                    var exportProvider = catalog.ExportProvider;
 
                     _instance = new TestEditorShell(compositionService, exportProvider);
                 }
 
                 return _instance;
             }
+        }
+
+        public static IEditorShell Create(object current)
+        {
+            throw new NotImplementedException();
         }
 
         private TestEditorShell(ICompositionService compositionService, ExportProvider exportProvider)

@@ -77,6 +77,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             _requestTcs = new TaskCompletionSource<ExecutionResult>();
             var request = await _session.BeginInteractionAsync();
 
+            if (text.Length >= request.MaxLength) {
+                CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
+                request.Dispose();
+                return await ExecutionResult.Failed;
+            }
+
             Task.Run(async () =>
             {
                 try

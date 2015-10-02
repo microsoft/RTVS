@@ -30,7 +30,9 @@ namespace Microsoft.VisualStudio.R.Packages.R
     [ProvideEditorExtension(typeof(REditorFactory), ".r", 0x32, NameResourceID = 106)]
     [ProvideEditorFactory(typeof(REditorFactory), 106, CommonPhysicalViewAttributes = 0x2, TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
     [ProvideEditorLogicalView(typeof(REditorFactory), VSConstants.LOGVIEWID.TextView_string)]
-    [ProvideLanguageService(typeof(RLanguageService), RContentTypeDefinition.LanguageName, 106, ShowSmartIndent = true)]
+    [ProvideLanguageService(typeof(RLanguageService), RContentTypeDefinition.LanguageName, 106, ShowSmartIndent = true,
+        ShowMatchingBrace = true, MatchBraces =true, MatchBracesAtCaret = true, ShowCompletion = true)]
+    [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
@@ -42,21 +44,31 @@ namespace Microsoft.VisualStudio.R.Packages.R
         public const string OptionsDialogName = "R Tools";
 
         private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
+        private System.Threading.Tasks.Task _indexBuildingTask;
+
+        public static RPackage Current { get; private set; }
 
         protected override void Initialize()
         {
+            Current = this;
+
             base.Initialize();
 
             IComponentModel componentModel = GetService(typeof(SComponentModel)) as IComponentModel;
             RToolsSettings.VerifyRIsInstalled(componentModel.DefaultExportProvider);
             ReplShortcutSetting.Initialize();
 
-            FunctionIndex.BuildIndexAsync();
+            _indexBuildingTask = FunctionIndex.BuildIndexAsync();
         }
 
         protected override void Dispose(bool disposing)
         {
-            //FunctionIndex.SaveIndexAsync();
+            if (_indexBuildingTask != null)
+            {
+                _indexBuildingTask.Wait(2000);
+                _indexBuildingTask = null;
+            }
+
             ReplShortcutSetting.Close();
             base.Dispose(disposing);
         }
@@ -90,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         protected override object GetAutomationObject(string name)
         {
-            if (name == RPackage.OptionsDialogName)
+            if (name == OptionsDialogName)
             {
                 DialogPage page = GetDialogPage(typeof(REditorOptionsDialog));
                 return page.AutomationObject;

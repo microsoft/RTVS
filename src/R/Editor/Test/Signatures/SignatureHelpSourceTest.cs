@@ -2,12 +2,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Test.Mocks;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;

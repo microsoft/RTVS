@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using IServiceProvider = System.IServiceProvider;
 
@@ -20,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
     {
         private static IApplicationShell instance;
         private static int _refCount;
-        private static VsEditorShell _shell;
+        private static IEditorShell _shell;
         private static bool _appTerminated;
 
         /// <summary>
@@ -62,6 +63,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <returns>Service instance of null if not found.</returns>
         public T GetGlobalService<T>(Type type = null) where T : class
         {
+            if(IsTestEnvironment)
+            {
+                IServiceProvider sp = RPackage.Current;
+                return sp.GetService(type ?? typeof(T)) as T;
+            }
+
             return Microsoft.VisualStudio.Shell.Package.GetGlobalService(type ?? typeof(T)) as T;
         }
 
@@ -148,14 +155,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell
             AppDomain ad = AppDomain.CurrentDomain;
             Assembly[] loadedAssemblies = ad.GetAssemblies();
 
-            Assembly apexAssembly = loadedAssemblies.FirstOrDefault((asm) =>
+            Assembly testAssembly = loadedAssemblies.FirstOrDefault((asm) =>
             {
                 AssemblyName assemblyName = asm.GetName();
                 string name = assemblyName.Name;
-                return name.IndexOf("apex", StringComparison.OrdinalIgnoreCase) >= 0;
+                return name.IndexOf("apex", StringComparison.OrdinalIgnoreCase) >= 0 || name.IndexOf(".mocks", StringComparison.OrdinalIgnoreCase) >= 0;
             });
 
-            this.IsTestEnvironment = apexAssembly != null;
+            this.IsTestEnvironment = testAssembly != null;
         }
 
         internal static void AddRef()
@@ -187,7 +194,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
                 }
 
                 IEditorShell existingShell = EditorShell.HasShell ? EditorShell.Current : null;
-                _shell = existingShell as VsEditorShell;
+                _shell = existingShell;
 
                 // Don't create my own host if one has already been set (like during unit tests)
                 if (_shell == null && existingShell == null)
@@ -207,13 +214,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         {
             if (_shell != null)
             {
-                VsEditorShell shell = _shell;
+                IEditorShell shell = _shell;
 
                 _shell = null;
                 EditorShell.RemoveShell(shell);
                 shell.Terminating -= OnTerminateApp;
 
-                shell.Dispose();
+                if (shell is IDisposable)
+                {
+                    ((IDisposable)shell).Dispose();
+                }
             }
         }
 
