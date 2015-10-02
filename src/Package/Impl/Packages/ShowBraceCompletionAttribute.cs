@@ -15,8 +15,15 @@ namespace Microsoft.VisualStudio.R.Package.Packages
 
         public override void Register(RegistrationContext context)
         {
-            Key key = context.CreateKey(@"Languages\Language Services\" + _language);
-            key.SetValue("ShowBraceCompletion", 1);
+            using (Key key = context.CreateKey(@"Languages\Language Services\" + _language))
+            {
+                key.SetValue("ShowBraceCompletion", 1);
+            }
+
+            using (Key key = context.CreateKey(@"Text Editor\" + _language))
+            {
+                key.SetValue("Brace Completion", 1);
+            }
         }
 
         public override void Unregister(RegistrationContext context)
