@@ -150,6 +150,7 @@ extern "C" {
     } structRstart, *Rstart;
 
 #ifdef _WIN32
+    __declspec(dllimport) extern UImode CharacterMode;
     __declspec(dllimport) extern RCNTXT* R_GlobalContext;
     __declspec(dllimport) extern SEXP R_GlobalEnv, R_EmptyEnv, R_BaseEnv, R_BaseNamespace, R_Srcref, R_NilValue, R_UnboundValue, R_MissingArg;
     __declspec(dllimport) extern int R_DirtyImage;

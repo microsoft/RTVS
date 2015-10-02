@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 
     rp.rhome = get_R_HOME();
     rp.home = getRUser();
-    rp.CharacterMode = LinkDLL;
+    rp.CharacterMode = RGui;
     rp.R_Quiet = R_TRUE;
     rp.R_Interactive = R_TRUE;
     rp.RestoreAction = SA_RESTORE;
@@ -27,7 +27,11 @@ int main(int argc, char** argv) {
 
     GA_initapp(0, 0);
     readconsolecfg();
+
+    CharacterMode = LinkDLL;
     setup_Rmainloop();
+    CharacterMode = RGui;
+
     run_Rmainloop();
 
     Rf_unprotect(1);
