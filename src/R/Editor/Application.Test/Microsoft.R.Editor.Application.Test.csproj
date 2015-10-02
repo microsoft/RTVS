@@ -104,6 +104,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Files\01.rd" />
+    <None Include="Files\lsfit-part.r" />
     <None Include="Files\lsfit.r" />
   </ItemGroup>
   <ItemGroup />

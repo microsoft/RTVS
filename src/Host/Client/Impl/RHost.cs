@@ -168,16 +168,22 @@ namespace Microsoft.R.Host.Client
 
         private async Task RunLoop(WebSocket webSocket, CancellationToken ct, byte[] buffer)
         {
-            for (bool done = false; !done && !ct.IsCancellationRequested;)
+            while (!ct.IsCancellationRequested)
             {
-                var webSocketReceiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
-                if (webSocketReceiveResult.CloseStatus != null)
+                WebSocketReceiveResult webSocketReceiveResult;
+                var s = string.Empty;
+                do
                 {
-                    break;
-                }
+                    webSocketReceiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
+                    if (webSocketReceiveResult.CloseStatus != null)
+                    {
+                        return;
+                    }
 
-                var s = Encoding.UTF8.GetString(buffer, 0, webSocketReceiveResult.Count);
-                var obj = JObject.Parse(s);
+                    s += Encoding.UTF8.GetString(buffer, 0, webSocketReceiveResult.Count);
+                } while (!webSocketReceiveResult.EndOfMessage);
+
+                JObject obj = JObject.Parse(s);
 
                 var contexts = GetContexts(obj);
                 var evaluator = new RExpressionEvaluator(webSocket, buffer, ct);
@@ -229,8 +235,7 @@ namespace Microsoft.R.Host.Client
                         break;
 
                     case "exit":
-                        done = true;
-                        break;
+                        return;
 
                     default:
                         throw new InvalidDataException("Unknown event type " + evt);

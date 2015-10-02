@@ -41,5 +41,26 @@ namespace Microsoft.R.Core.Test.Parser
 ";
             ParserTest.VerifyParse(expected, @"a <-(grepl('^check', install) || R_check_use_install_log)");
         }
+
+        [TestMethod]
+        public void ParseListExpression01()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [fitted.zeros <- xzero * z$coefficients]
+        Expression  [fitted.zeros <- xzero * z$coefficients]
+            TokenOperator  [<- [13...15)]
+                Variable  [fitted.zeros]
+                TokenNode  [<- [13...15)]
+                TokenOperator  [* [22...23)]
+                    Variable  [xzero]
+                    TokenNode  [* [22...23)]
+                    TokenOperator  [$ [25...26)]
+                        Variable  [z]
+                        TokenNode  [$ [25...26)]
+                        Variable  [coefficients]
+";
+            ParserTest.VerifyParse(expected, @"fitted.zeros <- xzero * z$coefficients");
+        }
     }
 }

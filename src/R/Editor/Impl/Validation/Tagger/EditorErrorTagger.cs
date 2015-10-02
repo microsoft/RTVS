@@ -256,6 +256,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
                     // Clip range to the current snapshop
                     int start = Math.Max(changedRange.Start, 0);
+                    start = Math.Min(start, _textBuffer.CurrentSnapshot.Length);
                     int end = Math.Min(changedRange.End, _textBuffer.CurrentSnapshot.Length);
 
                     if (changedRange.Length > 0 && TagsChanged != null)

@@ -106,6 +106,7 @@
     </Compile>
     <Compile Include="Engine\EngineSession.cs" />
     <Compile Include="Engine\EngineResponse.cs" />
+    <Compile Include="Help\Definitions\NamedItemType.cs" />
     <Compile Include="Help\Functions\FunctionIndexBuild.cs" />
     <Compile Include="Help\Functions\RdFunctionHelp.cs" />
     <Compile Include="Help\Packages\BasePackagesCollection.cs" />

@@ -2,7 +2,7 @@
 
 namespace Microsoft.R.Core.Tokens
 {
-    internal static class Logicals
+    public static class Logicals
     {
         public static bool IsLogical(string candidate)
         {
