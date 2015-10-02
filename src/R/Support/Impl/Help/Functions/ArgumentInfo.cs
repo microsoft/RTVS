@@ -20,12 +20,12 @@ namespace Microsoft.R.Support.Help.Functions
         public bool IsEllipsis { get; internal set; }
 
         public ArgumentInfo(string name) :
-            base(name)
+            base(name, NamedItemType.Parameter)
         {
         }
 
         public ArgumentInfo(string name, string description):
-            base(name, description)
+            base(name, description, NamedItemType.Parameter)
         {
         }
     }
