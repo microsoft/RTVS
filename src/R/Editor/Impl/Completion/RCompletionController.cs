@@ -44,6 +44,11 @@ namespace Microsoft.R.Editor.Completion
 
         public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
+            if(_textBuffer == null)
+            {
+                _textBuffer = subjectBuffer;
+            }
+
             if (_textBuffer == subjectBuffer)
             {
                 ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
@@ -67,6 +72,8 @@ namespace Microsoft.R.Editor.Completion
                         ServiceManager.RemoveService<RCompletionController>(TextView);
                     }
                 }
+
+                _textBuffer = null;
             }
 
             base.DisconnectSubjectBuffer(subjectBuffer);
