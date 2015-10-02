@@ -2,23 +2,19 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Core.Utility;
+using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Core.AST;
+using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.Completion
 {
-    using Definitions;
-    using Languages.Core.Text;
-    using Engine;
-    using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
-    using Languages.Editor.Completion;
-    using Core.AST;
-    using Document.Definitions;
-
     /// <summary>
     /// Provides actual content for the intellisense dropdown
     /// </summary>
@@ -77,6 +73,7 @@ namespace Microsoft.R.Editor.Completion
             }
 
             completions.Sort(RCompletion.Compare);
+            completions.RemoveDuplicates();
 
             CompletionSet completionSet = new CompletionSet(
                 "R Completion",
