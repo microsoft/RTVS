@@ -85,6 +85,7 @@ namespace Microsoft.R.Editor.SmartIndent
         public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null)
         {
             ITextBuffer textBuffer = line.Snapshot.TextBuffer;
+            IScope scope;
 
             if (ast == null)
             {
@@ -108,11 +109,21 @@ namespace Microsoft.R.Editor.SmartIndent
                 IKeywordScopeStatement scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(nonWsPosition);
                 if (scopeStatement != null && (scopeStatement.Scope == null || scopeStatement.Scope is SimpleScope))
                 {
-                    return GetBlockIndent(line) + REditorSettings.IndentSize;
+                    // There is if with a simple scope above. However, we need to check 
+                    // if the line that is being formatted is actually part of this scope.
+                    if (scopeStatement.Scope == null || (scopeStatement.Scope != null && line.Start < scopeStatement.Scope.End))
+                    {
+                        return GetBlockIndent(line) + REditorSettings.IndentSize;
+                    }
+                    else
+                    {
+                        scope = ast.GetNodeOfTypeFromPosition<IScope>(scopeStatement.Start);
+                        return InnerIndentSizeFromScope(textBuffer, scope, REditorSettings.FormatOptions);
+                    }
                 }
             }
 
-            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(line.Start);
+            scope = ast.GetNodeOfTypeFromPosition<IScope>(line.Start);
             if (scope != null && scope.OpenCurlyBrace != null)
             {
                 return InnerIndentSizeFromScope(textBuffer, scope, REditorSettings.FormatOptions);
