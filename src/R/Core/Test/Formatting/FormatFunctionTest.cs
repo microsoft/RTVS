@@ -222,5 +222,20 @@ else
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void Formatter_FormatFunctionNoSpaceAfterComma()
+        {
+            RFormatOptions options = new RFormatOptions();
+            options.SpaceAfterComma = false;
+
+            RFormatter f = new RFormatter(options);
+            string actual = f.Format("function(a, b) {return(a+b)}");
+            string expected =
+@"function(a,b) {
+    return (a + b)
+}";
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

@@ -527,6 +527,7 @@ namespace Microsoft.R.Core.Formatting
                 case RTokenType.OpenSquareBracket:
                 case RTokenType.OpenDoubleSquareBracket:
                 case RTokenType.Operator:
+                case RTokenType.Comma:
                     break;
 
                 default:
@@ -710,7 +711,17 @@ namespace Microsoft.R.Core.Formatting
 
         private bool ShouldAppendTextBeforeToken()
         {
-            return !IsClosingToken(_tokens.CurrentToken.TokenType) && _tokens.CurrentToken.TokenType != RTokenType.OpenCurlyBrace;
+            if (_tokens.PreviousToken.TokenType == RTokenType.Comma)
+            {
+                return false;
+            }
+
+            if (!IsClosingToken(_tokens.CurrentToken.TokenType) && _tokens.CurrentToken.TokenType != RTokenType.OpenCurlyBrace)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private bool HasSameLineElse()
