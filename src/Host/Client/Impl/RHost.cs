@@ -54,6 +54,9 @@ namespace Microsoft.R.Host.Client
         }
 
         public const int DefaultPort = 5118;
+        public const string RHostExe = "Microsoft.R.Host.exe";
+        public const string RBinPathX64 = @"bin\x64";
+
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
@@ -72,8 +75,8 @@ namespace Microsoft.R.Host.Client
 
         public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken))
         {
-            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), "Microsoft.R.Host.exe");
-            string rBinPath = Path.Combine(rHome, @"bin\x64");
+            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
+            string rBinPath = Path.Combine(rHome, RBinPathX64);
             
             if (!File.Exists(rhostExe))
             {
