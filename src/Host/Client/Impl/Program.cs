@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
     class Program : IRCallbacks {
         private IRExpressionEvaluator _evaluator;
 
-        static void Main() {
+        static void Main(string[] args) {
             var host = new RHost(new Program());
-            host.CreateAndRun().GetAwaiter().GetResult();
+            host.CreateAndRun(args[0]).GetAwaiter().GetResult();
         }
 
         public void Dispose() {

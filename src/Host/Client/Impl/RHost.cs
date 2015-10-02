@@ -70,10 +70,11 @@ namespace Microsoft.R.Host.Client
             _cts.Cancel();
         }
 
-        public async Task CreateAndRun(ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken))
+        public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken))
         {
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), "Microsoft.R.Host.exe");
-
+            string rBinPath = Path.Combine(rHome, @"bin\x64");
+            
             if (!File.Exists(rhostExe))
             {
                 throw new MicrosoftRHostMissingException();
@@ -81,6 +82,9 @@ namespace Microsoft.R.Host.Client
 
             psi = psi ?? new ProcessStartInfo();
             psi.FileName = rhostExe;
+            psi.UseShellExecute = false;
+            psi.EnvironmentVariables["R_HOME"] = rHome;
+            psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
 
             using (_process = Process.Start(psi))
             {
