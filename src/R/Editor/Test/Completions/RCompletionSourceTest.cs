@@ -134,6 +134,57 @@ namespace Microsoft.R.Editor.Test.Completions
             Assert.IsTrue(completionSets[0].Completions.Count > 0);
         }
 
+        [TestMethod]
+        public void RCompletionSource_FunctionDefinitionTest01()
+        {
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
+
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("x <- function()", 14, completionSets);
+
+            Assert.AreEqual(1, completionSets.Count);
+            Assert.AreEqual(0, completionSets[0].Completions.Count);
+        }
+
+        [TestMethod]
+        public void RCompletionSource_FunctionDefinitionTest02()
+        {
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
+
+            for (int i = 14; i <= 18; i++)
+            {
+                List<CompletionSet> completionSets = new List<CompletionSet>();
+                GetCompletions("x <- function(a, b)", i, completionSets);
+
+                Assert.AreEqual(1, completionSets.Count);
+                Assert.AreEqual(0, completionSets[0].Completions.Count);
+            }
+        }
+
+        [TestMethod]
+        public void RCompletionSource_FunctionDefinitionTest03()
+        {
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
+
+            for (int i = 14; i <= 19; i++)
+            {
+                List<CompletionSet> completionSets = new List<CompletionSet>();
+                GetCompletions("x <- function(a, b = x+y)", i, completionSets);
+
+                Assert.AreEqual(1, completionSets.Count);
+                Assert.AreEqual(0, completionSets[0].Completions.Count);
+            }
+
+            for (int i = 20; i <= 24; i++)
+            {
+                List<CompletionSet> completionSets = new List<CompletionSet>();
+                GetCompletions("x <- function(a, b = x+y)", i, completionSets);
+
+                Assert.AreNotEqual(0, completionSets.Count);
+                Assert.AreNotEqual(0, completionSets[0].Completions.Count);
+            }
+        }
+
         private void GetCompletions(string content, int position, IList<CompletionSet> completionSets, ITextRange selectedRange = null)
         {
             AstRoot ast = RParser.Parse(content);
@@ -141,7 +192,7 @@ namespace Microsoft.R.Editor.Test.Completions
             TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             TextViewMock textView = new TextViewMock(textBuffer, position);
 
-            if(selectedRange != null)
+            if (selectedRange != null)
             {
                 textView.Selection.Select(new SnapshotSpan(textBuffer.CurrentSnapshot, selectedRange.Start, selectedRange.Length), false);
             }
