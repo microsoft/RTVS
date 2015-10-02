@@ -149,5 +149,21 @@ OperatorExpected Token [2...3)
 ";
             ParserTest.VerifyParse(expected, "a b");
         }
+
+        [TestMethod]
+        public void ParseMissingListOperand01()
+        {
+            string content =
+@"
+    fitted.zeros <- xzero * z$ }
+";
+            string expected =
+@"GlobalScope  [Global]
+
+IndentifierExpected Token [31...32)";
+
+            ParserTest.VerifyParse(expected, content);
+        }
+
     }
 }

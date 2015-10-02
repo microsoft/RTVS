@@ -277,6 +277,12 @@ namespace Microsoft.R.Core.AST.Expressions
                 context.AddError(new ParseError(ParseErrorType.IndentifierExpected, ErrorLocation.Token, GetOperatorErrorRange(context)));
                 return false;
             }
+            else if (_previousOperationType == OperationType.BinaryOperator && currentOperationType == OperationType.EndOfExpression)
+            {
+                // missing list selector: z$ }
+                context.AddError(new ParseError(ParseErrorType.OperandExpected, ErrorLocation.Token, GetErrorRange(context)));
+                return false;
+            }
 
             return true;
         }
