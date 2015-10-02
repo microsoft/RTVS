@@ -711,17 +711,28 @@ namespace Microsoft.R.Core.Formatting
 
         private bool ShouldAppendTextBeforeToken()
         {
-            if (_tokens.PreviousToken.TokenType == RTokenType.Comma)
+            if (IsClosingToken(_tokens.CurrentToken.TokenType))
             {
                 return false;
             }
 
-            if (!IsClosingToken(_tokens.CurrentToken.TokenType) && _tokens.CurrentToken.TokenType != RTokenType.OpenCurlyBrace)
+            if (_tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace)
             {
-                return true;
+                return false;
+
             }
 
-            return false;
+            if (_tokens.PreviousToken.TokenType == RTokenType.Comma)
+            {
+                if (_tokens.Position > 0 && _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1))
+                {
+                    return true; // respect user indentation with line breaks
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         private bool HasSameLineElse()
