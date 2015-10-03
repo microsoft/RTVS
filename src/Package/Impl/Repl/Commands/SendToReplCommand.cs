@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

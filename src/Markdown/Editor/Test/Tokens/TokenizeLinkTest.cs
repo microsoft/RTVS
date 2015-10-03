@@ -7,7 +7,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeLinkTest : TokenizeTestBase<MdToken, MdTokenType>
+    public class TokenizeLinkTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType>
     {
         [TestMethod]
         public void TokenizeMd_Link01()
@@ -16,7 +16,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.AltText, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.AltText, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(6, tokens[0].Length);
         }

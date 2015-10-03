@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.VisualStudio.R.Package
+namespace Microsoft.VisualStudio.R.Packages.R
 {
     public static class RGuidList
     {

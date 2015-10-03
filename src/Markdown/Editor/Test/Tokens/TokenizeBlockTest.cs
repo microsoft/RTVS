@@ -8,7 +8,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeBlockTest : TokenizeTestBase<MdToken, MdTokenType>
+    public class TokenizeBlockTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType>
     {
         [TestMethod]
         public void TokenizeMd_Block01()
@@ -31,7 +31,7 @@ block
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Code, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Code, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(content.Length - 2, tokens[0].Length);
         }
@@ -63,7 +63,7 @@ block
             var tokens = this.Tokenize(content, new MdTokenizer());
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Code, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Code, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(content.Length - 2, tokens[0].Length);
         }
@@ -73,9 +73,9 @@ block
         {
             var tokens = this.Tokenize(@"`r x <- 1`", new MdTokenizer());
             Assert.AreEqual(3, tokens.Count);
-            Assert.AreEqual(MdTokenType.Code, tokens[0].TokenType);
-            Assert.IsTrue(tokens[1] is MdRCodeToken);
-            Assert.AreEqual(MdTokenType.Code, tokens[2].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Code, tokens[0].TokenType);
+            Assert.IsTrue(tokens[1] is MarkdownRCodeToken);
+            Assert.AreEqual(MarkdownTokenType.Code, tokens[2].TokenType);
 
             ICompositeToken composite = tokens[1] as ICompositeToken;
             Assert.AreEqual(3, composite.TokenList.Count);

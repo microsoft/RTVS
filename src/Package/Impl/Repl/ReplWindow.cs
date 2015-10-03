@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
+    using R.Packages.R;
     using Task = System.Threading.Tasks.Task;
 
     /// <summary>

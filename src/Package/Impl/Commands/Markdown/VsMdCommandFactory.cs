@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.R.Package.Commands.Markdown;
+using Microsoft.VisualStudio.R.Packages.Markdown;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;

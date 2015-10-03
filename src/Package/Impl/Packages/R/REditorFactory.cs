@@ -1,14 +1,15 @@
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Editors
+namespace Microsoft.VisualStudio.R.Packages.R
 {
-    [Guid(MdGuidList.MdEditorFactoryGuidString)]
-    internal sealed class MdEditorFactory : BaseEditorFactory
+    [Guid(RGuidList.REditorFactoryGuidString)]
+    internal sealed class REditorFactory : BaseEditorFactory
     {
-        public MdEditorFactory(Microsoft.VisualStudio.Shell.Package package) :
-            base(package, MdGuidList.MdEditorFactoryGuid, MdGuidList.MdLanguageServiceGuid)
+        public REditorFactory(Microsoft.VisualStudio.Shell.Package package) :
+            base(package, RGuidList.REditorFactoryGuid, RGuidList.RLanguageServiceGuid)
         {
         }
 

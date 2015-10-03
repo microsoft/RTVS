@@ -7,7 +7,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeQuoteTest : TokenizeTestBase<MdToken, MdTokenType>
+    public class TokenizeQuoteTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType>
     {
         [TestMethod]
         public void TokenizeMd_Quote01()
@@ -16,7 +16,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Blockquote, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Blockquote, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(7, tokens[0].Length);
         }
@@ -47,7 +47,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Blockquote, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Blockquote, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(18, tokens[0].Length);
         }

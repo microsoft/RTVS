@@ -169,7 +169,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Markdown Files (*.md;*.markdown)|*.md;*.markdown|All Files (*.*)|*.*.
+        ///   Looks up a localized string similar to Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|All Files (*.*)|*.*.
         /// </summary>
         internal static string SaveAsFilterMD {
             get {

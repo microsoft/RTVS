@@ -76,6 +76,7 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="ch">Character to find</param>
         /// <param name="startPosition">Starting position</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
+        [DebuggerStepThrough]
         public int IndexOf(char ch, int startPosition)
         {
             return _text.IndexOf(ch, startPosition);
@@ -87,6 +88,7 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="ch">Character to find</param>
         /// <param name="range">Range to search in</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
+        [DebuggerStepThrough]
         public int IndexOf(char ch, ITextRange range)
         {
             return _text.IndexOf(ch, range.Start, range.Length);
@@ -147,6 +149,7 @@ namespace Microsoft.Languages.Core.Text
         #endregion
 
         #region Dispose
+        [DebuggerStepThrough]
         public void Dispose()
         {
             _text = null;

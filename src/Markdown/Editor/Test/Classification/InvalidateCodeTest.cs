@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Markdown.Editor.Classification;
+using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Test.Utility;
 using Microsoft.VisualStudio.Editor.Mocks;

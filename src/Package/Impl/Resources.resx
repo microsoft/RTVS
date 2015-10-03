@@ -226,7 +226,7 @@
     <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>
   </data>
   <data name="SaveAsFilterMD" xml:space="preserve">
-    <value>Markdown Files (*.md;*.markdown)|*.md;*.markdown|All Files (*.*)|*.*</value>
+    <value>Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|All Files (*.*)|*.*</value>
   </data>
   <data name="CtrlECtrlE" xml:space="preserve">
     <value>Control+E, Control+E</value>

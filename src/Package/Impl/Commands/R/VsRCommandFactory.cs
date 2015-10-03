@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;

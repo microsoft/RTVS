@@ -2,7 +2,7 @@
 {
     // https://guides.github.com/features/mastering-markdown/
 
-    public enum MdTokenType
+    public enum MarkdownTokenType
     {
         /// <summary>
         /// Unrecognized token

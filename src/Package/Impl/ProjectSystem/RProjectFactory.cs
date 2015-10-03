@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
+using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem
 {

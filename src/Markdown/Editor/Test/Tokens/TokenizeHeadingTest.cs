@@ -7,7 +7,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeHeadingTest : TokenizeTestBase<MdToken, MdTokenType>
+    public class TokenizeHeadingTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType>
     {
         [TestMethod]
         public void TokenizeMd_Heading01()
@@ -16,7 +16,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Heading, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Heading, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(3, tokens[0].Length);
         }
@@ -28,7 +28,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Heading, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Heading, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(4, tokens[0].Length);
         }
@@ -40,7 +40,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Heading, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Heading, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(3, tokens[0].Length);
         }
@@ -52,7 +52,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Heading, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Heading, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(4, tokens[0].Length);
         }
@@ -64,7 +64,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Heading, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Heading, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(1, tokens[0].Length);
         }
@@ -76,7 +76,7 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
             Assert.AreEqual(1, tokens.Count);
 
-            Assert.AreEqual(MdTokenType.Heading, tokens[0].TokenType);
+            Assert.AreEqual(MarkdownTokenType.Heading, tokens[0].TokenType);
             Assert.AreEqual(0, tokens[0].Start);
             Assert.AreEqual(2, tokens[0].Length);
         }

@@ -4,6 +4,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
