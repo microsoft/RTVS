@@ -117,6 +117,18 @@ namespace Microsoft.R.Editor.Test.Formatting
             Assert.AreEqual(expected, actual);
         }
 
+        [TestMethod]
+        public void AutoFormat_ScopeTest01()
+        {
+            string content = "if (x > 1)\r\n{ x<-1\r\n";
+            ITextView textView = TestAutoFormat(content.Length, "}", content);
+
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected = "if (x > 1) {\r\n    x <- 1\r\n}";
+
+            Assert.AreEqual(expected, actual);
+        }
+
         private ITextView TestAutoFormat(int position, string textToType, string initialContent = "")
         {
             AstRoot ast;
