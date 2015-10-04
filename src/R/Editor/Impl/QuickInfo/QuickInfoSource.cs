@@ -77,8 +77,13 @@ namespace Microsoft.R.Editor.QuickInfo
             string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
             if (!string.IsNullOrEmpty(functionName))
             {
+                ITextSnapshot snapshot = session.TextView.TextBuffer.CurrentSnapshot;
+
                 position = Math.Min(signatureEnd, position);
-                applicableToSpan = session.TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(position, signatureEnd - position, SpanTrackingMode.EdgeInclusive);
+                int start = Math.Min(position, snapshot.Length);
+                int end = Math.Min(signatureEnd, snapshot.Length);
+
+                applicableToSpan = session.TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(new Span(start, end), SpanTrackingMode.EdgeInclusive);
 
                 IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName, retriggerAction, session);
 
