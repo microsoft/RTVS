@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Document;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -78,7 +79,7 @@ namespace Microsoft.R.Editor.Completion.Providers
         private IEnumerable<IPackageInfo> GetSpecificPackage(RCompletionContext context)
         {
             List<IPackageInfo> packages = new List<IPackageInfo>();
-            ITextSnapshot snapshot = context.Session.TextView.TextBuffer.CurrentSnapshot;
+            ITextSnapshot snapshot = context.TextBuffer.CurrentSnapshot;
             int colons = 0;
 
             for (int i = context.Position - 1; i >= 0; i--, colons++)

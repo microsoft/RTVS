@@ -14,12 +14,14 @@ namespace Microsoft.R.Editor.Completion.Definitions
     {
         public int Position { get; set; }
         public ICompletionSession Session { get; private set; }
+        public ITextBuffer TextBuffer { get; private set; }
         public AstRoot AstRoot { get; private set; }
         public bool InternalFunctions { get; internal set; }
 
-        public RCompletionContext(ICompletionSession session, AstRoot ast, int position)
+        public RCompletionContext(ICompletionSession session, ITextBuffer textBuffer, AstRoot ast, int position)
         {
             Session = session;
+            TextBuffer = textBuffer;
             Position = position;
             AstRoot = ast;
         }

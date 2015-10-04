@@ -59,7 +59,7 @@ namespace Microsoft.R.Editor.Completion
             Span applicableSpan = GetApplicableSpan(position, session);
             ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan, SpanTrackingMode.EdgeInclusive);
             List<RCompletion> completions = new List<RCompletion>();
-            RCompletionContext context = new RCompletionContext(session, ast, position);
+            RCompletionContext context = new RCompletionContext(session, _textBuffer, ast, position);
 
             foreach (IRCompletionListProvider provider in providers)
             {
