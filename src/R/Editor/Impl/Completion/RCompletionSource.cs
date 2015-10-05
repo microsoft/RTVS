@@ -2,23 +2,19 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Core.Utility;
+using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Core.AST;
+using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.Completion
 {
-    using Definitions;
-    using Languages.Core.Text;
-    using Engine;
-    using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
-    using Languages.Editor.Completion;
-    using Core.AST;
-    using Document.Definitions;
-
     /// <summary>
     /// Provides actual content for the intellisense dropdown
     /// </summary>
@@ -53,17 +49,18 @@ namespace Microsoft.R.Editor.Completion
 
         internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast)
         {
+            RCompletionContext context = new RCompletionContext(session, _textBuffer, ast, position);
+
             bool autoShownCompletion = true;
             if (session.TextView.Properties.ContainsProperty(CompletionController.AutoShownCompletion))
                 autoShownCompletion = session.TextView.Properties.GetProperty<bool>(CompletionController.AutoShownCompletion);
 
             IReadOnlyCollection<IRCompletionListProvider> providers =
-                RCompletionEngine.GetCompletionForLocation(ast, _textBuffer, position, autoShownCompletion);
+                RCompletionEngine.GetCompletionForLocation(context, autoShownCompletion);
 
             Span applicableSpan = GetApplicableSpan(position, session);
             ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan, SpanTrackingMode.EdgeInclusive);
             List<RCompletion> completions = new List<RCompletion>();
-            RCompletionContext context = new RCompletionContext(session, ast, position);
 
             foreach (IRCompletionListProvider provider in providers)
             {
@@ -77,6 +74,7 @@ namespace Microsoft.R.Editor.Completion
             }
 
             completions.Sort(RCompletion.Compare);
+            completions.RemoveDuplicates();
 
             CompletionSet completionSet = new CompletionSet(
                 "R Completion",

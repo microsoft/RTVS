@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Document;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -35,7 +36,8 @@ namespace Microsoft.R.Editor.Completion.Providers
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context)
         {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+            ImageSource constantGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic);
 
             // TODO: this is different in the console window where 
             // packages may have been loaded from the command line. 
@@ -52,6 +54,8 @@ namespace Microsoft.R.Editor.Completion.Providers
                 {
                     foreach (INamedItemInfo function in functions)
                     {
+                        ImageSource glyph = function.ItemType == NamedItemType.Constant ? constantGlyph : functionGlyph;
+
                         var completion = new RCompletion(function.Name, function.Name, function.Description, glyph);
                         completions.Add(completion);
                     }
@@ -75,7 +79,7 @@ namespace Microsoft.R.Editor.Completion.Providers
         private IEnumerable<IPackageInfo> GetSpecificPackage(RCompletionContext context)
         {
             List<IPackageInfo> packages = new List<IPackageInfo>();
-            ITextSnapshot snapshot = context.Session.TextView.TextBuffer.CurrentSnapshot;
+            ITextSnapshot snapshot = context.TextBuffer.CurrentSnapshot;
             int colons = 0;
 
             for (int i = context.Position - 1; i >= 0; i--, colons++)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Formatting;
@@ -18,7 +19,6 @@ namespace Microsoft.R.Editor.SmartIndent
     internal sealed class SmartIndenter : ISmartIndent
     {
         private ITextView _textView;
-        private ITextBuffer _textBuffer;
 
         public static SmartIndenter Attach(ITextView textView)
         {
@@ -35,7 +35,6 @@ namespace Microsoft.R.Editor.SmartIndent
         private SmartIndenter(ITextView textView)
         {
             _textView = textView;
-            _textBuffer = _textView.TextBuffer;
         }
 
         #region ISmartIndent;
@@ -65,6 +64,73 @@ namespace Microsoft.R.Editor.SmartIndent
         {
         }
         #endregion
+
+        public static int GetBlockIndent(ITextSnapshotLine line)
+        {
+            int lineNumber = line.LineNumber;
+
+            //Scan the previous lines for the first line that isn't an empty line.
+            while (--lineNumber >= 0)
+            {
+                ITextSnapshotLine previousLine = line.Snapshot.GetLineFromLineNumber(lineNumber);
+                if (previousLine.Length > 0)
+                {
+                    return OuterIndentSizeFromLine(previousLine, REditorSettings.FormatOptions);
+                }
+            }
+
+            return 0;
+        }
+
+        public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null)
+        {
+            ITextBuffer textBuffer = line.Snapshot.TextBuffer;
+            IScope scope;
+
+            if (ast == null)
+            {
+                IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
+                if (document == null || document.IsTransient)
+                {
+                    return 0;
+                }
+
+                ast = document.EditorTree.AstRoot;
+            }
+
+            // Try conditional without scope first
+            if (line.LineNumber > 0)
+            {
+                ITextSnapshotLine prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
+
+                string prevLineText = prevLine.GetText();
+                int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
+
+                IKeywordScopeStatement scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(nonWsPosition);
+                if (scopeStatement != null && (scopeStatement.Scope == null || scopeStatement.Scope is SimpleScope))
+                {
+                    // There is if with a simple scope above. However, we need to check 
+                    // if the line that is being formatted is actually part of this scope.
+                    if (scopeStatement.Scope == null || (scopeStatement.Scope != null && line.Start < scopeStatement.Scope.End))
+                    {
+                        return GetBlockIndent(line) + REditorSettings.IndentSize;
+                    }
+                    else
+                    {
+                        scope = ast.GetNodeOfTypeFromPosition<IScope>(scopeStatement.Start);
+                        return InnerIndentSizeFromScope(textBuffer, scope, REditorSettings.FormatOptions);
+                    }
+                }
+            }
+
+            scope = ast.GetNodeOfTypeFromPosition<IScope>(line.Start);
+            if (scope != null && scope.OpenCurlyBrace != null)
+            {
+                return InnerIndentSizeFromScope(textBuffer, scope, REditorSettings.FormatOptions);
+            }
+
+            return 0;
+        }
 
         public static int InnerIndentSizeFromScope(ITextBuffer textBuffer, IScope scope, RFormatOptions options)
         {
@@ -103,57 +169,6 @@ namespace Microsoft.R.Editor.SmartIndent
             string leadingWhitespace = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
 
             return IndentBuilder.TextIndentInSpaces(leadingWhitespace, options.TabSize);
-        }
-
-        private int? GetBlockIndent(ITextSnapshotLine line)
-        {
-            int lineNumber = line.LineNumber;
-
-            //Scan the previous lines for the first line that isn't an empty line.
-            while (--lineNumber >= 0)
-            {
-                ITextSnapshotLine previousLine = line.Snapshot.GetLineFromLineNumber(lineNumber);
-                if (previousLine.Length > 0)
-                {
-                    return OuterIndentSizeFromLine(previousLine, REditorSettings.FormatOptions);
-                }
-            }
-
-            return null;
-        }
-
-        private int? GetSmartIndent(ITextSnapshotLine line)
-        {
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(_textBuffer);
-            if(document == null || document.IsTransient)
-            {
-                return 0;
-            }
-
-            AstRoot ast = document.EditorTree.AstRoot;
-
-            // Try conditional without scope first
-            if (line.LineNumber > 0)
-            {
-                ITextSnapshotLine prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
-
-                string prevLineText = prevLine.GetText();
-                int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
-
-                IKeywordScopeStatement scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(nonWsPosition);
-                if (scopeStatement != null && scopeStatement.Scope == null)
-                {
-                    return GetBlockIndent(line) + REditorSettings.IndentSize;
-                }
-            }
-
-            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(line.Start);
-            if (scope != null && scope.OpenCurlyBrace != null)
-            {
-                return InnerIndentSizeFromScope(_textBuffer, scope, REditorSettings.FormatOptions);
-            }
-
-            return 0;
         }
     }
 }

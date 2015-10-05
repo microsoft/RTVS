@@ -85,7 +85,7 @@ namespace Microsoft.R.Support.RD.Parser
                 }
             }
 
-            if (argumentDescriptions != null)
+            if (argumentDescriptions != null && info.Signatures != null)
             {
                 // Merge descriptions into signatures
                 foreach (SignatureInfo sigInfo in info.Signatures)

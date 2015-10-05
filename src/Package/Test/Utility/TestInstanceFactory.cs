@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.R.Package.Editors;
-using Microsoft.VisualStudio.R.Package.Test.Mocks;
+using Microsoft.VisualStudio.Shell.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TextManager.Interop;
 

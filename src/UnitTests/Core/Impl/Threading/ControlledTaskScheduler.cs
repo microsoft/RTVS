@@ -17,20 +17,25 @@ namespace Microsoft.UnitTests.Core.Threading
         private readonly ConcurrentQueue<Task> _pendingTasks;
 
         private volatile bool _paused;
+        private int _scheduledTasksCount;
         private TaskCompletionSource<object> _futureTaskWaitingCompletionSource;
         private TaskCompletionSource<object> _emptyQueueCompletionSource;
+        private List<Exception> _exceptions;
         private Task _emptyQueueTask;
 
         public override int MaximumConcurrencyLevel => 1;
+
+        public int ScheduledTasksCount => _scheduledTasksCount;
 
         public ControlledTaskScheduler(SynchronizationContext syncContext)
         {
             _syncContext = syncContext;
             _pendingTasks = new ConcurrentQueue<Task>();
-            _callback = obj => Callback();
+            _callback = obj => Callback((Task)obj);
 
             _futureTaskWaitingCompletionSource = new TaskCompletionSource<object>();
             _emptyQueueCompletionSource = null;
+            _exceptions = new List<Exception>();
             _emptyQueueTask = Task.CompletedTask;
         }
 
@@ -80,33 +85,37 @@ namespace Microsoft.UnitTests.Core.Threading
         private void Resume()
         {
             _paused = false;
-            _syncContext.Post(_callback, null);
+            Task task;
+            while (_pendingTasks.TryPeek(out task))
+            {
+                _syncContext.Post(_callback, task);
+                _pendingTasks.TryDequeue(out task);
+            }
         }
 
         [SecurityCritical]
         protected override void QueueTask(Task task)
         {
-            SpinWait spinWait = new SpinWait();
-            while (_pendingTasks.IsEmpty)
+            if (Interlocked.Increment(ref _scheduledTasksCount) == 1)
             {
-                if (Interlocked.CompareExchange(ref _emptyQueueCompletionSource, new TaskCompletionSource<object>(), null) == null)
+                SpinWait spinWait = new SpinWait();
+                var tcs = new TaskCompletionSource<object>();
+                while (Interlocked.CompareExchange(ref _emptyQueueCompletionSource, tcs, null) != null)
                 {
-                    _emptyQueueTask = _emptyQueueCompletionSource.Task;
-                    _futureTaskWaitingCompletionSource.SetResult(null);
-                    break;
+                    spinWait.SpinOnce();
                 }
 
-                // If pendingTasks is empty, but this.emptyQueueCompletionSource != null,
-                // it is either Callback didn't updated this.emptyQueueCompletionSource yet, or another thread adding a task.
-                // Wait a bit, then retry.
-                spinWait.SpinOnce();
+                _emptyQueueTask = _emptyQueueCompletionSource.Task;
+                _futureTaskWaitingCompletionSource.SetResult(null);
             }
 
-            _pendingTasks.Enqueue(task);
-
-            if (!_paused)
+            if (_pendingTasks.Count > 0 || _paused)
             {
-                _syncContext.Post(_callback, null);
+                _pendingTasks.Enqueue(task);
+            }
+            else
+            {
+                _syncContext.Post(_callback, task);
             }
         }
 
@@ -122,44 +131,33 @@ namespace Microsoft.UnitTests.Core.Threading
             return null;
         }
 
-        private void Callback()
+        private void Callback(Task task)
         {
-            if (_pendingTasks.IsEmpty)
+            task.ContinueWith(AfterTaskExecuted, TaskContinuationOptions.ExecuteSynchronously);
+            TryExecuteTask(task);
+        }
+
+        private void AfterTaskExecuted(Task task)
+        {
+            if (task.IsFaulted && task.Exception != null)
             {
-                return;
+                _exceptions.AddRange(task.Exception.InnerExceptions);
             }
 
-            Task task;
-            List<Exception> exceptions = new List<Exception>();
-
-            while (_pendingTasks.TryPeek(out task))
+            if (Interlocked.Decrement(ref _scheduledTasksCount) == 0)
             {
-                if (task.IsCompleted)
+                Interlocked.Exchange(ref _futureTaskWaitingCompletionSource, new TaskCompletionSource<object>());
+                var exceptions = Interlocked.Exchange(ref _exceptions, new List<Exception>());
+                TaskCompletionSource<object> tcs = Interlocked.Exchange(ref _emptyQueueCompletionSource, null);
+
+                if (exceptions.Any())
                 {
-                    continue;
+                    tcs.SetException(exceptions);
                 }
-
-                TryExecuteTask(task);
-                if (task.IsFaulted && task.Exception != null)
+                else
                 {
-                    exceptions.AddRange(task.Exception.InnerExceptions);
+                    tcs.SetResult(null);
                 }
-
-                // Dequeue task only when it is completed
-                // Callback is called only in scheduler thread, so there will be no concurrency
-                _pendingTasks.TryDequeue(out task);
-            }
-
-            Interlocked.Exchange(ref _futureTaskWaitingCompletionSource, new TaskCompletionSource<object>());
-            TaskCompletionSource<object> tcs = Interlocked.Exchange(ref _emptyQueueCompletionSource, null);
-
-            if (exceptions.Any())
-            {
-                tcs.SetException(exceptions);
-            }
-            else
-            {
-                tcs.SetResult(null);
             }
         }
     }

@@ -8,6 +8,8 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
@@ -49,7 +51,7 @@ namespace Microsoft.R.Editor.Validation
         internal ConcurrentQueue<IValidationError> ValidationResults { get; private set; }
 
         private IEditorTree _editorTree;
-        private bool _validationEnabled = false;
+        private bool _syntaxCheckEnabled = false;
         private bool _validationStarted = false;
 
         private bool _advisedToIdleTime = false;
@@ -74,7 +76,7 @@ namespace Microsoft.R.Editor.Validation
             _editorTree.UpdateCompleted += OnTreeUpdateCompleted;
             _editorTree.Closing += OnTreeClose;
 
-            _validationEnabled = REditorSettings.ValidationEnabled;
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.TextBuffer);
 
             // Advise to settings changed *after* accessing the RSettings, 
             // since accessing the host application (VS) settings object may 
@@ -113,12 +115,12 @@ namespace Microsoft.R.Editor.Validation
         /// </summary>
         public bool IsValidationInProgress
         {
-            get { return _validationEnabled && _validationStarted; }
+            get { return _syntaxCheckEnabled && _validationStarted; }
         }
 
         private void StartValidationNextIdle()
         {
-            if (_validationEnabled)
+            if (_syntaxCheckEnabled)
             {
                 AdviseToIdle();
             }
@@ -160,15 +162,15 @@ namespace Microsoft.R.Editor.Validation
         #region Settings change handler
         private void OnSettingsChanged(object sender, EventArgs e)
         {
-            bool validationWasEnabled = _validationEnabled;
+            bool syntaxCheckWasEnabled = _syntaxCheckEnabled;
 
-            _validationEnabled = REditorSettings.ValidationEnabled;
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.TextBuffer);
 
-            if (validationWasEnabled && !_validationEnabled)
+            if (syntaxCheckWasEnabled && !_syntaxCheckEnabled)
             {
                 StopValidation();
             }
-            else if (!validationWasEnabled && _validationEnabled)
+            else if (!syntaxCheckWasEnabled && _syntaxCheckEnabled)
             {
                 StartValidation();
             }
@@ -178,9 +180,20 @@ namespace Microsoft.R.Editor.Validation
         }
         #endregion
 
+        public static bool IsSyntaxCheckEnabled(ITextBuffer textBuffer)
+        {
+            IREditorDocument document = REditorDocument.FromTextBuffer(textBuffer);
+            if (document != null)
+            {
+                return document.IsTransient ? REditorSettings.SyntaxCheckInRepl : REditorSettings.SyntaxCheck;
+            }
+
+            return false;
+        }
+
         private void StartValidation()
         {
-            if (_validationEnabled && _editorTree != null)
+            if (_syntaxCheckEnabled && _editorTree != null)
             {
                 _validationStarted = true;
                 QueueTreeForValidation();
@@ -214,7 +227,7 @@ namespace Microsoft.R.Editor.Validation
         /// <param name="e"></param>
         private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e)
         {
-            if (_validationEnabled)
+            if (_syntaxCheckEnabled)
             {
                 foreach (var node in e.Nodes)
                 {

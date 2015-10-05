@@ -4,6 +4,7 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Test.Signatures
@@ -15,7 +16,7 @@ namespace Microsoft.R.Editor.Test.Signatures
         [TestMethod]
         public void Settings_TestDefaults()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
 
             Assert.AreEqual(false, REditorSettings.CommitOnSpace);
             Assert.AreEqual(true, REditorSettings.CompletionEnabled);
@@ -24,7 +25,7 @@ namespace Microsoft.R.Editor.Test.Signatures
             Assert.AreEqual(IndentStyle.Smart, REditorSettings.IndentStyle);
             Assert.AreEqual(IndentType.Spaces, REditorSettings.IndentType);
             Assert.AreEqual(4, REditorSettings.TabSize);
-            Assert.AreEqual(true, REditorSettings.ValidationEnabled);
+            Assert.AreEqual(true, REditorSettings.SyntaxCheck);
             Assert.AreEqual(true, REditorSettings.SignatureHelpEnabled);
             Assert.AreEqual(false, REditorSettings.ShowTclFunctions);
             Assert.AreEqual(false, REditorSettings.ShowInternalFunctions);

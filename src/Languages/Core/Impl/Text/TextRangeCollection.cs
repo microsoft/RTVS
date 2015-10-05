@@ -575,7 +575,7 @@ namespace Microsoft.Languages.Core.Text
                             this[i].Shift(offset);
                         }
 
-                        return;
+                        break;
                     }
                     else if (mid < Count - 1 && this[mid].End <= position && position <= this[mid + 1].Start)
                     {
@@ -585,7 +585,7 @@ namespace Microsoft.Languages.Core.Text
                             this[i].Shift(offset);
                         }
 
-                        return;
+                        break;
                     }
 
                     // Position does not belong to this item and is not between item end and next item start
@@ -743,7 +743,7 @@ namespace Microsoft.Languages.Core.Text
         public virtual ICollection<T> ReflectTextChange(int start, int oldLength, int newLength, bool startInclusive)
         {
             int indexStart = GetItemContaining(start);
-            int indexEnd = GetItemContaining(start + oldLength);
+            int indexEnd = oldLength > 0 ? GetItemContaining(start + oldLength) : indexStart;
             ICollection<T> removed = _emptyList;
 
             if (indexStart >= 0 && indexEnd < 0 && start + oldLength == this[indexStart].End)

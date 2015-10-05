@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
 using Microsoft.Html.Core.Tree;
 using Microsoft.Html.Core.Tree.Nodes;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 
@@ -14,7 +16,7 @@ namespace Microsoft.R.Support.Help.Packages
         private string _description;
 
         public PackageInfo(string name, string installPath) :
-            base(name)
+            base(name, NamedItemType.Package)
         {
             InstallPath = installPath;
         }
@@ -171,16 +173,55 @@ namespace Microsoft.R.Support.Help.Packages
                     if (tdNode1.Children.Count == 1 && tdNode1.Children[0].Name.Equals("a", StringComparison.OrdinalIgnoreCase))
                     {
                         string functionName = element.Root.TextProvider.GetText(tdNode1.Children[0].InnerRange);
-                        if (IsValidName(functionName))
+                        if (functionName.IndexOf('&') >= 0)
+                        {
+                            functionName = WebUtility.HtmlDecode(functionName);
+                        }
+                        else if (!IsValidName(functionName))
+                        {
+                            return true;
+                        }
+
+                        NamedItemType itemType = GetItemType(functionName, tdNode1);
+                        if (itemType != NamedItemType.None)
                         {
                             string functionDescription = element.Root.TextProvider.GetText(tdNode2.InnerRange) ?? string.Empty;
-                            _functions.Add(new NamedItemInfo(functionName, functionDescription));
+                            _functions.Add(new NamedItemInfo(functionName, functionDescription, itemType));
                         }
                     }
                 }
 
                 return true;
             }
+
+            private static NamedItemType GetItemType(string name, ElementNode td)
+            {
+                if (Constants.IsConstant(name) || Logicals.IsLogical(name) || name.StartsWith("R_", StringComparison.OrdinalIgnoreCase))
+                {
+                    return NamedItemType.Constant;
+                }
+
+                if (td.Children.Count == 1)
+                {
+                    ElementNode a = td.Children[0];
+                    AttributeNode href = a.GetAttribute("href");
+
+                    if (href != null && href.Value != null)
+                    {
+                        if (href.Value.IndexOf("constant", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            return NamedItemType.Constant;
+                        }
+                        else if (href.Value.IndexOf("-package", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            return NamedItemType.None;
+                        }
+                    }
+                }
+
+                return NamedItemType.Function;
+            }
+
             private bool IsValidName(string name)
             {
                 bool hasCharacters = false;

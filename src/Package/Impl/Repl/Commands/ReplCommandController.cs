@@ -5,6 +5,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Commands;
+using Microsoft.R.Editor.Completion;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -65,17 +66,32 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
         {
             if (group == VSConstants.VSStd2K)
             {
-                if (id == (int)VSConstants.VSStd2KCmdID.TAB)
+                RCompletionController controller = RCompletionController.FromTextView(TextView);
+                if (controller != null)
                 {
-                    CompletionBroker.DismissAllSessions(TextView);
-                    CompletionBroker.TriggerCompletion(TextView);
-                    return CommandResult.Executed;
-                }
-                else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)
-                {
-                    // execute if the expression is complete
-                    ReplWindow.Current.ExecuteCurrentExpression(TextView);
-                    return CommandResult.Executed;
+                    if (id == (int)VSConstants.VSStd2KCmdID.TAB ||
+                       id == (int)VSConstants.VSStd2KCmdID.RETURN)
+                    {
+                        // If completion is up, commit it
+                        if (controller.HasActiveCompletionSession)
+                        {
+                            controller.CommitCompletionSession();
+                            return CommandResult.Executed;
+                        }
+
+                        if (id == (int)VSConstants.VSStd2KCmdID.TAB)
+                        {
+                            controller.DismissAllSessions();
+                            controller.ShowCompletion(autoShownCompletion: true);
+                        }
+                        else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)
+                        {
+                            // execute if the expression is complete
+                            ReplWindow.Current.ExecuteCurrentExpression(TextView);
+                        }
+
+                        return CommandResult.Executed;
+                    }
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Threading;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
@@ -13,6 +14,9 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
 {
+    using R.Packages.R;
+    using Task = System.Threading.Tasks.Task;
+
     /// <summary>
     /// Tracks most recently active REPL window
     /// </summary>
@@ -20,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
     {
         private uint _windowFrameEventsCookie;
         private IVsInteractiveWindow _lastUsedReplWindow;
-        private static Lazy<ReplWindow> _instance = new Lazy<ReplWindow>(() => new ReplWindow());
+        private static readonly Lazy<ReplWindow> _instance = new Lazy<ReplWindow>(() => new ReplWindow());
 
         public ReplWindow()
         {
@@ -28,9 +32,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             _windowFrameEventsCookie = shell.AdviseWindowFrameEvents(this);
         }
 
-        public static ReplWindow Current
+        public static ReplWindow Current => _instance.Value;
+
+        public Task SubmitAsync(IEnumerable<string> input)
         {
-            get { return _instance.Value; }
+            IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
+            if (current != null)
+            {
+                return current.InteractiveWindow.SubmitAsync(input);
+            }
+
+            return Task.CompletedTask;
         }
 
         public void ExecuteCode(string code)
@@ -111,7 +123,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             }
         }
 
-        public static async void EnsureReplWindow()
+        public static async Task EnsureReplWindow()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             if (!ReplWindowExists())

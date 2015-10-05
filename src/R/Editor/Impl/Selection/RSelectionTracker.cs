@@ -16,8 +16,8 @@ namespace Microsoft.R.Editor.Selection
     /// </summary>
     internal sealed class RSelectionTracker : SelectionTracker
     {
-        int _index;
-        int _offset;
+        private int _index;
+        private int _offset;
 
         /// <summary>
         /// SelectionTracker constructor
@@ -43,6 +43,7 @@ namespace Microsoft.R.Editor.Selection
         public override void StartTracking(bool automaticTracking)
         {
             int position = TextView.Caret.Position.BufferPosition;
+            VirtualSpaces = TextView.Caret.Position.VirtualSpaces;
             TokenFromPosition(TextBuffer.CurrentSnapshot, position, out _index, out _offset);
 
             base.StartTracking(false);
@@ -59,7 +60,7 @@ namespace Microsoft.R.Editor.Selection
                 PositionAfterChanges = new SnapshotPoint(TextBuffer.CurrentSnapshot, position);
             }
 
-            MoveToAfterChanges();
+            MoveToAfterChanges(VirtualSpaces);
         }
         #endregion
 
@@ -75,26 +76,41 @@ namespace Microsoft.R.Editor.Selection
             IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(new TextProvider(snapshot), 0, snapshot.Length, true);
 
             // Check if position is adjacent to previous token
-            itemIndex = tokens.GetFirstItemBeforePosition(position);
-            if (itemIndex >= 0 && tokens[itemIndex].End == position)
+            int prevItemIndex = tokens.GetFirstItemBeforePosition(position);
+            if (prevItemIndex >= 0 && tokens[prevItemIndex].End == position)
             {
+                itemIndex = prevItemIndex;
                 offset = -tokens[itemIndex].Length;
                 return;
             }
 
-            itemIndex = tokens.GetFirstItemAfterOrAtPosition(position);
-            if (itemIndex >= 0)
+            int nextItemIndex = tokens.GetFirstItemAfterOrAtPosition(position);
+            if (nextItemIndex >= 0)
             {
                 // If two tokens are adjacent, gravity is negative, i.e. caret travels
                 // with preceding token so it won't just to aniother line if, say, 
                 // formatter decides to insert a new line between tokens.
 
-                if (itemIndex > 0 && tokens[itemIndex - 1].End == tokens[itemIndex].Start)
+                if (nextItemIndex > 0 && tokens[nextItemIndex - 1].End == tokens[nextItemIndex].Start)
                 {
-                    itemIndex--;
+                    nextItemIndex--;
                 }
 
+                offset = tokens[nextItemIndex].Start - position;
+                itemIndex = nextItemIndex;
+                return;
+            }
+
+            // We are past last token
+            if(tokens.Count > 0)
+            {
+                itemIndex = tokens.Count - 1;
                 offset = tokens[itemIndex].Start - position;
+            }
+            else
+            {
+                itemIndex = -1;
+                offset = position;
             }
         }
 

@@ -29,12 +29,12 @@ namespace Microsoft.R.Support.Help.Functions
         #endregion
 
         public FunctionInfo(string name, string description) :
-            base(name, description)
+            base(name, description, NamedItemType.Function)
         {
         }
 
         public FunctionInfo(string name) :
-            base(name)
+            base(name, NamedItemType.Function)
         {
         }
     }

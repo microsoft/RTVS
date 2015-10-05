@@ -1,4 +1,6 @@
 ﻿
+using System.Diagnostics;
+
 namespace Microsoft.Languages.Core.Text
 {
     /// <summary>
@@ -10,6 +12,7 @@ namespace Microsoft.Languages.Core.Text
         /// Creates text range starting at given position and length of zero.
         /// </summary>
         /// <param name="position">Start position</param>
+        [DebuggerStepThrough]
         public TextRange(int position)
             : base(position)
         {
@@ -21,6 +24,7 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="start">Range start</param>
         /// <param name="length">Range length</param>
         /// </summary>
+        [DebuggerStepThrough]
         public TextRange(int start, int length)
             : base(start, length)
         {
@@ -30,6 +34,7 @@ namespace Microsoft.Languages.Core.Text
         /// Creates text range based on another text range
         /// </summary>
         /// <param name="range">Text range to use as position source</param>
+        [DebuggerStepThrough]
         public TextRange(ITextRange range)
             : this(range.Start, range.Length)
         {

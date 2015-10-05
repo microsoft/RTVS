@@ -52,11 +52,15 @@ namespace Microsoft.R.Editor.Signatures
             ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
             if (parametersInfo != null)
             {
-                ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(position, parametersInfo.SignatureEnd - position, SpanTrackingMode.EdgeInclusive);
+                position = Math.Min(parametersInfo.SignatureEnd, position);
+                int start = Math.Min(position, snapshot.Length);
+                int end = Math.Min(parametersInfo.SignatureEnd, snapshot.Length);
+
+                ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
 
                 // Get collection of function signatures from documentation (parsed RD file)
                 IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
-                if (functionInfo != null)
+                if (functionInfo != null && functionInfo.Signatures != null)
                 {
                     foreach (ISignatureInfo signatureInfo in functionInfo.Signatures)
                     {

@@ -92,7 +92,7 @@ namespace Microsoft.R.Core.AST
 
         private static void FindSpecificNode(IAstNode node, int position, Func<IAstNode, bool> match, ref IAstNode deepestNode, bool includeEnd = false)
         {
-            if (!node.Contains(position) && !(includeEnd && node.End == position))
+            if (position == node.Start || (!node.Contains(position) && !(includeEnd && node.End == position)))
             {
                 return; // not this element
             }

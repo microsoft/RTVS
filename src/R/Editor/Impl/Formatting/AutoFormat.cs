@@ -1,4 +1,5 @@
-﻿using Microsoft.Languages.Core.Formatting;
+﻿using System;
+using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
@@ -37,9 +38,10 @@ namespace Microsoft.R.Editor.Formatting
             }
 
             IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-            if (typedChar == '}' && scope != null && scope.OpenCurlyBrace != null)
+            if (typedChar == '}')
             {
-                // If user typed } then fromat the enclosing scope.
+                // If user typed } then fromat the enclosing scope
+                scope = ast.GetNodeOfTypeFromPosition<IScope>(position - 1);
                 formatRange = scope;
             }
             else if (typedChar == '\n' || typedChar == '\r')

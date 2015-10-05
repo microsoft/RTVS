@@ -14,16 +14,48 @@ namespace Microsoft.R.Editor.Tree
     {
         public EditorTree EditorTree { get; private set; }
 
-        public int Start { get; private set; }
+        /// <summary>
+        /// Most recent change start in the previous snapshot
+        /// </summary>
         public int OldStart { get; private set; }
+        /// <summary>
+        /// Most recent change length in the previous snapshot
+        /// </summary>
         public int OldLength { get; private set; }
+
+        /// <summary>
+        /// Most recent change start in the new snapshot
+        /// </summary>
+        public int NewStart { get; private set; }
+
+        /// <summary>
+        /// Most recent change length in the new snapshot
+        /// </summary>
         public int NewLength { get; private set; }
 
+        /// <summary>
+        /// Previous snapshot text
+        /// </summary>
         public ITextProvider OldTextProvider { get; private set; }
+        
+        /// <summary>
+        /// New snapshot text
+        /// </summary>
         public ITextProvider NewTextProvider { get; private set; }
 
-        public TextChange TextChange { get; private set; }
+        /// <summary>
+        /// Changes accumulated since last tree update
+        /// </summary>
+        public TextChange PendingChanges { get; private set; }
+
+        /// <summary>
+        /// Most recently changed node (if change was AST node change)
+        /// </summary>
         public IAstNode ChangedNode { get; set; }
+
+        /// <summary>
+        /// Most recently changed comment (if change was inside comments)
+        /// </summary>
         public RToken ChangedComment { get; set; }
 
         private TextRange _oldRange;
@@ -31,20 +63,35 @@ namespace Microsoft.R.Editor.Tree
         private string _oldText;
         private string _newText;
 
-        public TextChangeContext(EditorTree editorTree, TextChangeEventArgs args, TextChange textChange)
+        public TextChangeContext(EditorTree editorTree, TextChangeEventArgs change, TextChange pendingChanges)
         {
             EditorTree = editorTree;
-            Start = args.Start;
-            OldStart = args.OldStart;
-            OldLength = args.OldLength;
-            NewLength = args.NewLength;
+            NewStart = change.Start;
+            OldStart = change.OldStart;
+            OldLength = change.OldLength;
+            NewLength = change.NewLength;
 
-            OldTextProvider = args.OldText != null ? args.OldText : editorTree.AstRoot.TextProvider;
-            NewTextProvider = args.NewText != null ? args.NewText : new TextProvider(editorTree.TextBuffer.CurrentSnapshot, partial: true);
+            OldTextProvider = change.OldText != null ? change.OldText : editorTree.AstRoot.TextProvider;
+            NewTextProvider = change.NewText != null ? change.NewText : new TextProvider(editorTree.TextBuffer.CurrentSnapshot, partial: true);
 
-            TextChange = textChange;
+            PendingChanges = pendingChanges;
+
+            TextChange textChange = new TextChange();
+
+            textChange.OldRange = this.OldRange;
+            textChange.OldTextProvider = this.OldTextProvider;
+
+            textChange.NewRange = this.NewRange;
+            textChange.NewTextProvider = this.NewTextProvider;
+
+            textChange.Version = this.NewTextProvider.Version;
+
+            PendingChanges.Combine(textChange);
         }
 
+        /// <summary>
+        /// Range of changes in the previous snapshot
+        /// </summary>
         public TextRange OldRange
         {
             get
@@ -56,17 +103,23 @@ namespace Microsoft.R.Editor.Tree
             }
         }
 
+        /// <summary>
+        /// Range of changes in the new snapshot
+        /// </summary>
         public TextRange NewRange
         {
             get
             {
                 if (_newRange == null)
-                    _newRange = new TextRange(Start, NewLength);
+                    _newRange = new TextRange(NewStart, NewLength);
 
                 return _newRange;
             }
         }
 
+        /// <summary>
+        /// Changed text in the previous snapshot
+        /// </summary>
         public string OldText
         {
             get
@@ -78,6 +131,9 @@ namespace Microsoft.R.Editor.Tree
             }
         }
 
+        /// <summary>
+        /// Changed text in the new snapshot
+        /// </summary>
         public string NewText
         {
             get

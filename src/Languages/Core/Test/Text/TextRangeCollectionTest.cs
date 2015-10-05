@@ -405,6 +405,9 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.RemoveInRange(TextRange.FromBounds(5, 6));
             AssertEquals(target, 3, 5);
+
+            Assert.AreEqual(3, target.Start);
+            Assert.AreEqual(5, target.End);
         }
 
         [TestMethod]
@@ -414,6 +417,9 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.RemoveInRange(TextRange.FromBounds(Int32.MinValue / 2, Int32.MaxValue / 2));
             Assert.AreEqual(0, target.Count);
+
+            Assert.AreEqual(0, target.Start);
+            Assert.AreEqual(0, target.End);
         }
 
         [TestMethod]
@@ -422,7 +428,10 @@ namespace Microsoft.Languages.Core.Test.Text
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.RemoveInRange(TextRange.FromBounds(1, 7));
+
             Assert.AreEqual(0, target.Count);
+            Assert.AreEqual(0, target.Start);
+            Assert.AreEqual(0, target.End);
         }
 
         [TestMethod]
@@ -450,6 +459,9 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.RemoveInRange(TextRange.FromBounds(0, 5));
             AssertEquals(target, 5, 7);
+
+            Assert.AreEqual(5, target.Start);
+            Assert.AreEqual(7, target.End);
         }
 
         [TestMethod]
@@ -468,6 +480,9 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.RemoveInRange(TextRange.FromBounds(7, 10));
             Assert.AreEqual(3, target.Count);
+
+            Assert.AreEqual(1, target.Start);
+            Assert.AreEqual(7, target.End);
         }
 
         [TestMethod]
@@ -483,6 +498,9 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.RemoveInRange(TextRange.FromBounds(5, 5), inclusiveEnds: true);
             Assert.AreEqual(1, target.Count);
+
+            Assert.AreEqual(3, target.Start);
+            Assert.AreEqual(5, target.End);
         }
 
         [TestMethod]
@@ -495,6 +513,9 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.ReflectTextChange(0, 1, 0);
             AssertEquals(target, 1, 2, 3, 5, 5, 7);
+
+            Assert.AreEqual(1, target.Start);
+            Assert.AreEqual(7, target.End);
         }
 
         [TestMethod]
@@ -513,6 +534,9 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.ReflectTextChange(7, 1, 0);
             AssertEquals(target, 1, 2, 6, 7);
+
+            Assert.AreEqual(1, target.Start);
+            Assert.AreEqual(7, target.End);
         }
 
         [TestMethod]
@@ -525,6 +549,10 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.ReflectTextChange(0, 15, 20);
             AssertEquals(target);
+
+            Assert.AreEqual(0, target.Count);
+            Assert.AreEqual(0, target.Start);
+            Assert.AreEqual(0, target.End);
         }
 
         [TestMethod]
@@ -535,6 +563,9 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.ReflectTextChange(3, 0, 3);
             AssertEquals(target, 1, 2, 6, 8, 8, 10);
+
+            Assert.AreEqual(1, target.Start);
+            Assert.AreEqual(10, target.End);
         }
 
         [TestMethod]
@@ -550,6 +581,9 @@ namespace Microsoft.Languages.Core.Test.Text
 
             target.ShiftStartingFrom(22, 10);
             AssertEquals(target, 0, 1, 2, 8, 8, 10);
+
+            Assert.AreEqual(0, target.Start);
+            Assert.AreEqual(10, target.End);
         }
 
         [TestMethod]
@@ -562,6 +596,9 @@ namespace Microsoft.Languages.Core.Test.Text
             // testcase for deleting last range which was zero length
             target.ReflectTextChange(1, 1, 0);
             Assert.AreEqual(0, target.Count);
+
+            Assert.AreEqual(0, target.Start);
+            Assert.AreEqual(0, target.End);
         }
 
         [TestMethod]
@@ -594,6 +631,9 @@ namespace Microsoft.Languages.Core.Test.Text
             Assert.AreEqual(1, target[0].Start);
             Assert.AreEqual(3, target[1].Start);
             Assert.AreEqual(5, target[2].Start);
+
+            Assert.AreEqual(1, target.Start);
+            Assert.AreEqual(7, target.End);
         }
     }
 }

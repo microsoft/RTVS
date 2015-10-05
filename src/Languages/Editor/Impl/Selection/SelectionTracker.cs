@@ -16,6 +16,7 @@ namespace Microsoft.Languages.Editor.Selection
 
         protected SnapshotPoint PositionBeforeChanges { get; set; }
         protected SnapshotPoint PositionAfterChanges { get; set; }
+        protected int VirtualSpaces { get; set; }
 
         public SelectionTracker(ITextView textView)
         {
@@ -70,7 +71,7 @@ namespace Microsoft.Languages.Editor.Selection
                 PositionAfterChanges = TextView.Caret.Position.BufferPosition;
             }
 
-            MoveToAfterChanges();
+            MoveToAfterChanges(VirtualSpaces);
         }
 
         /// <summary>
@@ -78,25 +79,25 @@ namespace Microsoft.Languages.Editor.Selection
         /// </summary>
         public void MoveToBeforeChanges()
         {
-            MoveCaretTo(PositionBeforeChanges);
+            MoveCaretTo(PositionBeforeChanges, VirtualSpaces);
         }
 
         /// <summary>
         /// Moves caret to 'after changes' position
         /// </summary>
-        public void MoveToAfterChanges()
+        public void MoveToAfterChanges(int virtualSpaces = 0)
         {
-            MoveCaretTo(PositionAfterChanges);
+            MoveCaretTo(PositionAfterChanges, virtualSpaces);
         }
         #endregion
 
-        protected virtual void MoveCaretTo(SnapshotPoint position)
+        protected virtual void MoveCaretTo(SnapshotPoint position, int virtualSpaces)
         {
             var viewPosition = TextView.BufferGraph.MapUpToBuffer(position, PointTrackingMode.Positive, PositionAffinity.Successor, TextView.TextBuffer);
 
             if (viewPosition.HasValue)
             {
-                TextView.Caret.MoveTo(viewPosition.Value);
+                TextView.Caret.MoveTo(new VirtualSnapshotPoint(viewPosition.Value, virtualSpaces));
 
                 if (TextView.Caret.ContainingTextViewLine.VisibilityState != VisibilityState.FullyVisible)
                 {

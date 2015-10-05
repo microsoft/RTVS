@@ -4,7 +4,9 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
@@ -24,24 +26,30 @@ namespace Microsoft.R.Editor.Completion.Engine
         /// <param name="position">Caret position in the document</param>
         /// <param name="autoShownCompletion">True if completion is forced (like when typing Ctrl+Space)</param>
         /// <returns>List of completion entries for a given location in the AST</returns>
-        public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(AstRoot ast, ITextBuffer textBuffer, int position, bool autoShownCompletion)
+        public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion)
         {
             List<IRCompletionListProvider> providers = new List<IRCompletionListProvider>();
 
-            if (ast.Comments.Contains(position))
+            if (context.AstRoot.Comments.Contains(context.Position))
             {
                 // No completion in comments
                 return providers;
             }
 
-            IAstNode node = ast.NodeFromPosition(position);
+            IAstNode node = context.AstRoot.NodeFromPosition(context.Position);
             if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String)
             {
                 // No completion in strings
                 return providers;
             }
 
-            if (IsPackageListCompletion(textBuffer, position))
+            if(IsInFunctionDefinitionArgumentName(context.AstRoot, context.Position))
+            {
+                // No completion in function definition argument names
+                return providers;
+            }
+
+            if (IsPackageListCompletion(context.TextBuffer, context.Position))
             {
                 providers.Add(new PackagesCompletionProvider());
             }
@@ -50,6 +58,11 @@ namespace Microsoft.R.Editor.Completion.Engine
                 foreach (var p in CompletionProviders)
                 {
                     providers.Add(p.Value);
+                }
+
+                if(!context.IsInNameSpace())
+                {
+                    providers.Add(new PackagesCompletionProvider());
                 }
             }
 
@@ -74,7 +87,7 @@ namespace Microsoft.R.Editor.Completion.Engine
             }
         }
 
-        private static bool IsPackageListCompletion(ITextBuffer textBuffer, int position)
+        internal static bool IsPackageListCompletion(ITextBuffer textBuffer, int position)
         {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
@@ -127,6 +140,55 @@ namespace Microsoft.R.Editor.Completion.Engine
                 }
 
                 tokens.MoveToNextToken();
+            }
+
+            return false;
+        }
+
+        internal static bool IsInFunctionDefinitionArgumentName(AstRoot ast, int position)
+        {
+            FunctionDefinition funcDef = ast.GetNodeOfTypeFromPosition<FunctionDefinition>(position);
+            if(funcDef == null || funcDef.OpenBrace == null || funcDef.Arguments == null)
+            {
+                return false;
+            }
+
+            if(position < funcDef.OpenBrace.End || position >= funcDef.SignatureEnd)
+            {
+                return false;
+            }
+
+            int start = funcDef.OpenBrace.End;
+            int end = funcDef.SignatureEnd;
+
+            if (funcDef.Arguments.Count == 0 && position >= start && position <= end)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < funcDef.Arguments.Count; i++)
+            {
+                CommaSeparatedItem csi = funcDef.Arguments[i];
+                NamedArgument na = csi as NamedArgument;
+
+                if(position < csi.Start)
+                {
+                    break;
+                }
+
+                end = csi.End;
+                if (position >= start && position <= end)
+                {
+                    if(na == null)
+                    {
+                        return true; // Suppress intellisense
+                    }
+
+                    if(position <= na.EqualsSign.Start)
+                    {
+                        return true; // Suppress intellisense
+                    }
+                }
             }
 
             return false;

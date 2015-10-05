@@ -29,6 +29,7 @@ namespace Microsoft.Languages.Core.Text
         /// <summary>
         /// Creates text range starting at position 0 and length of 0
         /// </summary>
+        [DebuggerStepThrough]
         public TextRange()
             : this(0)
         {
@@ -50,6 +51,7 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="start">Range start</param>
         /// <param name="length">Range length</param>
         /// </summary>
+        [DebuggerStepThrough]
         public TextRange(int start, int length)
         {
             if (length < 0)
@@ -73,6 +75,7 @@ namespace Microsoft.Languages.Core.Text
         /// <summary>
         /// Resets text range to (0, 0)
         /// </summary>
+        [DebuggerStepThrough]
         public void Empty()
         {
             _start = 0;

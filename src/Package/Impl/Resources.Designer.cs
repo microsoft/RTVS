@@ -106,6 +106,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
+        /// </summary>
+        internal static string InputIsTooLong {
+            get {
+                return ResourceManager.GetString("InputIsTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R.
         /// </summary>
         internal static string LanguageName {
@@ -160,7 +169,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Markdown Files (*.md;*.markdown)|*.md;*.markdown|All Files (*.*)|*.*.
+        ///   Looks up a localized string similar to Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|All Files (*.*)|*.*.
         /// </summary>
         internal static string SaveAsFilterMD {
             get {
@@ -300,6 +309,24 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Settings_ReplCategory {
             get {
                 return ResourceManager.GetString("Settings_ReplCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syntax check in R Console.
+        /// </summary>
+        internal static string Settings_ReplSyntaxCheck {
+            get {
+                return ResourceManager.GetString("Settings_ReplSyntaxCheck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Turns on or off live code syntax check in R Console window. Syntax check may not work correctly in multi-line statements..
+        /// </summary>
+        internal static string Settings_ReplSyntaxCheck_Description {
+            get {
+                return ResourceManager.GetString("Settings_ReplSyntaxCheck_Description", resourceCulture);
             }
         }
         

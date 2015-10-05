@@ -1,8 +1,8 @@
 ﻿using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Mocks;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -17,7 +17,7 @@ namespace Microsoft.Markdown.Editor.Test.Utility
 
         public static ITextView MakeTextView(string content, int caretPosition)
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(MarkdownTestCompositionCatalog.Current));
 
             ITextBuffer textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
             return new TextViewMock(textBuffer, caretPosition);

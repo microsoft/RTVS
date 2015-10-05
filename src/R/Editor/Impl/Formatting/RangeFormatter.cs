@@ -5,6 +5,10 @@ using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Expressions;
+using Microsoft.R.Core.AST.Functions;
+using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Selection;
@@ -44,10 +48,11 @@ namespace Microsoft.R.Editor.Formatting
             ITextSnapshotLine endLine = snapshot.GetLineFromPosition(end);
 
             Span spanToFormat = Span.FromBounds(startLine.Start, endLine.End);
-            string spanText = snapshot.GetText(spanToFormat.Start, spanToFormat.Length).Trim();
+            string spanText = snapshot.GetText(spanToFormat.Start, spanToFormat.Length);
+            string trimmedSpanText = spanText.Trim();
 
             RFormatter formatter = new RFormatter(options);
-            string formattedText = formatter.Format(spanText);
+            string formattedText = formatter.Format(trimmedSpanText);
 
             formattedText = formattedText.Trim(); // there may be inserted line breaks after {
             formattedText = AppendIndent(textView.TextBuffer, spanToFormat.Start, ast, formattedText, options);
@@ -74,20 +79,21 @@ namespace Microsoft.R.Editor.Formatting
             string lineText = line.GetText();
             int textIndentInSpaces;
 
+            if (RespectUserIndent(textBuffer, ast, position))
+            {
+                textIndentInSpaces = IndentBuilder.TextIndentInSpaces(lineText, options.TabSize);
+            }
+            else
+            {
+                textIndentInSpaces = SmartIndenter.GetSmartIndent(line, ast);
+            }
+
             // Figure out indent from the enclosing scope
             IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
 
             // Check if position is actually inside the scope.
             // In range formatting it may be outside as in |{...}|
-            // and in this case we want one level less of indentation.
-            if (scope != null && scope.OpenCurlyBrace != null && position >= scope.OpenCurlyBrace.End)
-            {
-                textIndentInSpaces = SmartIndenter.InnerIndentSizeFromScope(textBuffer, scope, options);
-            }
-            else
-            {
-                textIndentInSpaces = SmartIndenter.OuterIndentSizeFromScope(textBuffer, scope, options);
-            }
+            // and in this case we want one level less of indentation.          
 
             string indentString = IndentBuilder.GetIndentString(textIndentInSpaces, options.IndentType, options.TabSize);
             int outerIndentInSpaces = SmartIndenter.OuterIndentSizeFromScope(textBuffer, scope, options);
@@ -100,7 +106,7 @@ namespace Microsoft.R.Editor.Formatting
             {
                 lineText = lines[i];
 
-                if(i == lines.Count-1 && lineText.Trim() == "}")
+                if (i == lines.Count - 1 && lineText.Trim() == "}")
                 {
                     sb.Append(outerIndentString);
                     sb.Append('}');
@@ -111,7 +117,7 @@ namespace Microsoft.R.Editor.Formatting
                 if (!string.IsNullOrWhiteSpace(lineText))
                 {
                     sb.Append(indentString);
-                 }
+                }
 
                 sb.Append(lineText);
 
@@ -120,6 +126,57 @@ namespace Microsoft.R.Editor.Formatting
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Determines if a given position is in area where user
+        /// specified indentation must be respected. For example,
+        /// in multi-line list of function arguments, 
+        /// multi-line expressions and so on.
+        /// </summary>
+        private static bool RespectUserIndent(ITextBuffer textBuffer, AstRoot ast, int position)
+        {
+            // Look up nearest expression
+            IAstNode node = ast.GetNodeOfTypeFromPosition<Expression>(position);
+            if(IsMultilineNode(textBuffer, node))
+            {
+                return true;
+            }
+
+            node = ast.GetNodeOfTypeFromPosition<FunctionDefinition>(position);
+            if (IsMultilineNode(textBuffer, node))
+            {
+                return true;
+            }
+
+            node = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
+            if (IsMultilineNode(textBuffer, node))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsMultilineNode(ITextBuffer textBuffer, IAstNode node)
+        {
+            if(node == null)
+            {
+                return false;
+            }
+
+            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
+            int length = snapshot.Length;
+
+            if (node.End < length)
+            {
+                ITextSnapshotLine startLine = textBuffer.CurrentSnapshot.GetLineFromPosition(node.Start);
+                ITextSnapshotLine endLine = textBuffer.CurrentSnapshot.GetLineFromPosition(node.End);
+
+                return startLine.LineNumber != endLine.LineNumber;
+            }
+
+            return true;
         }
     }
 }

@@ -14,14 +14,8 @@ namespace Microsoft.R.Editor.Application.Test.Typing
         //[TestMethod]
         public void TypeFile_R()
         {
-            string actual = TypeFileInEditor("01.r", RContentTypeDefinition.ContentType);
-            string expected =
-@"library(abind)
-x <- function (x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
-          yname = NULL)
-{
-    abind(a, )
-}";
+            string actual = TypeFileInEditor("lsfit-part.r", RContentTypeDefinition.ContentType);
+            string expected ="";
             Assert.AreEqual(expected, actual);
         }
 

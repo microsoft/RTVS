@@ -6,11 +6,13 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Mocks;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Markdown.Editor.Classification;
+using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.Markdown.Editor.Test.Utility;
+using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -27,7 +29,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification
         [TestMethod]
         public void ClassifyMarkdownFileTest01()
         {
-            EditorShell.SetShell(TestEditorShell.Create());
+            EditorShell.SetShell(TestEditorShell.Create(MarkdownTestCompositionCatalog.Current));
             ClassifyFile(TestContext, @"Classification\01.md");
         }
 
@@ -40,7 +42,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification
 
                 TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
-                IEditorShell shell = TestEditorShell.Create();
+                IEditorShell shell = TestEditorShell.Create(MarkdownTestCompositionCatalog.Current);
                 MdClassifierProvider classifierProvider = new MdClassifierProvider();
                 shell.CompositionService.SatisfyImportsOnce(classifierProvider);
 

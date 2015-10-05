@@ -28,6 +28,71 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
+        public void RangeFormatter_EmptyArgumentsTest01()
+        {
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView("c(,,)", out ast);
+
+            RangeFormatter.FormatRange(textView, TextRange.EmptyRange, ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected = "c(,,)";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void RangeFormatter_EmptyArgumentsTest02()
+        {
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView("c[,,]", out ast);
+
+            RangeFormatter.FormatRange(textView, TextRange.EmptyRange, ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected = "c[,,]";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void RangeFormatter_EmptyArgumentsTest03()
+        {
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView("c[[,,]]", out ast);
+
+            RangeFormatter.FormatRange(textView, TextRange.EmptyRange, ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected = "c[[,,]]";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void RangeFormatter_ArgumentsTest01()
+        {
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView("c[[a,,]]", out ast);
+
+            RangeFormatter.FormatRange(textView, TextRange.EmptyRange, ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected = "c[[a,,]]";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void RangeFormatter_ArgumentsTest02()
+        {
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView("c[[a,b,]]", out ast);
+
+            RangeFormatter.FormatRange(textView, TextRange.EmptyRange, ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected = "c[[a, b,]]";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void RangeFormatter_FormatConditionalTest01()
         {
             AstRoot ast;
@@ -90,6 +155,22 @@ x<-1
         }
 
         [TestMethod]
+        public void RangeFormatter_FormatConditionalTest04()
+        {
+            AstRoot ast;
+            string original = "if (x > 1)\r\ny<-2";
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
+
+            RangeFormatter.FormatRange(textView, new TextRange(original.IndexOf('y'), 0), ast, new RFormatOptions());
+
+            string expected = "if (x > 1)\r\n    y <- 2";
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        [TestMethod]
         public void RangeFormatter_FormatOneLine()
         {
             AstRoot ast;
@@ -118,6 +199,32 @@ foo(cache=TRUE)
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
             Assert.AreEqual("{\r\n}", actual);
+        }
+
+        [TestMethod]
+        public void RangeFormatter_FormatScopeLessIf01()
+        {
+            string original =
+@"
+if (x != nrx) 
+    stop()
+    if (z < ncx)
+    stop()
+";
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
+
+            RangeFormatter.FormatRange(textView, new TextRange(original.IndexOf("if (z"), 0), ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected = 
+@"
+if (x != nrx) 
+    stop()
+if (z < ncx)
+    stop()
+";
+
+            Assert.AreEqual(expected, actual);
         }
     }
 }

@@ -97,17 +97,19 @@
     <Compile Include="Document\R\VsREditorDocument.cs" />
     <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
     <Compile Include="Editors\IObjectInstanceFactory.cs" />
-    <Compile Include="Editors\MdEditorFactory.cs" />
-    <Compile Include="Languages\MdLanguageService.cs" />
+    <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
+    <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
     <Compile Include="Packages\CommandIDs.cs" />
+    <Compile Include="Packages\ShowBraceCompletionAttribute.cs" />
     <Compile Include="Plots\PlotWindowPane.cs" />
     <Compile Include="Plots\XamlPresenter.xaml.cs">
       <DependentUpon>XamlPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Packages\Markdown\MdPackage.cs" />
     <Compile Include="Packages\Markdown\MdGuidList.cs" />
+    <Compile Include="ProjectSystem\Exports.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
@@ -157,10 +159,10 @@
     </Compile>
     <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\AppShell.cs" />
-    <Compile Include="Editors\REditorFactory.cs" />
+    <Compile Include="Packages\R\REditorFactory.cs" />
     <Compile Include="Shell\IApplicationShell.cs" />
     <Compile Include="Packages\R\RGuidList.cs" />
-    <Compile Include="Languages\RLanguageService.cs" />
+    <Compile Include="Packages\R\RLanguageService.cs" />
     <Compile Include="Editors\TextBufferInitializationTracker.cs" />
     <Compile Include="Editors\BaseEditorFactory.cs" />
     <Compile Include="Languages\BaseLanguageService.cs" />
