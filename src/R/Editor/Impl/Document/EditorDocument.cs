@@ -131,7 +131,7 @@ namespace Microsoft.R.Editor.Document
                     if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType))
                     {
                         document = ServiceManager.GetService<REditorDocument>(tb);
-                        if(document != null)
+                        if (document != null)
                         {
                             return true;
                         }
@@ -144,6 +144,34 @@ namespace Microsoft.R.Editor.Document
             return document;
         }
 
+        /// <summary>
+        /// Locates first R buffer in the projection buffer graph.
+        /// Note that in REPL this may not be the active buffer.
+        /// In REPL used <see cref="FindInProjectedBuffers"/>.
+        /// </summary>
+        /// <param name="viewBuffer"></param>
+        /// <returns></returns>
+        public static ITextBuffer FindRBuffer(ITextBuffer viewBuffer)
+        {
+            if (viewBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType))
+            {
+                return viewBuffer;
+            }
+
+            // Try locating R buffer
+            ITextBuffer rBuffer = null;
+            IProjectionBuffer pb = viewBuffer as IProjectionBuffer;
+            if (pb != null)
+            {
+                rBuffer = pb.SourceBuffers.FirstOrDefault((ITextBuffer tb) =>
+                {
+                    return tb.ContentType.IsOfType(RContentTypeDefinition.ContentType);
+                });
+            }
+
+            return rBuffer;
+        }
+
         public static SnapshotPoint? MapCaretPositionFromView(ITextView textView)
         {
             int caretPosition = textView.Caret.Position.BufferPosition;
@@ -153,9 +181,32 @@ namespace Microsoft.R.Editor.Document
 
         public static SnapshotPoint? MapPointFromView(ITextView textView, SnapshotPoint point)
         {
+            ITextBuffer rBuffer;
+            SnapshotPoint? documentPoint = null;
+
             IREditorDocument document = REditorDocument.FindInProjectedBuffers(textView.TextBuffer);
-            ITextBuffer documentBuffer = document.TextBuffer;
-            SnapshotPoint? documentPoint = textView.BufferGraph.MapDownToBuffer(point, PointTrackingMode.Positive, documentBuffer, PositionAffinity.Predecessor);
+            if (document != null)
+            {
+                rBuffer = document.TextBuffer;
+            }
+            else
+            {
+                // Last resort, typically in unit tests when document is not available
+                rBuffer = REditorDocument.FindRBuffer(textView.TextBuffer);
+            }
+
+            if (rBuffer != null)
+            {
+                if (textView.BufferGraph != null)
+                {
+                    documentPoint = textView.BufferGraph.MapDownToBuffer(point, PointTrackingMode.Positive, rBuffer, PositionAffinity.Predecessor);
+                }
+                else
+                {
+                    documentPoint = point;
+                }
+            }
+
             return documentPoint;
         }
 

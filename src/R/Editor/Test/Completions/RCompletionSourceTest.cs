@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Test.Completions
             GetCompletions("", 0, completionSets);
 
             Assert.AreEqual(1, completionSets.Count);
-            Assert.AreEqual(2326, completionSets[0].Completions.Count);
+            Assert.AreEqual(2367, completionSets[0].Completions.Count);
 
             Completion x = completionSets[0].Completions.FirstOrDefault((Completion c) => c.DisplayText == "abbreviate");
             Assert.IsNotNull(x);
@@ -52,7 +52,7 @@ namespace Microsoft.R.Editor.Test.Completions
             Assert.AreEqual(1, completionSets.Count);
 
             completionSets[0].Filter();
-            Assert.AreEqual(104, completionSets[0].Completions.Count);
+            Assert.AreEqual(106, completionSets[0].Completions.Count);
 
             Assert.AreEqual("F", completionSets[0].Completions[0].DisplayText);
             Assert.AreEqual("Logical Vectors", completionSets[0].Completions[0].Description);
@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Test.Completions
             Assert.AreEqual(1, completionSets.Count);
 
             completionSets[0].Filter();
-            Assert.AreEqual(104, completionSets[0].Completions.Count);
+            Assert.AreEqual(106, completionSets[0].Completions.Count);
 
             Completion x = completionSets[0].Completions.FirstOrDefault((Completion c) => c.DisplayText == "for");
             Assert.IsNotNull(x);
