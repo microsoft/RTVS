@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core.Collections
 {
-    public class AwaitableConcurrentQueue<T> : IReadOnlyCollection<T>
+    public class AsyncConcurrentQueue<T> : IReadOnlyCollection<T>
     {
         private readonly ConcurrentQueue<T> _queue = new ConcurrentQueue<T>();
         private readonly ConcurrentQueue<TaskCompletionSource<T>> _pendingDequeue = new ConcurrentQueue<TaskCompletionSource<T>>();

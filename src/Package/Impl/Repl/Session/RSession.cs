@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
     internal sealed class RSession : IRSession, IRCallbacks
     {
-        private readonly AwaitableConcurrentQueue<RSessionRequestSource> _pendingRequestSources = new AwaitableConcurrentQueue<RSessionRequestSource>();
+        private readonly AsyncConcurrentQueue<RSessionRequestSource> _pendingRequestSources = new AsyncConcurrentQueue<RSessionRequestSource>();
         private readonly ConcurrentQueue<RSessionEvaluationSource> _pendingEvaluationSources = new ConcurrentQueue<RSessionEvaluationSource>();
         private readonly Stack<RSessionRequestSource> _currentRequestSources = new Stack<RSessionRequestSource>();
 

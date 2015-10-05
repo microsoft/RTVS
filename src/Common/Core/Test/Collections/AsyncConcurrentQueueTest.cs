@@ -8,12 +8,12 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Common.Core.Test.Collections
 {
-    public class AwaitableConcurrentQueueTest
+    public class AsyncConcurrentQueueTest
     {
         [Test]
         public async Task DequeueAwaitEnqueue()
         {
-            var queue = new AwaitableConcurrentQueue<int>();
+            var queue = new AsyncConcurrentQueue<int>();
             Delay().ContinueWith(_ => queue.Enqueue(5)).DoNotWait();
             var result = await queue.DequeueAsync();
             result.Should().Be(5);
@@ -22,7 +22,7 @@ namespace Microsoft.Common.Core.Test.Collections
         [Test]
         public async Task DequeueDequeueAwaitEnqueueEnqueue()
         {
-            var queue = new AwaitableConcurrentQueue<int>();
+            var queue = new AsyncConcurrentQueue<int>();
             var t1 = queue.DequeueAsync();
             var t2 = queue.DequeueAsync();
 
@@ -46,7 +46,7 @@ namespace Microsoft.Common.Core.Test.Collections
         [Test]
         public async Task EnqueueDequeueDequeueEnqueue()
         {
-            var queue = new AwaitableConcurrentQueue<int>();
+            var queue = new AsyncConcurrentQueue<int>();
             Task<int> t1 = null;
             Task<int> t2 = null;
             Action<Task> a1 = _ => queue.Enqueue(1);
@@ -72,7 +72,7 @@ namespace Microsoft.Common.Core.Test.Collections
         public async Task EnqueueDequeue1000()
         {
             var count = 1000;
-            var queue = new AwaitableConcurrentQueue<int>();
+            var queue = new AsyncConcurrentQueue<int>();
             var dequeueTasks = new ConcurrentQueue<Task<int>>();
             var input = Enumerable.Range(0, count).ToList();
 

@@ -102,7 +102,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Collections\AwaitableConcurrentQueueTest.cs" />
+    <Compile Include="Collections\AsyncConcurrentQueueTest.cs" />
     <Compile Include="Disposables\CountdownDisposableTest.cs" />
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
