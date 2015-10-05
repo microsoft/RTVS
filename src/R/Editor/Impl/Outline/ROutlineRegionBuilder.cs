@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
@@ -175,7 +176,7 @@ namespace Microsoft.R.Editor.Outline
 
         private bool OutlineNode(IAstNode node, out int startLineNumber, out int endLineNumber)
         {
-            if (node is AstRoot)
+            if (node is AstRoot || node is GlobalScope)
             {
                 startLineNumber = endLineNumber = 0;
                 return false;
