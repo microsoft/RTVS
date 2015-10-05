@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define USERINTERACTION // BUGBUG: BeginEvaluationAsync doesn't work!
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -83,27 +85,47 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
             return Task.FromResult(_variables);
         }
 
-        
+        #endregion
+
+#if USERINTERACTION
+        private bool fRefreshing = false;
+
         private async Task RefreshVariableCollection()
         {
-#if false
+
+            if (fRefreshing)
+            {
+                return;
+            }
+            fRefreshing = true;
             using (var interactor = await _rSession.BeginInteractionAsync(false))
             {
                 var response = await interactor.RespondAsync("ls.str(.GlobalEnv)\r\n");  // TODO: for now, global environment
-                _variables =  RVariableCollection.Parse(response);  // TODO: BUGBUG: make thread safe!
+                _variables = RVariableCollection.Parse(response);  // TODO: BUGBUG: make thread safe!
+
             }
+
+            // no await
+            Task.Run(async () =>
+            {
+                Task.Delay(100);
+                fRefreshing = false;
+            });
+        }
+
 #else
+        private async Task RefreshVariableCollection()
+        {
             using (var interactor = await _rSession.BeginEvaluationAsync())
             {
-                var response = await interactor.EvaluateAsync("x\r\n");
+                var response = await interactor.EvaluateAsync("ls.str(.GlobalEnv)\r\n");
                 if (response.ParseStatus == RParseStatus.OK)
                 {
                     _variables = RVariableCollection.Parse(response.Result);  // TODO: BUGBUG: make thread safe!
                 }
             }
-#endif
         }
-
-        #endregion
+#endif
     }
+    
 }
