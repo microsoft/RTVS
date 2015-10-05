@@ -7,7 +7,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
     internal sealed class RSessionRequestSource
     {
-        private readonly TaskCompletionSource<string> _requestTcs;
         private readonly TaskCompletionSource<IRSessionInteraction> _createRequestTcs;
         private readonly TaskCompletionSource<string> _responseTcs;
         private StringBuilder _sb;
@@ -16,21 +15,19 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
         public bool IsVisible { get; }
         public IReadOnlyCollection<IRContext> Contexts { get; }
 
-        public RSessionRequestSource(bool isVisible, IReadOnlyCollection<IRContext> contexts, TaskCompletionSource<string> requestTcs = null)
+        public RSessionRequestSource(bool isVisible, IReadOnlyCollection<IRContext> contexts)
         {
             _createRequestTcs = new TaskCompletionSource<IRSessionInteraction>();
-            _requestTcs = requestTcs ?? new TaskCompletionSource<string>();
             _responseTcs = new TaskCompletionSource<string>();
 
             IsVisible = isVisible;
             Contexts = contexts ?? new[] { RHost.TopLevelContext };
         }
 
-        public Task<string> BeginInteractionAsync(string prompt, int maxLength)
+        public void Request(string prompt, int maxLength, TaskCompletionSource<string> requestTcs)
         {
-            var request = new RSessionInteraction(_requestTcs, _responseTcs, prompt, maxLength, Contexts);
+            var request = new RSessionInteraction(requestTcs, _responseTcs, prompt, maxLength, Contexts);
             _createRequestTcs.SetResult(request);
-            return _requestTcs.Task;
         }
 
         public void Fail(string text)
