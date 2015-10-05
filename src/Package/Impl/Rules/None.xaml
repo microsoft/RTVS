@@ -30,13 +30,13 @@
     </StringProperty.DataSource>
   </StringProperty>
 
-  <StringProperty Name="FullPath" DisplayName="Full Path" ReadOnly="true" Category="General" F1Keyword="javascript.project.property.fullpath" Description="Location of the file.">
+  <StringProperty Name="FullPath" Visible="true" DisplayName="Full Path" ReadOnly="true" Category="General" Description="Location of the file.">
     <StringProperty.DataSource>
       <DataSource Persistence="Intrinsic" ItemType="None" PersistedName="FullPath" />
     </StringProperty.DataSource>
   </StringProperty>
 
-  <StringProperty Name="FileNameAndExtension" DisplayName="File Name" ReadOnly="true" Category="General" F1Keyword="javascript.project.property.filename" Description="Name of the file or folder.">
+  <StringProperty Name="FileNameAndExtension" Visible="true" DisplayName="File Name" ReadOnly="true" Category="General" Description="Name of the file or folder.">
     <StringProperty.DataSource>
       <DataSource Persistence="Intrinsic" ItemType="None" PersistedName="FileNameAndExtension" />
     </StringProperty.DataSource>
