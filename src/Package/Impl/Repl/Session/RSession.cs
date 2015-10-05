@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Collections;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
@@ -16,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
     internal sealed class RSession : IRSession, IRCallbacks
     {
-        private readonly ConcurrentQueue<RSessionRequestSource> _pendingRequestSources = new ConcurrentQueue<RSessionRequestSource>();
+        private readonly AwaitableConcurrentQueue<RSessionRequestSource> _pendingRequestSources = new AwaitableConcurrentQueue<RSessionRequestSource>();
         private readonly ConcurrentQueue<RSessionEvaluationSource> _pendingEvaluationSources = new ConcurrentQueue<RSessionEvaluationSource>();
         private readonly Stack<RSessionRequestSource> _currentRequestSources = new Stack<RSessionRequestSource>();
 
@@ -28,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
         /// <summary>
         /// ReadConsole requires a task even if there are no pending requests
         /// </summary>
-        private TaskCompletionSource<string> _nextRequestTcs;
         private IReadOnlyCollection<IRContext> _contexts;
         private RHost _host;
         private Task _hostRunTask;
@@ -45,20 +45,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true)
         {
-            var requestTcs = GetRequestTcs();
-            RSessionRequestSource requestSource;
-            if (requestTcs == null)
-            {
-                requestSource = new RSessionRequestSource(isVisible, _contexts);
-                _pendingRequestSources.Enqueue(requestSource);
-            }
-            else
-            {
-                requestSource = new RSessionRequestSource(isVisible, _contexts, requestTcs);
-                requestSource.BeginInteractionAsync(Prompt, MaxLength);
-                _currentRequestSources.Push(requestSource);
-            }
-
+            RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, _contexts);
+            _pendingRequestSources.Enqueue(requestSource);
             return requestSource.CreateRequestTask;
         }
 
@@ -78,9 +66,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
-            _hostRunTask = _host.CreateAndRun(RToolsSettings.GetRVersionPath());
+            _hostRunTask = Task.Run(() => _host.CreateAndRun(RToolsSettings.GetRVersionPath()));
 
-            return Task.WhenAny(_initializationTcs.Task, _hostRunTask).Unwrap();
+            var initializationTask = _initializationTcs.Task.ContinueWith(new Func<Task, Task>(AfterInitialization));
+
+            return Task.WhenAny(initializationTask, _hostRunTask).Unwrap();
         }
 
         public async Task StopHostAsync()
@@ -101,31 +91,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             await _hostRunTask;
         }
 
-        private TaskCompletionSource<string> GetRequestTcs()
+        private async Task AfterInitialization(Task task)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                var requestTsc = Interlocked.Exchange(ref _nextRequestTcs, null);
-                if (requestTsc != null)
-                {
-                    return requestTsc;
-                }
-
-                if (_pendingRequestSources.Count > 0)
-                {
-                    return null;
-                }
-
-                // If R host isn't connected yet, return null
-                if (_contexts == null)
-                {
-                    return null;
-                }
-
-                // There is either another request that is created or ReadConsole hasn't yet created request tcs for empty queue
-                spin.SpinOnce();
-            }
+            var interaction = await BeginInteractionAsync(false);
+            await interaction.SetDefaultWorkingDirectory();
         }
 
         Task IRCallbacks.Connected(string rVersion)
@@ -165,12 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             {
                 try
                 {
-                    string response = await ReadNextRequest(contexts, prompt, len);
-                    Debug.Assert(response.Length < len); // len includes null terminator
-                    if (response.Length >= len) {
-                        response = response.Substring(0, len - 1);
-                    }
-                    return response;
+                    return await ReadNextRequest(prompt, len);
                 }
                 catch (TaskCanceledException)
                 {
@@ -179,19 +143,23 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             }
         }
 
-        private Task<string> ReadNextRequest(IReadOnlyCollection<IRContext> contexts, string prompt, int len)
+        private async Task<string> ReadNextRequest(string prompt, int len)
         {
-            RSessionRequestSource requestSource;
-            if (_pendingRequestSources.TryPeek(out requestSource) && requestSource.Contexts.SequenceEqual(contexts))
+            var requestSource = await _pendingRequestSources.DequeueAsync();
+
+            TaskCompletionSource<string> requestTcs = new TaskCompletionSource<string>();
+            _currentRequestSources.Push(requestSource);
+            requestSource.Request(prompt, len, requestTcs);
+
+            string response = await requestTcs.Task;
+
+            Debug.Assert(response.Length < len); // len includes null terminator
+            if (response.Length >= len)
             {
-                _pendingRequestSources.TryDequeue(out requestSource);
-                _currentRequestSources.Push(requestSource);
-                return requestSource.BeginInteractionAsync(prompt, len);
+                response = response.Substring(0, len - 1);
             }
 
-            // If there are no pending requests, create tcs that will be used by the first newly added request
-            _nextRequestTcs = new TaskCompletionSource<string>();
-            return _nextRequestTcs.Task;
+            return response;
         }
 
         Task IRCallbacks.WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, string buf, OutputType otype)
