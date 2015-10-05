@@ -83,10 +83,20 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Show Plot Windows</ButtonText>
+          <ButtonText>R Plot Window</ButtonText>
         </Strings>
       </Button>
-      
+
+      <!-- Plot window in Other Window -->
+      <Button guid="guidVariableWindowCmdSet" id="cmdidShowVariableWindow" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>R Environment</ButtonText>
+        </Strings>
+      </Button>
+
       <!-- Plot window toolbar -->
       <Button guid="guidPlotWindowCmdSet" id="cmdidOpenPlot" priority="0x0100" type="Button">
         <Parent guid="guidPlotWindowCmdSet" id="plotToolbarGroup"/>
@@ -272,8 +282,7 @@
     <!-- Markdown Editor Factory Guid -->
     <GuidSymbol name="CMDUIGUID_MD_EDITOR" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
 
-    <!-- Show Plot Commands 
-    TODO: is it the right and best place? -->
+    <!-- Show Plot Commands -->
     <GuidSymbol name="guidPlotWindowCmdSet" value="{FE3D0077-CFD8-4178-A755-9B98D0FB6458}">
       <!-- Commands -->
       <IDSymbol name="cmdidShowPlotWindow" value="0x0100" />
@@ -286,6 +295,11 @@
       <IDSymbol name="menuIdPlotToolbar" value="0x2000" />
     </GuidSymbol>
 
+    <GuidSymbol name="guidVariableWindowCmdSet" value="{2B1E7C82-63EA-498B-A6A2-10B6489FA090}">
+      <!-- Commands -->
+      <IDSymbol name="cmdidShowVariableWindow" value="0x0100" />
+    </GuidSymbol>
+    
     <GuidSymbol name="guidPlotToolbarImages" value="{4926B34F-1AE5-4CAE-BBD4-1548E77D2033}" >
       <IDSymbol name="bmpOpenPlot" value="0x01" />
     </GuidSymbol>

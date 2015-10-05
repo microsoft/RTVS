@@ -1,16 +1,15 @@
 ﻿using System;
 using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Plots
+namespace Microsoft.VisualStudio.R.Controls
 {
     public class PlotWindowPane : ToolWindowPane
     {
@@ -136,7 +135,7 @@ Please open a file to show XAML file here.
                 {
                     for (int i = 0; i < cCmds; i++)
                     {
-                        switch(prgCmds[i].cmdID)
+                        switch (prgCmds[i].cmdID)
                         {
                             case CommandIDs.cmdidOpenPlot:
                                 prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_ENABLED | OLECMDF.OLECMDF_SUPPORTED);

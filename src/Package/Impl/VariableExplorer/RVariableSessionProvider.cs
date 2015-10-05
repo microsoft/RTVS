@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.VariableWindow;
 
 namespace Microsoft.VisualStudio.R.Package.VariableExplorer
 {
-    [Export(typeof(IVariableSessionProvider))]
+    //[Export(typeof(IVariableSessionProvider))]
     class RVariableSessionProvider : IVariableSessionProvider
     {
         private List<RVariableSession> _variableSessions;
