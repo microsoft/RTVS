@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             _initializationTcs = new TaskCompletionSource<object>();
             _hostRunTask = Task.Run(() => _host.CreateAndRun(RToolsSettings.GetRVersionPath()));
 
-            var initializationTask = _initializationTcs.Task.ContinueWith(new Func<Task, Task>(AfterInitialization));
+            var initializationTask = _initializationTcs.Task.ContinueWith(new Func<Task, Task>(AfterInitialization)).Unwrap();
 
             return Task.WhenAny(initializationTask, _hostRunTask).Unwrap();
         }
