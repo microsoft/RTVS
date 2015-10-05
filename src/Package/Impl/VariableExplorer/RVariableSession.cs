@@ -108,7 +108,7 @@ namespace Microsoft.VisualStudio.R.Package.VariableExplorer
             // no await
             Task.Run(async () =>
             {
-                Task.Delay(100);
+                await Task.Delay(100);
                 fRefreshing = false;
             });
         }

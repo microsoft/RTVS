@@ -8,7 +8,6 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
-    [Export(typeof(IRSessionProvider))]
     public class RSessionProvider : IRSessionProvider
     {
         private readonly ConcurrentDictionary<int, IRSession> _sessions = new ConcurrentDictionary<int, IRSession>();
