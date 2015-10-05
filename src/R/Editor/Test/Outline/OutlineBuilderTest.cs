@@ -78,7 +78,7 @@ else {
             Assert.AreEqual(3, rc.Count);
 
             Assert.AreEqual(0, rc[0].Start);
-            Assert.AreEqual(content.Length, rc[0].Length);
+            Assert.AreEqual(90, rc[0].Length);
 
             Assert.AreEqual(42, rc[1].Start);
             Assert.AreEqual(90, rc[1].End);
