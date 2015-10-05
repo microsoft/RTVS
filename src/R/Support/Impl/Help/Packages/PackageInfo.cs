@@ -183,9 +183,11 @@ namespace Microsoft.R.Support.Help.Packages
                         }
 
                         NamedItemType itemType = GetItemType(functionName, tdNode1);
-
-                        string functionDescription = element.Root.TextProvider.GetText(tdNode2.InnerRange) ?? string.Empty;
-                        _functions.Add(new NamedItemInfo(functionName, functionDescription, itemType));
+                        if (itemType != NamedItemType.None)
+                        {
+                            string functionDescription = element.Root.TextProvider.GetText(tdNode2.InnerRange) ?? string.Empty;
+                            _functions.Add(new NamedItemInfo(functionName, functionDescription, itemType));
+                        }
                     }
                 }
 
@@ -194,7 +196,7 @@ namespace Microsoft.R.Support.Help.Packages
 
             private static NamedItemType GetItemType(string name, ElementNode td)
             {
-                if (Constants.IsConstant(name) || Logicals.IsLogical(name))
+                if (Constants.IsConstant(name) || Logicals.IsLogical(name) || name.StartsWith("R_", StringComparison.OrdinalIgnoreCase))
                 {
                     return NamedItemType.Constant;
                 }
@@ -204,10 +206,16 @@ namespace Microsoft.R.Support.Help.Packages
                     ElementNode a = td.Children[0];
                     AttributeNode href = a.GetAttribute("href");
 
-                    if (href != null && href.Value != null &&
-                        href.Value.IndexOf("constant", StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (href != null && href.Value != null)
                     {
-                        return NamedItemType.Constant;
+                        if (href.Value.IndexOf("constant", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            return NamedItemType.Constant;
+                        }
+                        else if (href.Value.IndexOf("-package", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            return NamedItemType.None;
+                        }
                     }
                 }
 

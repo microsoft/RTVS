@@ -219,10 +219,10 @@ namespace Microsoft.R.Editor.Completion
                     //case '$':
                     //case '@':
                     case ':':
-                        return RCompletionContext.IsInNamespace(TextView);
+                        return RCompletionContext.IsCaretInNamespace(TextView);
 
                     case '(':
-                        return RCompletionContext.IsInLibraryStatement(TextView);
+                        return RCompletionContext.IsCaretInLibraryStatement(TextView);
 
                     default:
                         return Char.IsLetter(typedCharacter);

@@ -5,6 +5,7 @@
     /// </summary>
     public enum NamedItemType
     {
+        None,
         Package,
         Function,
         Constant,

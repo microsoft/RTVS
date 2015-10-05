@@ -26,30 +26,30 @@ namespace Microsoft.R.Editor.Completion.Engine
         /// <param name="position">Caret position in the document</param>
         /// <param name="autoShownCompletion">True if completion is forced (like when typing Ctrl+Space)</param>
         /// <returns>List of completion entries for a given location in the AST</returns>
-        public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(AstRoot ast, ITextBuffer textBuffer, int position, bool autoShownCompletion)
+        public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion)
         {
             List<IRCompletionListProvider> providers = new List<IRCompletionListProvider>();
 
-            if (ast.Comments.Contains(position))
+            if (context.AstRoot.Comments.Contains(context.Position))
             {
                 // No completion in comments
                 return providers;
             }
 
-            IAstNode node = ast.NodeFromPosition(position);
+            IAstNode node = context.AstRoot.NodeFromPosition(context.Position);
             if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String)
             {
                 // No completion in strings
                 return providers;
             }
 
-            if(IsInFunctionDefinitionArgumentName(ast, position))
+            if(IsInFunctionDefinitionArgumentName(context.AstRoot, context.Position))
             {
                 // No completion in function definition argument names
                 return providers;
             }
 
-            if (IsPackageListCompletion(textBuffer, position))
+            if (IsPackageListCompletion(context.TextBuffer, context.Position))
             {
                 providers.Add(new PackagesCompletionProvider());
             }
@@ -58,6 +58,11 @@ namespace Microsoft.R.Editor.Completion.Engine
                 foreach (var p in CompletionProviders)
                 {
                     providers.Add(p.Value);
+                }
+
+                if(!context.IsInNameSpace())
+                {
+                    providers.Add(new PackagesCompletionProvider());
                 }
             }
 

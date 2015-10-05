@@ -49,17 +49,18 @@ namespace Microsoft.R.Editor.Completion
 
         internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast)
         {
+            RCompletionContext context = new RCompletionContext(session, _textBuffer, ast, position);
+
             bool autoShownCompletion = true;
             if (session.TextView.Properties.ContainsProperty(CompletionController.AutoShownCompletion))
                 autoShownCompletion = session.TextView.Properties.GetProperty<bool>(CompletionController.AutoShownCompletion);
 
             IReadOnlyCollection<IRCompletionListProvider> providers =
-                RCompletionEngine.GetCompletionForLocation(ast, _textBuffer, position, autoShownCompletion);
+                RCompletionEngine.GetCompletionForLocation(context, autoShownCompletion);
 
             Span applicableSpan = GetApplicableSpan(position, session);
             ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan, SpanTrackingMode.EdgeInclusive);
             List<RCompletion> completions = new List<RCompletion>();
-            RCompletionContext context = new RCompletionContext(session, _textBuffer, ast, position);
 
             foreach (IRCompletionListProvider provider in providers)
             {
