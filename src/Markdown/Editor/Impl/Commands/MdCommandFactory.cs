@@ -8,15 +8,13 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Commands
 {
-    [Export(typeof(ICommandFactory))]
-    [ContentType(MdContentTypeDefinition.ContentType)]
-    internal class VsCommandFactory : ICommandFactory
+    //[Export(typeof(ICommandFactory))]
+    //[ContentType(MdContentTypeDefinition.ContentType)]
+    internal class MdCommandFactory : ICommandFactory
     {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer)
         {
             var commands = new List<ICommand>();
-
-            commands.Add(new KnitMenuCommand(textView));
             return commands;
         }
     }

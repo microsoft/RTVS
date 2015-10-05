@@ -79,6 +79,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\Markdown\MdContextMenuId.cs" />
+    <Compile Include="Commands\Markdown\VsRmdCommandFactory.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
     <Compile Include="Commands\Markdown\VsMdTextViewConnectionListener.cs" />
     <Compile Include="Commands\R\RContextMenuId.cs" />
@@ -93,6 +94,12 @@
     <Compile Include="Document\R\VsREditorDocument.cs" />
     <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
     <Compile Include="Editors\IObjectInstanceFactory.cs" />
+    <Compile Include="Logging\OutputWindowLog.cs" />
+    <Compile Include="Publishing\RmdPreviewCommand.cs" />
+    <Compile Include="Publishing\PreviewCommandBase.cs" />
+    <Compile Include="Publishing\PublishFormat.cs" />
+    <Compile Include="Publishing\PublishLog.cs" />
+    <Compile Include="Logging\PackagesInstallLog.cs" />
     <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
@@ -131,6 +138,7 @@
     <Compile Include="Options\R\VsRSettingsStorage.cs" />
     <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
     <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
+    <Compile Include="Publishing\MdPreviewCommand.cs" />
     <Compile Include="Repl\Commands\ReplCommandFactory.cs" />
     <Compile Include="Repl\Commands\ReplCommandTargetProvider.cs" />
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
@@ -359,6 +367,10 @@
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Actions\Impl\Microsoft.R.Actions.csproj">
+      <Project>{b68d4ad2-2dc2-473e-ab06-408172c4fb92}</Project>
+      <Name>Microsoft.R.Actions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>

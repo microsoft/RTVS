@@ -52,10 +52,6 @@
     <Buttons>
       <Button guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-        <!--
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        -->
         <Strings>
           <ButtonText>R Console Window</ButtonText>
         </Strings>
@@ -106,11 +102,11 @@
           <ButtonText>MD Context</ButtonText>
         </Strings>
       </Menu>
-      <!-- Knit flyout -->
-      <Menu guid="guidMdToolsCmdSet" id="knitSubMenu" type="Menu" priority="0x100">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnit"/>
+      <!-- Preview flyout -->
+      <Menu guid="guidMdToolsCmdSet" id="previewSubMenu" type="Menu" priority="0x100">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
         <Strings>
-          <ButtonText>Knit</ButtonText>
+          <ButtonText>Preview</ButtonText>
         </Strings>
       </Menu>
       <!-- RD editor context menu -->
@@ -118,30 +114,34 @@
 
     <Groups>
       <!-- MD code editor context menu groups -->
-      <Group guid="guidMdToolsCmdSet" id="groupKnit" priority="0x0200">
+      <Group guid="guidMdToolsCmdSet" id="groupPreview" priority="0x0200">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
 
-      <Group guid="guidMdToolsCmdSet" id="groupKnitSubMenu" priority="0x0100">
-        <Parent guid="guidMdToolsCmdSet" id="knitSubMenu"/>
+      <Group guid="guidMdToolsCmdSet" id="groupPreviewSubMenu" priority="0x0100">
+        <Parent guid="guidMdToolsCmdSet" id="previewSubMenu"/>
+      </Group>
+
+      <Group guid="guidMdToolsCmdSet" id="groupPublish" priority="0x0300">
+        <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
       <!-- End MD code editor context menu groups -->
     </Groups>
 
     <Buttons>
-      <!-- Knit menu item (in MD/RMD with flyout submenu -->
-      <Button guid="guidMdToolsCmdSet" id="cmdidKnit" priority="0x0101" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnit"/>
+      <!-- Preview menu item (in MD/RMD with flyout submenu -->
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreview" priority="0x0101" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>&amp;Knit</ButtonText>
+          <ButtonText>Pre&amp;view</ButtonText>
         </Strings>
       </Button>
 
-      <!-- Knit flyout menu items -->
-      <Button guid="guidMdToolsCmdSet" id="cmdidKnitHtml" priority="0x0101" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnitSubMenu"/>
+      <!-- Preview flyout menu items -->
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewHtml" priority="0x0101" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreviewSubMenu"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -149,8 +149,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidKnitPdf" priority="0x0102" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnitSubMenu"/>
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0102" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreviewSubMenu"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -158,15 +158,24 @@
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidKnitWord" priority="0x0103" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnitSubMenu"/>
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewWord" priority="0x0103" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreviewSubMenu"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Word</ButtonText>
         </Strings>
       </Button>
-      <!-- End Knit flyout menu items -->
+      <!-- End Preview flyout menu items -->
+      
+      <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0104" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Publish</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -250,15 +259,17 @@
     <GuidSymbol name="guidMdToolsCmdSet" value="{0BF33C69-94C2-4985-81A0-2556F8DB88A6}">
       <!-- Markdown editor context menu -->
       <IDSymbol name="mdEditorContextMenu" value="300" />
-      <IDSymbol name="knitSubMenu" value="130" />
-      <IDSymbol name="groupKnit" value="135" />
-      <IDSymbol name="groupKnitSubMenu" value="200" />
+      <IDSymbol name="previewSubMenu" value="130" />
+      <IDSymbol name="groupPreview" value="135" />
+      <IDSymbol name="groupPublish" value="145" />
+      <IDSymbol name="groupPreviewSubMenu" value="200" />
 
-      <!-- Knit in RD/RDM -->
-      <IDSymbol name="cmdidKnit" value="600" />
-      <IDSymbol name="cmdidKnitHtml" value="601" />
-      <IDSymbol name="cmdidKnitPdf" value="602" />
-      <IDSymbol name="cmdidKnitWord" value="603" />
+      <!-- Preview in RD/RDM -->
+      <IDSymbol name="cmdidPreview" value="600" />
+      <IDSymbol name="cmdidPreviewHtml" value="601" />
+      <IDSymbol name="cmdidPreviewPdf" value="602" />
+      <IDSymbol name="cmdidPreviewWord" value="603" />
+      <IDSymbol name="cmdidPublish" value="6103" />
     </GuidSymbol>
 
     <!-- Interactive Windows Commands -->

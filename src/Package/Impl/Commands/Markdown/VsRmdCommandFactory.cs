@@ -12,8 +12,8 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Commands
 {
     [Export(typeof(ICommandFactory))]
-    [ContentType(MdContentTypeDefinition.ContentType)]
-    internal class VsMdCommandFactory : ICommandFactory
+    [ContentType(RmdContentTypeDefinition.ContentType)]
+    internal class VsRmdCommandFactory : ICommandFactory
     {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer)
         {
