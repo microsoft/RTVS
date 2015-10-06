@@ -41,6 +41,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             _responseTcs.SetResult(_sb?.ToString());
         }
 
+        public bool TryCancel() {
+            return _responseTcs.TrySetCanceled();
+        }
+
         public void Write(string text)
         {
             if (_sb == null)

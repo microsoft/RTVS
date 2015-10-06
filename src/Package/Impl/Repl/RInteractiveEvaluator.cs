@@ -115,7 +115,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
-            CurrentWindow.WriteLine(Resources.MicrosoftRHostStopped);
+            if (!CurrentWindow.IsResetting) {
+                CurrentWindow.WriteLine(Resources.MicrosoftRHostStopped);
+            }
 
             if (_requestTcs != null) {
                 _requestTcs.SetResult(ExecutionResult.Success);

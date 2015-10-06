@@ -98,8 +98,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 requestSource.Complete();
             }
             while (_pendingRequestSources.Count > 0) {
-                var requestSource = _pendingRequestSources.Receive();
-                requestSource.Complete();
+                RSessionRequestSource requestSource;
+                if (_pendingRequestSources.TryReceive(out requestSource)) {
+                    requestSource.TryCancel();
+                }
             }
             while (_pendingEvaluationSources.Count > 0) {
                 RSessionEvaluationSource evalSource;
@@ -109,6 +111,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
 
             _contexts = null;
+            Prompt = string.Empty;
 
             OnDisconnected();
             return Task.CompletedTask;
