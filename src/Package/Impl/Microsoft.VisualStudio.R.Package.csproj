@@ -90,6 +90,7 @@
     <Compile Include="DataInspect\BooleanToHidingVisibilityConveter.cs" />
     <Compile Include="DataInspect\LevelToMarginConverter.cs" />
     <Compile Include="DataInspect\PlotWindowPane .cs" />
+    <Compile Include="DataInspect\REvaluation.cs" />
     <Compile Include="DataInspect\Variable.cs" />
     <Compile Include="DataInspect\VariableProvider.cs" />
     <Compile Include="DataInspect\VariableView.xaml.cs">
@@ -339,6 +340,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />

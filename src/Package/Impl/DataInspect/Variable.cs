@@ -26,6 +26,22 @@ namespace Microsoft.VisualStudio.R.Controls
         }
 
         /// <summary>
+        /// Create Variable instance from R evaluation
+        /// </summary>
+        /// <param name="evaluation"></param>
+        /// <returns></returns>
+        public static Variable Create(REvaluation evaluation)
+        {
+            var instance = new Variable(null, null);
+
+            instance.VariableName = evaluation.Name;
+            instance.TypeName = evaluation.TypeName;    // TODO: consider combine TypeName and ClassName
+            instance.VariableValue = evaluation.Value;
+
+            return instance;
+        }
+
+        /// <summary>
         /// <see cref="VariableView"/> that owns this
         /// </summary>
         public VariableView View { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,13 +14,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Controls
 {
     public partial class VariableView : UserControl
     {
         private readonly VariableProvider _variableProvider;
-        private readonly IList<Variable> _rootVariables;    // hierarchical variables
         private readonly ObservableCollection<Variable> _variables; // variables in flat structure
 
         public VariableView()
@@ -34,8 +35,14 @@ namespace Microsoft.VisualStudio.R.Controls
 
             RootGrid.ItemsSource = ViewSource.View;
 
-            _variableProvider = new VariableProvider();
+            _variableProvider = new VariableProvider(this);
+            _variableProvider.SessionsChanged += VariableProvider_SessionsChanged;
 
+            RefreshData();
+        }
+
+        private void VariableProvider_SessionsChanged(object sender, EventArgs e)
+        {
             RefreshData();
         }
 
@@ -46,8 +53,13 @@ namespace Microsoft.VisualStudio.R.Controls
             ViewSource.View.Refresh();
         }
 
-        public void AddRange(IEnumerable<Variable> variables)
+        public void AddRange(IEnumerable<Variable> variables, bool clearAll = true)
         {
+            if (clearAll)
+            {
+                _variables.Clear();
+            }
+
             Variable.TraverseDepthFirst(variables,
                 (v) => { _variables.Add(v); v.View = this; return true; });
 
@@ -64,10 +76,9 @@ namespace Microsoft.VisualStudio.R.Controls
         {
             var newVariables = _variableProvider.Get(new VariableProvideContext());
 
-            _variables.Clear();
-            AddRange(newVariables);
-
-            RefreshView();
+            DispatchInvoke(
+                () => AddRange(newVariables),
+                DispatcherPriority.Normal);
         }
 
         private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
@@ -77,6 +88,23 @@ namespace Microsoft.VisualStudio.R.Controls
             {
                 e.Accepted = variable.IsVisible;
             }
+        }
+
+        private static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
+        {
+            Action guardedAction =
+                () => {
+                    try
+                    {
+                        toInvoke();
+                    }
+                    catch
+                    {
+                        Debug.Assert(false, "Guarded invoke caught exception");
+                    }
+                };
+
+            Application.Current.Dispatcher.BeginInvoke(guardedAction, priority);    // TODO: acquiring Application.Current.Dispatcher, create utility class for UI thread and use it
         }
     }
 }
