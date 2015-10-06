@@ -20,8 +20,7 @@ namespace Microsoft.R.Host.Client {
             return Task.FromResult(true);
         }
 
-        public Task Evaluate(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct)
-        {
+        public Task Evaluate(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct) {
             _evaluator = evaluator;
             return Task.CompletedTask;
         }
@@ -49,20 +48,16 @@ namespace Microsoft.R.Host.Client {
 
         public async Task<YesNoCancel> YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s, CancellationToken ct) {
             await Console.Error.WriteAsync(s);
-            while (true)
-            {
+            while (true) {
                 string r = await ReadLineAsync(" [yes/no/cancel]> ", ct);
 
-                if (r.StartsWith("y", StringComparison.InvariantCultureIgnoreCase))
-                {
+                if (r.StartsWith("y", StringComparison.InvariantCultureIgnoreCase)) {
                     return Client.YesNoCancel.Yes;
                 }
-                if (r.StartsWith("n", StringComparison.InvariantCultureIgnoreCase))
-                {
+                if (r.StartsWith("n", StringComparison.InvariantCultureIgnoreCase)) {
                     return Client.YesNoCancel.No;
                 }
-                if (r.StartsWith("c", StringComparison.InvariantCultureIgnoreCase))
-                {
+                if (r.StartsWith("c", StringComparison.InvariantCultureIgnoreCase)) {
                     return Client.YesNoCancel.Cancel;
                 }
 
@@ -88,7 +83,7 @@ namespace Microsoft.R.Host.Client {
                         bool reentrant = true;
                         if (s.StartsWith("!", StringComparison.OrdinalIgnoreCase)) {
                             reentrant = false;
-                        s = s.Remove(0, 1);
+                            s = s.Remove(0, 1);
                         }
                         var er = await _evaluator.EvaluateAsync(s, reentrant, ct);
                         await Console.Out.WriteLineAsync(er.ToString());

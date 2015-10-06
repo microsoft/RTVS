@@ -140,8 +140,8 @@ namespace Microsoft.R.Host.Client {
                                     _canEval = true;
                                     await _callbacks.Evaluate(contexts, this, ct);
                                 }
-                            YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], ct);
-                            response = JsonConvert.SerializeObject((double)input);
+                                YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], ct);
+                                response = JsonConvert.SerializeObject((double)input);
                             } finally {
                                 _canEval = false;
                             }
@@ -155,15 +155,15 @@ namespace Microsoft.R.Host.Client {
                                     _canEval = true;
                                     await _callbacks.Evaluate(contexts, this, ct);
                                 }
-                            string input = await _callbacks.ReadConsole(
-                                contexts,
-                                (string)obj["prompt"],
-                                (string)obj["buf"],
-                                (int)(double)obj["len"],
-                                (bool)obj["addToHistory"],
-                                ct);
-                            input = input.Replace("\r\n", "\n");
-                            response = JsonConvert.SerializeObject(input);
+                                string input = await _callbacks.ReadConsole(
+                                    contexts,
+                                    (string)obj["prompt"],
+                                    (string)obj["buf"],
+                                    (int)(double)obj["len"],
+                                    (bool)obj["addToHistory"],
+                                    ct);
+                                input = input.Replace("\r\n", "\n");
+                                response = JsonConvert.SerializeObject(input);
                             } finally {
                                 _canEval = false;
                             }
@@ -237,25 +237,25 @@ namespace Microsoft.R.Host.Client {
 
             _canEval = false;
             try {
-            string request = JsonConvert.SerializeObject(new {
-                command = "eval",
-                expr = expression
-            });
+                string request = JsonConvert.SerializeObject(new {
+                    command = "eval",
+                    expr = expression
+                });
 
-            var requestBytes = Encoding.UTF8.GetBytes(request);
-            await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct);
+                var requestBytes = Encoding.UTF8.GetBytes(request);
+                await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct);
 
                 var obj = await RunLoop(ct, reentrant);
 
-            JToken result, error, parseStatus;
-            obj.TryGetValue("result", out result);
-            obj.TryGetValue("error", out error);
-            obj.TryGetValue("ParseStatus", out parseStatus);
+                JToken result, error, parseStatus;
+                obj.TryGetValue("result", out result);
+                obj.TryGetValue("error", out error);
+                obj.TryGetValue("ParseStatus", out parseStatus);
 
-            return new REvaluationResult(
-                result != null ? (string)result : null,
-                error != null ? (string)error : null,
-                parseStatus != null ? (RParseStatus)(double)parseStatus : RParseStatus.Null);
+                return new REvaluationResult(
+                    result != null ? (string)result : null,
+                    error != null ? (string)error : null,
+                    parseStatus != null ? (RParseStatus)(double)parseStatus : RParseStatus.Null);
             } finally {
                 _canEval = true;
             }

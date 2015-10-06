@@ -202,25 +202,21 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        async Task IRCallbacks.PlotXaml(IReadOnlyCollection<IRContext> contexts, string xamlFilePath, CancellationToken ct)
-        {
+        async Task IRCallbacks.PlotXaml(IReadOnlyCollection<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
             var frame = FindPlotWindow(0);
-            if (frame != null)
-            {
+            if (frame != null) {
                 object docView;
                 ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
-                if (docView != null)
-                {
+                if (docView != null) {
                     PlotWindowPane pane = (PlotWindowPane)docView;
                     pane.DisplayXamlFile(xamlFilePath);
                 }
             }
         }
 
-        private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags)
-        {
+        private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags) {
             IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
             // First just find. If it exists, use it. 
