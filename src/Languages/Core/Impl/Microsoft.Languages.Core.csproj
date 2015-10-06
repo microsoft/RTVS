@@ -98,6 +98,7 @@
     <Compile Include="Tokens\Tokenizer.cs" />
     <Compile Include="Tokens\TokenStream.cs" />
     <Compile Include="Utility\IPropertyOwner.cs" />
+    <Compile Include="Utility\ListHelpers.cs" />
     <Compile Include="Utility\PropertyDictionary.cs" />
     <Compile Include="Utility\TimeUtility.cs" />
   </ItemGroup>

@@ -38,9 +38,10 @@ namespace Microsoft.R.Editor.Formatting
             }
 
             IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-            if (typedChar == '}' && scope != null && scope.OpenCurlyBrace != null)
+            if (typedChar == '}')
             {
-                // If user typed } then fromat the enclosing scope.
+                // If user typed } then fromat the enclosing scope
+                scope = ast.GetNodeOfTypeFromPosition<IScope>(position - 1);
                 formatRange = scope;
             }
             else if (typedChar == '\n' || typedChar == '\r')

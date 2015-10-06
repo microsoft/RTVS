@@ -44,6 +44,11 @@ namespace Microsoft.R.Editor.Completion
 
         public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
+            if(_textBuffer == null)
+            {
+                _textBuffer = subjectBuffer;
+            }
+
             if (_textBuffer == subjectBuffer)
             {
                 ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
@@ -67,6 +72,8 @@ namespace Microsoft.R.Editor.Completion
                         ServiceManager.RemoveService<RCompletionController>(TextView);
                     }
                 }
+
+                _textBuffer = null;
             }
 
             base.DisconnectSubjectBuffer(subjectBuffer);
@@ -212,10 +219,10 @@ namespace Microsoft.R.Editor.Completion
                     //case '$':
                     //case '@':
                     case ':':
-                        return RCompletionContext.IsInNamespace(TextView);
+                        return RCompletionContext.IsCaretInNamespace(TextView);
 
                     case '(':
-                        return RCompletionContext.IsInLibraryStatement(TextView);
+                        return RCompletionContext.IsCaretInLibraryStatement(TextView);
 
                     default:
                         return Char.IsLetter(typedCharacter);

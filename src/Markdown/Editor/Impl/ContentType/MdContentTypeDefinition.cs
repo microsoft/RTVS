@@ -9,6 +9,7 @@ namespace Microsoft.Markdown.Editor.ContentTypes
         public const string ContentType = "Markdown";
         public const string FileExtension1 = ".md";
         public const string FileExtension2 = ".markdown";
+        public const string FileExtension3 = ".rmd";
 
         /// <summary>
         /// Exports the MD content type
@@ -16,7 +17,7 @@ namespace Microsoft.Markdown.Editor.ContentTypes
         [Export(typeof(ContentTypeDefinition))]
         [Name(MdContentTypeDefinition.ContentType)]
         [BaseDefinition("text")]
-        public ContentTypeDefinition IRdContentType { get; set; }
+        public ContentTypeDefinition IMdContentType { get; set; }
 
         /// <summary>
         /// Exports the markdown file extension
@@ -24,7 +25,7 @@ namespace Microsoft.Markdown.Editor.ContentTypes
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MdContentTypeDefinition.ContentType)]
         [FileExtension(MdContentTypeDefinition.FileExtension1)]
-        public FileExtensionToContentTypeDefinition IRdFileExtension1 { get; set; }
+        public FileExtensionToContentTypeDefinition IMdFileExtension1 { get; set; }
 
         /// <summary>
         /// Exports the markdown file extension
@@ -32,6 +33,14 @@ namespace Microsoft.Markdown.Editor.ContentTypes
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MdContentTypeDefinition.ContentType)]
         [FileExtension(MdContentTypeDefinition.FileExtension2)]
-        public FileExtensionToContentTypeDefinition IRdFileExtension2 { get; set; }
+        public FileExtensionToContentTypeDefinition IMdFileExtension2 { get; set; }
+
+        /// <summary>
+        /// Exports the R markdown file extension
+        /// </summary>
+        [Export(typeof(FileExtensionToContentTypeDefinition))]
+        [ContentType(MdContentTypeDefinition.ContentType)]
+        [FileExtension(MdContentTypeDefinition.FileExtension3)]
+        public FileExtensionToContentTypeDefinition IMdFileExtension3 { get; set; }
     }
 }

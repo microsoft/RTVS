@@ -53,7 +53,10 @@ namespace Microsoft.R.Editor.Signatures
             if (parametersInfo != null)
             {
                 position = Math.Min(parametersInfo.SignatureEnd, position);
-                ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(position, parametersInfo.SignatureEnd - position, SpanTrackingMode.EdgeInclusive);
+                int start = Math.Min(position, snapshot.Length);
+                int end = Math.Min(parametersInfo.SignatureEnd, snapshot.Length);
+
+                ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
 
                 // Get collection of function signatures from documentation (parsed RD file)
                 IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);

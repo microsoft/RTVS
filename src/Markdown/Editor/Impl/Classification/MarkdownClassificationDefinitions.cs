@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.Markdown.Editor.Classification
 {
     [ExcludeFromCodeCoverage]
-    internal sealed class RdClassificationDefinitions
+    internal sealed class MarkdownClassificationDefinitions
     {
         // https://help.github.com/articles/markdown-basics/
 

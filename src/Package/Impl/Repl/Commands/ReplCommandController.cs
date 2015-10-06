@@ -66,30 +66,32 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
         {
             if (group == VSConstants.VSStd2K)
             {
-                if (id == (int)VSConstants.VSStd2KCmdID.TAB)
+                RCompletionController controller = RCompletionController.FromTextView(TextView);
+                if (controller != null)
                 {
-                    RCompletionController controller = RCompletionController.FromTextView(TextView);
-                    if (controller != null)
+                    if (id == (int)VSConstants.VSStd2KCmdID.TAB ||
+                       id == (int)VSConstants.VSStd2KCmdID.RETURN)
                     {
-                        // If completion is up, commit it else trigger it
+                        // If completion is up, commit it
                         if (controller.HasActiveCompletionSession)
                         {
                             controller.CommitCompletionSession();
+                            return CommandResult.Executed;
                         }
-                        else
+
+                        if (id == (int)VSConstants.VSStd2KCmdID.TAB)
                         {
                             controller.DismissAllSessions();
                             controller.ShowCompletion(autoShownCompletion: true);
                         }
-                    }
+                        else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)
+                        {
+                            // execute if the expression is complete
+                            ReplWindow.Current.ExecuteCurrentExpression(TextView);
+                        }
 
-                    return CommandResult.Executed;
-                }
-                else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)
-                {
-                    // execute if the expression is complete
-                    ReplWindow.Current.ExecuteCurrentExpression(TextView);
-                    return CommandResult.Executed;
+                        return CommandResult.Executed;
+                    }
                 }
             }
 

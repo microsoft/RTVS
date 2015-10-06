@@ -6,21 +6,21 @@ using Microsoft.Languages.Core.Tokens;
 namespace Microsoft.Markdown.Editor.Tokens
 {
     [DebuggerDisplay("[{TokenType} : {Start}...{End}), Length = {Length}")]
-    public class MdToken : Token<MdTokenType>, IComparable<MdToken>
+    public class MarkdownToken : Token<MarkdownTokenType>, IComparable<MarkdownToken>
     {
-        public static MdToken EndOfStreamToken = new MdToken(MdTokenType.EndOfStream);
+        public static MarkdownToken EndOfStreamToken = new MarkdownToken(MarkdownTokenType.EndOfStream);
 
-        public MdToken(MdTokenType tokenType)
+        public MarkdownToken(MarkdownTokenType tokenType)
             : this(tokenType, TextRange.EmptyRange)
         {
         }
 
-        public MdToken(MdTokenType tokenType, ITextRange range)
+        public MarkdownToken(MarkdownTokenType tokenType, ITextRange range)
             : base(tokenType, range)
         {
         }
 
-        public int CompareTo(MdToken other)
+        public int CompareTo(MarkdownToken other)
         {
             if (other == null)
                 return -1;

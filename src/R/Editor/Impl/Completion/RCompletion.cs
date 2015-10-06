@@ -7,7 +7,7 @@ namespace Microsoft.R.Editor.Completion
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     [DebuggerDisplay("{DisplayText}")]
-    public class RCompletion : Completion
+    public class RCompletion : Completion, IComparable<RCompletion>
     {
         public bool RetriggerIntellisense { get; private set; }
 
@@ -33,5 +33,12 @@ namespace Microsoft.R.Editor.Completion
 
             return value;
         }
+
+        #region IComparable<RCompletion>
+        public int CompareTo(RCompletion other)
+        {
+            return DisplayText.CompareTo(other.DisplayText);
+        }
+        #endregion
     }
 }

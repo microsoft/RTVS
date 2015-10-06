@@ -97,11 +97,38 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to delete file {0}. Exception: {1}..
+        /// </summary>
+        internal static string Error_CannotDeleteFile {
+            get {
+                return ResourceManager.GetString("Error_CannotDeleteFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown conversion failed.
+        /// </summary>
+        internal static string Error_MarkdownConversionFailed {
+            get {
+                return ResourceManager.GetString("Error_MarkdownConversionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
         /// </summary>
         internal static string Error_Microsoft_R_Host_Missing {
             get {
                 return ResourceManager.GetString("Error_Microsoft_R_Host_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This operation requires package {0} which is not installed or has been removed. .
+        /// </summary>
+        internal static string Error_PackageMissing {
+            get {
+                return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
             }
         }
         
@@ -160,6 +187,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Packages.
+        /// </summary>
+        internal static string OutputWindowName_InstallPackages {
+            get {
+                return ResourceManager.GetString("OutputWindowName_InstallPackages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Publish.
+        /// </summary>
+        internal static string OutputWindowName_Publish {
+            get {
+                return ResourceManager.GetString("OutputWindowName_Publish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Interactive.
         /// </summary>
         internal static string ReplWindowName {
@@ -169,7 +214,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Markdown Files (*.md;*.markdown)|*.md;*.markdown|All Files (*.*)|*.*.
+        ///   Looks up a localized string similar to Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|All Files (*.*)|*.*.
         /// </summary>
         internal static string SaveAsFilterMD {
             get {

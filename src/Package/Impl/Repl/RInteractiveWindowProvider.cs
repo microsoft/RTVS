@@ -4,6 +4,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Repl
@@ -16,17 +17,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         [Import]
         private IVsInteractiveWindowFactory VsInteractiveWindowFactory { get; set; }
 
-        private readonly IRSessionProvider _sessionProvider;
+        [Import]
+        private IRSessionProvider SessionProvider { get; set; }
 
         public RInteractiveWindowProvider()
         {
             AppShell.Current.CompositionService.SatisfyImportsOnce(this);
-            _sessionProvider = new RSessionProvider();
         }
 
         public IVsInteractiveWindow Create(int instanceId)
         {
-            var session = _sessionProvider.Create(instanceId);
+            var session = SessionProvider.Create(instanceId);
             var evaluator = new RInteractiveEvaluator(session);
             var vsWindow = VsInteractiveWindowFactory.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType));

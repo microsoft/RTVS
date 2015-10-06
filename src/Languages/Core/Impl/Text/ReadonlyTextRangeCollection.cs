@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.Languages.Core.Text
 {
@@ -7,6 +8,7 @@ namespace Microsoft.Languages.Core.Text
     {
         private TextRangeCollection<T> _collection;
 
+        [DebuggerStepThrough]
         public ReadOnlyTextRangeCollection(TextRangeCollection<T> collection)
         {
             _collection = collection;

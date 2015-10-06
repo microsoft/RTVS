@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.VisualStudio.R.Languages;
 using Microsoft.VisualStudio.R.Package;
 
-namespace Microsoft.VisualStudio.R.Languages
+namespace Microsoft.VisualStudio.R.Packages.R
 {
     [Guid(RGuidList.RLanguageServiceGuidString)]
     internal sealed class RLanguageService : BaseLanguageService

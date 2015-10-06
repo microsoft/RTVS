@@ -200,5 +200,31 @@ foo(cache=TRUE)
 
             Assert.AreEqual("{\r\n}", actual);
         }
+
+        [TestMethod]
+        public void RangeFormatter_FormatScopeLessIf01()
+        {
+            string original =
+@"
+if (x != nrx) 
+    stop()
+    if (z < ncx)
+    stop()
+";
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
+
+            RangeFormatter.FormatRange(textView, new TextRange(original.IndexOf("if (z"), 0), ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected = 
+@"
+if (x != nrx) 
+    stop()
+if (z < ncx)
+    stop()
+";
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

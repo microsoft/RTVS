@@ -78,9 +78,9 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Commands\Markdown\MdContextMenuId.cs" />
+    <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
-    <Compile Include="Commands\Markdown\VsMdTextViewConnectionListener.cs" />
+    <Compile Include="Commands\Markdown\VsMarkdownTextViewConnectionListener.cs" />
     <Compile Include="Commands\R\RContextMenuId.cs" />
     <Compile Include="Commands\R\RPackageCommandId.cs" />
     <Compile Include="Commands\R\GoToFormattingOptionsCommand.cs" />
@@ -93,8 +93,15 @@
     <Compile Include="Document\R\VsREditorDocument.cs" />
     <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
     <Compile Include="Editors\IObjectInstanceFactory.cs" />
-    <Compile Include="Editors\MdEditorFactory.cs" />
-    <Compile Include="Languages\MdLanguageService.cs" />
+    <Compile Include="Logging\OutputWindowLog.cs" />
+    <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
+    <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
+    <Compile Include="Publishing\PreviewCommand.cs" />
+    <Compile Include="Publishing\Definitions\PublishFormat.cs" />
+    <Compile Include="Publishing\PublishLog.cs" />
+    <Compile Include="Logging\PackagesInstallLog.cs" />
+    <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
+    <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
     <Compile Include="Packages\CommandIDs.cs" />
@@ -105,7 +112,7 @@
     </Compile>
     <Compile Include="Packages\Markdown\MdPackage.cs" />
     <Compile Include="Packages\Markdown\MdGuidList.cs" />
-    <Compile Include="ProjectSystem\FileSystemExport.cs" />
+    <Compile Include="ProjectSystem\Exports.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
@@ -131,6 +138,7 @@
     <Compile Include="Options\R\VsRSettingsStorage.cs" />
     <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
     <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
+    <Compile Include="Publishing\Handlers\MdPublishHandler.cs" />
     <Compile Include="Repl\Commands\ReplCommandFactory.cs" />
     <Compile Include="Repl\Commands\ReplCommandTargetProvider.cs" />
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
@@ -155,10 +163,10 @@
     </Compile>
     <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\AppShell.cs" />
-    <Compile Include="Editors\REditorFactory.cs" />
+    <Compile Include="Packages\R\REditorFactory.cs" />
     <Compile Include="Shell\IApplicationShell.cs" />
     <Compile Include="Packages\R\RGuidList.cs" />
-    <Compile Include="Languages\RLanguageService.cs" />
+    <Compile Include="Packages\R\RLanguageService.cs" />
     <Compile Include="Editors\TextBufferInitializationTracker.cs" />
     <Compile Include="Editors\BaseEditorFactory.cs" />
     <Compile Include="Languages\BaseLanguageService.cs" />
@@ -359,6 +367,10 @@
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Actions\Impl\Microsoft.R.Actions.csproj">
+      <Project>{b68d4ad2-2dc2-473e-ab06-408172c4fb92}</Project>
+      <Name>Microsoft.R.Actions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>

@@ -11,12 +11,12 @@ namespace Microsoft.Markdown.Editor.Tokens
     /// Composite token that represents R code inside a markdown document
     /// </summary>
     [DebuggerDisplay("[{TokenType} : {Start}...{End}), Length = {Length}")]
-    public class MdRCodeToken : MdToken, ICompositeToken
+    public class MarkdownRCodeToken : MarkdownToken, ICompositeToken
     {
         private ITextProvider _textProvider;
 
-        public MdRCodeToken(int start, int length, ITextProvider textProvider) :
-            base(MdTokenType.Code, new TextRange(start, length))
+        public MarkdownRCodeToken(int start, int length, ITextProvider textProvider) :
+            base(MarkdownTokenType.Code, new TextRange(start, length))
         {
             _textProvider = textProvider;
         }

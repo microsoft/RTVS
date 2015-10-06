@@ -8,7 +8,7 @@ namespace Microsoft.Markdown.Editor.Tokens
     /// a separate tokenizer.
     /// https://help.github.com/articles/markdown-basics/
     /// </summary>
-    internal class MdTokenizer : BaseTokenizer<MdToken>
+    internal class MdTokenizer : BaseTokenizer<MarkdownToken>
     {
         public MdTokenizer()
         {
@@ -49,7 +49,7 @@ namespace Microsoft.Markdown.Editor.Tokens
                     case '_':
                         if (!char.IsWhiteSpace(_cs.NextChar))
                         {
-                            handled = HandleItalic('_', MdTokenType.Italic);
+                            handled = HandleItalic('_', MarkdownTokenType.Italic);
                         }
                         break;
 
@@ -99,28 +99,28 @@ namespace Microsoft.Markdown.Editor.Tokens
             }
         }
 
-        private bool HandleHeading()
+        protected bool HandleHeading()
         {
             if (_cs.Position == 0 || _cs.PrevChar == '\n' || _cs.PrevChar == '\r')
             {
-                return HandleSequenceToEol(MdTokenType.Heading);
+                return HandleSequenceToEol(MarkdownTokenType.Heading);
             }
 
             return false;
         }
 
-        private bool HandleQuote()
+        protected bool HandleQuote()
         {
             if (_cs.Position == 0 || _cs.PrevChar == '\n' || _cs.PrevChar == '\r')
             {
                 if (_cs.NextChar == ' ')
-                    return HandleSequenceToEmptyLine(MdTokenType.Blockquote);
+                    return HandleSequenceToEmptyLine(MarkdownTokenType.Blockquote);
             }
 
             return false;
         }
 
-        private bool HandleAltText()
+        protected bool HandleAltText()
         {
             int start = _cs.Position;
             while (!_cs.IsEndOfStream())
@@ -146,14 +146,14 @@ namespace Microsoft.Markdown.Editor.Tokens
 
                 if (_cs.CurrentChar == ')')
                 {
-                    AddToken(MdTokenType.AltText, start, end - start);
+                    AddToken(MarkdownTokenType.AltText, start, end - start);
                 }
             }
 
             return true;
         }
 
-        private bool HandleBackTick()
+        protected bool HandleBackTick()
         {
             if (_cs.NextChar == '`' && _cs.LookAhead(2) == '`' && (_cs.Position == 0 || _cs.PrevChar == '\n' || _cs.PrevChar == '\r'))
             {
@@ -168,7 +168,7 @@ namespace Microsoft.Markdown.Editor.Tokens
             return HandleMonospace();
         }
 
-        private bool HandleCode(bool block)
+        protected bool HandleCode(bool block)
         {
             int ticksStart = _cs.Position;
             int ticksLength;
@@ -205,16 +205,16 @@ namespace Microsoft.Markdown.Editor.Tokens
                     {
                         // code is inside ``` and after the language name.
                         // We still want to colorize numbers in ```{r, x = 1.0, ...}
-                        AddToken(MdTokenType.Code, ticksStart, ticksLength);
+                        AddToken(MarkdownTokenType.Code, ticksStart, ticksLength);
 
-                        var token = new MdRCodeToken(codeStart, codeEnd - codeStart, _cs.Text);
+                        var token = new MarkdownRCodeToken(codeStart, codeEnd - codeStart, _cs.Text);
                         _tokens.Add(token);
 
-                        AddToken(MdTokenType.Code, codeEnd, _cs.Position - codeEnd);
+                        AddToken(MarkdownTokenType.Code, codeEnd, _cs.Position - codeEnd);
                     }
                     else
                     {
-                        AddToken(MdTokenType.Code, ticksStart, _cs.Position - ticksStart);
+                        AddToken(MarkdownTokenType.Code, ticksStart, _cs.Position - ticksStart);
                     }
                     return true;
                 }
@@ -225,7 +225,7 @@ namespace Microsoft.Markdown.Editor.Tokens
             return false;
         }
 
-        private bool HandleMonospace()
+        protected bool HandleMonospace()
         {
             int start = _cs.Position;
             _cs.MoveToNextChar();
@@ -235,7 +235,7 @@ namespace Microsoft.Markdown.Editor.Tokens
                 if (_cs.CurrentChar == '`')
                 {
                     _cs.MoveToNextChar();
-                    AddToken(MdTokenType.Monospace, start, _cs.Position - start);
+                    AddToken(MarkdownTokenType.Monospace, start, _cs.Position - start);
                     return true;
                 }
 
@@ -245,7 +245,7 @@ namespace Microsoft.Markdown.Editor.Tokens
             return false;
         }
 
-        private bool HandleStar()
+        protected bool HandleStar()
         {
             int start = _cs.Position;
 
@@ -254,7 +254,7 @@ namespace Microsoft.Markdown.Editor.Tokens
                 case '*':
                     if (!char.IsWhiteSpace(_cs.LookAhead(2)))
                     {
-                        return HandleBold(MdTokenType.Bold);
+                        return HandleBold(MarkdownTokenType.Bold);
                     }
                     break;
 
@@ -264,7 +264,7 @@ namespace Microsoft.Markdown.Editor.Tokens
                 default:
                     if (!char.IsWhiteSpace(_cs.NextChar))
                     {
-                        return HandleItalic('*', MdTokenType.Italic);
+                        return HandleItalic('*', MarkdownTokenType.Italic);
                     }
                     break;
             }
@@ -272,7 +272,7 @@ namespace Microsoft.Markdown.Editor.Tokens
             return false;
         }
 
-        private bool HandleBold(MdTokenType tokenType)
+        protected bool HandleBold(MarkdownTokenType tokenType)
         {
             int start = _cs.Position;
 
@@ -285,7 +285,7 @@ namespace Microsoft.Markdown.Editor.Tokens
                     AddToken(tokenType, start, _cs.Position - start);
 
                     int startOfItalic = _cs.Position;
-                    if (HandleItalic(_cs.CurrentChar, MdTokenType.BoldItalic))
+                    if (HandleItalic(_cs.CurrentChar, MarkdownTokenType.BoldItalic))
                     {
                         start = _cs.Position;
                     }
@@ -313,7 +313,7 @@ namespace Microsoft.Markdown.Editor.Tokens
             return false;
         }
 
-        private bool HandleItalic(char boundaryChar, MdTokenType tokenType)
+        protected bool HandleItalic(char boundaryChar, MarkdownTokenType tokenType)
         {
             int start = _cs.Position;
 
@@ -327,7 +327,7 @@ namespace Microsoft.Markdown.Editor.Tokens
                     AddToken(tokenType, start, _cs.Position - start);
 
                     int startOfBold = _cs.Position;
-                    if (HandleBold(MdTokenType.BoldItalic))
+                    if (HandleBold(MarkdownTokenType.BoldItalic))
                     {
                         start = _cs.Position;
                     }
@@ -355,7 +355,7 @@ namespace Microsoft.Markdown.Editor.Tokens
             return false;
         }
 
-        private bool HandleListItem()
+        protected bool HandleListItem()
         {
             // List item must start at the beginning of the line
             bool atStartOfLine = _cs.Position == 0;
@@ -381,13 +381,13 @@ namespace Microsoft.Markdown.Editor.Tokens
 
             if (atStartOfLine)
             {
-                return HandleSequenceToEol(MdTokenType.ListItem);
+                return HandleSequenceToEol(MarkdownTokenType.ListItem);
             }
 
             return false;
         }
 
-        private bool HandleNumberedListItem()
+        protected bool HandleNumberedListItem()
         {
             int start = _cs.Position;
 
@@ -397,7 +397,7 @@ namespace Microsoft.Markdown.Editor.Tokens
                 {
                     if (_cs.CurrentChar == '.' && char.IsWhiteSpace(_cs.NextChar))
                     {
-                        return HandleSequenceToEol(MdTokenType.ListItem, start);
+                        return HandleSequenceToEol(MarkdownTokenType.ListItem, start);
                     }
 
                     break;
@@ -409,7 +409,7 @@ namespace Microsoft.Markdown.Editor.Tokens
             return false;
         }
 
-        private bool HandleSequenceToEol(MdTokenType tokeType, int startPosition = -1)
+        protected bool HandleSequenceToEol(MarkdownTokenType tokeType, int startPosition = -1)
         {
             int start = startPosition >= 0 ? startPosition : _cs.Position;
             _cs.SkipToEol();
@@ -418,7 +418,7 @@ namespace Microsoft.Markdown.Editor.Tokens
             return true;
         }
 
-        private bool HandleSequenceToEmptyLine(MdTokenType tokeType)
+        protected bool HandleSequenceToEmptyLine(MarkdownTokenType tokeType)
         {
             int start = _cs.Position;
 
@@ -437,11 +437,11 @@ namespace Microsoft.Markdown.Editor.Tokens
             return true;
         }
 
-        private void AddToken(MdTokenType type, int start, int length)
+        protected void AddToken(MarkdownTokenType type, int start, int length)
         {
             if (length > 0)
             {
-                var token = new MdToken(type, new TextRange(start, length));
+                var token = new MarkdownToken(type, new TextRange(start, length));
                 _tokens.Add(token);
             }
         }
