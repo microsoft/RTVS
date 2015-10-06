@@ -77,7 +77,7 @@ namespace Microsoft.R.Host.Client
         {
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
             string rBinPath = Path.Combine(rHome, RBinPathX64);
-            
+
             if (!File.Exists(rhostExe))
             {
                 throw new MicrosoftRHostMissingException();
@@ -228,6 +228,11 @@ namespace Microsoft.R.Host.Client
                         break;
 
                     case "CallBack":
+                        break;
+
+                    case "PlotXaml":
+                        await _callbacks.PlotXaml(contexts, (string)obj["filepath"]);
+                        // TODO: delete temporary xaml and bitmap files
                         break;
 
                     case "exit":

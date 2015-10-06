@@ -13,5 +13,6 @@ namespace Microsoft.R.Host.Client
         Task<YesNoCancel> YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s);
         Task Busy(IReadOnlyCollection<IRContext> contexts, bool which);
         Task Evaluate(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator);
+        Task PlotXaml(IReadOnlyCollection<IRContext> contexts, string xamlFilePath);
     }
 }
