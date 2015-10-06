@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
     public interface IRExpressionEvaluator {
-        Task<REvaluationResult> EvaluateAsync(string expression, CancellationToken ct);
+        Task<REvaluationResult> EvaluateAsync(string expression, bool reentrant, CancellationToken ct);
     }
 
     public enum RParseStatus {

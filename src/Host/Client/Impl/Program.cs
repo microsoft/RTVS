@@ -79,18 +79,23 @@ namespace Microsoft.R.Host.Client {
                 await Console.Out.WriteAsync($"|{_nesting}| {prompt}");
                 ++_nesting;
                 try {
-                string s = await Console.In.ReadLineAsync();
+                    string s = await Console.In.ReadLineAsync();
 
-                if (s.StartsWith("==", StringComparison.OrdinalIgnoreCase)) {
-                    s = s.Remove(0, 1);
-                } else if (s.StartsWith("=", StringComparison.OrdinalIgnoreCase)) {
-                    s = s.Remove(0, 1);
-                        var er = await _evaluator.EvaluateAsync(s, ct);
-                    await Console.Out.WriteLineAsync(er.ToString());
-                    continue;
-                }
+                    if (s.StartsWith("$$", StringComparison.OrdinalIgnoreCase)) {
+                        s = s.Remove(0, 1);
+                    } else if (s.StartsWith("$", StringComparison.OrdinalIgnoreCase)) {
+                        s = s.Remove(0, 1);
+                        bool reentrant = true;
+                        if (s.StartsWith("!", StringComparison.OrdinalIgnoreCase)) {
+                            reentrant = false;
+                        s = s.Remove(0, 1);
+                        }
+                        var er = await _evaluator.EvaluateAsync(s, reentrant, ct);
+                        await Console.Out.WriteLineAsync(er.ToString());
+                        continue;
+                    }
 
-                return s;
+                    return s;
                 } finally {
                     --_nesting;
                 }

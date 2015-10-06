@@ -12,7 +12,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
         private readonly IRSession _session;
         private TaskCompletionSource<ExecutionResult> _requestTcs;
-        private bool _isConnected;
 
         public RInteractiveEvaluator(IRSession session) {
             _session = session;
@@ -32,7 +31,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public async Task<ExecutionResult> InitializeAsync() {
             try {
                 await _session.StartHostAsync();
-                _isConnected = true;
                 return ExecutionResult.Success;
             } catch (MicrosoftRHostMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
@@ -55,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public bool CanExecuteCode(string text) {
-            return _isConnected;
+            return _session.IsHostRunning;
         }
 
         public async Task<ExecutionResult> ExecuteCodeAsync(string text) {
@@ -117,7 +115,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
-            _isConnected = false;
             CurrentWindow.WriteLine(Resources.MicrosoftRHostStopped);
 
             if (_requestTcs != null) {
