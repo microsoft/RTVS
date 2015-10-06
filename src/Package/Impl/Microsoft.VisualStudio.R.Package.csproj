@@ -390,7 +390,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Folder_6221_24.bmp" />
+    <None Include="Images\Folder_6221_24.bmp" />
     <None Include="Microsoft.R.Host.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
