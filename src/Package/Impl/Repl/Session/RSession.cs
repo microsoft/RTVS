@@ -145,10 +145,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             TaskCompletionSource<string> requestTcs = new TaskCompletionSource<string>();
             _currentRequestSources.Push(requestSource);
             requestSource.Request(prompt, len, requestTcs);
+            ct.Register(delegate { requestTcs.TrySetCanceled(); });
 
-            // Cancel immediately if ct is canceled, even if request is not handled yet.
-            // Disconnected handler will run next and take care of cleaning the queue.
-            await Task.WhenAny(requestTcs.Task, Task.Delay(Timeout.Infinite, ct)).Unwrap();
             string response = await requestTcs.Task;
 
             Debug.Assert(response.Length < len); // len includes null terminator
