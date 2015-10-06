@@ -112,7 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                     evalSource.TryCancel();
                 }
             }
-
+            
             _contexts = null;
             Prompt = string.Empty;
 
@@ -142,8 +142,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                     // If it was canceled through the token, then host itself is shutting down, and cancellation
                     // will be propagated on the entry to next iteration of this loop.
                 }
+                }
             }
-        }
 
         private async Task<string> ReadNextRequest(string prompt, int len, CancellationToken ct) {
             var requestSource = await _pendingRequestSources.ReceiveAsync(ct);
@@ -214,7 +214,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                     pane.DisplayXamlFile(xamlFilePath);
                 }
             }
-        }
+            }
 
         private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags) {
             IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));

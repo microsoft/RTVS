@@ -35,7 +35,7 @@ namespace Microsoft.R.Host.Client {
         public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
             string rBinPath = Path.Combine(rHome, RBinPathX64);
-
+            
             if (!File.Exists(rhostExe)) {
                 throw new MicrosoftRHostMissingException();
             }
@@ -76,10 +76,10 @@ namespace Microsoft.R.Host.Client {
                             _process.Kill();
                         } catch (InvalidOperationException) {
                         }
+                        }
                     }
                 }
             }
-        }
 
         public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken)) {
             ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
@@ -100,15 +100,15 @@ namespace Microsoft.R.Host.Client {
                 try {
                     var webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
                     string s = Encoding.UTF8.GetString(_buffer, 0, webSocketReceiveResult.Count);
-                    var obj = JObject.Parse(s);
+                var obj = JObject.Parse(s);
                     int protocolVersion = (int)(double)obj["protocol_version"];
-                    Debug.Assert(protocolVersion == 1);
+                Debug.Assert(protocolVersion == 1);
                     string rVersion = (string)obj["R_version"];
-                    await _callbacks.Connected(rVersion);
+                await _callbacks.Connected(rVersion);
                     await RunLoop(ct, allowEval: true);
                 } finally {
                     await _callbacks.Disconnected();
-                }
+            }
             } finally {
                 _isRunning = false;
             }
@@ -134,7 +134,7 @@ namespace Microsoft.R.Host.Client {
 
                 switch (evt) {
                     case "YesNoCancel":
-                        {
+                    {
                             try {
                                 if (allowEval) {
                                     _canEval = true;
@@ -145,30 +145,30 @@ namespace Microsoft.R.Host.Client {
                             } finally {
                                 _canEval = false;
                             }
-                            break;
-                        }
+                        break;
+                    }
 
                     case "ReadConsole":
-                        {
+                    {
                             try {
                                 if (allowEval) {
                                     _canEval = true;
                                     await _callbacks.Evaluate(contexts, this, ct);
                                 }
-                                string input = await _callbacks.ReadConsole(
-                                    contexts,
+                        string input = await _callbacks.ReadConsole(
+                            contexts,
                                     (string)obj["prompt"],
                                     (string)obj["buf"],
                                     (int)(double)obj["len"],
                                     (bool)obj["addToHistory"],
                                     ct);
-                                input = input.Replace("\r\n", "\n");
-                                response = JsonConvert.SerializeObject(input);
+                        input = input.Replace("\r\n", "\n");
+                        response = JsonConvert.SerializeObject(input);
                             } finally {
                                 _canEval = false;
                             }
-                            break;
-                        }
+                        break;
+                    }
 
                     case "WriteConsoleEx":
                         await _callbacks.WriteConsoleEx(contexts, (string)obj["buf"], (OutputType)(double)obj["otype"], ct);
@@ -207,7 +207,7 @@ namespace Microsoft.R.Host.Client {
             }
 
             return null;
-        }
+                }
 
         private async Task Evaluate(RContext[] contexts, CancellationToken ct) {
             _canEval = true;
