@@ -77,11 +77,16 @@ namespace Microsoft.R.Host.Client {
                 try {
                     string s = await Console.In.ReadLineAsync();
 
-                    if (s.StartsWith("==", StringComparison.OrdinalIgnoreCase)) {
+                    if (s.StartsWith("$$", StringComparison.OrdinalIgnoreCase)) {
                         s = s.Remove(0, 1);
-                    } else if (s.StartsWith("=", StringComparison.OrdinalIgnoreCase)) {
+                    } else if (s.StartsWith("$", StringComparison.OrdinalIgnoreCase)) {
                         s = s.Remove(0, 1);
-                        var er = await _evaluator.EvaluateAsync(s, ct);
+                        bool reentrant = true;
+                        if (s.StartsWith("!", StringComparison.OrdinalIgnoreCase)) {
+                            reentrant = false;
+                            s = s.Remove(0, 1);
+                        }
+                        var er = await _evaluator.EvaluateAsync(s, reentrant, ct);
                         await Console.Out.WriteLineAsync(er.ToString());
                         continue;
                     }

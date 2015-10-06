@@ -34,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         public string Prompt { get; private set; } = "> ";
         public int MaxLength { get; private set; } = 0x1000;
-        public bool HostIsRunning => _hostRunTask != null && !_hostRunTask.IsCompleted;
+        public bool IsHostRunning => _hostRunTask != null && !_hostRunTask.IsCompleted;
 
         public void Dispose() {
             _host?.Dispose();
@@ -96,6 +96,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             while (_currentRequestSources.Count > 0) {
                 var requestSource = _currentRequestSources.Pop();
                 requestSource.Complete();
+            }
+            while (_pendingRequestSources.Count > 0) {
+                var requestSource = _pendingRequestSources.Receive();
+                requestSource.Complete();
+            }
+            while (_pendingEvaluationSources.Count > 0) {
+                RSessionEvaluationSource evalSource;
+                if (_pendingEvaluationSources.TryDequeue(out evalSource)) {
+                    evalSource.TryCancel();
+                }
             }
 
             _contexts = null;

@@ -22,7 +22,7 @@ namespace Microsoft.R.Host.Client {
         private Process _process;
         private ClientWebSocket _socket;
         private byte[] _buffer;
-        private bool _isRunning;
+        private bool _isRunning, _canEval;
 
         public RHost(IRCallbacks callbacks) {
             _callbacks = callbacks;
@@ -105,7 +105,7 @@ namespace Microsoft.R.Host.Client {
                     Debug.Assert(protocolVersion == 1);
                     string rVersion = (string)obj["R_version"];
                     await _callbacks.Connected(rVersion);
-                    await RunLoop(ct);
+                    await RunLoop(ct, allowEval: true);
                 } finally {
                     await _callbacks.Disconnected();
                 }
@@ -114,7 +114,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task<JObject> RunLoop(CancellationToken ct) {
+        private async Task<JObject> RunLoop(CancellationToken ct, bool allowEval) {
             while (!ct.IsCancellationRequested) {
                 WebSocketReceiveResult webSocketReceiveResult;
                 var s = string.Empty;
@@ -132,27 +132,41 @@ namespace Microsoft.R.Host.Client {
                 var evt = (string)obj["event"];
                 string response = null;
 
-                await _callbacks.Evaluate(contexts, this, ct);
-
                 switch (evt) {
                     case "YesNoCancel":
                         {
-                            YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], ct);
-                            response = JsonConvert.SerializeObject((double)input);
+                            try {
+                                if (allowEval) {
+                                    _canEval = true;
+                                    await _callbacks.Evaluate(contexts, this, ct);
+                                }
+                                YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], ct);
+                                response = JsonConvert.SerializeObject((double)input);
+                            } finally {
+                                _canEval = false;
+                            }
                             break;
                         }
 
                     case "ReadConsole":
                         {
-                            string input = await _callbacks.ReadConsole(
-                                contexts,
-                                (string)obj["prompt"],
-                                (string)obj["buf"],
-                                (int)(double)obj["len"],
-                                (bool)obj["addToHistory"],
-                                ct);
-                            input = input.Replace("\r\n", "\n");
-                            response = JsonConvert.SerializeObject(input);
+                            try {
+                                if (allowEval) {
+                                    _canEval = true;
+                                    await _callbacks.Evaluate(contexts, this, ct);
+                                }
+                                string input = await _callbacks.ReadConsole(
+                                    contexts,
+                                    (string)obj["prompt"],
+                                    (string)obj["buf"],
+                                    (int)(double)obj["len"],
+                                    (bool)obj["addToHistory"],
+                                    ct);
+                                input = input.Replace("\r\n", "\n");
+                                response = JsonConvert.SerializeObject(input);
+                            } finally {
+                                _canEval = false;
+                            }
                             break;
                         }
 
@@ -190,6 +204,15 @@ namespace Microsoft.R.Host.Client {
             return null;
         }
 
+        private async Task Evaluate(RContext[] contexts, CancellationToken ct) {
+            _canEval = true;
+            try {
+                await _callbacks.Evaluate(contexts, this, ct);
+            } finally {
+                _canEval = false;
+            }
+        }
+
         private static RContext[] GetContexts(JObject obj) {
             JToken contextsArray;
             if (!obj.TryGetValue("contexts", out contextsArray)) {
@@ -202,26 +225,35 @@ namespace Microsoft.R.Host.Client {
                 .ToArray();
         }
 
-        async Task<REvaluationResult> IRExpressionEvaluator.EvaluateAsync(string expression, CancellationToken ct) {
-            string request = JsonConvert.SerializeObject(new {
-                command = "eval",
-                expr = expression
-            });
+        async Task<REvaluationResult> IRExpressionEvaluator.EvaluateAsync(string expression, bool reentrant, CancellationToken ct) {
+            if (!_canEval) {
+                throw new InvalidOperationException("EvaluateAsync can only be called while ReadConsole or YesNoCancel is pending.");
+            }
 
-            var requestBytes = Encoding.UTF8.GetBytes(request);
-            await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct);
+            _canEval = false;
+            try {
+                string request = JsonConvert.SerializeObject(new {
+                    command = "eval",
+                    expr = expression
+                });
 
-            var obj = await RunLoop(ct);
+                var requestBytes = Encoding.UTF8.GetBytes(request);
+                await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct);
 
-            JToken result, error, parseStatus;
-            obj.TryGetValue("result", out result);
-            obj.TryGetValue("error", out error);
-            obj.TryGetValue("ParseStatus", out parseStatus);
+                var obj = await RunLoop(ct, reentrant);
 
-            return new REvaluationResult(
-                result != null ? (string)result : null,
-                error != null ? (string)error : null,
-                parseStatus != null ? (RParseStatus)(double)parseStatus : RParseStatus.Null);
+                JToken result, error, parseStatus;
+                obj.TryGetValue("result", out result);
+                obj.TryGetValue("error", out error);
+                obj.TryGetValue("ParseStatus", out parseStatus);
+
+                return new REvaluationResult(
+                    result != null ? (string)result : null,
+                    error != null ? (string)error : null,
+                    parseStatus != null ? (RParseStatus)(double)parseStatus : RParseStatus.Null);
+            } finally {
+                _canEval = true;
+            }
         }
     }
 }

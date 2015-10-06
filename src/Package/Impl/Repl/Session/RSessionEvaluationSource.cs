@@ -18,5 +18,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _tcs.SetResult(evaluation);
             return evaluation.Task;
         }
+
+        public bool TryCancel() {
+            return _tcs.TrySetCanceled();
+        }
     }
 }

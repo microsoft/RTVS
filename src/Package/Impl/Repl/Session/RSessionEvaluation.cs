@@ -23,9 +23,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _tcs.SetResult(null);
         }
 
-        public Task<REvaluationResult> EvaluateAsync(string expression, CancellationToken ct) {
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(ct, _ct);
-            return _evaluator.EvaluateAsync(expression, cts.Token);
+        public Task<REvaluationResult> EvaluateAsync(string expression, bool reentrant) {
+            return _evaluator.EvaluateAsync(expression, reentrant, _ct);
         }
     }
 }
