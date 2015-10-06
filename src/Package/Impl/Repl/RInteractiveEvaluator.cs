@@ -1,25 +1,20 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace Microsoft.VisualStudio.R.Package.Repl
-{
-    internal sealed class RInteractiveEvaluator : IInteractiveEvaluator
-    {
+namespace Microsoft.VisualStudio.R.Package.Repl {
+    internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
         private readonly IRSession _session;
         private TaskCompletionSource<ExecutionResult> _requestTcs;
+        private bool _isConnected;
 
-        public RInteractiveEvaluator(IRSession session)
-        {
+        public RInteractiveEvaluator(IRSession session) {
             _session = session;
             _session.BeforeRequest += SessionOnBeforeRequest;
             _session.Response += SessionOnResponse;
@@ -27,53 +22,43 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             _session.Disconnected += SessionOnDisconnected;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             _session.BeforeRequest -= SessionOnBeforeRequest;
             _session.Response -= SessionOnResponse;
             _session.Error -= SessionOnError;
             _session.Disconnected -= SessionOnDisconnected;
         }
 
-        public async Task<ExecutionResult> InitializeAsync()
-        {
-            try
-            {
+        public async Task<ExecutionResult> InitializeAsync() {
+            try {
                 await _session.StartHostAsync();
+                _isConnected = true;
                 return ExecutionResult.Success;
-            }
-            catch (MicrosoftRHostMissingException)
-            {
+            } catch (MicrosoftRHostMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
                 EditorShell.Current.ShowErrorMessage(Resources.Error_Microsoft_R_Host_Missing);
                 return ExecutionResult.Failure;
-            }
-            catch (Exception)
-            {
+            } catch (Exception) {
                 return ExecutionResult.Failure;
             }
         }
 
-        public async Task<ExecutionResult> ResetAsync(bool initialize = true)
-        {
+        public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             CurrentWindow.WriteLine(Resources.MicrosoftRHostStopping);
             await _session.StopHostAsync();
 
-            if (initialize)
-            {
+            if (initialize) {
                 return await InitializeAsync();
             }
 
             return ExecutionResult.Success;
         }
 
-        public bool CanExecuteCode(string text)
-        {
-            return true;
+        public bool CanExecuteCode(string text) {
+            return _isConnected;
         }
 
-        public async Task<ExecutionResult> ExecuteCodeAsync(string text)
-        {
+        public async Task<ExecutionResult> ExecuteCodeAsync(string text) {
             _requestTcs = new TaskCompletionSource<ExecutionResult>();
             var request = await _session.BeginInteractionAsync();
 
@@ -83,18 +68,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl
                 return await ExecutionResult.Failed;
             }
 
-            Task.Run(async () =>
-            {
-                try
-                {
+            Task.Run(async () => {
+                try {
                     await request.RespondAsync(text);
-                }
-                catch (RException)
-                {
+                } catch (RException) {
                     // It was already reported via RSession.Error and printed out; do nothing.
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
                     EditorShell.Current.ShowErrorMessage(ex.ToString());
                 }
@@ -103,54 +82,45 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             return await _requestTcs.Task;
         }
 
-        public string FormatClipboard()
-        {
+        public string FormatClipboard() {
             // keep the clipboard content as is
             return null;
         }
 
-        public void AbortExecution()
-        {
+        public void AbortExecution() {
             //TODO: Find out if we can cancel long executions in R. For now - do nothing.
         }
 
-        public string GetPrompt()
-        {
+        public string GetPrompt() {
             return _session.Prompt;
         }
 
         public IInteractiveWindow CurrentWindow { get; set; }
 
-        private void SessionOnBeforeRequest(object sender, RBeforeRequestEventArgs args)
-        {
-            if (_requestTcs != null)
-            {
+        private void SessionOnBeforeRequest(object sender, RBeforeRequestEventArgs args) {
+            if (_requestTcs != null) {
                 _requestTcs.SetResult(ExecutionResult.Success);
                 _requestTcs = null;
             }
         }
 
-        private void SessionOnResponse(object sender, RResponseEventArgs args)
-        {
+        private void SessionOnResponse(object sender, RResponseEventArgs args) {
             CurrentWindow.Write(args.Message);
         }
 
-        private void SessionOnError(object sender, RErrorEventArgs args)
-        {
+        private void SessionOnError(object sender, RErrorEventArgs args) {
             CurrentWindow.WriteError(args.Message);
-            if (_requestTcs != null)
-            {
+            if (_requestTcs != null) {
                 _requestTcs.SetResult(ExecutionResult.Failure);
                 _requestTcs = null;
             }
         }
 
-        private void SessionOnDisconnected(object sender, EventArgs args)
-        {
+        private void SessionOnDisconnected(object sender, EventArgs args) {
+            _isConnected = false;
             CurrentWindow.WriteLine(Resources.MicrosoftRHostStopped);
 
-            if (_requestTcs != null)
-            {
+            if (_requestTcs != null) {
                 _requestTcs.SetResult(ExecutionResult.Success);
                 _requestTcs = null;
             }

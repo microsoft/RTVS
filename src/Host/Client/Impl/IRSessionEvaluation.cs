@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Host.Client
-{
-    public interface IRSessionEvaluation : IDisposable
-    {
+namespace Microsoft.R.Host.Client {
+    public interface IRSessionEvaluation : IDisposable {
         IReadOnlyCollection<IRContext> Contexts { get; }
-        Task<REvaluationResult> EvaluateAsync(string expression);
+        Task<REvaluationResult> EvaluateAsync(string expression, CancellationToken ct);
     }
 }

@@ -9,50 +9,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.R.Host.Client
-{
-    public sealed class RHost : IDisposable
-    {
-        private class RExpressionEvaluator : IRExpressionEvaluator {
-            private readonly WebSocket _ws;
-            private readonly byte[] _buffer;
-            private readonly CancellationToken _ct;
-
-            public RExpressionEvaluator(WebSocket ws, byte[] buffer, CancellationToken ct) {
-                _ws = ws;
-                _buffer = buffer;
-                _ct = ct;
-            }
-
-            public async Task<REvaluationResult> EvaluateAsync(string expression) {
-                string request = JsonConvert.SerializeObject(new {
-                    command = "eval",
-                    expr = expression
-                });
-
-                int count = Encoding.UTF8.GetBytes(request, 0, request.Length, _buffer, 0);
-                await _ws.SendAsync(new ArraySegment<byte>(_buffer, 0, count), WebSocketMessageType.Text, true, _ct);
-
-                var wsrr = await _ws.ReceiveAsync(new ArraySegment<byte>(_buffer), _ct);
-                if (wsrr.CloseStatus != null) {
-                    throw new TaskCanceledException();
-                }
-
-                string response = Encoding.UTF8.GetString(_buffer, 0, wsrr.Count);
-                var obj = JObject.Parse(response);
-
-                JToken result, error, parseStatus;
-                obj.TryGetValue("result", out result);
-                obj.TryGetValue("error", out error);
-                obj.TryGetValue("ParseStatus", out parseStatus);
-
-                return new REvaluationResult(
-                    result != null ? (string)result : null,
-                    error != null ? (string)error : null,
-                    parseStatus != null ? (RParseStatus)(double)parseStatus : RParseStatus.Null);
-            }
-        }
-
+namespace Microsoft.R.Host.Client {
+    public sealed class RHost : IDisposable, IRExpressionEvaluator {
         public const int DefaultPort = 5118;
         public const string RHostExe = "Microsoft.R.Host.exe";
         public const string RBinPathX64 = @"bin\x64";
@@ -62,24 +20,23 @@ namespace Microsoft.R.Host.Client
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly IRCallbacks _callbacks;
         private Process _process;
+        private ClientWebSocket _socket;
+        private byte[] _buffer;
+        private bool _isRunning;
 
-        public RHost(IRCallbacks callbacks)
-        {
+        public RHost(IRCallbacks callbacks) {
             _callbacks = callbacks;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             _cts.Cancel();
         }
 
-        public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken))
-        {
+        public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
             string rBinPath = Path.Combine(rHome, RBinPathX64);
-            
-            if (!File.Exists(rhostExe))
-            {
+
+            if (!File.Exists(rhostExe)) {
                 throw new MicrosoftRHostMissingException();
             }
 
@@ -89,174 +46,182 @@ namespace Microsoft.R.Host.Client
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
 
-            using (_process = Process.Start(psi))
-            {
-                try
-                {
+            using (this)
+            using (_process = Process.Start(psi)) {
+                _process.EnableRaisingEvents = true;
+                _process.Exited += delegate { Dispose(); };
+
+                try {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-                    using (var ws = new ClientWebSocket())
-                    {
+                    using (_socket = new ClientWebSocket()) {
                         var uri = new Uri("ws://localhost:" + DefaultPort);
-                        for (int i = 0; ; ++i)
-                        {
-                            try
-                            {
-                                await ws.ConnectAsync(uri, ct);
+                        for (int i = 0; ; ++i) {
+                            try {
+                                await _socket.ConnectAsync(uri, ct);
                                 break;
-                            }
-                            catch (WebSocketException)
-                            {
-                                if (i > 10)
-                                {
+                            } catch (WebSocketException) {
+                                if (i > 10) {
                                     throw;
                                 }
                                 await Task.Delay(100, ct);
                             }
                         }
 
-                        await Run(ws, ct);
+                        await Run(ct);
                     }
-                }
-                finally
-                {
-                    if (!_process.HasExited)
-                    {
-                        try
-                        {
+                } finally {
+                    if (!_process.HasExited) {
+                        try {
                             _process.WaitForExit(500);
                             _process.Kill();
-                        }
-                        catch (InvalidOperationException)
-                        {
+                        } catch (InvalidOperationException) {
                         }
                     }
                 }
             }
         }
 
-        public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken))
-        {
+        public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken)) {
             ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-            using (var ws = new ClientWebSocket())
-            {
-                await ws.ConnectAsync(uri, ct);
-                await Run(ws, ct);
+            using (_socket = new ClientWebSocket()) {
+                await _socket.ConnectAsync(uri, ct);
+                await Run(ct);
             }
         }
 
-        private async Task Run(WebSocket webSocket, CancellationToken ct)
-        {
-            var buffer = new byte[0x10000];
-
-            try
-            {
-                var webSocketReceiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
-                string s = Encoding.UTF8.GetString(buffer, 0, webSocketReceiveResult.Count);
-                var obj = JObject.Parse(s);
-                int protocolVersion = (int) (double) obj["protocol_version"];
-                Debug.Assert(protocolVersion == 1);
-                string rVersion = (string) obj["R_version"];
-                await _callbacks.Connected(rVersion);
-
-                await RunLoop(webSocket, ct, buffer);
+        private async Task Run(CancellationToken ct) {
+            if (_isRunning) {
+                throw new InvalidOperationException("This host is already running.");
             }
-            finally
-            {
-                await _callbacks.Disconnected();
+
+            _buffer = new byte[0x10000];
+            _isRunning = true;
+            try {
+                try {
+                    var webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
+                    string s = Encoding.UTF8.GetString(_buffer, 0, webSocketReceiveResult.Count);
+                    var obj = JObject.Parse(s);
+                    int protocolVersion = (int)(double)obj["protocol_version"];
+                    Debug.Assert(protocolVersion == 1);
+                    string rVersion = (string)obj["R_version"];
+                    await _callbacks.Connected(rVersion);
+                    await RunLoop(ct);
+                } finally {
+                    await _callbacks.Disconnected();
+                }
+            } finally {
+                _isRunning = false;
             }
         }
 
-        private async Task RunLoop(WebSocket webSocket, CancellationToken ct, byte[] buffer)
-        {
-            while (!ct.IsCancellationRequested)
-            {
+        private async Task<JObject> RunLoop(CancellationToken ct) {
+            while (!ct.IsCancellationRequested) {
                 WebSocketReceiveResult webSocketReceiveResult;
                 var s = string.Empty;
-                do
-                {
-                    webSocketReceiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
-                    if (webSocketReceiveResult.CloseStatus != null)
-                    {
-                        return;
+                do {
+                    webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
+                    if (webSocketReceiveResult.CloseStatus != null) {
+                        return null;
                     }
-
-                    s += Encoding.UTF8.GetString(buffer, 0, webSocketReceiveResult.Count);
+                    s += Encoding.UTF8.GetString(_buffer, 0, webSocketReceiveResult.Count);
                 } while (!webSocketReceiveResult.EndOfMessage);
 
                 JObject obj = JObject.Parse(s);
-
                 var contexts = GetContexts(obj);
-                var evaluator = new RExpressionEvaluator(webSocket, buffer, ct);
 
-                var evt = (string) obj["event"];
+                var evt = (string)obj["event"];
                 string response = null;
 
-                await _callbacks.Evaluate(contexts, evaluator);
+                await _callbacks.Evaluate(contexts, this, ct);
 
-                switch (evt)
-                {
+                switch (evt) {
                     case "YesNoCancel":
-                    {
-                        YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string) obj["s"]);
-                        response = JsonConvert.SerializeObject((double) input);
-                        break;
-                    }
+                        {
+                            YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], ct);
+                            response = JsonConvert.SerializeObject((double)input);
+                            break;
+                        }
 
                     case "ReadConsole":
-                    {
-                        string input = await _callbacks.ReadConsole(
-                            contexts,
-                            (string) obj["prompt"],
-                            (string) obj["buf"],
-                            (int) (double) obj["len"],
-                            (bool) obj["addToHistory"]);
-                        input = input.Replace("\r\n", "\n");
-                        response = JsonConvert.SerializeObject(input);
-                        break;
-                    }
+                        {
+                            string input = await _callbacks.ReadConsole(
+                                contexts,
+                                (string)obj["prompt"],
+                                (string)obj["buf"],
+                                (int)(double)obj["len"],
+                                (bool)obj["addToHistory"],
+                                ct);
+                            input = input.Replace("\r\n", "\n");
+                            response = JsonConvert.SerializeObject(input);
+                            break;
+                        }
 
                     case "WriteConsoleEx":
-                        await _callbacks.WriteConsoleEx(contexts, (string) obj["buf"], (OutputType) (double) obj["otype"]);
+                        await _callbacks.WriteConsoleEx(contexts, (string)obj["buf"], (OutputType)(double)obj["otype"], ct);
                         break;
 
                     case "ShowMessage":
-                        await _callbacks.ShowMessage(contexts, (string) obj["s"]);
+                        await _callbacks.ShowMessage(contexts, (string)obj["s"], ct);
                         break;
 
                     case "Busy":
-                        await _callbacks.Busy(contexts, (bool) obj["which"]);
+                        await _callbacks.Busy(contexts, (bool)obj["which"], ct);
                         break;
 
                     case "CallBack":
                         break;
 
+                    case "eval":
+                        return obj;
+
                     case "exit":
-                        return;
+                        return null;
 
                     default:
                         throw new InvalidDataException("Unknown event type " + evt);
                 }
 
-                if (response != null)
-                {
-                    int count = Encoding.UTF8.GetBytes(response, 0, response.Length, buffer, 0);
-                    await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, count), WebSocketMessageType.Text, true, ct);
+                if (response != null) {
+                    byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+                    await _socket.SendAsync(new ArraySegment<byte>(responseBytes, 0, responseBytes.Length), WebSocketMessageType.Text, true, ct);
                 }
             }
+
+            return null;
         }
 
-        private static RContext[] GetContexts(JObject obj)
-        {
+        private static RContext[] GetContexts(JObject obj) {
             JToken contextsArray;
-            if (!obj.TryGetValue("contexts", out contextsArray))
-            {
+            if (!obj.TryGetValue("contexts", out contextsArray)) {
                 return new RContext[0];
             }
 
-            return ((JArray) contextsArray)
+            return ((JArray)contextsArray)
                 .Cast<JObject>()
-                .Select(ctx => new RContext((RContextType) (double) ctx["callflag"]))
+                .Select(ctx => new RContext((RContextType)(double)ctx["callflag"]))
                 .ToArray();
+        }
+
+        async Task<REvaluationResult> IRExpressionEvaluator.EvaluateAsync(string expression, CancellationToken ct) {
+            string request = JsonConvert.SerializeObject(new {
+                command = "eval",
+                expr = expression
+            });
+
+            var requestBytes = Encoding.UTF8.GetBytes(request);
+            await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct);
+
+            var obj = await RunLoop(ct);
+
+            JToken result, error, parseStatus;
+            obj.TryGetValue("result", out result);
+            obj.TryGetValue("error", out error);
+            obj.TryGetValue("ParseStatus", out parseStatus);
+
+            return new REvaluationResult(
+                result != null ? (string)result : null,
+                error != null ? (string)error : null,
+                parseStatus != null ? (RParseStatus)(double)parseStatus : RParseStatus.Null);
         }
     }
 }
