@@ -5,5 +5,6 @@ namespace rhost {
     namespace server {
         void wait_for_client(unsigned port);
         void register_callbacks(structRstart& rp);
+        void plot_xaml(std::string& xaml);
     }
 }

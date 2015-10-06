@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "server.h"
 #include "Rapi.h"
+#include "vsgd.h"
 
 const unsigned PORT = 5118;
 
@@ -27,6 +28,9 @@ int main(int argc, char** argv) {
 
     GA_initapp(0, 0);
     readconsolecfg();
+
+    DllInfo *dll = R_getEmbeddingDllInfo();
+    R_init_vsgd(dll);
 
     CharacterMode = LinkDLL;
     setup_Rmainloop();

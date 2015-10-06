@@ -167,14 +167,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="crtutils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="server.cpp" />
+    <ClCompile Include="vsgd.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="crtutils.h" />
     <ClInclude Include="Rapi.h" />
+    <ClInclude Include="Rgraphicsapi.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="util.h" />
+    <ClInclude Include="vsgd.h" />
+    <ClInclude Include="xamlbuilder.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

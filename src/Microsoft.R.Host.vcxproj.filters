@@ -3,12 +3,18 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="server.cpp" />
+    <ClCompile Include="crtutils.cpp" />
+    <ClCompile Include="vsgd.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Rapi.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="util.h" />
+    <ClInclude Include="Rgraphicsapi.h" />
+    <ClInclude Include="crtutils.h" />
+    <ClInclude Include="xamlbuilder.h" />
+    <ClInclude Include="vsgd.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

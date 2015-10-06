@@ -9,6 +9,7 @@
 // - Rembedded.h
 // - Rinternals.h
 // - R_ext/Boolean.h
+// - R_ext/Rdynload.h
 // - R_ext/RStartup.h
 
 #pragma once
@@ -207,4 +208,37 @@ extern "C" {
     extern void GA_appcleanup(void);
     extern void readconsolecfg(void);
 #endif
+
+    typedef void * (*DL_FUNC)();
+    typedef unsigned int R_NativePrimitiveArgType;
+    typedef unsigned int R_NativeObjectArgType;
+    typedef enum { R_ARG_IN, R_ARG_OUT, R_ARG_IN_OUT, R_IRRELEVANT } R_NativeArgStyle;
+
+    typedef struct {
+        const char *name;
+        DL_FUNC     fun;
+        int         numArgs;
+        R_NativePrimitiveArgType *types;
+        R_NativeArgStyle         *styles;
+    } R_CMethodDef;
+    typedef R_CMethodDef R_FortranMethodDef;
+
+    typedef struct {
+        const char *name;
+        DL_FUNC     fun;
+        int         numArgs;
+    } R_CallMethodDef;
+    typedef R_CallMethodDef R_ExternalMethodDef;
+
+    typedef struct _DllInfo DllInfo;
+
+    int R_registerRoutines(DllInfo *info, const R_CMethodDef * const croutines,
+        const R_CallMethodDef * const callRoutines,
+        const R_FortranMethodDef * const fortranRoutines,
+        const R_ExternalMethodDef * const externalRoutines);
+
+    Rboolean R_useDynamicSymbols(DllInfo *info, Rboolean value);
+    Rboolean R_forceSymbols(DllInfo *info, Rboolean value);
+
+    DllInfo *R_getEmbeddingDllInfo(void);
 }

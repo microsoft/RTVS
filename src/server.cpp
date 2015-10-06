@@ -1,4 +1,5 @@
 #include "server.h"
+#include "crtutils.h"
 #include "util.h"
 #include "Rapi.h"
 
@@ -8,10 +9,6 @@ namespace rhost {
     namespace server {
         namespace {
             typedef websocketpp::server<websocketpp::config::asio> ws_server_type;
-
-            // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
-            // To ensure that our code runs during shutdown, we need to use the corresponding atexit().
-            auto msvcrt_atexit = reinterpret_cast<int(*)(void(*)())>(GetProcAddress(LoadLibrary(L"msvcrt.dll"), "atexit"));
 
             std::unique_ptr<std::thread> server_thread;
             std::promise<ws_server_type::connection_ptr> ws_conn_promise;
@@ -281,7 +278,9 @@ namespace rhost {
                         std::exit(1);
                     } else {
                         conn->start();
-                        msvcrt_atexit(on_exit);
+                        // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
+                        // To ensure that our code runs during shutdown, we need to use the corresponding atexit().
+                        rhost::crt::atexit(on_exit);
                     }
                 });
 
@@ -307,6 +306,16 @@ namespace rhost {
             rp.ShowMessage = ShowMessage;
             rp.YesNoCancel = YesNoCancel;
             rp.Busy = Busy;
+        }
+
+        void plot_xaml(std::string& filepath) {
+            picojson::object obj;
+            add_context(obj);
+
+            obj["event"] = picojson::value("PlotXaml");
+            obj["filepath"] = picojson::value(to_utf8(filepath));
+            std::string json = picojson::value(obj).serialize();
+            ws_conn->send(json, websocketpp::frame::opcode::text);
         }
     }
 }
