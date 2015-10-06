@@ -232,6 +232,7 @@ namespace Microsoft.R.Host.Client
 
                     case "PlotXaml":
                         await _callbacks.PlotXaml(contexts, (string)obj["filepath"]);
+                        // TODO: delete temporary xaml and bitmap files
                         break;
 
                     case "exit":
