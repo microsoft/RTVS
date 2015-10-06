@@ -8,8 +8,6 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-
         <local:BooleanToHidingVisibilityConveter x:Key="BooleanToHidingVisibilityConveter" />
         
         <local:LevelToMarginConverter x:Key="ConvertToThickness" LeftMargin="12" OtherMargin="4" />
@@ -65,6 +63,10 @@
             </Setter>
         </Style>
 
+        <Style x:Key="TextValueStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
     </UserControl.Resources>
     
     <DataGrid x:Name="RootGrid"
@@ -80,13 +82,13 @@
                                           IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                           Style="{StaticResource ExpandCollapseToggleStyle}"
                                           Visibility="{Binding HasChildren, Converter={StaticResource BooleanToHidingVisibilityConveter}}"/>
-                            <TextBlock Text="{Binding VariableName}" Margin="4" />
+                            <TextBlock Text="{Binding VariableName}" />
                         </StackPanel>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTextColumn Header="Value" Binding="{Binding VariableValue}" />
-            <DataGridTextColumn Header="Type" Binding="{Binding TypeName}" />
+            <DataGridTextColumn Header="Value" Binding="{Binding VariableValue}" ElementStyle="{StaticResource TextValueStyle}"/>
+            <DataGridTextColumn Header="Type" Binding="{Binding TypeName}" ElementStyle="{StaticResource TextValueStyle}" />
         </DataGrid.Columns>
     </DataGrid>
 </UserControl>

@@ -222,18 +222,19 @@ namespace Microsoft.VisualStudio.R.Controls
   }, finally = {
     close(con_repr);
   });
-  cat('""name"": ', file = con, sep = '');dput(expr, con);
-  cat(',""class"": ', file = con, sep = '');dput(class(expr), con);
-  cat(',""value"": ', file = con, sep = '');dput(repr, con);
-  cat(',""type"": ', file = con, sep = '');dput(typeof(obj), con);
+
+  cat('""name"": ""', file=con, sep='');cat(expr, file=con);cat('""', file=con, sep='');
+  cat(',""class"": ""', file=con, sep='');cat(class(expr), file=con);cat('""', file=con, sep='');
+  cat(',""value"": ', file=con, sep='');dput(paste(repr, collapse=''), file=con);
+  cat(',""type"": ""', file=con, sep='');cat(typeof(obj), file=con);cat('""', file=con, sep='');
 }
 .rtvs.datainspect.eval <<- function(expr, env) {
   con <-textConnection(NULL, open = ""w"");
   json <-""{}"";
   tryCatch({
-    cat('{', file = con, sep = '');
+    cat('{', file=con, sep='');
     .rtvs.datainspect.eval_into(con, expr, env);
-    cat('}\n', file = con, sep = '');
+    cat('}\n', file=con, sep='');
     json <-textConnectionValue(con);
   }, finally = {
     close(con);
@@ -244,20 +245,20 @@ namespace Microsoft.VisualStudio.R.Controls
   con <-textConnection(NULL, open = ""w"");
   json <-""{}"";
   tryCatch({
-    cat('[', file = con, sep = '');
+    cat('[', file=con, sep='');
     is_first <-TRUE;
     for (varname in ls(env))
     {
       if (is_first) {
         is_first <-FALSE;
       } else {
-        cat(', ', file = con, sep = '');
+        cat(', ', file=con, sep='');
       }
-      cat('{', file = con, sep = '');
+      cat('{', file=con, sep='');
       .rtvs.datainspect.eval_into(con, varname, env);
-      cat('}', file = con, sep = '');
+      cat('}', file=con, sep='');
     }
-    cat(']\n', file = con, sep = '');
+    cat(']\n', file=con, sep='');
     json <-textConnectionValue(con);
   }, finally = {
     close(con);
