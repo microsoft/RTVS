@@ -16,8 +16,6 @@ namespace Microsoft.VisualStudio.R.Controls
 {
     public class VariableProvideContext
     {
-        public static VariableProvideContext GlobalEnvironment = new VariableProvideContext() { Environment = ".GlobalEnv" };
-
         public string Environment { get; set; }
     }
 
@@ -28,8 +26,6 @@ namespace Microsoft.VisualStudio.R.Controls
         private List<Variable> _variables;
 
         private VariableView _view; // TODO: cut this dependency later
-
-        private static List<Variable> EmptyVariables = new List<Variable>();
 
         public VariableProvider(VariableView view)
         {
@@ -48,7 +44,8 @@ namespace Microsoft.VisualStudio.R.Controls
         {
             if (_rSession == null)
             {
-                return EmptyVariables;
+                return new List<Variable>();    // empty
+
             }
             else
             {
@@ -163,11 +160,7 @@ namespace Microsoft.VisualStudio.R.Controls
             {
                 var response = await interactor.RespondAsync(".rtvs.datainspect.env_vars(.GlobalEnv)\r\n");  // TODO: for now, global environment
                 var evaluations = Deserialize(response);
-                if (evaluations == null)
-                {
-                    _variables = EmptyVariables;
-                }
-                else
+                if (evaluations != null)
                 {
                     var variables = new List<Variable>();
                     foreach (var evaluation in evaluations)
@@ -199,7 +192,7 @@ namespace Microsoft.VisualStudio.R.Controls
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Exception: Deserialization error:{0}\r\n{1}", response, e.Message);
+                Debug.WriteLine(e.ToString());
 
                 return null;
             }
