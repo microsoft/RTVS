@@ -20,18 +20,9 @@ namespace Microsoft.Markdown.Editor.Commands
         protected override void OnTextBufferDisposing(ITextBuffer textBuffer)
         {
             IEditorInstance editorInstance = ServiceManager.GetService<IEditorInstance>(textBuffer);
-
             if (editorInstance != null)
             {
                 editorInstance.Dispose();
-            }
-            else
-            {
-                //IREditorDocument doc = EditorDocument.TryFromTextBuffer(textBuffer);
-                //if (doc != null)
-                //{
-                //    doc.Dispose();
-                //}
             }
 
             base.OnTextBufferDisposing(textBuffer);

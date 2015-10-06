@@ -12,9 +12,9 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown
         public MdLanguageService()
             : base(MdGuidList.MdLanguageServiceGuid,
                    MdContentTypeDefinition.LanguageName,
-                   MdContentTypeDefinition.FileExtension1 + ";" + 
+                   MdContentTypeDefinition.FileExtension1 + ";" +
                    MdContentTypeDefinition.FileExtension2 + ";" +
-                   MdContentTypeDefinition.RmdFileExtension)
+                   MdContentTypeDefinition.FileExtension3)
         {
         }
 

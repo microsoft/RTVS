@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Name("Visual Studio Markdown Editor Text View Connection Listener")]
     [Order(Before = "Default")]
-    internal sealed class VsRTextViewConnectionListener : MdTextViewConnectionListener
+    internal sealed class VsMarkdownTextViewConnectionListener : MdTextViewConnectionListener
     {
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer)
         {

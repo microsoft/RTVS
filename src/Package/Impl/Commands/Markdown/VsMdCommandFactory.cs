@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Commands
+namespace Microsoft.VisualStudio.R.Package.Commands.MD
 {
     [Export(typeof(ICommandFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
@@ -19,8 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands
         {
             var commands = new List<ICommand>();
 
-            commands.Add(new MdPreviewCommand(textView));
-            commands.Add(new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int)MdContextMenuId.MD));
+            commands.Add(new PreviewCommand(textView));
+            commands.Add(new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int)MarkdownContextMenuId.MD));
             return commands;
         }
     }

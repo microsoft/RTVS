@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -8,19 +9,23 @@ using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Markdown.Editor.Commands;
+using Microsoft.Markdown.Editor.Document;
+using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Actions.Logging;
 using Microsoft.R.Actions.Script;
+using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing
 {
-    internal abstract class PreviewCommandBase : ViewCommand
+    internal sealed class PreviewCommand : ViewCommand
     {
         private RCommand _lastCommand;
         private string _outputFilePath;
+        private Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler> _flavorHandlers = new Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler>();
 
-        public PreviewCommandBase(ITextView textView)
+        public PreviewCommand(ITextView textView)
             : base(textView, new CommandId[]
                 {
                   new CommandId(MdPackageCommandId.MdCmdSetGuid, (int)MdPackageCommandId.icmdPreviewHtml),
@@ -28,11 +33,12 @@ namespace Microsoft.VisualStudio.R.Package.Publishing
                   new CommandId(MdPackageCommandId.MdCmdSetGuid, (int)MdPackageCommandId.icmdPreviewWord),
                 }, false)
         {
+            IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = EditorShell.Current.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
+            foreach (var h in handlers)
+            {
+                _flavorHandlers[h.Value.Flavor] = h.Value;
+            }
         }
-
-        protected abstract string RequiredPackageName { get; }
-        protected abstract IEditorDocument GetDocument(ITextBuffer textBuffer);
-        protected abstract string GetCommandLine(string inputFile, string outputFile, PublishFormat publishFormat);
 
         public override CommandStatus Status(Guid group, int id)
         {
@@ -51,9 +57,11 @@ namespace Microsoft.VisualStudio.R.Package.Publishing
                 return CommandResult.Disabled;
             }
 
-            if (!InstallPackages.IsInstalled(RequiredPackageName, 5000))
+            IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
+
+            if (!InstallPackages.IsInstalled(flavorHandler.RequiredPackageName, 5000))
             {
-                EditorShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, RequiredPackageName));
+                EditorShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
                 return CommandResult.Disabled;
             }
 
@@ -67,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing
                 }
             }
 
-            IEditorDocument document = GetDocument(TextView.TextBuffer);
+            IEditorDocument document = MdEditorDocument.FromTextBuffer(TextView.TextBuffer);
             string inputFilePath = document.WorkspaceItem.Path;
             _outputFilePath = Path.ChangeExtension(inputFilePath, "html");
 
@@ -85,7 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing
             string outputFilePath = _outputFilePath.Replace('\\', '/');
             PublishFormat format = GetPublishFormat(id);
 
-            string arguments = GetCommandLine(inputFilePath, outputFilePath, PublishFormat.Html);
+            string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, PublishFormat.Html);
 
             _lastCommand = RCommand.ExecuteRExpressionAsync(arguments, PublishLog.Current);
             _lastCommand.Task.ContinueWith((Task t) => LaunchViewer(t));
@@ -137,6 +145,20 @@ namespace Microsoft.VisualStudio.R.Package.Publishing
                     return PublishFormat.Word;
             }
             return PublishFormat.Html;
+        }
+
+        private IMarkdownFlavorPublishHandler GetFlavorHandler(ITextBuffer textBuffer)
+        {
+            MarkdownFlavor flavor = MdFlavor.FromTextBuffer(textBuffer);
+            IMarkdownFlavorPublishHandler value = null;
+
+            if(_flavorHandlers.TryGetValue(flavor, out value))
+            {
+                return value;
+            }
+
+            Debug.Assert(false, "Unknown markdown flavor");
+            return new MdPublishHandler();
         }
     }
 }

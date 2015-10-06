@@ -9,7 +9,7 @@ namespace Microsoft.Markdown.Editor.ContentTypes
         public const string ContentType = "Markdown";
         public const string FileExtension1 = ".md";
         public const string FileExtension2 = ".markdown";
-        public const string RmdFileExtension = ".rmd";
+        public const string FileExtension3 = ".rmd";
 
         /// <summary>
         /// Exports the MD content type
@@ -34,5 +34,13 @@ namespace Microsoft.Markdown.Editor.ContentTypes
         [ContentType(MdContentTypeDefinition.ContentType)]
         [FileExtension(MdContentTypeDefinition.FileExtension2)]
         public FileExtensionToContentTypeDefinition IMdFileExtension2 { get; set; }
+
+        /// <summary>
+        /// Exports the R markdown file extension
+        /// </summary>
+        [Export(typeof(FileExtensionToContentTypeDefinition))]
+        [ContentType(MdContentTypeDefinition.ContentType)]
+        [FileExtension(MdContentTypeDefinition.FileExtension3)]
+        public FileExtensionToContentTypeDefinition IMdFileExtension3 { get; set; }
     }
 }

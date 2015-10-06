@@ -89,7 +89,6 @@ namespace Microsoft.R.Actions.Script
                 _rProcess.StartInfo = info;
 
                 _rProcess.Exited += OnProcessExited;
-
                 _rProcess.OutputDataReceived += OnOutputDataReceived;
                 _rProcess.ErrorDataReceived += OnErrorDataReceived;
 
@@ -99,6 +98,7 @@ namespace Microsoft.R.Actions.Script
                 _rProcess.BeginErrorReadLine();
 
                 _rProcess.WaitForExit();
+
                 Dispose();
             }
         }
