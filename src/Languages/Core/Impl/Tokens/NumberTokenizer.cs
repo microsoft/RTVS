@@ -1,11 +1,12 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Tokens
 {
     public static class NumberTokenizer
     {
-        public static object CharacterSteam { get; private set; }
+//        public static object CharacterSteam { get; private set; }
 
         public static int HandleNumber(CharacterStream cs)
         {
@@ -62,15 +63,34 @@ namespace Microsoft.Languages.Core.Tokens
 
             if (cs.CurrentChar == 'e' || cs.CurrentChar == 'E')
             {
-                return HandleExponent(cs, start);
+                int numberLength = HandleExponent(cs, start);
+                if(numberLength > 0)
+                {
+                    return IsValidDouble(cs, start, cs.Position) ? numberLength : 0;
+                }
             }
 
-            if(!isDouble && cs.CurrentChar == 'L')
+            if (!isDouble)
             {
-                cs.MoveToNextChar();
+                if (cs.CurrentChar == 'L')
+                {
+                    cs.MoveToNextChar();
+                }
+            }
+            else
+            {
+                return IsValidDouble(cs, start, cs.Position) ? cs.Position - start : 0;
             }
 
             return cs.Position - start;
+        }
+
+        private static bool IsValidDouble(CharacterStream cs, int start, int end)
+        {
+            int len = end - start;
+            string s = cs.GetSubstringAt(start, len);
+            double n;
+            return Double.TryParse(s, out n);
         }
 
         internal static int HandleHex(CharacterStream cs, int start)

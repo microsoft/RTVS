@@ -1,7 +1,7 @@
 ﻿
 namespace Microsoft.VisualStudio.R.Package.Commands.Markdown
 {
-    internal enum MdContextMenuId
+    internal enum MarkdownContextMenuId
     {
         MD = 300,
         RMD = 300

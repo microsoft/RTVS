@@ -101,23 +101,21 @@
     <Compile Include="Classification\MarkdownClassificationDefinitions.cs" />
     <Compile Include="Classification\MarkdownClassificationNameProvider.cs" />
     <Compile Include="Classification\MarkdownClassificationTypes.cs" />
-    <Compile Include="Classification\MD\MdClassifier.cs" />
-    <Compile Include="Classification\MD\MdClassifierProvider.cs" />
+    <Compile Include="Classification\MdClassifier.cs" />
+    <Compile Include="Classification\MdClassifierProvider.cs" />
     <Compile Include="Classification\MarkdownClassifierProvider.cs" />
-    <Compile Include="Classification\RMD\RmdClassifier.cs" />
-    <Compile Include="Classification\RMD\RmdClassifierProvider.cs" />
     <Compile Include="Commands\MdCommandFactory.cs" />
     <Compile Include="Commands\MdMainController.cs" />
     <Compile Include="Commands\MdPackageCommandId.cs" />
     <Compile Include="Commands\MdTextViewConnectionListener.cs" />
+    <Compile Include="Flavor\MdFlavor.cs" />
+    <Compile Include="Flavor\MarkdownFlavor.cs" />
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdDocumentFactory.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstanceFactory.cs" />
-    <Compile Include="ContentType\RmdContentTypeDefinition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Publish\KnitMenuCommand.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

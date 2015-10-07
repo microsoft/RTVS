@@ -7,8 +7,9 @@ namespace Microsoft.Markdown.Editor.Commands
         public static readonly Guid MdCmdSetGuid = new Guid("0BF33C69-94C2-4985-81A0-2556F8DB88A6");
 
         // GuidList.CmdSetGuid
-        public const int icmdKnitHtml = 601;
-        public const int icmdKnitPdf = 602;
-        public const int icmdKnitWord = 603;
+        public const int icmdPreviewHtml = 601;
+        public const int icmdPreviewPdf = 602;
+        public const int icmdPreviewWord = 603;
+        public const int icmdPublish = 610;
     }
 }

@@ -67,17 +67,6 @@ namespace Microsoft.R.Core.Test.Tokens
         [TestMethod]
         public void TokenizeComplexTest6()
         {
-            var tokens = this.Tokenize("-12.+-.1ei", new RTokenizer());
-
-            Assert.AreEqual(1, tokens.Count);
-            Assert.AreEqual(RTokenType.Complex, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(10, tokens[0].Length);
-        }
-
-        [TestMethod]
-        public void TokenizeComplexTest7()
-        {
             var tokens = this.Tokenize("1i", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);

@@ -36,10 +36,7 @@ namespace Microsoft.R.Editor.Completion
         {
             Debug.Assert(EditorShell.IsUIThread);
 
-            //if (_asyncSession != null)
-            //    return;
-
-            IREditorDocument doc = REditorDocument.FromTextBuffer(_textBuffer);
+            IREditorDocument doc = REditorDocument.TryFromTextBuffer(_textBuffer);
             if (doc == null)
                 return;
 

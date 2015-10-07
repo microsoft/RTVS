@@ -249,4 +249,19 @@
   <data name="Settings_ReplSyntaxCheck_Description" xml:space="preserve">
     <value>Turns on or off live code syntax check in R Console window. Syntax check may not work correctly in multi-line statements.</value>
   </data>
+  <data name="OutputWindowName_InstallPackages" xml:space="preserve">
+    <value>R Packages</value>
+  </data>
+  <data name="OutputWindowName_Publish" xml:space="preserve">
+    <value>R Publish</value>
+  </data>
+  <data name="Error_CannotDeleteFile" xml:space="preserve">
+    <value>Unable to delete file {0}. Exception: {1}.</value>
+  </data>
+  <data name="Error_MarkdownConversionFailed" xml:space="preserve">
+    <value>Markdown conversion failed</value>
+  </data>
+  <data name="Error_PackageMissing" xml:space="preserve">
+    <value>This operation requires package {0} which is not installed or has been removed. </value>
+  </data>
 </root>

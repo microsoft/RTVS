@@ -25,6 +25,14 @@
           <CommandName>Plot Window</CommandName>
         </Strings>
       </Menu>
+
+      <!--<Menu guid="guidRToolsCmdSet" id="TopLevelMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
+        <Strings>
+          <ButtonText>R Tools</ButtonText>
+          <CommandName>RToolsMenu</CommandName>
+        </Strings>
+      </Menu>-->
     </Menus>
     <!-- 
       In this section you can define new menu groups. A menu group is a container for 
@@ -35,10 +43,10 @@
     <Groups>
       <!-- R code editor context menu groups -->
       <!-- R Formatting -->
-      <Group guid="guidRToolsCmdSet" id="groupRepl" priority="0x0800">
+      <Group guid="guidRToolsCmdSet" id="groupRContextRepl" priority="0x0800">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="groupFormat" priority="0x0810">
+      <Group guid="guidRToolsCmdSet" id="groupRContextFormat" priority="0x0810">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <!-- End R code editor context menu groups -->
@@ -52,24 +60,20 @@
     <Buttons>
       <Button guid="guidRInteractiveCommandSet" id="cmdidShowDefaultInteractiveWindow" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-        <!--
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        -->
         <Strings>
           <ButtonText>R Console Window</ButtonText>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="cmdidGoToFormattingOptions" priority="0x0200" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
+        <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
         <Strings>
           <ButtonText>Formatting &amp;Options...</ButtonText>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="cmdidSendToRepl" priority="0x0101" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="groupRepl"/>
+        <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -96,7 +100,7 @@
           <ButtonText>R Environment</ButtonText>
         </Strings>
       </Button>
-
+      
       <!-- Plot window toolbar -->
       <Button guid="guidPlotWindowCmdSet" id="cmdidOpenPlot" priority="0x0100" type="Button">
         <Parent guid="guidPlotWindowCmdSet" id="plotToolbarGroup"/>
@@ -116,11 +120,11 @@
           <ButtonText>MD Context</ButtonText>
         </Strings>
       </Menu>
-      <!-- Knit flyout -->
-      <Menu guid="guidMdToolsCmdSet" id="knitSubMenu" type="Menu" priority="0x100">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnit"/>
+      <!-- Preview flyout -->
+      <Menu guid="guidMdToolsCmdSet" id="previewSubMenu" type="Menu" priority="0x100">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
         <Strings>
-          <ButtonText>Knit</ButtonText>
+          <ButtonText>Preview</ButtonText>
         </Strings>
       </Menu>
       <!-- RD editor context menu -->
@@ -128,30 +132,34 @@
 
     <Groups>
       <!-- MD code editor context menu groups -->
-      <Group guid="guidMdToolsCmdSet" id="groupKnit" priority="0x0200">
+      <Group guid="guidMdToolsCmdSet" id="groupPreview" priority="0x0200">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
 
-      <Group guid="guidMdToolsCmdSet" id="groupKnitSubMenu" priority="0x0100">
-        <Parent guid="guidMdToolsCmdSet" id="knitSubMenu"/>
+      <Group guid="guidMdToolsCmdSet" id="groupPreviewSubMenu" priority="0x0100">
+        <Parent guid="guidMdToolsCmdSet" id="previewSubMenu"/>
+      </Group>
+
+      <Group guid="guidMdToolsCmdSet" id="groupPublish" priority="0x0300">
+        <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
       <!-- End MD code editor context menu groups -->
     </Groups>
 
     <Buttons>
-      <!-- Knit menu item (in MD/RMD with flyout submenu -->
-      <Button guid="guidMdToolsCmdSet" id="cmdidKnit" priority="0x0101" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnit"/>
+      <!-- Preview menu item (in MD/RMD with flyout submenu -->
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreview" priority="0x0101" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>&amp;Knit</ButtonText>
+          <ButtonText>Pre&amp;view</ButtonText>
         </Strings>
       </Button>
 
-      <!-- Knit flyout menu items -->
-      <Button guid="guidMdToolsCmdSet" id="cmdidKnitHtml" priority="0x0101" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnitSubMenu"/>
+      <!-- Preview flyout menu items -->
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewHtml" priority="0x0101" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreviewSubMenu"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -159,8 +167,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidKnitPdf" priority="0x0102" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnitSubMenu"/>
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0102" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreviewSubMenu"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -168,21 +176,30 @@
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidKnitWord" priority="0x0103" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupKnitSubMenu"/>
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewWord" priority="0x0103" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreviewSubMenu"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Word</ButtonText>
         </Strings>
       </Button>
-      <!-- End Knit flyout menu items -->
+      <!-- End Preview flyout menu items -->
+
+      <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0104" type="Button">
+        <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Publish</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
       <Bitmaps>
-        <Bitmap guid="guidPlotToolbarImages" href=".\Folder_6221_24.bmp" usedList="bmpOpenPlot" />
+        <Bitmap guid="guidPlotToolbarImages" href=".\Images\Folder_6221_24.bmp" usedList="bmpOpenPlot" />
       </Bitmaps>
     </Bitmaps>
   </Commands>
@@ -196,7 +213,7 @@
 
     <!-- Formatting group -->
     <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
-      <Parent guid="guidRToolsCmdSet" id="groupFormat"/>
+      <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
     </CommandPlacement>
     <!-- End R code editor context menu -->
 
@@ -240,35 +257,72 @@
     <GuidSymbol name="guidCpsProjectFactory" value="{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}" />
     <GuidSymbol name="MarkdownPackage" value="{C765E811-8EE4-4040-84FC-F4DCBC12E6C4}" />
 
-    <!-- Command Ids must match those in Microsoft.VisualStudio.R.Package\Commands -->
+    <!-- Markdown context menu -->
+    <GuidSymbol name="guidMdToolsCmdSet" value="{0BF33C69-94C2-4985-81A0-2556F8DB88A6}">
+      <!-- Markdown editor context menu -->
+      <IDSymbol name="mdEditorContextMenu" value="300" />
+      <IDSymbol name="previewSubMenu" value="130" />
+      <IDSymbol name="groupPreview" value="135" />
+      <IDSymbol name="groupPublish" value="145" />
+      <IDSymbol name="groupPreviewSubMenu" value="200" />
+
+    <!-- Preview in RD/RDM -->
+      <IDSymbol name="cmdidPreview" value="600" />
+      <IDSymbol name="cmdidPreviewHtml" value="601" />
+      <IDSymbol name="cmdidPreviewPdf" value="602" />
+      <IDSymbol name="cmdidPreviewWord" value="603" />
+      <IDSymbol name="cmdidPublish" value="6103" />
+    </GuidSymbol>
+
     <GuidSymbol name="guidRToolsCmdSet" value="{AD87578C-B324-44DC-A12A-B01A6ED5C6E3}">
       <!-- Context menu ids. See Microsoft.R.Editor\Commands -->
       <!-- R code editor context menu. -->
       <IDSymbol name="rCodeEditorContextMenu" value="100" />
       <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
-      <IDSymbol name="groupFormat" value="120" />
+      <IDSymbol name="groupRContextFormat" value="120" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
-      <IDSymbol name="groupRepl" value="122" />
+      <IDSymbol name="groupRContextRepl" value="122" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
 
       <!-- See RPackageCommandId -->
       <IDSymbol name="cmdidGoToFormattingOptions" value="500" />
       <IDSymbol name="cmdidSendToRepl" value="501" />
-    </GuidSymbol>
+      <!-- RTVS Command IDs -->
+      <!-- General -->
+      <IDSymbol name="icmdGoToFormattingOptions" value="400" />
+      <IDSymbol name="icmdGoToRToolsOptions" value="401" />
 
-    <!-- Markdown context menu -->
-    <GuidSymbol name="guidMdToolsCmdSet" value="{0BF33C69-94C2-4985-81A0-2556F8DB88A6}">
-      <!-- Markdown editor context menu -->
-      <IDSymbol name="mdEditorContextMenu" value="300" />
-      <IDSymbol name="knitSubMenu" value="130" />
-      <IDSymbol name="groupKnit" value="135" />
-      <IDSymbol name="groupKnitSubMenu" value="200" />
+      <!-- REPL-->
+      <IDSymbol name="icmdSendToRepl" value="501" />
+      <IDSymbol name="icmdLoadWorkspace" value="502" />
+      <IDSymbol name="icmdSaveWorkspace" value="503" />
+      <IDSymbol name="icmdResetWorkspace" value="504" />
+      <IDSymbol name="icmdSetWorkingDirectory" value="505" />
 
-      <!-- Knit in RD/RDM -->
-      <IDSymbol name="cmdidKnit" value="600" />
-      <IDSymbol name="cmdidKnitHtml" value="601" />
-      <IDSymbol name="cmdidKnitPdf" value="602" />
-      <IDSymbol name="cmdidKnitWord" value="603" />
+      <!-- Packages-->
+      <IDSymbol name="icmdInstallPackages" value="601" />
+
+      <!-- Plots-->
+      <IDSymbol name="icmdOpenPlot" value="701" />
+      <IDSymbol name="icmdSavePlot" value="702" />
+      <IDSymbol name="icmdFixPlot" value="703" />
+      <IDSymbol name="icmdExportPlot" value="704" />
+      <IDSymbol name="icmdZoomInPlot" value="705" />
+      <IDSymbol name="icmdZoomOutPlot" value="706" />
+      <IDSymbol name="icmdCopyPlot" value="707" />
+
+      <!-- Data-->
+      <IDSymbol name="icmdImportDataset" value="801" />
+      <IDSymbol name="icmdImportDatasetUrl" value="802" />
+      <IDSymbol name="icmdImportDatasetTextFile" value="803" />
+
+      <!-- Window management-->
+      <IDSymbol name="icmdShowReplWindow" value="901" />
+      <IDSymbol name="icmdShowPlotWindow" value="902" />
+      <IDSymbol name="icmdShowVariableExplorerWindow" value="903" />
+      <IDSymbol name="icmdShowHistoryWindow" value="904" />
+      <IDSymbol name="icmdShowPackagesWindow" value="905" />
+
     </GuidSymbol>
 
     <!-- Interactive Windows Commands -->
@@ -293,6 +347,7 @@
 
       <!-- Menus -->
       <IDSymbol name="menuIdPlotToolbar" value="0x2000" />
+      <IDSymbol name="TopLevelMenu" value="0x2100" />
     </GuidSymbol>
 
     <GuidSymbol name="guidVariableWindowCmdSet" value="{2B1E7C82-63EA-498B-A6A2-10B6489FA090}">

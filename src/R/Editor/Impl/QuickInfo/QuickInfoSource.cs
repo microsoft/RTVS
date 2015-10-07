@@ -83,7 +83,7 @@ namespace Microsoft.R.Editor.QuickInfo
                 int start = Math.Min(position, snapshot.Length);
                 int end = Math.Min(signatureEnd, snapshot.Length);
 
-                applicableToSpan = session.TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(new Span(start, end), SpanTrackingMode.EdgeInclusive);
+                applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
 
                 IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName, retriggerAction, session);
 

@@ -11,8 +11,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Controls
 {
+    [Guid(WindowGuid)]
     public class PlotWindowPane : ToolWindowPane
     {
+        internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
+
         public PlotWindowPane()
         {
             Caption = "R Plot";
@@ -26,23 +29,31 @@ namespace Microsoft.VisualStudio.R.Controls
 
         private void InitializePresenter()
         {
-            var presenter = this.Content as XamlPresenter;
-            if (presenter != null)
-            {
-                presenter.LoadXaml(@"<TextBlock xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+            DisplayXaml(@"<TextBlock xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
 Please open a file to show XAML file here.
 </TextBlock>");
-            }
         }
 
         private void OpenPlotCommand()
         {
-            string fileName = GetFileName();
+            DisplayXamlFile(GetFileName());
+        }
 
+        public void DisplayXamlFile(string filePath)
+        {
             var presenter = this.Content as XamlPresenter;
             if (presenter != null)
             {
-                presenter.LoadXamlFile(fileName);
+                presenter.LoadXamlFile(filePath);
+            }
+        }
+
+        public void DisplayXaml(string xaml)
+        {
+            var presenter = this.Content as XamlPresenter;
+            if (presenter != null)
+            {
+                presenter.LoadXaml(xaml);
             }
         }
 

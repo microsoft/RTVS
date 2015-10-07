@@ -9,7 +9,7 @@ namespace Microsoft.R.Core.AST
 {
     public static class AstSearch
     {
-        public static IAstNode FindFirstElement(this AstRoot tree, Func<IAstNode, bool> filter)
+        public static IAstNode FindFirstElement(this AstNode tree, Func<IAstNode, bool> filter)
         {
             var finder = new SingleElementFinder(filter);
             tree.Accept(finder, null);
