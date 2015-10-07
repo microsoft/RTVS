@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Controls
+namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
     public class VariableWindowPane : ToolWindowPane
     {

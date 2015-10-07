@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Xaml;
 
-namespace Microsoft.VisualStudio.R.Controls
+namespace Microsoft.VisualStudio.R.Package.Plots
 {
     /// <summary>
     /// Interaction logic for XamlPresenter.xaml

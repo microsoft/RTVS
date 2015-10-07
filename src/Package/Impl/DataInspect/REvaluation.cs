@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 
-namespace Microsoft.VisualStudio.R.Controls
+namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
     [DataContract]
     public class REvaluation

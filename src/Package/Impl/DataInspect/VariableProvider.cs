@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
 
-namespace Microsoft.VisualStudio.R.Controls
+namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
     public class VariableProvideContext
     {

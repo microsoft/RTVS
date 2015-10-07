@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Microsoft.VisualStudio.R.Controls
+namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
     public class Variable
     {

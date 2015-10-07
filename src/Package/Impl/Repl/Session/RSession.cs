@@ -12,9 +12,9 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
-using Microsoft.VisualStudio.R.Controls;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Plots;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Session {
     internal sealed class RSession : IRSession, IRCallbacks {

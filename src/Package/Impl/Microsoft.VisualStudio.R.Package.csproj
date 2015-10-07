@@ -94,7 +94,7 @@
     <Compile Include="Commands\R\VsRTextViewConnectionListener.cs" />
     <Compile Include="DataInspect\BooleanToHidingVisibilityConveter.cs" />
     <Compile Include="DataInspect\LevelToMarginConverter.cs" />
-    <Compile Include="DataInspect\PlotWindowPane .cs" />
+    <Compile Include="Plots\PlotWindowPane .cs" />
     <Compile Include="DataInspect\REvaluation.cs" />
     <Compile Include="DataInspect\Variable.cs" />
     <Compile Include="DataInspect\VariableProvider.cs" />
@@ -127,7 +127,7 @@
     <Compile Include="Packages\CommandIDs.cs" />
     <Compile Include="Packages\ShowBraceCompletionAttribute.cs" />
     <Compile Include="DataInspect\VariableWindowPane.cs" />
-    <Compile Include="DataInspect\XamlPresenter.xaml.cs">
+    <Compile Include="Plots\XamlPresenter.xaml.cs">
       <DependentUpon>XamlPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Packages\Markdown\MdPackage.cs" />
@@ -551,7 +551,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="DataInspect\XamlPresenter.xaml">
+    <Page Include="Plots\XamlPresenter.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
