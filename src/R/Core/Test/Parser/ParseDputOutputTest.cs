@@ -47,12 +47,13 @@ namespace Microsoft.R.Core.Test.Parser
                 {
                     if (functionName.Name == "c")
                     {
-                        if (func.Arguments.Count <= 0)
+                        RObject robj = null;
+                        for (int i = 0; i < func.Arguments.Count; i++)
                         {
-                            return RNull.Null;
+                            robj = Create(func.Arguments[i], rClassNames, rTypeName);
+                            break;
                         }
 
-                        var robj = Create(func.Arguments[0], rClassNames, rTypeName);
                         if (robj is RNumber)
                         {
                             return CreateVector<RNumber>(func, RMode.Numeric);
@@ -69,28 +70,41 @@ namespace Microsoft.R.Core.Test.Parser
                         {
                             return CreateVector<RFunction>(func, RMode.Function);
                         }
-
-                        throw new InvalidOperationException("Can't understand combine function type");
+                        else if (robj is RMissing)
+                        {
+                            return CreateVector<RObject>(func, RMode.Null);
+                        }
+                        Debug.Fail("Can't understand combine function type");
+                        return RNull.Null;
                     }
                     else if (functionName.Name == "list")
                     {
-                        var list = new RList();
-
-                        for (int i = 0; i < func.Arguments.Count; i++)
-                        {
-                            list[i] = (Create(func.Arguments[i], rClassNames, rTypeName));
-                        }
-
-                        return list;
+                        return CreateList(func.Arguments, rClassNames, rTypeName);
                     }
                     else if (functionName.Name == "structure")
                     {
-                        RObject rObj = FindClass(func.Arguments);
-                        if ((rObj != null)
-                            && rObj.IsString
-                            && ((RString)rObj).Value == "\"factor\"")
+                        if (rClassNames != null)
                         {
-                            return CreateFactor(func);
+                            if (rClassNames.Contains("matrix"))
+                            {
+                                return CreateMatrix(func.Arguments);
+                            }
+                            if (rClassNames.Contains("data.frame"))
+                            {
+                                return CreateDataFrame(func.Arguments);
+                            }
+                            if (rClassNames.Contains("factor"))
+                            {
+                                return CreateFactor(func);
+                            }
+                        }
+                        RObject rObj = FindClass(func.Arguments);
+                        if (rObj != null)
+                        {
+                            if (rObj.IsString && ((RString)rObj).Value == "\"factor\"")
+                            {
+                                return CreateFactor(func);
+                            }
                         }
                         
                     }
@@ -110,21 +124,7 @@ namespace Microsoft.R.Core.Test.Parser
                 var op = (IOperator)node;
                 if (op.OperatorType == OperatorType.Sequence)
                 {
-                    var from = (RNumber)Create(op.LeftOperand, rClassNames, rTypeName);
-                    var to = (RNumber)Create(op.RightOperand, rClassNames, rTypeName);
-
-                    int count = (int)Math.Abs(to.Value - from.Value) + 1;
-                    int increment = to.Value > from.Value ? 1 : -1;
-                    var vector = new RVector<RNumber>(RMode.Numeric, count);
-
-                    double value = from.Value;
-                    for (int i = 0; i < count; i++)
-                    {
-                        vector[i] = new RNumber(value);
-                        value += increment;
-                    }
-
-                    return vector;
+                    return CreateSequence(op, rClassNames, rTypeName);
                 }
             }
             else if (node is IRValueNode)
@@ -132,6 +132,110 @@ namespace Microsoft.R.Core.Test.Parser
                 return ((IRValueNode)node).GetValue();
             }
             throw new NotImplementedException();
+        }
+
+
+        private static RObject CreateMatrix(ArgumentList arguments)
+        {
+            var dimensionObj = FindNamedArgument(arguments, ".Dim");
+            var dimensions = dimensionObj as IRVector<RNumber>;
+            if ((dimensions == null)
+                || (dimensions.Length != 2))
+            {
+                Debug.Fail("CreateMatrix hits object with no .Dim named argument");
+                return null;
+            }
+
+            IRVector<RNumber> values = FindValueVector(arguments);
+
+            // TODO: different Mode matrix
+            var matrix = new RMatrix<RNumber>(RMode.Numeric, (int)dimensions[0].Value, (int)dimensions[1].Value);
+            int index = 0;
+            for (int r = 0; r < matrix.NRow; r++)
+            {
+                matrix[r] = new RArray<RNumber>(RMode.Numeric, matrix.NCol);
+                for (int c = 0; c < matrix.NCol; c++)
+                {
+                    matrix[r][c] = values[index];
+                    index++;
+                }
+            }
+            return matrix;
+        }
+
+        private static RObject CreateDataFrame(ArgumentList arguments)
+        {
+            var valueList = FindValueList(arguments);
+
+            var columnNames = (RVector<RString>) FindNamedArgument(arguments, ".Names");
+            RString[] columnNamesArray = new RString[columnNames.Length];
+            for (int i = 0; i < columnNames.Length; i++)
+            {
+                columnNamesArray[i] = columnNames[i];
+            }
+
+            var rowNamesObj = FindNamedArgument(arguments, "row.names");
+            if (rowNamesObj is RVector<RString>)
+            {
+                var rowNames = (RVector<RString>)rowNamesObj;
+                RString[] rowNamesArray = new RString[rowNames.Length];
+                for (int i = 0; i < rowNames.Length; i++)
+                {
+                    rowNamesArray[i] = rowNames[i];
+                }
+            }
+
+            var dataframe = new RDataFrame(new RMode[0], valueList.Length, columnNames.Length);
+            for (int i = 0; i < valueList.Count; i++)
+            {
+                dataframe[i] = valueList[i];
+            }
+            return dataframe;
+        }
+
+        private static RObject CreateList(ArgumentList arguments, string[] rClassNames, string rTypeName)
+        {
+            var list = new RList();
+
+            FillList(arguments, rClassNames, rTypeName, list);
+
+            return list;
+        }
+
+        private static void FillList(ArgumentList arguments, string[] rClassNames, string rTypeName, RList list)
+        {
+            for (int i = 0; i < arguments.Count; i++)
+            {
+                if (arguments[i] is NamedArgument)
+                {
+                    var named = (NamedArgument)arguments[i];
+                    list.Add(new RString(named.Name), Create(named.DefaultValue.Content, null, null));
+                }
+                else
+                {
+
+                    list[i] = Create(arguments[i], rClassNames, rTypeName);
+                }
+            }
+        }
+
+        private static RObject CreateSequence(IOperator op, string[] rClassNames, string rTypeName)
+        {
+            var from = (RNumber)Create(op.LeftOperand, rClassNames, rTypeName);
+            var to = (RNumber)Create(op.RightOperand, rClassNames, rTypeName);
+
+            int count = (int)Math.Abs(to.Value - from.Value) + 1;
+            int increment = to.Value > from.Value ? 1 : -1;
+            var vector = new RVector<RNumber>(RMode.Numeric, count);
+
+            double value = from.Value;
+            for (int i = 0; i < count; i++)
+            {
+                vector[i] = new RNumber(value);
+                value += increment;
+            }
+
+            return vector;
         }
 
         public static RObject CreateVector<T>(IFunction func, RMode mode) where T : RObject
@@ -159,22 +263,7 @@ namespace Microsoft.R.Core.Test.Parser
 
             var label = (IRVector<RString>)labelObj;
 
-            RObject valuesObj = null;
-            for (int i = 0; i < arguments.Count; i++)
-            {
-                var expression = arguments[i] as ExpressionArgument;
-                if (expression != null)
-                {
-                    valuesObj = Create(expression, null, null);
-                    break;
-                }
-            }
-            var values = valuesObj as IRVector<RNumber>;
-            if (values == null)
-            {
-                Debug.Fail("CreateFactor needs numerical vector");   // TODO: throw?
-                return null;
-            }
+            var values = FindValueVector(arguments);
 
             var factor = new RFactor(values.Length, label);
             for (int i = 0; i < values.Length; i++)
@@ -195,6 +284,48 @@ namespace Microsoft.R.Core.Test.Parser
                 }
             }
             return false;
+        }
+
+        private static RList FindValueList(ArgumentList arguments)
+        {
+            RObject valuesObj = null;
+            for (int i = 0; i < arguments.Count; i++)
+            {
+                var expression = arguments[i] as ExpressionArgument;
+                if (expression != null)
+                {
+                    valuesObj = Create(expression, null, null);
+                    break;
+                }
+            }
+            var values = valuesObj as RList;
+            if (values == null)
+            {
+                Debug.Fail("Can't find value list");
+                return null;
+            }
+            return values;
+        }
+
+        private static IRVector<RNumber> FindValueVector(ArgumentList arguments)
+        {
+            RObject valuesObj = null;
+            for (int i = 0; i < arguments.Count; i++)
+            {
+                var expression = arguments[i] as ExpressionArgument;
+                if (expression != null)
+                {
+                    valuesObj = Create(expression, null, null);
+                    break;
+                }
+            }
+            var values = valuesObj as IRVector<RNumber>;
+            if (values == null)
+            {
+                Debug.Fail("Can't find value vector");
+                return null;
+            }
+            return values;
         }
 
         private static RObject FindClass(ArgumentList arguments)
@@ -239,23 +370,23 @@ namespace Microsoft.R.Core.Test.Parser
         public void ParseDataFrameTest()
         {
             string dputOutput =
-@".dput.output.value<-structure(
+@"structure(
   list(
     a = structure(
       c(1L, 3L, 2L),
-      .Label = c(\""one\"", \""three\"", \""two\""),
-      class = \""factor\""),
+      .Label = c(""one"", ""three"", ""two""),
+      class = ""factor""),
     x = c(1, 1, 1),
 	y = c(1, 2, 3)
   ),
-  .Names = c(\""a\"", \""x\"", \""y\""),
+  .Names = c(""a"", ""x"", ""y""),
   row.names = c(NA, -3L),
-  class = \""data.frame\"")";
+  class = ""data.frame"")";
 
-            RObject rData = RDataFactory.Parse(dputOutput, null, null);
+            RObject rData = RDataFactory.Parse(dputOutput, new string[] { "data.frame" }, "list");
 
-            var rIntegeer = rData as RInteger;
-            Assert.IsNotNull(rIntegeer);
+            var rDataFrame = rData as RDataFrame;
+            Assert.IsNotNull(rDataFrame);
         }
 
         [TestMethod]
@@ -348,9 +479,29 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void TempTest()  // Not a real test. For experiment code
+        public void ParseNamedListTest()
         {
-            RObject rData = RDataFactory.Parse(@"structure(c(2L, 1L, 1L, 1L, 2L), .Label = c(""female"", ""male""), class = ""factor"")", new string[] { "integer" }, "integer");
+            RObject rData = RDataFactory.Parse(@"list(a=1,b=c(1,2,3),c=1:10)", new string[] { "list" }, "list");
+
+            var rList = rData as RList;
+            Assert.IsNotNull(rList);
+            Assert.AreEqual(3, rList.Length);
+            Assert.AreEqual(1, ((RNumber)rList["a"]).Value);
+
+            var rListItem1 = (RVector<RNumber>)rList["b"];
+            Assert.AreEqual(3, rListItem1.Length);
+            Assert.AreEqual(1, rListItem1[0]);
+            Assert.AreEqual(2, rListItem1[1]);
+            Assert.AreEqual(3, rListItem1[2]);
+
+            var rListItem2 = (RVector<RNumber>)rList["c"];
+            Assert.AreEqual(10, rListItem2.Length);
+        }
+
+        [TestMethod]
+        public void ParseFactorTest()
+        {
+            RObject rData = RDataFactory.Parse(@"structure(c(2L, 1L, 1L, 1L, 2L), .Label = c(""female"", ""male""), class = ""factor"")", new string[] { "factor" }, "integer");
 
             RFactor rFactor = rData as RFactor;
             Assert.IsNotNull(rFactor);
@@ -366,6 +517,28 @@ namespace Microsoft.R.Core.Test.Parser
             Assert.AreEqual("\"female\"", rFactor.LabelOf(2).Value);
             Assert.AreEqual("\"female\"", rFactor.LabelOf(3).Value);
             Assert.AreEqual("\"male\"", rFactor.LabelOf(4).Value);
+        }
+
+        [TestMethod]
+        public void ParseMatrixTest()
+        {
+            RObject rData = RDataFactory.Parse(@"structure(1:20, .Dim = c(5L, 4L))", new string[] { "matrix" }, "integer");
+
+            var rMatrix = rData as RMatrix<RNumber>;
+            Assert.IsNotNull(rMatrix);
+            Assert.AreEqual(20, rMatrix.Length);
+            Assert.AreEqual(5, rMatrix.NRow);
+            Assert.AreEqual(4, rMatrix.NCol);
+
+            int value = 1;
+            for (int r = 0; r < rMatrix.NRow; r++)
+            {
+                for (int c = 0; c < rMatrix.NCol; c++)
+                {
+                    Assert.AreEqual(value, rMatrix[r][c].Value);
+                    value += 1;
+                }
+            }
         }
     }
 }
