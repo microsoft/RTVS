@@ -1,0 +1,65 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:col="clr-namespace:System.Collections;assembly=mscorlib"
+                    xmlns:System="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <FontFamily x:Key="FontFamily">Segoe UI, Arial</FontFamily>
+  <FontFamily x:Key="FontFamilyLight">Segoe UI Light, Segoe UI, Arial</FontFamily>
+
+  <!-- COLORS -->
+  <SolidColorBrush x:Key="BrandingError" Color="#FFE51400"/>
+  <SolidColorBrush x:Key="BrandingDark" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="BrandingDots" Color="#00FFFFFF"/>
+  <SolidColorBrush x:Key="BrandingLight" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="BrandingHighlight" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="BrandingLogoLight" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="BrandingLogoSymbol" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="ForegroundMedium" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="Foreground" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="ForegroundLight" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="BackgroundDark" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}"/>
+  <SolidColorBrush x:Key="BackgroundGradientMedium" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}"/>
+  <SolidColorBrush x:Key="BorderWindow" Color="{DynamicResource {x:Static SystemColors.WindowFrameColorKey}}"/>
+  <SolidColorBrush x:Key="InputBackground" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}"/>
+  <SolidColorBrush x:Key="InputBorder" Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}"/>
+
+  <!-- SCROLLBAR COLORS -->
+  <SolidColorBrush x:Key="ScrollBarBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarArrowBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarArrowDisabledBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarArrowGlyphBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarArrowGlyphDisabledBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarArrowGlyphMouseOverBrushKey" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarArrowGlyphPressedBrushKey" Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarArrowMouseOverBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarArrowPressedBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowFrameColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarDisabledBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbDisabledBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbGlyphBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbGlyphMouseOverBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbGlyphPressedBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbMouseOverBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbMouseOverBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbPressedBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollBarThumbPressedBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
+  <SolidColorBrush x:Key="AutoHideResizeGripBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowFrameColorKey}}"/>
+  <SolidColorBrush x:Key="ScrollViewerBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+
+  <!-- FONT SIZES -->
+  <System:Double x:Key="FontSizeMedium">12</System:Double>
+  <System:Double x:Key="FontSizeButton">13</System:Double>
+  <System:Double x:Key="FontSizeTabItem">14</System:Double>
+  <System:Double x:Key="FontSizeLarge">16</System:Double>
+  <System:Double x:Key="FontSizeXLargeButton">40</System:Double>
+  <System:Double x:Key="FontSizeBranding">25</System:Double>
+
+  <!-- LOWER REGION SIZE -->
+  <System:Double x:Key="LowerRegionHeight">112</System:Double>
+  <GridLength x:Key="LowerRegionGridCellHeight">108</GridLength>
+
+
+</ResourceDictionary>

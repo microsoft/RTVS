@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
     {
         public REditorOptionsDialog()
         {
-            this.SettingsRegistryPath = @"UserSettings\R_Editor_Advanced";
+            this.SettingsRegistryPath = @"UserSettings\R_Tools";
         }
 
         [LocCategory("Settings_SyntaxCheckCategory")]

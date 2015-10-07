@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+    <!-- Detect if Professional is installed -->
+    <util:RegistrySearch
+        Id="Professional_DetectKey"
+        Variable="Professional_DetectKey"
+        Root="HKLM"
+        Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\professional"
+        Value="Install"/>
+
+    <!-- Detect if Premium is installed -->
+    <util:RegistrySearch
+        Id="Premium_DetectKey"
+        Variable="Premium_DetectKey"
+        Root="HKLM"
+        Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\premium"
+        Value="Install"/>
+
+    <!-- Detect if Ultimate is installed -->
+    <util:RegistrySearch
+        Id="Ultimate_DetectKey"
+        Variable="Ultimate_DetectKey"
+        Root="HKLM"
+        Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\ultimate"
+        Value="Install"/>
+
+    <!-- Detect if Community is installed -->
+    <util:RegistrySearch
+        Id="Community_DetectKey"
+        Variable="Community_DetectKey"
+        Root="HKLM"
+        Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\community"
+        Value="Install"/>
+
+    <!-- Detect if Enterprise is installed -->
+    <util:RegistrySearch
+        Id="Enterprise_DetectKey"
+        Variable="Enterprise_DetectKey"
+        Root="HKLM"
+        Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\enterprise"
+        Value="Install"/>
+
+    <?define VS_Installed = ((Professional_DetectKey = 1) OR (Premium_DetectKey = 1) OR (Ultimate_DetectKey = 1) OR (Community_DetectKey = 1) OR (Enterprise_DetectKey = 1)) ?>
+</Include>

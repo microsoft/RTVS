@@ -180,6 +180,31 @@ namespace Microsoft.VisualStudio.R.Controls
             });
         }
 
+#else
+        private async Task RefreshVariableCollection()
+        {
+            await EnsureRSessionInitialized();
+
+            using (var interactor = await _rSession.BeginEvaluationAsync())
+            {
+                var response = await interactor.EvaluateAsync(".rtvs.datainspect.env_vars(.GlobalEnv)\r\n", false);
+                if (response.ParseStatus == RParseStatus.OK)
+                {
+                    var evaluations = Deserialize(response.Result);
+                    if (evaluations != null)
+                    {
+                        var variables = new List<Variable>();
+                        foreach (var evaluation in evaluations)
+                        {
+                            var instance = Variable.Create(evaluation);
+                            variables.Add(instance);
+                        }
+                        _variables = variables;
+                    }
+                }
+            }
+        }
+#endif
         private static List<REvaluation> Deserialize(string response)
         {
             try
@@ -198,19 +223,6 @@ namespace Microsoft.VisualStudio.R.Controls
             }
         }
 
-#else
-        private async Task RefreshVariableCollection()
-        {
-            using (var interactor = await _rSession.BeginEvaluationAsync())
-            {
-                var response = await interactor.EvaluateAsync("ls.str(.GlobalEnv)\r\n");
-                if (response.ParseStatus == RParseStatus.OK)
-                {
-                    _variables = RVariableCollection.Parse(response.Result);  // TODO: BUGBUG: make thread safe!
-                }
-            }
-        }
-#endif
 
         private readonly string InitializingRScript =
 @".rtvs.datainspect.eval_into <<- function(con, expr, env) {

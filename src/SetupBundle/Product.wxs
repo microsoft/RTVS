@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?include ..\Setup\Definitions.wxi?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:dd="http://schemas.microsoft.com/wix/2005/01/dd">
+
+  <Bundle
+           Name="$(var.ProductName)"
+           Manufacturer="Microsoft Corporation"
+           Version="$(var.MsiVersion)"
+           UpgradeCode="{242367FC-0CC7-46CE-A8CC-A6BD35083682}"
+           IconSourceFile="..\Setup\VSIcon.ico">
+
+    <?include VSDetection.wxi?>
+    <WixVariable Id="BundleLanguage" Value="1033"/>
+
+    <Variable Name="EditionDisplayName"
+              Persisted="yes"
+              Value="$(var.ProductName)" />
+
+    <BootstrapperApplicationRef Id="ManagedBootstrapperApplicationHost">
+      <PayloadGroupRef Id="commonvsmanaged_ux"/>
+      <PayloadGroupRef Id="mdd_ux"/>
+    </BootstrapperApplicationRef>
+
+    <dd:UxConfiguration>
+      <BundleInformation ShortName="R Tools For Visual Studio"
+                         BuildBranch="Main"
+                         BuildNumber="$(var.MsiVersion)" />
+
+      <UserExperienceDataCollection Policy="none" ShowCheckbox="False" />
+
+      <BlockOn>
+        <Process Name="devenv"
+                 Type="Warn"
+                 Description="#loc.DevEnvProcesssBlock" />
+      </BlockOn>
+
+    </dd:UxConfiguration>
+
+    <Chain>
+      <MsiPackage SourceFile="$(var.BinDir)\RTVS.msi" />
+    </Chain>
+
+  </Bundle>
+</Wix>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+*********************************************************
+
+Copyright (c) Microsoft. All rights reserved.
+
+*********************************************************
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:dd="http://schemas.microsoft.com/wix/2005/01/dd">
+  <Fragment>
+    <PayloadGroup Id="mdd_ux">
+      <Payload Name="Themes.xaml"
+               SourceFile="UXResources\DarkTheme.xaml" />
+      <Payload Name="SkuResources.xaml"
+               SourceFile="UXResources\SkuResources.xaml" />
+      <Payload Name="HighContrastSkuResources.xaml"
+               SourceFile="UXResources\HighContrastSkuResources.xaml" />
+      <Payload Name="License.htm"
+               SourceFile="EULA R Tools for Visual Studio.txt" />
+    </PayloadGroup>
+  </Fragment>
+</Wix>

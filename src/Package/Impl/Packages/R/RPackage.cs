@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;
@@ -47,6 +48,11 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         public static RPackage Current { get; private set; }
 
+        public RInteractiveWindowProvider InteractiveWindowProvider
+        {
+            get { return _interactiveWindowProvider.Value; }
+        }
+
         protected override void Initialize()
         {
             Current = this;
@@ -89,18 +95,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         protected override IEnumerable<MenuCommand> CreateMenuCommands()
         {
-            yield return new MenuCommand(
-                (sender, args) => _interactiveWindowProvider.Value.Open(instanceId: 0, focus: true),
-                new CommandID(RGuidList.RInteractiveCommandSetGuid, 0x0100));
-
-            // TODO: abstract the pane. reference to PTVS
-            yield return new MenuCommand(
-                (sender, args) => ShowWindowPane(typeof(PlotWindowPane), true),
-                new CommandID(RGuidList.PlotWindowGuid, CommandIDs.cmdidShowPlotWindow));
-
-            yield return new MenuCommand(
-                (sender, args) => ShowWindowPane(typeof(VariableWindowPane), true),
-                new CommandID(RGuidList.VariableWindowGuid, CommandIDs.cmdidShowVariableWindow));
+           return PackageCommands.GetCommands();
         }
 
         protected override object GetAutomationObject(string name)
@@ -123,27 +118,6 @@ namespace Microsoft.VisualStudio.R.Packages.R
             }
 
             return base.CreateToolWindow(ref toolWindowType, id);
-        }
-
-        private void ShowWindowPane(Type windowType, bool focus)
-        {
-            var window = FindWindowPane(windowType, 0, true) as ToolWindowPane;
-            if (window != null)
-            {
-                var frame = window.Frame as IVsWindowFrame;
-                if (frame != null)
-                {
-                    ErrorHandler.ThrowOnFailure(frame.Show());
-                }
-                if (focus)
-                {
-                    var content = window.Content as System.Windows.UIElement;
-                    if (content != null)
-                    {
-                        content.Focus();
-                    }
-                }
-            }
         }
     }
 }

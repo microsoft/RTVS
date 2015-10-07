@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -15,7 +13,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
         private ReplWindow _replWindow;
 
         public SendToReplCommand(ITextView textView, ITextBuffer textBuffer) :
-            base(textView, new[] { new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendToRepl) }, false)
+            base(textView, new[] 
+            {
+                new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteLineInInteractive),
+                new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteSelectionInInteractive)
+            }, false)
         {
             ReplWindow.EnsureReplWindow().DoNotWait();
             _replWindow = ReplWindow.Current;

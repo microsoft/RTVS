@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\R.Build.Version.targets" />
+  <Import Project="..\R.Wix.Settings.targets" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.7</ProductVersion>
+    <ProjectGuid>d9ff939a-a53e-4316-a909-fe8b9d254c38</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>ApacheCordovaTools</OutputName>
+    <OutputType>Bundle</OutputType>
+    <DDWixExtNugetPackageVersion>14.0.22823.1</DDWixExtNugetPackageVersion>
+    <DDWixExtDir>..\..\NugetPackages\DDWixExt.$(DDWixExtNugetPackageVersion)\</DDWixExtDir>
+    <DefineConstants>$(DefineConstants);DDWixExtDir=$(DDWixExtDir)</DefineConstants>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>$(DefineConstants);Debug;MsiVersion=$(BuildVersion);Chip=x86;Lang=enu</DefineConstants>
+    <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>$(DefineConstants);MsiVersion=$(BuildVersion);Chip=x86;Lang=enu</DefineConstants>
+    <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--<Compile Include="JSDiagnosticsToolsPackageGroup.wxs" />-->
+    <Compile Include="Product.wxs" />
+    <Compile Include="commonvsmanaged_ux.wxs" />
+    <Compile Include="RTVS_UX.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="EULA R Tools for Visual Studio.txt" />
+    <Content Include="UXResources\BootstrapperCore.config" />
+    <Content Include="UXResources\DarkTheme.xaml" />
+    <Content Include="UXResources\HighContrastSkuResources.xaml" />
+    <Content Include="UXResources\HighContrastThemes.xaml" />
+    <Content Include="UXResources\LocalizableStrings.xml" />
+    <Content Include="UXResources\SkuResources.xaml" />
+    <Content Include="VsDetection.wxi" />
+    <Content Include="VSLogo.GIF" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Setup\Setup.wixproj">
+      <Name>Setup</Name>
+      <Project>{b86e0ba1-82af-45f8-9be8-fddcb8ef7f13}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixInstallPath)WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
+    <WixExtension Include="WixBalExtension">
+      <HintPath>$(WixInstallPath)\WixBalExtension.dll</HintPath>
+      <Name>WixBalExtension</Name>
+    </WixExtension>
+    <WixExtension Include="DDWixExtension">
+      <HintPath>$(DDWixExtDir)\DDWixExtension.dll</HintPath>
+      <Class>Microsoft.VisualStudio.Tools.Build.DDWiXExtension</Class>
+      <Name>DDWixExtension</Name>
+    </WixExtension>
+    <WixExtension Include="DDBinderExtensionForBundle">
+      <Class>Microsoft.VisualStudio.Tools.Build.DDBinderExtensionForBundle</Class>
+      <HintPath>$(DDWixExtDir)\DDBinderExtensionForBundle.dll</HintPath>
+      <Name>DDBinderExtensionForBundle</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UXResources\" />
+  </ItemGroup>
+  <Import Project="..\R.Wix.targets" />
+</Project>

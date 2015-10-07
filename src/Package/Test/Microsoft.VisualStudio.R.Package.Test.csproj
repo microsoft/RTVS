@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
