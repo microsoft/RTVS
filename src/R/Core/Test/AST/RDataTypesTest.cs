@@ -151,7 +151,7 @@ namespace Microsoft.R.Core.Test.AST
 
             Assert.IsFalse(e.MoveNext());
 
-            IRVector<RNumber> rv = new RVector<RNumber>(RMode.Numeric, 1);
+            RObject rv = new RVector<RNumber>(RMode.Numeric, 1);
             var rs = new RString("abc");
 
             rl.Add(rs, rv);
@@ -170,9 +170,9 @@ namespace Microsoft.R.Core.Test.AST
             Assert.IsTrue(rl.ContainsKey(rs));
             Assert.IsTrue(rl.ContainsKey(new RString("abc")));
 
-            Assert.IsTrue(rl.Contains(new KeyValuePair<RString, IRVector>(rs, rv)));
+            Assert.IsTrue(rl.Contains(new KeyValuePair<RString, RObject>(rs, rv)));
 
-            var arr = new KeyValuePair<RString, IRVector>[2];
+            var arr = new KeyValuePair<RString, RObject>[2];
             rl.CopyTo(arr, 1);
 
             Assert.AreEqual(rs, arr[1].Key);
@@ -181,7 +181,7 @@ namespace Microsoft.R.Core.Test.AST
             Assert.AreEqual(rv, rl[rs]);
             Assert.IsFalse(rl.IsReadOnly);
 
-            IRVector u;
+            RObject u;
             Assert.IsTrue(rl.TryGetValue(rs, out u));
 
             var en = rl.GetEnumerator();
@@ -191,13 +191,13 @@ namespace Microsoft.R.Core.Test.AST
             Assert.AreEqual(rv, en.Current.Value);
             Assert.IsFalse(en.MoveNext());
 
-            IEnumerator<IRVector> en1 = ((IEnumerable<IRVector>)rl).GetEnumerator();
+            IEnumerator<RObject> en1 = ((IEnumerable<RObject>)rl).GetEnumerator();
             Assert.IsNotNull(en1);
             Assert.IsTrue(en1.MoveNext());
             Assert.AreEqual(rv, en1.Current);
             Assert.IsFalse(en1.MoveNext());
 
-            IEnumerator<KeyValuePair<RString, IRVector>> en2 = ((IEnumerable<KeyValuePair<RString, IRVector>>)rl).GetEnumerator();
+            IEnumerator<KeyValuePair<RString, RObject>> en2 = ((IEnumerable<KeyValuePair<RString, RObject>>)rl).GetEnumerator();
             Assert.IsNotNull(en2);
             Assert.IsTrue(en2.MoveNext());
             Assert.AreEqual(rs, en2.Current.Key);
@@ -213,7 +213,7 @@ namespace Microsoft.R.Core.Test.AST
             Assert.AreEqual(0, rl.Count);
             Assert.IsFalse(rl.ContainsKey(rs));
 
-            rl.Add(new KeyValuePair<RString, IRVector>(new RString("x"), new RVector<RLogical>(RMode.Logical, 1)));
+            rl.Add(new KeyValuePair<RString, RObject>(new RString("x"), new RLogical(true)));
             Assert.AreEqual(1, rl.Length);
             Assert.AreEqual(1, rl.Count);
             rl.Clear();
