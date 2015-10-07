@@ -10,27 +10,14 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown
 {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [Guid(MdGuidList.MdPackageGuidString)]
-    //[ProvideMenuResource("Menus.ctmenu", 1)]
-    #region Markdown
     [ProvideEditorExtension(typeof(MdEditorFactory), ".md", 0x32, NameResourceID = 107)]
-    [ProvideEditorExtension(typeof(MdEditorFactory), ".markdown", 0x32, NameResourceID = 107)]
     [ProvideEditorExtension(typeof(MdEditorFactory), ".rmd", 0x32, NameResourceID = 107)]
+    [ProvideEditorExtension(typeof(MdEditorFactory), ".markdown", 0x32, NameResourceID = 107)]
     [ProvideLanguageService(typeof(MdLanguageService), MdContentTypeDefinition.LanguageName, 107, ShowSmartIndent = false)]
     [ProvideEditorFactory(typeof(MdEditorFactory), 107, CommonPhysicalViewAttributes = 0x2, TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
     [ProvideEditorLogicalView(typeof(MdEditorFactory), VSConstants.LOGVIEWID.TextView_string)]
-    #endregion
     internal sealed class MdPackage : BasePackage<MdLanguageService>
     {
-        protected override void Initialize()
-        {
-            base.Initialize();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
-
         protected override IEnumerable<IVsEditorFactory> CreateEditorFactories()
         {
             yield return new MdEditorFactory(this);

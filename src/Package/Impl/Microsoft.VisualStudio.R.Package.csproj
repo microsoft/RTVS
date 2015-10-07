@@ -78,9 +78,9 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Commands\Markdown\MdContextMenuId.cs" />
+    <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
-    <Compile Include="Commands\Markdown\VsMdTextViewConnectionListener.cs" />
+    <Compile Include="Commands\Markdown\VsMarkdownTextViewConnectionListener.cs" />
     <Compile Include="Commands\R\RContextMenuId.cs" />
     <Compile Include="Commands\R\RPackageCommandId.cs" />
     <Compile Include="Commands\R\GoToFormattingOptionsCommand.cs" />
@@ -93,6 +93,13 @@
     <Compile Include="Document\R\VsREditorDocument.cs" />
     <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
     <Compile Include="Editors\IObjectInstanceFactory.cs" />
+    <Compile Include="Logging\OutputWindowLog.cs" />
+    <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
+    <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
+    <Compile Include="Publishing\PreviewCommand.cs" />
+    <Compile Include="Publishing\Definitions\PublishFormat.cs" />
+    <Compile Include="Publishing\PublishLog.cs" />
+    <Compile Include="Logging\PackagesInstallLog.cs" />
     <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
@@ -131,6 +138,7 @@
     <Compile Include="Options\R\VsRSettingsStorage.cs" />
     <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
     <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
+    <Compile Include="Publishing\Handlers\MdPublishHandler.cs" />
     <Compile Include="Repl\Commands\ReplCommandFactory.cs" />
     <Compile Include="Repl\Commands\ReplCommandTargetProvider.cs" />
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
@@ -184,6 +192,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -321,6 +331,10 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\NugetPackages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -360,6 +374,10 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Actions\Impl\Microsoft.R.Actions.csproj">
+      <Project>{b68d4ad2-2dc2-473e-ab06-408172c4fb92}</Project>
+      <Name>Microsoft.R.Actions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
@@ -378,7 +396,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Folder_6221_24.bmp" />
+    <None Include="Images\Folder_6221_24.bmp" />
     <None Include="Microsoft.R.Host.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

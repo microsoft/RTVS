@@ -45,6 +45,12 @@ namespace Microsoft.R.Core.AST.Values
                     NodeValue = new RNumber(result);
                     return base.Parse(context, parent);
                 }
+                else
+                {
+                    // Something unparsable
+                    NodeValue = new RNumber(0);
+                    return base.Parse(context, parent);
+                }
             }
 
             context.AddError(new ParseError(ParseErrorType.NumberExpected, ErrorLocation.Token, currentToken));

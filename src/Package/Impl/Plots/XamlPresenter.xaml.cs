@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
         public void LoadXamlFile(string fileName)
         {
-            SetContainer(() => XamlServices.Load(fileName));
+            SetContainer(() => XamlServices.Load(fileName), fileName);
         }
 
         public void LoadXaml(string xamlText)
@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             SetContainer(() => XamlServices.Parse(xamlText));
         }
 
-        private void SetContainer(Func<object> xamlObjectLoader)
+        private void SetContainer(Func<object> xamlObjectLoader, string fileName = null)
         {
             object parsed = null;
 
@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             }
             catch (Exception e)
             {
-                parsed = new TextBlock() { Text = string.Format("Couldn't parse XAML \r\n{0}", e.ToString()) };
+                parsed = new TextBlock() { Text = string.Format("Couldn't parse XAML ({1}) \r\n{0}", e.ToString(), fileName ?? "inline") };
             }
 
             var parsedObj = parsed as UIElement;

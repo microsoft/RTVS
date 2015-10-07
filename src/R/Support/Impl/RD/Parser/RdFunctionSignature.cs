@@ -175,7 +175,7 @@ namespace Microsoft.R.Support.RD.Parser
                 ExpressionArgument expArg = arg as ExpressionArgument;
                 if (expArg != null)
                 {
-                    argName = textProvider.GetText(expArg);
+                    argName = textProvider.GetText(expArg.ArgumentValue);
                 }
                 else
                 {
