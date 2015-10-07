@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
@@ -22,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
             InitializePresenter();
 
-            this.ToolBar = new CommandID(RGuidList.PlotWindowGuid, CommandIDs.menuIdPlotToolbar);
+            this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, CommandIDs.menuIdPlotToolbar);
             this.ToolBarCommandTarget = new PlotWindowCommandTarget(this);
         }
 
@@ -126,35 +127,34 @@ Please open a file to show XAML file here.
 
             public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
             {
-                if (pguidCmdGroup == RGuidList.PlotWindowGuid)
+                if (pguidCmdGroup == RGuidList.RCmdSetGuid)
                 {
                     switch (nCmdID)
                     {
-                        case CommandIDs.cmdidOpenPlot:
+                        case RPackageCommandId.icmdOpenPlot:
                             _owner.OpenPlotCommand();
                             return VSConstants.S_OK;
                     }
                 }
 
-                throw new InvalidOperationException();
+                return VSConstants.E_FAIL;
             }
 
             public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
             {
-                if (pguidCmdGroup == RGuidList.PlotWindowGuid)
+                if (pguidCmdGroup == RGuidList.RCmdSetGuid)
                 {
                     for (int i = 0; i < cCmds; i++)
                     {
                         switch (prgCmds[i].cmdID)
                         {
-                            case CommandIDs.cmdidOpenPlot:
+                            case RPackageCommandId.icmdOpenPlot:
                                 prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_ENABLED | OLECMDF.OLECMDF_SUPPORTED);
                                 return VSConstants.S_OK;
                         }
                     }
                 }
-
-                throw new InvalidOperationException();
+                return VSConstants.E_FAIL;
             }
         }
     }
