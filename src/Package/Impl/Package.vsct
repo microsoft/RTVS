@@ -139,11 +139,28 @@
         <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="plotSubMenuGroup" priority="0x0000">
+      <Group guid="guidRToolsCmdSet" id="plotSubMenuFileGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="plotSubMenuPrintGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup" priority="0x0400">
         <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuGroup" priority="0x0000">
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+      
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0300">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
     </Groups>
@@ -152,48 +169,53 @@
       <!-- Top level menu items -->
       <!-- Workspace flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdLoadWorkspace" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellOpen"/>
         <Strings>
-          <ButtonText>&amp;Load Workspace...</ButtonText>
+          <ButtonText>Load Workspace...</ButtonText>
+          <MenuText>&amp;Load Workspace...</MenuText>
           <CommandName>LoadWorkspace</CommandName>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdSaveWorkspace" priority="0x0200" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellSave"/>
         <Strings>
-          <ButtonText>Save Workspace &amp;As...</ButtonText>
-          <CommandName>SaveWorkspace</CommandName>
+          <ButtonText>Save Workspace As...</ButtonText>
+          <MenuText>Save Workspace &amp;As...</MenuText>
+          <CommandName>Save Workspace</CommandName>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdRestartR" priority="0x0300" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionRestart"/>
         <Strings>
-          <ButtonText>&amp;Restart R</ButtonText>
-          <CommandName>RestartR</CommandName>
+          <ButtonText>Restart R</ButtonText>
+          <MenuText>&amp;Restart R</MenuText>
+          <CommandName>Restart R</CommandName>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0300" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionInterrupt"/>
         <Strings>
-          <ButtonText>&amp;Interrupt R</ButtonText>
-          <CommandName>InterruptR</CommandName>
+          <ButtonText>Interrupt R</ButtonText>
+          <MenuText>&amp;Interrupt R</MenuText>
+          <CommandName>Interrupt R</CommandName>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdSetWorkingDirectory" priority="0x0400" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup"/>
         <Icon guid="ImageCatalogGuid" id="DocumentsFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Set Working &amp;Directory...</ButtonText>
-          <CommandName>SetWorkingDirectory</CommandName>
+          <ButtonText>Set Working Directory...</ButtonText>
+          <MenuText>Set Working &amp;Directory...</MenuText>
+          <CommandName>Set Working Directory</CommandName>
         </Strings>
       </Button>
       <!-- End Workspace flyout -->
@@ -204,64 +226,100 @@
         <Icon guid="ImageCatalogGuid" id="Package"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>&amp;Install...</ButtonText>
-          <CommandName>InstallPackages</CommandName>
+          <ButtonText>Install...</ButtonText>
+          <MenuText>&amp;Install...</MenuText>
+          <CommandName>Install Packages</CommandName>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdCheckForPackageUpdates" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="packagesSubMenuGroup"/>
         <Strings>
-          <ButtonText>Check for &amp;Updates...</ButtonText>
-          <CommandName>CheckFormPackageUpdates</CommandName>
+          <ButtonText>Check for Updates...</ButtonText>
+          <MenuText>Check for &amp;Updates...</MenuText>
+          <CommandName>Check For Package Updates</CommandName>
         </Strings>
       </Button>
       <!-- End Packages flyout -->
 
       <!-- Plots flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdOpenPlot" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellOpen"/>
         <Strings>
-          <ButtonText>&amp;Open...</ButtonText>
-          <CommandName>OpenPlot</CommandName>
+          <ButtonText>Open...</ButtonText>
+          <MenuText>&amp;Open...</MenuText>
+          <CommandName>Open Plot</CommandName>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdSavePlot" priority="0x0200" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellSave"/>
         <Strings>
-          <ButtonText>Save &amp;As...</ButtonText>
-          <CommandName>SavePlotAs</CommandName>
+          <ButtonText>Save As...</ButtonText>
+          <MenuText>Save &amp;As...</MenuText>
+          <CommandName>Save Plot As</CommandName>
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdFixPlot" priority="0x0300" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuGroup"/>
-        <Icon guid="guidVsShellIcons" id="cmdidVsShellPinTab"/>
-        <Strings>
-          <ButtonText>&amp;Fix</ButtonText>
-          <CommandName>FixPlotWindow</CommandName>
-        </Strings>
-      </Button>
-
-      <Button guid="guidRToolsCmdSet" id="icmdExportPlot" priority="0x0400" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuGroup"/>
+      <Button guid="guidRToolsCmdSet" id="icmdExportPlot" priority="0x0300" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="ImageCatalogGuid" id="Export"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>&amp;Export...</ButtonText>
-          <CommandName>ExportPlot</CommandName>
+          <CommandName>Export Plot</CommandName>
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdCopyPlot" priority="0x0700" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuGroup"/>
+      <Button guid="guidRToolsCmdSet" id="icmdFixPlot" priority="0x0400" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
+        <Icon guid="guidVsShellIcons" id="cmdidVsShellPinTab"/>
+        <Strings>
+          <ButtonText>&amp;Fix</ButtonText>
+          <CommandName>Fix Plot Window</CommandName>
+        </Strings>
+      </Button>
+
+
+      <Button guid="guidRToolsCmdSet" id="icmdPrintPlot" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenuPrintGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Print"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Print...</ButtonText>
+          <CommandName>Print Plot</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdZoomInPlot" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="ZoomIn"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Zoom In</ButtonText>
+          <MenuText>Zoom &amp;In</MenuText>
+          <CommandName>Zoom In Plot</CommandName>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0200" type="Button">
+        <Icon guid="ImageCatalogGuid" id="ZoomOut"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Zoom Out</ButtonText>
+          <MenuText>Zoom &amp;Out</MenuText>
+          <CommandName>Zoom Out Plot</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdCopyPlot" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellCopy"/>
         <Strings>
-          <ButtonText>&amp;Copy to Clipboard</ButtonText>
-          <CommandName>CopyPlotToClipboard</CommandName>
+          <ButtonText>Copy to Clipboard</ButtonText>
+          <MenuText>&amp;Copy to Clipboard</MenuText>
+          <CommandName>Copy Plot To Clipboard</CommandName>
         </Strings>
       </Button>
       <!-- End Plots flyout -->
@@ -272,8 +330,9 @@
         <Icon guid="ImageCatalogGuid" id="WebFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Import From Web &amp;URL...</ButtonText>
-          <CommandName>ImportDatasetFromWebUrl</CommandName>
+          <ButtonText>Import From Web URL...</ButtonText>
+          <MenuText>Import From Web &amp;URL...</MenuText>
+          <CommandName>Import Dataset From Web Url</CommandName>
         </Strings>
       </Button>
 
@@ -282,8 +341,9 @@
         <Icon guid="ImageCatalogGuid" id="DatabaseFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Import From &amp;Text File...</ButtonText>
-          <CommandName>ImportDatasetFromTextFile</CommandName>
+          <ButtonText>Import From Text File...</ButtonText>
+          <MenuText>Import From &amp;Text File...</MenuText>
+          <CommandName>Import Dataset From Text File</CommandName>
         </Strings>
       </Button>
       <!-- End Data flyout -->
@@ -295,7 +355,7 @@
         <Strings>
           <ButtonText>R Interactive</ButtonText>
           <MenuText>&amp;R Interactive</MenuText>
-          <CommandName>ShowRInteractiveWindow</CommandName>
+          <CommandName>Show R Interactive Window</CommandName>
         </Strings>
       </Button>
 
@@ -306,7 +366,7 @@
         <Strings>
           <ButtonText>Variable Explorer</ButtonText>
           <MenuText>&amp;Variable Explorer</MenuText>
-          <CommandName>ShowVariableExplorer</CommandName>
+          <CommandName>Show Variable Explorer</CommandName>
         </Strings>
       </Button>
 
@@ -316,7 +376,7 @@
         <Strings>
           <ButtonText>Plots</ButtonText>
           <MenuText>&amp;Plots</MenuText>
-          <CommandName>ShowPlots</CommandName>
+          <CommandName>Show Plot Windows</CommandName>
         </Strings>
       </Button>
 
@@ -327,7 +387,7 @@
         <Strings>
           <ButtonText>History</ButtonText>
           <MenuText>&amp;History</MenuText>
-          <CommandName>ShowHistorysWindow</CommandName>
+          <CommandName>Show History Window</CommandName>
         </Strings>
       </Button>
 
@@ -338,7 +398,7 @@
         <Strings>
           <ButtonText>Packages</ButtonText>
           <MenuText>P&amp;ackages</MenuText>
-          <CommandName>ShowPackagesWindow</CommandName>
+          <CommandName>Show Packages Window</CommandName>
         </Strings>
       </Button>
       <!-- End Windows flyout -->
@@ -349,7 +409,7 @@
         <Icon guid="guidVsShellIcons" id="cmdidVsShellOptions"/>
         <Strings>
           <ButtonText>&amp;Options...</ButtonText>
-          <CommandName>ROptions</CommandName>
+          <CommandName>R Tools Options</CommandName>
         </Strings>
       </Button>
       <!-- End top level menu -->
@@ -368,7 +428,7 @@
         <Icon guid="guidVsShellIcons" id="cmdidVsShellOpen"/>
         <Strings>
           <ButtonText>Open plot</ButtonText>
-          <CommandName>OpenPlot</CommandName>
+          <CommandName>Open Plot</CommandName>
         </Strings>
       </Button>
 
@@ -511,12 +571,20 @@
     </CommandPlacement>
 
     <!-- Plot window toolbar -->
-    <CommandPlacement guid="guidVSStd97" id="cmdidVsShellZoomIn" priority="0x0500">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomInPlot" priority="0x0500">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidVSStd97" id="cmdidVsShellZoomOut" priority="0x0510">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0510">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomInPlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup"/>
     </CommandPlacement>
   </CommandPlacements>
 
@@ -588,6 +656,10 @@
       <IDSymbol name="icmdRestartR" value="505" />
       <IDSymbol name="icmdInterruptR" value="506" />
 
+      <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
+      <IDSymbol name="sessionSubMenuRGroup" value="552"/>
+      <IDSymbol name="sessionSubMenuDirectoryGroup" value="553"/>
+
       <!-- Packages-->
       <IDSymbol name="icmdInstallPackages" value="601" />
       <IDSymbol name="icmdCheckForPackageUpdates" value="602" />
@@ -597,7 +669,16 @@
       <IDSymbol name="icmdSavePlot" value="702" />
       <IDSymbol name="icmdFixPlot" value="703" />
       <IDSymbol name="icmdExportPlot" value="704" />
+      <IDSymbol name="icmdPrintPlot" value="705" />
       <IDSymbol name="icmdCopyPlot" value="707" />
+      <IDSymbol name="icmdZoomInPlot" value="708" />
+      <IDSymbol name="icmdZoomOutPlot" value="709" />
+
+      <IDSymbol name="plotSubMenu" value="750"/>
+      <IDSymbol name="plotSubMenuFileGroup" value="751"/>
+      <IDSymbol name="plotSubMenuPrintGroup" value="752"/>
+      <IDSymbol name="plotSubMenuZoomGroup" value="753"/>
+      <IDSymbol name="plotSubMenuCopyGroup" value="754"/>
 
       <!-- Data-->
       <IDSymbol name="icmdImportDataset" value="801" />
@@ -620,15 +701,12 @@
       <IDSymbol name="sessionSubMenu" value="0x2110"/>
       <IDSymbol name="packagesSubMenu" value="0x2120"/>
       <IDSymbol name="dataSubMenu" value="0x2130"/>
-      <IDSymbol name="plotSubMenu" value="0x2140"/>
       <IDSymbol name="publishSubMenu" value="0x2150"/>
       <IDSymbol name="windowsSubMenu" value="0x2200"/>
       <IDSymbol name="toolsOptionsGroup" value="0x2300"/>
       <IDSymbol name="windowsSubMenuGroup" value="0x2310"/>
       <IDSymbol name="packagesSubMenuGroup" value="0x2320"/>
-      <IDSymbol name="plotSubMenuGroup" value="0x2330"/>
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>
-      <IDSymbol name="sessionSubMenuGroup" value="0x2350"/>
     </GuidSymbol>
 
     <!-- R Editor Factory Guid -->
@@ -652,6 +730,6 @@
     <UsedCommand guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" />
     <UsedCommand guid="guidVSStd11" id="cmdidExecuteLineInInteractive"  />
     <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomIn"  />
-    <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomIn"  />
+    <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomOut"  />
   </UsedCommands>
 </CommandTable>

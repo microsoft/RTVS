@@ -27,6 +27,10 @@ namespace Microsoft.VisualStudio.R.Packages.R
             commands.Add(new SavePlotCommand());
             commands.Add(new ExportPlotCommand());
             commands.Add(new FixPlotCommand());
+            commands.Add(new CopyPlotCommand());
+            commands.Add(new PrintPlotCommand());
+            commands.Add(new ZoomInPlotCommand());
+            commands.Add(new ZoomOutPlotCommand());
 
             commands.Add(new InstallPackagesCommand());
             commands.Add(new CheckForPackageUpdatesCommand());

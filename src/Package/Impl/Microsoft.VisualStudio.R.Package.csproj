@@ -78,6 +78,9 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
+    <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
+    <Compile Include="Plots\Commands\PrintPlotCommand.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
