@@ -1,11 +1,10 @@
-﻿using System;
-using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Options.R;
+﻿using System.ComponentModel.Design;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Commands.Global
+namespace Microsoft.VisualStudio.R.Package.Options.R.Tools
 {
     public sealed class GoToOptionsCommand: MenuCommand
     {

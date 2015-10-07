@@ -7,12 +7,9 @@
         public const int icmdGoToRToolsOptions = 401;
 
         // REPL
-        public const int icmdSendToRepl = 501;
         public const int icmdLoadWorkspace = 502;
         public const int icmdSaveWorkspace = 503;
         public const int icmdSetWorkingDirectory = 504;
-        public const int icmdRestartR = 505;
-        public const int icmdInterruptR = 506;
 
         // Packages
         public const int icmdInstallPackages = 601;
@@ -23,8 +20,6 @@
         public const int icmdSavePlot = 702;
         public const int icmdFixPlot = 703;
         public const int icmdExportPlot = 704;
-        public const int icmdZoomInPlot = 705;
-        public const int icmdZoomOutPlot = 706;
         public const int icmdCopyPlot = 707;
 
         // Data

@@ -119,6 +119,10 @@
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Composition.14.0.50417-pre\lib\net451\Microsoft.VisualStudio.Composition.Configuration.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.ImageCatalog, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.ImageCatalog.14.0.23205\lib\net45\Microsoft.VisualStudio.ImageCatalog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.ProjectSystem.Interop, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.ProjectSystem.14.0.50617-pre\lib\net451\Microsoft.VisualStudio.ProjectSystem.Interop.dll</HintPath>
       <Private>False</Private>

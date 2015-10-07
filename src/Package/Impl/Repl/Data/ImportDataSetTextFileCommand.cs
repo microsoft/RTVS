@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.Design;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Commands.Global
+namespace Microsoft.VisualStudio.R.Package.Repl.Data
 {
     public sealed class ImportDataSetTextFileCommand : MenuCommand
     {

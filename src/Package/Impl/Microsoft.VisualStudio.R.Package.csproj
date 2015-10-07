@@ -78,10 +78,11 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
     <Compile Include="Commands\Markdown\VsMarkdownTextViewConnectionListener.cs" />
-    <Compile Include="Commands\Global\GoToOptionsCommand.cs" />
+    <Compile Include="Options\R\Tools\GoToOptionsCommand.cs" />
     <Compile Include="Commands\R\RContextMenuId.cs" />
     <Compile Include="Commands\R\RPackageCommandId.cs" />
     <Compile Include="Commands\R\GoToFormattingOptionsCommand.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Plots\Commands\ExportPlotCommand.cs" />
     <Compile Include="Plots\Commands\FixPlotCommand.cs" />
     <Compile Include="Plots\Commands\CopyPlotCommand.cs" />
+    <Compile Include="Plots\Commands\ShowPlotWindowsCommand.cs" />
     <Compile Include="Plots\Commands\SavePlotCommand.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
@@ -150,12 +152,12 @@
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
     <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
     <Compile Include="Repl\Commands\ReplShortcutSetting.cs" />
-    <Compile Include="Commands\Global\LoadWorkspaceCommand.cs" />
-    <Compile Include="Commands\Global\InterruptRCommand.cs" />
-    <Compile Include="Commands\Global\RestartRCommand.cs" />
-    <Compile Include="Commands\Global\SaveWorkspaceCommand.cs" />
-    <Compile Include="Commands\Global\ImportDataSetTextFileCommand.cs" />
-    <Compile Include="Commands\Global\ImportDataSetUrlCommand.cs" />
+    <Compile Include="Repl\Workspace\LoadWorkspaceCommand.cs" />
+    <Compile Include="Repl\Workspace\InterruptRCommand.cs" />
+    <Compile Include="Repl\Workspace\RestartRCommand.cs" />
+    <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
+    <Compile Include="Repl\Data\ImportDataSetTextFileCommand.cs" />
+    <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Session\RSession.cs" />
     <Compile Include="Repl\Session\RSessionCommands.cs" />
@@ -173,6 +175,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RPackages\Commands\CheckForPackageUpdatesCommand.cs" />
+    <Compile Include="RPackages\Commands\InstallPackagesCommand.cs" />
     <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\AppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
@@ -204,6 +208,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -249,6 +255,11 @@
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.ImageCatalog, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.ImageCatalog.14.0.23205\lib\net45\Microsoft.VisualStudio.ImageCatalog.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Imaging, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
@@ -402,6 +413,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="VSShell\ShellIcons.h" />
     <None Include="Images\Folder_6221_24.bmp" />
     <None Include="Microsoft.R.Host.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

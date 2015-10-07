@@ -7,7 +7,6 @@ namespace Microsoft.VisualStudio.R.Packages.R
         public const string RPackageGuidString = "6D7C5336-C0CA-4857-A7E7-2E964EA836BF";
         public const string REditorFactoryGuidString = "EE606CC0-077A-4FDE-91C3-24EC012C8389";
         public const string RLanguageServiceGuidString = "29C0D8E0-C01C-412B-BEE8-7A7A253A31E6";
-        public const string RInteractiveCommandSetGuidString = "E1B81198-F2CF-46EE-BAF1-ACB4AE066A5C";
 
         public const string RCmdSetGuidString = "AD87578C-B324-44DC-A12A-B01A6ED5C6E3";
         public const string ProjectFileGeneratorGuidString = "62FC63E0-1A66-4B4A-B61A-A6C8BA558FC6";
@@ -20,7 +19,6 @@ namespace Microsoft.VisualStudio.R.Packages.R
         public static readonly Guid RPackageGuid = new Guid(RPackageGuidString);
         public static readonly Guid REditorFactoryGuid = new Guid(REditorFactoryGuidString);
         public static readonly Guid RLanguageServiceGuid = new Guid(RLanguageServiceGuidString);
-        public static readonly Guid RInteractiveCommandSetGuid = new Guid(RInteractiveCommandSetGuidString);
 
         public static readonly Guid RCmdSetGuid = new Guid(RCmdSetGuidString);
         public static readonly Guid CpsProjectFactoryGuid = new Guid(CpsProjectFactoryGuidString);
