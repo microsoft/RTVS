@@ -1,0 +1,1143 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+*********************************************************
+
+Copyright (c) Microsoft. All rights reserved.
+
+*********************************************************
+-->
+<!-- original source: \\cpvsbuild\Drops\dev14\Main\raw\current\sources\SetupAuthoring\UXResources\CommonVSManaged\LocalizableStrings.xml -->
+<strings>
+  <blockers>
+    <blocker _locID="CustomInstallPath_EmptyString">Install path cannot be empty.</blocker>
+    <blocker _locID="CustomInstallPath_PathTooLong">The path entered is too long.</blocker>
+    <blocker _locID="CustomInstallPath_NonFixDrive">The path entered cannot be on a removeable drive.</blocker>
+    <blocker _locID="CustomInstallPath_InvalidCharacters">The path contains invalid characters.</blocker>
+    <blocker _locID="CustomInstallPath_InvalidMSICharacters">The path contains characters which are invalid for Windows Installer.</blocker>
+    <blocker _locID="CustomInstallPath_PathNotRooted">The path entered is invalid.</blocker>
+    <blocker _locID="CustomInstallPath_InvalidDrive">Invalid drive.</blocker>
+    <blocker _locID="CustomInstallPath_RootPathNotAllowed">The path entered cannot be the root of the drive.</blocker>
+    <blocker _locID="InstallPath_Valid_NotEnoughFreeDiskspaceMB">You may need to free up disk space to install.</blocker>
+    <blocker _locID="InstallPath_Valid_NotEnoughFreeDiskspaceGB">You may need to free up disk space to install.</blocker>
+    <blocker _locID="CustomInstallPath_Valid_NotEnoughFreeDiskspaceMB">You may need to free up disk space to install.</blocker>
+    <blocker _locID="CustomInstallPath_Valid_NotEnoughFreeDiskspaceGB">You may need to free up disk space to install.</blocker>
+    <blocker _locID="CustomInstallPath_UnknownFailure">The path entered is incorrect</blocker>
+    <blocker _locID="MinimumNetFXVersion">The .Net Framework installed on this machine does not meet the minimum required version: [[NetfxProductVersion]].</blocker>
+    <blocker _locID="BuildTools_MinimumNetFXVersion">The .Net Framework installed on this machine does not meet the minimum required version: 4.5.1</blocker>
+    <blocker _locID="CompatibilityMode">Windows Program Compatibility mode is on. Turn it off and then try Setup again.</blocker>
+    <blocker _locID="BundleDowngrade">The product version that you are trying to set up is earlier than the version already installed on this computer.</blocker>
+    <blocker _locID="FirstLpUninstall">The first language installed for the product must be uninstalled with the main product.</blocker>
+    <blocker _locID="FullProductLanguage">This product is already installed. To install an additional language, please install the language pack for that language.</blocker>
+    <blocker _locID="OneInstanceAllowed">Another setup is already running. Please wait for it to finish before trying again.</blocker>
+    <blocker _locID="RebootPending">The computer needs to be restarted before setup can continue. Please restart the computer and run setup again.</blocker>
+    <blocker _locID="MinimumOSLevel">This version of Visual Studio requires a computer with a !$!http://go.microsoft.com/fwlink/?LinkID=[[MinOsLevelFwlinkId]]&amp;clcid=[[clcid]]!,!newer version of Windows!@!.</blocker>
+    <blocker _locID="ServerOSLevel">The operating system version on this computer is not compatible with this software. Please rerun after installing Windows Server 2008 R2 SP1 or 2012 or 2012 R2</blocker>
+    <blocker _locID="SameFlpLanguageBlocker">This language is already installed. To install an additional language, please install the language pack for that language.</blocker>
+    <blocker _locID="EnterpriseBlock">Microsoft Visual Studio Enterprise is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="TestAgentBlock">Setup has detected that a previous version of Microsoft Visual Studio Test Agent is already installed on this computer. You must first uninstall the previous version and then try the setup again.</blocker>
+    <blocker _locID="TestControllerBlock">Setup has detected that a previous version of Microsoft Visual Studio Test Controller is already installed on this computer. You must first uninstall the previous version and then try the setup again.</blocker>
+    <blocker _locID="CommunityBlock">Microsoft Visual Studio is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="ProfressionalBlock">Microsoft Visual Studio Professional is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="TeamExplorerBlock">Microsoft Visual Studio Team Explorer is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="TestAgentNotInstalledBlock">Microsoft Visual Studio Test Agent is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="TestControllerMinimumOSLevel">This version of Microsoft Visual Studio Test Controller requires a computer with a !$!http://go.microsoft.com/fwlink/?LinkID=[[MinOsLevelFwlinkId]]&amp;clcid=[[clcid]]!,!newer version of Windows!@!.</blocker>
+    <blocker _locID="TestControllerNotInstalledBlock">Microsoft Visual Studio Test Controller is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="TestProBlock">Microsoft Visual Studio Test Professional is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="FeedbackBlock">Microsoft Visual Studio Feedback Client is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="IsoShellBlock">Microsoft Visual Studio Shell (Isolated) is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="IntShellAdditionalBlock">Microsoft Visual Studio Shell (Integrated) is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="MatchingIsoShellLPBlock">A matching Microsoft Visual Studio Shell (Isolated) language pack is required, but it is not installed on this computer. Please install the Microsoft Visual Studio Shell (Isolated) language pack for this language and retry.</blocker>
+    <blocker _locID="ShellsBlock">Microsoft Visual Studio Shells Redist is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="VSSDKBlock">Microsoft Visual Studio SDK is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="WinBlock">This version of Visual Studio requires a computer with a !$!http://go.microsoft.com/fwlink/?LinkID=[[Win81BlockFwlinkId]]&amp;clcid=[[clcid]]!,!newer version of Windows!@!.</blocker>
+    <blocker _locID="IE10Block">This version of Visual Studio works best with !$!http://go.microsoft.com/fwlink/?LinkID=[[IE10FwlinkId]]&amp;clcid=[[clcid]]!,!Internet Explorer 10!@! which is currently not installed on your computer. If you choose to continue, !$!http://go.microsoft.com/fwlink/?LinkID=330043&amp;clcid=[[clcid]]!,!some features!@! might not work as expected.</blocker>
+    <blocker _locID="Win81PreRelBlock">This version of Visual Studio is !$!http://go.microsoft.com/fwlink/?LinkID=[[Win81PreRelBlockFwlinkId]]&amp;clcid=[[clcid]]!,!not compatible!@! with pre-release versions of Windows 8.1.</blocker>
+    <blocker _locID="KB2919355OnBlue">This version of Visual Studio requires the April 2014 update to Windows 8.1 and Windows Server 2012 R2 known as !$!http://go.microsoft.com/fwlink/?LinkId=403643&amp;clcid=[[clcid]]!,!KB 2919355!@!. Please install !$!http://go.microsoft.com/fwlink/?LinkId=403643&amp;clcid=[[clcid]]!,!KB 2919355!@! before you install Visual Studio on these operating systems.</blocker>
+    <blocker _locID="VSWinExpressBlock">Microsoft Visual Studio Express for Windows is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="WinExpressOrProBlock">This product requires Microsoft Visual Studio Express for Windows or Microsoft Visual Studio Professional or higher. (WinExpressOrProBlock)</blocker>
+    <blocker _locID="WDExpressBlock">Microsoft Visual Studio Express for Windows Desktop is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="VnsExpressBlock">Microsoft Visual Studio Express for Web and Azure is required, but it is not installed on this computer. Please install it and retry.</blocker>
+    <blocker _locID="MissingInternetConnectionBlock">No Internet connection detected on this machine. Please connect to the Internet and click Retry. Clicking Continue without an Internet connection may prevent install of some optional features.</blocker>
+    <blocker _locID="FeedLoadFailureBlock">Setup Failed!</blocker>
+    <!-- Workaround: Using a scenario specific string for Dev14 RC since the only expected scenario to get to this state
+                     is from a non applicable update launched by the VS IDE.  This will be reevaluated after RC when the
+                     VS IDE may support out non applicable updates.  -->
+    <blocker _locID="EmptyFilteredFeatureSelectionTreeBlock">The update does not apply to this product!</blocker>
+    <blocker _locID="HypervisorNotSupportedBlock">This computer does not support the Windows Phone emulator, which requires the 64-bit edition of Windows 8.1 Pro and a computer that supports Hyper-V. For more information, see !$!http://go.microsoft.com/fwlink/?LinkId=394063,System requirements for Windows Phone Emulator!@!.</blocker>
+    <blocker _locID="AdminMetadata_ValidationErrors">There are some validation errors in the admin deployment metadata xml provided. For more details, please see the setup log.</blocker>
+    <blocker _locID="StringInstallationSizeOneDriveMB">Setup requires up to {0:N0} MB across all drives.</blocker>
+    <blocker _locID="StringInstallationSizeOneDriveGB">Setup requires up to {0:N0} GB across all drives.</blocker>
+    <blocker _locID="StringInstallationSizeTwoDriveMB">Setup requires up to {0:N0} MB on {1} and up to {2:N0} MB on {3}</blocker>
+    <blocker _locID="StringInstallationSizeTwoDriveGB">Setup requires up to {0:N0} GB on {1} and up to {2:N2} GB on {3}</blocker>
+    <blocker _locID="StringInstallationSizeCustomPathOneDriveMB">Setup requires up to {0:N0} MB across all drives.</blocker>
+    <blocker _locID="StringInstallationSizeCustomPathOneDriveGB">Setup requires up to {0:N0} GB across all drives.</blocker>
+    <blocker _locID="StringInstallationSizeCustomPathTwoDriveMB">Setup requires up to {0:N0} MB on {1} and {2:N0} MB in:</blocker>
+    <blocker _locID="StringInstallationSizeCustomPathTwoDriveGB">Setup requires up to {0:N0} GB on {1} and {2:N2} GB in:</blocker>
+    <blocker _locID="StringFreeSpaceNeeded">You may need to free up disk space to install.</blocker>
+    <blocker _locID="DevEnvProcesssBlock">Please close Visual Studio now to reduce the chance that a computer restart will be required later.</blocker>
+    <blocker _locID="XdeProcessBlock">Please close Windows Phone Emulators now to reduce the chance that a computer restart will be required later.</blocker>
+    <blocker _locID="MMCProcesssBlock">Please close all instances of the Microsoft Management Console now to reduce the chance that a computer restart will be required later.</blocker>
+    <blocker _locID="TfsMgmtProcesssBlock">Please close the Team Foundation Server Administration Console before continuing.</blocker>
+    <blocker _locID="TfsConfigProcesssBlock">Please close the Team Foundation Server Config Tool (TfsConfig.exe) before continuing.</blocker>
+    <blocker _locID="UpdateNotApplicable">[[KBNumber]] does not apply, or is blocked by another condition on your computer.</blocker>
+    <blocker _locID="VS11BetaBlock">One or more Visual Studio Next Preview or earlier products are installed. Please uninstall these prior to installing Visual Studio Next.</blocker>
+
+    <blocker _locID="WinJSDevEnvProcesssWarn">Errors may occur if you do not close Visual Studio before installing.</blocker>
+    <blocker _locID="WinJSVSWinExpressProcesssWarn">Errors may occur if you do not close Visual Studio Express before installing.</blocker>
+    <blocker _locID="WinJSBlendProcesssWarn">Errors may occur if you do not close Blend before installing.</blocker>
+    <blocker _locID="WinJSDevEnvProcesssBlock">You cannot uninstall WinJS while Visual Studio is running</blocker>
+    <blocker _locID="WinJSVSWinExpressProcesssBlock">You cannot uninstall WinJS while Visual Studio Express is running</blocker>
+    <blocker _locID="WinJSBlendProcesssBlock">You cannot uninstall WinJS while Blend is running</blocker>
+
+    <blocker _locID="PreRtmObjectModelBlock">Setup has detected that a pre RTM version of a Microsoft Visual Studio Team Foundation product is already installed on this computer. You must first uninstall the previous version and then try the setup again.</blocker>
+    <blocker _locID="VssVersionBlock">Setup has detected that an old Visual SouceSafe version is installed on this computer. You must either uninstall this version or upgrade it to the latest one, i.e. Visual SourceSafe 2005 plus Visual SourceSafe 2005 Update, and then try the setup again.</blocker>
+    <blocker _locID="VssVersionWarning">Setup has detected that Visual SouceSafe 2005 Update and latest hot fixes are not installed on this computer. You may continue setup, however before you start using the Visual SourceSafe Upgrade Wizard we recommend you to install all latest updates for Visual SourceSafe. It will provide you with more reliable and smooth migration process.</blocker>
+    <blocker _locID="ProcessRunningBlock_VWDExpress">Errors may occur if you do not close all Visual Web Developer Express Instances before proceeding with setup.</blocker>
+    <blocker _locID="ProcessRunningBlock_Zune">Errors may occur if you do not close Zune before proceeding with setup.</blocker>
+    <blocker _locID="ProcessRunningBlock_Vpdexpress">Errors may occur if you do not close all Windows Phone Express (vpdexpress.exe) Instances before proceeding with setup.</blocker>
+    <blocker _locID="ProcessRunningBlock_Xde">Please close XDE.exe now to reduce the chance that a computer restart will be required later.</blocker>
+    <blocker _locID="ProcessRunningBlock_PhoneReg">Errors may occur if you do not close Windows Phone Developer Registration (PhoneReg.exe) before proceeding with setup.</blocker>
+    <blocker _locID="ProcessRunningBlock_XapDeploy">Errors may occur if you do not close Application Deployment (XapDeploy.exe) before proceeding with setup.</blocker>
+    <blocker _locID="Win8X64Block">This Product can only be installed on Windows 8 or later 64-bit Machine.</blocker>
+    <blocker _locID="ProfessionalVersionBlock">The Visual Studio installed on this machine does not meet the required version: [[ProfessionalVSVersion]]</blocker>
+    <blocker _locID="WPExpressBuildBlock">A previous version of WPExpress is already installed on this machine.</blocker>
+    <blocker _locID="DiffLanguageWPExpress10Block">A different language install of Visual Studio 2010 Express for Windows Phone is present on this machine. Either uninstall the existing program or install the same language setup.</blocker>
+    <blocker _locID="DiffLanguageWPExpress11Block">A different language install of Visual Studio 2012 Express for Windows Phone is present on this machine. Either uninstall the existing program or install the same language setup.</blocker>
+    <blocker _locID="DiffLanguageBlend50Block">A different language install of Expression Blend 5.0 is present on this machine. Either uninstall the existing program or install the same language setup.</blocker>
+    <blocker _locID="PrivilegedBlock">You need to be an administrator to install this product.</blocker>
+    <blocker _locID="MicrosoftRootCertificateAuthorityMissingBlock">Installation errors may occur because the security certificate updates that are required to install some Visual Studio components cannot be applied to this computer. This can occur when you are not connected to the Internet or when a group policy setting on your computer prevents Visual Studio from automatically applying the security certificate updates. If you choose to continue, some Visual Studio features may not work as expected. !$!http://go.microsoft.com/fwlink/?LinkId=[[SHA256BlockFwlinkId]]&amp;clcid=[[clcid]]!,!Learn more!@!.</blocker>
+    <blocker _locID="DevEnvProcessRestartDesignTimeBlock">Please close Visual Studio now. This product might require restarting Visual Studio after installation.</blocker>
+    <blocker _locID="MBCSMFCProductNotApplicableBlock">Stopping installation. This product applies only to the MFC library, which is not present on this computer.</blocker>
+
+    <blocker _locID="SlipstreamFLPDifferentLanguage">The language of the localized version of Visual Studio that is installed on your computer does not match the language of the localized version of Visual Studio that you are attempting to install. If you continue, the language of the existing localized version will be replaced. To add a language to the existing version, install a language pack.</blocker>
+    <blocker _locID="SlipstreamRequiresVSUpdate">This update cannot be uninstalled because it is required by Visual Studio $(GeneralBrandVersion). To remove this update, uninstall Visual Studio $(GeneralBrandVersion).</blocker>
+    <blocker _locID="SlipstreamRequiresOlderVSUpdate">An earlier version of this update is required by Visual Studio $(GeneralBrandVersion). To ensure that Visual Studio runs correctly after uninstall, select Visual Studio on the installed programs page in the Control Panel and then choose Repair.</blocker>
+
+
+    <blocker _locID="SelectableWarningMessage">Windows Store app development requires !$!http://go.microsoft.com/fwlink/?LinkID=316382&amp;clcid=[[clcid]]!,!Windows 8.1!@!.</blocker>
+
+    <blocker _locID="RmServerAlreadyInstalledBlock">One or more Release Management for Visual Studio $(GeneralBrandVersion) or earlier products are installed. Please uninstall these prior to installing Release Management Server for Team Foundation Server $(GeneralBrandVersion)</blocker>
+    <blocker _locID="RmDeployerAlreadyInstalledBlock">One or more Microsoft Deployment Agent $(GeneralBrandVersion) or earlier products are installed. Please uninstall these prior to installing Microsoft Deployment Agent $(GeneralBrandVersion)</blocker>
+    <blocker _locID="RmClientAlreadyInstalledBlock">One or more Release Management Client for Visual Studio $(GeneralBrandVersion) or earlier products are installed. Please uninstall these prior to installing Release Management Client for Visual Studio $(GeneralBrandVersion)</blocker>
+    <blocker _locID="RmOlderClientAlreadyInstalledBlock">One or more Release Management Client for Visual Studio 2013 or earlier products are installed. Please uninstall these prior to installing Release Management Client for Visual Studio $(GeneralBrandVersion)</blocker>
+    <blocker _locID="RmOlderDeployerAlreadyInstalledBlock">One or more Microsoft Deployment Agent 2013 or earlier products are installed. Please uninstall these prior to installing Microsoft Deployment Agent $(GeneralBrandVersion)</blocker>
+    <blocker _locID="RmOlderServerAlreadyInstalledBlock">One or more Release Management for Visual Studio 2013 or earlier products are installed. Please uninstall these prior to installing Release Management Server for Team Foundation Server $(GeneralBrandVersion)</blocker>
+
+    <blocker _locID="EnterpriseInstalledBlock">Visual Studio Enterprise $(GeneralBrandVersion) is currently installed on this machine. Please uninstall Visual Studio Enterprise $(GeneralBrandVersion) and retry.</blocker>
+    <blocker _locID="UltimateInstalledBlock">Visual Studio Ultimate $(GeneralBrandVersion) is currently installed on this machine. Please uninstall Visual Studio Ultimate $(GeneralBrandVersion) and retry.</blocker>
+    <blocker _locID="ProfessionalInstalledBlock">Visual Studio Professional $(GeneralBrandVersion) is currently installed on this machine. Please uninstall Visual Studio Professional $(GeneralBrandVersion) and retry.</blocker>
+
+    <blocker _locID="Tfs32BitOSBlock">Team Foundation Server is not compatible with 32-bit operating systems; please move to a 64-bit version.  You can find a list of supported operating systems at http://msdn.microsoft.com/en-us/library/dd578592.aspx.</blocker>
+    <blocker _locID="TfsDev10Installed">Features from a Team Foundation Server 2010 Application Tier or Proxy were detected.  To continue with this installation or upgrade, you must uninstall the previous version.  See the setup guide for additional information.</blocker>
+    <blocker _locID="TfsDev11PreRelaseIntalled">A pre-release version of Team Foundation Server 2012 has been detected.  You must uninstall the pre-release version of Team Foundation Server 2012 before you can install Team Foundation Server.</blocker>
+    <blocker _locID="TfsDev11PreRelaseUpdate1Intalled">This version of Team Foundation Server cannot upgrade the Team Foundation Server 2012 Update 1 CTP that is currently installed.</blocker>
+    <blocker _locID="TfsDev11PreRelaseUpdate2Intalled">This version of Team Foundation Server cannot upgrade the Team Foundation Server 2012 Update 2 CTP that is currently installed.</blocker>
+    <blocker _locID="TfsDev11PreRelaseUpdate3Intalled">This version of Team Foundation Server cannot upgrade the Team Foundation Server 2012 Update 3 CTP that is currently installed.</blocker>
+    <blocker _locID="TfsDev11PreRelaseUpdate4Intalled">This version of Team Foundation Server cannot upgrade the Team Foundation Server 2012 Update 4 CTP that is currently installed.</blocker>
+    <blocker _locID="TfsDev12PreRelaseIntalled">A pre-release version of Team Foundation Server 2013 has been detected.  You must uninstall the pre-release version of Team Foundation Server 2013 before you can install Team Foundation Server.</blocker>
+    <blocker _locID="TfsDev12PreRelaseUpdate2Intalled">This version of Team Foundation Server cannot upgrade the Team Foundation Server 2013 Update 2 CTP that is currently installed.</blocker>
+    <blocker _locID="TfsDifferentLanguageIntalled">The currently installed version of Team Foundation Server is a different language. There can only be one language of Team Foundation Server installed.</blocker>
+    <blocker _locID="TfsNotGoLive">This Technology Preview version of Team Foundation Server is not supported on production servers.  By clicking on Continue, I acknowlege that I will not be able to upgrade my Team Foundation Server instance after installing.</blocker>
+    <blocker _locID="TfsProjectServerNotFound">Unable to detect Project Server. In order to install this package, a supported version of Project Server must be installed on this machine. See http://go.microsoft.com/fwlink/?LinkId=253186 for information about supported versions.</blocker>
+    <blocker _locID="TfsExpressOverServer">Team Foundation Server has been detected. You cannot convert a Team Foundation Server install to a Team Foundation Server Express install.</blocker>
+  </blockers>
+
+
+  <overridetokens>
+    <token _locID="buildtools_displayname">Microsoft Build Tools Next Preview</token>
+    <token _locID="vs_enterprisecore">Visual Studio Additional Features</token>
+    <token _locID="vs_enterprisecoreres">Visual Studio Additional Features - ENU</token>
+    <token _locID="vs_premiumcore">Visual Studio Additional Features</token>
+    <token _locID="vs_premiumcoreres">Visual Studio Additional Features - ENU</token>
+    <token _locID="vs_communitycore">Visual Studio Core Features</token>
+    <token _locID="vs_communitycoreres">Visual Studio Core Features - ENU</token>
+    <token _locID="vs_professionalcore">Visual Studio Core Features</token>
+    <token _locID="vs_professionalcoreres">Visual Studio Core Features - ENU</token>
+    <token _locID="kb2664825">Hotfix for Windows (KB2664825)</token>
+    <token _locID="kb2882822">Hotfix for Windows (KB2882822)</token>
+    <token _locID="vsupdatededitiondisplayname">$(VSUpdateBrandNameNoLoc)</token>
+    <token _locID="hotfixeditiondisplayname">Update - [[KBNumber]]</token>
+    <token _locID="tfshotfixeditiondisplayname">Team Foundation Server Update - [[KBNumber]]</token>
+    <token _locID="tfstxtDescriptionAndDiskSpace">This installation will update the currently installed Team Foundation Server 2013. When complete, this update will use {0} MB of disk space.</token>
+    <token _locID="blend">with Blend</token>
+    <token _locID="slipstream">with $(VSUpdateBrandNameNoLoc)</token>
+    <token _locID="blendAndPhoneTools">with Blend and Windows Phone Tools</token>
+    <token _locID="txtLicense">
+      You must agree to the !$!{0}!,!License Terms!@! before you can install the product.
+
+      Visual Studio $(GeneralBrandVersion) automatically sends information to Microsoft about your installation experience, notifies you when an update is available, and connects you to content online. To learn more, see the !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Statement!@!.
+    </token>
+    <token _locID="vbpowerpackstxtLicense">
+      You must agree to the !$!{0}!,!License Terms!@! before you can install the update.
+
+      Visual Basic PowerPacks 14.0 automatically sends information to Microsoft about your installation experience, notifies you when an update is available, and connects you to content online.  To learn more, see the !$!http://go.microsoft.com/fwlink/?LinkID=[[PrivacyStatementFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Statement!@!.
+    </token>
+
+    <!-- Display names for WP 8.1 SDK MSIs -->
+    <token _locID="WindowsPhone81SDK_Desktop_DisplayName">Windows Phone 8.1 SDK</token>
+    <token _locID="WindowsPhone81SDK_Desktop_x64_DisplayName">Windows Phone 8.1 SDK - x64</token>
+    <token _locID="WindowsPhone81SDK_x86_DisplayName">Windows Phone 8.1 SDK - x86</token>
+    <token _locID="WindowsPhone81SDK_ARM_DisplayName">Windows Phone 8.1 SDK - ARM</token>
+    <token _locID="WindowsPhone81SDK_VHD_DisplayName">Windows Phone 8.1 SDK - Images</token>
+    <token _locID="WindowsPhone81GDR1SDK_VHD_DisplayName">Windows Phone 8.1 Update 1 SDK - Images</token>
+
+    <!-- Display name for the WP 8.1 Emulator bundle and its packages -->
+    <token _locID="WindowsPhone81Emulator_EditionDisplayName">Windows Phone 8.1 Emulators</token>
+    <token _locID="WindowsPhone81GDR1Emulator_EditionDisplayName">Windows Phone 8.1 Update 1 SDK and Emulators</token>
+    <token _locID="CoreConExtra_DisplayName">Windows Phone 8.1 Emulation Images</token>
+    <token _locID="CoreConExtraGDR1_DisplayName">Windows Phone 8.1 Update 1 Emulator Images</token>
+    <token _locID="MobileTools_XDEConfig81_DisplayName">Windows Phone Emulator Configurator</token>
+    <token _locID="MobileTools_Finalizer81_DisplayName">Windows Phone Tools Finalizer</token>
+
+    <!-- Display names for Windows updates required for Windows Phone 8.1 development on Windows 8.1 RTM -->
+    <token _locID="Windows8_1_KB2913642_x64_msu_DisplayName">Hotfix for Microsoft Windows (KB2913642)</token>
+    <token _locID="Windows8_1_KB2913642_x86_msu_DisplayName">Hotfix for Microsoft Windows (KB2913642)</token>
+    <token _locID="Windows8_1_KB2910887_v2_x64_msu_DisplayName">Hotfix for Microsoft Windows (KB2910887)</token>
+    <token _locID="Windows8_1_KB2910887_v2_x86_msu_DisplayName">Hotfix for Microsoft Windows (KB2910887)</token>
+    <token _locID="Windows8_1_KB2921128_x64_msu_DisplayName">Hotfix for Microsoft Windows (KB2921128)</token>
+    <token _locID="Windows8_1_KB2921128_x86_msu_DisplayName">Hotfix for Microsoft Windows (KB2921128)</token>
+
+    <!-- Bug 1007573: Visual Studio Update 3 - typo - Professionald in setup screen -->
+    <!-- Display name for the phoneaddon_professionalcoreres.msi MSIs -->
+    <token _locID="PhoneAddon_ProfessionalCoreRes_Lang_DisplayName">Windows Phone 8.1 Tools for Visual Studio Professional 2013 - Language resources</token>
+
+    <!-- Display names for the VS2012 wpsdk_* MSIs -->
+    <token _locID="wp_sdk_chs_DisplayName">Windows Phone SDK 8.0</token>
+    <token _locID="wp_sdk_cht_DisplayName">Windows Phone SDK 8.0</token>
+    <token _locID="wp_sdk_deu_DisplayName">Windows Phone SDK 8.0</token>
+    <token _locID="wp_sdk_enu_DisplayName">Windows Phone SDK 8.0</token>
+    <token _locID="wp_sdk_esn_DisplayName">Windows Phone SDK 8.0</token>
+    <token _locID="wp_sdk_fra_DisplayName">Windows Phone SDK 8.0</token>
+    <token _locID="wp_sdk_ita_DisplayName">Windows Phone SDK 8.0</token>
+    <token _locID="wp_sdk_jpn_DisplayName">Windows Phone SDK 8.0</token>
+    <token _locID="wp_sdk_kor_DisplayName">Windows Phone SDK 8.0</token>
+    <token _locID="wp_sdk_rus_DisplayName">Windows Phone SDK 8.0</token>
+
+    <!-- Display names for the VS2012 WP 8.0 XDE host MSI  -->
+    <token _locID="XDE_Host_DisplayName">Windows Phone 8.0 Emulation Host</token>
+
+    <!-- Display name for the mobiletools_wpsdkcore MSI that we wrap in the CoreCon package -->
+    <token _locID="CoreCon_DisplayName">Windows Phone SDK 8.0</token>
+
+    <token _locID="ThirdPartyLauncher">Secondary Installer</token>
+    <token _locID="SecondaryInstallerExePackage">Optional Items</token>
+
+    <!-- Display names for Tools for Windows 10 -->
+    <token _locID="Windows10Tools_EditionDisplayName">Tools for Windows 10</token>
+    <token _locID="Windows10Tools_ExtraEditionDisplayName">Technical Preview</token>
+
+    <token _locID="MDDCPlusPlusBundle_EditionDisplayName">Visual C++ for Mobile Development (iOS support)</token>
+    <token _locID="MDDCPlusPlusBundle_ExtraEditionDisplayName">Technical Preview</token>
+  </overridetokens>
+
+  <common>
+    <minimizebutton>
+      <text>_</text>
+      <tooltiptext _locID="btnMinTip">Minimize</tooltiptext>
+    </minimizebutton>
+    <exitbutton>
+      <text>_X</text>
+      <tooltiptext _locID="ButtonCloseTip">Close</tooltiptext>
+    </exitbutton>
+    <cancelbutton>
+      <text _locID="btnCancel">_Cancel</text>
+      <tooltiptext _locID="btnCancelTip">Cancel</tooltiptext>
+    </cancelbutton>
+    <cancelyesbutton>
+      <text _locID="btnCancelYes">_Yes</text>
+      <tooltiptext _locID="btnCancelYesTip">Yes, cancel setup.</tooltiptext>
+    </cancelyesbutton>
+    <cancelnobutton>
+      <text _locID="btnCancelNo">_No</text>
+      <tooltiptext _locID="btnCancelNoTip">No, do not cancel setup.</tooltiptext>
+    </cancelnobutton>
+    <cancelprompttext>
+      <text _locID="btnCancelPrompt">Are you sure you want to cancel setup?</text>
+    </cancelprompttext>
+    <sizeestimateformatlabel>
+      <tooltiptext _locID="lblSizeEstimateFormatStringTip">Estimated time to complete and disk space requirements</tooltiptext>
+    </sizeestimateformatlabel>
+  </common>
+
+  <msibusy>
+    <msibusyprompttext>
+      <text _locID="MsiBusyPrompt">Another setup is in progress. Please wait for it to complete, then retry the current setup.</text>
+    </msibusyprompttext>
+    <msibusycancelbutton>
+      <text _locID="btnMsiBusyCancel">_Cancel</text>
+      <tooltiptext _locID="btnMsiBusyCancelTip">Cancel setup.</tooltiptext>
+    </msibusycancelbutton>
+    <msibusyretrybutton>
+      <text _locID="btnMsiBusyRetry">_Retry</text>
+      <tooltiptext _locID="btnMsiBusyRetryTip">Retry setup.</tooltiptext>
+    </msibusyretrybutton>
+  </msibusy>
+
+  <blocks>
+    <stopblocksheader>
+      <text _locID="txtStopBlocksHeader">Setup Blocked</text>
+    </stopblocksheader>
+    <stopblockssubheader>
+      <text _locID="txtStopBlocksSubHeader">Correct the following problems and then run setup again. To learn more, you can review the list of !$!http://go.microsoft.com/fwlink/?LinkID=[[SolutionFwlinkId]]&amp;clcid=[[clcid]]!,!common issues and workarounds!@! or examine the !$![[LogFilePath]]!,!log file!@!.</text>
+    </stopblockssubheader>
+    <warnblocksheader>
+      <text _locID="txtWarnBlocksHeader">Setup Warnings</text>
+    </warnblocksheader>
+    <warnblockssubheader>
+      <text _locID="txtWarnBlocksSubHeader">Please review the following warnings. To learn more, you can review the list of !$!http://go.microsoft.com/fwlink/?LinkID=[[SolutionFwlinkId]]&amp;clcid=[[clcid]]!,!common issues and workarounds!@! or examine the !$![[LogFilePath]]!,!log file!@!.</text>
+    </warnblockssubheader>
+    <modernuxstopblocksheader>
+      <text _locID="txtModernUxStopBlocksHeader">We cannot install Visual Studio</text>
+    </modernuxstopblocksheader>
+    <modernuxwarnblocksheader>
+      <text _locID="txtModernUxWarnBlocksHeader">Setup Warnings</text>
+    </modernuxwarnblocksheader>
+    <retrybutton>
+      <text _locID="btnBlocksRetry">_Retry</text>
+      <tooltiptext _locID="btnBlocksRetryTip">Re-evaluate the blockers</tooltiptext>
+    </retrybutton>
+    <modernuxsuccessblocksheader>
+      <text _locID="txtModernUxSuccessBlocksHeader">Setup Blocked</text>
+    </modernuxsuccessblocksheader>
+    <modernuxlogandissues>
+      <text _locID="txtModernUxLogAndIssues">!$![[LogFilePath]]!,!View the log file!@! | !$!http://go.microsoft.com/fwlink/?LinkID=[[SolutionFwlinkId]]&amp;clcid=[[clcid]]!,!Known Issues!@!</text>
+    </modernuxlogandissues>
+    <successblocksheader>
+      <text _locID="txtSuccessBlocksHeader">Setup Blocked</text>
+    </successblocksheader>
+    <successblockssubheader>
+      <text _locID="txtSuccessBlocksSubHeader">To learn more, you can review the list of !$!http://go.microsoft.com/fwlink/?LinkID=[[SolutionFwlinkId]]&amp;clcid=[[clcid]]!,!common issues and workarounds!@! or examine the !$![[LogFilePath]]!,!log file!@!.</text>
+    </successblockssubheader>
+    <continuebutton>
+      <text _locID="btnBlocksContinue">Co_ntinue</text>
+      <tooltiptext _locID="btnBlocksContinueTip">Ignore warning and continue setup</tooltiptext>
+    </continuebutton>
+    <listinfolink>
+      <text _locID="lnkBlocksListInfo">Click here for additional details.</text>
+    </listinfolink>
+    <closebutton>
+      <text _locID="btnBlocksClose">_Cancel</text>
+      <tooltiptext _locID="btnBlocksCloseTip">Cancel setup</tooltiptext>
+    </closebutton>
+    <typelistcolumn>
+      <text _locID="colTypeBlocks">Type</text>
+    </typelistcolumn>
+    <blockdescriptioncolumn>
+      <text _locID="colBlockDescription">Description</text>
+    </blockdescriptioncolumn>
+  </blocks>
+
+  <freespaceblocks>
+    <header>
+      <text _locID="txtFreeSpaceBlocksHeader">Warning</text>
+    </header>
+    <continuebutton>
+      <text _locID="btnFreeSpaceBlocksContinue">_Continue</text>
+      <tooltiptext _locID="btnFreeSpaceBlocksContinueTip">Continue</tooltiptext>
+    </continuebutton>
+    <cancelbutton>
+      <text _locID="btnFreeSpaceBlocksCancel">_Cancel</text>
+      <tooltiptext _locID="btnFreeSpaceBlocksCancelTip">Cancel setup</tooltiptext>
+    </cancelbutton>
+  </freespaceblocks>
+
+  <layoutwelcome>
+    <locationdescription>
+      <text _locID="downloadLocation">Download Location:</text>
+    </locationdescription>
+    <downloadbutton>
+      <text _locID="btnInstall">_DOWNLOAD</text>
+      <tooltiptext _locID="btnInstallTip">Download</tooltiptext>
+    </downloadbutton>
+    <browsebutton>
+      <text _locID="btnBrowse">...</text>
+      <tooltiptext _locID="btnBrowseTip">Modify layout path</tooltiptext>
+    </browsebutton>
+  </layoutwelcome>
+
+  <updatewelcome>
+    <updateagreetext>
+      <text _locID="updateLicense">By clicking the "Install" button, I acknowledge that I accept the !$!{0}!,!License Terms!@! and !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Statement!@!.</text>
+    </updateagreetext>
+    <licensetext>
+      <text _locID="cbxUpdateLicense">I agree to the !$!{0}!,!License Terms!@! and !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Policy!@!.</text>
+      <tooltiptext _locID="cbxUpdateAgreeTip">Checking this box indicates agreement to the License Terms and Privacy Policy.</tooltiptext>
+    </licensetext>
+    <descriptionanddiskspace>
+      <text _locID="txtDescriptionAndDiskSpace">This installation will update all the Visual Studio $(GeneralBrandVersion) products and languages which are currently installed. When complete, this update will use up to {0} MB of disk space.</text>
+    </descriptionanddiskspace>
+    <moreinfolink>
+      <text _locID="lnkMoreInfo">_More Information</text>
+    </moreinfolink>
+  </updatewelcome>
+
+  <updatemoreinfo>
+    <installededproducts>
+      <text _locID="txtInstalledProducts">The following products will be updated or installed:</text>
+    </installededproducts>
+    <backbutton>
+      <text _locID="btnBack">_Back</text>
+      <tooltiptext _locID="btnBackTip">Back to previous page</tooltiptext>
+    </backbutton>
+    <diskspacetext>
+      <text _locID="txtDiskSpace">Installation will install up to {0} MB.</text>
+    </diskspacetext>
+  </updatemoreinfo>
+
+  <welcome>
+    <agreetextnext>
+      <text _locID="welcomeLicenseNext">By clicking the "Next" button, I acknowledge that I accept the !$!{0}!,!License Terms!@! and !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Statement!@!.</text>
+      <tooltiptext _locID="welcomeLicenseNextTip">By clicking the Next button, I acknowledge that I accept the License Terms and Privacy Statement.</tooltiptext>
+    </agreetextnext>
+    <agreetextnextonline>
+      <text _locID="welcomeLicenseNext">By clicking the "Next" button, I acknowledge that I accept the !$!http://go.microsoft.com/fwlink/?LinkID=[[LicenseFwlinkId]]&amp;clcid=[[clcid]]!,!License Terms!,!!,!To view the license terms, please use an internet connected device and navigate to {0}!@! and !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Statement!,!!,!To view the privacy statement, please use an internet connected device and navigate to {0}!@!.</text>
+      <tooltiptext _locID="welcomeLicenseNextTip">By clicking the Next button, I acknowledge that I accept the License Terms and Privacy Statement.</tooltiptext>
+    </agreetextnextonline>
+    <agreetextinstall>
+      <text _locID="welcomeLicenseInstall">By clicking the "Install" button, I acknowledge that I accept the !$!{0}!,!License Terms!@! and !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Statement!@!.</text>
+      <tooltiptext _locID="welcomeLicenseInstallTip">By clicking the Install button, I acknowledge that I accept the License Terms and Privacy Statement.</tooltiptext>
+    </agreetextinstall>
+    <agreetextinstallonline>
+      <text _locID="welcomeLicenseInstall">By clicking the "Install" button, I acknowledge that I accept the !$!http://go.microsoft.com/fwlink/?LinkID=[[LicenseFwlinkId]]&amp;clcid=[[clcid]]!,!License Terms!,!!,!To view the license terms, please use an internet connected device and navigate to {0}!@! and !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Statement!,!!,!To view the privacy statement, please use an internet connected device and navigate to {0}!@!.</text>
+      <tooltiptext _locID="welcomeLicenseInstallTip">By clicking the Install button, I acknowledge that I accept the License Terms and Privacy Statement.</tooltiptext>
+    </agreetextinstallonline>
+    <agreecheckbox>
+      <text _locID="cbxAgree">I agree to the !$!{0}!,!License Terms!@! and !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Policy!@!.</text>
+      <tooltiptext _locID="cbxAgreeTip">Checking this box indicates agreement to the License Terms and Privacy Policy.</tooltiptext>
+    </agreecheckbox>
+    <sqmcheckbox>
+      <text _locID="cbxAgree">Join the !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Visual Studio Experience Improvement Program!@! to help improve the quality, reliability and performance of Visual Studio (optional).</text>
+      <tooltiptext _locID="cbxAgreeTip">Checking this box indicates agreement to send information about the setup experiences to Microsoft Corporation</tooltiptext>
+    </sqmcheckbox>
+    <modernuxinstallbutton>
+      <text _locID="btnInstall">Accept &amp; _Install</text>
+      <tooltiptext _locID="btnInstallTip">Accept &amp; Install</tooltiptext>
+    </modernuxinstallbutton>
+    <installbutton>
+      <text _locID="btnInstall">I_nstall</text>
+      <tooltiptext _locID="btnInstallTip">Install</tooltiptext>
+    </installbutton>
+    <modernuxcustomizebutton>
+      <text _locID="btnCustomize">_Customize</text>
+      <tooltiptext _locID="btnCustomizeTip">Customize</tooltiptext>
+    </modernuxcustomizebutton>
+    <customizebutton>
+      <text _locID="btnCustomize">C_ustomize</text>
+      <tooltiptext _locID="btnCustomizeTip">Customize</tooltiptext>
+    </customizebutton>
+    <nextbutton>
+      <text _locID="btnNext">_Next</text>
+      <tooltiptext _locID="btnNextTip">Next</tooltiptext>
+    </nextbutton>
+    <browsebutton>
+      <text _locID="btnBrowse">...</text>
+      <tooltiptext _locID="btnBrowseTip">Modify product installation path</tooltiptext>
+    </browsebutton>
+    <browseforfolderdescription>
+      <text _locID="txtBrowseForFolderDescription">Please select or make a new installation location for the product.</text>
+    </browseforfolderdescription>
+    <insufficientspace>
+      <text _locID="txtInsufficientSpace">You may need to free up disk space to install.</text>
+    </insufficientspace>
+    <signintext>
+      <text _locID="txtSignIn">!$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Sign in!@! to personalize your install experience.</text>
+      <tooltiptext _locID="txtSignInTip">Sign in</tooltiptext>
+    </signintext>
+    <acceptlicenseprivacytext>
+      <text _locID="txtAgreeLicensePrivacy">By clicking the &quot;Accept &amp; Install&quot; button, I acknowledge that I accept the !$!{0}!,!License Terms!,!To view the License Terms, use an Internet-enabled device to navigate to http://aka.ms/VSEula!@! and !$!http://go.microsoft.com/fwlink/?LinkID=[[VSEIPAndPrivacyFwlinkId]]&amp;clcid=[[clcid]]!,!Privacy Statement!,!To view the License Terms, use an Internet-enabled device to navigate to http://aka.ms/VSPrivacy!@!.</text>
+    </acceptlicenseprivacytext>
+    <chooseinstallationlocationintrotext>
+      <text _locID="txtChooseInstallationLocationIntro">Choose your installation location</text>
+    </chooseinstallationlocationintrotext>
+    <chooseinstallationtypeintrotext>
+      <text _locID="txtChooseInstallationTypeIntro">Choose the type of installation</text>
+    </chooseinstallationtypeintrotext>
+    <typicalinstallradiobutton>
+      <text _locID="btnTypicalInstall">_Typical</text>
+      <tooltiptext _locID="btnTypicalInstallTip">Typical</tooltiptext>
+    </typicalinstallradiobutton>
+    <typicalinstalldescriptiontext>
+      <text _locID="txtTypicalInstallDescription">Install with default feature settings</text>
+    </typicalinstalldescriptiontext>
+    <custominstallradiobutton>
+      <text _locID="btnCustomInstall">C_ustom</text>
+      <tooltiptext _locID="btnCustomInstallTip">Custom</tooltiptext>
+    </custominstallradiobutton>
+    <custominstalldescriptiontext>
+      <text _locID="txtCustomInstallDescription">Allows you to customize your installation components</text>
+    </custominstalldescriptiontext>
+    <arpdescriptiontext>
+      <text _locID="txtARPDescription">You can add or remove additional features at any time after setup via Programs and Features in the Control Panel.</text>
+    </arpdescriptiontext>
+    <welcomecancelbutton>
+      <text _locID="btnWelcomeCancel">_Cancel</text>
+      <tooltiptext _locID="btnWelcomeCancelTip">Cancel setup</tooltiptext>
+    </welcomecancelbutton>
+  </welcome>
+
+  <welcomemaintenance>
+    <maintwelcome>
+      <text _locID="txtWelcomeMaint">Welcome to</text>
+    </maintwelcome>
+    <maintmode>
+      <text _locID="txtWelcomeMaintMode">Maintenance Mode</text>
+    </maintmode>
+    <addremovebutton>
+      <text _locID="btnAddRemove">_Modify</text>
+      <tooltiptext _locID="btnAddRemoveTip">Modify</tooltiptext>
+    </addremovebutton>
+    <repairbutton>
+      <text _locID="btnRepair">_Repair</text>
+      <tooltiptext _locID="btnRepairTip">Repair</tooltiptext>
+    </repairbutton>
+    <uninstallbutton>
+      <text _locID="btnUninstall">_Uninstall</text>
+      <tooltiptext _locID="btnUninstallTip">Uninstall</tooltiptext>
+    </uninstallbutton>
+
+    <uninstallprompttext>
+      <text _locID="txtCancelPrompt">The product will be removed from the computer. Do you want to continue?</text>
+    </uninstallprompttext>
+    <updateuninstallprompttext>
+      <text _locID="txtCancelPrompt">This update will be removed from the computer. Do you want to continue?</text>
+    </updateuninstallprompttext>
+    <uninstallyesbutton>
+      <text _locID="btnUninstallYes">_Yes</text>
+      <tooltiptext _locID="btnUninstallYesTip">Yes, uninstall setup.</tooltiptext>
+    </uninstallyesbutton>
+    <uninstallnobutton>
+      <text _locID="btnUninstallNo">_No</text>
+      <tooltiptext _locID="btnUninstallNoTip">No, do not uninstall setup.</tooltiptext>
+    </uninstallnobutton>
+  </welcomemaintenance>
+
+  <customize>
+    <optionalcomponentstext>
+      <text _locID="txtOptionalComponents">Features</text>
+    </optionalcomponentstext>
+    <featuresdescriptiontext>
+      <text _locID="txtFeatureDescription">Optional features to install:</text>
+    </featuresdescriptiontext>
+    <requiredfeaturesdescriptiontext>
+      <text _locID="txtFeatureDescription">Select at least one option to continue:</text>
+    </requiredfeaturesdescriptiontext>
+    <languagepackdescriptiontext>
+      <text _locID="txtLanguagePackDescription">Select your languages:</text>
+    </languagepackdescriptiontext>
+    <languagepackstext>
+      <text _locID="txtLanguagePacks">Languages</text>
+    </languagepackstext>
+    <advancedresetbutton>
+      <text _locID="btnAdvancedReset">_Reset Defaults</text>
+      <tooltiptext _locID="btnAdvancedResetTip">Reset default selections</tooltiptext>
+    </advancedresetbutton>
+    <advancedinstallbutton>
+      <text _locID="btnAdvancedInstall">_Install</text>
+      <tooltiptext _locID="btnAdvancedInstallTip">Install with selected options</tooltiptext>
+    </advancedinstallbutton>
+    <selectallcheckbox>
+      <text _locID="chkboxSelectAll">_Select All</text>
+      <tooltiptext _locID="chkboxSelectAllTip">Select All</tooltiptext>
+    </selectallcheckbox>
+    <advancedupdatebutton>
+      <text _locID="btnAdvancedUpdate">_UPDATE</text>
+      <tooltiptext _locID="btnAdvancedUpdateTip">Update</tooltiptext>
+    </advancedupdatebutton>
+    <backbutton>
+      <text _locID="btnBack">_Back</text>
+      <tooltiptext _locID="btnBackTip">Back to previous page</tooltiptext>
+    </backbutton>
+    <morelanguages>
+      <text _locID="txtMoreLanguage">!$!http://go.microsoft.com/fwlink/?LinkID=[[MoreLanguagesFwlinkId]]&amp;clcid=[[clcid]]!,!Get more languages!@!</text>
+      <tooltiptext _locID="txtMoreLanguageTip">Get more languages</tooltiptext>
+    </morelanguages>
+    <platformsheader>
+      <text _locID="txtPlatformsHeader">Platforms</text>
+    </platformsheader>
+    <selectionstatus>
+      <text _locID="txtSelectionStatus">({0} of {1} selected)</text>
+    </selectionstatus>
+    <packagegroupupdated>
+      <text _locID="txtPackageGroupUpdated">Updated</text>
+    </packagegroupupdated>
+    <packagegroupnew>
+      <text _locID="txtPackageGroupNew">New</text>
+    </packagegroupnew>
+    <availableversionsheader>
+      <text _locID="txtAvailableVersionsHeader">Available Versions:</text>
+    </availableversionsheader>
+    <advancedpagelistbox>
+      <text _locID="advancedPageListboxItem">Advanced Options</text>
+      <tooltiptext _locID="advancedPageListboxItemTip">Advanced Options</tooltiptext>
+    </advancedpagelistbox>
+    <languageheader>
+      <text _locID="txtLanguageHeader">Language</text>
+    </languageheader>
+    <languagesubheader>
+      <text _locID="txtLanguageSubHeader">Select your preferred language</text>
+    </languagesubheader>
+    <updatesheader>
+      <text _locID="txtUpdatesHeader">Updates</text>
+    </updatesheader>
+    <installpathheader>
+      <text _locID="txtInstallPathHeader">Install Path</text>
+    </installpathheader>
+    <installpathsubheader>
+      <text _locID="txtInstallPathSubHeader">This installation requires up to 15 GB across all drives</text>
+    </installpathsubheader>
+    <browsebutton>
+      <text _locID="btnBrowse">Browse...</text>
+      <tooltiptext _locID="btnBrowseTip">Modify product installation path</tooltiptext>
+    </browsebutton>
+    <updateslatestheader>
+      <text _locID="txtUpdatesLatestHeader">Install la_test</text>
+    </updateslatestheader>
+    <updateslatestsubheader>
+      <text _locID="txtUpdatesLatestSubHeader">Includes access to all the latest platform versions and updates as well as future updates for the Visual Studio core.</text>
+    </updateslatestsubheader>
+    <updatesrtmheader>
+      <text _locID="txtUpdatesRtmHeader">Install RT_M</text>
+    </updatesrtmheader>
+    <updatesrtmsubheader>
+      <text _locID="txtUpdatesRtmSubHeader">Visual Studio without any updates applied. This may limit the platforms that are available for you to use.</text>
+    </updatesrtmsubheader>
+    <languages>
+      <text _locID="txtlanguagesCombobox">English Český Deutsch Español Français Italiano Polski Português(BR) Türkçe Русский 한국어 中文 日本語 简体中文</text>
+    </languages>
+    <moreadvancedoptionsokbutton>
+      <text _locID="btnMoreAdvancedOptionsOk">_OK</text>
+      <tooltiptext _locID="btnMoreAdvancedOptionsOkTip">Confirm selection and go back.</tooltiptext>
+    </moreadvancedoptionsokbutton>
+    <optionalitemwarning>
+      <text _locID="txtOptionalItemWarning">By modifying the default selections, you may experience missing emulators, build errors, and other incompatibilities.</text>
+    </optionalitemwarning>
+    <newselectableitemadditionaltext>
+      <text _locID="txtNewSelectableItemAdditionalText"> new</text>
+    </newselectableitemadditionaltext>
+    <updatedselectableitemadditionaltext>
+      <text _locID="txtUpdatedSelectableItemAdditionalText"> updated</text>
+    </updatedselectableitemadditionaltext>
+    <replacedselectableitemadditionaltext>
+      <text _locID="txtReplacedSelectableItemAdditionalText"> replaced</text>
+    </replacedselectableitemadditionaltext>
+    <deprecatedselectableitemadditionaltext>
+      <text _locID="txtDeprecatedSelectableItemAdditionalText"> deprecated</text>
+    </deprecatedselectableitemadditionaltext>
+    <conflictdialogheader>
+      <text _locID="txtConflictdialogheaderText">Warning</text>
+    </conflictdialogheader>
+    <conflictdialogmessage>
+      <text _locID="txtConflictdialogmessageText">The choice you just clicked conflicts with a previous selection. Do you want to cancel current selection?</text>
+    </conflictdialogmessage>
+  </customize>
+
+  <terms>
+    <termsinstalltext>
+      <text _locID="txtTermsInstall">By clicking &quot;Install&quot; you agree to the license terms of the software and components you have selected to install. You are responsible for reading and accepting these license terms. Microsoft grants you no rights for any third party software you have selected; it is provided by the third parties indicated in the applicable license terms.</text>
+    </termsinstalltext>
+    <termsupdatetext>
+      <text _locID="txtTermsUpdate">By clicking &quot;Update&quot; you agree to the license terms of the software and components you have selected to install. You are responsible for reading and accepting these license terms. Microsoft grants you no rights for any third party software you have selected; it is provided by the third parties indicated in the applicable license terms.</text>
+    </termsupdatetext>
+    <removedtext>
+      <text _locID="txtRemoved">{0} will be removed</text>
+    </removedtext>
+    <termsinstallbutton>
+      <text _locID="btnTermsInstall">_Install</text>
+      <tooltiptext _locID="btnTermsInstallTip">Install with selected options</tooltiptext>
+    </termsinstallbutton>
+    <licensetermsbutton>
+      <text _locID="btnLicenseTerms">License Terms</text>
+      <tooltiptext _locID="btnLicenseTermsTip">License Terms</tooltiptext>
+    </licensetermsbutton>
+    <termsupdatebutton>
+      <text _locID="btnTermsUpdate">_UPDATE</text>
+      <tooltiptext _locID="btnTermsUpdateTip">Update</tooltiptext>
+    </termsupdatebutton>
+  </terms>
+
+  <promptforsource>
+    <promptforsourcetext>
+      <text _locID="txtSourcePrompt">A setup package is either missing or damaged</text>
+    </promptforsourcetext>
+    <promptforsourcelocationradiobutton>
+      <text _locID="rbtnSourcePromptLocation">Please provide a location to search for the packages:</text>
+      <tooltiptext _locID="rbtnPromptForSourceCancelTip">Browse for the packages on your computer or local network</tooltiptext>
+    </promptforsourcelocationradiobutton>
+    <promptforsourcenointernetradiobutton>
+      <text _locID="rbtnSourcePromptNoInternet">No internet connection detected</text>
+      <tooltiptext _locID="rbtnPromptForSourceNoInternetTip">The connection to the internet is not currently available</tooltiptext>
+    </promptforsourcenointernetradiobutton>
+    <promptforsourceswitchtointernetradiobutton>
+      <text _locID="rbtnSourcePromptSwitchToInternet">Download packages from the internet</text>
+      <tooltiptext _locID="rbtnSourcePromptSwitchToInternetTip">Select this button to acquire the packages from the internet</tooltiptext>
+    </promptforsourceswitchtointernetradiobutton>
+    <promptforsourceskippackageradiobutton>
+      <text _locID="rbtnSourcePromptSkipPackage">Skip package</text>
+      <tooltiptext _locID="rbtnSourcePromptSkipPackageTip">Select this button to skip this package and continue the install</tooltiptext>
+    </promptforsourceskippackageradiobutton>
+    <promptforsourceretrybutton>
+      <text _locID="btnPromptForSourceRetry">_Retry</text>
+      <tooltiptext _locID="btnPromptForSourceRetryTip">Retry</tooltiptext>
+    </promptforsourceretrybutton>
+    <promptforsourcecontinuebutton>
+      <text _locID="btnPromptForSourceContinue">Co_ntinue</text>
+      <tooltiptext _locID="btnPromptForSourceContinueTip">Skip this package and continue the install</tooltiptext>
+    </promptforsourcecontinuebutton>
+    <promptforsourcecancelbutton>
+      <text _locID="btnPromptForSourceCancel">_Cancel</text>
+      <tooltiptext _locID="btnPromptForSourceCancelTip">Cancel setup</tooltiptext>
+    </promptforsourcecancelbutton>
+    <promptforsourceupdatebutton>
+      <text _locID="btnPromptForSourceUpdate">_Update</text>
+      <tooltiptext _locID="btnPromptForSourceUpdateTip">Rescan to detect network connectivity status</tooltiptext>
+    </promptforsourceupdatebutton>
+    <promptforsourcebrowsebutton>
+      <text _locID="btnPromptForSourceBrowse">...</text>
+      <tooltiptext _locID="btnPromptForSourceBrowseTip">Browse for the packages on your computer or local network</tooltiptext>
+    </promptforsourcebrowsebutton>
+  </promptforsource>
+
+  <progress>
+    <downloadprogressbarlabel>
+      <text _locID="txtDownloadProgressBarLabel">Acquiring:</text>
+      <tooltiptext _locID="txtDownloadProgressBarLabelTip">Overall progress acquiring required packages</tooltiptext>
+    </downloadprogressbarlabel>
+    <cacheprogressbarlabel>
+      <text _locID="txtCacheProgressBarLabel">Downloading:</text>
+    </cacheprogressbarlabel>
+    <installprogressbarlabel>
+      <text _locID="txtInstallProgressBarLabel">Applying:</text>
+      <tooltiptext _locID="txtInstallProgressBarLabelTip">Overall progress applying the requisite changes</tooltiptext>
+    </installprogressbarlabel>
+    <newinstallprogressbarlabel>
+      <text _locID="txtNewInstallProgressBarLabel">We're installing Visual Studio for you...</text>
+      <tooltiptext _locID="txtNewInstallProgressBarLabelTip">Overall progress applying the requisite changes</tooltiptext>
+    </newinstallprogressbarlabel>
+    <msibusytext>
+      <text _locID="txtmsibusy">Another Installation is in progress. Please wait to retry again...</text>
+    </msibusytext>
+    <restorepointtext>
+      <text _locID="txtrestorepoint">Creating a system restore point...</text>
+    </restorepointtext>
+    <retrytext>
+      <text _locID="txtretry">Retrying</text>
+    </retrytext>
+    <updatingrelatedproducts>
+      <text _locID="txtupdatingrelatedproducts">Configuring your system. This might take a while.</text>
+    </updatingrelatedproducts>
+    <updatinglanguagepacks>
+      <text _locID="txtupdatinglanguagepacks">Updating {0} resources...</text>
+    </updatinglanguagepacks>
+    <waitfordownloadcompletetext>
+      <text _locID="txtretry">Waiting for acquisition to complete before reboot request...</text>
+    </waitfordownloadcompletetext>
+    <copytext>
+      <text _locID="txtCacheProgress">Copying and Caching:</text>
+    </copytext>
+    <installtext>
+      <text _locID="txtInstallProgress">Applying:</text>
+    </installtext>
+    <packagetext>
+      <text _locID="txtPackage">Package:</text>
+    </packagetext>
+    <cancellinglabel>
+      <text _locID="canceltxt">Stopping current session ...</text>
+    </cancellinglabel>
+    <progresscancelbutton>
+      <text _locID="btnProgressCancel">_Cancel</text>
+      <tooltiptext _locID="btnProgressCancelTip">Cancel setup</tooltiptext>
+    </progresscancelbutton>
+  </progress>
+
+  <finish>
+    <finishbutton>
+      <text _locID="btnFinish">_Finish</text>
+      <tooltiptext _locID="btnFinishTip">Finish</tooltiptext>
+    </finishbutton>
+    <successheader>
+      <text _locID="txtSuccessHeader">Setup Completed!</text>
+    </successheader>
+    <successinstallsubheader>
+      <text _locID="txtSuccessSubheader">All specified components have been installed successfully.</text>
+    </successinstallsubheader>
+    <successrepairsubheader>
+      <text _locID="txtSuccessRepairSubheader">All specified components have been repaired successfully.</text>
+    </successrepairsubheader>
+    <successuninstallsubheader>
+      <text _locID="txtSuccessUninstallSubheader">All specified components have been uninstalled successfully.</text>
+    </successuninstallsubheader>
+    <successmodifiedsubheader>
+      <!-- Add/Remove Packages-->
+      <text _locID="txtSuccessModifiedSubheader">All specified components have been modified successfully.</text>
+    </successmodifiedsubheader>
+    <successacquiredsubheader>
+      <!-- Create layout -->
+      <text _locID="txtSuccessAcquiredSubheader">All specified components have been acquired successfully.</text>
+    </successacquiredsubheader>
+    <successrequiredsubheader>
+      <text _locID="txtSuccessRequired">All required components have been installed successfully.</text>
+    </successrequiredsubheader>
+    <successwithwarningsheader>
+      <text _locID="txtSuccessWithWarningsHeader">Setup Completed.</text>
+    </successwithwarningsheader>
+    <successwithwarningssubheader>
+      <text _locID="txtSuccessWithWarningsSubheader">However, not all features installed correctly.</text>
+    </successwithwarningssubheader>
+    <warningstext>
+      <text _locID="txtSuccessIssues">Please correct the following problems to ensure full product functionality. To learn more, you can review the list of !$!http://go.microsoft.com/fwlink/?LinkID=[[SolutionFwlinkId]]&amp;clcid=[[clcid]]!,!common issues and workarounds!@! or examine the !$![[LogFilePath]]!,!log file!@!.</text>
+    </warningstext>
+    <thirdpartydownloadwarningtext>
+      <text _locID="thirdPartyWarning">Dynamic items failed to download</text>
+    </thirdpartydownloadwarningtext>
+    <modernuxwarningstext>
+      <text _locID="txtModernUxSuccessIssues">!$![[LogFilePath]]!,!View the log file!@! | !$!http://go.microsoft.com/fwlink/?LinkID=[[SolutionFwlinkId]]&amp;clcid=[[clcid]]!,!Known Issues!@!</text>
+    </modernuxwarningstext>
+    <failedheader>
+      <text _locID="txtFailedHeader">Setup Failed!</text>
+    </failedheader>
+    <failedsubheader>
+      <text _locID="txtFailedSubheader">Install cannot continue because some required components failed.</text>
+    </failedsubheader>
+    <failedtext>
+      <text _locID="txtFailedIssues">Please correct the following problems and restart the setup to ensure full product functionality. To learn more, you can review the list of !$!http://go.microsoft.com/fwlink/?LinkID=[[SolutionFwlinkId]]&amp;clcid=[[clcid]]!,!common issues and workarounds!@! or examine the !$![[LogFilePath]]!,!log file!@!.</text>
+    </failedtext>
+    <modernuxfailedtext>
+      <text _locID="txtModernUxFailedIssues">!$![[LogFilePath]]!,!View the log file!@! | !$!http://go.microsoft.com/fwlink/?LinkID=[[SolutionFwlinkId]]&amp;clcid=[[clcid]]!,!Known Issues!@!</text>
+    </modernuxfailedtext>
+    <cancelledheader>
+      <text _locID="txtCancelledHeader">Setup Canceled.</text>
+    </cancelledheader>
+    <cancelledinstalltext>
+      <text _locID="txtCancelledComps">[[PackagesInstalled]] of [[TotalPackages]] components installed successfully.</text>
+    </cancelledinstalltext>
+    <cancelledrepairtext>
+      <text _locID="txtCancelledComps">[[PackagesInstalled]] of [[TotalPackages]] components repaired successfully.</text>
+    </cancelledrepairtext>
+    <cancelleduninstalltext>
+      <text _locID="txtCancelledComps">[[PackagesInstalled]] of [[TotalPackages]] components uninstalled successfully.</text>
+    </cancelleduninstalltext>
+    <cancelledmodifytext>
+      <text _locID="txtCancelledComps">[[PackagesInstalled]] of [[TotalPackages]] components modified successfully.</text>
+    </cancelledmodifytext>
+    <cancelledacquiredtext>
+      <text _locID="txtCancelledComps">[[PackagesInstalled]] of [[TotalPackages]] components acquired successfully.</text>
+    </cancelledacquiredtext>
+    <progressrebootheader>
+      <text _locID="txtProgressRebootHeader">Restart required in order to complete setup.</text>
+    </progressrebootheader>
+    <progressreboottext>
+      <text _locID="txtProgressRebootText">The computer needs to be restarted before setup can continue.  Restart the computer and setup will resume when you next log in.</text>
+    </progressreboottext>
+    <rebootsuccessreboottext>
+      <text _locID="txtRebootSuccess_RebootText">The computer needs to be restarted before starting the product.</text>
+    </rebootsuccessreboottext>
+    <rebootfailurereboottext>
+      <text _locID="txtRebootFailure_RebootText">The computer requires a restart. Before restarting setup, restart the computer now or defer until later.</text>
+    </rebootfailurereboottext>
+    <rebootnowbutton>
+      <text _locID="btnRebootYes">Restart _Now</text>
+      <tooltiptext _locID="btnRebootYesTip">Restart Now</tooltiptext>
+    </rebootnowbutton>
+    <rebootlaterbutton>
+      <text _locID="btnRebootLater">Restart _Later</text>
+      <tooltiptext _locID="btnRebootLaterTip">Restart later at time of your choosing</tooltiptext>
+    </rebootlaterbutton>
+    <launchbutton>
+      <text _locID="btnLaunch">_LAUNCH</text>
+      <tooltiptext _locID="btnLaunchTip">Launch the application</tooltiptext>
+    </launchbutton>
+    <closebutton>
+      <text _locID="btnClose">_Close</text>
+      <tooltiptext _locID="btnCloseTip">Close setup</tooltiptext>
+    </closebutton>
+    <typelistcolumn>
+      <text _locID="colTypeFinish">Type</text>
+    </typelistcolumn>
+    <packagenamecolumn>
+      <text _locID="colPackageName">Package Name</text>
+    </packagenamecolumn>
+    <errordescriptioncolumn>
+      <text _locID="colErrorDescription">Error Description</text>
+    </errordescriptioncolumn>
+    <genericerrormessage>
+      <text _locID="txtGenericError">Fatal error during execution.</text>
+    </genericerrormessage>
+    <nonvitalfailuremessage>
+      <text _locID="txtNonVitalError">Package failed.</text>
+    </nonvitalfailuremessage>
+    <engineerror>
+      <text _locID="txtEngineError">Setup Engine</text>
+    </engineerror>
+    <defaultmessagesectionheading>
+      <text _locID="txtMessageHeading">Please go through the following messages</text>
+    </defaultmessagesectionheading>
+    <uninstallmddinfo>
+      <text _locID="uninstallmddinfo">http://go.microsoft.com/fwlink/?LinkID=[[UninstallMddInfoFwlinkId]]&amp;clcid=[[clcid]]</text>
+    </uninstallmddinfo>
+    <setupupdateprocessfailure>
+      <text _locID="setupupdateprocessfailure">Failed to download and launch Update. Please ensure you have network connection and retry setup.</text>
+    </setupupdateprocessfailure>
+  </finish>
+
+  <thirdparty>
+    <thirdpartysuccessheader>
+      <text _locID="txtthirdpartySuccessheader">Visual Studio install has completed successfully.</text>
+    </thirdpartysuccessheader>
+    <successdetails>
+      <text _locID="txtSuccessDetails">If you installed features for Cross Platform Mobile Development, working with those projects will require additional software which you can install now or at a later time from Programs and Features in Control Panel. An Internet connection is needed.</text>
+    </successdetails>
+    <thirdpartyrequiredheader>
+      <text _locID="txtthirdPartyRequiredheader">Additional Software Required</text>
+    </thirdpartyrequiredheader>
+    <thirdpartyoptionalheader>
+      <text _locID="txtthirdPartyOptionalheader">Optional Software</text>
+    </thirdpartyoptionalheader>
+    <successinstallbutton>
+      <text _locID="btninstallLaunch">_Install</text>
+      <tooltiptext _locID="btninstallLaunchTip">Launch Secondary Installer</tooltiptext>
+    </successinstallbutton>
+    <successskipbutton>
+      <text _locID="btnSkip">_Skip</text>
+      <tooltiptext _locID="btnSkipTip">Complete Visual Studio installation.</tooltiptext>
+    </successskipbutton>
+    <successrebootneededheader>
+      <text _locID="txtSuccessrebootneededHeader">Visual Studio install has completed successfully and requires a reboot.</text>
+    </successrebootneededheader>
+    <successrebootneededdetails>
+      <text _locID="txtSuccessRebootNeededDetails">If you installed features for Cross Platform Mobile Development, working with those projects will require additional software which you can install after a reboot now or at a later time from Programs and Features in Control Panel. An Internet connection is needed.</text>
+    </successrebootneededdetails>
+    <successrebootbutton>
+      <text _locID="btnsuccessreboot">_Restart and Install</text>
+      <tooltiptext _locID="btnsuccessrebootTip">Restart and launch Secondary Installer</tooltiptext>
+    </successrebootbutton>
+    <warningheader>
+      <text _locID="txtWarningHeader">Visual Studio install has completed but not all features are installed correctly.</text>
+    </warningheader>
+    <warningdetails>
+      <text _locID="txtWarningDetails">If you installed features for Cross Platform Mobile Development, working with those projects will require additional software which you can install now or at a later time from Programs and Features in Control Panel. An Internet connection is needed. If you choose to install later, you can skip to view warnings.</text>
+    </warningdetails>
+    <warningrebootneededheader>
+      <text _locID="btnWarningRebootNeededHeader">Visual Studio install has completed but not all features are installed correctly and it requires a reboot.</text>
+    </warningrebootneededheader>
+    <warningrebootneededdetails>
+      <text _locID="txtWarningRebootNeededDetails">If you installed features for Cross Platform Mobile Development, working with those projects will require additional software which you can install after a reboot now or at a later time from Programs and Features in Control Panel. An Internet connection is needed. If you choose to install later, you can skip to view warnings.</text>
+    </warningrebootneededdetails>
+    <thirdpartyhelphyperlink>
+      <text _locID="txtThirdPartyHelpHyperLink">!$!http://go.microsoft.com/fwlink/?LinkId=[[ThirdPartyHelpFwlinkId]]&amp;clcid=[[clcid]]!,!Why is additional software required?!@!</text>
+    </thirdpartyhelphyperlink>
+  </thirdparty>
+
+  <updateConsent>
+    <installationscopetext>
+      <text _locID="installationScopeText">Choose the scope of installation</text>
+    </installationscopetext>
+    <installlatestradiobutton>
+      <text _locID="rbtnInstalllatest">Install latest (recommended)</text>
+      <tooltiptext _locID="rbtnInstalllatestTip">Install latest (recommended)</tooltiptext>
+    </installlatestradiobutton>
+    <installlatesttext>
+      <text _locID="installLatestText">Includes access to all the latest platform versions and updates as well as feature updates for the Visual Studio core.</text>
+    </installlatesttext>
+    <installcurrentradiobutton>
+      <text _locID="rbtnInstallcurrent">Install using current known configuration</text>
+      <tooltiptext _locID="rbtnInstallcurrentTip">Install using current known configuration</tooltiptext>
+    </installcurrentradiobutton>
+    <installcurrenttext>
+      <text _locID="installCurrentText">Visual Studio without any updates applied. This may limit the platforms that are available for you to use.</text>
+    </installcurrenttext>
+    <nextbutton>
+      <text _locID="btnNext">_Next</text>
+      <tooltiptext _locID="btnNextTip">Next</tooltiptext>
+    </nextbutton>
+    <cancelbutton>
+      <text _locID="btnCancel">_Cancel</text>
+      <tooltiptext _locID="btnCancelTip">Cancel Visual Studio setup</tooltiptext>
+    </cancelbutton>
+  </updateConsent>
+
+  <WERDialog>
+    <dialogheader>
+      <text _locID="txtWERDialogHeader">Setup detected an issue during the operation. Please click below to check for a solution and help us to improve the setup experience</text>
+    </dialogheader>
+  </WERDialog>
+
+  <selectableitems>
+    <selectableitem _locID="VSCoreName">Visual Studio core</selectableitem>
+    <selectableitem _locID="VSCoreDescription">
+      Visual Studio core.
+    </selectableitem>
+
+    <!-- These are string used for the 'core' items in the hierarchy.  The strings for the parent grouping
+         are defined in the dynamic feed -->
+    <selectableitem _locID="MDDCPlusPlusName">Visual C++ Mobile Development</selectableitem>
+    <selectableitem _locID="MDDCPlusPlusDescription">
+      Core Tools for Visual C++ Mobile Development.
+    </selectableitem>
+    <selectableitem _locID="MDDCSharpName">Multi-Device Hybrid Apps using C#</selectableitem>
+    <selectableitem _locID="MDDCSharpDescription">
+      Multi-Device Hybrid Apps using C#.
+    </selectableitem>
+    <selectableitem _locID="MDDJSName">HTML/JavaScript (Apache Cordova)</selectableitem>
+    <selectableitem _locID="MDDJSDescription">
+      Core Tools for Apache Cordova.
+    </selectableitem>
+
+    <selectableitem _locID="WebToolsName">Microsoft Web Developer Tools</selectableitem>
+    <selectableitem _locID="WebToolsDescription">
+      Tools for Cloud, Web, Mobile Web and APIs: ASP.NET, IIS Express, HTML5/CSS3 editors, Grunt/Bower client side tools and more.
+    </selectableitem>
+    <selectableitem _locID="OfficeDeveloperToolsName">Microsoft Office Developer Tools</selectableitem>
+    <selectableitem _locID="OfficeDeveloperToolsDescription">
+      Microsoft Office Developer Tools are add-on tools that enables developers to create,
+      build, debug, run and publish apps and solutions for Office and Sharepoint 2013.
+    </selectableitem>
+    <selectableitem _locID="LightSwitchName">LightSwitch</selectableitem>
+    <selectableitem _locID="LightSwitchDescription">
+      LightSwitch for Visual Studio is a simplified self-service development tool that
+      enables you to build business applications quickly and easily for the desktop and cloud.
+    </selectableitem>
+    <selectableitem _locID="VC_MFC_Libraries_Name">Microsoft Foundation Classes for C++</selectableitem>
+    <selectableitem _locID="VC_MFC_Libraries_Description">
+      Microsoft Foundation Class (MFC) libraries for use with Visual C++.
+    </selectableitem>
+    <selectableitem _locID="SL_Development_Kits_Name">Silverlight Development Kit</selectableitem>
+    <selectableitem _locID="SL_Development_Kits_Description">
+      Includes SDK needed for developing Silverlight 5 based applications.
+    </selectableitem>
+    <selectableitem _locID="SQL_Name">Microsoft SQL Server Data Tools</selectableitem>
+    <selectableitem _locID="SQL_Description">
+      Microsoft SQL Server Data Tools provides the latest tools developers need
+      to build Microsoft SQL Server based applications or Entity Framework based applications.
+      These tools include:
+      * Entity Framework Designer
+      * Microsoft SQL Server Data Tools
+      * Microsoft SQL Server 2012 Native Client
+      * Microsoft SQL Server 2012 Command Line Utilities
+      * Microsoft SQL Server 2012 Transact-SQL Compiler
+    </selectableitem>
+
+    <selectableitem _locID="Blend">Blend for Visual Studio</selectableitem>
+    <selectableitem _locID="BlendDescription">
+      Blend for Visual Studio includes powerful, design-centric tools for XAML and HTML.
+    </selectableitem>
+
+    <selectableitem _locID="Win81SDK">Tools for Windows 8.1 and Windows Phone 8.1</selectableitem>
+    <selectableitem _locID="Win81SDKDescription">
+      Tools for creating Windows Store apps and games for Windows 8.1 and Windows Phone 8.1. Includes the Windows SDKs for Windows 8.1 and Windows Phone 8.1, and the Visual Studio 2013 Visual C++ toolset (v120).
+    </selectableitem>
+
+    <selectableitem _locID="SelectableItemWindowsPhone81EmulatorName">Emulators for Windows Phone 8.1</selectableitem>
+    <selectableitem _locID="SelectableItemWindowsPhone81EmulatorDescription">
+      The Windows Phone 8.1 emulators help you create and test apps and games for Windows Phone 8.1 without using a device.
+    </selectableitem>
+
+    <selectableitem _locID="ToolsForWin81_WP80_WP81">Tools for Windows 8.1 and Windows Phone 8.0/8.1</selectableitem>
+    <selectableitem _locID="ToolsForWin81_WP80_WP81Description">
+      Development tools for creating apps for Windows 8.1, Windows Phone 8.0, and Windows Phone 8.1.
+    </selectableitem>
+
+    <selectableitem _locID="WindowsPhone80Name">Windows Phone 8.0 SDK</selectableitem>
+    <selectableitem _locID="WindowsPhone80Description">
+      Tools for creating apps and games for Windows Phone 8.0. Includes the Windows SDK for Windows Phone 8.0, the Windows Phone 8.0 emulators, and the Visual Studio 2012 Visual C++ toolset (v110).
+    </selectableitem>
+
+    <selectableitem _locID="ThirdPartyHTMLName">Multi-Device Hybrid Apps using HTML and JavaScript</selectableitem>
+    <selectableitem _locID="ThirdPartyHTMLDescription">
+      Provides you with the tools to develop 3rd party tools using HTML and JaveScript.
+    </selectableitem>
+
+    <selectableitem _locID="ThirdPartyCPlusPlusName">
+      Visual C++ for Cross Platform Mobile Development.
+    </selectableitem>
+    <selectableitem _locID="ThirdPartyCPlusPlusDescription">
+      Provides you with the tools to develop 3rd party tools using C++.
+    </selectableitem>
+
+    <selectableitem _locID="ThirdPartyCSharpName">Multi-Device Hybrid Apps using C#</selectableitem>
+    <selectableitem _locID="ThirdPartyCSharpDescription">
+      Provides you with the tools to develop 3rd party tools using C#.
+    </selectableitem>
+  </selectableitems>
+
+  <languagepacks>
+    <langpackitem ID="1028">中文(繁體)</langpackitem>
+    <langpackitem ID="1029">čeština</langpackitem>
+    <langpackitem ID="1031">Deutsch</langpackitem>
+    <langpackitem ID="1033">English</langpackitem>
+    <langpackitem ID="1036">français</langpackitem>
+    <langpackitem ID="1040">italiano</langpackitem>
+    <langpackitem ID="1041">日本語</langpackitem>
+    <langpackitem ID="1042">한국어</langpackitem>
+    <langpackitem ID="1045">polski</langpackitem>
+    <langpackitem ID="1046">Português (Brasil)</langpackitem>
+    <langpackitem ID="1049">русский</langpackitem>
+    <langpackitem ID="1055">Türkçe</langpackitem>
+    <langpackitem ID="2052">中文(简体)</langpackitem>
+    <langpackitem ID="3082">español</langpackitem>
+  </languagepacks>
+
+  <helpscreen>
+    <helpheader>
+      <text _locID="txtHelpHeader">Setup - Usage</text>
+    </helpheader>
+    <generichelpmessage>
+      <text _locID="txtGenericHelp">
+        This setup supports the following switches:
+
+        /Help              Display this usage text.
+        /H
+        /?
+
+        /Quiet             Quiet mode with no display and no user interaction.
+        /Q
+        /Silent
+        /S
+
+        /Passive           Display progress but do not wait for user input.
+
+        /PromptRestart     Prompt the user before restarting the system.
+
+        /NoRestart         Do not restart during or after installation.
+
+        /ForceRestart      Always restart the system after installation.
+
+        /Log               &lt;filename&gt; Specifies a location for the log file.
+        /L
+
+        /Uninstall         Uninstall the product.
+        /U
+
+        /Uninstall /Force  Uninstall the product and features shared with other products.
+        /U /Force          Warning: using this switch may cause other products installed on this machine to stop functioning properly.
+
+        /Repair            Repair the product.
+
+        /Layout            Create a copy of the media in specified folder.
+
+        /NoRefresh         Prevent setup checking for updates from the internet.
+
+        /NoWeb             Prevent setup downloading from the internet.
+
+        /Full              Install all product features.
+
+        /FullDynamic       Install all dynamic product features.
+
+        /AdminFile         &lt;filename&gt; Specifies the installation control file.
+
+        /AddRemoveFeatures Choose which features to add or remove from the installed product.
+
+        /SecondaryInstaller Trigger the secondary installer for Cross Platform Mobile Development at the end of the Visual Studio install if Cross Platform Mobile Development item(s) are selected
+
+        /InstallSelectableItems &lt;item1;item2;...;itemN&gt; Choose which selectable item(s) to be installed. If you do not want any selectable item to be installed, just pass in this switch without any value.
+
+        /CustomInstallPath &lt;path&gt;
+        Set Custom install location
+
+        /ProductKey        &lt;25-character product key&gt;
+        Set custom product key (no dashes)
+
+        For more information see http://go.microsoft.com/fwlink/?linkid=[[HelpFwlinkId]]&amp;clcid=[[clcid]]
+      </text>
+    </generichelpmessage>
+  </helpscreen>
+</strings>

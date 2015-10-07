@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;
@@ -87,14 +88,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         protected override IEnumerable<MenuCommand> CreateMenuCommands()
         {
-            yield return new MenuCommand(
-                (sender, args) => _interactiveWindowProvider.Value.Open(instanceId: 0, focus: true),
-                new CommandID(RGuidList.RInteractiveCommandSetGuid, 0x0100));
-
-            // TODO: abstract the pane. reference to PTVS
-            yield return new MenuCommand(
-                (sender, args) => ShowWindowPane(typeof(PlotWindowPane), true),
-                new CommandID(RGuidList.PlotWindowGuid, 0x0100));
+           return PackageCommands.GetCommands();
         }
 
         protected override object GetAutomationObject(string name)

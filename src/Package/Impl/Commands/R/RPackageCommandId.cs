@@ -10,11 +10,13 @@
         public const int icmdSendToRepl = 501;
         public const int icmdLoadWorkspace = 502;
         public const int icmdSaveWorkspace = 503;
-        public const int icmdResetWorkspace = 504;
-        public const int icmdSetWorkingDirectory = 505;
+        public const int icmdSetWorkingDirectory = 504;
+        public const int icmdRestartR = 505;
+        public const int icmdInterruptR = 506;
 
         // Packages
         public const int icmdInstallPackages = 601;
+        public const int icmdCheckForPackageUpdates = 602;
 
         // Plots
         public const int icmdOpenPlot = 701;

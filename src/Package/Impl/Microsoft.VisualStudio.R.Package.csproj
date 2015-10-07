@@ -81,6 +81,7 @@
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
     <Compile Include="Commands\Markdown\VsMarkdownTextViewConnectionListener.cs" />
+    <Compile Include="Commands\Global\GoToOptionsCommand.cs" />
     <Compile Include="Commands\R\RContextMenuId.cs" />
     <Compile Include="Commands\R\RPackageCommandId.cs" />
     <Compile Include="Commands\R\GoToFormattingOptionsCommand.cs" />
@@ -94,6 +95,11 @@
     <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
     <Compile Include="Editors\IObjectInstanceFactory.cs" />
     <Compile Include="Logging\OutputWindowLog.cs" />
+    <Compile Include="Packages\R\PackageCommands.cs" />
+    <Compile Include="Plots\Commands\ExportPlotCommand.cs" />
+    <Compile Include="Plots\Commands\FixPlotCommand.cs" />
+    <Compile Include="Plots\Commands\CopyPlotCommand.cs" />
+    <Compile Include="Plots\Commands\SavePlotCommand.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
     <Compile Include="Publishing\PreviewCommand.cs" />
@@ -144,6 +150,12 @@
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
     <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
     <Compile Include="Repl\Commands\ReplShortcutSetting.cs" />
+    <Compile Include="Commands\Global\LoadWorkspaceCommand.cs" />
+    <Compile Include="Commands\Global\InterruptRCommand.cs" />
+    <Compile Include="Commands\Global\RestartRCommand.cs" />
+    <Compile Include="Commands\Global\SaveWorkspaceCommand.cs" />
+    <Compile Include="Commands\Global\ImportDataSetTextFileCommand.cs" />
+    <Compile Include="Commands\Global\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Session\RSession.cs" />
     <Compile Include="Repl\Session\RSessionCommands.cs" />
