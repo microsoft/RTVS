@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
 {
     internal static class ReplShortcutSetting
     {
-        private const string CommandName = "OtherContextMenus.RContext.SendToRConsole";
+        private const string CommandName = "EditorContextMenus.CodeWindow.ExecuteLineInInteractive";
 
         private static bool _currentSetting;
 
@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                     if (commandBindings != null && commandBindings.Length > 0)
                     {
                         string commandName = c.Name;
-                        if (!commandName.ToLowerInvariant().Contains("SendToRConsole"))
+                        if (!commandName.ToLowerInvariant().Contains("ExecuteLineInInteractive"))
                         {
                             foreach (object o in commandBindings)
                             {
