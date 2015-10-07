@@ -1,22 +1,18 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Commands;
+﻿using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands
 {
-    public sealed class ZoomInPlotCommand : MenuCommand
+    internal sealed class ZoomInPlotCommand : PackageCommand
     {
         public ZoomInPlotCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdZoomInPlot))
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdZoomInPlot)
         {
         }
 
-        class Handler
+        protected override void SetStatus()
         {
-            public void OnCommand()
-            {
-            }
+            Enabled = false;
         }
     }
 }

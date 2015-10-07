@@ -1,22 +1,18 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Commands;
+﻿using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands
 {
-    public sealed class PrintPlotCommand : MenuCommand
+    internal sealed class PrintPlotCommand : PackageCommand
     {
         public PrintPlotCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPrintPlot))
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPrintPlot)
         {
         }
 
-        class Handler
+        protected override void SetStatus()
         {
-            public void OnCommand()
-            {
-            }
+            Enabled = false;
         }
     }
 }

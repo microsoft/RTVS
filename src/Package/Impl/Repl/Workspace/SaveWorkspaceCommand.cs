@@ -1,22 +1,18 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Commands;
+﻿using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace
 {
-    public sealed class SaveWorkspaceCommand : MenuCommand
+    internal sealed class SaveWorkspaceCommand : PackageCommand
     {
         public SaveWorkspaceCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveWorkspace))
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveWorkspace)
         {
         }
 
-        class Handler
+        protected override void SetStatus()
         {
-            public void OnCommand()
-            {
-            }
+            this.Enabled = ReplWindow.ReplWindowExists();
         }
     }
 }

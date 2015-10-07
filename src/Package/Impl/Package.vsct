@@ -81,7 +81,7 @@
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
           <ButtonText>Publish</ButtonText>
-          <MenuText>&amp;ublish</MenuText>
+          <MenuText>P&amp;ublish</MenuText>
         </Strings>
       </Menu>
 
@@ -159,9 +159,17 @@
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
-      
+
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0300">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="publishPublishSubMenuGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
       </Group>
     </Groups>
 
@@ -171,6 +179,7 @@
       <Button guid="guidRToolsCmdSet" id="icmdLoadWorkspace" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellOpen"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Load Workspace...</ButtonText>
           <MenuText>&amp;Load Workspace...</MenuText>
@@ -181,6 +190,7 @@
       <Button guid="guidRToolsCmdSet" id="icmdSaveWorkspace" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellSave"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Save Workspace As...</ButtonText>
           <MenuText>Save Workspace &amp;As...</MenuText>
@@ -191,6 +201,7 @@
       <Button guid="guidRToolsCmdSet" id="icmdRestartR" priority="0x0300" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionRestart"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Restart R</ButtonText>
           <MenuText>&amp;Restart R</MenuText>
@@ -201,6 +212,7 @@
       <Button guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0300" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionInterrupt"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Interrupt R</ButtonText>
           <MenuText>&amp;Interrupt R</MenuText>
@@ -212,6 +224,7 @@
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup"/>
         <Icon guid="ImageCatalogGuid" id="DocumentsFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Set Working Directory...</ButtonText>
           <MenuText>Set Working &amp;Directory...</MenuText>
@@ -256,6 +269,7 @@
       <Button guid="guidRToolsCmdSet" id="icmdSavePlot" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellSave"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Save As...</ButtonText>
           <MenuText>Save &amp;As...</MenuText>
@@ -267,6 +281,7 @@
         <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="ImageCatalogGuid" id="Export"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>&amp;Export...</ButtonText>
           <CommandName>Export Plot</CommandName>
@@ -276,6 +291,7 @@
       <Button guid="guidRToolsCmdSet" id="icmdFixPlot" priority="0x0400" type="Button">
         <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellPinTab"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>&amp;Fix</ButtonText>
           <CommandName>Fix Plot Window</CommandName>
@@ -287,6 +303,7 @@
         <Parent guid="guidRToolsCmdSet" id="plotSubMenuPrintGroup"/>
         <Icon guid="ImageCatalogGuid" id="Print"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>&amp;Print...</ButtonText>
           <CommandName>Print Plot</CommandName>
@@ -296,16 +313,18 @@
       <Button guid="guidRToolsCmdSet" id="icmdZoomInPlot" priority="0x0100" type="Button">
         <Icon guid="ImageCatalogGuid" id="ZoomIn"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Zoom In</ButtonText>
           <MenuText>Zoom &amp;In</MenuText>
           <CommandName>Zoom In Plot</CommandName>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0200" type="Button">
         <Icon guid="ImageCatalogGuid" id="ZoomOut"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Zoom Out</ButtonText>
           <MenuText>Zoom &amp;Out</MenuText>
@@ -316,6 +335,7 @@
       <Button guid="guidRToolsCmdSet" id="icmdCopyPlot" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellCopy"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Copy to Clipboard</ButtonText>
           <MenuText>&amp;Copy to Clipboard</MenuText>
@@ -329,6 +349,7 @@
         <Parent guid="guidRToolsCmdSet" id="dataSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="WebFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Import From Web URL...</ButtonText>
           <MenuText>Import From Web &amp;URL...</MenuText>
@@ -340,6 +361,7 @@
         <Parent guid="guidRToolsCmdSet" id="dataSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="DatabaseFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Import From Text File...</ButtonText>
           <MenuText>Import From &amp;Text File...</MenuText>
@@ -347,6 +369,52 @@
         </Strings>
       </Button>
       <!-- End Data flyout -->
+
+      <!-- Publish flyout -->
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewHtml" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="HTMLFile"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Preview HTML</ButtonText>
+          <CommandName>Preview HTML</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
+        <Icon guid="pdfIconGuid" id="pdfIcon"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Preview PDF</ButtonText>
+          <CommandName>Preview PDF</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewWord" priority="0x0300" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="OfficeWord2013"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Preview Word</ButtonText>
+          <CommandName>Preview Word</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="publishPublishSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="PublishAllWebSites"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Publish...</ButtonText>
+          <CommandName>Publish</CommandName>
+        </Strings>
+      </Button>
+
+      <!-- End of Publish flyout -->
 
       <!-- Windows flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdShowReplWindow" priority="0x0100" type="Button">
@@ -522,10 +590,11 @@
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
-    <!--<Bitmaps>
+    <Bitmaps>
       <Bitmaps>
+        <Bitmap guid="pdfIconGuid" href="Images\pdf.bmp" usedList="pdfIcon" />
       </Bitmaps>
-    </Bitmaps>-->
+    </Bitmaps>
   </Commands>
 
   <CommandPlacements>
@@ -707,12 +776,19 @@
       <IDSymbol name="windowsSubMenuGroup" value="0x2310"/>
       <IDSymbol name="packagesSubMenuGroup" value="0x2320"/>
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>
+      <IDSymbol name="publishSubMenuGroup" value="0x2350"/>
+      <IDSymbol name="publishPreviewSubMenuGroup" value="0x2360"/>
+      <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>
     </GuidSymbol>
 
     <!-- R Editor Factory Guid -->
     <GuidSymbol name="CMDUIGUID_R_EDITOR" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
     <!-- Markdown Editor Factory Guid -->
     <GuidSymbol name="CMDUIGUID_MD_EDITOR" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
+
+    <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
+      <IDSymbol name="pdfIcon" value="1" />
+    </GuidSymbol>
   </Symbols>
 
   <UsedCommands>
@@ -732,4 +808,5 @@
     <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomIn"  />
     <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomOut"  />
   </UsedCommands>
+
 </CommandTable>
