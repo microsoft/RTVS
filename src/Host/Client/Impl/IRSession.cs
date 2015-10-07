@@ -11,7 +11,7 @@ namespace Microsoft.R.Host.Client
         event EventHandler<EventArgs> Disconnected;
 
         string Prompt { get; }
-        bool HostIsRunning { get; }
+        bool IsHostRunning { get; }
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true);
         Task<IRSessionEvaluation> BeginEvaluationAsync();
