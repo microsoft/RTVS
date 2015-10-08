@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
@@ -36,6 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
         {
             List<ICommand> commands = new List<ICommand>();
 
+            commands.Add(new OpenPlotCommand(this));
             commands.Add(new SavePlotCommand(this));
             commands.Add(new ExportPlotCommand(this));
             commands.Add(new FixPlotCommand(this));
@@ -50,19 +53,31 @@ namespace Microsoft.VisualStudio.R.Package.Plots
         private void InitializePresenter()
         {
             DisplayXaml(
-                "<TextBlock xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " + 
+                "<TextBlock xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
                 "Foreground=\"DarkGray\" " +
                 "TextAlignment=\"Center\" " +
                 "VerticalAlignment=\"Center\" " +
                 "HorizontalAlignment=\"Center\" " +
                 "TextWrapping=\"Wrap\">" +
-                Resources.EmptyPlotWindowWatermark + 
+                Resources.EmptyPlotWindowWatermark +
                 "</TextBlock>");
         }
 
         public void OpenPlot()
         {
-            DisplayXamlFile(GetFileName());
+            string fileName = GetFileName();
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                try
+                {
+                    DisplayXamlFile(fileName);
+                }
+                catch(Exception ex)
+                {
+                    EditorShell.Current.ShowErrorMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.CannotOpenPlotFile, ex.Message));
+                }
+            }
         }
 
         public void DisplayXamlFile(string filePath)
@@ -88,9 +103,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots
         {
             return FileUtilities.BrowseForFileOpen(
                 IntPtr.Zero,
-                Resources.XamlFileFilter,
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Resources.OpenXamlPlotDialogTitle);
+                Resources.PlotFileFilter,
+                // TODO: open in current project folder if one is active
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\",
+                Resources.OpenPlotDialogTitle);
         }
     }
 }

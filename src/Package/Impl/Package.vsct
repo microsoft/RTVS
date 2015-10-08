@@ -117,11 +117,6 @@
         <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
       </Group>
 
-      <!-- PlotWindow groups -->
-      <Group guid="guidRToolsCmdSet" id="plotToolbarGroup" priority="0x0000">
-        <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
-      </Group>
-
       <!-- Main menu groups-->
       <Group guid="guidRToolsCmdSet" id="toolsOptionsGroup" priority="0x1000">
         <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
@@ -171,6 +166,21 @@
       <Group guid="guidRToolsCmdSet" id="publishPublishSubMenuGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
       </Group>
+
+      <!-- Plot toolbar -->
+      <Group guid="guidRToolsCmdSet" id="plotToolbarFileGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="plotToolbarPrintGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup" priority="0x0400">
+        <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
+      </Group>
+
     </Groups>
 
     <Buttons>
@@ -257,7 +267,6 @@
 
       <!-- Plots flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdOpenPlot" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellOpen"/>
         <Strings>
           <ButtonText>Open...</ButtonText>
@@ -267,7 +276,6 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdSavePlot" priority="0x0200" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellSave"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -278,7 +286,6 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdExportPlot" priority="0x0300" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="ImageCatalogGuid" id="Export"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -289,7 +296,6 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdFixPlot" priority="0x0400" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellPinTab"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -300,7 +306,6 @@
 
 
       <Button guid="guidRToolsCmdSet" id="icmdPrintPlot" priority="0x0200" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuPrintGroup"/>
         <Icon guid="ImageCatalogGuid" id="Print"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -333,7 +338,6 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdCopyPlot" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellCopy"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -490,16 +494,6 @@
         </Strings>
       </Button>
 
-      <!-- Plot window toolbar -->
-      <Button guid="guidRToolsCmdSet" id="icmdOpenPlot" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="plotToolbarGroup"/>
-        <Icon guid="guidVsShellIcons" id="cmdidVsShellOpen"/>
-        <Strings>
-          <ButtonText>Open plot</ButtonText>
-          <CommandName>Open Plot</CommandName>
-        </Strings>
-      </Button>
-
     </Buttons>
   </Commands>
 
@@ -639,13 +633,37 @@
       <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
     </CommandPlacement>
 
-    <!-- Plot window toolbar -->
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomInPlot" priority="0x0500">
-      <Parent guid="guidRToolsCmdSet" id="plotToolbarGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomInPlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0510">
-      <Parent guid="guidRToolsCmdSet" id="plotToolbarGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup"/>
+    </CommandPlacement>
+
+    <!-- Plot submenu -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdOpenPlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSavePlot" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdExportPlot" priority="0x0300">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdFixPlot" priority="0x0400">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuFileGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrintPlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuPrintGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdCopyPlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup"/>
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomInPlot" priority="0x0100">
@@ -655,6 +673,40 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0200">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup"/>
     </CommandPlacement>
+
+    <!-- Plot window toolbar -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdOpenPlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarFileGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSavePlot" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarFileGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdExportPlot" priority="0x0300">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarFileGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdFixPlot" priority="0x0400">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarFileGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrintPlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarPrintGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdCopyPlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarCopyGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomInPlot" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarZoomGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarZoomGroup"/>
+    </CommandPlacement>
+
   </CommandPlacements>
 
   <KeyBindings>
@@ -674,6 +726,12 @@
     <UsedCommand guid="guidVSStd97" id="cmdidF1Help" />
     <!-- ECMD_OPENLINEABOVE is usually bound to Ctrl+Enter which R users want for 'Send to REPL -->
     <UsedCommand guid="guidVSStd2K" id="ECMD_OPENLINEABOVE"/>
+    <UsedCommand guid="guidVSStd11" id="cmdidInteractiveSessionInterrupt" />
+    <UsedCommand guid="guidVSStd11" id="cmdidInteractiveSessionRestart" />
+    <UsedCommand guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" />
+    <UsedCommand guid="guidVSStd11" id="cmdidExecuteLineInInteractive"  />
+    <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomIn"  />
+    <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomOut"  />
   </UsedCommands>
 
   <Symbols>
@@ -761,7 +819,10 @@
       <IDSymbol name="icmdShowHistoryWindow" value="904" />
       <IDSymbol name="icmdShowPackagesWindow" value="905" />
 
-      <IDSymbol name="plotToolbarGroup" value="0x1000" />
+      <IDSymbol name="plotToolbarFileGroup" value="0x1000" />
+      <IDSymbol name="plotToolbarPrintGroup" value="0x1100" />
+      <IDSymbol name="plotToolbarCopyGroup" value="0x1200" />
+      <IDSymbol name="plotToolbarZoomGroup" value="0x1300" />
       <IDSymbol name="plotWindowToolBarId" value="0x2000" />
 
       <!-- Submenus-->
@@ -790,23 +851,4 @@
       <IDSymbol name="pdfIcon" value="1" />
     </GuidSymbol>
   </Symbols>
-
-  <UsedCommands>
-    <UsedCommand guid="guidVSStd97" id="cmdidCut" />
-    <UsedCommand guid="guidVSStd97" id="cmdidCopy" />
-    <UsedCommand guid="guidVSStd97" id="cmdidPaste" />
-    <UsedCommand guid="guidVSStd97" id="cmdidDelete" />
-    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATDOCUMENT" />
-    <UsedCommand guid="guidVSStd2K" id="ECMD_FORMATSELECTION" />
-    <UsedCommand guid="guidVSStd2K" id="ECMD_HELP" />
-    <UsedCommand guid="guidVSStd2K" id="ECMD_HELPKEYWORD" />
-    <UsedCommand guid="guidVSStd97" id="cmdidF1Help" />
-    <UsedCommand guid="guidVSStd11" id="cmdidInteractiveSessionInterrupt" />
-    <UsedCommand guid="guidVSStd11" id="cmdidInteractiveSessionRestart" />
-    <UsedCommand guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" />
-    <UsedCommand guid="guidVSStd11" id="cmdidExecuteLineInInteractive"  />
-    <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomIn"  />
-    <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomOut"  />
-  </UsedCommands>
-
 </CommandTable>
