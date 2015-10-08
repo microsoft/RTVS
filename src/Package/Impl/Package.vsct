@@ -617,10 +617,6 @@
 
     <!-- Show plot window -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotWindow" priority="0x0500">
-      <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-    </CommandPlacement>
-
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotWindow" priority="0x0500">
       <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
     </CommandPlacement>
 
