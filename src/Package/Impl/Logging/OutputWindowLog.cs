@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using EnvDTE;
 using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -33,13 +34,16 @@ namespace Microsoft.VisualStudio.R.Package.Logging
 
                     Debug.Assert(_pane != null, "Cannot create output window pane " + _windowName);
                 }
-                else
-                {
-                    
-                }
             }
 
             _pane.Activate();
+
+            DTE dte = AppShell.Current.GetGlobalService<DTE>();
+            Window window = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+            if (window != null)
+            {
+                window.Activate();
+            }
         }
 
         #region IActionLog
