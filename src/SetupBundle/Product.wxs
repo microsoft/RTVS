@@ -23,7 +23,7 @@
 
     <BootstrapperApplicationRef Id="ManagedBootstrapperApplicationHost">
       <PayloadGroupRef Id="commonvsmanaged_ux"/>
-      <PayloadGroupRef Id="mdd_ux"/>
+      <PayloadGroupRef Id="rtvs_ux"/>
     </BootstrapperApplicationRef>
 
     <dd:UxConfiguration>

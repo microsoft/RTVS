@@ -49,6 +49,10 @@
     <Content Include="VSLogo.GIF" />
   </ItemGroup>
   <ItemGroup>
+    <WixExtension Include="WixUtilExtension">
+      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <Name>WixUtilExtension</Name>
+    </WixExtension>
     <WixExtension Include="WixBalExtension">
       <HintPath>$(WixInstallPath)\WixBalExtension.dll</HintPath>
       <Name>WixBalExtension</Name>
