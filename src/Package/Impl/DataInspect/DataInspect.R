@@ -2,7 +2,7 @@
 	obj <- eval(parse(text = expr), env);
 	repr <- capture.output(str(obj, list.len = 0));
 
-	fmt <- '"name":  %s, "class": "%s", "value": %s, "type": %s';
+	fmt <- '"name":  "%s", "class": "%s", "value": "%s", "type": "%s"';
 	return (gettextf(fmt, expr, class(obj), repr[1], typeof(obj)));
 }
 .rtvs.datainspect.eval <<- function(expr, env) {
@@ -24,7 +24,7 @@
 
 		list <- sapply(ls(env), get_object, USE.NAMES = FALSE);
 		array_fmt <- '[%s]';
-		json <- paste(list, sep=', ', collapse = '');
+		json <- gettextf(array_fmt, paste(list, collapse = ','));
 
 	}, finally = {
 	});
