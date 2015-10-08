@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xaml;
@@ -7,6 +8,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 {
     internal class PlotContentProvider : IPlotContentProvider
     {
+        private string _lastLoadFile;
+
         #region IPlotContentProvider implementation
 
         public event EventHandler<PlotChangedEventArgs> PlotChanged;
@@ -17,6 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             try
             {
                 element = (UIElement) XamlServices.Load(fileName);
+                _lastLoadFile = fileName;
             }
             catch (Exception e)
             {
@@ -27,19 +31,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             OnPlotChanged(element);
         }
 
-        public void LoadXaml(string xamlText)
+        public void SaveFile(string fileName)
         {
-            UIElement element = null;
-            try
+            if (_lastLoadFile != null)
             {
-                element = (UIElement)XamlServices.Parse(xamlText);
+                File.Copy(_lastLoadFile, fileName, true);   // overwrite
             }
-            catch (Exception e)
-            {
-                element = CreateErrorContent(e);
-            }
-
-            OnPlotChanged(element);
         }
 
         #endregion IPlotContentProvider implementation

@@ -279,4 +279,7 @@
   <data name="CannotOpenPlotFile" xml:space="preserve">
     <value>Unable to open plot file. Exception: {0}</value>
   </data>
+  <data name="SavePlotDialogTitle" xml:space="preserve">
+    <value>Save R Plot File</value>
+  </data>
 </root>

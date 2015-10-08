@@ -277,6 +277,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save R Plot File.
+        /// </summary>
+        internal static string SavePlotDialogTitle {
+            get {
+                return ResourceManager.GetString("SavePlotDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Automatic formatting.
         /// </summary>
         internal static string Settings_AutoFormat {

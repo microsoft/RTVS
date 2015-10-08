@@ -20,10 +20,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots
         void LoadFile(string filePath);
 
         /// <summary>
-        /// Load XAML string to parse and create plot UIElement
+        /// Copy last loaded file to destination
         /// </summary>
-        /// <param name="xamlText">XAML string</param>
-        void LoadXaml(string xamlText);
+        /// <param name="fileName">the destination filepath</param>
+        void SaveFile(string fileName);
     }
 
     /// <summary>

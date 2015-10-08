@@ -211,7 +211,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
                 if (docView != null) {
                     PlotWindowPane pane = (PlotWindowPane)docView;
-                    pane.ContentProvider.LoadFile(xamlFilePath);
+                    pane.PlotContentProvider.LoadFile(xamlFilePath);
                 }
             }
         }
