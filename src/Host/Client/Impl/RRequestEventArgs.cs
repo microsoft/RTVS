@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client
 {
-    public class RBeforeRequestEventArgs : EventArgs
+    public class RRequestEventArgs : EventArgs
     {
         public IReadOnlyCollection<IRContext> Contexts { get; }
         public string Prompt { get; }
         public int MaxLength { get; }
         public bool AddToHistoty { get; }
 
-        public RBeforeRequestEventArgs(IReadOnlyCollection<IRContext> contexts, string prompt, int maxLength, bool addToHistoty)
+        public RRequestEventArgs(IReadOnlyCollection<IRContext> contexts, string prompt, int maxLength, bool addToHistoty)
         {
             Contexts = contexts;
             Prompt = prompt;

@@ -179,8 +179,9 @@
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Session\RSession.cs" />
-    <Compile Include="Repl\Session\RSessionCommands.cs" />
+    <Compile Include="Repl\Session\RSessionInteractionCommands.cs" />
     <Compile Include="Repl\Session\RSessionEvaluation.cs" />
+    <Compile Include="Repl\Session\RSessionEvaluationCommands.cs" />
     <Compile Include="Repl\Session\RSessionEvaluationSource.cs" />
     <Compile Include="Repl\Session\RSessionInteraction.cs" />
     <Compile Include="Repl\Session\RSessionRequestSource.cs" />
