@@ -78,6 +78,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
     <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
@@ -229,6 +230,10 @@
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
     <None Include="app.config" />
+    <Content Include="DataInspect\DataInspect.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="packages.config" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
