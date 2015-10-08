@@ -85,6 +85,8 @@
     <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
     <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
     <Compile Include="Plots\Commands\PrintPlotCommand.cs" />
+    <Compile Include="Plots\IPlotContentProvider.cs" />
+    <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />

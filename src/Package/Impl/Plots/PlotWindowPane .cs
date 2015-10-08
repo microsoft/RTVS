@@ -15,14 +15,17 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Plots
 {
     [Guid(WindowGuid)]
-    public class PlotWindowPane : ToolWindowPane
+    internal class PlotWindowPane : ToolWindowPane
     {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
+
 
         public PlotWindowPane()
         {
             Caption = Resources.PlotWindowCaption;
-            Content = new XamlPresenter();
+
+            ContentProvider = new PlotContentProvider();
+            Content = new XamlPresenter(ContentProvider);
 
             InitializePresenter();
 
@@ -33,6 +36,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
         }
+
+        public IPlotContentProvider ContentProvider { get; }
 
         private IEnumerable<ICommand> GetCommands()
         {
@@ -52,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
         private void InitializePresenter()
         {
-            DisplayXaml(
+            ContentProvider.LoadXaml(
                 "<TextBlock xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
                 "Foreground=\"DarkGray\" " +
                 "TextAlignment=\"Center\" " +
@@ -70,31 +75,13 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             {
                 try
                 {
-                    DisplayXamlFile(fileName);
-        }
+                    ContentProvider.LoadFile(fileName);
+                }
                 catch(Exception ex)
                 {
                     EditorShell.Current.ShowErrorMessage(
                         string.Format(CultureInfo.InvariantCulture, Resources.CannotOpenPlotFile, ex.Message));
                 }
-            }
-        }
-
-        public void DisplayXamlFile(string filePath)
-        {
-            var presenter = this.Content as XamlPresenter;
-            if (presenter != null)
-            {
-                presenter.LoadXamlFile(filePath);
-            }
-        }
-
-        public void DisplayXaml(string xaml)
-        {
-            var presenter = this.Content as XamlPresenter;
-            if (presenter != null)
-            {
-                presenter.LoadXaml(xaml);
             }
         }
 

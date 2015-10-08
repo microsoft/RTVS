@@ -205,16 +205,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         async Task IRCallbacks.PlotXaml(IReadOnlyCollection<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
-            var frame = FindPlotWindow(0);
+            var frame = FindPlotWindow(0);  // TODO: acquire plot content provider through service
             if (frame != null) {
                 object docView;
                 ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
                 if (docView != null) {
                     PlotWindowPane pane = (PlotWindowPane)docView;
-                    pane.DisplayXamlFile(xamlFilePath);
+                    pane.ContentProvider.LoadFile(xamlFilePath);
                 }
             }
-            }
+        }
 
         private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags) {
             IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));

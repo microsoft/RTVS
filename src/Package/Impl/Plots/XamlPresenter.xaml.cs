@@ -9,40 +9,23 @@ namespace Microsoft.VisualStudio.R.Package.Plots
     /// <summary>
     /// Interaction logic for XamlPresenter.xaml
     /// </summary>
-    public partial class XamlPresenter : UserControl
+    internal partial class XamlPresenter : UserControl
     {
-        public XamlPresenter()
+        private readonly IPlotContentProvider _contentProvider;
+
+        public XamlPresenter(IPlotContentProvider contentProvider)
         {
             InitializeComponent();
+
+            _contentProvider = contentProvider;
+            _contentProvider.PlotChanged += ContentProvider_PlotChanged;
         }
 
-        public void LoadXamlFile(string fileName)
+        private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e)
         {
-            SetContainer(() => XamlServices.Load(fileName), fileName);
-        }
+            Debug.Assert(e.NewPlotElement != null);
 
-        public void LoadXaml(string xamlText)
-        {
-            SetContainer(() => XamlServices.Parse(xamlText));
-        }
-
-        private void SetContainer(Func<object> xamlObjectLoader, string fileName = null)
-        {
-            object parsed = null;
-
-            try
-            {
-                parsed = xamlObjectLoader();
-            }
-            catch (Exception e)
-            {
-                parsed = new TextBlock() { Text = string.Format("Couldn't parse XAML ({1}) \r\n{0}", e.ToString(), fileName ?? "inline") };
-            }
-
-            var parsedObj = parsed as UIElement;
-            Debug.Assert(parsedObj != null);
-
-            this.RootContainer.Child = parsedObj;
+            this.RootContainer.Child = e.NewPlotElement;
         }
     }
 }
