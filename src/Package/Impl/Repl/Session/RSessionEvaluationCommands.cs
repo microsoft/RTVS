@@ -20,6 +20,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return evaluation.EvaluateNonReentrantAsync($".rtvs.datainspect.env_vars(.GlobalEnv)\n");
         }
 
+        public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
+            var script = @"
+vsgd <- function() {
+   .External('C_vsgd', 5, 5)
+}
+options(device='vsgd')
+";
+
+            return evaluation.EvaluateAsync(script, reentrant: false);
+        }
+
         private static Task<REvaluationResult> EvaluateNonReentrantAsync(this IRSessionEvaluation evaluation, FormattableString commandText) {
             return evaluation.EvaluateAsync(FormattableString.Invariant(commandText), reentrant: false);
         }

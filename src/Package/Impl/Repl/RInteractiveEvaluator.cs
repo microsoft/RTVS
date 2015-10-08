@@ -1,10 +1,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
@@ -95,17 +97,32 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IInteractiveWindow CurrentWindow { get; set; }
 
         private void SessionOnResponse(object sender, RResponseEventArgs args) {
-            CurrentWindow.Write(args.Message);
+            Write(args.Message).DoNotWait();
         }
 
         private void SessionOnError(object sender, RErrorEventArgs args) {
-            CurrentWindow.WriteError(args.Message);
+            WriteError(args.Message).DoNotWait();
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
             if (!CurrentWindow.IsResetting) {
-                CurrentWindow.WriteLine(Resources.MicrosoftRHostStopped);
+                WriteLine(Resources.MicrosoftRHostStopped).DoNotWait();
             }
+        }
+
+        private async Task Write(string  message) {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            CurrentWindow.Write(message);
+        }
+
+        private async Task WriteError(string  message) {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            CurrentWindow.WriteError(message);
+        }
+
+        private async Task WriteLine(string  message) {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            CurrentWindow.WriteLine(message);
         }
     }
 }

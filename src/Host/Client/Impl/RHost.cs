@@ -235,7 +235,7 @@ namespace Microsoft.R.Host.Client {
             try {
                 string request = JsonConvert.SerializeObject(new {
                     command = "eval",
-                    expr = expression
+                    expr = expression.Replace("\r\n", "\n")
                 });
 
                 var requestBytes = Encoding.UTF8.GetBytes(request);

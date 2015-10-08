@@ -112,12 +112,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private async Task EnsureRSessionInitialized() {
             if (!_rSessionInitialized) {
-                using (var interactor = await _rSession.BeginInteractionAsync(false)) {
-                    string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    string filePath = Path.Combine(dir, @"DataInspect\DataInspect.R").Replace('\\', '/');
-                    string script = string.Format("source('{0}')\r\n", filePath);
+                string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string filePath = Path.Combine(dir, @"DataInspect\DataInspect.R").Replace('\\', '/');
+                string script = $"source('{filePath}')\n";
 
-                    await interactor.RespondAsync(script);
+                using (var interactor = await _rSession.BeginEvaluationAsync()) {
+                    await interactor.EvaluateAsync(script, false);
                 }
 
                 _rSessionInitialized = true;
@@ -127,13 +127,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task RefreshVariableCollection() {
             await EnsureRSessionInitialized();
 
+            REvaluationResult response;
             using (var interactor = await _rSession.BeginEvaluationAsync()) {
-                var response = await interactor.GetGlobalEnvironmentVariables();
-                if (response.ParseStatus == RParseStatus.OK) {
-                    var evaluations = Deserialize<List<REvaluation>>(response.Result);
-                    if (evaluations != null) {
-                        _variables = evaluations.Select(Variable.Create).ToList();
-                    }
+                response = await interactor.GetGlobalEnvironmentVariables();
+            }
+
+            if (response.ParseStatus == RParseStatus.OK) {
+                var evaluations = Deserialize<List<REvaluation>>(response.Result);
+                if (evaluations != null) {
+                    _variables = evaluations.Select(Variable.Create).ToList();
                 }
             }
         }
