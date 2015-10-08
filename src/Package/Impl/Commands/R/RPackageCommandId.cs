@@ -2,6 +2,8 @@
 {
     public static class RPackageCommandId
     {
+        public const int plotWindowToolBarId = 0x2000;
+
         // General
         public const int icmdGoToFormattingOptions = 400;
         public const int icmdGoToRToolsOptions = 401;

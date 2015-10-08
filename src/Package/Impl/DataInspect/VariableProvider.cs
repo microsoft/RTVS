@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -45,7 +46,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             if (_rSession == null)
             {
                 return new List<Variable>();    // empty
-
             }
             else
             {
@@ -120,8 +120,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 _rSession.BeforeRequest += RSession_BeforeRequest;
                 _rSession.Disconnected += RSession_Disconnected;
                 _rSessionInitialized = false;
-
-                
             }
 
             if (SessionsChanged != null)
@@ -136,7 +134,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             {
                 using (var interactor = await _rSession.BeginInteractionAsync(false))
                 {
-                    await interactor.RespondAsync(InitializingRScript);
+                    string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    string filePath = Path.Combine(dir, @"DataInspect\DataInspect.R").Replace('\\', '/');
+                    string script = string.Format("source('{0}')\r\n", filePath);
+
+                    await interactor.RespondAsync(script);
                 }
 
                 _rSessionInitialized = true;
@@ -154,23 +156,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             }
             fRefreshing = true;
 
-            await EnsureRSessionInitialized();
+            var variables = new List<Variable>();
 
-            using (var interactor = await _rSession.BeginInteractionAsync(false))
+            try
             {
-                var response = await interactor.RespondAsync(".rtvs.datainspect.env_vars(.GlobalEnv)\r\n");  // TODO: for now, global environment
-                var evaluations = Deserialize(response);
-                if (evaluations != null)
+                await EnsureRSessionInitialized();
+
+                using (var interactor = await _rSession.BeginInteractionAsync(false))
                 {
-                    var variables = new List<Variable>();
-                    foreach (var evaluation in evaluations)
+                    var response = await interactor.RespondAsync(".rtvs.datainspect.env_vars(.GlobalEnv)\r\n");  // TODO: for now, global environment
+                    var evaluations = Deserialize<List<REvaluation>>(response);
+                    if (evaluations != null)
                     {
-                        var instance = Variable.Create(evaluation);
-                        variables.Add(instance);
+                        foreach (var evaluation in evaluations)
+                        {
+                            var instance = Variable.Create(evaluation);
+                            variables.Add(instance);
+                        }
                     }
-                    _variables = variables;
                 }
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Failed to get variables:{0}", e.Message);
+            }
+
+            _variables = variables; // if fails, empty variables window
 
             // no await
             Task.Run(async () =>
@@ -205,14 +216,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             }
         }
 #endif
-        private static List<REvaluation> Deserialize(string response)
+
+        private static T Deserialize<T>(string response) where T : class
         {
             try
             {
-                var serializer = new DataContractJsonSerializer(typeof(List<REvaluation>));
+                var serializer = new DataContractJsonSerializer(typeof(T));
                 using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(response)))
                 {
-                    return (List<REvaluation>)serializer.ReadObject(stream);
+                    return (T)serializer.ReadObject(stream);
                 }
             }
             catch (Exception e)
@@ -222,61 +234,5 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 return null;
             }
         }
-
-
-        private readonly string InitializingRScript =
-@".rtvs.datainspect.eval_into <<- function(con, expr, env) {
-  obj <- eval(parse(text = expr), env);
-  con_repr <- textConnection(NULL, open = ""w"");
-  tryCatch({
-    dput(obj, con_repr);
-    repr <-textConnectionValue(con_repr);
-  }, finally = {
-    close(con_repr);
-  });
-
-  cat('""name"": ""', file=con, sep='');cat(expr, file=con);cat('""', file=con, sep='');
-  cat(',""class"": ""', file=con, sep='');cat(class(expr), file=con);cat('""', file=con, sep='');
-  cat(',""value"": ', file=con, sep='');dput(paste(repr, collapse=''), file=con);
-  cat(',""type"": ""', file=con, sep='');cat(typeof(obj), file=con);cat('""', file=con, sep='');
-}
-.rtvs.datainspect.eval <<- function(expr, env) {
-  con <-textConnection(NULL, open = ""w"");
-  json <-""{}"";
-  tryCatch({
-    cat('{', file=con, sep='');
-    .rtvs.datainspect.eval_into(con, expr, env);
-    cat('}\n', file=con, sep='');
-    json <-textConnectionValue(con);
-  }, finally = {
-    close(con);
-  });
-  cat(json);
-}
-.rtvs.datainspect.env_vars <<-function(env) {
-  con <-textConnection(NULL, open = ""w"");
-  json <-""{}"";
-  tryCatch({
-    cat('[', file=con, sep='');
-    is_first <-TRUE;
-    for (varname in ls(env))
-    {
-      if (is_first) {
-        is_first <-FALSE;
-      } else {
-        cat(', ', file=con, sep='');
-      }
-      cat('{', file=con, sep='');
-      .rtvs.datainspect.eval_into(con, varname, env);
-      cat('}', file=con, sep='');
-    }
-    cat(']\n', file=con, sep='');
-    json <-textConnectionValue(con);
-  }, finally = {
-    close(con);
-  });
-  cat(json);
-}
-";
     }
 }

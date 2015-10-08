@@ -18,10 +18,29 @@ namespace Microsoft.VisualStudio.R.Package.Publishing
             get { return "rmarkdown"; }
         }
 
+        public bool FormatSupported(PublishFormat format)
+        {
+            return format != PublishFormat.Pdf;
+        }
+
         public string GetCommandLine(string inputFile, string outputFile, PublishFormat publishFormat)
         {
             // Run rmarkdown::render
-            return string.Format(CultureInfo.InvariantCulture, "\"rmarkdown::render(\'{0}\', \'html_document\')\"", inputFile, outputFile);
+            return string.Format(CultureInfo.InvariantCulture, "\"rmarkdown::render(\'{0}\', \'{1}\')\"", inputFile, GetDocumentTypeString(publishFormat));
+        }
+
+        private string GetDocumentTypeString(PublishFormat publishFormat)
+        {
+            switch(publishFormat)
+            {
+                case PublishFormat.Pdf:
+                    return "pdf_document";
+
+                case PublishFormat.Word:
+                    return "word_document";
+            }
+
+            return "html_document";
         }
     }
 }

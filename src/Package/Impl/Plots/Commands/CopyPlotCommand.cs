@@ -1,22 +1,26 @@
-﻿using Microsoft.VisualStudio.R.Package.Commands;
+﻿using System;
+using Microsoft.Languages.Editor;
+using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands
 {
-    internal sealed class CopyPlotCommand : PackageCommand
+    internal sealed class CopyPlotCommand : PlotWindowCommand
     {
-        public CopyPlotCommand() :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlot)
+        public CopyPlotCommand(PlotWindowPane pane) :
+            base(pane, RPackageCommandId.icmdCopyPlot)
         {
         }
 
-        protected override void SetStatus()
+        public override CommandStatus Status(Guid group, int id)
         {
-            Enabled = false;
+            return CommandStatus.Supported;
         }
 
-        protected override void Handle()
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
         {
+            return CommandResult.Executed;
         }
     }
 }

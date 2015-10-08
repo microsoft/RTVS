@@ -1,17 +1,23 @@
-﻿using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Packages.R;
+﻿using System;
+using Microsoft.Languages.Editor;
+using Microsoft.VisualStudio.R.Package.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands
 {
-    internal sealed class ZoomOutPlotCommand : PackageCommand
+    internal sealed class ZoomOutPlotCommand : PlotWindowCommand
     {
-        public ZoomOutPlotCommand() :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdZoomOutPlot)
+        public ZoomOutPlotCommand(PlotWindowPane pane) :
+            base(pane, RPackageCommandId.icmdZoomOutPlot)
         {
         }
-        protected override void SetStatus()
+        public override CommandStatus Status(Guid group, int id)
         {
-            Enabled = false;
+            return CommandStatus.Supported;
+        }
+
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
+        {
+            return CommandResult.Executed;
         }
     }
 }

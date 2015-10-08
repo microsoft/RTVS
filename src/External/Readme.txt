@@ -1,1 +1,0 @@
-Copied from \\cpvsbuild\drops\DSTools\VariableWindow\DSTools-VariableWindow-CI-Debug\DSTools-VariableWindow-CI-Debug_00015271.3\raw\binaries

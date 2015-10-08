@@ -78,10 +78,16 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
+    <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
+    <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
     <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
     <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
     <Compile Include="Plots\Commands\PrintPlotCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
@@ -117,7 +123,7 @@
     <Compile Include="Plots\Commands\SavePlotCommand.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
-    <Compile Include="Publishing\PreviewCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewCommand.cs" />
     <Compile Include="Publishing\Definitions\PublishFormat.cs" />
     <Compile Include="Publishing\PublishLog.cs" />
     <Compile Include="Logging\PackagesInstallLog.cs" />
@@ -207,15 +213,13 @@
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
+    <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />
     <Compile Include="Utilities\TextBufferUtilities.cs" />
     <Compile Include="Utilities\CompletionUtilities.cs" />
+    <Compile Include="Utilities\ToolWindowUtilities.cs" />
     <Compile Include="Utilities\ViewUtilities.cs" />
-    <Compile Include="VariableExplorer\RVariable.cs" />
-    <Compile Include="VariableExplorer\RVariableCollection.cs" />
-    <Compile Include="VariableExplorer\RVariableSession.cs" />
-    <Compile Include="VariableExplorer\RVariableSessionProvider.cs" />
     <Compile Include="Workspace\VsFileInfo.cs" />
     <Compile Include="Workspace\IVsWorkspaceItem.cs" />
     <Compile Include="Workspace\VsFile.cs" />
@@ -226,6 +230,10 @@
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
     <None Include="app.config" />
+    <Content Include="DataInspect\DataInspect.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="packages.config" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -365,12 +373,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Validation, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.VariableWindow">
-      <HintPath>..\..\External\Microsoft.VisualStudio.VariableWindow.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.VariableWindow.Interfaces">
-      <HintPath>..\..\External\Microsoft.VisualStudio.VariableWindow.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />

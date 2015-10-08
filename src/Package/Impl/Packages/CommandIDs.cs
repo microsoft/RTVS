@@ -9,7 +9,6 @@ namespace Microsoft.VisualStudio.R.Package
     public static class CommandIDs
     {
         // plot commands
-        public const int plotToolbarGroup = 0x1000;
-        public const int menuIdPlotToolbar = 0x2000;
+        //public const int plotToolbarGroup = 0x1000;
     }
 }

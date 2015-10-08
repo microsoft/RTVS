@@ -22,7 +22,10 @@ namespace Microsoft.VisualStudio.R.Package.Interop
         public CommandTargetToOleShim(ITextView textView, ICommandTarget commandTarget)
         {
             _commandTarget = commandTarget;
-            _variantStacks = CommandTargetToOleShimVariantStacks.EnsureConnected(textView);
+            if (textView != null)
+            {
+                _variantStacks = CommandTargetToOleShimVariantStacks.EnsureConnected(textView);
+            }
         }
 
         #region IOleCommandTarget
@@ -41,7 +44,8 @@ namespace Microsoft.VisualStudio.R.Package.Interop
 
             try
             {
-                _variantStacks.Push(variantIn, variantOut, false);
+                if (_variantStacks != null)
+                    _variantStacks.Push(variantIn, variantOut, false);
 
                 object inputArg = TranslateInputArg(ref guidCommandGroup, commandID, variantIn);
                 object outputArg = null;
@@ -65,7 +69,8 @@ namespace Microsoft.VisualStudio.R.Package.Interop
             }
             finally
             {
-                _variantStacks.Pop();
+                if (_variantStacks != null)
+                    _variantStacks.Pop();
             }
 
             return OleCommand.MakeOleResult(result);
@@ -128,12 +133,15 @@ namespace Microsoft.VisualStudio.R.Package.Interop
             CommandResult result;
             try
             {
-                _variantStacks.Push(IntPtr.Zero, IntPtr.Zero, true);
+                if (_variantStacks != null)
+                    _variantStacks.Push(IntPtr.Zero, IntPtr.Zero, true);
+
                 result = commandTarget.Invoke(group, id, inputArg, ref outputArg);
             }
             finally
             {
-                _variantStacks.Pop();
+                if (_variantStacks != null)
+                    _variantStacks.Pop();
             }
 
             return result;
