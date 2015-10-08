@@ -85,6 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         private async Task AfterInitialization(Task task) {
             using (var evaluation = await BeginEvaluationAsync()) {
+                await evaluation.SetVsGraphicsDevice();
                 await evaluation.SetDefaultWorkingDirectory();
             }
         }
