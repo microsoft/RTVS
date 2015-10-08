@@ -103,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         #endregion
 
-        private async void SetRSession(IRSession session)
+        private void SetRSession(IRSession session)
         {
             // unregister event handler from old session
             if (_rSession != null)
@@ -183,12 +183,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
             _variables = variables; // if fails, empty variables window
 
-            // no await
-            Task.Run(async () =>
+            #pragma warning disable 4014
+            Task.Run(async () =>            // no await
             {
                 await Task.Delay(100);
                 fRefreshing = false;        // TODO: BUGBUG: dirty workaround. yikes!
             });
+            #pragma warning restore 4014
         }
 
 #else

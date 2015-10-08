@@ -5,47 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands
 {
-    internal sealed class ShowVariableWindowCommand : MenuCommand
+    internal sealed class ShowVariableWindowCommand : PackageCommand
     {
         public ShowVariableWindowCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdShowVariableExplorerWindow))
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdShowVariableExplorerWindow)
         {
         }
 
-        class Handler
+        protected override void Handle()
         {
-            public void OnCommand()
-            {
-                ShowWindowPane(typeof(VariableWindowPane), true);
-            }
-
-            private void ShowWindowPane(Type windowType, bool focus)
-            {
-                var window = RPackage.Current.FindWindowPane(windowType, 0, true) as ToolWindowPane;
-                if (window != null)
-                {
-                    var frame = window.Frame as IVsWindowFrame;
-                    if (frame != null)
-                    {
-                        ErrorHandler.ThrowOnFailure(frame.Show());
-                    }
-                    if (focus)
-                    {
-                        var content = window.Content as System.Windows.UIElement;
-                        if (content != null)
-                        {
-                            content.Focus();
-                        }
-                    }
-                }
-            }
+            ToolWindowUtilities.ShowWindowPane<VariableWindowPane>(0, true);
         }
     }
 }
