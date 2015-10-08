@@ -10,18 +10,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
     public class Variable
     {
-        public Variable(VariableView view = null)
+        private Variable(Variable parent, VariableView view = null)
         {
             _children = new List<Variable>();
-
             View = view;
-
             IsExpanded = false;
-        }
-
-        public Variable(Variable parent, VariableView view = null)
-            : this(view)
-        {
             Parent = parent;
         }
 
@@ -32,11 +25,38 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// <returns></returns>
         public static Variable Create(REvaluation evaluation)
         {
+            const string DataFramePrefix = "'data.frame':";
             var instance = new Variable(null, null);
 
+            // Name
             instance.VariableName = evaluation.Name;
-            instance.TypeName = evaluation.TypeName;    // TODO: consider combine TypeName and ClassName
-            instance.VariableValue = evaluation.Value;
+
+            // Type
+            instance.TypeName = evaluation.ClassName;
+            if (instance.TypeName == "ordered factor")
+            {
+                instance.TypeName = "ordered";
+            }
+
+            // Value
+            string variableValue = evaluation.Value.Trim();
+            if (evaluation.Value.Trim().StartsWith(DataFramePrefix))
+            {
+                instance.VariableValue = variableValue.Substring(DataFramePrefix.Length).Trim();
+            }
+            else
+            {
+                instance.VariableValue = variableValue;
+            }
+
+            // TODP: HasChildren
+            /*
+            if ((instance.TypeName == "data.frame")
+                || (instance.TypeName == "matrix"))
+            {
+                instance.HasChildren = true;
+            }
+            */
 
             return instance;
         }
@@ -84,13 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             }
         }
 
-        public bool HasChildren
-        {
-            get
-            {
-                return (_children != null) && (_children.Count > 0);
-            }
-        }
+        public bool HasChildren { get; private set; }
 
         List<Variable> _children;
         public List<Variable> Children

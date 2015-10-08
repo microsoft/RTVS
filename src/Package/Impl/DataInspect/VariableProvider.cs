@@ -46,7 +46,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             if (_rSession == null)
             {
                 return new List<Variable>();    // empty
-
             }
             else
             {
@@ -121,8 +120,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 _rSession.BeforeRequest += RSession_BeforeRequest;
                 _rSession.Disconnected += RSession_Disconnected;
                 _rSessionInitialized = false;
-
-                
             }
 
             if (SessionsChanged != null)
@@ -168,7 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 using (var interactor = await _rSession.BeginInteractionAsync(false))
                 {
                     var response = await interactor.RespondAsync(".rtvs.datainspect.env_vars(.GlobalEnv)\r\n");  // TODO: for now, global environment
-                    var evaluations = Deserialize(response);
+                    var evaluations = Deserialize<List<REvaluation>>(response);
                     if (evaluations != null)
                     {
                         foreach (var evaluation in evaluations)
@@ -219,14 +216,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             }
         }
 #endif
-        private static List<REvaluation> Deserialize(string response)
+
+        private static T Deserialize<T>(string response) where T : class
         {
             try
             {
-                var serializer = new DataContractJsonSerializer(typeof(List<REvaluation>));
+                var serializer = new DataContractJsonSerializer(typeof(T));
                 using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(response)))
                 {
-                    return (List<REvaluation>)serializer.ReadObject(stream);
+                    return (T)serializer.ReadObject(stream);
                 }
             }
             catch (Exception e)

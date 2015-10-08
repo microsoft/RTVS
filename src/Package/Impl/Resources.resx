@@ -264,4 +264,19 @@
   <data name="Error_PackageMissing" xml:space="preserve">
     <value>This operation requires package {0} which is not installed or has been removed. </value>
   </data>
+  <data name="PlotWindowCaption" xml:space="preserve">
+    <value>R Plot</value>
+  </data>
+  <data name="EmptyPlotWindowWatermark" xml:space="preserve">
+    <value>Please open a saved plot file to display data</value>
+  </data>
+  <data name="OpenPlotDialogTitle" xml:space="preserve">
+    <value>Open R Plot File</value>
+  </data>
+  <data name="PlotFileFilter" xml:space="preserve">
+    <value>R Plot Files (*.vsplot)|*.vsplot|All Files (*.*)|*.*</value>
+  </data>
+  <data name="CannotOpenPlotFile" xml:space="preserve">
+    <value>Unable to open plot file. Exception: {0}</value>
+  </data>
 </root>
