@@ -11,7 +11,7 @@
            Name="$(var.ProductName)"
            Manufacturer="Microsoft Corporation"
            Version="$(var.MsiVersion)"
-           UpgradeCode="{242367FC-0CC7-46CE-A8CC-A6BD35083682}"
+           UpgradeCode="{165B6EF9-D111-4435-8BDC-604AA21BF8C9}"
            IconSourceFile="..\Setup\VSIcon.ico">
 
     <?include VSDetection.wxi?>
