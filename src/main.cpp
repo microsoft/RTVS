@@ -6,6 +6,8 @@
 const unsigned PORT = 5118;
 
 int main(int argc, char** argv) {
+    setlocale(LC_NUMERIC, "C");
+
     fprintf(stderr, "Waiting for connection on port %u ...\n", PORT);
     rhost::server::wait_for_client(PORT);
 
@@ -38,6 +40,5 @@ int main(int argc, char** argv) {
 
     run_Rmainloop();
 
-    Rf_unprotect(1);
     Rf_endEmbeddedR(0);
 }

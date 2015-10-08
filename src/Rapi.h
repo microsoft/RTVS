@@ -241,4 +241,7 @@ extern "C" {
     Rboolean R_forceSymbols(DllInfo *info, Rboolean value);
 
     DllInfo *R_getEmbeddingDllInfo(void);
+
+    void R_WaitEvent(void);
+    void R_ProcessEvents(void);
 }

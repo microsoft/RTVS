@@ -4,17 +4,19 @@
 #include "Rapi.h"
 
 using namespace rhost::util;
+using namespace std::literals;
 
 namespace rhost {
     namespace server {
         namespace {
             typedef websocketpp::server<websocketpp::config::asio> ws_server_type;
 
+            DWORD main_thread_id;
             std::unique_ptr<std::thread> server_thread;
             std::promise<ws_server_type::connection_ptr> ws_conn_promise;
             ws_server_type::connection_ptr ws_conn;
             std::unique_ptr<std::promise<picojson::value>> response_promise;
-            bool connectionClosed = false;
+            bool is_connection_closed = false;
 
             picojson::object r_eval(const std::string& expr) {
                 picojson::object obj;
@@ -57,20 +59,16 @@ namespace rhost {
 
                 picojson::value r;
                 do {
-                    std::future<picojson::value> future = response_promise->get_future();
-                    while (true) {
-                        std::future_status status = future.wait_for(std::chrono::seconds(5));
-                        if (status == std::future_status::timeout) {
-                            if (connectionClosed) {
-                                return picojson::value("q()");
-                            }
-                        }
-                        else {
-                            break;
+                    std::future<picojson::value> response_future = response_promise->get_future();
+                    while (response_future.wait_for(0ms) != std::future_status::ready) {
+                        R_WaitEvent();
+                        R_ProcessEvents();
+                        if (is_connection_closed) {
+                            return picojson::value("q()");
                         }
                     }
 
-                    r = future.get();
+                    r = response_future.get();
                     response_promise = nullptr;
 
                     if (r.is<picojson::object>()) {
@@ -95,6 +93,11 @@ namespace rhost {
                 return r;
             }
 
+            void unblock_message_loop() {
+                // Unblock any pending with_response call that is waiting in a message loop.
+                PostThreadMessage(main_thread_id, WM_NULL, 0, 0);
+            }
+
             void add_context(picojson::object& obj) {
                 picojson::array ctxs;
                 for (RCNTXT* ctxt = R_GlobalContext; ctxt != nullptr; ctxt = ctxt->nextcontext) {
@@ -106,7 +109,7 @@ namespace rhost {
             }
 
             extern "C" int ReadConsole(const char* prompt, char* buf, int len, int addToHistory) {
-                if (connectionClosed) {
+                if (is_connection_closed) {
                     return 1;
                 }
 
@@ -145,7 +148,7 @@ namespace rhost {
             }
 
             extern "C" void WriteConsoleEx(const char* buf, int len, int otype) {
-                if (connectionClosed) {
+                if (is_connection_closed) {
                     return;
                 }
 
@@ -173,7 +176,7 @@ namespace rhost {
             }
 
             extern "C" void ShowMessage(const char* s) {
-                if (connectionClosed) {
+                if (is_connection_closed) {
                     return;
                 }
 
@@ -188,7 +191,7 @@ namespace rhost {
             }
 
             extern "C" int YesNoCancel(const char* s) {
-                if (connectionClosed) {
+                if (is_connection_closed) {
                     return 0;
                 }
 
@@ -213,7 +216,7 @@ namespace rhost {
             }
 
             extern "C" void Busy(int which) {
-                if (connectionClosed) {
+                if (is_connection_closed) {
                     return;
                 }
 
@@ -241,10 +244,11 @@ namespace rhost {
                 }
 
                 response_promise->set_value(v);
+                unblock_message_loop();
             }
 
             extern "C" void on_exit() {
-                if (!connectionClosed) {
+                if (!is_connection_closed) {
                     picojson::object obj;
                     obj["event"] = picojson::value("exit");
                     std::string json = picojson::value(obj).serialize();
@@ -255,11 +259,18 @@ namespace rhost {
 
             void connection_close_handler(websocketpp::connection_hdl h)
             {
-                connectionClosed = true;
+                is_connection_closed = true;
+                unblock_message_loop();
             }
 
-            void thread_func(unsigned port) {
+            void server_thread_func(unsigned port) {
                 ws_server_type server;
+
+#ifdef NDEBUG
+                server.set_access_channels(websocketpp::log::alevel::none);
+                server.set_error_channels(websocketpp::log::elevel::none);
+#endif
+
                 server.set_open_handler([&](websocketpp::connection_hdl hdl) {
                     ws_conn_promise.set_value(server.get_con_from_hdl(hdl));
                 });
@@ -289,7 +300,8 @@ namespace rhost {
         }
 
         void wait_for_client(unsigned port) {
-            server_thread.reset(new std::thread(thread_func, port));
+            main_thread_id = GetCurrentThreadId();
+            server_thread.reset(new std::thread(server_thread_func, port));
             ws_conn = ws_conn_promise.get_future().get();
 
             picojson::object obj;
