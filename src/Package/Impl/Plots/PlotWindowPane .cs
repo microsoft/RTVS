@@ -36,7 +36,11 @@ Please open a file to show XAML file here.
 
         private void OpenPlotCommand()
         {
-            DisplayXamlFile(GetFileName());
+            var filename = GetFileName();
+            if (filename != null)   // user pressed cancel
+            {
+                DisplayXamlFile(filename);
+            }
         }
 
         public void DisplayXamlFile(string filePath)
