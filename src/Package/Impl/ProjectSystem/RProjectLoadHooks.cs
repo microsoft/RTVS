@@ -44,18 +44,19 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
             // Force REPL window up
             await ReplWindow.EnsureReplWindow();
 
-            var interaction = await _sessionProvider.Current.BeginInteractionAsync(false);
-            await interaction.SetWorkingDirectory(_projectDirectory);
+            using (var evaluation = await _sessionProvider.Current.BeginEvaluationAsync()) {
+                await evaluation.SetWorkingDirectory(_projectDirectory);
+            }
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args)
         {
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             var currentSession = _sessionProvider.Current;
-            if (currentSession != null)
-            {
-                var interaction = await currentSession.BeginInteractionAsync(false);
-                await interaction.SetDefaultWorkingDirectory();
+            if (currentSession != null) {
+                using (var evaluation = await currentSession.BeginEvaluationAsync()) {
+                    await evaluation.SetDefaultWorkingDirectory();
+                }
             }
         }
     }

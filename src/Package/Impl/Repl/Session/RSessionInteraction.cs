@@ -8,7 +8,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
     internal sealed class RSessionInteraction : IRSessionInteraction
     {
         private readonly TaskCompletionSource<string> _requestTcs;
-        private readonly TaskCompletionSource<string> _responseTcs;
+        private readonly TaskCompletionSource<object> _responseTcs;
 
         public string Prompt { get; }
         public int MaxLength { get; }
@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
         public RSessionInteraction(
             TaskCompletionSource<string> requestTcs,
-            TaskCompletionSource<string> responseTcs,
+            TaskCompletionSource<object> responseTcs,
             string prompt,
             int maxLength,
             IReadOnlyCollection<IRContext> contexts)
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             Contexts = contexts;
         }
 
-        public Task<string> RespondAsync(string messageText)
+        public Task RespondAsync(string messageText)
         {
             _requestTcs.SetResult(messageText);
             return _responseTcs.Task;
