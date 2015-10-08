@@ -154,7 +154,7 @@
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
-
+      
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0300">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
@@ -325,7 +325,7 @@
           <CommandName>Zoom In Plot</CommandName>
         </Strings>
       </Button>
-
+      
       <Button guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0200" type="Button">
         <Icon guid="ImageCatalogGuid" id="ZoomOut"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -588,7 +588,7 @@
       <Bitmaps>
         <Bitmap guid="pdfIconGuid" href="Images\pdf.bmp" usedList="pdfIcon" />
       </Bitmaps>
-    </Bitmaps>
+      </Bitmaps>
   </Commands>
 
   <CommandPlacements>

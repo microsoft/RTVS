@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
                 try
                 {
                     DisplayXamlFile(fileName);
-                }
+        }
                 catch(Exception ex)
                 {
                     EditorShell.Current.ShowErrorMessage(

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
+using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Data;
@@ -29,7 +30,9 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
             commands.Add(new ShowPlotWindowsCommand());
             commands.Add(new ShowRInteractiveWindowsCommand());
- 
+
+            commands.Add(new ShowVariableWindowCommand());
+
             return commands;
         }
     }

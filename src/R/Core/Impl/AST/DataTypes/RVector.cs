@@ -37,7 +37,7 @@ namespace Microsoft.R.Core.AST.DataTypes
         /// </summary>
         public int Length { get; private set; }
 
-        public T this[int index]
+        public virtual T this[int index]
         {
             get  
             {

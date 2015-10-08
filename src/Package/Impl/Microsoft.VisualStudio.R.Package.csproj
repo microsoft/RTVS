@@ -78,6 +78,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
@@ -98,6 +99,15 @@
     <Compile Include="Commands\ShowContextMenuCommand.cs" />
     <Compile Include="Commands\R\VsRCommandFactory.cs" />
     <Compile Include="Commands\R\VsRTextViewConnectionListener.cs" />
+    <Compile Include="DataInspect\BooleanToHidingVisibilityConveter.cs" />
+    <Compile Include="DataInspect\LevelToMarginConverter.cs" />
+    <Compile Include="Plots\PlotWindowPane .cs" />
+    <Compile Include="DataInspect\REvaluation.cs" />
+    <Compile Include="DataInspect\Variable.cs" />
+    <Compile Include="DataInspect\VariableProvider.cs" />
+    <Compile Include="DataInspect\VariableView.xaml.cs">
+      <DependentUpon>VariableView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Document\IVsEditorDocumentFactory.cs" />
     <Compile Include="Document\Markdown\VsMdEditorDocument.cs" />
     <Compile Include="Document\Markdown\VsMdEditorDocumentFactory.cs" />
@@ -123,7 +133,7 @@
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
     <Compile Include="Packages\CommandIDs.cs" />
     <Compile Include="Packages\ShowBraceCompletionAttribute.cs" />
-    <Compile Include="Plots\PlotWindowPane.cs" />
+    <Compile Include="DataInspect\VariableWindowPane.cs" />
     <Compile Include="Plots\XamlPresenter.xaml.cs">
       <DependentUpon>XamlPresenter.xaml</DependentUpon>
     </Compile>
@@ -220,6 +230,10 @@
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
     <None Include="app.config" />
+    <Content Include="DataInspect\DataInspect.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="packages.config" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -363,6 +377,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
@@ -540,6 +555,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Plots\XamlPresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DataInspect\VariableView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
