@@ -220,10 +220,6 @@
     <Compile Include="Utilities\CompletionUtilities.cs" />
     <Compile Include="Utilities\ToolWindowUtilities.cs" />
     <Compile Include="Utilities\ViewUtilities.cs" />
-    <Compile Include="VariableExplorer\RVariable.cs" />
-    <Compile Include="VariableExplorer\RVariableCollection.cs" />
-    <Compile Include="VariableExplorer\RVariableSession.cs" />
-    <Compile Include="VariableExplorer\RVariableSessionProvider.cs" />
     <Compile Include="Workspace\VsFileInfo.cs" />
     <Compile Include="Workspace\IVsWorkspaceItem.cs" />
     <Compile Include="Workspace\VsFile.cs" />
@@ -377,12 +373,6 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Validation, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.VariableWindow">
-      <HintPath>..\..\External\Microsoft.VisualStudio.VariableWindow.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.VariableWindow.Interfaces">
-      <HintPath>..\..\External\Microsoft.VisualStudio.VariableWindow.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
