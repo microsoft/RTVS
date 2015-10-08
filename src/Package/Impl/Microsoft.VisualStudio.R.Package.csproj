@@ -82,6 +82,9 @@
     <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
     <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
     <Compile Include="Plots\Commands\PrintPlotCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
@@ -117,7 +120,7 @@
     <Compile Include="Plots\Commands\SavePlotCommand.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
-    <Compile Include="Publishing\PreviewCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewCommand.cs" />
     <Compile Include="Publishing\Definitions\PublishFormat.cs" />
     <Compile Include="Publishing\PublishLog.cs" />
     <Compile Include="Logging\PackagesInstallLog.cs" />
