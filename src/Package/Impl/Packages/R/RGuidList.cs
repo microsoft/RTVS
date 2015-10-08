@@ -14,7 +14,6 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         public const string ReplInteractiveWindowProviderGuidString = "C2582843-58C9-4FE7-B4BD-864C17AD7CE2";
         public const string ReplWindowGuidString = "7026C640-8831-43A4-A93A-A56AA6BB9552";
-        public const string PlotWindowGuidString = "FE3D0077-CFD8-4178-A755-9B98D0FB6458";
 
         public static readonly Guid RPackageGuid = new Guid(RPackageGuidString);
         public static readonly Guid REditorFactoryGuid = new Guid(REditorFactoryGuidString);
@@ -25,6 +24,5 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         public static readonly Guid ReplInteractiveWindowProviderGuid = new Guid(ReplInteractiveWindowProviderGuidString);
         public static readonly Guid ReplWindowGuid = new Guid(ReplWindowGuidString);
-        public static readonly Guid PlotWindowGuid = new Guid(PlotWindowGuidString);
     };
 }
