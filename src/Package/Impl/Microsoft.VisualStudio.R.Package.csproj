@@ -78,6 +78,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
     <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
     <Compile Include="Plots\Commands\PrintPlotCommand.cs" />
@@ -441,10 +442,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="VSShell\ShellIcons.h" />
-    <None Include="Images\Folder_6221_24.bmp" />
     <None Include="Microsoft.R.Host.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Images\pdf.bmp" />
     <Content Include="Resources\Package.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
       <SubType>Designer</SubType>

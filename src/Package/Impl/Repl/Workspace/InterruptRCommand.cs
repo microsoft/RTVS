@@ -1,22 +1,17 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Packages.R;
+﻿using Microsoft.VisualStudio.R.Package.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace
 {
-    public sealed class InterruptRCommand : MenuCommand
+    internal sealed class InterruptRCommand : PackageCommand
     {
         public InterruptRCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.InteractiveSessionInterrupt))
+            base(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.InteractiveSessionInterrupt)
         {
         }
 
-        class Handler
+        protected override void SetStatus()
         {
-            public void OnCommand()
-            {
-            }
+            Enabled = false;
         }
     }
 }

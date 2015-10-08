@@ -1,22 +1,18 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Commands;
+﻿using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands
 {
-    public sealed class ExportPlotCommand : MenuCommand
+    internal sealed class ExportPlotCommand : PackageCommand
     {
         public ExportPlotCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlot))
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlot)
         {
         }
 
-        class Handler
+        protected override void SetStatus()
         {
-            public void OnCommand()
-            {
-            }
+            Enabled = false;
         }
     }
 }

@@ -151,9 +151,16 @@ Please open a file to show XAML file here.
                             case RPackageCommandId.icmdOpenPlot:
                                 prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_ENABLED | OLECMDF.OLECMDF_SUPPORTED);
                                 return VSConstants.S_OK;
+                            case RPackageCommandId.icmdZoomInPlot:
+                                prgCmds[i].cmdf = 0;
+                                return VSConstants.S_OK;
+                            case RPackageCommandId.icmdZoomOutPlot:
+                                prgCmds[i].cmdf = 0;
+                                return VSConstants.S_OK;
                         }
                     }
                 }
+
                 return VSConstants.E_FAIL;
             }
         }

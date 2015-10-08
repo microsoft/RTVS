@@ -1,22 +1,22 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Commands;
+﻿using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands
 {
-    public sealed class CopyPlotCommand : MenuCommand
+    internal sealed class CopyPlotCommand : PackageCommand
     {
         public CopyPlotCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlot))
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlot)
         {
         }
 
-        class Handler
+        protected override void SetStatus()
         {
-            public void OnCommand()
-            {
-            }
+            Enabled = false;
+        }
+
+        protected override void Handle()
+        {
         }
     }
 }

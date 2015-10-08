@@ -1,22 +1,17 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Commands;
+﻿using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Data
 {
-    public sealed class ImportDataSetTextFileCommand : MenuCommand
+    internal sealed class ImportDataSetTextFileCommand : PackageCommand
     {
         public ImportDataSetTextFileCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetTextFile))
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetTextFile)
         {
         }
-
-        class Handler
+        protected override void SetStatus()
         {
-            public void OnCommand()
-            {
-            }
+            this.Enabled = ReplWindow.ReplWindowExists();
         }
     }
 }
