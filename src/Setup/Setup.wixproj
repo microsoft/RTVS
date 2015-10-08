@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\R.Build.Version.targets" />
   <Import Project="..\R.Wix.Settings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.7</ProductVersion>
-    <ProjectGuid>b86e0ba1-82af-45f8-9be8-fddcb8ef7f13</ProjectGuid>
+    <ProjectGuid>B86E0BA1-82AF-45F8-9BE8-FDDCB8EF7F13</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>RTVS</OutputName>
     <OutputType>Package</OutputType>
