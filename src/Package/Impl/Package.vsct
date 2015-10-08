@@ -20,7 +20,7 @@
       </Menu>
       <!-- End R code editor context menu -->
 
-      <Menu guid="guidRToolsCmdSet" id="menuIdPlotToolbar" type="ToolWindowToolbar" priority="0x100">
+      <Menu guid="guidRToolsCmdSet" id="plotWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
         <Parent guid="guidRToolsCmdSet" id="0" />
         <CommandFlag>DefaultDocked</CommandFlag>
         <CommandFlag>NoToolbarClose</CommandFlag>
@@ -119,7 +119,7 @@
 
       <!-- PlotWindow groups -->
       <Group guid="guidRToolsCmdSet" id="plotToolbarGroup" priority="0x0000">
-        <Parent guid="guidRToolsCmdSet" id="menuIdPlotToolbar"/>
+        <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
       </Group>
 
       <!-- Main menu groups-->
@@ -762,7 +762,7 @@
       <IDSymbol name="icmdShowPackagesWindow" value="905" />
 
       <IDSymbol name="plotToolbarGroup" value="0x1000" />
-      <IDSymbol name="menuIdPlotToolbar" value="0x2000" />
+      <IDSymbol name="plotWindowToolBarId" value="0x2000" />
 
       <!-- Submenus-->
       <IDSymbol name="mainMenuGroup" value="0x100"/>

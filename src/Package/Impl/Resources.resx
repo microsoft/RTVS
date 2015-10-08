@@ -264,4 +264,16 @@
   <data name="Error_PackageMissing" xml:space="preserve">
     <value>This operation requires package {0} which is not installed or has been removed. </value>
   </data>
+  <data name="PlotWindowCaption" xml:space="preserve">
+    <value>R Plot</value>
+  </data>
+  <data name="EmptyPlotWindowWatermark" xml:space="preserve">
+    <value>Please open a saved plot file to display data</value>
+  </data>
+  <data name="OpenXamlPlotDialogTitle" xml:space="preserve">
+    <value>Choose XAML File</value>
+  </data>
+  <data name="XamlFileFilter" xml:space="preserve">
+    <value>XAML Files (*.xaml)|*.xaml|All Files (*.*)|*.*</value>
+  </data>
 </root>

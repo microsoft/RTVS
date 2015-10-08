@@ -97,6 +97,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please open a saved plot file to display data.
+        /// </summary>
+        internal static string EmptyPlotWindowWatermark {
+            get {
+                return ResourceManager.GetString("EmptyPlotWindowWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to delete file {0}. Exception: {1}..
         /// </summary>
         internal static string Error_CannotDeleteFile {
@@ -187,6 +196,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose XAML File.
+        /// </summary>
+        internal static string OpenXamlPlotDialogTitle {
+            get {
+                return ResourceManager.GetString("OpenXamlPlotDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Packages.
         /// </summary>
         internal static string OutputWindowName_InstallPackages {
@@ -201,6 +219,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string OutputWindowName_Publish {
             get {
                 return ResourceManager.GetString("OutputWindowName_Publish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot.
+        /// </summary>
+        internal static string PlotWindowCaption {
+            get {
+                return ResourceManager.GetString("PlotWindowCaption", resourceCulture);
             }
         }
         
@@ -498,6 +525,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string UndoActionFormatDocument {
             get {
                 return ResourceManager.GetString("UndoActionFormatDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XAML Files (*.xaml)|*.xaml|All Files (*.*)|*.*.
+        /// </summary>
+        internal static string XamlFileFilter {
+            get {
+                return ResourceManager.GetString("XamlFileFilter", resourceCulture);
             }
         }
     }
