@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSessionEvaluation : IDisposable {
-        IReadOnlyCollection<IRContext> Contexts { get; }
+        IReadOnlyList<IRContext> Contexts { get; }
         /// <param name="reentrant">
         /// If <c>true</c>, nested evaluations are possible if R transitions to the state allowing evaluation
         /// while evaluating this expression. Otherwise, no nested evaluations are possible.

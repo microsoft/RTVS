@@ -90,6 +90,7 @@
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
+    <Compile Include="Repl\RSessionExtensions.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
@@ -133,6 +134,12 @@
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
+    <Compile Include="Packages\CommandIDs.cs" />
+    <Compile Include="Packages\ProvideDebugEngineAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugExceptionAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugLanguageAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugPortPickerAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugPortSupplierAttribute.cs" />
     <Compile Include="Packages\ShowBraceCompletionAttribute.cs" />
     <Compile Include="DataInspect\VariableWindowPane.cs" />
     <Compile Include="Plots\XamlPresenter.xaml.cs">
@@ -180,8 +187,9 @@
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Session\RSession.cs" />
-    <Compile Include="Repl\Session\RSessionCommands.cs" />
+    <Compile Include="Repl\Session\RSessionInteractionCommands.cs" />
     <Compile Include="Repl\Session\RSessionEvaluation.cs" />
+    <Compile Include="Repl\Session\RSessionEvaluationCommands.cs" />
     <Compile Include="Repl\Session\RSessionEvaluationSource.cs" />
     <Compile Include="Repl\Session\RSessionInteraction.cs" />
     <Compile Include="Repl\Session\RSessionRequestSource.cs" />
@@ -277,6 +285,9 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Debugger.Interop, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
@@ -395,6 +406,10 @@
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Debugger\Engine\Impl\Microsoft.R.Debugger.Engine.csproj">
+      <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
+      <Name>Microsoft.R.Debugger.Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>

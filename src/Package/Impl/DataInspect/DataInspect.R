@@ -1,51 +1,32 @@
-.rtvs.datainspect.eval_into <<- function(con, expr, env) {
+.rtvs.datainspect.eval_into <<- function(expr, env) {
 	obj <- eval(parse(text = expr), env);
-	repr <- capture.output(str(obj, list.len = 0))
+	repr <- capture.output(str(obj, list.len = 0));
 
-	cat('"name": ', file = con, sep = '');
-	dput(expr, file = con);
-	cat(',"class": "', file = con, sep = '');
-	cat(class(obj), file = con);
-	cat('"', file = con, sep = '');
-	cat(',"value": ', file = con, sep = '');
-	dput(repr[1], file = con);
-	cat(',"type": ', file = con, sep = '');
-	dput(typeof(obj), file = con);
+	fmt <- '"name":  "%s", "class": "%s", "value": "%s", "type": "%s"';
+	return (gettextf(fmt, expr, class(obj), repr[1], typeof(obj)));
 }
 .rtvs.datainspect.eval <<- function(expr, env) {
-	con <- textConnection(NULL, open = "w");
 	json <- "{}";
 	tryCatch({
-		cat('{', file = con, sep = '');
-		.rtvs.datainspect.eval_into(con, expr, env);
-		cat('}\n', file = con, sep = '');
-		json <- textConnectionValue(con);
+		fmt <- '{%s}';
+		json <- gettextf(fmt, .rtvs.datainspect.eval_into(expr, env));
 	}, finally = {
-		close(con);
 	});
-	cat(json);
+	return(json);
 }
 .rtvs.datainspect.env_vars <<- function(env) {
-	con <- textConnection(NULL, open = "w");
-	json <- "{}";
+	json <- "[]";
 	tryCatch({
-		cat('[', file = con, sep = '');
-		is_first <- TRUE;
-		for (varname in ls(env)) {
-			if (is_first) {
-				is_first <- FALSE;
-			}
-			else {
-				cat(', ', file = con, sep = '');
-			}
-			cat('{', file = con, sep = '');
-			.rtvs.datainspect.eval_into(con, varname, env);
-			cat('}', file = con, sep = '');
+		get_object <- function(expr) { 
+			object_fmt <- '{%s}'
+			return(gettextf(object_fmt, .rtvs.datainspect.eval_into(expr, env)));
 		}
-		cat(']\n', file = con, sep = '');
-		json <- textConnectionValue(con);
+
+		list <- sapply(ls(env), get_object, USE.NAMES = FALSE);
+		array_fmt <- '[%s]';
+		json <- gettextf(array_fmt, paste(list, collapse = ','));
+
 	}, finally = {
-		close(con);
 	});
-	cat(json);
+	return(json);
 }

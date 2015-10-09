@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform>x86</Platform>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -20,7 +20,7 @@
     <Manufacturer>Microsoft Corporation</Manufacturer>
     <ManufacturerShortName>Microsoft</ManufacturerShortName>
 
-    <ProductName Condition=" '$(ProductName)'=='' ">Microsoft Visual Studio Tools for Apache Cordova</ProductName>
+    <ProductName Condition=" '$(ProductName)'=='' ">R Tools for Visual Studio</ProductName>
     <DefineConstants>$(DefineConstants);CompatibleVsVersion=$(VsRcVersion);</DefineConstants>
   </PropertyGroup>
 

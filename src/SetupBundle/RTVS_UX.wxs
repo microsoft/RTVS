@@ -8,7 +8,7 @@ Copyright (c) Microsoft. All rights reserved.
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:dd="http://schemas.microsoft.com/wix/2005/01/dd">
   <Fragment>
-    <PayloadGroup Id="mdd_ux">
+    <PayloadGroup Id="rtvs_ux">
       <Payload Name="Themes.xaml"
                SourceFile="UXResources\DarkTheme.xaml" />
       <Payload Name="SkuResources.xaml"
