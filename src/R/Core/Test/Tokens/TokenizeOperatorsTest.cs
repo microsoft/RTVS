@@ -67,7 +67,7 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void Tokenize_CustomOperatorsTest()
+        public void Tokenize_CustomOperatorsTest01()
         {
             var tokens = this.Tokenize("%foo% %русский%", new RTokenizer());
 
@@ -79,6 +79,21 @@ namespace Microsoft.R.Core.Test.Tokens
             Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
             Assert.AreEqual(6, tokens[1].Start);
             Assert.AreEqual(9, tokens[1].Length);
+        }
+
+        [TestMethod]
+        public void Tokenize_CustomOperatorsTest02()
+        {
+            var tokens = this.Tokenize("%<% %?=?%", new RTokenizer());
+
+            Assert.AreEqual(2, tokens.Count);
+            Assert.AreEqual(RTokenType.Operator, tokens[0].TokenType);
+            Assert.AreEqual(0, tokens[0].Start);
+            Assert.AreEqual(3, tokens[0].Length);
+
+            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
+            Assert.AreEqual(4, tokens[1].Start);
+            Assert.AreEqual(5, tokens[1].Length);
         }
     }
 }
