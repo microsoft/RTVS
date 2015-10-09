@@ -18,6 +18,7 @@ namespace Microsoft.R.Debugger.Engine {
             Debug.Assert(engine.Session != null);
             Engine = engine;
             Engine.Session.RSession.BeforeRequest += RSession_BeforeRequest;
+            ResetStackFrames();
         }
 
         public void Dispose() {

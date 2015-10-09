@@ -1,17 +1,12 @@
 using System;
 using System.ComponentModel.Composition;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
+using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.R.Host.Client;
-using Microsoft.Common.Core;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Debugger.Engine {
@@ -76,8 +71,8 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             Session = new DebugSession(session);
-            Session.Initialize().GetAwaiter().GetResult();
             Session.Browse += Session_Browse;
+            Session.Initialize().GetAwaiter().GetResult();
 
             MainThread = new AD7Thread(this);
             _events = pCallback;

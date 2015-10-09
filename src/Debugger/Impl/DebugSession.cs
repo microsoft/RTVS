@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
-using Microsoft.Common.Core;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Debugger {
     public sealed class DebugSession : IDisposable {
         private TaskCompletionSource<object> _stepTcs;
+        private CancellationTokenSource _initialPromptCts = new CancellationTokenSource();
 
         public IRSession RSession { get; set; }
 
@@ -56,12 +57,25 @@ namespace Microsoft.R.Debugger {
             } else if (res.Error != null) {
                 throw new InvalidDataException("DebugHelpers.R failed to eval: " + res.Error);
             }
+
+            // Attach might happen when session is already at the Browse prompt, in which case we have
+            // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
+            // grab an interaction and check the prompt.
+            RSession.BeginInteractionAsync().ContinueWith(async t => {
+                using (var inter = await t) {
+                    // If we got AfterRequest before we got here, then that has already taken care of
+                    // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.
+                    _initialPromptCts.Token.ThrowIfCancellationRequested();
+                    // Otherwise, treat it the same as if AfterRequest just happened.
+                    CheckForBrowse(inter.Contexts);
+                }
+            }).DoNotWait();
         }
 
         public async Task ExecuteBrowserCommandAsync(string command) {
             ThrowIfDisposed();
             using (var inter = await RSession.BeginInteractionAsync(isVisible: true).ConfigureAwait(false)) {
-                if (IsInBrowser(inter.Contexts)) {
+                if (IsInBrowseMode(inter.Contexts)) {
                     await inter.RespondAsync(command + "\n").ConfigureAwait(false);
                 }
             }
@@ -180,21 +194,26 @@ namespace Microsoft.R.Debugger {
             return stackFrames;
         }
 
-        private bool IsInBrowser(IReadOnlyList<IRContext> contexts) {
+        private bool IsInBrowseMode(IReadOnlyList<IRContext> contexts) {
             return contexts.SkipWhile(context => context.CallFlag.HasFlag(RContextType.Restart))
                 .FirstOrDefault()?.CallFlag.HasFlag(RContextType.Browser) == true;
         }
 
-        private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
-            if (IsInBrowser(e.Contexts)) {
+        private void CheckForBrowse(IReadOnlyList<IRContext> contexts) {
+            if (IsInBrowseMode(contexts)) {
                 if (_stepTcs != null) {
                     var stepTcs = _stepTcs;
                     _stepTcs = null;
                     stepTcs.TrySetResult(null);
-                } 
+                }
 
                 Browse?.Invoke(this, EventArgs.Empty);
-            } 
+            }
+        }
+
+        private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
+            _initialPromptCts.Cancel();
+            CheckForBrowse(e.Contexts);
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
