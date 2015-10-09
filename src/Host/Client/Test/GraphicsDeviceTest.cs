@@ -191,6 +191,7 @@ grid.newpage()
             host.CreateAndRun(rhome, psi).GetAwaiter().GetResult();
             // Right now we may receive more than one xaml file, so just use the last one
             // Later, we'll want to check that we got the expected count
+            Assert.IsTrue(callbacks.XamlFilePaths.Count > 0);
             var filePath = callbacks.XamlFilePaths[callbacks.XamlFilePaths.Count - 1];
             Assert.IsNotNull(filePath);
             Assert.IsTrue(File.Exists(filePath));
