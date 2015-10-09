@@ -8,6 +8,8 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Resources;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -32,8 +34,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
             SetRSession(sessionProvider.Current);
-
-            Task t = RefreshVariableCollection();   // TODO: have a no-await wrapper to handle side effects
         }
 
         #region Public
@@ -102,6 +102,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 _rSession.BeforeRequest += RSession_BeforeRequest;
                 _rSession.Disconnected += RSession_Disconnected;
                 _rSessionInitialized = false;
+
+                Task t = RefreshVariableCollection();   // TODO: have a no-await wrapper to handle side effects
             }
 
             if (SessionsChanged != null) {
@@ -111,9 +113,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private async Task EnsureRSessionInitialized() {
             if (!_rSessionInitialized) {
-                string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string filePath = Path.Combine(dir, @"DataInspect\DataInspect.R").Replace('\\', '/');
-                string script = $"source('{filePath}')\n";
+
+                string script = null;
+
+                var assembly = this.GetType().Assembly;
+                using (var stream = assembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.DataInspect.DataInspect.R"))
+                {
+                    using (var reader = new StreamReader(stream))
+                    {
+                        script = reader.ReadToEnd();
+                    }
+                }
+                script += "\n";
 
                 using (var interactor = await _rSession.BeginEvaluationAsync()) {
                     await interactor.EvaluateAsync(script, false);

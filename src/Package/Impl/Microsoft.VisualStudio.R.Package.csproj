@@ -238,10 +238,9 @@
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
     <None Include="app.config" />
-    <Content Include="DataInspect\DataInspect.R">
+    <EmbeddedResource Include="DataInspect\DataInspect.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
