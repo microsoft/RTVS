@@ -17,6 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _evaluator = evaluator;
             _tcs = new TaskCompletionSource<object>();
             _ct = ct;
+            ct.Register(() => _tcs.TrySetCanceled());
         }
 
         public void Dispose() {

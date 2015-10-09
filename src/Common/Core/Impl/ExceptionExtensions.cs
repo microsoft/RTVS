@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Microsoft.Common.Core
 {
-    static class ExceptionExtensions
+    public static class ExceptionExtensions
     {
         /// <summary>
         /// Returns true if an exception should not be handled by logging code.
