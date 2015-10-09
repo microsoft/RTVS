@@ -32,6 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
             SetRSession(sessionProvider.Current);
+
+            Task t = RefreshVariableCollection();   // TODO: have a no-await wrapper to handle side effects
         }
 
         #region Public
@@ -59,10 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// Used to queue another request to refresh variables after the interaction request.
         /// </summary>
         private async void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
-            // await cause thie event handler returns and let event raiser run through
-            // but it wait internally for varaible evaluation request to be processed
             await RefreshVariableCollection();
-            _view.RefreshData();
         }
 
         /// <summary>
@@ -138,6 +137,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     _variables = evaluations.Select(Variable.Create).ToList();
                 }
             }
+
+            _view.RefreshData();
         }
 
         private static T Deserialize<T>(string response) where T : class {
