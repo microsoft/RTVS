@@ -409,6 +409,10 @@
       <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
       <Name>Microsoft.R.Debugger.Engine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Debugger\Impl\Microsoft.R.Debugger.csproj">
+      <Project>{17e155bf-351c-4253-b9b1-36eeea35fe3c}</Project>
+      <Name>Microsoft.R.Debugger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
       <Name>Microsoft.R.Host.Client</Name>
