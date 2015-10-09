@@ -106,7 +106,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please open a saved plot file to display data.
+        ///   Looks up a localized string similar to Create a plot or open a saved plot file to display data.
         /// </summary>
         internal static string EmptyPlotWindowWatermark {
             get {

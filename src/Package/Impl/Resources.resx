@@ -268,7 +268,7 @@
     <value>R Plot</value>
   </data>
   <data name="EmptyPlotWindowWatermark" xml:space="preserve">
-    <value>Please open a saved plot file to display data</value>
+    <value>Create a plot or open a saved plot file to display data</value>
   </data>
   <data name="OpenPlotDialogTitle" xml:space="preserve">
     <value>Open R Plot File</value>
@@ -278,7 +278,7 @@
   </data>
   <data name="CannotOpenPlotFile" xml:space="preserve">
     <value>Unable to open plot file. Exception: {0}</value>
-  </data>  
+  </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
     <value>Starting R Session...</value>
   </data>
