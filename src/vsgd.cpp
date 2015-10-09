@@ -1,5 +1,7 @@
 #include <fstream>
 
+#include "boost/algorithm/string.hpp"
+
 #include "xamlbuilder.h"
 #include "Rgraphicsapi.h"
 #include "server.h"
@@ -97,7 +99,9 @@ static std::string r_line_type_to_xaml(int lty) {
         stream << val << " ";
     }
 
-    return stream.str();
+    std::string str = stream.str();
+    boost::algorithm::trim_right(str);
+    return str;
 }
 
 static std::string r_line_join_to_xaml(int ljoin) {
