@@ -62,8 +62,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _initializationTcs = new TaskCompletionSource<object>();
 
             _hostRunTask = Task.Run(() => _host.CreateAndRun(RToolsSettings.GetRVersionPath()));
+            this.ScheduleEvaluation(async e => {
+                await e.SetVsGraphicsDevice();
+                await e.SetDefaultWorkingDirectory();
+            });
 
-            var initializationTask = _initializationTcs.Task.ContinueWith(new Func<Task, Task>(AfterInitialization)).Unwrap();
+            var initializationTask = _initializationTcs.Task;
 
             return Task.WhenAny(initializationTask, _hostRunTask).Unwrap();
         }
@@ -81,13 +85,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             await request.Quit();
             await _hostRunTask;
-        }
-
-        private async Task AfterInitialization(Task task) {
-            using (var evaluation = await BeginEvaluationAsync()) {
-                await evaluation.SetVsGraphicsDevice();
-                await evaluation.SetDefaultWorkingDirectory();
-            }
         }
 
         Task IRCallbacks.Connected(string rVersion) {
@@ -123,7 +120,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         async Task<string> IRCallbacks.ReadConsole(IReadOnlyCollection<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-            currentRequest?.Complete();
 
             _contexts = contexts;
             Prompt = prompt;
@@ -135,12 +131,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             Task evaluationTask;
 
             if (isEvaluationAllowed) {
+                await EvaluateAll(contexts, ct);
                 evaluationCts = new CancellationTokenSource();
                 evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct);
             } else {
                 evaluationCts = null;
                 evaluationTask = Task.CompletedTask;
             }
+
+            currentRequest?.Complete();
 
             string consoleInput = null;
 
