@@ -13,11 +13,13 @@ using System.Diagnostics;
 namespace Microsoft.R.Debugger {
     public sealed class DebugSession : IDisposable {
         private List<DebugStackFrame> _stackFrames = new List<DebugStackFrame>();
+        private TaskCompletionSource<object> _stepTcs;
 
         public IRSession RSession { get; }
 
-        public event EventHandler BreakpointHit;
+        public event EventHandler Paused;
         public event EventHandler Resumed;
+        public event EventHandler BreakpointHit;
 
         public DebugSession(IRSession session) {
             RSession = session;
@@ -56,9 +58,11 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        public async Task ExecuteAsync(string command) {
+        public async Task ExecuteBrowserCommandAsync(string command) {
             using (var inter = await RSession.BeginInteractionAsync(isVisible: true).ConfigureAwait(false)) {
-                await inter.RespondAsync(command).ConfigureAwait(false);
+                if (IsInBrowser(inter.Contexts)) {
+                    await inter.RespondAsync(command + "\n").ConfigureAwait(false);
+                }
             }
         }
 
@@ -85,6 +89,38 @@ namespace Microsoft.R.Debugger {
             }
 
             return new DebugSuccessfulEvaluationResult(stackFrame, expression, JObject.Parse(res.Result));
+        }
+
+        public Task StepIntoAsync() {
+            return Step("s");
+        }
+
+        public Task StepOverAsync() {
+            return Step("n");
+        }
+
+        public Task StepOutAsync() {
+            return Step("browserSetDebug()", "c");
+        }
+
+        private async Task Step(params string[] commands) {
+            Debug.Assert(commands.Length > 0);
+            _stepTcs = new TaskCompletionSource<object>();
+            for (int i = 0; i < commands.Length - 1; ++i) {
+                await ExecuteBrowserCommandAsync(commands[i]);
+            }
+
+            ExecuteBrowserCommandAsync(commands.Last()).DoNotWait();
+            await _stepTcs.Task;
+        }
+
+        public void CancelStep() {
+            if (_stepTcs == null) {
+                throw new InvalidOperationException("No step to end.");
+            }
+
+            _stepTcs.TrySetCanceled();
+            _stepTcs = null;
         }
 
         private async Task FetchStackFrames(IRSessionEvaluation eval) {
@@ -129,15 +165,30 @@ namespace Microsoft.R.Debugger {
             _stackFrames.Reverse();
         }
 
+        private bool IsInBrowser(IReadOnlyList<IRContext> contexts) {
+            return contexts.SkipWhile(context => context.CallFlag.HasFlag(RContextType.Restart))
+                .FirstOrDefault()?.CallFlag.HasFlag(RContextType.Browser) == true;
+        }
+
         private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
-            var contexts = e.Contexts.ToList();
-            if (contexts.Count >= 2 && contexts[0].CallFlag.HasFlag(RContextType.Restart) && contexts[1].CallFlag.HasFlag(RContextType.Browser)) {
+            if (IsInBrowser(e.Contexts)) {
                 RSession.BeginEvaluationAsync().ContinueWith(async t => {
                     using (var eval = await t) {
                         await FetchStackFrames(eval).ConfigureAwait(false);
+                    }
+
+                    if (_stepTcs != null) {
+                        var stepTcs = _stepTcs;
+                        _stepTcs = null;
+                        stepTcs.TrySetResult(null);
+                    } else {
                         BreakpointHit?.Invoke(this, EventArgs.Empty);
                     }
+
+                    Paused?.Invoke(this, EventArgs.Empty);
                 });
+            } else {
+                Paused?.Invoke(this, EventArgs.Empty);
             }
         }
 

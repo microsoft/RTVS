@@ -9,10 +9,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         private readonly TaskCompletionSource<object> _tcs;
         private readonly CancellationToken _ct;
 
-        public IReadOnlyCollection<IRContext> Contexts { get; }
+        public IReadOnlyList<IRContext> Contexts { get; }
         public Task Task => _tcs.Task;
 
-        public RSessionEvaluation(IReadOnlyCollection<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct) {
+        public RSessionEvaluation(IReadOnlyList<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct) {
             Contexts = contexts;
             _evaluator = evaluator;
             _tcs = new TaskCompletionSource<object>();

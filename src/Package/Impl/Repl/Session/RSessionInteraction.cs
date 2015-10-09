@@ -12,14 +12,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
         public string Prompt { get; }
         public int MaxLength { get; }
-        public IReadOnlyCollection<IRContext> Contexts { get; }
+        public IReadOnlyList<IRContext> Contexts { get; }
 
         public RSessionInteraction(
             TaskCompletionSource<string> requestTcs,
             TaskCompletionSource<object> responseTcs,
             string prompt,
             int maxLength,
-            IReadOnlyCollection<IRContext> contexts)
+            IReadOnlyList<IRContext> contexts)
         {
             _requestTcs = requestTcs;
             _responseTcs = responseTcs;

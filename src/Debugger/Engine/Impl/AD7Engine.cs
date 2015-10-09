@@ -102,6 +102,8 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugEngine2.ContinueFromSynchronousEvent(IDebugEvent2 pEvent) {
             if (pEvent is AD7ProgramDestroyEvent) {
                 _events = null;
+                Session.Dispose();
+                Session = null;
             }
 
             return VSConstants.S_OK;
@@ -186,7 +188,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (_firstContinue) {
                 _firstContinue = false;
             } else {
-                Session.ExecuteAsync("c").DoNotWait();
+                Session.ExecuteBrowserCommandAsync("c").DoNotWait();
             }
             return VSConstants.S_OK;
         }
@@ -265,24 +267,24 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram2.Step(IDebugThread2 pThread, enum_STEPKIND sk, enum_STEPUNIT Step) {
-            string[] cmds;
+            Task step;
             switch (sk) {
                 case enum_STEPKIND.STEP_OVER:
-                    cmds = new[] { "n" };
+                    step = Session.StepOverAsync();
                     break;
                 case enum_STEPKIND.STEP_INTO:
-                    cmds = new[] { "s" };
+                    step = Session.StepIntoAsync();
                     break;
                 case enum_STEPKIND.STEP_OUT:
-                    cmds = new[] { "browserSetDebug()", "c" };
+                    step = Session.StepOutAsync();
                     break;
                 default:
                     return VSConstants.E_NOTIMPL;
             }
 
-            foreach (var cmd in cmds) {
-                Session.ExecuteAsync(cmd).DoNotWait();
-            }
+            step.ContinueWith(t => {
+                Send(new AD7SteppingCompleteEvent(), AD7SteppingCompleteEvent.IID);
+            });
 
             return VSConstants.S_OK;
         }
@@ -336,6 +338,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram3.ExecuteOnThread(IDebugThread2 pThread) {
+            Session.CancelStep();
             return ((IDebugProgram2)this).Continue(pThread);
         }
 

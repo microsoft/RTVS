@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         /// <summary>
         /// ReadConsole requires a task even if there are no pending requests
         /// </summary>
-        private IReadOnlyCollection<IRContext> _contexts;
+        private IReadOnlyList<IRContext> _contexts;
         private RHost _host;
         private Task _hostRunTask;
         private TaskCompletionSource<object> _initializationTcs;
@@ -118,7 +118,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return Task.CompletedTask;
         }
 
-        async Task<string> IRCallbacks.ReadConsole(IReadOnlyCollection<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+        async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
 
             _contexts = contexts;
@@ -184,7 +184,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return response;
         }
 
-        private async Task EvaluateUntilCancelled(IReadOnlyCollection<IRContext> contexts, CancellationToken evaluationCancellationToken, CancellationToken hostCancellationToken) {
+        private async Task EvaluateUntilCancelled(IReadOnlyList<IRContext> contexts, CancellationToken evaluationCancellationToken, CancellationToken hostCancellationToken) {
             var ct = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken).Token;
 
             while (!ct.IsCancellationRequested) {
@@ -197,14 +197,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        private async Task EvaluateAll(IReadOnlyCollection<IRContext> contexts, CancellationToken ct) {
+        private async Task EvaluateAll(IReadOnlyList<IRContext> contexts, CancellationToken ct) {
             RSessionEvaluationSource source;
             while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
                 await source.BeginEvaluationAsync(contexts, _host, ct);
             }
         }
 
-        Task IRCallbacks.WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
+        Task IRCallbacks.WriteConsoleEx(IReadOnlyList<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
             if (otype == OutputType.Error) {
                 OnError(contexts, buf);
 
@@ -217,12 +217,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.ShowMessage(IReadOnlyCollection<IRContext> contexts, string message, CancellationToken ct) {
+        async Task IRCallbacks.ShowMessage(IReadOnlyList<IRContext> contexts, string message, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
             EditorShell.Current.ShowErrorMessage(message);
         }
 
-        async Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+        async Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
             if (isEvaluationAllowed) {
                 await EvaluateAll(contexts, ct);
             }
@@ -230,11 +230,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return YesNoCancel.Yes;
         }
 
-        Task IRCallbacks.Busy(IReadOnlyCollection<IRContext> contexts, bool which, CancellationToken ct) {
+        Task IRCallbacks.Busy(IReadOnlyList<IRContext> contexts, bool which, CancellationToken ct) {
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.PlotXaml(IReadOnlyCollection<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
+        async Task IRCallbacks.PlotXaml(IReadOnlyList<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
             var frame = FindPlotWindow(0);
@@ -258,7 +258,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return frame;
         }
 
-        private void OnBeforeRequest(IReadOnlyCollection<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
+        private void OnBeforeRequest(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
             var handlers = BeforeRequest;
             if (handlers != null) {
                 var args = new RRequestEventArgs(contexts, prompt, maxLength, addToHistory);
@@ -266,7 +266,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        private void OnAfterRequest(IReadOnlyCollection<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
+        private void OnAfterRequest(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
             var handlers = AfterRequest;
             if (handlers != null) {
                 var args = new RRequestEventArgs(contexts, prompt, maxLength, addToHistory);
@@ -274,7 +274,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        private void OnResponse(IReadOnlyCollection<IRContext> contexts, string message) {
+        private void OnResponse(IReadOnlyList<IRContext> contexts, string message) {
             var handlers = Response;
             if (handlers != null) {
                 var args = new RResponseEventArgs(contexts, message);
@@ -282,7 +282,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        private void OnError(IReadOnlyCollection<IRContext> contexts, string message) {
+        private void OnError(IReadOnlyList<IRContext> contexts, string message) {
             var handlers = Error;
             if (handlers != null) {
                 var args = new RErrorEventArgs(contexts, message);
