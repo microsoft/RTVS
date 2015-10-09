@@ -354,7 +354,7 @@ namespace Microsoft.R.Core.Tokens
             {
                 AddToken(RTokenType.Null, RTokenSubType.BuiltinConstant, start, s.Length);
             }
-            else if (s == "NA")
+            else if (s == "NA" || s == "NA_character_" || s == "NA_complex_" || s == "NA_integer_" || s == "NA_real_")
             {
                 AddToken(RTokenType.Missing, RTokenSubType.BuiltinConstant, start, s.Length);
             }

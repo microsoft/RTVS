@@ -10,6 +10,11 @@ namespace Microsoft.R.Core.Tokens
              return Array.BinarySearch<string>(_constants, candidate) >= 0;
         }
 
+        public static string[] ConstantsList
+        {
+            get { return _constants; }
+        }
+
         // must be sorted
         internal static string[] _constants = new string[]
         {
