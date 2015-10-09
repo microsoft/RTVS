@@ -134,15 +134,16 @@ namespace Microsoft.R.Debugger {
             await _stepTcs.Task;
         }
 
-        public void CancelStep() {
+        public bool CancelStep() {
             ThrowIfDisposed();
 
             if (_stepTcs == null) {
-                throw new InvalidOperationException("No step to end.");
+                return false;
             }
 
             _stepTcs.TrySetCanceled();
             _stepTcs = null;
+            return true;
         }
 
         public async Task<IReadOnlyList<DebugStackFrame>> GetStackFrames() {

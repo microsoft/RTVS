@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
@@ -12,22 +13,37 @@ using Task = System.Threading.Tasks.Task;
 namespace Microsoft.R.Debugger.Engine {
     [ComVisible(true)]
     [Guid(DebuggerGuids.DebugEngineCLSIDString)]
-    public sealed class AD7Engine : IDebugEngine2, IDebugEngineLaunch2, IDebugProgram3, IDebugSymbolSettings100 {
-        private bool _firstContinue = true;
+    public sealed class AD7Engine : IDebugEngine2, IDebugEngineLaunch2, IDebugProgram3, IDebugSymbolSettings100, IDisposable {
+        private IDebugEventCallback2 _events;
+        private IDebugProgram2 _program;
+        private Guid _programId;
+        private bool _firstContinue = true, _sentContinue = false;
 
         internal DebugSession Session { get; private set; }
 
         internal AD7Thread MainThread { get; private set; }
 
+        internal bool IsInBrowseMode { get; set; }
+
         [Import]
         private IRSessionProvider SessionProvider { get; set; }
-
-        private IDebugEventCallback2 _events;
-        private Guid _programId;
 
         public AD7Engine() {
             var compModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
             compModel.DefaultCompositionService.SatisfyImportsOnce(this);
+        }
+
+        public void Dispose() {
+            _events = null;
+            _program = null;
+
+            MainThread.Dispose();
+            MainThread = null;
+
+            Session.Dispose();
+            Session = null;
+
+            SessionProvider = null;
         }
 
         internal void Send(IDebugEvent2 eventObject, string iidEvent, IDebugProgram2 program, IDebugThread2 thread) {
@@ -63,7 +79,8 @@ namespace Microsoft.R.Debugger.Engine {
                 throw new ArgumentException("Zero or more than one program node, or program node is not a " + typeof(AD7ProgramNode), "rgpProgramNodes");
             }
 
-            Marshal.ThrowExceptionForHR(rgpPrograms[0].GetProgramId(out _programId));
+            _program = rgpPrograms[0];
+            Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
             var session = SessionProvider.Current;
             if (session == null) {
@@ -72,6 +89,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             Session = new DebugSession(session);
             Session.Browse += Session_Browse;
+            Session.RSession.AfterRequest += RSession_AfterRequest;
             Session.Initialize().GetAwaiter().GetResult();
 
             MainThread = new AD7Thread(this);
@@ -93,20 +111,16 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugEngine2.ContinueFromSynchronousEvent(IDebugEvent2 pEvent) {
             if (pEvent is AD7ProgramDestroyEvent) {
-                _events = null;
-
-                MainThread.Dispose();
-                MainThread = null;
-
-                Session.Dispose();
-                Session = null;
+                Dispose();
             }
 
             return VSConstants.S_OK;
         }
 
         int IDebugEngine2.CreatePendingBreakpoint(IDebugBreakpointRequest2 pBPRequest, out IDebugPendingBreakpoint2 ppPendingBP) {
-            throw new NotImplementedException();
+            // TODO
+            ppPendingBP = null;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IDebugEngine2.DestroyProgram(IDebugProgram2 pProgram) {
@@ -124,15 +138,18 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngine2.RemoveAllSetExceptions(ref Guid guidType) {
-            throw new NotImplementedException();
+            // TODO
+            return VSConstants.E_NOTIMPL;
         }
 
         int IDebugEngine2.RemoveSetException(EXCEPTION_INFO[] pException) {
-            throw new NotImplementedException();
+            // TODO
+            return VSConstants.E_NOTIMPL;
         }
 
         int IDebugEngine2.SetException(EXCEPTION_INFO[] pException) {
-            throw new NotImplementedException();
+            // TODO
+            return VSConstants.E_NOTIMPL;
         }
 
         int IDebugEngine2.SetLocale(ushort wLangID) {
@@ -184,7 +201,12 @@ namespace Microsoft.R.Debugger.Engine {
             if (_firstContinue) {
                 _firstContinue = false;
             } else {
-                Session.ExecuteBrowserCommandAsync("c").DoNotWait();
+                // If _sentContinue is true, then this is a dummy Continue issued to notify the
+                // debugger that user has explicitly entered something at the Browse prompt. 
+                if (!_sentContinue) {
+                    _sentContinue = true;
+                    Session.ExecuteBrowserCommandAsync("c").DoNotWait();
+                }
             }
             return VSConstants.S_OK;
         }
@@ -387,9 +409,30 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void Session_Browse(object sender, EventArgs e) {
+            IsInBrowseMode = true;
+            _sentContinue = false;
             var bps = new AD7BoundBreakpointsEnum(new IDebugBoundBreakpoint2[0]);
             var evt = new AD7BreakpointEvent(bps);
             Send(evt, AD7BreakpointEvent.IID);
+        }
+
+        private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
+            if (IsInBrowseMode) {
+                IsInBrowseMode = false;
+                if (!_sentContinue) {
+                    // User has explicitly typed something at the Browse prompt, so tell the debugger that
+                    // we're moving on by issuing a dummy Continue request to switch it to the running state.
+                    _sentContinue = true;
+
+                    IDebugProcess2 process;
+                    var ex = Marshal.GetExceptionForHR(_program.GetProcess(out process));
+                    Debug.Assert(ex == null);
+                    if (process != null) {
+                        ex = Marshal.GetExceptionForHR(((IDebugProcess3)process).Execute(MainThread));
+                        Debug.Assert(ex == null);
+                    }
+                }
+            }
         }
     }
 }
