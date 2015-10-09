@@ -134,7 +134,6 @@
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
-    <Compile Include="Packages\CommandIDs.cs" />
     <Compile Include="Packages\ProvideDebugEngineAttribute.cs" />
     <Compile Include="Packages\ProvideDebugExceptionAttribute.cs" />
     <Compile Include="Packages\ProvideDebugLanguageAttribute.cs" />
