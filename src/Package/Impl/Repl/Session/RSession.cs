@@ -237,7 +237,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         async Task IRCallbacks.PlotXaml(IReadOnlyList<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
-            var frame = FindPlotWindow(0);  // TODO: acquire plot content provider through service
+            // find first, then create. If created, show it.
+            // if found and not visible, user has closed or covered with other window. Here respect user action
+            var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst);  // TODO: acquire plot content provider through service
+            if (frame == null)
+            {
+                frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);
+                if (frame != null)
+                {
+                    frame.ShowNoActivate();
+                }
+            }
+
             if (frame != null) {
                 object docView;
                 ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
