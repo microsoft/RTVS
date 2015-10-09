@@ -1,6 +1,7 @@
 #pragma once
 #pragma warning(disable: 4996)
 
+#include <atomic>
 #include <codecvt>
 #include <csetjmp>
 #include <cstdio>

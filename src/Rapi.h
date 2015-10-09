@@ -242,6 +242,7 @@ extern "C" {
 
     DllInfo *R_getEmbeddingDllInfo(void);
 
-    void R_WaitEvent(void);
-    void R_ProcessEvents(void);
+    void R_WaitEvent();
+    void R_ProcessEvents();
+    void R_Suicide(const char *);
 }

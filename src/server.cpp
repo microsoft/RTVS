@@ -16,7 +16,7 @@ namespace rhost {
             std::promise<ws_server_type::connection_ptr> ws_conn_promise;
             ws_server_type::connection_ptr ws_conn;
             std::unique_ptr<std::promise<picojson::value>> response_promise;
-            bool is_connection_closed = false;
+            std::atomic<bool> is_connection_closed = false;
 
             picojson::object r_eval(const std::string& expr) {
                 picojson::object obj;
@@ -64,7 +64,8 @@ namespace rhost {
                         R_WaitEvent();
                         R_ProcessEvents();
                         if (is_connection_closed) {
-                            return picojson::value("q()");
+                            R_Suicide("Lost connection to client.");
+                            assert(false); // not reachable
                         }
                     }
 
