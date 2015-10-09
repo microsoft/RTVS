@@ -10,10 +10,16 @@ namespace Microsoft.R.Core.Tokens
             return Array.BinarySearch<string>(_builtins, candidate) >= 0;
         }
 
+        public static string[] BuiltinList
+        {
+            get { return _builtins; }
+        }
+
         internal static string[] _builtins = new string[]
         {
             "library",
             "require",
+            "return",
             "switch",
             "typeof",
         };

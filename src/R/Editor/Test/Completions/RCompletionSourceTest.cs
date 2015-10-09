@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Test.Completions
             GetCompletions("", 0, completionSets);
 
             Assert.AreEqual(1, completionSets.Count);
-            Assert.AreEqual(2367, completionSets[0].Completions.Count);
+            Assert.AreEqual(2371, completionSets[0].Completions.Count);
 
             Completion x = completionSets[0].Completions.FirstOrDefault((Completion c) => c.DisplayText == "abbreviate");
             Assert.IsNotNull(x);

@@ -122,6 +122,7 @@
     <Compile Include="Formatting\FormatFunctionTest.cs" />
     <Compile Include="Formatting\FormatSamplesFilesTest.cs" />
     <Compile Include="Formatting\FormatFilesFiles.cs" />
+    <Compile Include="Parser\ParseBuiltInsTest.cs" />
     <Compile Include="Parser\ParseFilesTest.cs" />
     <Compile Include="Parser\ParseCommentsTest.cs" />
     <Compile Include="Parser\ParseLambdaTest.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Parser\ParseStringContstantsTest.cs" />
     <Compile Include="Parser\ParseLogicalContstantsTest.cs" />
     <Compile Include="Parser\ParseSimpleExpressionsTest.cs" />
+    <Compile Include="Tokens\TokenizeBuiltinsTest.cs" />
     <Compile Include="Tokens\TokenizeRandomStringsTest.cs" />
     <Compile Include="Tokens\TokenizeOperatorsTest.cs" />
     <Compile Include="Tokens\TokenizeIndexerTest.cs" />

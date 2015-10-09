@@ -21,10 +21,17 @@ namespace Microsoft.R.Editor.Completion.Providers
 
             if (!context.IsInNameSpace())
             {
-                ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
+                ImageSource keyWordGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
+               
                 foreach (string keyword in Keywords.KeywordList)
                 {
-                    completions.Add(new RCompletion(keyword, keyword, string.Empty, glyph));
+                    completions.Add(new RCompletion(keyword, keyword, string.Empty, keyWordGlyph));
+                }
+
+                ImageSource buildInGlyth = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
+                foreach (string s in Builtins.BuiltinList)
+                {
+                    completions.Add(new RCompletion(s, s, string.Empty, buildInGlyth));
                 }
             }
 

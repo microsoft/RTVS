@@ -60,7 +60,15 @@ namespace Microsoft.R.Core.AST.Statements
                     // Some of the statements may be R-values like typeof() but
                     // in case of the statement appearing on its own return value
                     // will be simply ignored. IDE may choose to show a warning.
-                    statement = KeywordStatement.CreateStatement(context, parent);
+                    if (currentToken.SubType == RTokenSubType.BuiltinFunction && tokens.NextToken.TokenType != RTokenType.OpenBrace)
+                    {
+                        // 'return <- x + y' is allowed
+                        statement = new ExpressionStatement(terminatingKeyword);
+                    }
+                    else
+                    {
+                        statement = KeywordStatement.CreateStatement(context, parent);
+                    }
                     break;
 
                 case RTokenType.Semicolon:

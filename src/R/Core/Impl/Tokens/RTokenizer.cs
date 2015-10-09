@@ -335,60 +335,60 @@ namespace Microsoft.R.Core.Tokens
             int start = _cs.Position;
 
             string s = this.GetIdentifier();
-            if (s.Length > 0)
+            if (s.Length == 0)
             {
-                if (s[0] == '`')
+                AddToken(RTokenType.Unknown, start, 1);
+                _cs.MoveToNextChar();
+                return;
+            }
+
+            if (s[0] == '`')
+            {
+                AddToken(RTokenType.Identifier, RTokenSubType.None, start, s.Length);
+            }
+            else if (Logicals.IsLogical(s))
+            {
+                AddToken(RTokenType.Logical, start, s.Length);
+            }
+            else if (s == "NULL")
+            {
+                AddToken(RTokenType.Null, RTokenSubType.BuiltinConstant, start, s.Length);
+            }
+            else if (s == "NA")
+            {
+                AddToken(RTokenType.Missing, RTokenSubType.BuiltinConstant, start, s.Length);
+            }
+            else if (s == "Inf")
+            {
+                AddToken(RTokenType.Infinity, RTokenSubType.BuiltinConstant, start, s.Length);
+            }
+            else if (s == "NaN")
+            {
+                AddToken(RTokenType.NaN, RTokenSubType.BuiltinConstant, start, s.Length);
+            }
+            else if (Builtins.IsBuiltin(s))
+            {
+                if (IsOpenBraceFollow(_cs, _cs.Position))
                 {
-                    AddToken(RTokenType.Identifier, RTokenSubType.None, start, s.Length);
-                }
-                else if (Keywords.IsKeyword(s))
-                {
-                    AddToken(RTokenType.Keyword, start, s.Length);
-                }
-                else if (Logicals.IsLogical(s))
-                {
-                    AddToken(RTokenType.Logical, start, s.Length);
-                }
-                else if (s == "NULL")
-                {
-                    AddToken(RTokenType.Null, RTokenSubType.BuiltinConstant, start, s.Length);
-                }
-                else if (s == "NA")
-                {
-                    AddToken(RTokenType.Missing, RTokenSubType.BuiltinConstant, start, s.Length);
-                }
-                else if (s == "Inf")
-                {
-                    AddToken(RTokenType.Infinity, RTokenSubType.BuiltinConstant, start, s.Length);
-                }
-                else if (s == "NaN")
-                {
-                    AddToken(RTokenType.NaN, RTokenSubType.BuiltinConstant, start, s.Length);
+                    AddToken(RTokenType.Keyword, RTokenSubType.BuiltinFunction, start, s.Length);
                 }
                 else
                 {
-                    RTokenSubType subType = RTokenSubType.None;
-
-                    if (Builtins.IsBuiltin(s))
-                    {
-                        subType = RTokenSubType.BuiltinFunction;
-                    }
-                    else if (s.StartsWith("as.", StringComparison.Ordinal) || s.StartsWith("is.", StringComparison.Ordinal))
-                    {
-                        subType = RTokenSubType.TypeFunction;
-                    }
-
-                    AddToken(RTokenType.Identifier, subType, start, s.Length);
+                    AddToken(RTokenType.Identifier, start, s.Length);
                 }
-
-                return;
+            }
+            else if (s.StartsWith("as.", StringComparison.Ordinal) || s.StartsWith("is.", StringComparison.Ordinal))
+            {
+                AddToken(RTokenType.Identifier, RTokenSubType.TypeFunction, start, s.Length);
+            }
+            else if (Keywords.IsKeyword(s))
+            {
+                AddToken(RTokenType.Keyword, start, s.Length);
             }
             else
             {
-                AddToken(RTokenType.Unknown, start, 1);
+                AddToken(RTokenType.Identifier, start, s.Length);
             }
-
-            _cs.MoveToNextChar();
         }
 
         internal string GetIdentifier()
@@ -505,6 +505,19 @@ namespace Microsoft.R.Core.Tokens
         private static bool IsIdentifierCharacter(CharacterStream cs)
         {
             return (cs.IsAnsiLetter() || cs.IsDecimal() || cs.CurrentChar == '.' || cs.CurrentChar == '_');
+        }
+
+        private static bool IsOpenBraceFollow(CharacterStream cs, int position)
+        {
+            for (int i = position; i < cs.Length; i++)
+            {
+                if (!char.IsWhiteSpace(cs[i]))
+                {
+                    return cs[i] == '(';
+                }
+            }
+
+            return false;
         }
     }
 }

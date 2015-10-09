@@ -29,8 +29,15 @@ namespace Microsoft.R.Editor.Classification
                 case RTokenType.Logical:
                 case RTokenType.Missing:
                 case RTokenType.Null:
-                case RTokenType.Keyword:
                     return PredefinedClassificationTypeNames.Keyword;
+
+                case RTokenType.Keyword:
+                    if (t.SubType == RTokenSubType.BuiltinFunction)
+                    {
+                        return RClassificationTypes.BuiltinFunction;
+                    }
+                    return PredefinedClassificationTypeNames.Keyword;
+
                 case RTokenType.String:
                     return PredefinedClassificationTypeNames.String;
                 case RTokenType.Number:
@@ -52,7 +59,7 @@ namespace Microsoft.R.Editor.Classification
                     return "Punctuation";
 
                 case RTokenType.Identifier:
-                    if (t.SubType == RTokenSubType.BuiltinFunction || t.SubType == RTokenSubType.BuiltinConstant)
+                    if (t.SubType == RTokenSubType.BuiltinConstant)
                     {
                         return RClassificationTypes.BuiltinFunction;
                     }
@@ -60,11 +67,10 @@ namespace Microsoft.R.Editor.Classification
                     {
                         return RClassificationTypes.TypeFunction;
                     }
-                    return "Default";
-
-                default:
-                    return "Default";
+                    break;
             }
+
+            return "Default";
         }
     }
 }
