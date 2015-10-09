@@ -11,9 +11,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
         public Task<IRSessionInteraction> CreateRequestTask => _createRequestTcs.Task;
         public bool IsVisible { get; }
-        public IReadOnlyCollection<IRContext> Contexts { get; }
+        public IReadOnlyList<IRContext> Contexts { get; }
 
-        public RSessionRequestSource(bool isVisible, IReadOnlyCollection<IRContext> contexts)
+        public RSessionRequestSource(bool isVisible, IReadOnlyList<IRContext> contexts)
         {
             _createRequestTcs = new TaskCompletionSource<IRSessionInteraction>();
             _responseTcs = new TaskCompletionSource<object>();

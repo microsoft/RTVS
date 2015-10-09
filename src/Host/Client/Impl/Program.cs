@@ -17,7 +17,7 @@ namespace Microsoft.R.Host.Client {
         public void Dispose() {
         }
 
-        public Task Busy(IReadOnlyCollection<IRContext> contexts, bool which, CancellationToken ct) {
+        public Task Busy(IReadOnlyList<IRContext> contexts, bool which, CancellationToken ct) {
             return Task.FromResult(true);
         }
 
@@ -29,20 +29,20 @@ namespace Microsoft.R.Host.Client {
             return Task.CompletedTask;
         }
 
-        public async Task<string> ReadConsole(IReadOnlyCollection<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+        public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
             return (await ReadLineAsync(prompt, isEvaluationAllowed, ct)) + "\n";
         }
 
-        public async Task ShowMessage(IReadOnlyCollection<IRContext> contexts, string s, CancellationToken ct) {
+        public async Task ShowMessage(IReadOnlyList<IRContext> contexts, string s, CancellationToken ct) {
             await Console.Error.WriteLineAsync(s);
         }
 
-        public async Task WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
+        public async Task WriteConsoleEx(IReadOnlyList<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
             var writer = otype == OutputType.Output ? Console.Out : Console.Error;
             await writer.WriteAsync(buf);
         }
 
-        public async Task<YesNoCancel> YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+        public async Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
             await Console.Error.WriteAsync(s);
             while (true) {
                 string r = await ReadLineAsync(" [yes/no/cancel]> ", isEvaluationAllowed, ct);
@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task PlotXaml(IReadOnlyCollection<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
+        public async Task PlotXaml(IReadOnlyList<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
             await Console.Error.WriteLineAsync(xamlFilePath);
         }
 
