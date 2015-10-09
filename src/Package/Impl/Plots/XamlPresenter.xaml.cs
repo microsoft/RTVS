@@ -9,40 +9,60 @@ namespace Microsoft.VisualStudio.R.Package.Plots
     /// <summary>
     /// Interaction logic for XamlPresenter.xaml
     /// </summary>
-    public partial class XamlPresenter : UserControl
+    internal partial class XamlPresenter : UserControl
     {
-        public XamlPresenter()
+        private readonly IPlotContentProvider _contentProvider;
+
+        private UIElement _watermarkElement;
+
+        public XamlPresenter(IPlotContentProvider contentProvider)
         {
             InitializeComponent();
+
+            SetWatermark();
+
+            _contentProvider = contentProvider;
+            _contentProvider.PlotChanged += ContentProvider_PlotChanged;
         }
 
-        public void LoadXamlFile(string fileName)
+        public UIElement PlotElement
         {
-            SetContainer(() => XamlServices.Load(fileName), fileName);
-        }
-
-        public void LoadXaml(string xamlText)
-        {
-            SetContainer(() => XamlServices.Parse(xamlText));
-        }
-
-        private void SetContainer(Func<object> xamlObjectLoader, string fileName = null)
-        {
-            object parsed = null;
-
-            try
+            get
             {
-                parsed = xamlObjectLoader();
+                return this.RootContainer.Child;
             }
-            catch (Exception e)
+        }
+
+        private void SetWatermark()
+        {
+            if (_watermarkElement == null)
             {
-                parsed = new TextBlock() { Text = string.Format("Couldn't parse XAML ({1}) \r\n{0}", e.ToString(), fileName ?? "inline") };
+                // TODO: define this in XAML file. why dynamic creation? you lazy boy
+                _watermarkElement = (UIElement)XamlServices.Parse(
+                    "<TextBlock xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
+                    "Foreground=\"DarkGray\" " +
+                    "TextAlignment=\"Center\" " +
+                    "VerticalAlignment=\"Center\" " +
+                    "HorizontalAlignment=\"Center\" " +
+                    "TextWrapping=\"Wrap\">" +
+                    Package.Resources.EmptyPlotWindowWatermark +
+                    "</TextBlock>");
             }
+            this.RootContainer.Child = _watermarkElement;
 
-            var parsedObj = parsed as UIElement;
-            Debug.Assert(parsedObj != null);
+            //XamlServices.Save(this.RootContainer.Child);
+        }
 
-            this.RootContainer.Child = parsedObj;
+        private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e)
+        {
+            if (e.NewPlotElement == null)
+            {
+                SetWatermark();
+            }
+            else
+            {
+                this.RootContainer.Child = e.NewPlotElement;
+            }
         }
     }
 }

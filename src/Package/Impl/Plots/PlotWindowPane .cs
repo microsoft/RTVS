@@ -15,31 +15,39 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Plots
 {
     [Guid(WindowGuid)]
-    public class PlotWindowPane : ToolWindowPane
+    internal class PlotWindowPane : ToolWindowPane
     {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
+
+        private SavePlotCommand _saveCommand;
 
         public PlotWindowPane()
         {
             Caption = Resources.PlotWindowCaption;
-            Content = new XamlPresenter();
 
-            InitializePresenter();
+            // set content with presenter
+            PlotContentProvider = new PlotContentProvider();
+            PlotContentProvider.PlotChanged += ContentProvider_PlotChanged; // TODO: when to unregister the event? for now, it's fine as 1:1 match Provider:Pane
+            Content = new XamlPresenter(PlotContentProvider);
 
+            // initialize toolbar
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
-
             Controller c = new Controller();
             c.AddCommandSet(GetCommands());
-
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
         }
+
+        public IPlotContentProvider PlotContentProvider { get; }
 
         private IEnumerable<ICommand> GetCommands()
         {
             List<ICommand> commands = new List<ICommand>();
 
             commands.Add(new OpenPlotCommand(this));
-            commands.Add(new SavePlotCommand(this));
+
+            _saveCommand = new SavePlotCommand(this);
+            commands.Add(_saveCommand);
+
             commands.Add(new ExportPlotCommand(this));
             commands.Add(new FixPlotCommand(this));
             commands.Add(new CopyPlotCommand(this));
@@ -50,28 +58,27 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             return commands;
         }
 
-        private void InitializePresenter()
+        private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e)
         {
-            DisplayXaml(
-                "<TextBlock xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
-                "Foreground=\"DarkGray\" " +
-                "TextAlignment=\"Center\" " +
-                "VerticalAlignment=\"Center\" " +
-                "HorizontalAlignment=\"Center\" " +
-                "TextWrapping=\"Wrap\">" +
-                Resources.EmptyPlotWindowWatermark +
-                "</TextBlock>");
+            if (e.NewPlotElement == null)
+            {
+                _saveCommand.Disable();
+            }
+            else
+            {
+                _saveCommand.Enable();
+            }
         }
 
         public void OpenPlot()
         {
-            string fileName = GetFileName();
-            if (!string.IsNullOrEmpty(fileName))
+            string filePath = GetLoadFilePath();
+            if (!string.IsNullOrEmpty(filePath))
             {
                 try
                 {
-                    DisplayXamlFile(fileName);
-        }
+                    PlotContentProvider.LoadFile(filePath);
+                }
                 catch(Exception ex)
                 {
                     EditorShell.Current.ShowErrorMessage(
@@ -80,26 +87,25 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             }
         }
 
-        public void DisplayXamlFile(string filePath)
+        public void SavePlot()
         {
-            var presenter = this.Content as XamlPresenter;
-            if (presenter != null)
+            string destinationFilePath = GetSaveFilePath();
+            if (!string.IsNullOrEmpty(destinationFilePath))
             {
-                presenter.LoadXamlFile(filePath);
+                try
+                {
+                    PlotContentProvider.SaveFile(destinationFilePath);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                    //EditorShell.Current.ShowErrorMessage(
+                    //    string.Format(CultureInfo.InvariantCulture, Resources.CannotOpenPlotFile, ex.Message));
+                }
             }
         }
 
-        public void DisplayXaml(string xaml)
-        {
-            var presenter = this.Content as XamlPresenter;
-            if (presenter != null)
-            {
-                presenter.LoadXaml(xaml);
-            }
-        }
-
-        // TODO: factor out to utility. Copied code from PTVS, Dialogs.cs
-        private string GetFileName()
+        private string GetLoadFilePath()
         {
             return FileUtilities.BrowseForFileOpen(
                 IntPtr.Zero,
@@ -107,6 +113,15 @@ namespace Microsoft.VisualStudio.R.Package.Plots
                 // TODO: open in current project folder if one is active
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\",
                 Resources.OpenPlotDialogTitle);
+        }
+
+        private string GetSaveFilePath()
+        {
+            return FileUtilities.BrowseForFileSave(
+                IntPtr.Zero,
+                Resources.PlotFileFilter,
+                null,
+                Resources.SavePlotDialogTitle);
         }
     }
 }

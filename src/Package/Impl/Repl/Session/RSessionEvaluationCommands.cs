@@ -22,10 +22,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
             var script = @"
-vsgd <- function() {
+.rtvs.vsgd <- function() {
    .External('C_vsgd', 5, 5)
 }
-options(device='vsgd')
+options(device='.rtvs.vsgd')
 ";
 
             return evaluation.EvaluateAsync(script, reentrant: false);

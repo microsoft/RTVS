@@ -98,9 +98,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                     {
                         toInvoke();
                     }
-                    catch
+                    catch  (Exception e)
                     {
-                        Debug.Assert(false, "Guarded invoke caught exception");
+                        Debug.Assert(false, "Guarded invoke caught exception", e.Message);
                     }
                 };
 
