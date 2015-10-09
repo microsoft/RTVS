@@ -2,7 +2,7 @@
 <Include>
   <?define ProductName="R Tools for Visual Studio" ?>
   <?define VSRegVer="14.0" ?>
-  
+
   <!-- 
      Uncomment this to simulate loc build.
      You may need to copy bin/*/localize folder contents
@@ -14,15 +14,17 @@
   <?define LocDir="$(var.OutDir)\localize" ?>
   <?define SourceDir=".." ?>
 
-	<?define ItemTemplatesDir="$(var.BinDir)\ItemTemplates\R" ?>
-	<?define ProjectTemplatesDir="$(var.BinDir)\ProjectTemplates\R" ?>
-	<?define CpsRulesDir="$(var.BinDir)\Rules" ?>
-	
+  <?define ItemTemplatesDir="$(var.BinDir)\ItemTemplates\R" ?>
+  <?define ProjectTemplatesDir="$(var.BinDir)\ProjectTemplates\R" ?>
+  <?define CpsRulesDir="$(var.BinDir)\Rules" ?>
+
   <?ifdef LabBuild?>
-    <?define LangList=CHS;CHT;CSY;DEU;ENU;ESN;FRA;ITA;JPN;KOR;PLK;PTB;RUS;TRK?>
-    <?define LcidList=2052;1028;1029;1031;1033;3082;FRA;1036;1041;1042;1045;1046;1049;1055?>
+  <!--<?define LangList=CHS;CHT;CSY;DEU;ENU;ESN;FRA;ITA;JPN;KOR;PLK;PTB;RUS;TRK?>
+  <?define LcidList=2052;1028;1029;1031;1033;3082;FRA;1036;1041;1042;1045;1046;1049;1055?>-->
+  <?define LangList=ENU?>
+  <?define LcidList=1033?>  
   <?else?>
-    <?define LangList=ENU?>
-    <?define LcidList=1033?>
+  <?define LangList=ENU?>
+  <?define LcidList=1033?>
   <?endif?>
 </Include>

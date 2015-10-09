@@ -85,6 +85,8 @@
     <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
     <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
     <Compile Include="Plots\Commands\PrintPlotCommand.cs" />
+    <Compile Include="Plots\IPlotContentProvider.cs" />
+    <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
@@ -132,7 +134,6 @@
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
-    <Compile Include="Packages\CommandIDs.cs" />
     <Compile Include="Packages\ProvideDebugEngineAttribute.cs" />
     <Compile Include="Packages\ProvideDebugExceptionAttribute.cs" />
     <Compile Include="Packages\ProvideDebugLanguageAttribute.cs" />

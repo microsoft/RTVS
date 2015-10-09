@@ -1,6 +1,6 @@
 .rtvs.datainspect.eval_into <<- function(expr, env) {
 	obj <- eval(parse(text = expr), env);
-	repr <- capture.output(str(obj, list.len = 0));
+	repr <- capture.output(str(obj, max.level = 0));
 
 	fmt <- '"name":  "%s", "class": "%s", "value": "%s", "type": "%s"';
 	return (gettextf(fmt, expr, class(obj), repr[1], typeof(obj)));
