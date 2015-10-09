@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7StackFrame : IDebugStackFrame2, IDebugExpressionContext2, IDebugProperty2 {
+        private Lazy<IReadOnlyDictionary<string, DebugEvaluationResult>> _variables;
+
         public AD7Engine Engine { get; }
 
         public DebugStackFrame StackFrame { get; }
@@ -15,6 +18,8 @@ namespace Microsoft.R.Debugger.Engine {
         public AD7StackFrame(AD7Engine engine, DebugStackFrame stackFrame) {
             Engine = engine;
             StackFrame = stackFrame;
+
+            _variables = Lazy.Create(() => StackFrame.GetVariables().GetAwaiter().GetResult());
         }
 
         int IDebugStackFrame2.EnumProperties(enum_DEBUGPROP_INFO_FLAGS dwFields, uint nRadix, ref Guid guidFilter, uint dwTimeout, out uint pcelt, out IEnumDebugPropertyInfo2 ppEnum) {
@@ -139,8 +144,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
-            var vars = StackFrame.GetVariables().GetAwaiter().GetResult().Values;
-            var infos = vars
+            var infos = _variables.Value.Values
                 .OrderBy(v => v.Expression)
                 .Select(v => new AD7Property(this, v).GetDebugPropertyInfo(dwRadix, dwFields))
                 .ToArray();

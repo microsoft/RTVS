@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
-using Microsoft.Common.Core;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Debugger {
     public sealed class DebugSession : IDisposable {
-        private List<DebugStackFrame> _stackFrames = new List<DebugStackFrame>();
         private TaskCompletionSource<object> _stepTcs;
+        private CancellationTokenSource _initialPromptCts = new CancellationTokenSource();
 
-        public IRSession RSession { get; }
+        public IRSession RSession { get; set; }
 
-        public event EventHandler Paused;
-        public event EventHandler Resumed;
-        public event EventHandler BreakpointHit;
+        public event EventHandler Browse;
 
         public DebugSession(IRSession session) {
             RSession = session;
@@ -30,9 +28,18 @@ namespace Microsoft.R.Debugger {
         public void Dispose() {
             RSession.BeforeRequest -= RSession_BeforeRequest;
             RSession.AfterRequest -= RSession_AfterRequest;
+            RSession = null;
+        }
+
+        private void ThrowIfDisposed() {
+            if (RSession == null) {
+                throw new ObjectDisposedException(nameof(DebugSession));
+            }
         }
 
         public async Task Initialize() {
+            ThrowIfDisposed();
+
             string helpers;
             using (var stream = typeof(DebugSession).Assembly.GetManifestResourceStream(typeof(DebugSession).Namespace + ".DebugHelpers.R"))
             using (var reader = new StreamReader(stream)) {
@@ -46,27 +53,36 @@ namespace Microsoft.R.Debugger {
             }
 
             if (res.ParseStatus != RParseStatus.OK) {
-                throw new InvalidDataException("InjectHelpers failed to parse: " + res.ParseStatus);
+                throw new InvalidDataException("DebugHelpers.R failed to parse: " + res.ParseStatus);
             } else if (res.Error != null) {
-                throw new InvalidDataException("InjectHelpers failed to eval: " + res.Error);
+                throw new InvalidDataException("DebugHelpers.R failed to eval: " + res.Error);
             }
-        }
 
-        public IReadOnlyList<DebugStackFrame> StackFrames {
-            get {
-                return _stackFrames;
-            }
+            // Attach might happen when session is already at the Browse prompt, in which case we have
+            // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
+            // grab an interaction and check the prompt.
+            RSession.BeginInteractionAsync().ContinueWith(async t => {
+                using (var inter = await t) {
+                    // If we got AfterRequest before we got here, then that has already taken care of
+                    // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.
+                    _initialPromptCts.Token.ThrowIfCancellationRequested();
+                    // Otherwise, treat it the same as if AfterRequest just happened.
+                    CheckForBrowse(inter.Contexts);
+                }
+            }).DoNotWait();
         }
 
         public async Task ExecuteBrowserCommandAsync(string command) {
+            ThrowIfDisposed();
             using (var inter = await RSession.BeginInteractionAsync(isVisible: true).ConfigureAwait(false)) {
-                if (IsInBrowser(inter.Contexts)) {
+                if (IsInBrowseMode(inter.Contexts)) {
                     await inter.RespondAsync(command + "\n").ConfigureAwait(false);
                 }
             }
         }
 
         internal async Task<REvaluationResult> EvaluateRawAsync(string expression, bool throwOnError = true) {
+            ThrowIfDisposed();
             using (var eval = await RSession.BeginEvaluationAsync().ConfigureAwait(false)) {
                 var res = await eval.EvaluateAsync(expression, reentrant: false).ConfigureAwait(false);
                 if (throwOnError && (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null)) {
@@ -77,6 +93,8 @@ namespace Microsoft.R.Debugger {
         }
 
         public async Task<DebugEvaluationResult> EvaluateAsync(DebugStackFrame stackFrame, string expression, string env = "NULL") {
+            ThrowIfDisposed();
+
             var quotedExpr = expression.Replace("\\", "\\\\").Replace("'", "\'");
             var res = await EvaluateRawAsync($".rtvs.eval('{quotedExpr}', ${env})", throwOnError: false).ConfigureAwait(false);
 
@@ -105,6 +123,8 @@ namespace Microsoft.R.Debugger {
 
         private async Task Step(params string[] commands) {
             Debug.Assert(commands.Length > 0);
+            ThrowIfDisposed();
+
             _stepTcs = new TaskCompletionSource<object>();
             for (int i = 0; i < commands.Length - 1; ++i) {
                 await ExecuteBrowserCommandAsync(commands[i]);
@@ -114,22 +134,29 @@ namespace Microsoft.R.Debugger {
             await _stepTcs.Task;
         }
 
-        public void CancelStep() {
+        public bool CancelStep() {
+            ThrowIfDisposed();
+
             if (_stepTcs == null) {
-                throw new InvalidOperationException("No step to end.");
+                return false;
             }
 
             _stepTcs.TrySetCanceled();
             _stepTcs = null;
+            return true;
         }
 
-        private async Task FetchStackFrames(IRSessionEvaluation eval) {
-            _stackFrames.Clear();
+        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFrames() {
+            ThrowIfDisposed();
 
-            var res = await eval.EvaluateAsync(".rtvs.traceback()", reentrant: false).ConfigureAwait(false);
+            REvaluationResult res;
+            using (var eval = await RSession.BeginEvaluationAsync().ConfigureAwait(false)) {
+                res = await eval.EvaluateAsync(".rtvs.traceback()", reentrant: false).ConfigureAwait(false);
+            }
+
             if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null) {
                 Debug.Fail(".rtvs.traceback() failed");
-                return;
+                return new DebugStackFrame[0];
             }
 
             JArray jFrames;
@@ -137,8 +164,10 @@ namespace Microsoft.R.Debugger {
                 jFrames = JArray.Parse(res.Result);
             } catch (JsonException) {
                 Debug.Fail("Failed to parse JSON returned by .rtvs.traceback()");
-                return;
+                return new DebugStackFrame[0];
             }
+
+            var stackFrames = new List<DebugStackFrame>();
 
             string callingExpression = null;
             int i = 0;
@@ -158,42 +187,37 @@ namespace Microsoft.R.Debugger {
                     callingExpression = null;
                 }
 
-                _stackFrames.Add(stackFrame);
+                stackFrames.Add(stackFrame);
                 ++i;
             }
 
-            _stackFrames.Reverse();
+            stackFrames.Reverse();
+            return stackFrames;
         }
 
-        private bool IsInBrowser(IReadOnlyList<IRContext> contexts) {
+        private bool IsInBrowseMode(IReadOnlyList<IRContext> contexts) {
             return contexts.SkipWhile(context => context.CallFlag.HasFlag(RContextType.Restart))
                 .FirstOrDefault()?.CallFlag.HasFlag(RContextType.Browser) == true;
         }
 
-        private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
-            if (IsInBrowser(e.Contexts)) {
-                RSession.BeginEvaluationAsync().ContinueWith(async t => {
-                    using (var eval = await t) {
-                        await FetchStackFrames(eval).ConfigureAwait(false);
-                    }
+        private void CheckForBrowse(IReadOnlyList<IRContext> contexts) {
+            if (IsInBrowseMode(contexts)) {
+                if (_stepTcs != null) {
+                    var stepTcs = _stepTcs;
+                    _stepTcs = null;
+                    stepTcs.TrySetResult(null);
+                }
 
-                    if (_stepTcs != null) {
-                        var stepTcs = _stepTcs;
-                        _stepTcs = null;
-                        stepTcs.TrySetResult(null);
-                    } else {
-                        BreakpointHit?.Invoke(this, EventArgs.Empty);
-                    }
-
-                    Paused?.Invoke(this, EventArgs.Empty);
-                });
-            } else {
-                Paused?.Invoke(this, EventArgs.Empty);
+                Browse?.Invoke(this, EventArgs.Empty);
             }
         }
 
+        private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
+            _initialPromptCts.Cancel();
+            CheckForBrowse(e.Contexts);
+        }
+
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
-            Resumed?.Invoke(this, EventArgs.Empty);
         }
     }
 
