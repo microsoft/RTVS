@@ -9,6 +9,8 @@
       <File Source="$(var.BinDir)\Microsoft.R.Common.Core.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Actions.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Debugger.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Debugger.Engine.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Editor.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Host.Client.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Host.exe" />
@@ -22,6 +24,8 @@
       <Component Id="ProductAssembliesDebugData" Guid="{320E46DF-665F-492C-A0D6-9CE7DE21036D}">
         <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pdb" />
         <File Source="$(var.BinDir)\Microsoft.Markdown.Editor.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Debugger.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Debugger.Engine.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Editor.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Actions.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Core.pdb" />
