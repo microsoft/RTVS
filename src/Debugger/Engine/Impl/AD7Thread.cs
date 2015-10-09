@@ -1,29 +1,51 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace Microsoft.R.Debugger.Engine {
-    internal sealed class AD7Thread : IDebugThread2, IDebugThread100 {
-        public AD7Engine Engine { get; }
+    internal sealed class AD7Thread : IDebugThread2, IDebugThread100, IDisposable {
+        private Lazy<IReadOnlyList<DebugStackFrame>> _stackFrames;
+
+        public AD7Engine Engine { get; set; }
 
         public AD7Thread(AD7Engine engine) {
+            Debug.Assert(engine.Session != null);
             Engine = engine;
+            Engine.Session.RSession.BeforeRequest += RSession_BeforeRequest;
+        }
+
+        public void Dispose() {
+            Engine.Session.RSession.BeforeRequest -= RSession_BeforeRequest;
+            Engine = null;
+        }
+
+        private void ThrowIfDisposed() {
+            if (Engine == null) {
+                throw new ObjectDisposedException(nameof(AD7Thread));
+            }
         }
 
         int IDebugThread100.CanDoFuncEval() {
+            ThrowIfDisposed();
             return VSConstants.S_FALSE;
         }
 
         int IDebugThread2.CanSetNextStatement(IDebugStackFrame2 pStackFrame, IDebugCodeContext2 pCodeContext) {
+            ThrowIfDisposed();
             return VSConstants.S_FALSE;
         }
 
         int IDebugThread2.EnumFrameInfo(enum_FRAMEINFO_FLAGS dwFieldSpec, uint nRadix, out IEnumDebugFrameInfo2 ppEnum) {
+            ThrowIfDisposed();
+
             var fi = new FRAMEINFO[1];
-            var fis = Engine.Session.StackFrames.Select(f => {
+            var fis = _stackFrames.Value.Select(f => {
                 var frame = (IDebugStackFrame2)new AD7StackFrame(Engine, f);
                 Marshal.ThrowExceptionForHR(frame.GetInfo(dwFieldSpec, nRadix, fi));
                 return fi[0];
@@ -38,21 +60,26 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugThread2.GetName(out string pbstrName) {
+            ThrowIfDisposed();
             pbstrName = "Main Thread";
             return VSConstants.S_OK;
         }
 
         int IDebugThread2.GetProgram(out IDebugProgram2 ppProgram) {
+            ThrowIfDisposed();
             ppProgram = Engine;
             return VSConstants.S_OK;
         }
 
         int IDebugThread2.GetThreadId(out uint pdwThreadId) {
+            ThrowIfDisposed();
             pdwThreadId = 1;
             return VSConstants.S_OK;
         }
 
         int IDebugThread2.GetThreadProperties(enum_THREADPROPERTY_FIELDS dwFields, THREADPROPERTIES[] ptp) {
+            ThrowIfDisposed();
+
             var tp = new THREADPROPERTIES();
 
             if (dwFields.HasFlag(enum_THREADPROPERTY_FIELDS.TPF_ID)) {
@@ -76,7 +103,7 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             if (dwFields.HasFlag(enum_THREADPROPERTY_FIELDS.TPF_LOCATION)) {
-                var frame = Engine.Session.StackFrames.LastOrDefault();
+                var frame = _stackFrames.Value.LastOrDefault();
                 tp.bstrName = frame != null ? frame.CallingExpression : "<unknown>";
                 tp.dwFields |= enum_THREADPROPERTY_FIELDS.TPF_LOCATION;
             }
@@ -136,6 +163,14 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugThread100.SetThreadDisplayName(string bstrDisplayName) {
             return VSConstants.E_NOTIMPL;
+        }
+
+        private void ResetStackFrames() {
+            _stackFrames = Lazy.Create(() => Engine.Session.GetStackFrames().GetAwaiter().GetResult());
+        }
+
+        private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
+            ResetStackFrames();
         }
     }
 }

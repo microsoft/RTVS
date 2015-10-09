@@ -22,7 +22,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         internal DebugSession Session { get; private set; }
 
-        internal AD7Thread MainThread { get; }
+        internal AD7Thread MainThread { get; private set; }
 
         [Import]
         private IRSessionProvider SessionProvider { get; set; }
@@ -33,7 +33,6 @@ namespace Microsoft.R.Debugger.Engine {
         public AD7Engine() {
             var compModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
             compModel.DefaultCompositionService.SatisfyImportsOnce(this);
-            MainThread = new AD7Thread(this);
         }
 
         internal void Send(IDebugEvent2 eventObject, string iidEvent, IDebugProgram2 program, IDebugThread2 thread) {
@@ -77,14 +76,12 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             Session = new DebugSession(session);
-            Session.BreakpointHit += Session_Paused;
-            Session.Resumed += Session_Resumed;
+            Session.Initialize().GetAwaiter().GetResult();
+            Session.Browse += Session_Browse;
 
-            Task.Run(async delegate {
-                await Session.Initialize();
-            }).GetAwaiter().GetResult();
-
+            MainThread = new AD7Thread(this);
             _events = pCallback;
+
             AD7EngineCreateEvent.Send(this);
             AD7ProgramCreateEvent.Send(this);
             Send(new AD7LoadCompleteEvent(), AD7LoadCompleteEvent.IID);
@@ -102,6 +99,10 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugEngine2.ContinueFromSynchronousEvent(IDebugEvent2 pEvent) {
             if (pEvent is AD7ProgramDestroyEvent) {
                 _events = null;
+
+                MainThread.Dispose();
+                MainThread = null;
+
                 Session.Dispose();
                 Session = null;
             }
@@ -390,13 +391,10 @@ namespace Microsoft.R.Debugger.Engine {
             return VSConstants.S_OK;
         }
 
-        private void Session_Paused(object sender, EventArgs e) {
+        private void Session_Browse(object sender, EventArgs e) {
             var bps = new AD7BoundBreakpointsEnum(new IDebugBoundBreakpoint2[0]);
             var evt = new AD7BreakpointEvent(bps);
             Send(evt, AD7BreakpointEvent.IID);
-        }
-
-        private void Session_Resumed(object sender, EventArgs e) {
         }
     }
 }

@@ -74,6 +74,7 @@
     <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="IO\IFileSystemInfo.cs" />
     <Compile Include="IO\IFileSystemWatcher.cs" />
+    <Compile Include="Lazy.cs" />
     <Compile Include="StackExtensions.cs" />
     <Compile Include="StringBuilderExtensions.cs" />
     <Compile Include="TaskExtensions.cs" />

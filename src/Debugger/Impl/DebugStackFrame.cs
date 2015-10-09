@@ -9,8 +9,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Debugger {
     public class DebugStackFrame {
-        private IReadOnlyDictionary<string, DebugEvaluationResult> _variables;
-
         public int Index { get; }
 
         public DebugSession Session { get; }
@@ -42,19 +40,16 @@ namespace Microsoft.R.Debugger {
         }
 
         public async Task<IReadOnlyDictionary<string, DebugEvaluationResult>> GetVariables() {
-            if (_variables == null) {
-                var vars = new Dictionary<string, DebugEvaluationResult>();
-                var res = await Session.EvaluateRawAsync($".rtvs.env_vars(sys.frame({Index}))").ConfigureAwait(false);
-                var jFrameVars = JObject.Parse(res.Result);
-                foreach (var kv in jFrameVars) {
-                    var name = kv.Key;
-                    var jEvalResult = (JObject)kv.Value;
-                    vars[name] = new DebugSuccessfulEvaluationResult(this, name, jEvalResult);
-                }
-                _variables = vars;
+            var vars = new Dictionary<string, DebugEvaluationResult>();
+            var res = await Session.EvaluateRawAsync($".rtvs.env_vars(sys.frame({Index}))").ConfigureAwait(false);
+            var jFrameVars = JObject.Parse(res.Result);
+            foreach (var kv in jFrameVars) {
+                var name = kv.Key;
+                var jEvalResult = (JObject)kv.Value;
+                vars[name] = new DebugSuccessfulEvaluationResult(this, name, jEvalResult);
             }
 
-            return _variables;
+            return vars;
         }
     }
 }
