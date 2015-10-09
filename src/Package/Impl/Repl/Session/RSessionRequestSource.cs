@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 
@@ -8,17 +7,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
     internal sealed class RSessionRequestSource
     {
         private readonly TaskCompletionSource<IRSessionInteraction> _createRequestTcs;
-        private readonly TaskCompletionSource<string> _responseTcs;
-        private StringBuilder _sb;
+        private readonly TaskCompletionSource<object> _responseTcs;
 
         public Task<IRSessionInteraction> CreateRequestTask => _createRequestTcs.Task;
         public bool IsVisible { get; }
-        public IReadOnlyCollection<IRContext> Contexts { get; }
+        public IReadOnlyList<IRContext> Contexts { get; }
 
-        public RSessionRequestSource(bool isVisible, IReadOnlyCollection<IRContext> contexts)
+        public RSessionRequestSource(bool isVisible, IReadOnlyList<IRContext> contexts)
         {
             _createRequestTcs = new TaskCompletionSource<IRSessionInteraction>();
-            _responseTcs = new TaskCompletionSource<string>();
+            _responseTcs = new TaskCompletionSource<object>();
 
             IsVisible = isVisible;
             Contexts = contexts ?? new[] { RHost.TopLevelContext };
@@ -32,26 +30,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
         public void Fail(string text)
         {
-            Write(text);
-            _responseTcs.SetException(new RException(_sb.ToString()));
+            _responseTcs.SetException(new RException(text));
         }
 
         public void Complete()
         {
-            _responseTcs.SetResult(_sb?.ToString());
+            _responseTcs.SetResult(null);
         }
 
         public bool TryCancel() {
             return _responseTcs.TrySetCanceled();
-        }
-
-        public void Write(string text)
-        {
-            if (_sb == null)
-            {
-                _sb = new StringBuilder();
-            }
-            _sb.Append(text);
         }
     }
 }

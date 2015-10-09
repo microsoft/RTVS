@@ -6,5 +6,10 @@ namespace Microsoft.R.Host.Client
     {
         IRSession Create(int sessionId);
         IRSession Current { get; }
+
+        /// <summary>
+        /// event raised when current session changes
+        /// </summary>
+        event EventHandler CurrentSessionChanged;
     }
 }

@@ -78,10 +78,19 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
+    <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
+    <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
     <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
     <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
     <Compile Include="Plots\Commands\PrintPlotCommand.cs" />
+    <Compile Include="Plots\IPlotContentProvider.cs" />
+    <Compile Include="Plots\PlotContentProvider.cs" />
+    <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
+    <Compile Include="Repl\RSessionExtensions.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
@@ -93,6 +102,15 @@
     <Compile Include="Commands\ShowContextMenuCommand.cs" />
     <Compile Include="Commands\R\VsRCommandFactory.cs" />
     <Compile Include="Commands\R\VsRTextViewConnectionListener.cs" />
+    <Compile Include="DataInspect\BooleanToHidingVisibilityConveter.cs" />
+    <Compile Include="DataInspect\LevelToMarginConverter.cs" />
+    <Compile Include="Plots\PlotWindowPane .cs" />
+    <Compile Include="DataInspect\REvaluation.cs" />
+    <Compile Include="DataInspect\Variable.cs" />
+    <Compile Include="DataInspect\VariableProvider.cs" />
+    <Compile Include="DataInspect\VariableView.xaml.cs">
+      <DependentUpon>VariableView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Document\IVsEditorDocumentFactory.cs" />
     <Compile Include="Document\Markdown\VsMdEditorDocument.cs" />
     <Compile Include="Document\Markdown\VsMdEditorDocumentFactory.cs" />
@@ -108,7 +126,7 @@
     <Compile Include="Plots\Commands\SavePlotCommand.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
-    <Compile Include="Publishing\PreviewCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewCommand.cs" />
     <Compile Include="Publishing\Definitions\PublishFormat.cs" />
     <Compile Include="Publishing\PublishLog.cs" />
     <Compile Include="Logging\PackagesInstallLog.cs" />
@@ -116,9 +134,13 @@
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
-    <Compile Include="Packages\CommandIDs.cs" />
+    <Compile Include="Packages\ProvideDebugEngineAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugExceptionAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugLanguageAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugPortPickerAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugPortSupplierAttribute.cs" />
     <Compile Include="Packages\ShowBraceCompletionAttribute.cs" />
-    <Compile Include="Plots\PlotWindowPane.cs" />
+    <Compile Include="DataInspect\VariableWindowPane.cs" />
     <Compile Include="Plots\XamlPresenter.xaml.cs">
       <DependentUpon>XamlPresenter.xaml</DependentUpon>
     </Compile>
@@ -164,8 +186,9 @@
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Session\RSession.cs" />
-    <Compile Include="Repl\Session\RSessionCommands.cs" />
+    <Compile Include="Repl\Session\RSessionInteractionCommands.cs" />
     <Compile Include="Repl\Session\RSessionEvaluation.cs" />
+    <Compile Include="Repl\Session\RSessionEvaluationCommands.cs" />
     <Compile Include="Repl\Session\RSessionEvaluationSource.cs" />
     <Compile Include="Repl\Session\RSessionInteraction.cs" />
     <Compile Include="Repl\Session\RSessionRequestSource.cs" />
@@ -198,10 +221,12 @@
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
+    <Compile Include="Utilities\FileUtilities.cs" />
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />
     <Compile Include="Utilities\TextBufferUtilities.cs" />
     <Compile Include="Utilities\CompletionUtilities.cs" />
+    <Compile Include="Utilities\ToolWindowUtilities.cs" />
     <Compile Include="Utilities\ViewUtilities.cs" />
     <Compile Include="Workspace\VsFileInfo.cs" />
     <Compile Include="Workspace\IVsWorkspaceItem.cs" />
@@ -213,6 +238,10 @@
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
     <None Include="app.config" />
+    <Content Include="DataInspect\DataInspect.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="packages.config" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -255,6 +284,9 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Debugger.Interop, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
@@ -356,6 +388,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
@@ -372,6 +405,10 @@
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Debugger\Engine\Impl\Microsoft.R.Debugger.Engine.csproj">
+      <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
+      <Name>Microsoft.R.Debugger.Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
@@ -533,6 +570,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Plots\XamlPresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="DataInspect\VariableView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

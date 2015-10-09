@@ -238,7 +238,7 @@
     <value>R Host process is stopped. Click Reset to start a new one.</value>
   </data>
   <data name="MicrosoftRHostStopping" xml:space="preserve">
-    <value>Stopping R Host process...</value>
+    <value>Stopping R Session...</value>
   </data>
   <data name="InputIsTooLong" xml:space="preserve">
     <value>Input is too long - no more than {0} characters expected.</value>
@@ -263,5 +263,26 @@
   </data>
   <data name="Error_PackageMissing" xml:space="preserve">
     <value>This operation requires package {0} which is not installed or has been removed. </value>
+  </data>
+  <data name="PlotWindowCaption" xml:space="preserve">
+    <value>R Plot</value>
+  </data>
+  <data name="EmptyPlotWindowWatermark" xml:space="preserve">
+    <value>Run plotting command in R Interactive Window, or open file</value>
+  </data>
+  <data name="OpenPlotDialogTitle" xml:space="preserve">
+    <value>Open R Plot File</value>
+  </data>
+  <data name="PlotFileFilter" xml:space="preserve">
+    <value>R Plot Files (*.vsplot)|*.vsplot|All Files (*.*)|*.*</value>
+  </data>
+  <data name="CannotOpenPlotFile" xml:space="preserve">
+    <value>Unable to open plot file. Exception: {0}</value>
+  </data>
+  <data name="MicrosoftRHostStarting" xml:space="preserve">
+    <value>Starting R Session...</value>
+  </data>
+  <data name="SavePlotDialogTitle" xml:space="preserve">
+    <value>Save R Plot File</value>
   </data>
 </root>

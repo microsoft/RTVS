@@ -70,6 +70,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to open plot file. Exception: {0}.
+        /// </summary>
+        internal static string CannotOpenPlotFile {
+            get {
+                return ResourceManager.GetString("CannotOpenPlotFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Control+E, Control+E.
         /// </summary>
         internal static string CtrlECtrlE {
@@ -93,6 +102,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string EditorName {
             get {
                 return ResourceManager.GetString("EditorName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run plotting command in R Interactive Window, or open file.
+        /// </summary>
+        internal static string EmptyPlotWindowWatermark {
+            get {
+                return ResourceManager.GetString("EmptyPlotWindowWatermark", resourceCulture);
             }
         }
         
@@ -151,6 +169,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Starting R Session....
+        /// </summary>
+        internal static string MicrosoftRHostStarting {
+            get {
+                return ResourceManager.GetString("MicrosoftRHostStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Host process is stopped. Click Reset to start a new one..
         /// </summary>
         internal static string MicrosoftRHostStopped {
@@ -160,7 +187,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stopping R Host process....
+        ///   Looks up a localized string similar to Stopping R Session....
         /// </summary>
         internal static string MicrosoftRHostStopping {
             get {
@@ -187,6 +214,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open R Plot File.
+        /// </summary>
+        internal static string OpenPlotDialogTitle {
+            get {
+                return ResourceManager.GetString("OpenPlotDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Packages.
         /// </summary>
         internal static string OutputWindowName_InstallPackages {
@@ -201,6 +237,24 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string OutputWindowName_Publish {
             get {
                 return ResourceManager.GetString("OutputWindowName_Publish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot Files (*.vsplot)|*.vsplot|All Files (*.*)|*.*.
+        /// </summary>
+        internal static string PlotFileFilter {
+            get {
+                return ResourceManager.GetString("PlotFileFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot.
+        /// </summary>
+        internal static string PlotWindowCaption {
+            get {
+                return ResourceManager.GetString("PlotWindowCaption", resourceCulture);
             }
         }
         
@@ -228,6 +282,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string SaveAsFilterR {
             get {
                 return ResourceManager.GetString("SaveAsFilterR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save R Plot File.
+        /// </summary>
+        internal static string SavePlotDialogTitle {
+            get {
+                return ResourceManager.GetString("SavePlotDialogTitle", resourceCulture);
             }
         }
         

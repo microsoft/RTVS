@@ -16,7 +16,7 @@ namespace Microsoft.R.Core.AST.DataTypes
     [DebuggerDisplay("[{Length}]")]
     public class RList : RObject, IRVector<RObject>, IDictionary<RString, RObject>
     {
-        private Lazy<HybridDictionary> propeties = new Lazy<HybridDictionary>(() => new HybridDictionary());
+        private Lazy<HybridDictionary> properties = new Lazy<HybridDictionary>(() => new HybridDictionary());
 
         #region IRVector
         public RMode Mode
@@ -33,14 +33,14 @@ namespace Microsoft.R.Core.AST.DataTypes
         {
             get
             {
-                if (this.propeties.IsValueCreated)
-                    return (RObject)propeties.Value[index];
+                if (this.properties.IsValueCreated)
+                    return (RObject)properties.Value[index];
 
                 throw new ArgumentOutOfRangeException("index");
             }
             set
             {
-                this.propeties.Value[index] = value;
+                this.properties.Value[index] = value;
             }
         }
         #endregion
@@ -50,20 +50,20 @@ namespace Microsoft.R.Core.AST.DataTypes
         {
             get
             {
-                if (this.propeties.IsValueCreated)
-                    return (RObject)this.propeties.Value[key];
+                if (this.properties.IsValueCreated)
+                    return (RObject)this.properties.Value[key];
 
                 throw new ArgumentOutOfRangeException("key");
             }
             set
             {
-                this.propeties.Value[key] = value;
+                this.properties.Value[key] = value;
             }
         }
 
         public int Count
         {
-            get { return this.propeties.IsValueCreated ? this.propeties.Value.Count : 0; }
+            get { return this.properties.IsValueCreated ? this.properties.Value.Count : 0; }
         }
 
         public bool IsReadOnly
@@ -77,9 +77,9 @@ namespace Microsoft.R.Core.AST.DataTypes
             {
                 List<RString> keys = new List<RString>();
 
-                if (this.propeties.IsValueCreated)
+                if (this.properties.IsValueCreated)
                 {
-                    foreach (RString key in this.propeties.Value.Keys)
+                    foreach (RString key in this.properties.Value.Keys)
                     {
                         keys.Add(key);
                     }
@@ -95,9 +95,9 @@ namespace Microsoft.R.Core.AST.DataTypes
             {
                 List<RObject> values = new List<RObject>();
 
-                if (this.propeties.IsValueCreated)
+                if (this.properties.IsValueCreated)
                 {
-                    foreach (RObject value in this.propeties.Value.Values)
+                    foreach (RObject value in this.properties.Value.Values)
                     {
                         values.Add(value);
                     }
@@ -109,41 +109,41 @@ namespace Microsoft.R.Core.AST.DataTypes
 
         public void Add(KeyValuePair<RString, RObject> item)
         {
-            this.propeties.Value.Add(item.Key, item.Value);
+            this.properties.Value.Add(item.Key, item.Value);
         }
 
         public void Add(RString key, RObject value)
         {
-            this.propeties.Value.Add(key, value);
+            this.properties.Value.Add(key, value);
         }
 
         public void Clear()
         {
-            if (this.propeties.IsValueCreated)
-                this.propeties.Value.Clear();
+            if (this.properties.IsValueCreated)
+                this.properties.Value.Clear();
         }
 
         public bool Contains(KeyValuePair<RString, RObject> item)
         {
-            if (this.propeties.IsValueCreated)
-                return this.propeties.Value.Contains(item.Key);
+            if (this.properties.IsValueCreated)
+                return this.properties.Value.Contains(item.Key);
 
             return false;
         }
 
         public bool ContainsKey(RString key)
         {
-            if (this.propeties.IsValueCreated)
-                return this.propeties.Value.Contains(key);
+            if (this.properties.IsValueCreated)
+                return this.properties.Value.Contains(key);
 
             return false;
         }
 
         public void CopyTo(KeyValuePair<RString, RObject>[] array, int arrayIndex)
         {
-            if (this.propeties.IsValueCreated)
+            if (this.properties.IsValueCreated)
             {
-                foreach (DictionaryEntry de in this.propeties.Value)
+                foreach (DictionaryEntry de in this.properties.Value)
                 {
                     array[arrayIndex++] = new KeyValuePair<RString, RObject>((RString)de.Key, (RObject)de.Value);
                 }
@@ -157,9 +157,9 @@ namespace Microsoft.R.Core.AST.DataTypes
 
         public bool Remove(RString key)
         {
-            if (this.propeties.IsValueCreated && this.ContainsKey(key))
+            if (this.properties.IsValueCreated && this.ContainsKey(key))
             {
-                this.propeties.Value.Remove(key);
+                this.properties.Value.Remove(key);
                 return true;
             }
 
@@ -168,9 +168,9 @@ namespace Microsoft.R.Core.AST.DataTypes
 
         public bool TryGetValue(RString key, out RObject value)
         {
-            if (this.propeties.IsValueCreated && this.ContainsKey(key))
+            if (this.properties.IsValueCreated && this.ContainsKey(key))
             {
-                value = (RObject)this.propeties.Value[key];
+                value = (RObject)this.properties.Value[key];
                 return true;
             }
 
@@ -182,9 +182,9 @@ namespace Microsoft.R.Core.AST.DataTypes
         #region IEnumerable
         public IEnumerator<KeyValuePair<RString, RObject>> GetEnumerator()
         {
-            if (this.propeties.IsValueCreated)
+            if (this.properties.IsValueCreated)
             {
-                return new HybridDictionaryEnumerator<RString, RObject>(this.propeties.Value.GetEnumerator());
+                return new HybridDictionaryEnumerator<RString, RObject>(this.properties.Value.GetEnumerator());
             }
 
             return Collection<KeyValuePair<RString, RObject>>.Empty.GetEnumerator();
@@ -192,9 +192,9 @@ namespace Microsoft.R.Core.AST.DataTypes
 
         IEnumerator<RObject> IEnumerable<RObject>.GetEnumerator()
         {
-            if (this.propeties.IsValueCreated)
+            if (this.properties.IsValueCreated)
             {
-                return new ListEnumerator<RObject>(this.propeties.Value.Values.GetEnumerator());
+                return new ListEnumerator<RObject>(this.properties.Value.Values.GetEnumerator());
             }
 
             return Collection<RObject>.Empty.GetEnumerator();
@@ -202,9 +202,9 @@ namespace Microsoft.R.Core.AST.DataTypes
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            if (this.propeties.IsValueCreated)
+            if (this.properties.IsValueCreated)
             {
-                return this.propeties.Value.GetEnumerator();
+                return this.properties.Value.GetEnumerator();
             }
 
             return Collection<KeyValuePair<RString, RObject>>.Empty.GetEnumerator();

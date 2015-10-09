@@ -1,17 +1,21 @@
-﻿using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Packages.R;
+﻿using System;
+using Microsoft.Languages.Editor;
+using Microsoft.VisualStudio.R.Package.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands
 {
-    internal sealed class SavePlotCommand : PackageCommand
+    internal sealed class SavePlotCommand : PlotWindowCommand
     {
-        public SavePlotCommand() :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSavePlot)
+        public SavePlotCommand(PlotWindowPane pane) :
+            base(pane, RPackageCommandId.icmdSavePlot)
         {
         }
-        protected override void SetStatus()
+
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
         {
-            Enabled = false;
+            _pane.SavePlot();
+
+            return CommandResult.Executed;
         }
     }
 }
