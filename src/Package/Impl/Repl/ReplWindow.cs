@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         public void ExecuteCode(string code)
         {
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
-            if (current != null)
+            if (current != null && !string.IsNullOrWhiteSpace(code))
             {
                 current.InteractiveWindow.AddInput(code);
                 current.InteractiveWindow.Operations.ExecuteInput();

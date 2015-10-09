@@ -9,6 +9,6 @@ namespace Microsoft.R.Host.Client
         string Prompt { get; }
         int MaxLength { get; }
         IReadOnlyCollection<IRContext> Contexts { get; }
-        Task<string> RespondAsync(string messageText);
+        Task RespondAsync(string messageText);
     }
 }
