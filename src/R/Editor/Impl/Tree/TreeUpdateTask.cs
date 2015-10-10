@@ -35,9 +35,9 @@ namespace Microsoft.R.Editor.Tree
         private static int _parserDelay = 200;
 
         /// <summary>
-        /// Creator thread - typically manin thread ID
+        /// Owner thread - typically main thread ID
         /// </summary>
-        private int _creatorThreadId = Thread.CurrentThread.ManagedThreadId;
+        private int _ownerThreadId = Thread.CurrentThread.ManagedThreadId;
 
         /// <summary>
         /// Editor tree that task is servicing
@@ -122,6 +122,11 @@ namespace Microsoft.R.Editor.Tree
         }
         #endregion
 
+        internal void TakeThreadOwnership()
+        {
+            _ownerThreadId = Thread.CurrentThread.ManagedThreadId;
+        }
+
         internal void RegisterCompletionCallback(Action action)
         {
             _completionCallbacks.Add(action);
@@ -129,7 +134,7 @@ namespace Microsoft.R.Editor.Tree
 
         internal void ClearChanges()
         {
-            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             _pendingChanges.Clear();
@@ -190,7 +195,7 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         internal void OnTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges)
         {
-            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             _editorTree.FireOnUpdatesPending(textChanges);
@@ -343,7 +348,7 @@ namespace Microsoft.R.Editor.Tree
         // internal for unit tests
         internal bool DeleteAndShiftElements(TextChangeContext context)
         {
-            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             TextChange textChange = context.PendingChanges;
@@ -389,7 +394,7 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         private void OnIdle(object sender, EventArgs e)
         {
-            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             if (TextBuffer == null || TextBuffer.EditInProgress)
@@ -422,7 +427,7 @@ namespace Microsoft.R.Editor.Tree
         /// Non-async processing is typically used in unit tests only.</param>
         internal void ProcessPendingTextBufferChanges(ITextProvider newTextProvider, bool async)
         {
-            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             if (ChangesPending)
@@ -557,7 +562,7 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         internal void EnsureProcessingComplete()
         {
-            if (_creatorThreadId != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThreadId != Thread.CurrentThread.ManagedThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             Stopwatch sw = null;
@@ -636,7 +641,7 @@ namespace Microsoft.R.Editor.Tree
         /// <param name="o"></param>
         internal void ApplyBackgroundProcessingResults()
         {
-            if (_creatorThreadId != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThreadId != Thread.CurrentThread.ManagedThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             if (TraceParse.Enabled)
@@ -750,7 +755,7 @@ namespace Microsoft.R.Editor.Tree
         #region Dispose
         protected override void Dispose(bool disposing)
         {
-            if (Thread.CurrentThread.ManagedThreadId != _creatorThreadId)
+            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             lock (_disposeLock)

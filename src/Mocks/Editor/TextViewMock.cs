@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks
             get { return null; }
         }
 
-        public ITextCaret Caret { get; private set; }
+        public ITextCaret Caret { get; set; }
 
         public bool HasAggregateFocus
         {

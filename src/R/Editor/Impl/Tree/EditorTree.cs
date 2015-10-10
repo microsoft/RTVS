@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
@@ -37,7 +38,7 @@ namespace Microsoft.R.Editor.Tree
         {
             get
             {
-                if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+                if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
                     throw new ThreadStateException("Method should only be called on the main thread. Use AcquireReadLock when accessing tree from a background thread.");
 
                 // Do not call EnsureTreeReady here since it may slow down
@@ -95,7 +96,7 @@ namespace Microsoft.R.Editor.Tree
             if (TreeUpdateTask == null)
                 return;
 
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             // OK to run in sync if changes are pending since we need it updated now
@@ -112,6 +113,17 @@ namespace Microsoft.R.Editor.Tree
         }
 
         #region Internal members
+
+        /// <summary>
+        /// Makes current thread owner of the tree.
+        /// Normally only one thread can access the tree.
+        /// </summary>
+        internal void TakeThreadOwnerShip()
+        {
+            _ownerThread = Thread.CurrentThread.ManagedThreadId;
+            TreeUpdateTask.TakeThreadOwnership();
+            TreeLock.TakeThreadOwnership();
+        }
 
         internal AstRoot GetAstRootUnsafe()
         {
@@ -132,9 +144,9 @@ namespace Microsoft.R.Editor.Tree
         internal EditorTreeLock TreeLock { get; private set; }
 
         /// <summary>
-        /// Tree creator thread id (usually main thread)
+        /// Tree owner thread id (usually main thread)
         /// </summary>
-        int _creatorThread;
+        int _ownerThread;
 
         /// <summary>
         /// Current text buffer snapshot
@@ -154,7 +166,7 @@ namespace Microsoft.R.Editor.Tree
         /// <param name="textBuffer">Text buffer</param>
         public EditorTree(ITextBuffer textBuffer)
         {
-            _creatorThread = Thread.CurrentThread.ManagedThreadId;
+            _ownerThread = Thread.CurrentThread.ManagedThreadId;
 
             TextBuffer = textBuffer;
             TextBuffer.ChangedHighPriority += OnTextBufferChanged;
@@ -170,7 +182,7 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         public void Build()
         {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             var sw = Stopwatch.StartNew();

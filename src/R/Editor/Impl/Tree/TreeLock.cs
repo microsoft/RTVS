@@ -33,6 +33,11 @@ namespace Microsoft.R.Editor.Tree
             _treeUsers = new HashSet<Guid>();
         }
 
+        internal void TakeThreadOwnership()
+        {
+            _ownerThreadId = Thread.CurrentThread.ManagedThreadId;
+        }
+
         /// <summary>
         /// Acquires read lock on the tree. Must be called before any tree access.
         /// </summary>

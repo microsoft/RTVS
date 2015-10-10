@@ -70,7 +70,7 @@ namespace Microsoft.R.Editor.Tree
         /// <param name="textChanges">List of pending changes</param>
         internal void FireOnUpdatesPending(IReadOnlyCollection<TextChangeEventArgs> textChanges)
         {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
             {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
@@ -94,7 +94,7 @@ namespace Microsoft.R.Editor.Tree
         /// <param name="element">Element</param>
         internal void FireOnPositionsOnlyChanged()
         {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
             {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
@@ -118,7 +118,7 @@ namespace Microsoft.R.Editor.Tree
         /// <param name="nodes">Collection of removed nodes</param>
         internal void FireOnNodesRemoved(IReadOnlyCollection<IAstNode> nodes)
         {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
             {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
@@ -166,7 +166,7 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         internal void FireOnUpdateBegin()
         {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
             {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
@@ -189,7 +189,7 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         internal void FireOnUpdateCompleted(TreeUpdateType updateType)
         {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
             {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
