@@ -36,7 +36,6 @@ namespace Microsoft.R.Editor.Signatures
             Session.Dismissed += OnSessionDismissed;
 
             TextView = session.TextView;
-            TextView.Caret.PositionChanged += OnCaretPositionChanged;
 
             SubjectBuffer = subjectBuffer;
             SubjectBuffer.Changed += OnSubjectBufferChanged;
@@ -127,26 +126,16 @@ namespace Microsoft.R.Editor.Signatures
                     IREditorDocument document = REditorDocument.FromTextBuffer(e.After.TextBuffer);
                     if (document != null)
                     {
-                        ComputeCurrentParameter(document.EditorTree.AstRoot, position);
-                    }
-                }
-            }
-        }
-
-        protected virtual void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e)
-        {
-            if (Session != null)
-            {
-                var prevParameter = _currentParameter;
-                IREditorDocument document = REditorDocument.TryFromTextBuffer(SubjectBuffer);
-                if (document != null)
-                {
-                    ComputeCurrentParameter(document.EditorTree.AstRoot, e.NewPosition.BufferPosition);
-
-                    if (_currentParameter != prevParameter)
-                    {
-                        if (CurrentParameterChanged != null)
-                            CurrentParameterChanged(this, new CurrentParameterChangedEventArgs(prevParameter, _currentParameter));
+                        SnapshotPoint? p = REditorDocument.MapCaretPositionFromView(TextView);
+                        if (p.HasValue)
+                        {
+                            document.EditorTree.EnsureTreeReady();
+                            ComputeCurrentParameter(document.EditorTree.AstRoot, p.Value.Position);
+                        }
+                        else
+                        {
+                            Session.Dismiss();
+                        }
                     }
                 }
             }
@@ -155,7 +144,6 @@ namespace Microsoft.R.Editor.Signatures
         protected virtual void OnSessionDismissed(object sender, EventArgs e)
         {
             Session.Dismissed -= OnSessionDismissed;
-            TextView.Caret.PositionChanged -= OnCaretPositionChanged;
             SubjectBuffer.Changed -= OnSubjectBufferChanged;
 
             Session = null;
