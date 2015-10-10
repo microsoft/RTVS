@@ -23,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         public event EventHandler<RResponseEventArgs> Response;
         public event EventHandler<RErrorEventArgs> Error;
         public event EventHandler<EventArgs> Disconnected;
+        public event EventHandler<EventArgs> Disposed;
 
         /// <summary>
         /// ReadConsole requires a task even if there are no pending requests
@@ -39,6 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         public void Dispose() {
             _host?.Dispose();
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true) {

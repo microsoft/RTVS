@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Packages {
         }
 
         public override void Register(RegistrationContext context) {
-            var engineKey = context.CreateKey("AD7Metrics\\PortSupplier\\" + _id);
+            var engineKey = context.CreateKey("AD7Metrics\\PortSupplier\\" + new Guid(_id).ToString("B"));
             engineKey.SetValue("Name", _name);
             engineKey.SetValue("CLSID", _portSupplier.GUID.ToString("B"));
             if (_portPicker != null) {

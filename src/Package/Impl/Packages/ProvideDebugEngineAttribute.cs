@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Packages {
         }
 
         public override void Register(RegistrationContext context) {
-            var engineKey = context.CreateKey("AD7Metrics\\Engine\\" +  new Guid(_id).ToString("B"));
+            var engineKey = context.CreateKey("AD7Metrics\\Engine\\" + new Guid(_id).ToString("B"));
             engineKey.SetValue("Name", _name);
 
             engineKey.SetValue("CLSID", _debugEngine.GUID.ToString("B"));

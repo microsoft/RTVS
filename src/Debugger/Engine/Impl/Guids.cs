@@ -25,5 +25,11 @@ namespace Microsoft.R.Debugger.Engine {
 
         public const string DebugEngineString = "BC67335F-8EC6-4AA8-AF59-72AEC95947EA";
         public static readonly Guid DebugEngine = new Guid(DebugEngineString);
+
+        public const string PortSupplierCLSIDString = "B89C17B4-320D-44D0-B95C-5D3468644207";
+        public static readonly Guid PortSupplierCLSID = new Guid(PortSupplierCLSIDString);
+
+        public const string PortSupplierString = "B3B6414F-D6F8-43A3-BFF4-93F5DD84CB86";
+        public static readonly Guid PortSupplier = new Guid(PortSupplierString);
     };
 }

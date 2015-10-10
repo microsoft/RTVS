@@ -83,6 +83,11 @@
     <Compile Include="DebuggerConstants.cs" />
     <Compile Include="EngineUtils.cs" />
     <Compile Include="Guids.cs" />
+    <Compile Include="PortSupplier\RDebugPortPicker.cs" />
+    <Compile Include="PortSupplier\RDebugPortSupplier.cs" />
+    <Compile Include="PortSupplier\RDebugPortSupplier.DebugPort.cs" />
+    <Compile Include="PortSupplier\RDebugPortSupplier.DebugProcess.cs" />
+    <Compile Include="PortSupplier\RDebugPortSupplier.DebugProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AD7Expression.cs" />
   </ItemGroup>
@@ -107,6 +112,7 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

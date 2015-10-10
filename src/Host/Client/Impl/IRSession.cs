@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Host.Client
-{
-    public interface IRSession : IDisposable
-    {
+namespace Microsoft.R.Host.Client {
+    public interface IRSession : IDisposable {
         event EventHandler<RRequestEventArgs> BeforeRequest;
         event EventHandler<RRequestEventArgs> AfterRequest;
         event EventHandler<RResponseEventArgs> Response;
         event EventHandler<RErrorEventArgs> Error;
         event EventHandler<EventArgs> Disconnected;
+        event EventHandler<EventArgs> Disposed;
 
         string Prompt { get; }
         bool IsHostRunning { get; }

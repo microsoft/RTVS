@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
@@ -117,8 +118,8 @@ namespace Microsoft.R.Debugger.Engine {
         }
     }
 
-    internal class AD7BoundBreakpointsEnum : AD7Enum<IDebugBoundBreakpoint2, IEnumDebugBoundBreakpoints2>, IEnumDebugBoundBreakpoints2 {
-        public AD7BoundBreakpointsEnum(IDebugBoundBreakpoint2[] breakpoints)
+    internal class AD7BoundBreakpointEnum : AD7Enum<IDebugBoundBreakpoint2, IEnumDebugBoundBreakpoints2>, IEnumDebugBoundBreakpoints2 {
+        public AD7BoundBreakpointEnum(IDebugBoundBreakpoint2[] breakpoints)
             : base(breakpoints) {
 
         }
@@ -128,14 +129,35 @@ namespace Microsoft.R.Debugger.Engine {
         }
     }
 
-    internal class AD7ErrorBreakpointsEnum : AD7Enum<IDebugErrorBreakpoint2, IEnumDebugErrorBreakpoints2>, IEnumDebugErrorBreakpoints2 {
-        public AD7ErrorBreakpointsEnum(IDebugErrorBreakpoint2[] breakpoints)
+    internal class AD7ErrorBreakpointEnum : AD7Enum<IDebugErrorBreakpoint2, IEnumDebugErrorBreakpoints2>, IEnumDebugErrorBreakpoints2 {
+        public AD7ErrorBreakpointEnum(IDebugErrorBreakpoint2[] breakpoints)
             : base(breakpoints) {
 
         }
 
         public int Next(uint celt, IDebugErrorBreakpoint2[] rgelt, ref uint celtFetched) {
             return Next(celt, rgelt, out celtFetched);
+        }
+    }
+
+    internal class AD7ProcessEnum : AD7Enum<IDebugProcess2, IEnumDebugProcesses2>, IEnumDebugProcesses2 {
+        public AD7ProcessEnum(IDebugProcess2[] processes)
+            : base(processes) {
+        }
+
+        public int Next(uint celt, IDebugProcess2[] rgelt, ref uint pceltFetched) {
+            return Next(celt, rgelt, out pceltFetched);
+        }
+    }
+
+    internal class AD7ProgramEnum : AD7Enum<IDebugProgram2, IEnumDebugPrograms2>, IEnumDebugPrograms2 {
+        public AD7ProgramEnum(IDebugProgram2[] programs)
+            : base(programs) {
+        }
+
+        public int Next(uint celt, IDebugProgram2[] rgelt, ref uint pceltFetched) {
+            return Next(celt, rgelt, out pceltFetched);
+
         }
     }
 }
