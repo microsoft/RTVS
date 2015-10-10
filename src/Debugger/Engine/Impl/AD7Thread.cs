@@ -15,14 +15,14 @@ namespace Microsoft.R.Debugger.Engine {
         public AD7Engine Engine { get; set; }
 
         public AD7Thread(AD7Engine engine) {
-            Debug.Assert(engine.Session != null);
+            Debug.Assert(engine.DebugSession != null);
             Engine = engine;
-            Engine.Session.RSession.BeforeRequest += RSession_BeforeRequest;
+            Engine.DebugSession.RSession.BeforeRequest += RSession_BeforeRequest;
             ResetStackFrames();
         }
 
         public void Dispose() {
-            Engine.Session.RSession.BeforeRequest -= RSession_BeforeRequest;
+            Engine.DebugSession.RSession.BeforeRequest -= RSession_BeforeRequest;
             Engine = null;
         }
 
@@ -167,7 +167,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void ResetStackFrames() {
-            _stackFrames = Lazy.Create(() => Engine.Session.GetStackFrames().GetAwaiter().GetResult());
+            _stackFrames = Lazy.Create(() => Engine.DebugSession.GetStackFrames().GetAwaiter().GetResult());
         }
 
         private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {

@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
+using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -15,18 +16,21 @@ namespace Microsoft.R.Debugger.Engine {
     [Guid(DebuggerGuids.DebugEngineCLSIDString)]
     public sealed class AD7Engine : IDebugEngine2, IDebugEngineLaunch2, IDebugProgram3, IDebugSymbolSettings100, IDisposable {
         private IDebugEventCallback2 _events;
-        private IDebugProgram2 _program;
+        private RDebugPortSupplier.DebugProgram _program;
         private Guid _programId;
         private bool _firstContinue = true, _sentContinue = false;
 
-        internal DebugSession Session { get; private set; }
+        internal DebugSession DebugSession { get; private set; }
 
         internal AD7Thread MainThread { get; private set; }
 
         internal bool IsInBrowseMode { get; set; }
 
         [Import]
-        private IRSessionProvider SessionProvider { get; set; }
+        private IRSessionProvider RSessionProvider { get; set; }
+
+        [Import]
+        private IDebugSessionProvider DebugSessionProvider {get;set;}
 
         public AD7Engine() {
             var compModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
@@ -40,10 +44,10 @@ namespace Microsoft.R.Debugger.Engine {
             MainThread.Dispose();
             MainThread = null;
 
-            Session.Dispose();
-            Session = null;
+            DebugSession.Dispose();
+            DebugSession = null;
 
-            SessionProvider = null;
+            RSessionProvider = null;
         }
 
         internal void Send(IDebugEvent2 eventObject, string iidEvent, IDebugProgram2 program, IDebugThread2 thread) {
@@ -75,22 +79,18 @@ namespace Microsoft.R.Debugger.Engine {
             if (rgpPrograms.Length != 1) {
                 throw new ArgumentException("Zero or more than one programs", "rgpPrograms");
             }
-            if (rgpProgramNodes.Length != 1 || !(rgpProgramNodes[0] is AD7ProgramNode)) {
-                throw new ArgumentException("Zero or more than one program node, or program node is not a " + typeof(AD7ProgramNode), "rgpProgramNodes");
+
+            _program = rgpPrograms[0] as RDebugPortSupplier.DebugProgram;
+            if (_program == null) {
+                throw new ArgumentException("rgpPrograms[0] must be an " + nameof(RDebugPortSupplier.DebugProgram), "rgpPrograms");
             }
 
-            _program = rgpPrograms[0];
             Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
-            var session = SessionProvider.Current;
-            if (session == null) {
-                throw new InvalidOperationException("No session");
-            }
-
-            Session = new DebugSession(session);
-            Session.Browse += Session_Browse;
-            Session.RSession.AfterRequest += RSession_AfterRequest;
-            Session.Initialize().GetAwaiter().GetResult();
+            DebugSession = DebugSessionProvider.GetDebugSession(_program.Session);
+            DebugSession.Browse += Session_Browse;
+            DebugSession.RSession.AfterRequest += RSession_AfterRequest;
+            DebugSession.Initialize().GetAwaiter().GetResult();
 
             MainThread = new AD7Thread(this);
             _events = pCallback;
@@ -104,7 +104,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugEngine2.CauseBreak() {
             Task.Run(async delegate {
-                await Session.EvaluateAsync(null, "browser()");
+                await DebugSession.EvaluateAsync(null, "browser()");
             }).GetAwaiter().GetResult();
             return VSConstants.E_NOTIMPL;
         }
@@ -205,7 +205,7 @@ namespace Microsoft.R.Debugger.Engine {
                 // debugger that user has explicitly entered something at the Browse prompt. 
                 if (!_sentContinue) {
                     _sentContinue = true;
-                    Session.ExecuteBrowserCommandAsync("c").DoNotWait();
+                    DebugSession.ExecuteBrowserCommandAsync("c").DoNotWait();
                 }
             }
             return VSConstants.S_OK;
@@ -288,13 +288,13 @@ namespace Microsoft.R.Debugger.Engine {
             Task step;
             switch (sk) {
                 case enum_STEPKIND.STEP_OVER:
-                    step = Session.StepOverAsync();
+                    step = DebugSession.StepOverAsync();
                     break;
                 case enum_STEPKIND.STEP_INTO:
-                    step = Session.StepIntoAsync();
+                    step = DebugSession.StepIntoAsync();
                     break;
                 case enum_STEPKIND.STEP_OUT:
-                    step = Session.StepOutAsync();
+                    step = DebugSession.StepOutAsync();
                     break;
                 default:
                     return VSConstants.E_NOTIMPL;
@@ -356,7 +356,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram3.ExecuteOnThread(IDebugThread2 pThread) {
-            Session.CancelStep();
+            DebugSession.CancelStep();
             return ((IDebugProgram2)this).Continue(pThread);
         }
 
@@ -411,7 +411,7 @@ namespace Microsoft.R.Debugger.Engine {
         private void Session_Browse(object sender, EventArgs e) {
             IsInBrowseMode = true;
             _sentContinue = false;
-            var bps = new AD7BoundBreakpointsEnum(new IDebugBoundBreakpoint2[0]);
+            var bps = new AD7BoundBreakpointEnum(new IDebugBoundBreakpoint2[0]);
             var evt = new AD7BreakpointEvent(bps);
             Send(evt, AD7BreakpointEvent.IID);
         }

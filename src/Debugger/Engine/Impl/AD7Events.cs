@@ -189,7 +189,7 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugBreakpointBoundEvent2.EnumBoundBreakpoints(out IEnumDebugBoundBreakpoints2 ppEnum) {
             IDebugBoundBreakpoint2[] boundBreakpoints = new IDebugBoundBreakpoint2[1];
             boundBreakpoints[0] = m_boundBreakpoint;
-            ppEnum = new AD7BoundBreakpointsEnum(boundBreakpoints);
+            ppEnum = new AD7BoundBreakpointEnum(boundBreakpoints);
             return VSConstants.S_OK;
         }
 
