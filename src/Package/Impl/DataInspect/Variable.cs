@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -12,10 +13,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
     {
         private Variable(Variable parent, VariableView view = null)
         {
-            _children = new List<Variable>();
+            Children = new ObservableCollection<Variable>();
             View = view;
-            IsExpanded = false;
+            //IsExpanded = false;
             Parent = parent;
+        }
+
+        public static Variable CreateEmpty() {
+            return new Variable(null);
         }
 
         /// <summary>
@@ -81,43 +86,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// </summary>
         public string TypeName { get; set; }
 
-        bool _isExpanded;
-        public bool IsExpanded
-        {
-            get { return _isExpanded; }
-            set
-            {
-                if (_isExpanded != value)
-                {
-                    _isExpanded = value;
-                    if (_isExpanded)
-                    {
-                        Expand();
-                    }
-                    else
-                    {
-                        Collapse();
-                    }
+        //bool _isExpanded;
+        //public bool IsExpanded
+        //{
+        //    get { return _isExpanded; }
+        //    set
+        //    {
+        //        if (_isExpanded != value)
+        //        {
+        //            _isExpanded = value;
+        //            if (_isExpanded)
+        //            {
+        //                Expand();
+        //            }
+        //            else
+        //            {
+        //                Collapse();
+        //            }
 
-                    View?.RefreshView();
-                }
-            }
-        }
+        //            //View?.RefreshView();
+        //        }
+        //    }
+        //}
 
         public bool HasChildren { get; private set; }
 
-        List<Variable> _children;
-        public List<Variable> Children
-        {
-            get
-            {
-                if (_children == null)
-                {
-                    _children = new List<Variable>();
-                }
-                return _children;
-            }
-        }
+        public ObservableCollection<Variable> Children { get; }
 
         Variable _parent;
         public Variable Parent
@@ -141,33 +135,33 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// simple Depth first traverse of Variable tree, and take action (Recursive)
         /// </summary>
         /// <param name="variables">variables to recurse</param>
-        public static void TraverseDepthFirst(IEnumerable<Variable> variables, Func<Variable, bool> action)
-        {
-            foreach (var variable in variables)
-            {
-                if (action(variable))
-                {
-                    if (variable.HasChildren)
-                    {
-                        TraverseDepthFirst(variable.Children, action);
-                    }
-                }
-            }
-        }
+        //public static void TraverseDepthFirst(IEnumerable<Variable> variables, Func<Variable, bool> action)
+        //{
+        //    foreach (var variable in variables)
+        //    {
+        //        if (action(variable))
+        //        {
+        //            if (variable.HasChildren)
+        //            {
+        //                TraverseDepthFirst(variable.Children, action);
+        //            }
+        //        }
+        //    }
+        //}
 
         #region Private
 
-        private void Expand()
-        {
-            TraverseDepthFirst(this.Children,
-                (v) => { v.IsVisible = true; return v.IsExpanded; });
-        }
+        //private void Expand()
+        //{
+        //    TraverseDepthFirst(this.Children,
+        //        (v) => { v.IsVisible = true; return v.IsExpanded; });
+        //}
 
-        private void Collapse()
-        {
-            TraverseDepthFirst(this.Children,
-                (v) => { v.IsVisible = false; return v.IsExpanded; });
-        }
+        //private void Collapse()
+        //{
+        //    TraverseDepthFirst(this.Children,
+        //        (v) => { v.IsVisible = false; return v.IsExpanded; });
+        //}
 
         #endregion
     }
