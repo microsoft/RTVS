@@ -14,11 +14,13 @@ using Task = System.Threading.Tasks.Task;
 namespace Microsoft.R.Debugger.Engine {
     [ComVisible(true)]
     [Guid(DebuggerGuids.DebugEngineCLSIDString)]
-    public sealed class AD7Engine : IDebugEngine2, IDebugEngineLaunch2, IDebugProgram3, IDebugSymbolSettings100, IDisposable {
+    public sealed class AD7Engine : IDebugEngine2, IDebugEngineLaunch2, IDebugProgram3, IDebugSymbolSettings100 {
         private IDebugEventCallback2 _events;
         private RDebugPortSupplier.DebugProgram _program;
         private Guid _programId;
         private bool _firstContinue = true, _sentContinue = false;
+
+        internal bool IsDisposed { get; private set; }
 
         internal DebugSession DebugSession { get; private set; }
 
@@ -38,16 +40,23 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         public void Dispose() {
+            IsDisposed = true;
+
             _events = null;
             _program = null;
 
             MainThread.Dispose();
             MainThread = null;
 
-            DebugSession.Dispose();
             DebugSession = null;
-
             RSessionProvider = null;
+            DebugSessionProvider = null;
+        }
+
+        private void ThrowIfDisposed() {
+            if (IsDisposed) {
+                throw new ObjectDisposedException(nameof(AD7Engine));
+            }
         }
 
         internal void Send(IDebugEvent2 eventObject, string iidEvent, IDebugProgram2 program, IDebugThread2 thread) {
@@ -76,6 +85,8 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngine2.Attach(IDebugProgram2[] rgpPrograms, IDebugProgramNode2[] rgpProgramNodes, uint celtPrograms, IDebugEventCallback2 pCallback, enum_ATTACH_REASON dwReason) {
+            ThrowIfDisposed();
+
             if (rgpPrograms.Length != 1) {
                 throw new ArgumentException("Zero or more than one programs", "rgpPrograms");
             }
@@ -103,6 +114,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngine2.CauseBreak() {
+            ThrowIfDisposed();
             Task.Run(async delegate {
                 await DebugSession.EvaluateAsync(null, "browser()");
             }).GetAwaiter().GetResult();
@@ -110,6 +122,8 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngine2.ContinueFromSynchronousEvent(IDebugEvent2 pEvent) {
+            ThrowIfDisposed();
+
             if (pEvent is AD7ProgramDestroyEvent) {
                 Dispose();
             }
@@ -124,6 +138,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngine2.DestroyProgram(IDebugProgram2 pProgram) {
+            ThrowIfDisposed();
             return DebuggerConstants.E_PROGRAM_DESTROY_PENDING;
         }
 
@@ -133,8 +148,9 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngine2.GetEngineId(out Guid pguidEngine) {
+            ThrowIfDisposed();
             pguidEngine = DebuggerGuids.DebugEngine;
-            return VSConstants.S_OK; ;
+            return VSConstants.S_OK;
         }
 
         int IDebugEngine2.RemoveAllSetExceptions(ref Guid guidType) {
@@ -153,18 +169,22 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngine2.SetLocale(ushort wLangID) {
+            ThrowIfDisposed();
             return VSConstants.S_OK;
         }
 
         int IDebugEngine2.SetMetric(string pszMetric, object varValue) {
+            ThrowIfDisposed();
             return VSConstants.S_OK;
         }
 
         int IDebugEngine2.SetRegistryRoot(string pszRegistryRoot) {
+            ThrowIfDisposed();
             return VSConstants.S_OK;
         }
 
         int IDebugEngineLaunch2.CanTerminateProcess(IDebugProcess2 pProcess) {
+            ThrowIfDisposed();
             return VSConstants.S_FALSE;
         }
 
@@ -185,19 +205,24 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram2.CanDetach() {
+            ThrowIfDisposed();
             return VSConstants.S_OK;
         }
 
         int IDebugProgram2.CauseBreak() {
+            ThrowIfDisposed();
             return ((IDebugEngine2)this).CauseBreak();
         }
 
         int IDebugProgram2.Detach() {
+            ThrowIfDisposed();
             Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
             return VSConstants.S_OK;
         }
 
-        int IDebugProgram2.Continue(IDebugThread2 pThread) {
+        private int Continue(IDebugThread2 pThread) {
+            ThrowIfDisposed();
+
             if (_firstContinue) {
                 _firstContinue = false;
             } else {
@@ -208,10 +233,17 @@ namespace Microsoft.R.Debugger.Engine {
                     DebugSession.ExecuteBrowserCommandAsync("c").DoNotWait();
                 }
             }
+
             return VSConstants.S_OK;
         }
 
+        int IDebugProgram2.Continue(IDebugThread2 pThread) {
+            return Continue(pThread);
+        }
+
         int IDebugProgram2.EnumCodeContexts(IDebugDocumentPosition2 pDocPos, out IEnumDebugCodeContexts2 ppEnum) {
+            ThrowIfDisposed();
+
             string fileName;
             Marshal.ThrowExceptionForHR(pDocPos.GetFileName(out fileName));
 
@@ -231,10 +263,13 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram2.EnumModules(out IEnumDebugModules2 ppEnum) {
-            throw new NotImplementedException();
+            // TODO
+            ppEnum = null;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IDebugProgram2.EnumThreads(out IEnumDebugThreads2 ppEnum) {
+            ThrowIfDisposed();
             ppEnum = new AD7ThreadEnum(new[] { MainThread });
             return VSConstants.S_OK;
         }
@@ -259,6 +294,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram2.GetEngineInfo(out string pbstrEngine, out Guid pguidEngine) {
+            ThrowIfDisposed();
             pbstrEngine = "R";
             pguidEngine = DebuggerGuids.DebugEngine;
             return VSConstants.S_OK;
@@ -270,6 +306,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram2.GetName(out string pbstrName) {
+            ThrowIfDisposed();
             pbstrName = null;
             return VSConstants.S_OK;
         }
@@ -280,11 +317,14 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram2.GetProgramId(out Guid pguidProgramId) {
+            ThrowIfDisposed();
             pguidProgramId = _programId;
             return VSConstants.S_OK;
         }
 
         int IDebugProgram2.Step(IDebugThread2 pThread, enum_STEPKIND sk, enum_STEPUNIT Step) {
+            ThrowIfDisposed();
+
             Task step;
             switch (sk) {
                 case enum_STEPKIND.STEP_OVER:
@@ -356,8 +396,9 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram3.ExecuteOnThread(IDebugThread2 pThread) {
+            ThrowIfDisposed();
             DebugSession.CancelStep();
-            return ((IDebugProgram2)this).Continue(pThread);
+            return Continue(pThread);
         }
 
         int IDebugProgram3.GetDebugProperty(out IDebugProperty2 ppProperty) {
@@ -405,6 +446,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugSymbolSettings100.SetSymbolLoadState(int bIsManual, int bLoadAdjacentSymbols, string bstrIncludeList, string bstrExcludeList) {
+            ThrowIfDisposed();
             return VSConstants.S_OK;
         }
 

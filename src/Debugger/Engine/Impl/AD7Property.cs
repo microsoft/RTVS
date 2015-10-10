@@ -153,15 +153,30 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProperty2.SetValueAsString(string pszValue, uint dwRadix, uint dwTimeout) {
-            throw new NotImplementedException();
+            string errorString;
+            return ((IDebugProperty3)this).SetValueAsStringWithError(pszValue, dwRadix, dwTimeout, out errorString);
         }
 
         int IDebugProperty3.SetValueAsString(string pszValue, uint dwRadix, uint dwTimeout) {
-            throw new NotImplementedException();
+            return ((IDebugProperty2)this).SetValueAsString(pszValue, dwRadix, dwTimeout);
         }
 
         int IDebugProperty3.SetValueAsStringWithError(string pszValue, uint dwRadix, uint dwTimeout, out string errorString) {
-            throw new NotImplementedException();
+            errorString = null;
+
+            var successResult = Result as DebugSuccessfulEvaluationResult;
+            if (successResult == null) {
+                return VSConstants.E_NOTIMPL;
+            }
+
+            // TODO: dwRadix
+            var setResult = successResult.SetValueAsync(pszValue).GetAwaiter().GetResult() as DebugFailedEvaluationResult;
+            if (setResult != null) {
+                errorString = setResult.ErrorText;
+                return VSConstants.E_FAIL;
+            }
+
+            return VSConstants.S_OK;
         }
 
         internal DEBUG_PROPERTY_INFO GetDebugPropertyInfo(uint radix, enum_DEBUGPROP_INFO_FLAGS fields) {
@@ -189,7 +204,7 @@ namespace Microsoft.R.Debugger.Engine {
                 dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
             }
 
-            if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE)) {
+            if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE) && successResult != null) {
                 // TODO: handle radix
                 dpi.bstrValue = successResult.Value;
                 dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;

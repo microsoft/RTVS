@@ -96,10 +96,11 @@ namespace Microsoft.R.Debugger {
             ThrowIfDisposed();
 
             var quotedExpr = expression.Replace("\\", "\\\\").Replace("'", "\'");
-            var res = await EvaluateRawAsync($".rtvs.eval('{quotedExpr}', ${env})", throwOnError: false).ConfigureAwait(false);
+            var res = await EvaluateRawAsync($".rtvs.eval('{quotedExpr}', {env})", throwOnError: false).ConfigureAwait(false);
 
             if (res.ParseStatus != RParseStatus.OK) {
-                return new DebugFailedEvaluationResult(expression, res.ParseStatus.ToString());
+                Debug.Fail("Malformed .rtvs.eval");
+                return new DebugFailedEvaluationResult(expression, "RParseStatus." + res.ParseStatus);
             } else if (res.Error != null) {
                 return new DebugFailedEvaluationResult(expression, res.Error);
             } else if (res.Result == null) {

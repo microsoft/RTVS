@@ -55,6 +55,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -70,6 +71,7 @@
     <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <PrivateAssembliesFolderPath>$(DevEnvDir)\PrivateAssemblies\</PrivateAssembliesFolderPath>
@@ -91,6 +93,7 @@
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
+    <Compile Include="Repl\Commands\AttachDebuggerCommand.cs" />
     <Compile Include="Repl\Commands\ReplTypingCommandHandler.cs" />
     <Compile Include="Repl\RSessionExtensions.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />

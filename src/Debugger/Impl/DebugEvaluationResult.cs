@@ -43,6 +43,10 @@ namespace Microsoft.R.Debugger {
             : this(stackFrame, expression, (string)json["value"], (string)json["raw_value"], (string)json["type"]) {
         }
 
+        public Task<DebugEvaluationResult> SetValueAsync(string value) {
+            return StackFrame.EvaluateAsync($"{Expression} <- {value}");
+        }
+
         public async Task<DebugSuccessfulEvaluationResult[]> GetChildren() {
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");

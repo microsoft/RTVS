@@ -34,9 +34,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
 
+        public int Id { get; private set; }
         public string Prompt { get; private set; } = "> ";
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _hostRunTask != null && !_hostRunTask.IsCompleted;
+
+        public RSession(int id) {
+            Id = id;
+        }
 
         public void Dispose() {
             _host?.Dispose();

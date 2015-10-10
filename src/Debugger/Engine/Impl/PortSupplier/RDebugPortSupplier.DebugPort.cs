@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.R.Host.Client;
@@ -25,9 +26,12 @@ namespace Microsoft.R.Debugger.Engine.PortSupplier {
                 compModel.DefaultCompositionService.SatisfyImportsOnce(this);
             }
 
+            private IEnumerable<DebugProcess> GetProcesses() {
+                return RSessionProvider.GetSessions().Select(kv => new DebugProcess(this, kv.Key, kv.Value));
+            }
+
             public int EnumProcesses(out IEnumDebugProcesses2 ppEnum) {
-                var processes = RSessionProvider.GetSessions().Select(kv => new DebugProcess(this, kv.Key, kv.Value));
-                ppEnum = new AD7ProcessEnum(processes.Cast<IDebugProcess2>().ToArray());
+                ppEnum = new AD7ProcessEnum(GetProcesses().Cast<IDebugProcess2>().ToArray());
                 return VSConstants.S_OK;
             }
 
@@ -52,7 +56,13 @@ namespace Microsoft.R.Debugger.Engine.PortSupplier {
 
             public int GetProcess(AD_PROCESS_ID ProcessId, out IDebugProcess2 ppProcess) {
                 ppProcess = null;
-                return VSConstants.E_NOTIMPL;
+
+                if (ProcessId.ProcessIdType != (uint)enum_AD_PROCESS_ID.AD_PROCESS_ID_SYSTEM) {
+                    return VSConstants.E_FAIL;
+                }
+
+                ppProcess = GetProcesses().FirstOrDefault(p => p.ProcessId == ProcessId.dwProcessId);
+                return ppProcess != null ? VSConstants.S_OK : VSConstants.E_FAIL;
             }
         }
     }

@@ -241,6 +241,17 @@
           <CommandName>Set Working Directory</CommandName>
         </Strings>
       </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0400" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup"/>
+        <Icon guid="ImageCatalogGuid" id="RemoteDebugger"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Attach Debugger</ButtonText>
+          <MenuText>&amp;Attach Debugger</MenuText>
+          <CommandName>Attach Debugger</CommandName>
+        </Strings>
+      </Button>
       <!-- End Workspace flyout -->
 
       <!-- Packages flyout -->
@@ -778,6 +789,7 @@
       <IDSymbol name="icmdSetWorkingDirectory" value="504" />
       <IDSymbol name="icmdRestartR" value="505" />
       <IDSymbol name="icmdInterruptR" value="506" />
+      <IDSymbol name="icmdAttachDebugger" value="507" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
