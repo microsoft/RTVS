@@ -283,8 +283,8 @@ namespace Microsoft.R.Editor.Tree
         }
 
         /// <summary>
-        /// Removes nodes and their keys from the tree collection if 
-        /// node range is partially or entirely within the deleted region.
+        /// Removes nodes from the tree collection if node range is 
+        /// // partially or entirely within the deleted region.
         /// This is needed since parsing is asynchronous and without
         /// removing damaged nodes so intellisense will still be able
         /// to find them in the tree which actually they are gone.
@@ -308,7 +308,7 @@ namespace Microsoft.R.Editor.Tree
 
                 if (range.Start == child.Start && range.Length == 0)
                 {
-                    // Typing right before the node
+                    // Change is right before the node
                     break;
                 }
 
@@ -330,6 +330,8 @@ namespace Microsoft.R.Editor.Tree
                             nodesChanged = true;
                         }
                     }
+
+                    removeChild = true;
                 }
 
                 if (removeChild)
