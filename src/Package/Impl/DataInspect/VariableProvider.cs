@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
     {
         private bool _rSessionInitialized = false;
         private IRSession _rSession;
-        private Variable _globalEnv;
+        private Variable _monitor;
 
         public VariableProvider()
         {
@@ -43,8 +43,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
             SetRSession(sessionProvider.Current);   // TODO: f ind a place to SetRSession to null, watch out memory leak
-
-            _globalEnv = Variable.CreateEmpty();
         }
 
         #region Public
@@ -117,7 +115,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         {
             if (!_rSessionInitialized)
             {
-
                 string script = null;
 
                 var assembly = this.GetType().Assembly;
@@ -141,34 +138,29 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         private async Task RefreshVariableCollection()
         {
+            if (_monitor == null) return;
+
             await EnsureRSessionInitialized();
 
             REvaluationResult response;
             using (var interactor = await _rSession.BeginEvaluationAsync())
             {
-                response = await interactor.GetGlobalEnvironmentVariables();
+                response = await interactor.EvaluateAsync(
+                    _monitor.EvaluationContext.GetQueryString(),
+                    false);
             }
 
             if (response.ParseStatus == RParseStatus.OK)
             {
-                var evaluations = Deserialize<List<REvaluation>>(response.Result);
-                if (evaluations != null)
+                var evaluation = Deserialize<REvaluation>(response.Result);
+                if (evaluation != null)
                 {
-
-                    DispatchInvoke(() =>
-                    {
-                        _globalEnv.Children.Clear();    // TODO: clear and add all, optimize to touch only changed
-                        foreach (var child in evaluations.Select(Variable.Create))
-                        {
-                            _globalEnv.Children.Add(child);
-                        }
-                    },
-                    DispatcherPriority.Normal);
+                    _monitor.Update(Variable.Create(evaluation, _monitor.EvaluationContext));
                 }
             }
         }
 
-        public async Task<Variable> EvaluateVariable(VariableEvaluationContext context)
+        public async Task<Variable> EvaluateVariable(VariableEvaluationContext context) // TODO: rename to monitor
         {
             await EnsureRSessionInitialized();
 
@@ -183,7 +175,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 var evaluation = Deserialize<REvaluation>(response.Result);
                 if (evaluation != null)
                 {
-                    return Variable.Create(evaluation);
+                    var created = Variable.Create(evaluation, context);
+                    _monitor = created;
+                    return created;
                 }
             }
 

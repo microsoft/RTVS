@@ -2,45 +2,37 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
-    public class Variable
+    public class Variable : INotifyPropertyChanged  // TODO: BindableBase
     {
-        private Variable(Variable parent, VariableView view = null)
+        private Variable(VariableEvaluationContext evaluationContext)
         {
             Children = new ObservableCollection<Variable>();
-            View = view;
-            Parent = parent;
+            EvaluationContext = evaluationContext;
         }
 
-        public static Variable CreateEmpty() {
-            return new Variable(null);
-        }
+        public VariableEvaluationContext EvaluationContext { get; }
 
-        public VariableEvaluationContext EvaluationContext { get; private set; }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public static Variable Create(REvaluation evaluation, VariableEvaluationContext context)
-        {
-            var instance = Create(evaluation);
-            instance.EvaluationContext = context;
-
-            return instance;
-        }
 
         /// <summary>
         /// Create Variable instance from R evaluation
         /// </summary>
         /// <param name="evaluation"></param>
         /// <returns></returns>
-        public static Variable Create(REvaluation evaluation)
+        public static Variable Create(REvaluation evaluation, VariableEvaluationContext evaluationContext)
         {
             const string DataFramePrefix = "'data.frame':";
-            var instance = new Variable(null, null);
+            var instance = new Variable(evaluationContext);
 
             // Name
             instance.VariableName = evaluation.Name;
@@ -70,58 +62,148 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 instance.HasChildren = true;
             }
 
+            if (evaluation.Length > 1)
+            {
+                instance.HasChildren = true;
+            }
+
             if (evaluation.Children != null)
             {
-                foreach (var child in evaluation.Children)
+                foreach (var child in evaluation.Children.Evals)
                 {
-                    instance.Children.Add(Variable.Create(child));
+                    instance.Children.Add(Variable.Create(child, evaluationContext));
                 }
             }
 
             return instance;
         }
 
-        /// <summary>
-        /// <see cref="VariableView"/> that owns this
-        /// </summary>
-        public VariableView View { get; set; }
 
+        private string _variableName;
         /// <summary>
         /// Name of variable
         /// </summary>
-        public string VariableName { get; set; }
-
-        /// <summary>
-        /// Value of variable, represented in short string
-        /// </summary>
-        public string VariableValue { get; set; }
-
-        /// <summary>
-        /// Type name of variable
-        /// </summary>
-        public string TypeName { get; set; }
-
-        public bool HasChildren { get; private set; }
-
-        public ObservableCollection<Variable> Children
+        public string VariableName
         {
-            get;
-        }
-
-        Variable _parent;
-        public Variable Parent
-        {
-            get { return _parent; }
-            private set
+            get { return _variableName; }
+            set
             {
-                _parent = value;
-                if (_parent != null)
+                if (_variableName != value)
                 {
-                    Level = _parent.Level + 1;
+                    _variableName = value;
+                    if (PropertyChanged != null)
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs("VariableName"));
+                    }
                 }
             }
         }
 
-        public int Level { get; set; }
+        private string _variableValue;
+        /// <summary>
+        /// Value of variable, represented in short string
+        /// </summary>
+        public string VariableValue
+        {
+            get { return _variableValue; }
+            set
+            {
+                if (_variableValue != value)
+                {
+                    _variableValue = value;
+                    if (PropertyChanged != null)
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs("VariableValue"));
+                    }
+                }
+            }
+        }
+
+        private string _typeName;
+        /// <summary>
+        /// Type name of variable
+        /// </summary>
+        public string TypeName
+        {
+            get { return _typeName; }
+            set
+            {
+                if (_typeName != value)
+                {
+                    _typeName = value;
+                    if (PropertyChanged != null)
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs("TypeName"));
+                    }
+                }
+            }
+        }
+
+        public bool HasChildren { get; private set; }
+
+        public ObservableCollection<Variable> Children { get; }
+
+        public void Update(Variable update)
+        {
+            DispatchInvoke(() => UpdateInternal(update), DispatcherPriority.Normal);
+        }
+
+        private void UpdateInternal(Variable update)
+        {
+            if (VariableName != update.VariableName)
+            {
+                throw new InvalidOperationException("Can't update to different variable");
+            }
+
+            VariableValue = update.VariableValue;
+            TypeName = update.TypeName;
+            HasChildren = update.HasChildren;
+
+            // remove
+            var removed = from v in Children
+                          where !update.Children.Any((u) => (v.VariableName == u.VariableName))
+                          select v;
+            foreach (var item in removed)
+            {
+                Children.Remove(item);
+            }
+
+            List<Variable> newVariables  = new List<Variable>();
+            foreach (var newitem in update.Children)
+            {
+                var old = Children.FirstOrDefault((u) => (u.VariableName == newitem.VariableName));
+                if (old == null)
+                {
+                    newVariables.Add(newitem);
+                }
+                else
+                {
+                    old.UpdateInternal(newitem);
+                }
+            }
+
+            foreach (var item in newVariables)
+            {
+                Children.Add(item);
+            }
+        }
+
+        private static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
+        {
+            Action guardedAction =
+                () =>
+                {
+                    try
+                    {
+                        toInvoke();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Assert(false, "Guarded invoke caught exception", e.Message);
+                    }
+                };
+
+            Application.Current.Dispatcher.BeginInvoke(guardedAction, priority);    // TODO: acquiring Application.Current.Dispatcher, create utility class for UI thread and use it
+        }
     }
 }

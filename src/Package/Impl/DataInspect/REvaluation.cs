@@ -22,7 +22,26 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         [DataMember(Name = "type")]
         public string TypeName { get; set; }
 
-        [DataMember(Name ="children")]
-        public List<REvaluation> Children { get; set; }
+        [DataMember(Name = "length")]
+        public int Length { get; set; }
+
+        [DataMember(Name = "children")]
+        public REvaluationRange Children { get; set; }
+    }
+
+    [DataContract]
+    public class REvaluationRange
+    {
+        [DataMember(Name ="total")]
+        public int Total { get; set; }
+
+        [DataMember(Name ="begin")]
+        public int Begin { get; set; }
+
+        [DataMember(Name = "end")]
+        public int End { get; set; }
+
+        [DataMember(Name = "variables")]
+        public List<REvaluation> Evals { get; set; }
     }
 }

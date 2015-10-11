@@ -1,6 +1,9 @@
-.rtvs.datainspect.print_into <<- function(con, obj) {
+.rtvs.datainspect.print_into <<- function(con, obj, name, add.children, first.hundred) {
   repr <- capture.output(str(obj, max.level = 0))
-  
+
+  cat('"name": ', file = con, sep = '');
+  dput(name, file = con);
+  cat(',', file = con, sep = '');
   cat('"class": "', file = con, sep = '');
   cat(class(obj), file = con);
   cat('"', file = con, sep = '');
@@ -8,37 +11,64 @@
   dput(repr[1], file = con);
   cat(',"type": ', file = con, sep = '');
   dput(typeof(obj), file = con);
+  cat(',"length": ', file = con, sep = '');
+  cat(length(obj), file = con);
+
+  if(add.children){
+    cat(',', file = con, sep = '');
+    .rtvs.datainspect.append_children(con, obj, first.hundred=first.hundred)
+  }
 }
 
-.rtvs.datainspect.env_children <<- function(con, obj) {
-	cat('[', file = con, sep = '');
+.rtvs.datainspect.append_children <<- function(con, obj, first.hundred=FALSE) {
+  cat('"children": ', file = con, sep = '');
+
+  l<-length(obj);
+
+  cat('{"total": ', file = con, sep = '');
+  cat(l, file = con);
+
+  begin<-1
+  if (first.hundred) { end<-min(l, begin+100); }
+  else {end<-l}
+  
+  cat(',"begin": ', file = con, sep = '');
+  cat(begin, file = con, sep = '');
+  cat(',"end": ', file = con, sep = '');
+  cat(end, file = con, sep = '');
+
+  cat(',"variables": ', file = con, sep = '');
+
+  cat('[', file = con, sep = '');
+	
+  n <- names(obj)
+  if (is.null(n)) {
 	is_first <- TRUE;
-	for (var in as.list(obj)) {
-		if (is_first) {
-			is_first <- FALSE;
-		}
-		else {
-			cat(', ', file = con, sep = '');
-		}
-		cat('{', file = con, sep = '');
-		.rtvs.datainspect.print_into(con, var);
-		cat('}', file = con, sep = '');
+	for(i in begin:end) {
+	  if (is_first) { is_first <- FALSE;}
+	  else { cat(', ', file = con, sep = ''); }
+	  cat('{', file = con, sep = '');
+	  .rtvs.datainspect.print_into(con, obj[[i]], gettextf("[[%s]]", i), add.children=FALSE, first.hundred=TRUE);
+      cat('}\n', file = con, sep = '');
 	}
-	cat(']', file = con, sep = '');
-}
-
-.rtvs.datainspect.append_children <<- function(con, obj) {
-  cat(',"children": ', file = con, sep = '');
-  .rtvs.datainspect.env_children(con, obj);
+  } else {
+    n <- n[begin:end]
+	is_first <- TRUE;
+    for(i in n) {
+	  if (is_first) { is_first <- FALSE;}
+	  else { cat(', ', file = con, sep = ''); }
+      cat('{', file = con, sep = '');
+      .rtvs.datainspect.print_into(con, obj[[i]], i, add.children=FALSE, first.hundred=TRUE);
+      cat('}\n', file = con, sep = '');
+	}
+  }
+  cat(']\n', file = con, sep = '');
 }
 
 .rtvs.datainspect.eval_into <<- function(con, expr, env) {
 	obj <- eval(parse(text = expr), env);
-	cat('"name": ', file = con, sep = '');
-	dput(expr, file = con);
-	cat(',', file = con, sep = '');
-	.rtvs.datainspect.print_into(con, obj);
-	.rtvs.datainspect.append_children(con,obj);
+	
+	.rtvs.datainspect.print_into(con, obj, expr, add.children=TRUE, first.hundred=FALSE);
 }
 
 .rtvs.datainspect.eval <<- function(expr, env) {
