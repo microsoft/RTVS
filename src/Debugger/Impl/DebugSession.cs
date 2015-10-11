@@ -158,16 +158,14 @@ namespace Microsoft.R.Debugger {
             }
 
             if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null) {
-                Debug.Fail(".rtvs.traceback() failed");
-                return new DebugStackFrame[0];
+                throw new InvalidDataException(".rtvs.traceback() failed");
             }
 
             JArray jFrames;
             try {
                 jFrames = JArray.Parse(res.Result);
-            } catch (JsonException) {
-                Debug.Fail("Failed to parse JSON returned by .rtvs.traceback()");
-                return new DebugStackFrame[0];
+            } catch (JsonException ex) {
+                throw new InvalidDataException("Failed to parse JSON returned by .rtvs.traceback()", ex);
             }
 
             var stackFrames = new List<DebugStackFrame>();
