@@ -49,13 +49,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             }
         }
 
+        private int itemIndexOffset = 1;
         private void VariableChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
                     {
-                        int index = e.NewStartingIndex + 1; // offset to Column header
+                        int index = e.NewStartingIndex + itemIndexOffset; // offset to Column header
                         foreach (var child in e.NewItems)
                         {
                             RootGrid.Items.Insert(index++, child);
@@ -64,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     {
-                        int index = e.OldStartingIndex + 1;
+                        int index = e.OldStartingIndex + itemIndexOffset;
                         foreach (var child in e.OldItems)
                         {
                             RootGrid.Items.Insert(index++, child);
@@ -73,9 +74,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     {
-                        while (RootGrid.Items.Count > 1)
+                        while (RootGrid.Items.Count > itemIndexOffset)
                         {
-                            RootGrid.Items.RemoveAt(RootGrid.Items.Count - 1);
+                            RootGrid.Items.RemoveAt(RootGrid.Items.Count - itemIndexOffset);
                         }
                     }
                     break;

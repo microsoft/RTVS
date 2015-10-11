@@ -75,6 +75,8 @@ namespace Microsoft.VisualStudioTools.Wpf {
         public static readonly object ScrollBarArrowBackgroundPressedKey = VsBrushes.ScrollBarArrowPressedBackgroundKey;
         public static readonly object ScrollBarArrowBackgroundDisabledKey = VsBrushes.ScrollBarArrowDisabledBackgroundKey;
 
+        public static readonly object ScrollBarStyleKey = VsResourceKeys.ScrollBarStyleKey;
+
 #if DEV11_OR_LATER
         public static readonly object SearchGlyphBrushKey = SearchControlColors.SearchGlyphBrushKey;
 #else
