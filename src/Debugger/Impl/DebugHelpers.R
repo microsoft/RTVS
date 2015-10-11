@@ -119,25 +119,43 @@
 }
 
 
-.rtvs.parse <<- function(...) {
-  cat('<parse>\n')
-  r <- .rtvs.base_parse(...);
-  cat('</parse>\n');
+.rtvs.base_source <<- NULL;
+
+
+.rtvs.source <<- function(...) {
+  dput(list(...))
+  r <- .rtvs.base_source(...);
   r
 }
 
 
-.rtvs.detour_parse <<- function() {
-  if (!identical(parse, .rtvs.parse)) {
-    .rtvs.base_parse <<- parse;
-    
-    unlockBinding('parse', baseenv());
-    unlockBinding('parse', .BaseNamespaceEnv);
-
-    assign('parse', .rtvs.parse, envir = baseenv());
-    assign('parse', .rtvs.parse, envir = .BaseNamespaceEnv);
-    
-    lockBinding('parse', baseenv());
-    lockBinding('parse', .BaseNamespaceEnv);
+.rtvs.detour_source <<- function(detour) {
+  if (detour) {
+    if (is.null(.rtvs.base_source)) {
+      .rtvs.base_source <<- source;
+      
+      unlockBinding('source', baseenv());
+      unlockBinding('source', .BaseNamespaceEnv);
+  
+      assign('source', .rtvs.source, envir = baseenv());
+      assign('source', .rtvs.source, envir = .BaseNamespaceEnv);
+      
+      lockBinding('source', baseenv());
+      lockBinding('source', .BaseNamespaceEnv);
+    }
+  } else {
+    if (!is.null(.rtvs.base_source)) {
+      unlockBinding('source', baseenv());
+      unlockBinding('source', .BaseNamespaceEnv);
+      
+      assign('source', .rtvs.base_source, envir = baseenv());
+      assign('source', .rtvs.base_source, envir = .BaseNamespaceEnv);
+      
+      lockBinding('source', baseenv());
+      lockBinding('source', .BaseNamespaceEnv);
+      
+      .rtvs.base_source <<- NULL;
+    }
   }
 }
+
