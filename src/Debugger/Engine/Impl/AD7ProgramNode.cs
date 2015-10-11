@@ -1,8 +1,8 @@
+/*
+using System;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
-using System;
-using System.Diagnostics;
-using Microsoft.R.Editor.ContentType;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7ProgramNode : IDebugProgramNode2 {
@@ -49,3 +49,4 @@ namespace Microsoft.R.Debugger.Engine {
         }
     }
 }
+*/

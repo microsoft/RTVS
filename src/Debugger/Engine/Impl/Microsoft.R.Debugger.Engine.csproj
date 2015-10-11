@@ -81,8 +81,7 @@
     <Compile Include="AD7StackFrame.cs" />
     <Compile Include="AD7Thread.cs" />
     <Compile Include="DebuggerConstants.cs" />
-    <Compile Include="EngineUtils.cs" />
-    <Compile Include="Guids.cs" />
+    <Compile Include="DebuggerGuids.cs" />
     <Compile Include="PortSupplier\RDebugPortPicker.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.DebugPort.cs" />

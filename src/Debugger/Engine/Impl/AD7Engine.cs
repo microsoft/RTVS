@@ -101,7 +101,7 @@ namespace Microsoft.R.Debugger.Engine {
             DebugSession = DebugSessionProvider.GetDebugSession(_program.Session);
             DebugSession.Browse += Session_Browse;
             DebugSession.RSession.AfterRequest += RSession_AfterRequest;
-            DebugSession.Initialize().GetAwaiter().GetResult();
+            DebugSession.InitializeAsync().GetAwaiter().GetResult();
 
             MainThread = new AD7Thread(this);
             _events = pCallback;
@@ -132,9 +132,8 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngine2.CreatePendingBreakpoint(IDebugBreakpointRequest2 pBPRequest, out IDebugPendingBreakpoint2 ppPendingBP) {
-            // TODO
-            ppPendingBP = null;
-            return VSConstants.E_NOTIMPL;
+            ppPendingBP = new AD7PendingBreakpoint(this, pBPRequest);
+            return VSConstants.S_OK;
         }
 
         int IDebugEngine2.DestroyProgram(IDebugProgram2 pProgram) {

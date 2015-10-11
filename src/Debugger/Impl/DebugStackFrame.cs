@@ -39,7 +39,7 @@ namespace Microsoft.R.Debugger {
             return Session.EvaluateAsync(this, expression, $"sys.frame({Index})");
         }
 
-        public async Task<IReadOnlyDictionary<string, DebugEvaluationResult>> GetVariables() {
+        public async Task<IReadOnlyDictionary<string, DebugEvaluationResult>> GetVariablesAsync() {
             var vars = new Dictionary<string, DebugEvaluationResult>();
             var res = await Session.EvaluateRawAsync($".rtvs.env_vars(sys.frame({Index}))").ConfigureAwait(false);
             var jFrameVars = JObject.Parse(res.Result);

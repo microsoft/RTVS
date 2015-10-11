@@ -19,7 +19,7 @@ namespace Microsoft.R.Debugger.Engine {
             Engine = engine;
             StackFrame = stackFrame;
 
-            _variables = Lazy.Create(() => StackFrame.GetVariables().GetAwaiter().GetResult());
+            _variables = Lazy.Create(() => StackFrame.GetVariablesAsync().GetAwaiter().GetResult());
         }
 
         int IDebugStackFrame2.EnumProperties(enum_DEBUGPROP_INFO_FLAGS dwFields, uint nRadix, ref Guid guidFilter, uint dwTimeout, out uint pcelt, out IEnumDebugPropertyInfo2 ppEnum) {

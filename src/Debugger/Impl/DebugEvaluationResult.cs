@@ -22,6 +22,10 @@ namespace Microsoft.R.Debugger {
             : base(expression) {
             ErrorText = errorText;
         }
+
+        public override string ToString() {
+            return $"{nameof(DebugFailedEvaluationResult)}: {ErrorText}";
+        }
     }
 
     public class DebugSuccessfulEvaluationResult : DebugEvaluationResult {
@@ -47,13 +51,17 @@ namespace Microsoft.R.Debugger {
             return StackFrame.EvaluateAsync($"{Expression} <- {value}");
         }
 
-        public async Task<DebugSuccessfulEvaluationResult[]> GetChildren() {
+        public Task<DebugSuccessfulEvaluationResult[]> GetChildrenAsync() {
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
             // TODO
-            return new DebugSuccessfulEvaluationResult[0];
+            return Task.FromResult(new DebugSuccessfulEvaluationResult[0]);
+        }
+
+        public override string ToString() {
+            return $"{nameof(DebugSuccessfulEvaluationResult)}: {TypeName} {Value}";
         }
     }
 }

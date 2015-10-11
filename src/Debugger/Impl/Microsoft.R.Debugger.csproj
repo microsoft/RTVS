@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="DebugSession.cs" />
     <Compile Include="DebugEvaluationResult.cs" />
+    <Compile Include="DebugUtilities.cs" />
     <Compile Include="IDebugSessionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DebugStackFrame.cs" />

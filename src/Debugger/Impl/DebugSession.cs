@@ -15,6 +15,9 @@ namespace Microsoft.R.Debugger {
         private TaskCompletionSource<object> _stepTcs;
         private CancellationTokenSource _initialPromptCts = new CancellationTokenSource();
 
+        // Key is filename + line number; value is the count of breakpoints set for that line.
+        private Dictionary<Tuple<string, int>, int> _breakpoints = new Dictionary<Tuple<string, int>, int>();
+
         public IRSession RSession { get; set; }
 
         public event EventHandler Browse;
@@ -37,7 +40,7 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        public async Task Initialize() {
+        public async Task InitializeAsync() {
             ThrowIfDisposed();
 
             string helpers;
@@ -95,8 +98,7 @@ namespace Microsoft.R.Debugger {
         public async Task<DebugEvaluationResult> EvaluateAsync(DebugStackFrame stackFrame, string expression, string env = "NULL") {
             ThrowIfDisposed();
 
-            var quotedExpr = expression.Replace("\\", "\\\\").Replace("'", "\'");
-            var res = await EvaluateRawAsync($".rtvs.eval('{quotedExpr}', {env})", throwOnError: false).ConfigureAwait(false);
+            var res = await EvaluateRawAsync($".rtvs.eval({expression.ToRStringLiteral()}, {env})", throwOnError: false).ConfigureAwait(false);
 
             if (res.ParseStatus != RParseStatus.OK) {
                 Debug.Fail("Malformed .rtvs.eval");
@@ -111,18 +113,18 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task StepIntoAsync() {
-            return Step("s");
+            return StepAsync("s");
         }
 
         public Task StepOverAsync() {
-            return Step("n");
+            return StepAsync("n");
         }
 
         public Task StepOutAsync() {
-            return Step("browserSetDebug()", "c");
+            return StepAsync("browserSetDebug()", "c");
         }
 
-        private async Task Step(params string[] commands) {
+        private async Task StepAsync(params string[] commands) {
             Debug.Assert(commands.Length > 0);
             ThrowIfDisposed();
 
@@ -147,7 +149,7 @@ namespace Microsoft.R.Debugger {
             return true;
         }
 
-        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFrames() {
+        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync() {
             ThrowIfDisposed();
 
             REvaluationResult res;
@@ -194,6 +196,40 @@ namespace Microsoft.R.Debugger {
 
             stackFrames.Reverse();
             return stackFrames;
+        }
+
+        public async Task<int> AddBreakpointAsync(string fileName, int lineNumber) {
+            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber})");
+            if (res is DebugFailedEvaluationResult) {
+                throw new InvalidOperationException($"{res.Expression}: {res}");
+            }
+
+            var location = Tuple.Create(fileName, lineNumber);
+            if (!_breakpoints.ContainsKey(location)) {
+                _breakpoints.Add(location, 0);
+            }
+
+            return ++_breakpoints[location];
+        }
+
+        public async Task<int> RemoveBreakpointAsync(string fileName, int lineNumber) {
+            var location = Tuple.Create(fileName, lineNumber);
+            if (!_breakpoints.ContainsKey(location)) {
+                return 0;
+            }
+
+            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, clear=TRUE)");
+            if (res is DebugFailedEvaluationResult) {
+                throw new InvalidOperationException($"{res.Expression}: {res}");
+            }
+
+            int count = --_breakpoints[location];
+            Debug.Assert(count >= 0);
+            if (count == 0) {
+                _breakpoints.Remove(location);
+            }
+
+            return count;
         }
 
         private bool IsInBrowseMode(IReadOnlyList<IRContext> contexts) {
