@@ -1,14 +1,18 @@
+.rtvs.repr <<- function(obj) {
+  con <- textConnection(NULL, open = "w");
+  tryCatch({
+    dput(obj, con);
+    repr <- paste0(textConnectionValue(con), collapse='');
+  }, finally = {
+    close(con);
+  });
+  repr
+}
+
 .rtvs.eval_into <<- function(con, expr, env) {
   obj <- eval(parse(text = expr), env);
   
-  con_repr <- textConnection(NULL, open = "w");
-  tryCatch({
-    dput(obj, con_repr);
-    repr <- paste0(textConnectionValue(con_repr), collapse='');
-  }, finally = {
-    close(con_repr);
-  });
-  
+  repr <- .rtvs.repr(obj);
   cat('"value": ', file = con, sep = '');
   dput(repr, con);
   
@@ -56,7 +60,7 @@
       if (is.null(call)) {
         cat('null', file = con, sep = '');
       } else {
-        dput(format(call), con);
+        dput(.rtvs.repr(call), con);
       }
       
       cat(', "filename":', file = con, sep = '');

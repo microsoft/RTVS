@@ -65,7 +65,7 @@ namespace Microsoft.R.Debugger {
             // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
             // grab an interaction and check the prompt.
             RSession.BeginInteractionAsync().ContinueWith(async t => {
-                using (var inter = await t) {
+                using (var inter = await t.ConfigureAwait(false)) {
                     // If we got AfterRequest before we got here, then that has already taken care of
                     // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.
                     _initialPromptCts.Token.ThrowIfCancellationRequested();
@@ -130,11 +130,11 @@ namespace Microsoft.R.Debugger {
 
             _stepTcs = new TaskCompletionSource<object>();
             for (int i = 0; i < commands.Length - 1; ++i) {
-                await ExecuteBrowserCommandAsync(commands[i]);
+                await ExecuteBrowserCommandAsync(commands[i]).ConfigureAwait(false);
             }
 
             ExecuteBrowserCommandAsync(commands.Last()).DoNotWait();
-            await _stepTcs.Task;
+            await _stepTcs.Task.ConfigureAwait(false);
         }
 
         public bool CancelStep() {
@@ -199,7 +199,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public async Task<int> AddBreakpointAsync(string fileName, int lineNumber) {
-            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber})");
+            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber})").ConfigureAwait(false);
             if (res is DebugFailedEvaluationResult) {
                 throw new InvalidOperationException($"{res.Expression}: {res}");
             }
@@ -218,7 +218,7 @@ namespace Microsoft.R.Debugger {
                 return 0;
             }
 
-            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, clear=TRUE)");
+            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, clear=TRUE)").ConfigureAwait(false);
             if (res is DebugFailedEvaluationResult) {
                 throw new InvalidOperationException($"{res.Expression}: {res}");
             }
