@@ -120,14 +120,24 @@
 
 
 .rtvs.parse <<- function(...) {
-  .rtvs.base_parse(...);
+  cat('<parse>\n')
+  r <- .rtvs.base_parse(...);
+  cat('</parse>\n');
+  r
 }
 
 
-if (!identical(parse, .rtvs.parse)) {
-  .rtvs.base_parse <<- parse;
-  unlockBinding("parse", as.environment("package:base"));
-  #assignInNamespace('parse', .rtvs.parse, ns = 'base', envir = as.environment('package:base'));
-  #assign('parse', .rtvs.parse, envir = as.environment('package:base'));
-  lockBinding("parse", as.environment("package:base"));
+.rtvs.detour_parse <<- function() {
+  if (!identical(parse, .rtvs.parse)) {
+    .rtvs.base_parse <<- parse;
+    
+    unlockBinding('parse', baseenv());
+    unlockBinding('parse', .BaseNamespaceEnv);
+
+    assign('parse', .rtvs.parse, envir = baseenv());
+    assign('parse', .rtvs.parse, envir = .BaseNamespaceEnv);
+    
+    lockBinding('parse', baseenv());
+    lockBinding('parse', .BaseNamespaceEnv);
+  }
 }
