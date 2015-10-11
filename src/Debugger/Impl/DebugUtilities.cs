@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Debugger {
-    internal static class DebugUtilities {
-        internal static string ToRStringLiteral(this string s, char quote = '"', string nullValue = "NULL") {
+    public static class DebugUtilities {
+        public static string ToRStringLiteral(this string s, char quote = '"', string nullValue = "NULL") {
             Debug.Assert(quote == '"' || quote == '\'');
 
             if (s == null) {

@@ -95,6 +95,7 @@
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
     <Compile Include="Repl\Commands\AttachDebuggerCommand.cs" />
     <Compile Include="Repl\Commands\ReplTypingCommandHandler.cs" />
+    <Compile Include="Commands\R\SourceRScriptCommand.cs" />
     <Compile Include="Repl\RSessionExtensions.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />

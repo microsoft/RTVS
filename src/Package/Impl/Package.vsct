@@ -242,13 +242,13 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0400" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup"/>
         <Icon guid="ImageCatalogGuid" id="RemoteDebugger"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Attach Debugger</ButtonText>
-          <MenuText>&amp;Attach Debugger</MenuText>
+          <MenuText>A&amp;ttach Debugger</MenuText>
           <CommandName>Attach Debugger</CommandName>
         </Strings>
       </Button>
@@ -314,7 +314,6 @@
           <CommandName>Fix Plot Window</CommandName>
         </Strings>
       </Button>
-
 
       <Button guid="guidRToolsCmdSet" id="icmdPrintPlot" priority="0x0200" type="Button">
         <Icon guid="ImageCatalogGuid" id="Print"/>
@@ -504,6 +503,16 @@
           <CommandName>RFormattingOptions</CommandName>
         </Strings>
       </Button>
+      
+      <Button guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Run"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Source R Script</ButtonText>
+          <MenuText>&amp;Source R Script</MenuText>
+          <CommandName>Source R Script</CommandName>
+        </Strings>
+      </Button>
 
     </Buttons>
   </Commands>
@@ -613,6 +622,10 @@
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+
     <!-- Formatting group -->
     <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
@@ -718,6 +731,7 @@
 
   <KeyBindings>
     <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="E" mod1="CONTROL" key2="E" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
   </KeyBindings>
 
@@ -790,6 +804,7 @@
       <IDSymbol name="icmdRestartR" value="505" />
       <IDSymbol name="icmdInterruptR" value="506" />
       <IDSymbol name="icmdAttachDebugger" value="507" />
+      <IDSymbol name="icmdSourceRScript" value="508" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
