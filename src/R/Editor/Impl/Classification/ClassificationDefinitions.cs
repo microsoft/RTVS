@@ -21,7 +21,7 @@ namespace Microsoft.R.Editor.Classification
         {
             public BuiltinClassificationFormat()
             {
-                ForegroundColor = Colors.DarkKhaki;
+                ForegroundColor = Colors.Navy;
                 this.DisplayName = Resources.ColorName_R_Builtin;
             }
         }

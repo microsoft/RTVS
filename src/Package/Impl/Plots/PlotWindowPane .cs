@@ -79,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
                 {
                     PlotContentProvider.LoadFile(filePath);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     EditorShell.Current.ShowErrorMessage(
                         string.Format(CultureInfo.InvariantCulture, Resources.CannotOpenPlotFile, ex.Message));
@@ -92,16 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             string destinationFilePath = GetSaveFilePath();
             if (!string.IsNullOrEmpty(destinationFilePath))
             {
-                try
-                {
-                    PlotContentProvider.SaveFile(destinationFilePath);
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                    //EditorShell.Current.ShowErrorMessage(
-                    //    string.Format(CultureInfo.InvariantCulture, Resources.CannotOpenPlotFile, ex.Message));
-                }
+                PlotContentProvider.SaveFile(destinationFilePath);
             }
         }
 

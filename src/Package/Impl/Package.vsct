@@ -598,7 +598,7 @@
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteLineInInteractive" priority="0x100">
+    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 

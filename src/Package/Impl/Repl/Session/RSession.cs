@@ -23,11 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         public event EventHandler<RResponseEventArgs> Response;
         public event EventHandler<RErrorEventArgs> Error;
         public event EventHandler<EventArgs> Disconnected;
+        public event EventHandler<EventArgs> Disposed;
 
         /// <summary>
         /// ReadConsole requires a task even if there are no pending requests
         /// </summary>
-        private IReadOnlyCollection<IRContext> _contexts;
+        private IReadOnlyList<IRContext> _contexts;
         private RHost _host;
         private Task _hostRunTask;
         private TaskCompletionSource<object> _initializationTcs;
@@ -39,6 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         public void Dispose() {
             _host?.Dispose();
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true) {
@@ -62,8 +64,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _initializationTcs = new TaskCompletionSource<object>();
 
             _hostRunTask = Task.Run(() => _host.CreateAndRun(RToolsSettings.GetRVersionPath()));
+            this.ScheduleEvaluation(async e => {
+                await e.SetVsGraphicsDevice();
+                await e.SetDefaultWorkingDirectory();
+            });
 
-            var initializationTask = _initializationTcs.Task.ContinueWith(new Func<Task, Task>(AfterInitialization)).Unwrap();
+            var initializationTask = _initializationTcs.Task;
 
             return Task.WhenAny(initializationTask, _hostRunTask).Unwrap();
         }
@@ -81,13 +87,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             await request.Quit();
             await _hostRunTask;
-        }
-
-        private async Task AfterInitialization(Task task) {
-            using (var evaluation = await BeginEvaluationAsync()) {
-                await evaluation.SetVsGraphicsDevice();
-                await evaluation.SetDefaultWorkingDirectory();
-            }
         }
 
         Task IRCallbacks.Connected(string rVersion) {
@@ -121,9 +120,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return Task.CompletedTask;
         }
 
-        async Task<string> IRCallbacks.ReadConsole(IReadOnlyCollection<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+        async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-            currentRequest?.Complete();
 
             _contexts = contexts;
             Prompt = prompt;
@@ -135,12 +133,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             Task evaluationTask;
 
             if (isEvaluationAllowed) {
+                await EvaluateAll(contexts, ct);
                 evaluationCts = new CancellationTokenSource();
                 evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct);
             } else {
                 evaluationCts = null;
                 evaluationTask = Task.CompletedTask;
             }
+
+            currentRequest?.Complete();
 
             string consoleInput = null;
 
@@ -185,7 +186,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return response;
         }
 
-        private async Task EvaluateUntilCancelled(IReadOnlyCollection<IRContext> contexts, CancellationToken evaluationCancellationToken, CancellationToken hostCancellationToken) {
+        private async Task EvaluateUntilCancelled(IReadOnlyList<IRContext> contexts, CancellationToken evaluationCancellationToken, CancellationToken hostCancellationToken) {
             var ct = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken).Token;
 
             while (!ct.IsCancellationRequested) {
@@ -198,14 +199,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        private async Task EvaluateAll(IReadOnlyCollection<IRContext> contexts, CancellationToken ct) {
+        private async Task EvaluateAll(IReadOnlyList<IRContext> contexts, CancellationToken ct) {
             RSessionEvaluationSource source;
             while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
                 await source.BeginEvaluationAsync(contexts, _host, ct);
             }
         }
 
-        Task IRCallbacks.WriteConsoleEx(IReadOnlyCollection<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
+        Task IRCallbacks.WriteConsoleEx(IReadOnlyList<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
             if (otype == OutputType.Error) {
                 OnError(contexts, buf);
 
@@ -218,12 +219,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.ShowMessage(IReadOnlyCollection<IRContext> contexts, string message, CancellationToken ct) {
+        async Task IRCallbacks.ShowMessage(IReadOnlyList<IRContext> contexts, string message, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
             EditorShell.Current.ShowErrorMessage(message);
         }
 
-        async Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyCollection<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+        async Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
             if (isEvaluationAllowed) {
                 await EvaluateAll(contexts, ct);
             }
@@ -231,14 +232,25 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return YesNoCancel.Yes;
         }
 
-        Task IRCallbacks.Busy(IReadOnlyCollection<IRContext> contexts, bool which, CancellationToken ct) {
+        Task IRCallbacks.Busy(IReadOnlyList<IRContext> contexts, bool which, CancellationToken ct) {
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.PlotXaml(IReadOnlyCollection<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
+        async Task IRCallbacks.PlotXaml(IReadOnlyList<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
-            var frame = FindPlotWindow(0);  // TODO: acquire plot content provider through service
+            // find first, then create. If created, show it.
+            // if found and not visible, user has closed or covered with other window. Here respect user action
+            var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst);  // TODO: acquire plot content provider through service
+            if (frame == null)
+            {
+                frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);
+                if (frame != null)
+                {
+                    frame.ShowNoActivate();
+                }
+            }
+
             if (frame != null) {
                 object docView;
                 ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
@@ -259,7 +271,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return frame;
         }
 
-        private void OnBeforeRequest(IReadOnlyCollection<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
+        private void OnBeforeRequest(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
             var handlers = BeforeRequest;
             if (handlers != null) {
                 var args = new RRequestEventArgs(contexts, prompt, maxLength, addToHistory);
@@ -267,7 +279,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        private void OnAfterRequest(IReadOnlyCollection<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
+        private void OnAfterRequest(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
             var handlers = AfterRequest;
             if (handlers != null) {
                 var args = new RRequestEventArgs(contexts, prompt, maxLength, addToHistory);
@@ -275,7 +287,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        private void OnResponse(IReadOnlyCollection<IRContext> contexts, string message) {
+        private void OnResponse(IReadOnlyList<IRContext> contexts, string message) {
             var handlers = Response;
             if (handlers != null) {
                 var args = new RResponseEventArgs(contexts, message);
@@ -283,7 +295,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        private void OnError(IReadOnlyCollection<IRContext> contexts, string message) {
+        private void OnError(IReadOnlyList<IRContext> contexts, string message) {
             var handlers = Error;
             if (handlers != null) {
                 var args = new RErrorEventArgs(contexts, message);

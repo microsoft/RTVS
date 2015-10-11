@@ -56,7 +56,7 @@ namespace Microsoft.R.Editor.Commands
             get { return ServiceManager.GetService<RCompletionController>(TextView); }
         }
 
-        private void HandleCompletion(char typedChar)
+        protected virtual void HandleCompletion(char typedChar)
         {
             switch (typedChar)
             {

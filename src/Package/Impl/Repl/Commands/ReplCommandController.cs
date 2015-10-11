@@ -76,12 +76,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                         if (controller.HasActiveCompletionSession)
                         {
                             controller.CommitCompletionSession();
+                            controller.DismissAllSessions();
                             return CommandResult.Executed;
                         }
 
+                        controller.DismissAllSessions();
                         if (id == (int)VSConstants.VSStd2KCmdID.TAB)
                         {
-                            controller.DismissAllSessions();
                             controller.ShowCompletion(autoShownCompletion: true);
                         }
                         else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)

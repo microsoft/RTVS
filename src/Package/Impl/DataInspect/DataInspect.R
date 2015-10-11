@@ -1,32 +1,82 @@
-.rtvs.datainspect.eval_into <<- function(expr, env) {
-	obj <- eval(parse(text = expr), env);
-	repr <- capture.output(str(obj, list.len = 0));
-
-	fmt <- '"name":  "%s", "class": "%s", "value": "%s", "type": "%s"';
-	return (gettextf(fmt, expr, class(obj), repr[1], typeof(obj)));
+.rtvs.datainspect.print_into <<- function(con, obj) {
+  repr <- capture.output(str(obj, max.level = 0))
+  
+  cat('"class": "', file = con, sep = '');
+  cat(class(obj), file = con);
+  cat('"', file = con, sep = '');
+  cat(',"value": ', file = con, sep = '');
+  dput(repr[1], file = con);
+  cat(',"type": ', file = con, sep = '');
+  dput(typeof(obj), file = con);
 }
+
+.rtvs.datainspect.env_children <<- function(con, obj) {
+	cat('[', file = con, sep = '');
+	is_first <- TRUE;
+	for (var in as.list(obj)) {
+		if (is_first) {
+			is_first <- FALSE;
+		}
+		else {
+			cat(', ', file = con, sep = '');
+		}
+		cat('{', file = con, sep = '');
+		.rtvs.datainspect.print_into(con, var);
+		cat('}', file = con, sep = '');
+	}
+	cat(']', file = con, sep = '');
+}
+
+.rtvs.datainspect.append_children <<- function(con, obj) {
+  cat(',"children": ', file = con, sep = '');
+  .rtvs.datainspect.env_children(con, obj);
+}
+
+.rtvs.datainspect.eval_into <<- function(con, expr, env) {
+	obj <- eval(parse(text = expr), env);
+	cat('"name": ', file = con, sep = '');
+	dput(expr, file = con);
+	cat(',', file = con, sep = '');
+	.rtvs.datainspect.print_into(con, obj);
+	.rtvs.datainspect.append_children(con,obj);
+}
+
 .rtvs.datainspect.eval <<- function(expr, env) {
+	con <- textConnection(NULL, open = "w");
 	json <- "{}";
 	tryCatch({
-		fmt <- '{%s}';
-		json <- gettextf(fmt, .rtvs.datainspect.eval_into(expr, env));
+		cat('{', file = con, sep = '');
+		.rtvs.datainspect.eval_into(con, expr, env);
+		cat('}\n', file = con, sep = '');
+		json <- textConnectionValue(con);
 	}, finally = {
+		close(con);
 	});
-	return(json);
+	return(paste(json, collapse=''));
 }
+
 .rtvs.datainspect.env_vars <<- function(env) {
-	json <- "[]";
+	con <- textConnection(NULL, open = "w");
+	json <- "{}";
 	tryCatch({
-		get_object <- function(expr) { 
-			object_fmt <- '{%s}'
-			return(gettextf(object_fmt, .rtvs.datainspect.eval_into(expr, env)));
+		cat('[', file = con, sep = '');
+		is_first <- TRUE;
+		for (varname in ls(env)) {
+			if (is_first) {
+				is_first <- FALSE;
+			}
+			else {
+				cat(', ', file = con, sep = '');
+			}
+			cat('{', file = con, sep = '');
+			.rtvs.datainspect.eval_into(con, varname, env);
+			cat('}', file = con, sep = '');
 		}
-
-		list <- sapply(ls(env), get_object, USE.NAMES = FALSE);
-		array_fmt <- '[%s]';
-		json <- gettextf(array_fmt, paste(list, collapse = ','));
-
+		cat(']\n', file = con, sep = '');
+		json <- textConnectionValue(con);
 	}, finally = {
+		close(con);
 	});
-	return(json);
+	
+	return(paste(json, collapse=''))
 }

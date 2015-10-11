@@ -21,5 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         [DataMember(Name = "type")]
         public string TypeName { get; set; }
+
+        [DataMember(Name ="children")]
+        public List<REvaluation> Children { get; set; }
     }
 }

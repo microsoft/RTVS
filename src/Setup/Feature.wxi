@@ -2,11 +2,11 @@
 <Include>
   <Feature Id="ProductFeature" Title="$(var.ProductName)">
 
-    <?foreach Lang in $(var.LangList)?>
+    <!--<?foreach Lang in $(var.LangList)?>
       <?if $(var.Lang) != "ENU"?>
         <ComponentRef Id="ProductLocalizedResources_$(var.Lang)" />
       <?endif?>    
-    <?endforeach?>
+    <?endforeach?>-->
 
     <?foreach Lcid in $(var.LcidList)?>
       <ComponentRef Id="ItemTemplates_$(var.Lcid)" />

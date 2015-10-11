@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -12,10 +13,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
     {
         private Variable(Variable parent, VariableView view = null)
         {
-            _children = new List<Variable>();
+            Children = new ObservableCollection<Variable>();
             View = view;
-            IsExpanded = false;
             Parent = parent;
+        }
+
+        public static Variable CreateEmpty() {
+            return new Variable(null);
+        }
+
+        public VariableEvaluationContext EvaluationContext { get; private set; }
+
+        public static Variable Create(REvaluation evaluation, VariableEvaluationContext context)
+        {
+            var instance = Create(evaluation);
+            instance.EvaluationContext = context;
+
+            return instance;
         }
 
         /// <summary>
@@ -49,14 +63,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 instance.VariableValue = variableValue;
             }
 
-            // TODP: HasChildren
-            /*
             if ((instance.TypeName == "data.frame")
-                || (instance.TypeName == "matrix"))
+                || (instance.TypeName == "matrix")
+                || (instance.TypeName == "environment"))
             {
                 instance.HasChildren = true;
             }
-            */
+
+            if (evaluation.Children != null)
+            {
+                foreach (var child in evaluation.Children)
+                {
+                    instance.Children.Add(Variable.Create(child));
+                }
+            }
 
             return instance;
         }
@@ -81,42 +101,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// </summary>
         public string TypeName { get; set; }
 
-        bool _isExpanded;
-        public bool IsExpanded
-        {
-            get { return _isExpanded; }
-            set
-            {
-                if (_isExpanded != value)
-                {
-                    _isExpanded = value;
-                    if (_isExpanded)
-                    {
-                        Expand();
-                    }
-                    else
-                    {
-                        Collapse();
-                    }
-
-                    View?.RefreshView();
-                }
-            }
-        }
-
         public bool HasChildren { get; private set; }
 
-        List<Variable> _children;
-        public List<Variable> Children
+        public ObservableCollection<Variable> Children
         {
-            get
-            {
-                if (_children == null)
-                {
-                    _children = new List<Variable>();
-                }
-                return _children;
-            }
+            get;
         }
 
         Variable _parent;
@@ -134,41 +123,5 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         }
 
         public int Level { get; set; }
-
-        public bool IsVisible { get; set; }
-
-        /// <summary>
-        /// simple Depth first traverse of Variable tree, and take action (Recursive)
-        /// </summary>
-        /// <param name="variables">variables to recurse</param>
-        public static void TraverseDepthFirst(IEnumerable<Variable> variables, Func<Variable, bool> action)
-        {
-            foreach (var variable in variables)
-            {
-                if (action(variable))
-                {
-                    if (variable.HasChildren)
-                    {
-                        TraverseDepthFirst(variable.Children, action);
-                    }
-                }
-            }
-        }
-
-        #region Private
-
-        private void Expand()
-        {
-            TraverseDepthFirst(this.Children,
-                (v) => { v.IsVisible = true; return v.IsExpanded; });
-        }
-
-        private void Collapse()
-        {
-            TraverseDepthFirst(this.Children,
-                (v) => { v.IsVisible = false; return v.IsExpanded; });
-        }
-
-        #endregion
     }
 }

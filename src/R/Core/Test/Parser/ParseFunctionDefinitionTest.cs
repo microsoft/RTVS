@@ -212,5 +212,59 @@ OperatorExpected Token [16...17)
 ";
             ParserTest.VerifyParse(expected, "function(a) {}");
         }
+
+        [TestMethod]
+        public void ParseFunctionDefinitionTest08()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a((function(x) vector(length = x))(x), 1)]
+        Expression  [a((function(x) vector(length = x))(x), 1)]
+            FunctionCall  [0...41)
+                Variable  [a]
+                TokenNode  [( [1...2)]
+                ArgumentList  [2...40)
+                    ExpressionArgument  [2...38)
+                        Expression  [(function(x) vector(length = x))(x)]
+                            FunctionCall  [2...37)
+                                Group  [2...34)
+                                    TokenNode  [( [2...3)]
+                                    Expression  [function(x) vector(length = x)]
+                                        FunctionDefinition  [3...33)
+                                            TokenNode  [function [3...11)]
+                                            TokenNode  [( [11...12)]
+                                            ArgumentList  [12...13)
+                                                ExpressionArgument  [12...13)
+                                                    Expression  [x]
+                                                        Variable  [x]
+                                            TokenNode  [) [13...14)]
+                                            SimpleScope  [15...33)
+                                                ExpressionStatement  [vector(length = x)]
+                                                    Expression  [vector(length = x)]
+                                                        FunctionCall  [15...33)
+                                                            Variable  [vector]
+                                                            TokenNode  [( [21...22)]
+                                                            ArgumentList  [22...32)
+                                                                NamedArgument  [22...32)
+                                                                    TokenNode  [length [22...28)]
+                                                                    TokenNode  [= [29...30)]
+                                                                    Expression  [x]
+                                                                        Variable  [x]
+                                                            TokenNode  [) [32...33)]
+                                    TokenNode  [) [33...34)]
+                                TokenNode  [( [34...35)]
+                                ArgumentList  [35...36)
+                                    ExpressionArgument  [35...36)
+                                        Expression  [x]
+                                            Variable  [x]
+                                TokenNode  [) [36...37)]
+                        TokenNode  [, [37...38)]
+                    ExpressionArgument  [39...40)
+                        Expression  [1]
+                            NumericalValue  [1 [39...40)]
+                TokenNode  [) [40...41)]
+";
+            ParserTest.VerifyParse(expected, "a((function(x) vector(length = x))(x), 1))");
+        }
     }
 }

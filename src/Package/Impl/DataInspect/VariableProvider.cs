@@ -8,41 +8,46 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Resources;
+using System.Windows.Threading;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public class VariableProvideContext {
+namespace Microsoft.VisualStudio.R.Package.DataInspect
+{
+    public class VariableEvaluationContext
+    {
+        public const string GlobalEnv = ".GlobalEnv";
+
         public string Environment { get; set; }
+
+        public string VariableName { get; set; }
+
+        public string GetQueryString()
+        {
+            return string.Format(".rtvs.datainspect.eval(\"{0}\", env={1})\n", VariableName, this.Environment);
+        }
     }
 
-    public class VariableProvider {
+    public class VariableProvider
+    {
         private bool _rSessionInitialized = false;
         private IRSession _rSession;
-        private List<Variable> _variables;
+        private Variable _globalEnv;
 
-        private VariableView _view; // TODO: cut this dependency later
-
-        public VariableProvider(VariableView view) {
-            _view = view;
-            _variables = new List<Variable>();
-
+        public VariableProvider()
+        {
             var sessionProvider = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
-            SetRSession(sessionProvider.Current);
+            SetRSession(sessionProvider.Current);   // TODO: f ind a place to SetRSession to null, watch out memory leak
+
+            _globalEnv = Variable.CreateEmpty();
         }
 
         #region Public
-
-        public IList<Variable> Get(VariableProvideContext context) {
-            if (_rSession == null) {
-                return new List<Variable>();    // empty
-            } else {
-                return _variables;
-            }
-        }
 
         /// <summary>
         /// R current session change triggers this SessionsChanged event
@@ -58,30 +63,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// IRSession.BeforeRequest handler. At each interaction request, this is called.
         /// Used to queue another request to refresh variables after the interaction request.
         /// </summary>
-        private async void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
-            // await cause thie event handler returns and let event raiser run through
-            // but it wait internally for varaible evaluation request to be processed
+        private async void RSession_BeforeRequest(object sender, RRequestEventArgs e)
+        {
             await RefreshVariableCollection();
-            _view.RefreshData();
-        }
-
-        /// <summary>
-        /// IRSession.Disconnected handler. Used to unregister event handler from IRSession
-        /// </summary>
-        private void RSession_Disconnected(object sender, EventArgs e) {
-            SetRSession(null);  // reset RSession reference
         }
 
         /// <summary>
         /// IRSessionProvider.CurrentSessionChanged handler. When current session changes, this is called
         /// </summary>
-        private void RSessionProvider_CurrentChanged(object sender, EventArgs e) {
+        private void RSessionProvider_CurrentChanged(object sender, EventArgs e)
+        {
             var sessionProvider = sender as IRSessionProvider;
             Debug.Assert(sessionProvider != null);
 
-            if (sessionProvider != null) {
+            if (sessionProvider != null)
+            {
                 var session = sessionProvider.Current;
-                if (!object.Equals(session, _rSession)) {
+                if (!object.Equals(session, _rSession))
+                {
                     SetRSession(session);
                 }
             }
@@ -89,34 +88,50 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
-        private void SetRSession(IRSession session) {
+        private void SetRSession(IRSession session)
+        {
             // unregister event handler from old session
-            if (_rSession != null) {
+            if (_rSession != null)
+            {
                 _rSession.BeforeRequest -= RSession_BeforeRequest;
-                _rSession.Disconnected -= RSession_Disconnected;
                 _rSessionInitialized = false;
             }
 
             // register event handler to new session
             _rSession = session;
-            if (_rSession != null) {
+            if (_rSession != null)
+            {
                 _rSession.BeforeRequest += RSession_BeforeRequest;
-                _rSession.Disconnected += RSession_Disconnected;
                 _rSessionInitialized = false;
+
+                Task t = RefreshVariableCollection();   // TODO: have a no-await wrapper to handle side effects
             }
 
-            if (SessionsChanged != null) {
+            if (SessionsChanged != null)
+            {
                 SessionsChanged(this, EventArgs.Empty);
             }
         }
 
-        private async Task EnsureRSessionInitialized() {
-            if (!_rSessionInitialized) {
-                string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string filePath = Path.Combine(dir, @"DataInspect\DataInspect.R").Replace('\\', '/');
-                string script = $"source('{filePath}')\n";
+        private async Task EnsureRSessionInitialized()
+        {
+            if (!_rSessionInitialized)
+            {
 
-                using (var interactor = await _rSession.BeginEvaluationAsync()) {
+                string script = null;
+
+                var assembly = this.GetType().Assembly;
+                using (var stream = assembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.DataInspect.DataInspect.R"))
+                {
+                    using (var reader = new StreamReader(stream))
+                    {
+                        script = reader.ReadToEnd();
+                    }
+                }
+                script += "\n";
+
+                using (var interactor = await _rSession.BeginEvaluationAsync())
+                {
                     await interactor.EvaluateAsync(script, false);
                 }
 
@@ -124,33 +139,91 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private async Task RefreshVariableCollection() {
+        private async Task RefreshVariableCollection()
+        {
             await EnsureRSessionInitialized();
 
             REvaluationResult response;
-            using (var interactor = await _rSession.BeginEvaluationAsync()) {
+            using (var interactor = await _rSession.BeginEvaluationAsync())
+            {
                 response = await interactor.GetGlobalEnvironmentVariables();
             }
 
-            if (response.ParseStatus == RParseStatus.OK) {
+            if (response.ParseStatus == RParseStatus.OK)
+            {
                 var evaluations = Deserialize<List<REvaluation>>(response.Result);
-                if (evaluations != null) {
-                    _variables = evaluations.Select(Variable.Create).ToList();
+                if (evaluations != null)
+                {
+
+                    DispatchInvoke(() =>
+                    {
+                        _globalEnv.Children.Clear();    // TODO: clear and add all, optimize to touch only changed
+                        foreach (var child in evaluations.Select(Variable.Create))
+                        {
+                            _globalEnv.Children.Add(child);
+                        }
+                    },
+                    DispatcherPriority.Normal);
                 }
             }
         }
 
-        private static T Deserialize<T>(string response) where T : class {
-            try {
+        public async Task<Variable> EvaluateVariable(VariableEvaluationContext context)
+        {
+            await EnsureRSessionInitialized();
+
+            REvaluationResult response;
+            using (var interactor = await _rSession.BeginEvaluationAsync())
+            {
+                response = await interactor.EvaluateAsync(context.GetQueryString(), false);
+            }
+
+            if (response.ParseStatus == RParseStatus.OK)
+            {
+                var evaluation = Deserialize<REvaluation>(response.Result);
+                if (evaluation != null)
+                {
+                    return Variable.Create(evaluation);
+                }
+            }
+
+            return null;    // TODO: error handling, throw?
+        }
+
+        private static T Deserialize<T>(string response) where T : class
+        {
+            try
+            {
                 var serializer = new DataContractJsonSerializer(typeof(T));
-                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(response))) {
+                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(response)))
+                {
                     return (T)serializer.ReadObject(stream);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Debug.WriteLine(e.ToString());
 
                 return null;
             }
+        }
+
+        private static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
+        {
+            Action guardedAction =
+                () =>
+                {
+                    try
+                    {
+                        toInvoke();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Assert(false, "Guarded invoke caught exception", e.Message);
+                    }
+                };
+
+            Application.Current.Dispatcher.BeginInvoke(guardedAction, priority);    // TODO: acquiring Application.Current.Dispatcher, create utility class for UI thread and use it
         }
     }
 }

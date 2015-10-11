@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands
 {
@@ -83,6 +86,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                     ITextSnapshotLine nextLine = snapshot.GetLineFromLineNumber(line.LineNumber + 1);
                     TextView.Caret.MoveTo(new SnapshotPoint(snapshot, nextLine.Start));
                     TextView.Caret.EnsureVisible();
+                }
+
+                // Take focus back if REPL window has stolen it
+                if (!TextView.HasAggregateFocus)
+                {
+                    IVsEditorAdaptersFactoryService adapterService = EditorShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
+                    IVsTextView tv = adapterService.GetViewAdapter(TextView);
+                    tv.SendExplicitFocus();
                 }
             }
 

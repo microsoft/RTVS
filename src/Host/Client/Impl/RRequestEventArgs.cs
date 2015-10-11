@@ -5,12 +5,12 @@ namespace Microsoft.R.Host.Client
 {
     public class RRequestEventArgs : EventArgs
     {
-        public IReadOnlyCollection<IRContext> Contexts { get; }
+        public IReadOnlyList<IRContext> Contexts { get; }
         public string Prompt { get; }
         public int MaxLength { get; }
         public bool AddToHistoty { get; }
 
-        public RRequestEventArgs(IReadOnlyCollection<IRContext> contexts, string prompt, int maxLength, bool addToHistoty)
+        public RRequestEventArgs(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistoty)
         {
             Contexts = contexts;
             Prompt = prompt;

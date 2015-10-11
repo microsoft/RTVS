@@ -140,9 +140,9 @@
     <?include ItemTemplates.wxi ?>
     <?include ProjectTemplates.wxi ?>
 
-    <?ifdef LabBuild?>
+    <!--<?ifdef LabBuild?>
     <?include LocalizedResources.wxi ?>
-    <?endif?>
+    <?endif?>-->
   </Fragment>
 
 </Wix>

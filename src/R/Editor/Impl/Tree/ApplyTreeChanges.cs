@@ -12,7 +12,7 @@ namespace Microsoft.R.Editor.Tree
     {
         internal List<TreeChangeEventRecord> ApplyChangesFromQueue(Queue<EditorTreeChange> queue)
         {
-            if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             Stopwatch sw = null;

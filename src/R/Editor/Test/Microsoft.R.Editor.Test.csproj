@@ -155,6 +155,7 @@
     <Compile Include="Utility\REditorTestCompositionCatalog.cs" />
     <Compile Include="Utility\EditorTestFilesSetup.cs" />
     <Compile Include="Utility\TextViewTest.cs" />
+    <Compile Include="Utility\TextBufferUtility.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

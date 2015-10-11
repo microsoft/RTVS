@@ -91,7 +91,8 @@ namespace Microsoft.R.Editor.QuickInfo
                 {
                     foreach (ISignatureInfo sig in functionInfo.Signatures)
                     {
-                        var signatureString = sig.GetSignatureString(functionInfo.Name);
+                        string signatureString = sig.GetSignatureString(functionInfo.Name);
+                        int wrapLength = Math.Min(SignatureInfo.MaxSignatureLength, signatureString.Length);
                         string text;
 
                         if (string.IsNullOrWhiteSpace(functionInfo.Description))
@@ -103,7 +104,7 @@ namespace Microsoft.R.Editor.QuickInfo
                             /// VS may end showing very long tooltip so we need to keep 
                             /// description reasonably short: typically about
                             /// same length as the function signature.
-                            text = signatureString + "\r\n" + functionInfo.Description.Wrap(signatureString.Length);
+                            text = signatureString + "\r\n" + functionInfo.Description.Wrap(wrapLength);
                         }
 
                         if (text.Length > 0)

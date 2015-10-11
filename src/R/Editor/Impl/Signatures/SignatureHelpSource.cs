@@ -120,7 +120,7 @@ namespace Microsoft.R.Editor.Signatures
             sig.Content = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
             sig.ApplicableToSpan = span;
 
-            sig.Documentation = functionInfo.Description.Wrap(sig.Content.Length);
+            sig.Documentation = functionInfo.Description.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
 
             Debug.Assert(locusPoints.Count == signatureInfo.Arguments.Count + 1);
             for (int i = 0; i < signatureInfo.Arguments.Count; i++)
@@ -137,7 +137,11 @@ namespace Microsoft.R.Editor.Signatures
                     /// VS may end showing very long tooltip so we need to keep 
                     /// description reasonably short: typically about
                     /// same length as the function signature.
-                    paramList.Add(new SignatureParameter(p.Description.Wrap(sig.Content.Length), locus, locus, p.Name, sig));
+                    paramList.Add(
+                        new SignatureParameter(
+                            p.Description.Wrap(
+                                Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length)), 
+                                locus, locus, p.Name, sig));
                 }
             }
 

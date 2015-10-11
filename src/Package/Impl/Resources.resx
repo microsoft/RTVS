@@ -268,7 +268,7 @@
     <value>R Plot</value>
   </data>
   <data name="EmptyPlotWindowWatermark" xml:space="preserve">
-    <value>Please open a saved plot file to display data</value>
+    <value>Run plotting command in R Interactive Window, or open file</value>
   </data>
   <data name="OpenPlotDialogTitle" xml:space="preserve">
     <value>Open R Plot File</value>

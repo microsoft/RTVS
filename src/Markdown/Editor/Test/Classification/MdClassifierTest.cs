@@ -56,7 +56,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification
                 if (_regenerateBaselineFiles)
                 {
                     // Update this to your actual enlistment if you need to update baseline
-                    string enlistmentPath = @"F:\RTVS\src\R\Support\Test\Markdown\Files\Classification";
+                    string enlistmentPath = @"F:\RTVS\src\Markdown\Editor\Test\Files\Classification";
                     baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".colors";
 
                     TestFiles.UpdateBaseline(baselineFile, actual);

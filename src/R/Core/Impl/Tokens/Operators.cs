@@ -21,12 +21,18 @@ namespace Microsoft.R.Core.Tokens
 
         private static int GetNCharOperatorLength(CharacterStream cs)
         {
-            if (cs.CurrentChar == '%' && Char.IsLetter(cs.NextChar))
+            // R allows user-defined infix operators. These have the form of 
+            // a string of characters delimited by the ‘%’ character. The string 
+            // can contain any printable character except ‘%’. 
+            if (cs.CurrentChar == '%' && !char.IsWhiteSpace(cs.NextChar))
             {
+                // In case of broken or partially typed operators
+                // make sure we terminate at whitespace or end of the line
+                // so in 'x <- y % z' '% z' is not an operator.
                 int start = cs.Position;
                 int length;
 
-                cs.Advance(2);
+                cs.MoveToNextChar();
 
                 while (!cs.IsEndOfStream() && !cs.IsWhiteSpace())
                 {
@@ -40,9 +46,11 @@ namespace Microsoft.R.Core.Tokens
                         return length;
                     }
 
-                    if (!Char.IsLetterOrDigit(cs.CurrentChar))
+                    if(cs.IsAtNewLine())
                     {
-                        break;
+                        // x <- y %abcd
+                        cs.Position = start;
+                        return 1;
                     }
 
                     cs.MoveToNextChar();

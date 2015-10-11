@@ -4,8 +4,10 @@ using Microsoft.R.Support.Help.Definitions;
 
 namespace Microsoft.R.Support.Help.Functions
 {
-    public sealed class SignatureInfo: ISignatureInfo
+    public sealed class SignatureInfo : ISignatureInfo
     {
+        public const int MaxSignatureLength = 160;
+
         #region ISignatureInfo
         /// <summary>
         /// Function arguments
@@ -15,6 +17,7 @@ namespace Microsoft.R.Support.Help.Functions
         public string GetSignatureString(string functionName, List<int> locusPoints = null)
         {
             var sb = new StringBuilder(functionName);
+            int lineCount = 0;
 
             sb.Append('(');
 
@@ -40,6 +43,12 @@ namespace Microsoft.R.Support.Help.Functions
 
                 if (locusPoints != null)
                     locusPoints.Add(sb.Length);
+
+                if (sb.Length > (lineCount + 1) * MaxSignatureLength && i != Arguments.Count - 1)
+                {
+                    sb.Append("\r\n");
+                    lineCount++;
+                }
             }
 
             sb.Append(')');

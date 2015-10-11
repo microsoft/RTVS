@@ -79,6 +79,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
+    <Compile Include="Debugger\RDebugSessionProvider.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
@@ -90,6 +91,8 @@
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
+    <Compile Include="Repl\Commands\ReplTypingCommandHandler.cs" />
+    <Compile Include="Repl\RSessionExtensions.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
@@ -133,6 +136,11 @@
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
+    <Compile Include="Packages\ProvideDebugEngineAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugExceptionAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugLanguageAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugPortPickerAttribute.cs" />
+    <Compile Include="Packages\ProvideDebugPortSupplierAttribute.cs" />
     <Compile Include="Packages\ShowBraceCompletionAttribute.cs" />
     <Compile Include="DataInspect\VariableWindowPane.cs" />
     <Compile Include="Plots\XamlPresenter.xaml.cs">
@@ -228,14 +236,24 @@
     <Compile Include="Workspace\VsFolder.cs" />
     <Compile Include="Workspace\VsWorkspace.cs" />
     <Compile Include="Workspace\VsWorkspaceItem.cs" />
+    <Compile Include="Wpf\Commands.cs" />
+    <Compile Include="Wpf\ConfigurationControl.cs" />
+    <Compile Include="Wpf\Controls.cs" />
+    <Compile Include="Wpf\Dialogs.cs" />
+    <Compile Include="Wpf\LabelledButton.cs" />
+    <Compile Include="Wpf\LabelledControl.cs" />
+    <Compile Include="Wpf\LambdaConverter\ILambdaConverterProvider.cs" />
+    <Compile Include="Wpf\LambdaConverter\LambdaConverter.cs" />
+    <Compile Include="Wpf\LambdaConverter\LambdaExtension.cs" />
+    <Compile Include="Wpf\LambdaConverter\LambdaProperties.cs" />
+    <Compile Include="Wpf\NativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
     <None Include="app.config" />
-    <Content Include="DataInspect\DataInspect.R">
+    <EmbeddedResource Include="DataInspect\DataInspect.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -278,6 +296,9 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Debugger.Interop, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
@@ -379,6 +400,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
@@ -396,6 +418,14 @@
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Debugger\Engine\Impl\Microsoft.R.Debugger.Engine.csproj">
+      <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
+      <Name>Microsoft.R.Debugger.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Debugger\Impl\Microsoft.R.Debugger.csproj">
+      <Project>{17e155bf-351c-4253-b9b1-36eeea35fe3c}</Project>
+      <Name>Microsoft.R.Debugger</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
@@ -561,6 +591,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="DataInspect\VariableView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Wpf\Controls.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

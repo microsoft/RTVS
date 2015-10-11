@@ -23,11 +23,8 @@ namespace Microsoft.R.Core.Tokens
             "function",
             "if",
             "in",
-            "library",
             "next",
             "repeat",
-            "require",
-            "return",
             "while",
         };
     }

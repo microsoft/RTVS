@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.R.Debugger.Engine;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
@@ -21,6 +22,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.R.Debugger.Engine.PortSupplier;
 
 namespace Microsoft.VisualStudio.R.Packages.R
 {
@@ -31,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
     [ProvideEditorFactory(typeof(REditorFactory), 106, CommonPhysicalViewAttributes = 0x2, TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
     [ProvideEditorLogicalView(typeof(REditorFactory), VSConstants.LOGVIEWID.TextView_string)]
     [ProvideLanguageService(typeof(RLanguageService), RContentTypeDefinition.LanguageName, 106, ShowSmartIndent = true,
-        ShowMatchingBrace = true, MatchBraces =true, MatchBracesAtCaret = true, ShowCompletion = true)]
+        ShowMatchingBrace = true, MatchBraces = true, MatchBracesAtCaret = true, ShowCompletion = true)]
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
@@ -39,6 +41,10 @@ namespace Microsoft.VisualStudio.R.Packages.R
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
     [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
     [ProvideToolWindow(typeof(PlotWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
+    [ProvideDebugEngine(RContentTypeDefinition.LanguageName, typeof(AD7ProgramProvider), typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
+    [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, RGuidList.RLanguageServiceGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString)]
+    [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
+    [ProvideDebugPortPicker(typeof(RDebugPortPicker))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     internal class RPackage : BasePackage<RLanguageService>
     {
