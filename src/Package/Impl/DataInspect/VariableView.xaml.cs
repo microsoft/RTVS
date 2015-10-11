@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
@@ -27,8 +30,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         public void InitializeData()
         {
-            _globalEnv = _variableProvider.GetGlobalEnv(new VariableProvideContext());
-            SetVariable(_globalEnv);
+            Task t = Task.Run(async () =>   // no await
+            {
+                _globalEnv = await _variableProvider.EvaluateVariable(
+                    new VariableEvaluationContext()
+                    {
+                        Environment = VariableEvaluationContext.GlobalEnv,
+                        VariableName = VariableEvaluationContext.GlobalEnv
+                    });
+
+                if (_globalEnv != null)
+                {
+                    DispatchInvoke(() => RootGrid.Items.Add(_globalEnv), DispatcherPriority.Normal);
+                }
+            });
         }
 
         private void SetVariable(Variable variable)
@@ -85,6 +100,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
+        {
+            Action guardedAction =
+                () =>
+                {
+                    try
+                    {
+                        toInvoke();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Assert(false, "Guarded invoke caught exception", e.Message);
+                    }
+                };
+
+            Application.Current.Dispatcher.BeginInvoke(guardedAction, priority);    // TODO: acquiring Application.Current.Dispatcher, create utility class for UI thread and use it
         }
     }
 }
