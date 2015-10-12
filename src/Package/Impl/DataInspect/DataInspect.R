@@ -22,15 +22,23 @@
 
 .rtvs.datainspect.append_children <<- function(con, obj, first.hundred=FALSE) {
   cat('"children": ', file = con, sep = '');
-
-  l<-length(obj);
+  
+  l <- 0
+  varnams <- vector("character", 0)
+  if (is.environment(obj)) {
+    varnames <- names(as.list(obj, all.names=FALSE))
+    l<-length(varnames)
+  }  else {
+    varnames <- names(obj)
+    l<-length(obj)
+  }
 
   cat('{"total": ', file = con, sep = '');
   cat(l, file = con);
 
-  begin<-1
-  if (first.hundred) { end<-min(l, begin+100); }
-  else {end<-l}
+  begin<-1;
+
+  if (first.hundred) end<-min(l, begin+99) else end <- l
   
   cat(',"begin": ', file = con, sep = '');
   cat(begin, file = con, sep = '');
@@ -38,75 +46,81 @@
   cat(end, file = con, sep = '');
 
   cat(',"variables": ', file = con, sep = '');
-
   cat('[', file = con, sep = '');
-	
-  n <- names(obj)
-  if (is.null(n)) {
-	is_first <- TRUE;
-	for(i in begin:end) {
-	  if (is_first) { is_first <- FALSE;}
-	  else { cat(', ', file = con, sep = ''); }
-	  cat('{', file = con, sep = '');
-	  .rtvs.datainspect.print_into(con, obj[[i]], gettextf("[[%s]]", i), add.children=FALSE, first.hundred=TRUE);
-      cat('}\n', file = con, sep = '');
-	}
+    
+  if (is.null(varnames)) {
+    if (l > 0) {
+      is_first <- TRUE;
+        for(i in begin:end) {
+        if (is_first) {
+          is_first <- FALSE;
+        } else {
+          cat(', ', file = con, sep = '');
+        }
+        cat('{', file = con, sep = '');
+        .rtvs.datainspect.print_into(con, obj[[i]], gettextf("[[%s]]", i), add.children=FALSE, first.hundred=TRUE);
+        cat('}\n', file = con, sep = '');
+      }
+    }
   } else {
-    n <- n[begin:end]
-	is_first <- TRUE;
-    for(i in n) {
-	  if (is_first) { is_first <- FALSE;}
-	  else { cat(', ', file = con, sep = ''); }
+    varnames <- varnames[begin:end]
+    is_first <- TRUE;
+    for(varname in varnames) {
+      if (is_first) {
+        is_first <- FALSE;
+      } else {
+        cat(', ', file = con, sep = '');
+      }
       cat('{', file = con, sep = '');
-      .rtvs.datainspect.print_into(con, obj[[i]], i, add.children=FALSE, first.hundred=TRUE);
+      .rtvs.datainspect.print_into(con, obj[[varname]], varname, add.children=FALSE, first.hundred=TRUE);
       cat('}\n', file = con, sep = '');
-	}
+    }
   }
   cat(']\n', file = con, sep = '');
 }
 
 .rtvs.datainspect.eval_into <<- function(con, expr, env) {
-	obj <- eval(parse(text = expr), env);
-	
-	.rtvs.datainspect.print_into(con, obj, expr, add.children=TRUE, first.hundred=FALSE);
+    obj <- eval(parse(text = expr), env);
+    
+    .rtvs.datainspect.print_into(con, obj, expr, add.children=TRUE, first.hundred=FALSE);
 }
 
 .rtvs.datainspect.eval <<- function(expr, env) {
-	con <- textConnection(NULL, open = "w");
-	json <- "{}";
-	tryCatch({
-		cat('{', file = con, sep = '');
-		.rtvs.datainspect.eval_into(con, expr, env);
-		cat('}\n', file = con, sep = '');
-		json <- textConnectionValue(con);
-	}, finally = {
-		close(con);
-	});
-	return(paste(json, collapse=''));
+    con <- textConnection(NULL, open = "w");
+    json <- "{}";
+    tryCatch({
+        cat('{', file = con, sep = '');
+        .rtvs.datainspect.eval_into(con, expr, env);
+        cat('}\n', file = con, sep = '');
+        json <- textConnectionValue(con);
+    }, finally = {
+        close(con);
+    });
+    return(paste(json, collapse=''));
 }
 
 .rtvs.datainspect.env_vars <<- function(env) {
-	con <- textConnection(NULL, open = "w");
-	json <- "{}";
-	tryCatch({
-		cat('[', file = con, sep = '');
-		is_first <- TRUE;
-		for (varname in ls(env)) {
-			if (is_first) {
-				is_first <- FALSE;
-			}
-			else {
-				cat(', ', file = con, sep = '');
-			}
-			cat('{', file = con, sep = '');
-			.rtvs.datainspect.eval_into(con, varname, env);
-			cat('}', file = con, sep = '');
-		}
-		cat(']\n', file = con, sep = '');
-		json <- textConnectionValue(con);
-	}, finally = {
-		close(con);
-	});
-	
-	return(paste(json, collapse=''))
+    con <- textConnection(NULL, open = "w");
+    json <- "{}";
+    tryCatch({
+        cat('[', file = con, sep = '');
+        is_first <- TRUE;
+        for (varname in ls(env)) {
+            if (is_first) {
+                is_first <- FALSE;
+            }
+            else {
+                cat(', ', file = con, sep = '');
+            }
+            cat('{', file = con, sep = '');
+            .rtvs.datainspect.eval_into(con, varname, env);
+            cat('}', file = con, sep = '');
+        }
+        cat(']\n', file = con, sep = '');
+        json <- textConnectionValue(con);
+    }, finally = {
+        close(con);
+    });
+    
+    return(paste(json, collapse=''))
 }
