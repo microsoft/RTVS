@@ -8,11 +8,21 @@ using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace Microsoft.R.Debugger.Engine.PortSupplier {
     partial class RDebugPortSupplier {
+        // VS debugger really doesn't like process ID 0, but sessions can have such an ID.
+        // So for the debugger, provide fake IDs that are incremented by this amount so that we never get zero.
+        internal const uint BaseProcessId = 1000000000;
+
+        public static uint GetProcessId(int sessionId) {
+            return (uint)sessionId + BaseProcessId;
+        }
+
         internal class DebugProcess : IDebugProcess2, IDebugProcessSecurity2 {
             private readonly DebugPort _port;
             private readonly int _sessionId;
 
             public IRSession Session { get; }
+
+            public uint ProcessId => RDebugPortSupplier.GetProcessId(_sessionId);
 
             public string Name => $"R session {_sessionId}";
 
@@ -60,7 +70,7 @@ namespace Microsoft.R.Debugger.Engine.PortSupplier {
                 pi.bstrFileName = Name;
                 pi.bstrBaseName = Name;
                 pi.bstrTitle = "";
-                pi.ProcessId.dwProcessId = (uint)_sessionId;
+                pi.ProcessId.dwProcessId = ProcessId;
                 pProcessInfo[0] = pi;
                 return VSConstants.S_OK;
             }
@@ -87,7 +97,7 @@ namespace Microsoft.R.Debugger.Engine.PortSupplier {
 
             public int GetPhysicalProcessId(AD_PROCESS_ID[] pProcessId) {
                 var pidStruct = new AD_PROCESS_ID();
-                pidStruct.dwProcessId = (uint)_sessionId;
+                pidStruct.dwProcessId = ProcessId;
                 pProcessId[0] = pidStruct;
                 return VSConstants.S_OK;
             }

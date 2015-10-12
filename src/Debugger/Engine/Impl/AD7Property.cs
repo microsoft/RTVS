@@ -10,11 +10,11 @@ namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7Property : IDebugProperty3 {
         public AD7StackFrame StackFrame { get; }
 
-        public DebugEvaluationResult Result { get; }
+        public DebugEvaluationResult EvaluationResult { get; }
 
         public AD7Property(AD7StackFrame stackFrame, DebugEvaluationResult result) {
             StackFrame = stackFrame;
-            Result = result;
+            EvaluationResult = result;
         }
 
         int IDebugProperty3.CreateObjectID() {
@@ -121,25 +121,25 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugProperty3.GetStringCharLength(out uint pLen) {
             pLen = 0;
 
-            var successResult = Result as DebugSuccessfulEvaluationResult;
-            if (successResult == null || successResult.RawValue == null) {
+            var valueResult = EvaluationResult as DebugValueEvaluationResult;
+            if (valueResult == null || valueResult.RawValue == null) {
                 return VSConstants.E_FAIL;
             }
 
-            pLen = (uint)successResult.RawValue.Length;
+            pLen = (uint)valueResult.RawValue.Length;
             return VSConstants.S_OK;
         }
 
         int IDebugProperty3.GetStringChars(uint buflen, ushort[] rgString, out uint pceltFetched) {
             pceltFetched = 0;
 
-            var successResult = Result as DebugSuccessfulEvaluationResult;
-            if (successResult == null || successResult.RawValue == null) {
+            var valueResult = EvaluationResult as DebugValueEvaluationResult;
+            if (valueResult == null || valueResult.RawValue == null) {
                 return VSConstants.E_FAIL;
             }
 
             for (int i = 0; i < buflen; ++i) {
-                rgString[i] = successResult.RawValue[i];
+                rgString[i] = valueResult.RawValue[i];
             }
             return VSConstants.S_OK;
         }
@@ -153,15 +153,25 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProperty2.SetValueAsString(string pszValue, uint dwRadix, uint dwTimeout) {
-            throw new NotImplementedException();
+            string errorString;
+            return ((IDebugProperty3)this).SetValueAsStringWithError(pszValue, dwRadix, dwTimeout, out errorString);
         }
 
         int IDebugProperty3.SetValueAsString(string pszValue, uint dwRadix, uint dwTimeout) {
-            throw new NotImplementedException();
+            return ((IDebugProperty2)this).SetValueAsString(pszValue, dwRadix, dwTimeout);
         }
 
         int IDebugProperty3.SetValueAsStringWithError(string pszValue, uint dwRadix, uint dwTimeout, out string errorString) {
-            throw new NotImplementedException();
+            errorString = null;
+
+            // TODO: dwRadix
+            var setResult = EvaluationResult.SetValueAsync(pszValue).GetAwaiter().GetResult() as DebugErrorEvaluationResult;
+            if (setResult != null) {
+                errorString = setResult.ErrorText;
+                return VSConstants.E_FAIL;
+            }
+
+            return VSConstants.S_OK;
         }
 
         internal DEBUG_PROPERTY_INFO GetDebugPropertyInfo(uint radix, enum_DEBUGPROP_INFO_FLAGS fields) {
@@ -171,37 +181,56 @@ namespace Microsoft.R.Debugger.Engine {
             dpi.pProperty = this;
             dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_PROP;
 
-            var successResult = Result as DebugSuccessfulEvaluationResult;
-            var failResult = Result as DebugFailedEvaluationResult;
+            var valueResult = EvaluationResult as DebugValueEvaluationResult;
+            var errorResult = EvaluationResult as DebugErrorEvaluationResult;
+            var promiseResult = EvaluationResult as DebugPromiseEvaluationResult;
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_FULLNAME)) {
-                dpi.bstrFullName = Result.Expression;
+                dpi.bstrFullName = EvaluationResult.Expression;
                 dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_FULLNAME;
             }
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_NAME)) {
-                dpi.bstrName = Result.Expression;
+                dpi.bstrName = EvaluationResult.Expression;
                 dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_NAME;
             }
 
-            if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE) && successResult != null) {
-                dpi.bstrType = successResult.TypeName;
-                dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
+            if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE)) {
+                if (valueResult != null) {
+                    dpi.bstrType = valueResult.TypeName;
+                    dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
+                } else if (promiseResult != null) {
+                    dpi.bstrType = "<promise>";
+                    dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
+                } else if (EvaluationResult is DebugActiveBindingEvaluationResult) {
+                    dpi.bstrType = "<active binding>";
+                    dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
+                }
             }
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE)) {
-                // TODO: handle radix
-                dpi.bstrValue = successResult.Value;
-                dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
+                if (valueResult != null) {
+                    // TODO: handle radix
+                    dpi.bstrValue = valueResult.Value;
+                    dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
+                } else if (promiseResult != null) {
+                    dpi.bstrValue = promiseResult.Code;
+                    dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
+                } else if (errorResult != null) {
+                    dpi.bstrValue = errorResult.ErrorText;
+                    dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
+                }
             }
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_ATTRIB)) {
+                dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_ATTRIB;
+
                 // TODO:
                 //    dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_OBJ_IS_EXPANDABLE;
 
-                if (successResult != null) {
+                if (valueResult != null) {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_RAW_STRING;
-                    switch (successResult.TypeName) {
+                    switch (valueResult.TypeName) {
                         //case "character":
                         //    dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_RAW_STRING;
                         //    break;
@@ -212,8 +241,12 @@ namespace Microsoft.R.Debugger.Engine {
                             dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_METHOD;
                             break;
                     }
-                } else if (failResult != null) {
+                } else if (errorResult != null) {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_ERROR;
+                } else if (promiseResult != null) {
+                    dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_SIDE_EFFECT;
+                } else if (EvaluationResult is DebugActiveBindingEvaluationResult) {
+                    dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_PROPERTY;
                 }
             }
 

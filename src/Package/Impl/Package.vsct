@@ -180,6 +180,11 @@
       <Group guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup" priority="0x0400">
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
       </Group>
+      
+      <!-- InteractiveWindow -->
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+      </Group>
 
     </Groups>
 
@@ -188,7 +193,8 @@
       <!-- Workspace flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdLoadWorkspace" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
-        <Icon guid="guidVsShellIcons" id="cmdidVsShellOpen"/>
+        <Icon guid="ImageCatalogGuid" id="OpenVirtualMachine"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Load Workspace...</ButtonText>
@@ -199,7 +205,8 @@
 
       <Button guid="guidRToolsCmdSet" id="icmdSaveWorkspace" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
-        <Icon guid="guidVsShellIcons" id="cmdidVsShellSave"/>
+        <Icon guid="ImageCatalogGuid" id="StoreVirtualMachine"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Save Workspace As...</ButtonText>
@@ -239,6 +246,17 @@
           <ButtonText>Set Working Directory...</ButtonText>
           <MenuText>Set Working &amp;Directory...</MenuText>
           <CommandName>Set Working Directory</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup"/>
+        <Icon guid="ImageCatalogGuid" id="RemoteDebugger"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Attach Debugger</ButtonText>
+          <MenuText>A&amp;ttach Debugger</MenuText>
+          <CommandName>Attach Debugger</CommandName>
         </Strings>
       </Button>
       <!-- End Workspace flyout -->
@@ -303,7 +321,6 @@
           <CommandName>Fix Plot Window</CommandName>
         </Strings>
       </Button>
-
 
       <Button guid="guidRToolsCmdSet" id="icmdPrintPlot" priority="0x0200" type="Button">
         <Icon guid="ImageCatalogGuid" id="Print"/>
@@ -493,6 +510,16 @@
           <CommandName>RFormattingOptions</CommandName>
         </Strings>
       </Button>
+      
+      <Button guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Run"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Source R Script</ButtonText>
+          <MenuText>&amp;Source R Script</MenuText>
+          <CommandName>Source R Script</CommandName>
+        </Strings>
+      </Button>
 
     </Buttons>
   </Commands>
@@ -602,6 +629,10 @@
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+
     <!-- Formatting group -->
     <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
@@ -707,6 +738,7 @@
 
   <KeyBindings>
     <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="E" mod1="CONTROL" key2="E" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
   </KeyBindings>
 
@@ -778,6 +810,8 @@
       <IDSymbol name="icmdSetWorkingDirectory" value="504" />
       <IDSymbol name="icmdRestartR" value="505" />
       <IDSymbol name="icmdInterruptR" value="506" />
+      <IDSymbol name="icmdAttachDebugger" value="507" />
+      <IDSymbol name="icmdSourceRScript" value="508" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -845,6 +879,11 @@
 
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />
+    </GuidSymbol>
+    
+    <!-- InteractiveWindow Guid -->
+    <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
+      <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>
     </GuidSymbol>
   </Symbols>
 </CommandTable>

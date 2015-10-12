@@ -33,9 +33,7 @@ namespace Microsoft.R.Editor.Signatures
             if (!REditorSettings.SignatureHelpEnabled)
                 return;
 
-            var document = REditorDocument.FromTextBuffer(_textBuffer);
-            Debug.Assert(document != null);
-
+            var document = REditorDocument.TryFromTextBuffer(_textBuffer);
             if (document != null)
             {
                 document.EditorTree.EnsureTreeReady();

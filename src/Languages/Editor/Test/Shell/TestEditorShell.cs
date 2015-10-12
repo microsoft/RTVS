@@ -92,29 +92,35 @@ namespace Microsoft.Languages.Editor.Tests.Shell
             get { return "."; }
         }
 
-        public IServiceProvider ServiceProvider
-        {
-            get { return null; }
-        }
+        public IServiceProvider ServiceProvider => null;
 
-        public Thread MainThread
-        {
-            get { return Thread.CurrentThread; }
-
-        }
+        public Thread MainThread => Thread.CurrentThread;
 
         public bool ShowHelp(string topic)
         {
             return true;
         }
-        public void ShowErrorMessage(string msg)
+
+        public void ShowErrorMessage(string msg, string title = null)
         {
         }
 
-        public bool IsUnitTestEnvironment
-        {
-            get { return true; }
+        /// <summary>
+        /// Displays error message in a host-specific UI
+        /// </summary>
+        public bool ShowYesNoMessage(string message, string title = null) {
+            return true;
         }
+
+        public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            return null;
+        }
+
+        public string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            return null;
+        }
+
+        public bool IsUnitTestEnvironment => true;
 
         public bool IsUITestEnvironment
         {

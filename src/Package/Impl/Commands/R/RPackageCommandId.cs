@@ -12,6 +12,8 @@
         public const int icmdLoadWorkspace = 502;
         public const int icmdSaveWorkspace = 503;
         public const int icmdSetWorkingDirectory = 504;
+        public const int icmdAttachDebugger = 507;
+        public const int icmdSourceRScript = 508;
 
         // Packages
         public const int icmdInstallPackages = 601;

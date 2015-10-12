@@ -15,6 +15,9 @@ namespace Microsoft.R.Debugger {
         private TaskCompletionSource<object> _stepTcs;
         private CancellationTokenSource _initialPromptCts = new CancellationTokenSource();
 
+        // Key is filename + line number; value is the count of breakpoints set for that line.
+        private Dictionary<Tuple<string, int>, int> _breakpoints = new Dictionary<Tuple<string, int>, int>();
+
         public IRSession RSession { get; set; }
 
         public event EventHandler Browse;
@@ -37,7 +40,7 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        public async Task Initialize() {
+        public async Task InitializeAsync() {
             ThrowIfDisposed();
 
             string helpers;
@@ -62,7 +65,7 @@ namespace Microsoft.R.Debugger {
             // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
             // grab an interaction and check the prompt.
             RSession.BeginInteractionAsync().ContinueWith(async t => {
-                using (var inter = await t) {
+                using (var inter = await t.ConfigureAwait(false)) {
                     // If we got AfterRequest before we got here, then that has already taken care of
                     // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.
                     _initialPromptCts.Token.ThrowIfCancellationRequested();
@@ -81,11 +84,12 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        internal async Task<REvaluationResult> EvaluateRawAsync(string expression, bool throwOnError = true) {
+        internal async Task<REvaluationResult> EvaluateRawAsync(string expression) {
             ThrowIfDisposed();
             using (var eval = await RSession.BeginEvaluationAsync().ConfigureAwait(false)) {
                 var res = await eval.EvaluateAsync(expression, reentrant: false).ConfigureAwait(false);
-                if (throwOnError && (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null)) {
+                if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null) {
+                    Debug.Fail($"Internal debugger evaluation {expression} failed: {res}");
                     throw new REvaluationException(res);
                 }
                 return res;
@@ -94,44 +98,33 @@ namespace Microsoft.R.Debugger {
 
         public async Task<DebugEvaluationResult> EvaluateAsync(DebugStackFrame stackFrame, string expression, string env = "NULL") {
             ThrowIfDisposed();
-
-            var quotedExpr = expression.Replace("\\", "\\\\").Replace("'", "\'");
-            var res = await EvaluateRawAsync($".rtvs.eval('{quotedExpr}', ${env})", throwOnError: false).ConfigureAwait(false);
-
-            if (res.ParseStatus != RParseStatus.OK) {
-                return new DebugFailedEvaluationResult(expression, res.ParseStatus.ToString());
-            } else if (res.Error != null) {
-                return new DebugFailedEvaluationResult(expression, res.Error);
-            } else if (res.Result == null) {
-                return new DebugFailedEvaluationResult(expression, "No result");
-            }
-
-            return new DebugSuccessfulEvaluationResult(stackFrame, expression, JObject.Parse(res.Result));
+            var res = await EvaluateRawAsync($".rtvs.eval({expression.ToRStringLiteral()}, {env})").ConfigureAwait(false);
+            return DebugEvaluationResult.Parse(stackFrame, expression, JObject.Parse(res.Result));
         }
 
         public Task StepIntoAsync() {
-            return Step("s");
+            return StepAsync("s");
         }
 
         public Task StepOverAsync() {
-            return Step("n");
+            return StepAsync("n");
         }
 
         public Task StepOutAsync() {
-            return Step("browserSetDebug()", "c");
+            return StepAsync("browserSetDebug()", "c");
         }
 
-        private async Task Step(params string[] commands) {
+        private async Task StepAsync(params string[] commands) {
             Debug.Assert(commands.Length > 0);
             ThrowIfDisposed();
 
             _stepTcs = new TaskCompletionSource<object>();
             for (int i = 0; i < commands.Length - 1; ++i) {
-                await ExecuteBrowserCommandAsync(commands[i]);
+                await ExecuteBrowserCommandAsync(commands[i]).ConfigureAwait(false);
             }
 
             ExecuteBrowserCommandAsync(commands.Last()).DoNotWait();
-            await _stepTcs.Task;
+            await _stepTcs.Task.ConfigureAwait(false);
         }
 
         public bool CancelStep() {
@@ -146,7 +139,7 @@ namespace Microsoft.R.Debugger {
             return true;
         }
 
-        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFrames() {
+        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync() {
             ThrowIfDisposed();
 
             REvaluationResult res;
@@ -155,44 +148,71 @@ namespace Microsoft.R.Debugger {
             }
 
             if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null) {
-                Debug.Fail(".rtvs.traceback() failed");
-                return new DebugStackFrame[0];
+                throw new InvalidDataException(".rtvs.traceback() failed");
             }
 
             JArray jFrames;
             try {
                 jFrames = JArray.Parse(res.Result);
-            } catch (JsonException) {
-                Debug.Fail("Failed to parse JSON returned by .rtvs.traceback()");
-                return new DebugStackFrame[0];
+            } catch (JsonException ex) {
+                throw new InvalidDataException("Failed to parse JSON returned by .rtvs.traceback()", ex);
             }
 
             var stackFrames = new List<DebugStackFrame>();
 
-            string callingExpression = null;
+            DebugStackFrame lastFrame = null;
             int i = 0;
             foreach (JObject jFrame in jFrames) {
-                DebugStackFrame stackFrame;
                 try {
                     string fileName = (string)jFrame["filename"];
                     int? lineNumber = (int?)(double?)jFrame["linenum"];
                     bool isGlobal = (bool)jFrame["is_global"];
-
-                    stackFrame = new DebugStackFrame(this, i, fileName, lineNumber, callingExpression, isGlobal);
-
-                    callingExpression = (string)jFrame["call"];
+                    lastFrame = DebugStackFrame.Parse(this, i, lastFrame, jFrame);
                 } catch (JsonException ex) {
                     Debug.Fail(ex.ToString());
-                    stackFrame = new DebugStackFrame(this, i, null, null, null, false);
-                    callingExpression = null;
+                    lastFrame = new DebugStackFrame(this, i, lastFrame, null, null, null, false);
                 }
 
-                stackFrames.Add(stackFrame);
+                stackFrames.Add(lastFrame);
                 ++i;
             }
 
             stackFrames.Reverse();
             return stackFrames;
+        }
+
+        public async Task<int> AddBreakpointAsync(string fileName, int lineNumber) {
+            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber})").ConfigureAwait(false);
+            if (res is DebugErrorEvaluationResult) {
+                throw new InvalidOperationException($"{res.Expression}: {res}");
+            }
+
+            var location = Tuple.Create(fileName, lineNumber);
+            if (!_breakpoints.ContainsKey(location)) {
+                _breakpoints.Add(location, 0);
+            }
+
+            return ++_breakpoints[location];
+        }
+
+        public async Task<int> RemoveBreakpointAsync(string fileName, int lineNumber) {
+            var location = Tuple.Create(fileName, lineNumber);
+            if (!_breakpoints.ContainsKey(location)) {
+                return 0;
+            }
+
+            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, clear=TRUE)").ConfigureAwait(false);
+            if (res is DebugErrorEvaluationResult) {
+                throw new InvalidOperationException($"{res.Expression}: {res}");
+            }
+
+            int count = --_breakpoints[location];
+            Debug.Assert(count >= 0);
+            if (count == 0) {
+                _breakpoints.Remove(location);
+            }
+
+            return count;
         }
 
         private bool IsInBrowseMode(IReadOnlyList<IRContext> contexts) {

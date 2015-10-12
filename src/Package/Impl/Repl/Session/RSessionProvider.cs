@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         private readonly ConcurrentDictionary<int, IRSession> _sessions = new ConcurrentDictionary<int, IRSession>();
 
         public IRSession Create(int sessionId) {
-            IRSession session = new RSession();
+            IRSession session = new RSession(sessionId);
             IRSession currentSession = this.Current;
 
             if (!_sessions.TryAdd(sessionId, session)) {

@@ -20,6 +20,7 @@ using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.R.Debugger.Engine.PortSupplier;
@@ -41,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
     [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
     [ProvideToolWindow(typeof(PlotWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
-    [ProvideDebugEngine(RContentTypeDefinition.LanguageName, typeof(AD7ProgramProvider), typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
+    [ProvideDebugEngine(RContentTypeDefinition.LanguageName, null, typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
     [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, RGuidList.RLanguageServiceGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString)]
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
     [ProvideDebugPortPicker(typeof(RDebugPortPicker))]
@@ -102,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         protected override IEnumerable<MenuCommand> CreateMenuCommands()
         {
-           return PackageCommands.GetCommands();
+           return PackageCommands.GetCommands(AppShell.Current.ExportProvider);
         }
 
         protected override object GetAutomationObject(string name)

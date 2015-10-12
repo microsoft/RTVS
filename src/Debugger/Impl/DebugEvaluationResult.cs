@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,48 +9,101 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Debugger {
     public abstract class DebugEvaluationResult {
+        public DebugStackFrame StackFrame { get; }
         public string Expression { get; }
 
-        internal DebugEvaluationResult(string expression) {
+        internal DebugEvaluationResult(DebugStackFrame stackFrame, string expression) {
+            StackFrame = stackFrame;
             Expression = expression;
         }
-    }
 
-    public class DebugFailedEvaluationResult : DebugEvaluationResult {
-        public string ErrorText { get; }
+        internal static DebugEvaluationResult Parse(DebugStackFrame stackFrame, string expression, JObject json) {
+            var errorText = (string)json["error"];
+            if (errorText != null) {
+                return new DebugErrorEvaluationResult(stackFrame, expression, errorText);
+            }
 
-        public DebugFailedEvaluationResult(string expression, string errorText)
-            : base(expression) {
-            ErrorText = errorText;
+            var code = (string)json["promise"];
+            if (code != null) {
+                return new DebugPromiseEvaluationResult(stackFrame, expression, code);
+            }
+
+            var isActiveBinding = (bool?)json["active_binding"];
+            if (isActiveBinding == true) {
+                return new DebugActiveBindingEvaluationResult(stackFrame, expression);
+            }
+
+            var value = (string)json["value"];
+            if (value != null) {
+                var rawValue = (string)json["raw_value"];
+                var typeName = (string)json["type"];
+                return new DebugValueEvaluationResult(stackFrame, expression, value, rawValue, typeName);
+            }
+
+            throw new InvalidDataException($"Could not determine kind of evaluation result: {json}");
+        }
+
+        public Task<DebugEvaluationResult> SetValueAsync(string value) {
+            return StackFrame.EvaluateAsync($"{Expression} <- {value}");
         }
     }
 
-    public class DebugSuccessfulEvaluationResult : DebugEvaluationResult {
-        public DebugStackFrame StackFrame { get; }
+    public class DebugErrorEvaluationResult : DebugEvaluationResult {
+        public string ErrorText { get; }
+
+        public DebugErrorEvaluationResult(DebugStackFrame stackFrame, string expression, string errorText)
+            : base(stackFrame, expression) {
+            ErrorText = errorText;
+        }
+
+        public override string ToString() {
+            return $"ERROR: {ErrorText}";
+        }
+    }
+
+    public class DebugValueEvaluationResult : DebugEvaluationResult {
         public string Value { get; }
         public string RawValue { get; }
         public string TypeName { get; }
         public bool HasChildren { get; }
 
-        public DebugSuccessfulEvaluationResult(DebugStackFrame stackFrame, string expression, string value, string rawValue, string typeName)
-            : base(expression) {
-            StackFrame = stackFrame;
+        public DebugValueEvaluationResult(DebugStackFrame stackFrame, string expression, string value, string rawValue, string typeName)
+            : base(stackFrame, expression) {
             Value = value;
             RawValue = rawValue;
             TypeName = typeName;
         }
 
-        public DebugSuccessfulEvaluationResult(DebugStackFrame stackFrame, string expression, JObject json)
-            : this(stackFrame, expression, (string)json["value"], (string)json["raw_value"], (string)json["type"]) {
-        }
-
-        public async Task<DebugSuccessfulEvaluationResult[]> GetChildren() {
+        public Task<DebugValueEvaluationResult[]> GetChildrenAsync() {
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
             // TODO
-            return new DebugSuccessfulEvaluationResult[0];
+            return Task.FromResult(new DebugValueEvaluationResult[0]);
+        }
+
+        public override string ToString() {
+            return $"VALUE: {TypeName} {Value}";
+        }
+    }
+
+    public class DebugPromiseEvaluationResult : DebugEvaluationResult {
+        public string Code { get; }
+
+        public DebugPromiseEvaluationResult(DebugStackFrame stackFrame, string expression, string code)
+            : base(stackFrame, expression) {
+            Code = code;
+        }
+
+        public override string ToString() {
+            return $"PROMISE: {Code}";
+        }
+    }
+
+    public class DebugActiveBindingEvaluationResult : DebugEvaluationResult {
+        public DebugActiveBindingEvaluationResult(DebugStackFrame stackFrame, string expression)
+            : base(stackFrame, expression) {
         }
     }
 }

@@ -105,7 +105,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             if (dwFields.HasFlag(enum_THREADPROPERTY_FIELDS.TPF_LOCATION)) {
                 var frame = _stackFrames.Value.LastOrDefault();
-                tp.bstrName = frame != null ? frame.CallingExpression : "<unknown>";
+                tp.bstrName = frame != null ? frame.CallingFrame?.Call : "<unknown>";
                 tp.dwFields |= enum_THREADPROPERTY_FIELDS.TPF_LOCATION;
             }
 
@@ -167,7 +167,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void ResetStackFrames() {
-            _stackFrames = Lazy.Create(() => Engine.DebugSession.GetStackFrames().GetAwaiter().GetResult());
+            _stackFrames = Lazy.Create(() => Engine.DebugSession.GetStackFramesAsync().GetAwaiter().GetResult());
         }
 
         private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {

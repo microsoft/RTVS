@@ -19,7 +19,7 @@ namespace Microsoft.R.Debugger.Engine {
             Engine = engine;
             StackFrame = stackFrame;
 
-            _variables = Lazy.Create(() => StackFrame.GetVariables().GetAwaiter().GetResult());
+            _variables = Lazy.Create(() => StackFrame.GetVariablesAsync().GetAwaiter().GetResult());
         }
 
         int IDebugStackFrame2.EnumProperties(enum_DEBUGPROP_INFO_FLAGS dwFields, uint nRadix, ref Guid guidFilter, uint dwTimeout, out uint pcelt, out IEnumDebugPropertyInfo2 ppEnum) {
@@ -109,7 +109,7 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             if (dwFieldSpec.HasFlag(enum_FRAMEINFO_FLAGS.FIF_FUNCNAME)) {
-                fi.m_bstrFuncName = StackFrame.CallingExpression ?? (StackFrame.IsGlobal ? "<global>" : "<unknown>");
+                fi.m_bstrFuncName = StackFrame.CallingFrame?.Call ?? (StackFrame.IsGlobal ? "<global>" : "<unknown>");
                 fi.m_dwValidFields |= enum_FRAMEINFO_FLAGS.FIF_FUNCNAME;
 
                 if (dwFieldSpec.HasFlag(enum_FRAMEINFO_FLAGS.FIF_FUNCNAME_MODULE) && moduleName != null) {
@@ -134,7 +134,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugStackFrame2.GetName(out string pbstrName) {
-            pbstrName = StackFrame.CallingExpression;
+            pbstrName = StackFrame.CallingFrame?.Call;
             return VSConstants.S_OK;
         }
 
@@ -205,7 +205,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugExpressionContext2.GetName(out string pbstrName) {
-            pbstrName = string.Format("{0}:{1}|{2}", StackFrame.FileName, StackFrame.LineNumber, StackFrame.CallingExpression);
+            pbstrName = string.Format("{0}:{1}|{2}", StackFrame.FileName, StackFrame.LineNumber, StackFrame.CallingFrame?.Call);
             return VSConstants.S_OK;
         }
 

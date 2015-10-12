@@ -15,7 +15,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         public AD7StackFrame StackFrame { get; }
 
-        public AD7DocumentContext DocumentContext { get; }
+        public AD7DocumentContext DocumentContext { get; set; }
 
         public AD7MemoryAddress(AD7Engine engine, string fileName, int? lineNumber, AD7DocumentContext documentContext = null) {
             Engine = engine;
@@ -91,7 +91,7 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             if ((dwFields & enum_CONTEXT_INFO_FIELDS.CIF_FUNCTION) != 0) {
-                pinfo[0].bstrFunction = StackFrame != null ? StackFrame.StackFrame.CallingExpression : "<unknown>";
+                pinfo[0].bstrFunction = StackFrame?.StackFrame?.CallingFrame?.Call ?? "<unknown>";
                 pinfo[0].dwFields |= enum_CONTEXT_INFO_FIELDS.CIF_FUNCTION;
             }
 

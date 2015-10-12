@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -9,6 +11,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using NSubstitute;
 using Xunit;
 using Microsoft.Common.Core.Test.IO.SubstituteFactories;
+using NSubstitute.ExceptionExtensions;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
 {
@@ -384,6 +387,39 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 _changeset.Should().NotBeNull();
                 _changeset.AddedDirectories.Should().Equal(expectedAdded);
                 _changeset.RemovedFiles.Should().Equal(expectedRemoved);
+            }
+
+            [Test]
+            public async Task DirectoryAdded_SymlinkIgnored() {
+
+                const string projectDirectorySubtree = @"
+[a]
+  [def]
+    x.r
+    y.r
+    [z.r]
+";
+                // a\
+                var a = (IDirectoryInfo)DirectoryInfoFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
+                // a\def\
+                var def = (IDirectoryInfo)a.EnumerateFileSystemInfos().Last();
+                // a\def\z.r\
+                var z_r = (IDirectoryInfo)def.EnumerateFileSystemInfos().Last();
+                z_r.Attributes.Returns(FileAttributes.Directory | FileAttributes.ReparsePoint);
+                z_r.EnumerateFileSystemInfos().ThrowsForAnyArgs(new Exception());
+
+                using (_taskScheduler.Pause()) {
+                    RaiseCreated(_directoryWatcher, @"Z:\abc\a");
+                }
+
+                await _taskScheduler;
+
+                var expectedFiles = new[] { @"a\def\x.r", @"a\def\y.r" };
+                var expectedDirectories = new[] { @"a\", @"a\def\" };
+
+                _changeset.Should().NotBeNull();
+                _changeset.AddedFiles.Should().BeEquivalentTo(expectedFiles);
+                _changeset.AddedDirectories.Should().BeEquivalentTo(expectedDirectories);
             }
 
             [CompositeTest]

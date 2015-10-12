@@ -17,7 +17,7 @@ namespace Microsoft.R.Debugger.Engine.PortSupplier {
         }
 
         public int CanAddPort() {
-            return VSConstants.S_OK; // S_OK = true, S_FALSE = false
+            return VSConstants.S_OK;
         }
 
         public int EnumPorts(out IEnumDebugPorts2 ppEnum) {

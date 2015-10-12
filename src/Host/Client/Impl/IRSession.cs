@@ -10,6 +10,7 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<EventArgs> Disconnected;
         event EventHandler<EventArgs> Disposed;
 
+        int Id { get; }
         string Prompt { get; }
         bool IsHostRunning { get; }
 

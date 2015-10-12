@@ -169,6 +169,34 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Load workspace from {0} failed:
+        ///{1}.
+        /// </summary>
+        internal static string LoadWorkspaceFailedMessageFormat {
+            get {
+                return ResourceManager.GetString("LoadWorkspaceFailedMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to load the R data file &quot;{0}&quot; into the global environment?.
+        /// </summary>
+        internal static string LoadWorkspaceIntoGlobalEnvironment {
+            get {
+                return ResourceManager.GetString("LoadWorkspaceIntoGlobalEnvironment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load Workspace.
+        /// </summary>
+        internal static string LoadWorkspaceTitle {
+            get {
+                return ResourceManager.GetString("LoadWorkspaceTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         internal static string MicrosoftRHostStarting {
@@ -291,6 +319,25 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string SavePlotDialogTitle {
             get {
                 return ResourceManager.GetString("SavePlotDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Workspace As.
+        /// </summary>
+        internal static string SaveWorkspaceAsTitle {
+            get {
+                return ResourceManager.GetString("SaveWorkspaceAsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save workspace into {0} failed:
+        ///{1}.
+        /// </summary>
+        internal static string SaveWorkspaceFailedMessageFormat {
+            get {
+                return ResourceManager.GetString("SaveWorkspaceFailedMessageFormat", resourceCulture);
             }
         }
         
@@ -561,6 +608,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string UndoActionFormatDocument {
             get {
                 return ResourceManager.GetString("UndoActionFormatDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Data Files (*.rdata)|*.rdata|All Files (*.*)|*.*.
+        /// </summary>
+        internal static string WorkspaceFileFilter {
+            get {
+                return ResourceManager.GetString("WorkspaceFileFilter", resourceCulture);
             }
         }
     }
