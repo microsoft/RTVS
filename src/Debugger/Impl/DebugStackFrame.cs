@@ -9,30 +9,37 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Debugger {
     public class DebugStackFrame {
+        public DebugSession Session { get; }
+
         public int Index { get; }
 
-        public DebugSession Session { get; }
+        public DebugStackFrame CallingFrame { get; }
 
         public string FileName { get; }
 
         public int? LineNumber { get; }
 
-        public string CallingExpression { get; }
+        public string Call { get; }
 
         public bool IsGlobal { get; }
 
-        internal DebugStackFrame(DebugSession session, int index, string fileName, int? lineNumber, string callingExpression, bool isGlobal) {
+        internal DebugStackFrame(DebugSession session, int index, DebugStackFrame callingFrame, string fileName, int? lineNumber, string call, bool isGlobal) {
             Debug.Assert(index >= 0);
             Session = session;
             Index = index;
+            CallingFrame = callingFrame;
             FileName = fileName;
             LineNumber = lineNumber;
-            CallingExpression = callingExpression;
+            Call = call;
             IsGlobal = isGlobal;
         }
 
-        internal DebugStackFrame(DebugSession session, int index, JObject jFrame)
-            : this(session, index, (string)jFrame["filename"], (int?)(double?)jFrame["linenum"], (string)jFrame["call"], (bool)jFrame["is_global"]) {
+        internal static DebugStackFrame Parse(DebugSession session, int index, DebugStackFrame callingFrame, JObject jFrame) {
+            var fileName = (string)jFrame["filename"];
+            var lineNumber = (int?)(double?)jFrame["line_number"];
+            var call = (string)jFrame["call"];
+            var isGlobal = (bool)jFrame["is_global"];
+            return new DebugStackFrame(session, index, callingFrame, fileName, lineNumber, call, isGlobal);
         }
 
         public Task<DebugEvaluationResult> EvaluateAsync(string expression) {
@@ -46,7 +53,7 @@ namespace Microsoft.R.Debugger {
             foreach (var kv in jFrameVars) {
                 var name = kv.Key;
                 var jEvalResult = (JObject)kv.Value;
-                vars[name] = new DebugSuccessfulEvaluationResult(this, name, jEvalResult);
+                vars[name] = DebugEvaluationResult.Parse(this, name, jEvalResult);
             }
 
             return vars;

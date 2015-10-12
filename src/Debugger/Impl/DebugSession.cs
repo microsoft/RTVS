@@ -84,11 +84,12 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        internal async Task<REvaluationResult> EvaluateRawAsync(string expression, bool throwOnError = true) {
+        internal async Task<REvaluationResult> EvaluateRawAsync(string expression) {
             ThrowIfDisposed();
             using (var eval = await RSession.BeginEvaluationAsync().ConfigureAwait(false)) {
                 var res = await eval.EvaluateAsync(expression, reentrant: false).ConfigureAwait(false);
-                if (throwOnError && (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null)) {
+                if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null) {
+                    Debug.Fail($"Internal debugger evaluation {expression} failed: {res}");
                     throw new REvaluationException(res);
                 }
                 return res;
@@ -97,19 +98,8 @@ namespace Microsoft.R.Debugger {
 
         public async Task<DebugEvaluationResult> EvaluateAsync(DebugStackFrame stackFrame, string expression, string env = "NULL") {
             ThrowIfDisposed();
-
-            var res = await EvaluateRawAsync($".rtvs.eval({expression.ToRStringLiteral()}, {env})", throwOnError: false).ConfigureAwait(false);
-
-            if (res.ParseStatus != RParseStatus.OK) {
-                Debug.Fail("Malformed .rtvs.eval");
-                return new DebugFailedEvaluationResult(expression, "RParseStatus." + res.ParseStatus);
-            } else if (res.Error != null) {
-                return new DebugFailedEvaluationResult(expression, res.Error);
-            } else if (res.Result == null) {
-                return new DebugFailedEvaluationResult(expression, "No result");
-            }
-
-            return new DebugSuccessfulEvaluationResult(stackFrame, expression, JObject.Parse(res.Result));
+            var res = await EvaluateRawAsync($".rtvs.eval({expression.ToRStringLiteral()}, {env})").ConfigureAwait(false);
+            return DebugEvaluationResult.Parse(stackFrame, expression, JObject.Parse(res.Result));
         }
 
         public Task StepIntoAsync() {
@@ -170,25 +160,20 @@ namespace Microsoft.R.Debugger {
 
             var stackFrames = new List<DebugStackFrame>();
 
-            string callingExpression = null;
+            DebugStackFrame lastFrame = null;
             int i = 0;
             foreach (JObject jFrame in jFrames) {
-                DebugStackFrame stackFrame;
                 try {
                     string fileName = (string)jFrame["filename"];
                     int? lineNumber = (int?)(double?)jFrame["linenum"];
                     bool isGlobal = (bool)jFrame["is_global"];
-
-                    stackFrame = new DebugStackFrame(this, i, fileName, lineNumber, callingExpression, isGlobal);
-
-                    callingExpression = (string)jFrame["call"];
+                    lastFrame = DebugStackFrame.Parse(this, i, lastFrame, jFrame);
                 } catch (JsonException ex) {
                     Debug.Fail(ex.ToString());
-                    stackFrame = new DebugStackFrame(this, i, null, null, null, false);
-                    callingExpression = null;
+                    lastFrame = new DebugStackFrame(this, i, lastFrame, null, null, null, false);
                 }
 
-                stackFrames.Add(stackFrame);
+                stackFrames.Add(lastFrame);
                 ++i;
             }
 
@@ -198,7 +183,7 @@ namespace Microsoft.R.Debugger {
 
         public async Task<int> AddBreakpointAsync(string fileName, int lineNumber) {
             var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber})").ConfigureAwait(false);
-            if (res is DebugFailedEvaluationResult) {
+            if (res is DebugErrorEvaluationResult) {
                 throw new InvalidOperationException($"{res.Expression}: {res}");
             }
 
@@ -217,7 +202,7 @@ namespace Microsoft.R.Debugger {
             }
 
             var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, clear=TRUE)").ConfigureAwait(false);
-            if (res is DebugFailedEvaluationResult) {
+            if (res is DebugErrorEvaluationResult) {
                 throw new InvalidOperationException($"{res.Expression}: {res}");
             }
 

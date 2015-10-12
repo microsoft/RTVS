@@ -9,24 +9,35 @@
   repr
 }
 
+
 .rtvs.eval_into <<- function(con, expr, env) {
-  obj <- eval(parse(text = expr), env);
-  
-  repr <- .rtvs.repr(obj);
-  cat('"value": ', file = con, sep = '');
-  dput(repr, con);
-  
-  raw_value <- tryCatch({
-    paste0(toString(obj), collapse='');
+  err <- NULL;
+  tryCatch({
+    obj <- eval(parse(text = expr), env);
   }, error = function(e) {
-    repr;
-  })
-  
-  cat(', "raw_value": ', file = con, sep = '');
-  dput(raw_value, con);
-  
-  cat(', "type": ', file = con, sep = '');
-  dput(typeof(obj), con);
+    err <<- e;
+  });
+
+  if (is.null(err)) {
+    repr <- .rtvs.repr(obj);
+    cat('"value": ', file = con, sep = '');
+    dput(repr, con);
+    
+    raw_value <- tryCatch({
+      paste0(toString(obj), collapse='');
+    }, error = function(e) {
+      repr;
+    })
+    
+    cat(', "raw_value": ', file = con, sep = '');
+    dput(raw_value, con);
+    
+    cat(', "type": ', file = con, sep = '');
+    dput(typeof(obj), con);
+  } else {
+    cat('"error": ', file = con, sep = '');
+    dput(conditionMessage(err), con);
+  }
 }
 
 .rtvs.eval <<- function(expr, env) {
@@ -71,7 +82,7 @@
         cat('null', file = con, sep = '');
       }
       
-      cat(', "linenum":', file = con, sep = '');
+      cat(', "line_number":', file = con, sep = '');
       linenum <- getSrcLocation(call, which = 'line');
       if (!is.null(linenum)) {
         dput(as.double(linenum), con);
@@ -109,7 +120,17 @@
       
       dput(varname, con);
       cat(': {', file = con, sep = '');
-      .rtvs.eval_into(con, varname, env);
+      
+      code <- .Call(".rtvs.Call.unevaluated_promise", varname, env);
+      if (!is.null(code)) {
+        cat('"promise":', file = con, sep = '');
+        dput(.rtvs.repr(code), con);
+      } else if (bindingIsActive(varname, env)) {
+        cat('"active_binding":true', file = con, sep = '');
+      } else {
+        .rtvs.eval_into(con, varname, env);
+      }
+      
       cat('}', file = con, sep = '');
     }
     

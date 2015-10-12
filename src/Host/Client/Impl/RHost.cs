@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
@@ -69,6 +70,9 @@ namespace Microsoft.R.Host.Client {
 
                         await Run(ct);
                     }
+                } catch (Exception ex) when (!(ex is OperationCanceledException)) { // TODO: replace with better logging
+                    Trace.Fail("Exception in RHost run loop:\n" + ex);
+                    throw;
                 } finally {
                     if (!_process.HasExited) {
                         try {
@@ -130,7 +134,6 @@ namespace Microsoft.R.Host.Client {
                 var contexts = GetContexts(obj);
 
                 var evt = (string)obj["event"];
-
                 switch (evt) {
                     case "YesNoCancel":
                         await YesNoCancel(contexts, obj, allowEval, ct);
@@ -142,15 +145,15 @@ namespace Microsoft.R.Host.Client {
 
                     case "WriteConsoleEx":
                         await
-                            _callbacks.WriteConsoleEx(contexts, (string) obj["buf"], (OutputType) (double) obj["otype"], ct);
+                            _callbacks.WriteConsoleEx(contexts, (string)obj["buf"], (OutputType)(double)obj["otype"], ct);
                         break;
 
                     case "ShowMessage":
-                        await _callbacks.ShowMessage(contexts, (string) obj["s"], ct);
+                        await _callbacks.ShowMessage(contexts, (string)obj["s"], ct);
                         break;
 
                     case "Busy":
-                        await _callbacks.Busy(contexts, (bool) obj["which"], ct);
+                        await _callbacks.Busy(contexts, (bool)obj["which"], ct);
                         break;
 
                     case "CallBack":
@@ -160,7 +163,7 @@ namespace Microsoft.R.Host.Client {
                         return obj;
 
                     case "PlotXaml":
-                        await _callbacks.PlotXaml(contexts, (string) obj["filepath"], ct);
+                        await _callbacks.PlotXaml(contexts, (string)obj["filepath"], ct);
                         // TODO: delete temporary xaml and bitmap files
                         break;
 
@@ -178,10 +181,9 @@ namespace Microsoft.R.Host.Client {
         private async Task YesNoCancel(RContext[] contexts, JObject obj, bool allowEval, CancellationToken ct) {
             try {
                 _canEval = allowEval;
-                YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string) obj["s"], _canEval, ct);
-                await SendAsync((double) input, ct);
-            }
-            finally {
+                YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], _canEval, ct);
+                await SendAsync((double)input, ct);
+            } finally {
                 _canEval = false;
             }
         }
@@ -191,15 +193,14 @@ namespace Microsoft.R.Host.Client {
                 _canEval = allowEval;
 
                 var prompt = (string)obj["prompt"];
-                var buf = (string) obj["buf"];
-                var len = (int) (double) obj["len"];
-                var addToHistory = (bool) obj["addToHistory"];
+                var buf = (string)obj["buf"];
+                var len = (int)(double)obj["len"];
+                var addToHistory = (bool)obj["addToHistory"];
 
                 string input = await _callbacks.ReadConsole(contexts, prompt, buf, len, addToHistory, _canEval, ct);
                 input = input.Replace("\r\n", "\n");
                 await SendAsync(input, ct);
-            }
-            finally {
+            } finally {
                 _canEval = false;
             }
         }

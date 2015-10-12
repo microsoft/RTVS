@@ -100,7 +100,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             DebugSession = DebugSessionProvider.GetDebugSession(_program.Session);
             DebugSession.Browse += Session_Browse;
-            DebugSession.RSession.AfterRequest += RSession_AfterRequest;
+            //DebugSession.RSession.AfterRequest += RSession_AfterRequest;
             DebugSession.InitializeAsync().GetAwaiter().GetResult();
 
             MainThread = new AD7Thread(this);

@@ -91,7 +91,7 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             if ((dwFields & enum_CONTEXT_INFO_FIELDS.CIF_FUNCTION) != 0) {
-                pinfo[0].bstrFunction = StackFrame != null ? StackFrame.StackFrame.CallingExpression : "<unknown>";
+                pinfo[0].bstrFunction = StackFrame?.StackFrame?.CallingFrame?.Call ?? "<unknown>";
                 pinfo[0].dwFields |= enum_CONTEXT_INFO_FIELDS.CIF_FUNCTION;
             }
 

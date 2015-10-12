@@ -105,7 +105,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             if (dwFields.HasFlag(enum_THREADPROPERTY_FIELDS.TPF_LOCATION)) {
                 var frame = _stackFrames.Value.LastOrDefault();
-                tp.bstrName = frame != null ? frame.CallingExpression : "<unknown>";
+                tp.bstrName = frame != null ? frame.CallingFrame?.Call : "<unknown>";
                 tp.dwFields |= enum_THREADPROPERTY_FIELDS.TPF_LOCATION;
             }
 
