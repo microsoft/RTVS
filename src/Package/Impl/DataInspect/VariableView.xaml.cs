@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
@@ -21,84 +11,109 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
     public partial class VariableView : UserControl
     {
         private readonly VariableProvider _variableProvider;
-        private readonly ObservableCollection<Variable> _variables; // variables in flat structure
+        private Variable _globalEnv;
 
         public VariableView()
         {
             InitializeComponent();
-            
-            _variables = new ObservableCollection<Variable>();
 
-            ViewSource = new CollectionViewSource();
-            ViewSource.Source = _variables;
-            ViewSource.Filter += CollectionViewSource_Filter;
-
-            RootGrid.ItemsSource = ViewSource.View;
-
-            _variableProvider = new VariableProvider(this);
+            _variableProvider = new VariableProvider();
             _variableProvider.SessionsChanged += VariableProvider_SessionsChanged;
 
-            RefreshData();
+            InitializeData();
         }
 
         private void VariableProvider_SessionsChanged(object sender, EventArgs e)
         {
-            RefreshData();
+            InitializeData();
         }
 
-        public CollectionViewSource ViewSource { get; }
-
-        public void RefreshView()
+        public void InitializeData()
         {
-            ViewSource.View.Refresh();
-        }
-
-        public void AddRange(IEnumerable<Variable> variables, bool clearAll = true)
-        {
-            if (clearAll)
+            Task t = Task.Run(async () =>   // no await
             {
-                _variables.Clear();
+                var globalEnvVar = await _variableProvider.EvaluateVariable(
+                    new VariableEvaluationContext()
+                    {
+                        Environment = VariableEvaluationContext.GlobalEnv,
+                        VariableName = VariableEvaluationContext.GlobalEnv
+                    });
+
+                if (globalEnvVar != null)
+                {
+                    DispatchInvoke(() => SetVariable(globalEnvVar), DispatcherPriority.Normal);
+                }
+            });
+        }
+
+        private void SetVariable(Variable variable)
+        {
+            if (_globalEnv != null)
+            {
+                _globalEnv.Children.CollectionChanged -= VariableChildren_CollectionChanged;
             }
 
-            Variable.TraverseDepthFirst(variables,
-                (v) => { _variables.Add(v); v.View = this; return true; });
-
-            // set top level visible
-            foreach (var v in variables)
+            _globalEnv = variable;
+            if (_globalEnv != null)
             {
-                v.IsVisible = true;
+                EnvironmentTextBlock.Text = _globalEnv.VariableValue;
+
+                _globalEnv.Children.CollectionChanged += VariableChildren_CollectionChanged;
+                foreach (var child in _globalEnv.Children)
+                {
+                    RootTreeView.Items.Add(child);
+                }
             }
-
-            RefreshView();
         }
 
-        public void RefreshData()
+        private int itemIndexOffset = 0;
+        private void VariableChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            var newVariables = _variableProvider.Get(new VariableProvideContext());
-
-            DispatchInvoke(
-                () => AddRange(newVariables),
-                DispatcherPriority.Normal);
-        }
-
-        private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
-        {
-            var variable = e.Item as Variable;
-            if (variable != null)
+            switch (e.Action)
             {
-                e.Accepted = variable.IsVisible;
+                case NotifyCollectionChangedAction.Add:
+                    {
+                        int index = e.NewStartingIndex + itemIndexOffset; // offset to Column header
+                        foreach (var child in e.NewItems)
+                        {
+                            RootTreeView.Items.Insert(index++, child);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    {
+                        int index = e.OldStartingIndex + itemIndexOffset;
+                        foreach (var child in e.OldItems)
+                        {
+                            RootTreeView.Items.Insert(index++, child);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    {
+                        while (RootTreeView.Items.Count > itemIndexOffset)
+                        {
+                            RootTreeView.Items.RemoveAt(RootTreeView.Items.Count - itemIndexOffset);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                case NotifyCollectionChangedAction.Move:
+                default:
+                    throw new NotSupportedException();
             }
         }
 
         private static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
         {
             Action guardedAction =
-                () => {
+                () =>
+                {
                     try
                     {
                         toInvoke();
                     }
-                    catch  (Exception e)
+                    catch (Exception e)
                     {
                         Debug.Assert(false, "Guarded invoke caught exception", e.Message);
                     }

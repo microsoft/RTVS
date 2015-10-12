@@ -180,6 +180,11 @@
       <Group guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup" priority="0x0400">
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
       </Group>
+      
+      <!-- InteractiveWindow -->
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+      </Group>
 
     </Groups>
 
@@ -188,7 +193,8 @@
       <!-- Workspace flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdLoadWorkspace" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
-        <Icon guid="guidVsShellIcons" id="cmdidVsShellOpen"/>
+        <Icon guid="ImageCatalogGuid" id="OpenVirtualMachine"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Load Workspace...</ButtonText>
@@ -199,7 +205,8 @@
 
       <Button guid="guidRToolsCmdSet" id="icmdSaveWorkspace" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
-        <Icon guid="guidVsShellIcons" id="cmdidVsShellSave"/>
+        <Icon guid="ImageCatalogGuid" id="StoreVirtualMachine"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Save Workspace As...</ButtonText>
@@ -872,6 +879,11 @@
 
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />
+    </GuidSymbol>
+    
+    <!-- InteractiveWindow Guid -->
+    <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
+      <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>
     </GuidSymbol>
   </Symbols>
 </CommandTable>

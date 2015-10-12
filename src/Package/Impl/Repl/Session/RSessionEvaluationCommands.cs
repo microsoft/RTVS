@@ -20,6 +20,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return evaluation.EvaluateNonReentrantAsync($".rtvs.datainspect.env_vars(.GlobalEnv)\n");
         }
 
+        public static Task<REvaluationResult> LoadWorkspace(this IRSessionEvaluation evaluation, string path) {
+            return evaluation.EvaluateNonReentrantAsync($"load('{path.Replace('\\', '/')}', .GlobalEnv)\n");
+        }
+
+        public static Task<REvaluationResult> SaveWorkspace(this IRSessionEvaluation evaluation, string path) {
+            return evaluation.EvaluateNonReentrantAsync($"save.image(file='{path.Replace('\\', '/')}')\n");
+        }
+
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
             var script = @"
 .rtvs.vsgd <- function() {
