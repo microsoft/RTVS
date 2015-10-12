@@ -2,6 +2,7 @@
 #include "server.h"
 #include "Rapi.h"
 #include "vsgd.h"
+#include "r_util.h"
 
 const unsigned PORT = 5118;
 
@@ -33,6 +34,7 @@ int main(int argc, char** argv) {
 
     DllInfo *dll = R_getEmbeddingDllInfo();
     R_init_vsgd(dll);
+    R_init_util(dll);
 
     CharacterMode = LinkDLL;
     setup_Rmainloop();

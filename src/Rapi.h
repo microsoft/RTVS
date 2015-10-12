@@ -153,7 +153,9 @@ extern "C" {
 #ifdef _WIN32
     __declspec(dllimport) extern UImode CharacterMode;
     __declspec(dllimport) extern RCNTXT* R_GlobalContext;
-    __declspec(dllimport) extern SEXP R_GlobalEnv, R_EmptyEnv, R_BaseEnv, R_BaseNamespace, R_Srcref, R_NilValue, R_UnboundValue, R_MissingArg;
+    __declspec(dllimport) extern SEXP
+        R_GlobalEnv, R_EmptyEnv, R_BaseEnv, R_BaseNamespace, R_Srcref, R_NilValue,
+        R_TrueValue, R_FalseValue, R_UnboundValue, R_MissingArg;
     __declspec(dllimport) extern int R_DirtyImage;
     __declspec(dllimport) extern char *R_TempDir;
     __declspec(dllimport) extern int UserBreak;
@@ -184,20 +186,34 @@ extern "C" {
     extern SEXP Rf_protect(SEXP);
     extern void Rf_unprotect(int);
     extern void Rf_unprotect_ptr(SEXP);
+    extern Rboolean Rf_isNull(SEXP s);
+    extern Rboolean Rf_isSymbol(SEXP s);
+    extern Rboolean Rf_isLogical(SEXP s);
+    extern Rboolean Rf_isReal(SEXP s);
+    extern Rboolean Rf_isComplex(SEXP s);
+    extern Rboolean Rf_isExpression(SEXP s);
+    extern Rboolean Rf_isEnvironment(SEXP s);
+    extern Rboolean Rf_isString(SEXP s);
+    extern Rboolean Rf_isObject(SEXP s);
     extern SEXP Rf_mkChar(const char*);
     extern SEXP Rf_asChar(SEXP);
     extern SEXP Rf_allocVector3(SEXPTYPE, R_xlen_t, /*R_allocator_t*/ void*);
     extern R_len_t Rf_length(SEXP);
+    extern SEXP Rf_installChar(SEXP);
+    extern SEXP Rf_findVar(SEXP, SEXP);
+    __declspec(noreturn) extern void Rf_error(const char *, ...);
 
     extern void setup_Rmainloop(void);
     extern void run_Rmainloop(void);
     extern void CleanEd(void);
 
+    extern int TYPEOF(SEXP x);
     extern SEXP STRING_ELT(SEXP x, R_xlen_t i);
     extern SEXP VECTOR_ELT(SEXP x, R_xlen_t i);
     extern void SET_STRING_ELT(SEXP x, R_xlen_t i, SEXP v);
     extern SEXP SET_VECTOR_ELT(SEXP x, R_xlen_t i, SEXP v);
     extern const char* R_CHAR(SEXP x);
+    extern int PRSEEN(SEXP x);
 
 #ifdef _WIN32
     extern char *getDLLVersion(void), *getRUser(void), *get_R_HOME(void);

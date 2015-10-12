@@ -113,7 +113,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TRACE_JSON;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>..\lib\picojson;..\lib\websocketpp</AdditionalIncludeDirectories>
     </ClCompile>
@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClCompile Include="crtutils.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="r_util.cpp" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="vsgd.cpp" />
   </ItemGroup>
@@ -177,6 +178,7 @@
     <ClInclude Include="crtutils.h" />
     <ClInclude Include="Rapi.h" />
     <ClInclude Include="Rgraphicsapi.h" />
+    <ClInclude Include="r_util.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="util.h" />

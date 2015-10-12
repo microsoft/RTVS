@@ -17,6 +17,7 @@ namespace rhost {
             ws_server_type::connection_ptr ws_conn;
             std::unique_ptr<std::promise<picojson::value>> response_promise;
             std::atomic<bool> is_connection_closed = false;
+            std::atomic<int> nesting_level = 0;
 
             picojson::object r_eval(const std::string& expr) {
                 picojson::object obj;
@@ -52,10 +53,25 @@ namespace rhost {
                 return obj;
             }
 
+            std::error_code send_json(ws_server_type::connection_type& conn, const picojson::value& value) {
+                std::string json = value.serialize();
+#ifdef TRACE_JSON
+                for (int i = 0; i < nesting_level; ++i) fputc('\t', stderr);
+                fprintf(stderr, "<<< %s\n\n", json.c_str());
+#endif
+                return conn.send(json, websocketpp::frame::opcode::text);
+            }
+
+            std::error_code send_json(ws_server_type::connection_type& conn, const picojson::object& obj) {
+                return send_json(conn, picojson::value(obj));
+            }
+
             template<class F>
             picojson::value with_response(F&& f) {
                 response_promise = std::make_unique<std::promise<picojson::value>>();
                 f();
+
+                ++nesting_level;
 
                 picojson::value r;
                 do {
@@ -83,14 +99,13 @@ namespace rhost {
                             }
 
                             picojson::object result = r_eval(expr);
-                            std::string json = picojson::value(result).serialize();
-
                             response_promise = std::make_unique<std::promise<picojson::value>>();
-                            ws_conn->send(json, websocketpp::frame::opcode::text);
+                            send_json(*ws_conn, result);
                         }
                     }
                 } while (response_promise);
 
+                --nesting_level;
                 return r;
             }
 
@@ -123,10 +138,8 @@ namespace rhost {
                 obj["addToHistory"] = picojson::value(addToHistory ? true : false);
 
                 for (;;) {
-                    std::string json = picojson::value(obj).serialize();
-
                     picojson::value resp = with_response([&] {
-                        ws_conn->send(json, websocketpp::frame::opcode::text);
+                        send_json(*ws_conn, obj);
                     });
 
                     if (resp.is<picojson::null>()) {
@@ -160,8 +173,7 @@ namespace rhost {
                 obj["buf"] = picojson::value(to_utf8(buf, len));
                 obj["otype"] = picojson::value(static_cast<double>(otype));
 
-                std::string json = picojson::value(obj).serialize();
-                ws_conn->send(json, websocketpp::frame::opcode::text);
+                send_json(*ws_conn, obj);
             }
 
             extern "C" void CallBack() {
@@ -171,8 +183,7 @@ namespace rhost {
 
                 obj["event"] = picojson::value("CallBack");
 
-                std::string json = picojson::value(obj).serialize();
-                ws_conn->send(json, websocketpp::frame::opcode::text);
+                send_json(*ws_conn, obj);
 #endif
             }
 
@@ -187,8 +198,7 @@ namespace rhost {
                 obj["event"] = picojson::value("ShowMessage");
                 obj["s"] = picojson::value(to_utf8(s));
 
-                std::string json = picojson::value(obj).serialize();
-                ws_conn->send(json, websocketpp::frame::opcode::text);
+                send_json(*ws_conn, obj);
             }
 
             extern "C" int YesNoCancel(const char* s) {
@@ -199,10 +209,9 @@ namespace rhost {
                 picojson::object obj;
                 obj["event"] = picojson::value("YesNoCancel");
                 obj["s"] = picojson::value(to_utf8(s));
-                std::string json = picojson::value(obj).serialize();
 
                 picojson::value resp = with_response([&] {
-                    ws_conn->send(json, websocketpp::frame::opcode::text);
+                    send_json(*ws_conn, obj);
                 });
 
                 if (resp.is<picojson::null>()) {
@@ -227,8 +236,7 @@ namespace rhost {
                 obj["event"] = picojson::value("Busy");
                 obj["which"] = picojson::value(which ? true : false);
 
-                std::string json = picojson::value(obj).serialize();
-                ws_conn->send(json, websocketpp::frame::opcode::text);
+                send_json(*ws_conn, obj);
             }
 
             void on_ws_message(websocketpp::connection_hdl hdl, ws_server_type::message_ptr msg) {
@@ -237,10 +245,17 @@ namespace rhost {
                     return;
                 }
 
+                const std::string& json = msg->get_payload();
+
+#ifdef TRACE_JSON
+                for (int i = 0; i < nesting_level; ++i) fputc('\t', stderr);
+                fprintf(stderr, ">>> %s\n\n", json.c_str());
+#endif
+
                 picojson::value v;
-                std::string err = picojson::parse(v, msg->get_payload());
+                std::string err = picojson::parse(v, json);
                 if (!err.empty()) {
-                    fprintf(stderr, "Couldn't parse message: %s\n%s", msg->get_payload().c_str(), err.c_str());
+                    fprintf(stderr, "Couldn't parse message: %s\n%s", json.c_str(), err.c_str());
                     return;
                 }
 
@@ -252,8 +267,7 @@ namespace rhost {
                 if (!is_connection_closed) {
                     picojson::object obj;
                     obj["event"] = picojson::value("exit");
-                    std::string json = picojson::value(obj).serialize();
-                    ws_conn->send(json, websocketpp::frame::opcode::text);
+                    send_json(*ws_conn, obj);
                     server_thread->join();
                 }
             }
@@ -267,7 +281,7 @@ namespace rhost {
             void server_thread_func(unsigned port) {
                 ws_server_type server;
 
-#ifdef NDEBUG
+#ifndef TRACE_WEBSOCKET
                 server.set_access_channels(websocketpp::log::alevel::none);
                 server.set_error_channels(websocketpp::log::elevel::none);
 #endif
@@ -308,8 +322,7 @@ namespace rhost {
             picojson::object obj;
             obj["protocol_version"] = picojson::value(1.0);
             obj["R_version"] = picojson::value(getDLLVersion());
-            std::string json = picojson::value(obj).serialize();
-            ws_conn->send(json, websocketpp::frame::opcode::text);
+            send_json(*ws_conn, obj);
         }
 
         void register_callbacks(structRstart& rp) {
@@ -327,8 +340,7 @@ namespace rhost {
 
             obj["event"] = picojson::value("PlotXaml");
             obj["filepath"] = picojson::value(to_utf8(filepath));
-            std::string json = picojson::value(obj).serialize();
-            ws_conn->send(json, websocketpp::frame::opcode::text);
+            send_json(*ws_conn, obj);
         }
     }
 }
