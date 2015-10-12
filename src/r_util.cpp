@@ -2,7 +2,7 @@
 #include "Rapi.h"
 
 namespace {
-    extern "C" SEXP is_unseen_promise(SEXP name, SEXP env) {
+    extern "C" SEXP unevaluated_promise(SEXP name, SEXP env) {
         if (!Rf_isEnvironment(env)) {
             Rf_error("env is not an environment");
         }
@@ -11,7 +11,7 @@ namespace {
         }
 
         SEXP value = Rf_findVar(Rf_installChar(STRING_ELT(name, 0)), env);
-        if (TYPEOF(value) != PROMSXP || PRSEEN(value)) {
+        if (TYPEOF(value) != PROMSXP || PRVALUE(value) != R_UnboundValue) {
             return R_NilValue;
         }
 
@@ -19,7 +19,7 @@ namespace {
     }
 
     R_CallMethodDef call_methods[] = {
-        { ".rtvs.Call.is_unseen_promise", (DL_FUNC)&is_unseen_promise, 2 },
+        { ".rtvs.Call.unevaluated_promise", (DL_FUNC)unevaluated_promise, 2 },
         { }
     };
 }

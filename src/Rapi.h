@@ -215,6 +215,8 @@ extern "C" {
     extern const char* R_CHAR(SEXP x);
     extern int PRSEEN(SEXP x);
     extern SEXP PRCODE(SEXP x);
+    extern SEXP PRENV(SEXP x);
+    extern SEXP PRVALUE(SEXP x);
 
 #ifdef _WIN32
     extern char *getDLLVersion(void), *getRUser(void), *get_R_HOME(void);
