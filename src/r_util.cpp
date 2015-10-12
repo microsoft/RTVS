@@ -11,7 +11,11 @@ namespace {
         }
 
         SEXP value = Rf_findVar(Rf_installChar(STRING_ELT(name, 0)), env);
-        return (TYPEOF(value) == PROMSXP && !PRSEEN(value)) ? R_TrueValue : R_FalseValue;
+        if (TYPEOF(value) != PROMSXP || PRSEEN(value)) {
+            return R_NilValue;
+        }
+
+        return PRCODE(value);
     }
 
     R_CallMethodDef call_methods[] = {

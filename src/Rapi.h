@@ -214,6 +214,7 @@ extern "C" {
     extern SEXP SET_VECTOR_ELT(SEXP x, R_xlen_t i, SEXP v);
     extern const char* R_CHAR(SEXP x);
     extern int PRSEEN(SEXP x);
+    extern SEXP PRCODE(SEXP x);
 
 #ifdef _WIN32
     extern char *getDLLVersion(void), *getRUser(void), *get_R_HOME(void);
