@@ -96,10 +96,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             }
         }
 
-        private string GetLoadFilePath()
-        {
-            return FileUtilities.BrowseForFileOpen(
-                IntPtr.Zero,
+        private string GetLoadFilePath() {
+            return EditorShell.Current.BrowseForFileOpen(IntPtr.Zero,
                 Resources.PlotFileFilter,
                 // TODO: open in current project folder if one is active
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\",
@@ -108,11 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
         private string GetSaveFilePath()
         {
-            return FileUtilities.BrowseForFileSave(
-                IntPtr.Zero,
-                Resources.PlotFileFilter,
-                null,
-                Resources.SavePlotDialogTitle);
+            return EditorShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotFileFilter, null,Resources.SavePlotDialogTitle);
         }
     }
 }

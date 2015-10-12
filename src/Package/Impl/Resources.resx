@@ -278,11 +278,31 @@
   </data>
   <data name="CannotOpenPlotFile" xml:space="preserve">
     <value>Unable to open plot file. Exception: {0}</value>
-  </data>  
+  </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
     <value>Starting R Session...</value>
   </data>
   <data name="SavePlotDialogTitle" xml:space="preserve">
     <value>Save R Plot File</value>
+  </data>
+  <data name="LoadWorkspaceIntoGlobalEnvironment" xml:space="preserve">
+    <value>Do you want to load the R data file "{0}" into the global environment?</value>
+  </data>
+  <data name="LoadWorkspaceFailedMessageFormat" xml:space="preserve">
+    <value>Load workspace from {0} failed:
+{1}</value>
+  </data>
+  <data name="LoadWorkspaceTitle" xml:space="preserve">
+    <value>Load Workspace</value>
+  </data>
+  <data name="SaveWorkspaceAsTitle" xml:space="preserve">
+    <value>Save Workspace As</value>
+  </data>
+  <data name="SaveWorkspaceFailedMessageFormat" xml:space="preserve">
+    <value>Save workspace into {0} failed:
+{1}</value>
+  </data>
+  <data name="WorkspaceFileFilter" xml:space="preserve">
+    <value>R Data Files (*.rdata)|*.rdata|All Files (*.*)|*.*</value>
   </data>
 </root>

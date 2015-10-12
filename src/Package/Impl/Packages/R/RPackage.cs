@@ -20,6 +20,7 @@ using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.R.Debugger.Engine.PortSupplier;
@@ -102,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         protected override IEnumerable<MenuCommand> CreateMenuCommands()
         {
-           return PackageCommands.GetCommands();
+           return PackageCommands.GetCommands(AppShell.Current.ExportProvider);
         }
 
         protected override object GetAutomationObject(string name)

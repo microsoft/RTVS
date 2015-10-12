@@ -6,7 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands
 {
     internal abstract class PackageCommand : OleMenuCommand
     {
-        public PackageCommand(Guid group, int id) :
+        protected PackageCommand(Guid group, int id) :
             base((sender, args) => new Handler().OnCommand(sender as PackageCommand),
                 new CommandID(group, id))
         {
