@@ -46,6 +46,12 @@
                         <Setter Property="SnapsToDevicePixels" Value="True"/>
                     </Style>
 
+                    <Style x:Key="HeaderCellBorderStyle" TargetType="{x:Type Border}">
+                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Controls.ControlBorderKey}}"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="SnapsToDevicePixels" Value="True"/>
+                    </Style>
+
                     <Style x:Key="TreeViewItemStyle" TargetType="{x:Type TreeViewItem}">
                         <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Controls.BackgroundKey}}"/>
                         <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ItemsControl}}}"/>
@@ -185,35 +191,45 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Grid.IsSharedSizeScope="True">
-        <TreeView x:Name="RootGrid"  BorderThickness="0" Grid.Row="1"
-            Background="Transparent"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            ScrollViewer.VerticalScrollBarVisibility="Visible"
-            ItemContainerStyle="{DynamicResource TreeViewItemStyle}"
-            HorizontalContentAlignment="Stretch">
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3">
+            <TextBlock x:Name="EnvironmentTextBlockLabel" Text="Environment: "></TextBlock>
+            <TextBlock x:Name="EnvironmentTextBlock" Text="Empty" /> <!-- TODO: use resource for text -->
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
+            <Grid Grid.IsSharedSizeScope="True">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="NameColumnDefinition" />
+                        <ColumnDefinition x:Name="ValueColumnDefinition" SharedSizeGroup="ValueColumnGroup" Width="200"/>
+                        <ColumnDefinition x:Name="TypeColumnDefinition" SharedSizeGroup="TypeColumnGroup" Width="100" />
+                    </Grid.ColumnDefinitions>
 
-            <TreeViewItem x:Name="HeaderItem">
-                <TreeViewItem.Header>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition x:Name="NameColumnDefinition" />
-                            <ColumnDefinition x:Name="ValueColumnDefinition" SharedSizeGroup="ValueColumnGroup" Width="200"/>
-                            <ColumnDefinition x:Name="TypeColumnDefinition" SharedSizeGroup="TypeColumnGroup" Width="100" />
-                        </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Style="{DynamicResource HeaderCellBorderStyle}">
+                        <TextBlock Grid.Column="0" Text="Name" />
+                    </Border>
+                    <Border Grid.Column="1" Style="{DynamicResource HeaderCellBorderStyle}">
+                        <TextBlock Grid.Column="1" Text="Value" />
+                    </Border>
+                    <Border Grid.Column="2" Style="{DynamicResource HeaderCellBorderStyle}">
+                        <TextBlock Grid.Column="2" Text="Type" />
+                    </Border>
+                </Grid>
+                <TreeView x:Name="RootTreeView"  BorderThickness="0" Grid.Row="1"
+                Background="Transparent"
+                ItemContainerStyle="{DynamicResource TreeViewItemStyle}"
+                HorizontalContentAlignment="Stretch">
 
-                        <Border Grid.Column="0" Style="{DynamicResource CellBorderStyle}">
-                            <TextBlock Grid.Column="0" Text="Name" />
-                        </Border>
-                        <Border Grid.Column="1" Style="{DynamicResource CellBorderStyle}">
-                            <TextBlock Grid.Column="1" Text="Value" />
-                        </Border>
-                        <Border Grid.Column="2" Style="{DynamicResource CellBorderStyle}">
-                            <TextBlock Grid.Column="2" Text="Type" />
-                        </Border>
-                    </Grid>
-                </TreeViewItem.Header>
-            </TreeViewItem>
-        </TreeView>
+                </TreeView>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

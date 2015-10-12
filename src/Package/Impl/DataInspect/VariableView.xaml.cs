@@ -32,16 +32,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         {
             Task t = Task.Run(async () =>   // no await
             {
-                _globalEnv = await _variableProvider.EvaluateVariable(
+                var globalEnvVar = await _variableProvider.EvaluateVariable(
                     new VariableEvaluationContext()
                     {
                         Environment = VariableEvaluationContext.GlobalEnv,
                         VariableName = VariableEvaluationContext.GlobalEnv
                     });
 
-                if (_globalEnv != null)
+                if (globalEnvVar != null)
                 {
-                    DispatchInvoke(() => RootGrid.Items.Add(_globalEnv), DispatcherPriority.Normal);
+                    DispatchInvoke(() => SetVariable(globalEnvVar), DispatcherPriority.Normal);
                 }
             });
         }
@@ -56,15 +56,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             _globalEnv = variable;
             if (_globalEnv != null)
             {
+                EnvironmentTextBlock.Text = _globalEnv.VariableValue;
+
                 _globalEnv.Children.CollectionChanged += VariableChildren_CollectionChanged;
                 foreach (var child in _globalEnv.Children)
                 {
-                    RootGrid.Items.Add(child);
+                    RootTreeView.Items.Add(child);
                 }
             }
         }
 
-        private int itemIndexOffset = 1;
+        private int itemIndexOffset = 0;
         private void VariableChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
@@ -74,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                         int index = e.NewStartingIndex + itemIndexOffset; // offset to Column header
                         foreach (var child in e.NewItems)
                         {
-                            RootGrid.Items.Insert(index++, child);
+                            RootTreeView.Items.Insert(index++, child);
                         }
                     }
                     break;
@@ -83,15 +85,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                         int index = e.OldStartingIndex + itemIndexOffset;
                         foreach (var child in e.OldItems)
                         {
-                            RootGrid.Items.Insert(index++, child);
+                            RootTreeView.Items.Insert(index++, child);
                         }
                     }
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     {
-                        while (RootGrid.Items.Count > itemIndexOffset)
+                        while (RootTreeView.Items.Count > itemIndexOffset)
                         {
-                            RootGrid.Items.RemoveAt(RootGrid.Items.Count - itemIndexOffset);
+                            RootTreeView.Items.RemoveAt(RootTreeView.Items.Count - itemIndexOffset);
                         }
                     }
                     break;
