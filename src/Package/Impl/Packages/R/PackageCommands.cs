@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
+using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
@@ -11,29 +14,29 @@ namespace Microsoft.VisualStudio.R.Packages.R
 {
     internal static class PackageCommands
     {
-        public static IEnumerable<MenuCommand> GetCommands()
-        {
-            var commands = new List<MenuCommand>();
+        public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
+            var rSessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
+            var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
 
-            commands.Add(new GoToOptionsCommand());
+            return new List<MenuCommand> {
+                new GoToOptionsCommand(),
 
-            commands.Add(new LoadWorkspaceCommand());
-            commands.Add(new SaveWorkspaceCommand());
-            commands.Add(new RestartRCommand());
-            commands.Add(new InterruptRCommand());
+                new LoadWorkspaceCommand(rSessionProvider, projectServiceAccessor),
+                new SaveWorkspaceCommand(rSessionProvider, projectServiceAccessor),
+                new RestartRCommand(),
+                new InterruptRCommand(),
 
-            commands.Add(new ImportDataSetTextFileCommand());
-            commands.Add(new ImportDataSetUrlCommand());
+                new ImportDataSetTextFileCommand(),
+                new ImportDataSetUrlCommand(),
 
-            commands.Add(new InstallPackagesCommand());
-            commands.Add(new CheckForPackageUpdatesCommand());
+                new InstallPackagesCommand(),
+                new CheckForPackageUpdatesCommand(),
 
-            commands.Add(new ShowPlotWindowsCommand());
-            commands.Add(new ShowRInteractiveWindowsCommand());
+                new ShowPlotWindowsCommand(),
+                new ShowRInteractiveWindowsCommand(),
 
-            commands.Add(new ShowVariableWindowCommand());
-
-            return commands;
+                new ShowVariableWindowCommand()
+            };
         }
     }
 }

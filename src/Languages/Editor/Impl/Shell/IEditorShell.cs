@@ -82,7 +82,16 @@ namespace Microsoft.Languages.Editor.Shell
         /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
-        void ShowErrorMessage(string message);
+        void ShowErrorMessage(string message, string title = null);
+
+        /// <summary>
+        /// Displays question in a host-specific UI
+        /// </summary>
+        bool ShowYesNoMessage(string message, string title = null);
+
+        string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null);
+
+        string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null);
 
         /// <summary>
         /// Displays help on the specified topic

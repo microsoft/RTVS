@@ -2,6 +2,8 @@
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Languages.Editor.Controller;
@@ -173,13 +175,109 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
-        public void ShowErrorMessage(string message)
+        public void ShowErrorMessage(string message, string title = null)
         {
             var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
-            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0, 
+            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0, 
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
+        }
+
+        /// <summary>
+        /// Displays question in a host-specific UI
+        /// </summary>
+        public bool ShowYesNoMessage(string message, string title = null)
+        {
+            var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            int result;
+
+            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0, 
+                OLEMSGBUTTON.OLEMSGBUTTON_YESNO, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
+
+            switch (result) {
+                case NativeMethods.IDYES:
+                    return true;
+                case NativeMethods.IDNO:
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
+        public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            if (uiShell == null) {
+                return null;
+            }
+
+            if (owner == IntPtr.Zero) {
+                ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
+            }
+
+            VSOPENFILENAMEW[] openInfo = new VSOPENFILENAMEW[1];
+            openInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSOPENFILENAMEW));
+            openInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
+            openInfo[0].hwndOwner = owner;
+            openInfo[0].pwzDlgTitle = title;
+            openInfo[0].nMaxFileName = 260;
+            var pFileName = Marshal.AllocCoTaskMem(520);
+            openInfo[0].pwzFileName = pFileName;
+            openInfo[0].pwzInitialDir = Path.GetDirectoryName(initialPath);
+            var nameArray = (Path.GetFileName(initialPath) + "\0").ToCharArray();
+            Marshal.Copy(nameArray, 0, pFileName, nameArray.Length);
+
+            try {
+                int hr = uiShell.GetOpenFileNameViaDlg(openInfo);
+                if (hr == VSConstants.OLE_E_PROMPTSAVECANCELLED) {
+                    return null;
+                }
+                ErrorHandler.ThrowOnFailure(hr);
+                return Marshal.PtrToStringAuto(openInfo[0].pwzFileName);
+            } finally {
+                if (pFileName != IntPtr.Zero) {
+                    Marshal.FreeCoTaskMem(pFileName);
+                }
+            }
+        }
+
+        public string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            if (string.IsNullOrEmpty(initialPath)) {
+                initialPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar;
+            }
+
+            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            if (null == uiShell) {
+                return null;
+            }
+
+            if (owner == IntPtr.Zero) {
+                ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
+            }
+
+            VSSAVEFILENAMEW[] saveInfo = new VSSAVEFILENAMEW[1];
+            saveInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
+            saveInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
+            saveInfo[0].hwndOwner = owner;
+            saveInfo[0].pwzDlgTitle = title;
+            saveInfo[0].nMaxFileName = 260;
+            var pFileName = Marshal.AllocCoTaskMem(520);
+            saveInfo[0].pwzFileName = pFileName;
+            saveInfo[0].pwzInitialDir = Path.GetDirectoryName(initialPath);
+            var nameArray = (Path.GetFileName(initialPath) + "\0").ToCharArray();
+            Marshal.Copy(nameArray, 0, pFileName, nameArray.Length);
+            try {
+                int hr = uiShell.GetSaveFileNameViaDlg(saveInfo);
+                if (hr == VSConstants.OLE_E_PROMPTSAVECANCELLED) {
+                    return null;
+                }
+                ErrorHandler.ThrowOnFailure(hr);
+                return Marshal.PtrToStringAuto(saveInfo[0].pwzFileName);
+            } finally {
+                if (pFileName != IntPtr.Zero) {
+                    Marshal.FreeCoTaskMem(pFileName);
+                }
+            }
         }
 
         /// <summary>
