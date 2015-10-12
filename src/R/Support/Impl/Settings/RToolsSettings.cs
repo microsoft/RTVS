@@ -29,7 +29,11 @@ namespace Microsoft.R.Support.Settings
                     return;
                 }
             }
-
+            else
+            {
+                rPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "R");
+            }
+            
             string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled, rPath);
             EditorShell.Current.ShowErrorMessage(message);
 
