@@ -494,11 +494,13 @@ static pDevDesc new_devdesc(double width, double height) {
     // TODO: if this fails, need to free dd
     pXamlDeviceDesc xdd = new XamlDeviceDesc();
 
+    int startfill = R_RGB(255, 255, 255);
+
     xdd->width = INCH_TO_DEVICE_UNIT(width);
     xdd->height = INCH_TO_DEVICE_UNIT(height);
     xdd->debug = false;
     xdd->write_on_mode = true;
-    xdd->xaml = new rhost::graphics::xaml_builder(xdd->width, xdd->height);
+    xdd->xaml = new rhost::graphics::xaml_builder(xdd->width, xdd->height, r_color_to_xaml(startfill));
 
     dd->left = 0;
     dd->right = xdd->width;
@@ -524,7 +526,7 @@ static pDevDesc new_devdesc(double width, double height) {
 
     dd->startps = 10;
     dd->startcol = R_RGB(0, 0, 0);
-    dd->startfill = R_RGB(255, 255, 255);
+    dd->startfill = startfill;
     dd->startlty = LTY_SOLID;
     dd->startfont = 0;
     dd->startgamma = 0;

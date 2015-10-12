@@ -18,12 +18,14 @@ namespace rhost {
             std::list<std::string> _xaml;
             double _width;
             double _height;
+            std::string _background_color;
             bool _clipping;
 
         public:
-            xaml_builder(double width, double height) {
+            xaml_builder(double width, double height, std::string background_color) {
                 _width = width;
                 _height = height;
+                _background_color = background_color;
                 _clipping = false;
             }
 
@@ -250,6 +252,7 @@ namespace rhost {
                 write_attr("xmlns:vs", VS_XMLNS, f);
                 write_attr("Height", _height, f);
                 write_attr("Width", _width, f);
+                write_attr("Background", _background_color, f);
                 f << ">\r\n";
                 for (std::list<std::string>::iterator it = _xaml.begin(); it != _xaml.end(); it++) {
                     f << *it << "\r\n";
