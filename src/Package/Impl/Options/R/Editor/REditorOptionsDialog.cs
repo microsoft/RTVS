@@ -48,6 +48,28 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         }
 
         [LocCategory("Settings_IntellisenseCategory")]
+        [CustomLocDisplayName("Settings_CommitOnEnter")]
+        [LocDescription("Settings_CommitOnEnter_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(false)]
+        public bool CommitOnEnter
+        {
+            get { return REditorSettings.CommitOnEnter; }
+            set { REditorSettings.CommitOnEnter = value; }
+        }
+
+        [LocCategory("Settings_IntellisenseCategory")]
+        [CustomLocDisplayName("Settings_TriggerOnFirstChar")]
+        [LocDescription("Settings_TriggerOnFirstChar_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool TriggerOnFirstChar
+        {
+            get { return REditorSettings.ShowCompletionOnFirstChar; }
+            set { REditorSettings.ShowCompletionOnFirstChar = value; }
+        }
+
+        [LocCategory("Settings_IntellisenseCategory")]
         [CustomLocDisplayName("Settings_ShowTclFunctions")]
         [LocDescription("Settings_ShowTclFunctions_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]

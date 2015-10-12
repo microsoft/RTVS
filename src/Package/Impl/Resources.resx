@@ -190,10 +190,10 @@
     <value>Show functions from TCL/TK package in the statement completion list</value>
   </data>
   <data name="Settings_CommitOnSpace" xml:space="preserve">
-    <value>Commit on space key</value>
+    <value>Commit on Space key</value>
   </data>
   <data name="Settings_CommitOnSpace_Description" xml:space="preserve">
-    <value>Commit intellisense selection when space key is pressed</value>
+    <value>Commit intellisense selection when Space key is pressed</value>
   </data>
   <data name="Settings_SpaceAfterComma" xml:space="preserve">
     <value>Space after comma</value>
@@ -278,11 +278,23 @@
   </data>
   <data name="CannotOpenPlotFile" xml:space="preserve">
     <value>Unable to open plot file. Exception: {0}</value>
-  </data>  
+  </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
     <value>Starting R Session...</value>
   </data>
   <data name="SavePlotDialogTitle" xml:space="preserve">
     <value>Save R Plot File</value>
+  </data>
+  <data name="Settings_CommitOnEnter" xml:space="preserve">
+    <value>Commit on Enter key</value>
+  </data>
+  <data name="Settings_CommitOnEnter_Description" xml:space="preserve">
+    <value>Commit intellisense selection when Enter key is pressed</value>
+  </data>
+  <data name="Settings_TriggerOnFirstChar" xml:space="preserve">
+    <value>Intellisense list on first character</value>
+  </data>
+  <data name="Settings_TriggerOnFirstChar_Description" xml:space="preserve">
+    <value>Show intellisense list on first character typed. If set to off, completion list can be invoked by typing one or more characters and pressing Tab or by invoking Edit &gt; IntelliSense &gt; List Members command</value>
   </data>
 </root>

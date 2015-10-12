@@ -331,7 +331,25 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Commit on space key.
+        ///   Looks up a localized string similar to Commit on Enter key.
+        /// </summary>
+        internal static string Settings_CommitOnEnter {
+            get {
+                return ResourceManager.GetString("Settings_CommitOnEnter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commit intellisense selection when Enter key is pressed.
+        /// </summary>
+        internal static string Settings_CommitOnEnter_Description {
+            get {
+                return ResourceManager.GetString("Settings_CommitOnEnter_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Commit on Space key.
         /// </summary>
         internal static string Settings_CommitOnSpace {
             get {
@@ -340,7 +358,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Commit intellisense selection when space key is pressed.
+        ///   Looks up a localized string similar to Commit intellisense selection when Space key is pressed.
         /// </summary>
         internal static string Settings_CommitOnSpace_Description {
             get {
@@ -534,6 +552,24 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Settings_SyntaxCheckCategory {
             get {
                 return ResourceManager.GetString("Settings_SyntaxCheckCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Intellisense list on first character.
+        /// </summary>
+        internal static string Settings_TriggerOnFirstChar {
+            get {
+                return ResourceManager.GetString("Settings_TriggerOnFirstChar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show intellisense list on first character typed. If set to off, completion list can be invoked by typing one or more characters and pressing Tab or by invoking Edit &gt; IntelliSense &gt; List Members command.
+        /// </summary>
+        internal static string Settings_TriggerOnFirstChar_Description {
+            get {
+                return ResourceManager.GetString("Settings_TriggerOnFirstChar_Description", resourceCulture);
             }
         }
         
