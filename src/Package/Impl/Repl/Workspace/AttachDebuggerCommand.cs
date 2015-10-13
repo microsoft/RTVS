@@ -5,45 +5,42 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
-    public sealed class AttachDebuggerCommand : ViewCommand {
-        private static readonly CommandId[] _commands =  {
-            new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdAttachDebugger)
-        };
+namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
+    internal sealed class AttachDebuggerCommand : PackageCommand {
+        private readonly IRSessionProvider _rSessionProvider;
 
-        private ReplWindow _replWindow;
-
-        public AttachDebuggerCommand(ITextView textView)
-            : base(textView, _commands, false) {
-            ReplWindow.EnsureReplWindow().DoNotWait();
-            _replWindow = ReplWindow.Current;
+        public AttachDebuggerCommand(IRSessionProvider rSessionProvider)
+            : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdAttachDebugger) {
+            _rSessionProvider = rSessionProvider;
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            return CommandStatus.SupportedAndEnabled;
+        protected override void SetStatus() {
+            Enabled = _rSessionProvider.Current != null;
         }
 
-        public unsafe override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            var evaluator = _replWindow.GetInteractiveWindow().InteractiveWindow.Evaluator as RInteractiveEvaluator;
-            if (evaluator == null) {
-                return CommandResult.Disabled;
+
+        protected unsafe override void Handle() {
+            var session = _rSessionProvider.Current;
+            if (session == null) {
+                return;
             }
 
             var debugger = AppShell.Current.GetGlobalService<IVsDebugger2>(typeof(SVsShellDebugger));
             if (debugger == null) {
-                return CommandResult.Disabled;
+                return;
             }
 
             var pDebugEngines = stackalloc Guid[1];
             pDebugEngines[0] = DebuggerGuids.DebugEngine;
 
-            uint pid = RDebugPortSupplier.GetProcessId(evaluator.Session.Id);
+            uint pid = RDebugPortSupplier.GetProcessId(session.Id);
 
             var debugTarget = new VsDebugTargetInfo2 {
                 cbSize = (uint)Marshal.SizeOf<VsDebugTargetInfo2>(),
@@ -68,16 +65,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             Marshal.ThrowExceptionForHR(debugger.LaunchDebugTargets2(1, (IntPtr)pDebugTarget));
 
-            return CommandResult.Executed;
+            // If we have successfully attached, VS has switched to debugging UI context, which hides
+            // the REPL window. Show it again and give it focus.
+            IVsWindowFrame frame = ReplWindow.FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
+            if (frame != null) {
+                frame.Show();
+            }
         }
-
-        //protected override void Dispose(bool disposing) {
-        //    if (_replWindow != null) {
-        //        _replWindow.Dispose();
-        //        _replWindow = null;
-        //    }
-
-        //    base.Dispose(disposing);
-        //}
     }
 }

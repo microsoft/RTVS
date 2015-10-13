@@ -15,7 +15,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
             commands.Add(new HistoryNavigationCommand(textView));
             commands.Add(new ReplTypingCommandHandler(textView));
             commands.Add(new RCompletionCommandHandler(textView));
-            commands.Add(new AttachDebuggerCommand(textView));
 
             return commands;
         }
