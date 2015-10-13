@@ -144,6 +144,11 @@
 }
 
 
+.rtvs.breakpoint <<- function(filename, line_number) {
+  browser()
+}
+
+
 .rtvs.base_source <<- NULL;
 
 

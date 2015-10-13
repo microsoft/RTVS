@@ -167,22 +167,23 @@ namespace Microsoft.R.Debugger {
                     string fileName = (string)jFrame["filename"];
                     int? lineNumber = (int?)(double?)jFrame["linenum"];
                     bool isGlobal = (bool)jFrame["is_global"];
-                    lastFrame = DebugStackFrame.Parse(this, i, lastFrame, jFrame);
+                    lastFrame = new DebugStackFrame(this, i, lastFrame, jFrame);
+                    stackFrames.Add(lastFrame);
                 } catch (JsonException ex) {
                     Debug.Fail(ex.ToString());
-                    lastFrame = new DebugStackFrame(this, i, lastFrame, null, null, null, false);
                 }
-
-                stackFrames.Add(lastFrame);
                 ++i;
             }
 
-            stackFrames.Reverse();
             return stackFrames;
         }
 
         public async Task<int> AddBreakpointAsync(string fileName, int lineNumber) {
-            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber})").ConfigureAwait(false);
+            // Tracer expression must be in sync with DebugStackFrame._breakpoingRegex
+            var tracer = $"quote(.rtvs.breakpoint({fileName.ToRStringLiteral()}, {lineNumber}))";
+
+            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, tracer={tracer})")
+                .ConfigureAwait(false);
             if (res is DebugErrorEvaluationResult) {
                 throw new InvalidOperationException($"{res.Expression}: {res}");
             }
