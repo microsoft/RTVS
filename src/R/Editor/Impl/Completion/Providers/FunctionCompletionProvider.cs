@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Windows.Media;
@@ -6,6 +7,7 @@ using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -156,5 +158,30 @@ namespace Microsoft.R.Editor.Completion.Providers
 
             return packages;
         }
+
+        //private bool IsValidName(string name)
+        //{
+        //    if (name[0] == '.')
+        //    {
+        //        if(name.Length > 4 && name.Substring(0, 4).ToLowerInvariant().Equals(".tcl", StringComparison.Ordinal))
+        //        {
+        //            return REditorSettings.ShowTclFunctions;
+        //        }
+
+        //        if(name.Length > 1 && char.IsLetter(name[1]))
+        //        {
+        //            return true;
+        //        }
+
+        //        return REditorSettings.ShowInternalFunctions;
+        //    }
+
+        //    if(name.Length > 2 && name[0] == '_' &&  name[1] == '_')
+        //    {
+        //        return REditorSettings.ShowInternalFunctions;
+        //    }
+
+        //    return true;
+        //}
     }
 }

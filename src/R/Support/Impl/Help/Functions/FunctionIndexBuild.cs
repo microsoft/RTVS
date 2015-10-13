@@ -17,6 +17,14 @@ namespace Microsoft.R.Support.Help.Functions
     {
         private static Task _indexBuildingTask;
 
+        public static void BuildIndexForPackage(IPackageInfo package)
+        {
+            foreach (INamedItemInfo f in package.Functions)
+            {
+                AddFunctionToPackage(package.Name, f);
+            }
+        }
+
         public static Task BuildIndexAsync()
         {
             if (_indexBuildingTask == null)

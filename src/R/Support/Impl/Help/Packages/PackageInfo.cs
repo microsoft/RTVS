@@ -226,12 +226,7 @@ namespace Microsoft.R.Support.Help.Packages
             {
                 bool hasCharacters = false;
 
-                if (name == null || name.Length == 0 || !char.IsLetter(name[0]))
-                {
-                    return false;
-                }
-
-                if (name.Length >= 2 && name[0] == '.' && name[1] == '_')
+                if (name == null || name.Length == 0)
                 {
                     return false;
                 }
@@ -241,10 +236,7 @@ namespace Microsoft.R.Support.Help.Packages
                     if (char.IsLetterOrDigit(name[i]))
                     {
                         hasCharacters = true;
-                    }
-                    else if (name[i] != '.' && name[i] != '_')
-                    {
-                        return false;
+                        break;
                     }
                 }
 

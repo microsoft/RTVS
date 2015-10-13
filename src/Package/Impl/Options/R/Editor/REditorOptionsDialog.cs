@@ -25,16 +25,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
             set { REditorSettings.SyntaxCheck = value; }
         }
 
-        [LocCategory("Settings_IntellisenseCategory")]
-        [CustomLocDisplayName("Settings_ShowInternalFunctions")]
-        [LocDescription("Settings_ShowInternalFunctions_Description")]
-        [TypeConverter(typeof(OnOffTypeConverter))]
-        [DefaultValue(true)]
-        public bool ShowInternalFunctions
-        {
-            get { return REditorSettings.ShowInternalFunctions; }
-            set { REditorSettings.ShowInternalFunctions = value; }
-        }
+        //[LocCategory("Settings_IntellisenseCategory")]
+        //[CustomLocDisplayName("Settings_ShowInternalFunctions")]
+        //[LocDescription("Settings_ShowInternalFunctions_Description")]
+        //[TypeConverter(typeof(OnOffTypeConverter))]
+        //[DefaultValue(true)]
+        //public bool ShowInternalFunctions
+        //{
+        //    get { return REditorSettings.ShowInternalFunctions; }
+        //    set { REditorSettings.ShowInternalFunctions = value; }
+        //}
 
         [LocCategory("Settings_IntellisenseCategory")]
         [CustomLocDisplayName("Settings_CommitOnSpace")]
@@ -69,16 +69,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
             set { REditorSettings.ShowCompletionOnFirstChar = value; }
         }
 
-        [LocCategory("Settings_IntellisenseCategory")]
-        [CustomLocDisplayName("Settings_ShowTclFunctions")]
-        [LocDescription("Settings_ShowTclFunctions_Description")]
-        [TypeConverter(typeof(OnOffTypeConverter))]
-        [DefaultValue(false)]
-        public bool ShowTclFunctions
-        {
-            get { return REditorSettings.ShowTclFunctions; }
-            set { REditorSettings.ShowTclFunctions = value; }
-        }
+        //[LocCategory("Settings_IntellisenseCategory")]
+        //[CustomLocDisplayName("Settings_ShowTclFunctions")]
+        //[LocDescription("Settings_ShowTclFunctions_Description")]
+        //[TypeConverter(typeof(OnOffTypeConverter))]
+        //[DefaultValue(false)]
+        //public bool ShowTclFunctions
+        //{
+        //    get { return REditorSettings.ShowTclFunctions; }
+        //    set { REditorSettings.ShowTclFunctions = value; }
+        //}
 
         [LocCategory("Settings_FormattingCategory")]
         [CustomLocDisplayName("Settings_BracesExpanded")]

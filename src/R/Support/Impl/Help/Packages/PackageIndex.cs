@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Functions;
 
 namespace Microsoft.R.Support.Help.Packages
 {
@@ -52,7 +53,7 @@ namespace Microsoft.R.Support.Help.Packages
 
                         foreach (IPackageInfo p in collection.Value.Packages)
                         {
-                            _packages[p.Name] = p;
+                            _packages[p.Name.ToLowerInvariant()] = p;
                         }
                     }
 
@@ -71,13 +72,39 @@ namespace Microsoft.R.Support.Help.Packages
         {
             IPackageInfo package;
 
-            package = BasePackages.FirstOrDefault((IPackageInfo p) => p.Name == packageName);
+            // Strip quotes, if any
+            packageName = packageName.Replace("\'", string.Empty).Replace("\"", string.Empty).Trim();
+            packageName = packageName.ToLowerInvariant();
+
+            package = BasePackages.FirstOrDefault((IPackageInfo p) => p.Name.Equals(packageName, StringComparison.OrdinalIgnoreCase));
             if (package == null)
             {
                 _packages.TryGetValue(packageName, out package);
             }
 
+            if (package == null)
+            {
+                package = TryFindPackageNew(packageName);
+            }
+
             return package;
+        }
+
+        private static IPackageInfo TryFindPackageNew(string packageName)
+        {
+            foreach (Lazy<IPackageCollection> collection in _collections)
+            {
+                IPackageInfo package = collection.Value.Packages.FirstOrDefault((p) => p.Name.Equals(packageName, StringComparison.OrdinalIgnoreCase));
+                if (package != null)
+                {
+                    _packages[package.Name.ToLowerInvariant()] = package;
+
+                    FunctionIndex.BuildIndexForPackage(package);
+                    return package;
+                }
+            }
+
+            return null;
         }
     }
 }
