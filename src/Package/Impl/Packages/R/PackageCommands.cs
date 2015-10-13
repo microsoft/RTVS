@@ -23,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
                 new LoadWorkspaceCommand(rSessionProvider, projectServiceAccessor),
                 new SaveWorkspaceCommand(rSessionProvider, projectServiceAccessor),
+                new AttachDebuggerCommand(rSessionProvider),
                 new RestartRCommand(),
                 new InterruptRCommand(),
 
