@@ -25,6 +25,13 @@ typedef XamlDeviceDesc* pXamlDeviceDesc;
 
 #define TRACING(dd) (((pXamlDeviceDesc)dd->deviceSpecific)->debug)
 
+#define FONTFACE_PLAIN          1
+#define FONTFACE_BOLD           2
+#define FONTFACE_ITALIC         3
+#define FONTFACE_BOLD_ITALIC    4
+
+#define DEFAULT_FONT_NAME       "Arial"
+
 static void trace(const char *text, ...) {
     va_list args;
     va_start(args, text);
@@ -32,10 +39,23 @@ static void trace(const char *text, ...) {
     va_end(args);
 }
 
-static double string_width(const char *str, double ps) {
+static double string_width(const char *str, double ps, int fontface) {
     SIZE size;
     HDC dc = GetDC(NULL);
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/dd183499(v=vs.85).aspx
+    HFONT font = CreateFontA((int)ps, 0, 0, 0,
+        (fontface == FONTFACE_BOLD || fontface == FONTFACE_BOLD_ITALIC) ? FW_BOLD : FW_NORMAL,
+        fontface == FONTFACE_ITALIC || fontface == FONTFACE_BOLD_ITALIC,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+        FF_DONTCARE | DEFAULT_PITCH,
+        DEFAULT_FONT_NAME);
+    auto old_font = SelectObject(dc, font);
     BOOL result = GetTextExtentPoint32A(dc, str, (int)strlen(str), &size);
+    SelectObject(dc, old_font);
+    DeleteObject(font);
     ReleaseDC(NULL, dc);
     if (result) {
         return size.cx;
@@ -62,6 +82,26 @@ static void write_xaml(pDevDesc dd) {
     xdd->xaml->write_xaml(path);
     // TODO: also keep track of the external bitmap files we create so we can delete them
     rhost::server::plot_xaml(path);
+}
+
+static std::string r_fontface_to_xaml_font_weight(int fontface) {
+    switch (fontface) {
+    case FONTFACE_BOLD:
+    case FONTFACE_BOLD_ITALIC:
+        return "Bold";
+    default:
+        return "";
+    }
+}
+
+static std::string r_fontface_to_xaml_font_style(int fontface) {
+    switch (fontface) {
+    case FONTFACE_ITALIC:
+    case FONTFACE_BOLD_ITALIC:
+        return "Italic";
+    default:
+        return "";
+    }
 }
 
 static std::string r_color_to_xaml(int col) {
@@ -399,7 +439,7 @@ extern "C" double VSGD_StrWidth(const char *str, const pGEcontext gc, pDevDesc d
         trace("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex);
     }
 
-    double width = string_width(str, gc->ps * gc->cex);
+    double width = string_width(str, gc->ps * gc->cex, gc->fontface);
 
     if (TRACING(dd)) {
         trace("  {return=%f}\n", width);
@@ -417,7 +457,10 @@ extern "C" void VSGD_Text(double x, double y, const char *str, double rot, doubl
     y -= gc->ps * gc->cex;
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
-    xdd->xaml->text(x, y, str, 0.0 - rot, hadj, r_color_to_xaml(gc->col), gc->ps * gc->cex);
+    xdd->xaml->text(x, y, str, 0.0 - rot, hadj,
+        r_color_to_xaml(gc->col), gc->ps * gc->cex,
+        r_fontface_to_xaml_font_weight(gc->fontface),
+        r_fontface_to_xaml_font_style(gc->fontface));
 }
 
 extern "C" void VSGD_OnExit(pDevDesc dd) {
@@ -443,7 +486,10 @@ extern "C"  void VSGD_TextUTF8(double x, double y, const char *str, double rot, 
     y -= gc->ps * gc->cex;
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
-    xdd->xaml->text(x, y, str, 0.0 - rot, hadj, r_color_to_xaml(gc->col), gc->ps * gc->cex);
+    xdd->xaml->text(x, y, str, 0.0 - rot, hadj,
+        r_color_to_xaml(gc->col), gc->ps * gc->cex,
+        r_fontface_to_xaml_font_weight(gc->fontface),
+        r_fontface_to_xaml_font_style(gc->fontface));
 }
 
 extern "C"  double VSGD_StrWidthUTF8(const char *str, const pGEcontext gc, pDevDesc dd) {
@@ -452,7 +498,7 @@ extern "C"  double VSGD_StrWidthUTF8(const char *str, const pGEcontext gc, pDevD
         trace("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex);
     }
 
-    double width = string_width(str, gc->ps * gc->cex);
+    double width = string_width(str, gc->ps * gc->cex, gc->fontface);
 
     if (TRACING(dd)) {
         trace("  {return=%f}\n", width);
@@ -500,7 +546,7 @@ static pDevDesc new_devdesc(double width, double height) {
     xdd->height = INCH_TO_DEVICE_UNIT(height);
     xdd->debug = false;
     xdd->write_on_mode = true;
-    xdd->xaml = new rhost::graphics::xaml_builder(xdd->width, xdd->height, r_color_to_xaml(startfill));
+    xdd->xaml = new rhost::graphics::xaml_builder(xdd->width, xdd->height, r_color_to_xaml(startfill), DEFAULT_FONT_NAME);
 
     dd->left = 0;
     dd->right = xdd->width;

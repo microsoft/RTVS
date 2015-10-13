@@ -8,7 +8,9 @@
 #include "boost/algorithm/string/replace.hpp"
 
 #define XAML_XMLNS "http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-#define VS_XMLNS "clr-namespace:Microsoft.VisualStudioTools.Wpf;assembly=XamlViewer"
+
+// Re-enable this code if we want to use base-64 encoded bitmaps (with appropriate namespace/assembly name)
+//#define VS_XMLNS "clr-namespace:Microsoft.VisualStudioTools.Wpf;assembly=XamlViewer"
 
 namespace rhost {
     namespace graphics {
@@ -19,13 +21,15 @@ namespace rhost {
             double _width;
             double _height;
             std::string _background_color;
+            std::string _font_family;
             bool _clipping;
 
         public:
-            xaml_builder(double width, double height, std::string background_color) {
+            xaml_builder(double width, double height, std::string background_color, std::string font_family) {
                 _width = width;
                 _height = height;
                 _background_color = background_color;
+                _font_family = font_family;
                 _clipping = false;
             }
 
@@ -136,36 +140,36 @@ namespace rhost {
             }
 
             // TODO: currently unused, not sure if we'll end up using it or not.  keeping in case we do.
-            void bitmap_embedded_base64(double top, double left, double width, double height, double rotation, bool interpolate, const std::string& base64_encoded_data) {
-                std::ostringstream stream;
+            //void bitmap_embedded_base64(double top, double left, double width, double height, double rotation, bool interpolate, const std::string& base64_encoded_data) {
+            //    std::ostringstream stream;
 
-                stream << "<Image";
-                write_attr("Canvas.Left", left, stream);
-                write_attr("Canvas.Top", top, stream);
-                write_attr("Width", width, stream);
-                write_attr("Height", height, stream);
-                if (!interpolate) {
-                    stream << " RenderOptions.BitmapScalingMode=\"NearestNeighbor\"";
-                }
-                stream << " >";
-                if (rotation != 0) {
-                    stream << "<Image.RenderTransform>";
-                    stream << "<TransformGroup>";
-                    stream << "<RotateTransform Angle=\"" << rotation << "\" />";
-                    stream << "</TransformGroup>";
-                    stream << "</Image.RenderTransform>";
-                }
-                stream << "<Image.Source>";
-                stream << "<vs:Base64ImageSource>";
-                stream << "<vs:Base64ImageSource.Base64>";
-                stream << base64_encoded_data;
-                stream << "</vs:Base64ImageSource.Base64>";
-                stream << "</vs:Base64ImageSource>";
-                stream << "</Image.Source>";
-                stream << "</Image>";
+            //    stream << "<Image";
+            //    write_attr("Canvas.Left", left, stream);
+            //    write_attr("Canvas.Top", top, stream);
+            //    write_attr("Width", width, stream);
+            //    write_attr("Height", height, stream);
+            //    if (!interpolate) {
+            //        stream << " RenderOptions.BitmapScalingMode=\"NearestNeighbor\"";
+            //    }
+            //    stream << " >";
+            //    if (rotation != 0) {
+            //        stream << "<Image.RenderTransform>";
+            //        stream << "<TransformGroup>";
+            //        stream << "<RotateTransform Angle=\"" << rotation << "\" />";
+            //        stream << "</TransformGroup>";
+            //        stream << "</Image.RenderTransform>";
+            //    }
+            //    stream << "<Image.Source>";
+            //    stream << "<vs:Base64ImageSource>";
+            //    stream << "<vs:Base64ImageSource.Base64>";
+            //    stream << base64_encoded_data;
+            //    stream << "</vs:Base64ImageSource.Base64>";
+            //    stream << "</vs:Base64ImageSource>";
+            //    stream << "</Image.Source>";
+            //    stream << "</Image>";
 
-                _xaml.push_back(stream.str());
-            }
+            //    _xaml.push_back(stream.str());
+            //}
 
             void bitmap_external_file(double top, double left, double width, double height, double rotation, bool interpolate, const std::string& filepath) {
                 std::ostringstream stream;
@@ -194,7 +198,7 @@ namespace rhost {
                 _xaml.push_back(stream.str());
             }
 
-            void text(double x, double y, const std::string& str, double rotation, double hadj, const std::string& color, double font_size) {
+            void text(double x, double y, const std::string& str, double rotation, double hadj, const std::string& color, double font_size, const std::string& font_weight, const std::string& font_style) {
                 std::ostringstream stream;
 
                 stream << "<TextBlock";
@@ -202,8 +206,15 @@ namespace rhost {
                 write_attr("Canvas.Left", x, stream);
                 write_attr("Canvas.Top", y, stream);
                 write_attr("Text", xml_escape(str), stream);
+                write_attr("FontFamily", _font_family, stream);
                 write_attr("FontSize", font_size, stream);
                 write_attr("Foreground", color, stream);
+                if (!font_weight.empty()) {
+                    write_attr("FontWeight", font_weight, stream);
+                }
+                if (!font_style.empty()) {
+                    write_attr("FontStyle", font_style, stream);
+                }
                 if (rotation != 0) {
                     stream << ">";
                     stream << "<TextBlock.RenderTransform>";
@@ -249,7 +260,8 @@ namespace rhost {
             void write_xaml(std::ofstream& f) {
                 f << "<Canvas";
                 write_attr("xmlns", "http://schemas.microsoft.com/winfx/2006/xaml/presentation", f);
-                write_attr("xmlns:vs", VS_XMLNS, f);
+                // Re-enable this code if we want to use base-64 encoded bitmaps
+                //write_attr("xmlns:vs", VS_XMLNS, f);
                 write_attr("Height", _height, f);
                 write_attr("Width", _width, f);
                 write_attr("Background", _background_color, f);
