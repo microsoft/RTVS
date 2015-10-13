@@ -9,21 +9,21 @@ using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Debugger {
+    internal enum DebugStackFrameKind {
+        Normal,
+        DoTrace, // .doTrace(.rtvs.breakpoint(...))
+        DoTraceInternals, // everything between the one above and the one below
+        Breakpoint, // .rtvs.breakpoint(...)
+        TracebackAfterBreakpoint // .rtvs.traceback() immediately following .rtvs.breakpoint(...)
+    }
+
     public class DebugStackFrame {
         private static readonly Regex _doTraceRegex = new Regex(
-            @"^\.doTrace\(\.rtvs\.breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)\)$",
-            RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
+            @"^\.doTrace\(\{\s*\.rtvs\.breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)\s*\}\)$",
+            RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
         private static readonly Regex _breakpointRegex = new Regex(
             @"^\.rtvs\.breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)$",
-            RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
-
-        private enum FrameKind {
-            Normal,
-            DoTrace, // .doTrace(.rtvs.breakpoint(...))
-            DoTraceInternals, // everything between the one above and the one below
-            Breakpoint, // .rtvs.breakpoint(...)
-            TracebackAfterBreakpoint // .rtvs.traceback() immediately following .rtvs.breakpoint(...)
-        }
+            RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
 
         public DebugSession Session { get; }
 
@@ -39,14 +39,14 @@ namespace Microsoft.R.Debugger {
 
         public bool IsGlobal { get; }
 
-        private readonly FrameKind _frameKind;
+        internal DebugStackFrameKind FrameKind { get; }
 
         public bool IsDebuggerInternal =>
-            _frameKind == FrameKind.DoTraceInternals ||
-            _frameKind == FrameKind.Breakpoint ||
-            _frameKind == FrameKind.TracebackAfterBreakpoint;
+            FrameKind == DebugStackFrameKind.DoTraceInternals ||
+            FrameKind == DebugStackFrameKind.Breakpoint ||
+            FrameKind == DebugStackFrameKind.TracebackAfterBreakpoint;
 
-        internal DebugStackFrame(DebugSession session, int index, DebugStackFrame callingFrame, JObject jFrame) {
+        internal DebugStackFrame(DebugSession session, int index, DebugStackFrame callingFrame, JObject jFrame, DebugStackFrame fallbackFrame = null) {
             Session = session;
             Index = index;
             CallingFrame = callingFrame;
@@ -58,7 +58,7 @@ namespace Microsoft.R.Debugger {
 
             var match = _doTraceRegex.Match(Call);
             if (match.Success) {
-                _frameKind = FrameKind.DoTrace;
+                FrameKind = DebugStackFrameKind.DoTrace;
                 try {
                     // When setBreakpoint injects .doTrace calls, it does not inject source information for them.
                     // Consequently, then such a call is on the stack - i.e. when a breakpoint is hit - there is
@@ -77,19 +77,29 @@ namespace Microsoft.R.Debugger {
                     Debug.Fail($"Couldn't parse RTVS .doTrace call: {Call}");
                 }
             } else if (_breakpointRegex.IsMatch(Call)) {
-                _frameKind = FrameKind.Breakpoint;
+                FrameKind = DebugStackFrameKind.Breakpoint;
             } else {
-                switch (CallingFrame?._frameKind) {
-                    case FrameKind.DoTrace:
-                    case FrameKind.DoTraceInternals:
-                        _frameKind = FrameKind.DoTraceInternals;
+                switch (CallingFrame?.FrameKind) {
+                    case DebugStackFrameKind.DoTrace:
+                    case DebugStackFrameKind.DoTraceInternals:
+                        FrameKind = DebugStackFrameKind.DoTraceInternals;
                         break;
-                    case FrameKind.Breakpoint:
+                    case DebugStackFrameKind.Breakpoint:
                         if (Call == ".rtvs.traceback()") {
-                            _frameKind = FrameKind.TracebackAfterBreakpoint;
+                            FrameKind = DebugStackFrameKind.TracebackAfterBreakpoint;
                         }
                         break;
                 }
+            }
+
+            if (fallbackFrame != null) {
+                // If we still don't have the filename and line number, use those from the fallback frame.
+                // This happens during breakpoint hit processing after the context is unwound from within
+                // .doTrace back to the function that called it - because we no longer have .doTrace call,
+                // we don't have the file/line information that came from it. But DebugSession will have
+                // stashed it away when it had it, and then pass it as a fallback frame if index matches.
+                FileName = FileName ?? fallbackFrame.FileName;
+                LineNumber = LineNumber ?? fallbackFrame.LineNumber;
             }
         }
 

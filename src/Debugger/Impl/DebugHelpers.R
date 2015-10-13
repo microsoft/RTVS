@@ -2,7 +2,7 @@
   con <- textConnection(NULL, open = "w");
   tryCatch({
     dput(obj, con);
-    repr <- paste0(textConnectionValue(con), collapse='');
+    repr <- paste0(textConnectionValue(con), collapse='\n');
   }, finally = {
     close(con);
   });

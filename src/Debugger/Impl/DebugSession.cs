@@ -12,8 +12,18 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Debugger {
     public sealed class DebugSession : IDisposable {
-        private TaskCompletionSource<object> _stepTcs;
+        // State machine that processes breakpoints hit. We need to issue several commands in response
+        // in succession; this keeps track of where we were on the last interaction.
+        private enum BreakpointHitProcessingState {
+            None,
+            BrowserSetDebug,
+            Continue
+        }
+
         private CancellationTokenSource _initialPromptCts = new CancellationTokenSource();
+        private TaskCompletionSource<object> _stepTcs;
+        private BreakpointHitProcessingState _bpHitProcState;
+        private DebugStackFrame _bpHitFrame;
 
         // Key is filename + line number; value is the count of breakpoints set for that line.
         private Dictionary<Tuple<string, int>, int> _breakpoints = new Dictionary<Tuple<string, int>, int>();
@@ -70,7 +80,7 @@ namespace Microsoft.R.Debugger {
                     // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.
                     _initialPromptCts.Token.ThrowIfCancellationRequested();
                     // Otherwise, treat it the same as if AfterRequest just happened.
-                    CheckForBrowse(inter.Contexts);
+                    ProcessBrowsePrompt(inter.Contexts);
                 }
             }).DoNotWait();
         }
@@ -167,7 +177,8 @@ namespace Microsoft.R.Debugger {
                     string fileName = (string)jFrame["filename"];
                     int? lineNumber = (int?)(double?)jFrame["linenum"];
                     bool isGlobal = (bool)jFrame["is_global"];
-                    lastFrame = new DebugStackFrame(this, i, lastFrame, jFrame);
+                    var fallbackFrame = (_bpHitFrame != null && _bpHitFrame.Index == i) ? _bpHitFrame : null;
+                    lastFrame = new DebugStackFrame(this, i, lastFrame, jFrame, fallbackFrame);
                     stackFrames.Add(lastFrame);
                 } catch (JsonException ex) {
                     Debug.Fail(ex.ToString());
@@ -179,9 +190,8 @@ namespace Microsoft.R.Debugger {
         }
 
         public async Task<int> AddBreakpointAsync(string fileName, int lineNumber) {
-            // Tracer expression must be in sync with DebugStackFrame._breakpoingRegex
-            var tracer = $"quote(.rtvs.breakpoint({fileName.ToRStringLiteral()}, {lineNumber}))";
-
+            // Tracer expression must be in sync with DebugStackFrame._breakpointRegex
+            var tracer = $"quote({{.rtvs.breakpoint({fileName.ToRStringLiteral()}, {lineNumber})}})";
             var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, tracer={tracer})")
                 .ConfigureAwait(false);
             if (res is DebugErrorEvaluationResult) {
@@ -221,21 +231,88 @@ namespace Microsoft.R.Debugger {
                 .FirstOrDefault()?.CallFlag.HasFlag(RContextType.Browser) == true;
         }
 
-        private void CheckForBrowse(IReadOnlyList<IRContext> contexts) {
-            if (IsInBrowseMode(contexts)) {
-                if (_stepTcs != null) {
-                    var stepTcs = _stepTcs;
-                    _stepTcs = null;
-                    stepTcs.TrySetResult(null);
-                }
-
-                Browse?.Invoke(this, EventArgs.Empty);
+        private void InterruptBreakpointHitProcessing() {
+            _bpHitFrame = null;
+            if (_bpHitProcState != BreakpointHitProcessingState.None) {
+                _bpHitProcState = BreakpointHitProcessingState.None;
+                // If we were in the middle of processing a breakpoint hit, we need to make sure that
+                // any pending stepping is canceled, since we can no longer handle it at this point.
+                CancelStep();
             }
+        }
+
+        private void ProcessBrowsePrompt(IReadOnlyList<IRContext> contexts) {
+            if (!IsInBrowseMode(contexts)) {
+                InterruptBreakpointHitProcessing();
+                return;
+            }
+
+            RSession.BeginInteractionAsync().ContinueWith(async t => {
+                using (var inter = await t) {
+                    if (inter.Contexts != contexts) {
+                        // Someone else has already responded to this interaction.
+                        InterruptBreakpointHitProcessing();
+                        return;
+                    }
+
+                    switch (_bpHitProcState) {
+                        case BreakpointHitProcessingState.None:
+                            {
+                                var lastFrame = (await GetStackFramesAsync().ConfigureAwait(false)).LastOrDefault();
+                                if (lastFrame?.FrameKind == DebugStackFrameKind.TracebackAfterBreakpoint) {
+                                    // If we're stopped at a breakpoint, step out of .doTrace, so that the next stepping command that
+                                    // happens is applied at the actual location inside the function where the breakpoint was set.
+                                    // Determine how many steps out we need to make by counting back to .doTrace. Also stash away the
+                                    // .doTrace frame - we will need it to correctly report filename and line number after we unwind.
+                                    int n = 0;
+                                    _bpHitFrame = lastFrame;
+                                    for (
+                                        _bpHitFrame = lastFrame;
+                                        _bpHitFrame != null && _bpHitFrame.FrameKind != DebugStackFrameKind.DoTrace;
+                                        _bpHitFrame = _bpHitFrame.CallingFrame
+                                    ) {
+                                        ++n;
+                                    }
+
+                                    // Set the destination for the next "c", which we will issue on the following prompt.
+                                    await inter.RespondAsync($"browserSetDebug({n})\n");
+                                    _bpHitProcState = BreakpointHitProcessingState.BrowserSetDebug;
+                                    return;
+                                } else {
+                                    _bpHitFrame = null;
+                                }
+                                break;
+                            }
+
+                        case BreakpointHitProcessingState.BrowserSetDebug:
+                            // We have issued a browserSetDebug() on the previous interaction prompt to set destination
+                            // for the "c" command. Issue that command now, and move to the next step.
+                            await inter.RespondAsync("c\n");
+                            _bpHitProcState = BreakpointHitProcessingState.Continue;
+                            return;
+
+                        case BreakpointHitProcessingState.Continue:
+                            // We have issued a "c" command on the previous interaction prompt to unwind the stack back
+                            // to the function in which the breakpoint was set. We are in the proper context now, and
+                            // can report step completion and raise Browse below.
+                            _bpHitProcState = BreakpointHitProcessingState.None;
+                            break;
+                    }
+
+                    if (_stepTcs != null) {
+                        var stepTcs = _stepTcs;
+                        _stepTcs = null;
+                        stepTcs.TrySetResult(null);
+                    }
+
+                    Browse?.Invoke(this, EventArgs.Empty);
+                }
+            }).DoNotWait();
         }
 
         private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
             _initialPromptCts.Cancel();
-            CheckForBrowse(e.Contexts);
+            ProcessBrowsePrompt(e.Contexts);
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
