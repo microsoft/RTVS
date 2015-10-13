@@ -1,4 +1,5 @@
 .rtvs.datainspect.print_into <<- function(con, obj, name, add.children, first.hundred) {
+  cat('{', file = con, sep = '');
   repr <- capture.output(str(obj, max.level = 0))
 
   cat('"name": ', file = con, sep = '');
@@ -12,12 +13,16 @@
   cat(',"type": ', file = con, sep = '');
   dput(typeof(obj), file = con);
   cat(',"length": ', file = con, sep = '');
-  cat(length(obj), file = con);
+  
+  l <- length(obj);
+  cat(l, file = con, sep='');
 
-  if(add.children){
+  if((l > 1) && add.children){
     cat(',', file = con, sep = '');
     .rtvs.datainspect.append_children(con, obj, first.hundred=first.hundred)
   }
+  
+  cat('}\n', file = con, sep = '');
 }
 
 .rtvs.datainspect.append_children <<- function(con, obj, first.hundred=FALSE) {
@@ -57,9 +62,7 @@
         } else {
           cat(', ', file = con, sep = '');
         }
-        cat('{', file = con, sep = '');
-        .rtvs.datainspect.print_into(con, obj[[i]], gettextf("[[%s]]", i), add.children=FALSE, first.hundred=TRUE);
-        cat('}\n', file = con, sep = '');
+        .rtvs.datainspect.print_into(con, obj[[i]], gettextf("[[%s]]", i), add.children=TRUE, first.hundred=TRUE);
       }
     }
   } else {
@@ -71,12 +74,10 @@
       } else {
         cat(', ', file = con, sep = '');
       }
-      cat('{', file = con, sep = '');
-      .rtvs.datainspect.print_into(con, obj[[varname]], varname, add.children=FALSE, first.hundred=TRUE);
-      cat('}\n', file = con, sep = '');
+      .rtvs.datainspect.print_into(con, obj[[varname]], varname, add.children=TRUE, first.hundred=TRUE);
     }
   }
-  cat(']\n', file = con, sep = '');
+  cat(']}\n', file = con, sep = '');
 }
 
 .rtvs.datainspect.eval_into <<- function(con, expr, env) {
@@ -89,9 +90,7 @@
     con <- textConnection(NULL, open = "w");
     json <- "{}";
     tryCatch({
-        cat('{', file = con, sep = '');
         .rtvs.datainspect.eval_into(con, expr, env);
-        cat('}\n', file = con, sep = '');
         json <- textConnectionValue(con);
     }, finally = {
         close(con);

@@ -198,7 +198,7 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3">
             <TextBlock x:Name="EnvironmentTextBlockLabel" Text="Environment: "></TextBlock>
-            <TextBlock x:Name="EnvironmentTextBlock" Text="Empty" /> <!-- TODO: use resource for text -->
+            <TextBlock x:Name="EnvironmentTextBlock" Text="No R Interactive" /> <!-- TODO: use resource for text -->
         </StackPanel>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
             <Grid Grid.IsSharedSizeScope="True">
