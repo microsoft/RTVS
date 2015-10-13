@@ -167,7 +167,13 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void ResetStackFrames() {
-            _stackFrames = Lazy.Create(() => Engine.DebugSession.GetStackFramesAsync().GetAwaiter().GetResult());
+            _stackFrames = Lazy.Create(() =>
+                (IReadOnlyList<DebugStackFrame>)
+                Engine.DebugSession.GetStackFramesAsync()
+                .GetAwaiter().GetResult()
+                .Where(f => !f.IsDebuggerInternal)
+                .Reverse()
+                .ToArray());
         }
 
         private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
