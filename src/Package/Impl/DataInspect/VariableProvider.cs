@@ -117,6 +117,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         private async Task RefreshVariableCollection()
         {
+            if(_rSession == null)
+            {
+                return;
+            }
+
             REvaluationResult response;
             using (var interactor = await _rSession.BeginEvaluationAsync())
             {
