@@ -149,6 +149,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         private static T Deserialize<T>(string response) where T : class
         {
+            if(response == null)
+            {
+                return default(T);
+            }
+
             try
             {
                 var serializer = new DataContractJsonSerializer(typeof(T));
