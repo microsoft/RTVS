@@ -12,6 +12,8 @@ namespace Microsoft.R.Editor.Settings
         public const string AutoFormatKey = "AutoFormat";
         public const string FormatOnPasteKey = "FormatOnPaste";
         public const string CommitOnSpaceKey = "CommitOnSpace";
+        public const string CommitOnEnterKey = "CommitOnEnter";
+        public const string CompletionOnFirstCharKey = "CompletionOnFirstChar";
         public const string SendToReplOnCtrlEnterKey = "SendToReplOnCtrlEnter";
         public const string SyntaxCheckInReplKey = "SyntaxCheckInRepl";
 
@@ -158,13 +160,30 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
+        public static bool CommitOnEnter
+        {
+            get { return Storage.GetBoolean(CommitOnEnterKey, false); }
+            set
+            {
+                if (IsWritable)
+                    WritableStorage.SetBoolean(CommitOnEnterKey, value);
+            }
+        }
+
+
+        public static bool ShowCompletionOnFirstChar
+        {
+            get { return Storage.GetBoolean(CompletionOnFirstCharKey, true); }
+            set
+            {
+                if (IsWritable)
+                    WritableStorage.SetBoolean(CompletionOnFirstCharKey, value);
+            }
+        }
+
         public static IndentType IndentType
         {
-            get
-            {
-                return (IndentType)Storage.GetInteger(CommonSettings.FormatterIndentTypeKey, (int)IndentType.Spaces);
-            }
-
+            get { return (IndentType)Storage.GetInteger(CommonSettings.FormatterIndentTypeKey, (int)IndentType.Spaces); }
             set
             {
                 if (IsWritable)
@@ -174,11 +193,7 @@ namespace Microsoft.R.Editor.Settings
 
         public static int IndentSize
         {
-            get
-            {
-                return Storage.GetInteger(CommonSettings.FormatterIndentSizeKey, 4);
-            }
-
+            get { return Storage.GetInteger(CommonSettings.FormatterIndentSizeKey, 4); }
             set
             {
                 if (IsWritable)
@@ -188,11 +203,7 @@ namespace Microsoft.R.Editor.Settings
 
         public static IndentStyle IndentStyle
         {
-            get
-            {
-                return (IndentStyle)Storage.GetInteger(CommonSettings.IndentStyleKey, (int)IndentStyle.Smart);
-            }
-
+            get { return (IndentStyle)Storage.GetInteger(CommonSettings.IndentStyleKey, (int)IndentStyle.Smart); }
             set
             {
                 if (IsWritable)
@@ -202,11 +213,7 @@ namespace Microsoft.R.Editor.Settings
 
         public static int TabSize
         {
-            get
-            {
-                return Storage.GetInteger(CommonSettings.FormatterTabSizeKey, 4);
-            }
-
+            get { return Storage.GetInteger(CommonSettings.FormatterTabSizeKey, 4); }
             set
             {
                 if (IsWritable)

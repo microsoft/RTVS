@@ -54,7 +54,7 @@ namespace Microsoft.R.Support.Help.Packages
                 string directoryPath = _directoriesEnumerator.Current;
                 if (!string.IsNullOrEmpty(directoryPath))
                 {
-                    string name = Path.GetFileName(directoryPath).ToLowerInvariant();
+                    string name = Path.GetFileName(directoryPath);
                     return new PackageInfo(name, Path.GetDirectoryName(directoryPath));
                 }
 

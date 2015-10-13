@@ -44,7 +44,7 @@ namespace Microsoft.R.Editor.Completion
 
         public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
-            if(_textBuffer == null)
+            if (_textBuffer == null)
             {
                 _textBuffer = subjectBuffer;
             }
@@ -151,7 +151,7 @@ namespace Microsoft.R.Editor.Completion
                         return true;
                 }
 
-                if (completionText == "if" || completionText == "for" || completionText == "while" || 
+                if (completionText == "if" || completionText == "for" || completionText == "while" ||
                     completionText == "return" || completionText == "library" || completionText == "require")
                 {
                     if (typedChar == '(')
@@ -192,12 +192,20 @@ namespace Microsoft.R.Editor.Completion
                 if (typedChar == ' ' && !REditorSettings.CommitOnSpace)
                     return false;
 
-                if (char.IsWhiteSpace(typedChar) || typedChar == '\n' || typedChar == '\t')
+                if (char.IsWhiteSpace(typedChar))
                 {
                     IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
-                    if(document != null && document.IsTransient)
+                    if (document != null && document.IsTransient)
                     {
-                        return false;
+                        return typedChar == '\t';
+                    }
+
+                    if (typedChar == '\n' || typedChar == '\r')
+                    {
+                        if (REditorSettings.CommitOnEnter)
+                            return true;
+
+                        return !IsAutoShownCompletion();
                     }
 
                     return true;
@@ -205,6 +213,29 @@ namespace Microsoft.R.Editor.Completion
             }
 
             return false;
+        }
+
+        public override bool OnPreTypeChar(char typedCharacter)
+        {
+            if (typedCharacter == '\t' && !HasActiveCompletionSession)
+            {
+                // if previous character is not whitespace, bring it on
+                SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
+                if (position.HasValue)
+                {
+                    int pos = position.Value;
+                    if (pos > 0 && pos <= position.Value.Snapshot.Length)
+                    {
+                        if (!char.IsWhiteSpace(position.Value.Snapshot[pos - 1]))
+                        {
+                            ShowCompletion(autoShownCompletion: false);
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return base.OnPreTypeChar(typedCharacter);
         }
 
         /// <summary>
@@ -225,7 +256,11 @@ namespace Microsoft.R.Editor.Completion
                         return RCompletionContext.IsCaretInLibraryStatement(TextView);
 
                     default:
-                        return Char.IsLetter(typedCharacter);
+                        if (REditorSettings.ShowCompletionOnFirstChar)
+                        {
+                            return Char.IsLetter(typedCharacter) || typedCharacter == '.';
+                        }
+                        break;
                 }
             }
 
@@ -306,7 +341,7 @@ namespace Microsoft.R.Editor.Completion
                         document.EditorTree.EnsureTreeReady();
 
                         ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(
-                            document.EditorTree.AstRoot, _textBuffer.CurrentSnapshot, 
+                            document.EditorTree.AstRoot, _textBuffer.CurrentSnapshot,
                             TextView.Caret.Position.BufferPosition);
 
                         return parametersInfo != null && parametersInfo.FunctionName == sessionFunctionInfo.Name;

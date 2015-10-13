@@ -449,9 +449,10 @@ namespace Microsoft.Languages.Editor.Completion
                         CompletionSession.Committed += OnCompletionSessionCommitted;
                     }
                 }
-                finally
+                catch(Exception)
                 {
                     TextView.Properties.RemoveProperty(AutoShownCompletion);
+                    throw;
                 }
             }
 
@@ -497,13 +498,29 @@ namespace Microsoft.Languages.Editor.Completion
             {
                 SignatureBroker.DismissAllSessions(TextView);
 
-                TextView.Properties.RemoveProperty(CompletionController.AutoShownCompletion);
-                TextView.Properties.AddProperty(CompletionController.AutoShownCompletion, autoShown);
+                TextView.Properties.RemoveProperty(CompletionController.AutoShownSignature);
+                TextView.Properties.AddProperty(CompletionController.AutoShownSignature, autoShown);
 
                 SignatureBroker.TriggerSignatureHelp(TextView);
             }
         }
 
+        protected bool IsAutoShownCompletion()
+        {
+            bool value = false;
+            TextView.Properties.TryGetProperty(CompletionController.AutoShownCompletion, out value);
+
+            return value;
+        }
+
+        protected bool IsAutoShownSignature()
+        {
+            bool value = false;
+            TextView.Properties.TryGetProperty(CompletionController.AutoShownSignature, out value);
+
+            return value;
+        }
+        
         /// <summary>
         /// The signature and completion MUST be shown in a specific order,
         /// so use this function to get the order correct.
