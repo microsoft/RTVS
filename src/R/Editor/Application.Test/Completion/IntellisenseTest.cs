@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion
 
             try
             {
-                script.Type("library(");
+                script.Type("library(abin");
                 script.DoIdle(100);
                 script.Type("{TAB}");
 
@@ -60,7 +60,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion
 
             try
             {
-                script.Type("require(");
+                script.Type("require(abin");
                 script.DoIdle(100);
                 script.Type("{TAB}");
 

@@ -27,8 +27,8 @@ namespace Microsoft.R.Editor.Test.Signatures
             Assert.AreEqual(4, REditorSettings.TabSize);
             Assert.AreEqual(true, REditorSettings.SyntaxCheck);
             Assert.AreEqual(true, REditorSettings.SignatureHelpEnabled);
-            Assert.AreEqual(false, REditorSettings.ShowTclFunctions);
-            Assert.AreEqual(false, REditorSettings.ShowInternalFunctions);
+            //Assert.AreEqual(false, REditorSettings.ShowTclFunctions);
+            //Assert.AreEqual(false, REditorSettings.ShowInternalFunctions);
 
             Assert.AreEqual(4, REditorSettings.FormatOptions.IndentSize);
             Assert.AreEqual(4, REditorSettings.FormatOptions.TabSize);
