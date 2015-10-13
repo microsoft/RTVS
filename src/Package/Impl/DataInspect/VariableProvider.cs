@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
-    public class VariableEvaluationContext
+    internal class VariableEvaluationContext
     {
         public const string GlobalEnv = ".GlobalEnv";
 
@@ -31,11 +31,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         }
     }
 
-    public class VariableProvider
+    internal class VariableChangedArgs : EventArgs
     {
-        private bool _rSessionInitialized = false;
+        public REvaluation NewVariable { get; set; }
+    }
+
+    internal class VariableProvider
+    {
         private IRSession _rSession;
-        private Variable _monitor;
+        private VariableEvaluationContext _monitorContext;
 
         public VariableProvider()
         {
@@ -51,6 +55,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// R current session change triggers this SessionsChanged event
         /// </summary>
         public event EventHandler SessionsChanged;
+
+        public event EventHandler<VariableChangedArgs> VariableChanged;
 
         #endregion
 
@@ -92,7 +98,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             if (_rSession != null)
             {
                 _rSession.BeforeRequest -= RSession_BeforeRequest;
-                _rSessionInitialized = false;
             }
 
             // register event handler to new session
@@ -100,7 +105,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             if (_rSession != null)
             {
                 _rSession.BeforeRequest += RSession_BeforeRequest;
-                _rSessionInitialized = false;
 
                 Task t = RefreshVariableCollection();   // TODO: have a no-await wrapper to handle side effects
             }
@@ -111,42 +115,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             }
         }
 
-        private async Task EnsureRSessionInitialized()
-        {
-            if (!_rSessionInitialized)
-            {
-                string script = null;
-
-                var assembly = this.GetType().Assembly;
-                using (var stream = assembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.DataInspect.DataInspect.R"))
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        script = reader.ReadToEnd();
-                    }
-                }
-                script += "\n";
-
-                using (var interactor = await _rSession.BeginEvaluationAsync())
-                {
-                    await interactor.EvaluateAsync(script, false);
-                }
-
-                _rSessionInitialized = true;
-            }
-        }
-
         private async Task RefreshVariableCollection()
         {
-            if (_monitor == null) return;
-
-            await EnsureRSessionInitialized();
-
             REvaluationResult response;
             using (var interactor = await _rSession.BeginEvaluationAsync())
             {
                 response = await interactor.EvaluateAsync(
-                    _monitor.EvaluationContext.GetQueryString(),
+                    _monitorContext.GetQueryString(),
                     false);
             }
 
@@ -155,33 +130,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 var evaluation = Deserialize<REvaluation>(response.Result);
                 if (evaluation != null)
                 {
-                    _monitor.Update(Variable.Create(evaluation, _monitor.EvaluationContext));
+                    if (VariableChanged != null)
+                    {
+                        VariableChanged(
+                            this,
+                            new VariableChangedArgs() { NewVariable = evaluation });
+                    }
                 }
             }
         }
 
-        public async Task<Variable> EvaluateVariable(VariableEvaluationContext context) // TODO: rename to monitor
+        public async Task SetMonitorContext(VariableEvaluationContext context) // TODO: rename to monitor
         {
-            await EnsureRSessionInitialized();
+            _monitorContext = context;
 
-            REvaluationResult response;
-            using (var interactor = await _rSession.BeginEvaluationAsync())
-            {
-                response = await interactor.EvaluateAsync(context.GetQueryString(), false);
-            }
-
-            if (response.ParseStatus == RParseStatus.OK)
-            {
-                var evaluation = Deserialize<REvaluation>(response.Result);
-                if (evaluation != null)
-                {
-                    var created = Variable.Create(evaluation, context);
-                    _monitor = created;
-                    return created;
-                }
-            }
-
-            return null;    // TODO: error handling, throw?
+            await RefreshVariableCollection();
         }
 
         private static T Deserialize<T>(string response) where T : class
@@ -200,24 +163,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
                 return null;
             }
-        }
-
-        private static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
-        {
-            Action guardedAction =
-                () =>
-                {
-                    try
-                    {
-                        toInvoke();
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.Assert(false, "Guarded invoke caught exception", e.Message);
-                    }
-                };
-
-            Application.Current.Dispatcher.BeginInvoke(guardedAction, priority);    // TODO: acquiring Application.Current.Dispatcher, create utility class for UI thread and use it
         }
     }
 }

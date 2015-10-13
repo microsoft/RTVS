@@ -12,6 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
     {
         private readonly VariableProvider _variableProvider;
         private Variable _globalEnv;
+        private VariableEvaluationContext _globalEnvContext;
 
         public VariableView()
         {
@@ -19,6 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
             _variableProvider = new VariableProvider();
             _variableProvider.SessionsChanged += VariableProvider_SessionsChanged;
+            _variableProvider.VariableChanged += VariableProvider_VariableChanged;
 
             InitializeData();
         }
@@ -28,21 +30,39 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             InitializeData();
         }
 
+        private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e)
+        {
+            if (e.NewVariable != null
+                && e.NewVariable.Name == _globalEnvContext.VariableName)
+            {
+                var newVariable = Variable.Create(e.NewVariable, _globalEnvContext);
+
+                DispatchInvoke(() =>
+                {
+                    if (_globalEnv == null)
+                    {
+                        SetVariable(newVariable);
+                    }
+                    else
+                    {
+                        _globalEnv.Update(newVariable);
+                    }
+                },
+                DispatcherPriority.Normal);
+            }
+        }
+
         public void InitializeData()
         {
             Task t = Task.Run(async () =>   // no await
             {
-                var globalEnvVar = await _variableProvider.EvaluateVariable(
-                    new VariableEvaluationContext()
-                    {
-                        Environment = VariableEvaluationContext.GlobalEnv,
-                        VariableName = VariableEvaluationContext.GlobalEnv
-                    });
-
-                if (globalEnvVar != null)
+                _globalEnvContext = new VariableEvaluationContext()
                 {
-                    DispatchInvoke(() => SetVariable(globalEnvVar), DispatcherPriority.Normal);
-                }
+                    Environment = VariableEvaluationContext.GlobalEnv,
+                    VariableName = VariableEvaluationContext.GlobalEnv
+                };
+
+                await _variableProvider.SetMonitorContext(_globalEnvContext);
             });
         }
 
@@ -85,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                         int index = e.OldStartingIndex + itemIndexOffset;
                         foreach (var child in e.OldItems)
                         {
-                            RootTreeView.Items.Insert(index++, child);
+                            RootTreeView.Items.RemoveAt(index);
                         }
                     }
                     break;

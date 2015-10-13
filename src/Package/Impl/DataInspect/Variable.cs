@@ -11,7 +11,7 @@ using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
-    public class Variable : INotifyPropertyChanged  // TODO: BindableBase
+    internal class Variable : INotifyPropertyChanged  // TODO: BindableBase
     {
         private Variable(VariableEvaluationContext evaluationContext)
         {
@@ -148,7 +148,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             DispatchInvoke(() => UpdateInternal(update), DispatcherPriority.Normal);
         }
 
-        private void UpdateInternal(Variable update)
+        private void UpdateInternal(Variable update)    // TODO: optimize the iteration
         {
             if (VariableName != update.VariableName)
             {
@@ -160,16 +160,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             HasChildren = update.HasChildren;
 
             // remove
-            var removed = from v in Children
+            var removed = (from v in Children
                           where !update.Children.Any((u) => (v.VariableName == u.VariableName))
-                          select v;
+                          select v).ToList();
+            var nonRemoved = (from v in update.Children
+                           where !removed.Any((u) => (v.VariableName == u.VariableName))
+                           select v).ToList();
+
             foreach (var item in removed)
             {
                 Children.Remove(item);
             }
 
             List<Variable> newVariables  = new List<Variable>();
-            foreach (var newitem in update.Children)
+            foreach (var newitem in nonRemoved)
             {
                 var old = Children.FirstOrDefault((u) => (u.VariableName == newitem.VariableName));
                 if (old == null)
