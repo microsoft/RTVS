@@ -16,35 +16,90 @@
         <ResourceDictionary>
             <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ResourceKey={x:Static wpf:Controls.ScrollBarStyleKey}}" />
 
+            <Style x:Key="HeaderScrollViewerControlTemplate" TargetType="{x:Type local:HeaderScrollViewer}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type local:HeaderScrollViewer}">
+                            <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Rectangle x:Name="Corner"
+                                   Grid.Column="1"
+                                   Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="2"/>
+                                    <ContentPresenter Content="{TemplateBinding Header}" />
+                                <ScrollContentPresenter
+                                    x:Name="PART_ScrollContentPresenter"
+                                    CanContentScroll="{TemplateBinding CanContentScroll}"
+                                    CanHorizontallyScroll="False" CanVerticallyScroll="True"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}"
+                                    Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="1"/>
+                                <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar"
+                                   Cursor="Arrow"
+                                   Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                                   Maximum="{TemplateBinding ScrollableHeight}" Minimum="0"
+                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                   Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                   ViewportSize="{TemplateBinding ViewportHeight}"/>
+                                <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                   AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow"
+                                   Grid.Column="0" Grid.Row="2"
+                                   Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal"
+                                   Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                                   Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                   ViewportSize="{TemplateBinding ViewportWidth}"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+                <Setter Property="Width" Value="8"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Cursor" Value="SizeWE"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Thumb}">
+                            <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
 
                 <ResourceDictionary>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Children}"
-                                  DataType="{x:Type local:Variable}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition  />
-                                <ColumnDefinition SharedSizeGroup="ValueColumnGroup" />
-                                <ColumnDefinition SharedSizeGroup="TypeColumnGroup" />
-                            </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Style="{DynamicResource CellBorderStyle}">
-                                <TextBlock Grid.Column="0" Text="{Binding VariableName}" Padding="3,0,3,0"/>
-                            </Border>
-                            <Border Grid.Column="1" Style="{DynamicResource CellBorderStyle}">
-                                <TextBlock Grid.Column="1" Text="{Binding VariableValue}" Padding="3,0,3,0"/>
-                            </Border>
-                            <Border Grid.Column="2" Style="{DynamicResource CellBorderStyle}">
-                                <TextBlock Grid.Column="2" Text="{Binding TypeName}" Padding="3,0,3,0"/>
-                            </Border>
-                        </Grid>
-                    </HierarchicalDataTemplate>
+                    <local:LevelToIndentConverter x:Key="LevelToIndentConverter" />
 
                     <Style x:Key="CellBorderStyle" TargetType="{x:Type Border}">
                         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Controls.ControlBorderKey}}"/>
                         <Setter Property="BorderThickness" Value="0,0,1,0"/>
                         <Setter Property="SnapsToDevicePixels" Value="True"/>
                     </Style>
+
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}"
+                                  DataType="{x:Type local:Variable}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Style="{DynamicResource CellBorderStyle}">
+                                <TextBlock Text="{Binding VariableValue}" Width="{Binding ValueWidth}"  Padding="3,0,3,0" TextWrapping="NoWrap" ClipToBounds="True"/>
+                            </Border>
+                            <Border Grid.Column="1" Style="{DynamicResource CellBorderStyle}">
+                                <TextBlock Text="{Binding TypeName}" Width="{Binding TypeWidth}" Padding="3,0,3,0" TextWrapping="NoWrap" ClipToBounds="True"/>
+                            </Border>
+                        </Grid>
+                    </HierarchicalDataTemplate>
 
                     <Style x:Key="HeaderCellBorderStyle" TargetType="{x:Type Border}">
                         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Controls.ControlBorderKey}}"/>
@@ -75,17 +130,13 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type TreeViewItem}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition SharedSizeGroup="TogggleColumnGroup"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                    <Grid HorizontalAlignment="Stretch">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
 
-                                        <Border Grid.Row="0" Grid.ColumnSpan="2"
+                                        <Border Grid.Row="0"
                                                 x:Name="Bd"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
                                                 BorderThickness="{TemplateBinding BorderThickness}"
@@ -93,60 +144,79 @@
                                                 SnapsToDevicePixels="True">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition SharedSizeGroup="TogggleColumnGroup" MinWidth="19" Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-
-                                                <ToggleButton x:Name="Expander" ClickMode="Press" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
-                                                    <ToggleButton.Style>
-                                                        <Style TargetType="{x:Type ToggleButton}">
-                                                            <Setter Property="Focusable" Value="False"/>
-                                                            <Setter Property="Width" Value="16"/>
-                                                            <Setter Property="Height" Value="16"/>
-                                                            <Setter Property="Template">
-                                                                <Setter.Value>
-                                                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                                        <Border Background="Transparent" Height="16" Padding="5" Width="16">
-                                                                            <Path x:Name="ExpandPath" Data="M0,0 L0,6 L6,0 z" Fill="White" Stroke="#FF818181">
-                                                                                <Path.RenderTransform>
-                                                                                    <RotateTransform Angle="135" CenterY="3" CenterX="3"/>
-                                                                                </Path.RenderTransform>
-                                                                            </Path>
-                                                                        </Border>
-                                                                        <ControlTemplate.Triggers>
-                                                                            <Trigger Property="IsChecked" Value="True">
-                                                                                <Setter Property="RenderTransform" TargetName="ExpandPath">
-                                                                                    <Setter.Value>
-                                                                                        <RotateTransform Angle="180" CenterY="3" CenterX="3"/>
-                                                                                    </Setter.Value>
-                                                                                </Setter>
-                                                                                <Setter Property="Fill" TargetName="ExpandPath" Value="#FF595959"/>
-                                                                                <Setter Property="Stroke" TargetName="ExpandPath" Value="#FF262626"/>
-                                                                            </Trigger>
-                                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                                <Setter Property="Stroke" TargetName="ExpandPath" Value="#FF27C7F7"/>
-                                                                                <Setter Property="Fill" TargetName="ExpandPath" Value="#FFCCEEFB"/>
-                                                                            </Trigger>
-                                                                            <MultiTrigger>
-                                                                                <MultiTrigger.Conditions>
-                                                                                    <Condition Property="IsMouseOver" Value="True"/>
-                                                                                    <Condition Property="IsChecked" Value="True"/>
-                                                                                </MultiTrigger.Conditions>
-                                                                                <Setter Property="Stroke" TargetName="ExpandPath" Value="#FF1CC4F7"/>
-                                                                                <Setter Property="Fill" TargetName="ExpandPath" Value="#FF82DFFB"/>
-                                                                            </MultiTrigger>
-                                                                        </ControlTemplate.Triggers>
-                                                                    </ControlTemplate>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Style>
-                                                    </ToggleButton.Style>
-                                                </ToggleButton>
-                                                <ContentPresenter x:Name="PART_Header" Grid.Column="1"  
-                                                              ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                                
+                                                <Grid Width="{Binding NameWidth}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition MinWidth="19" Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Rectangle Width="{Binding Path=IndentStep, Converter={StaticResource LevelToIndentConverter}}" />
+                                                    <ToggleButton x:Name="Expander"
+                                                              Grid.Column="1"
+                                                              ClickMode="Press" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
+                                                        <ToggleButton.Style>
+                                                            <Style TargetType="{x:Type ToggleButton}">
+                                                                <Setter Property="Focusable" Value="False"/>
+                                                                <Setter Property="Width" Value="16"/>
+                                                                <Setter Property="Height" Value="16"/>
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                                            <Border Background="Transparent" Height="16" Padding="5" Width="16">
+                                                                                <Path x:Name="ExpandPath" Data="M0,0 L0,6 L6,0 z" Fill="White" Stroke="#FF818181">
+                                                                                    <Path.RenderTransform>
+                                                                                        <RotateTransform Angle="135" CenterY="3" CenterX="3"/>
+                                                                                    </Path.RenderTransform>
+                                                                                </Path>
+                                                                            </Border>
+                                                                            <ControlTemplate.Triggers>
+                                                                                <Trigger Property="IsChecked" Value="True">
+                                                                                    <Setter Property="RenderTransform" TargetName="ExpandPath">
+                                                                                        <Setter.Value>
+                                                                                            <RotateTransform Angle="180" CenterY="3" CenterX="3"/>
+                                                                                        </Setter.Value>
+                                                                                    </Setter>
+                                                                                    <Setter Property="Fill" TargetName="ExpandPath" Value="#FF595959"/>
+                                                                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="#FF262626"/>
+                                                                                </Trigger>
+                                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="#FF27C7F7"/>
+                                                                                    <Setter Property="Fill" TargetName="ExpandPath" Value="#FFCCEEFB"/>
+                                                                                </Trigger>
+                                                                                <MultiTrigger>
+                                                                                    <MultiTrigger.Conditions>
+                                                                                        <Condition Property="IsMouseOver" Value="True"/>
+                                                                                        <Condition Property="IsChecked" Value="True"/>
+                                                                                    </MultiTrigger.Conditions>
+                                                                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="#FF1CC4F7"/>
+                                                                                    <Setter Property="Fill" TargetName="ExpandPath" Value="#FF82DFFB"/>
+                                                                                </MultiTrigger>
+                                                                            </ControlTemplate.Triggers>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Style>
+                                                        </ToggleButton.Style>
+                                                    </ToggleButton>
+                                                    <Border Grid.Column="2" Style="{DynamicResource CellBorderStyle}">
+                                                        <TextBlock Text="{Binding VariableName}" Padding="3,0,3,0" TextWrapping="NoWrap" ClipToBounds="True"/>
+                                                    </Border>
+                                                </Grid>
+                                                
+                                                <ContentPresenter x:Name="PART_Header" Grid.Column="1"
+                                                                  ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                                  Content="{TemplateBinding Header}"
+                                                                  ContentStringFormat="{TemplateBinding HeaderStringFormat}"
+                                                                  ContentSource="Header"
+                                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                                             </Grid>
                                         </Border>
-                                        <ItemsPresenter x:Name="ItemsHost" Grid.Column="1" Grid.Row="1"/>
+                                        <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
                                     </Grid>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsExpanded" Value="False">
@@ -191,7 +261,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid x:Name="RootGrid">
+    <Grid x:Name="RootGrid" Grid.IsSharedSizeScope="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -200,36 +270,43 @@
             <TextBlock x:Name="EnvironmentTextBlockLabel" Text="Environment: "></TextBlock>
             <TextBlock x:Name="EnvironmentTextBlock" Text="No R Interactive" /> <!-- TODO: use resource for text -->
         </StackPanel>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
-            <Grid Grid.IsSharedSizeScope="True">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid>
+        <local:HeaderScrollViewer  Grid.Row="1"
+                                  Style="{StaticResource HeaderScrollViewerControlTemplate}"
+                                  VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
+            <local:HeaderScrollViewer.Header>
+                <Grid x:Name="HeaderRowGrid">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition x:Name="NameColumnDefinition" />
-                        <ColumnDefinition x:Name="ValueColumnDefinition" SharedSizeGroup="ValueColumnGroup" Width="200"/>
-                        <ColumnDefinition x:Name="TypeColumnDefinition" SharedSizeGroup="TypeColumnGroup" Width="100" />
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <Border Grid.Column="0" Style="{DynamicResource HeaderCellBorderStyle}">
-                        <TextBlock Grid.Column="0" Text="Name" />
+                        <Grid x:Name="NameColumn" Width="140">
+                            <TextBlock Text="Name" TextWrapping="NoWrap" />
+                        </Grid>
                     </Border>
-                    <Border Grid.Column="1" Style="{DynamicResource HeaderCellBorderStyle}">
-                        <TextBlock Grid.Column="1" Text="Value" />
+                    <Border Grid.Column="1" Style="{DynamicResource HeaderCellBorderStyle}" >
+                        <Grid x:Name="ValueColumn">
+                            <TextBlock Text="Value" TextWrapping="NoWrap" />
+                            <Thumb x:Name="LeftThumb" HorizontalAlignment="Left" Style="{StaticResource ColumnHeaderGripperStyle}"/>
+                            <Thumb x:Name="RightThumb" HorizontalAlignment="Right" Style="{StaticResource ColumnHeaderGripperStyle}"/>
+                        </Grid>
                     </Border>
                     <Border Grid.Column="2" Style="{DynamicResource HeaderCellBorderStyle}">
-                        <TextBlock Grid.Column="2" Text="Type" />
+                        <Grid x:Name="TypeColumn" Width="100">
+                            <TextBlock Text="Type" TextWrapping="NoWrap"/>
+                        </Grid>
                     </Border>
                 </Grid>
-                <TreeView x:Name="RootTreeView"  BorderThickness="0" Grid.Row="1"
+            </local:HeaderScrollViewer.Header>
+
+            <TreeView x:Name="RootTreeView"  BorderThickness="0" Grid.Row="1"
                 Background="Transparent"
                 ItemContainerStyle="{DynamicResource TreeViewItemStyle}"
                 HorizontalContentAlignment="Stretch">
 
-                </TreeView>
-            </Grid>
-        </ScrollViewer>
+            </TreeView>
+        </local:HeaderScrollViewer>
     </Grid>
 </UserControl>

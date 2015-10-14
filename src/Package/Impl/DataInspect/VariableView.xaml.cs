@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
@@ -23,6 +25,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             _variableProvider.VariableChanged += VariableProvider_VariableChanged;
 
             InitializeData();
+
+            Loaded += VariableView_Loaded;
+            Unloaded += VariableView_Unloaded;
+            SizeChanged += VariableView_SizeChanged;
+        }
+
+        private void VariableView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ResetWidth();
+        }
+
+        private void VariableView_Loaded(object sender, RoutedEventArgs e)
+        {
+            RegisterThumbEvents();
+
+            ResetWidth();
+        }
+
+        private void VariableView_Unloaded(object sender, RoutedEventArgs e)
+        {
+            UnregisterThumbEvents();
         }
 
         private void VariableProvider_SessionsChanged(object sender, EventArgs e)
@@ -35,7 +58,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             if (e.NewVariable != null
                 && e.NewVariable.Name == _globalEnvContext.VariableName)
             {
-                var newVariable = Variable.Create(e.NewVariable, _globalEnvContext);
+                var newVariable = Variable.Create(null, e.NewVariable, _globalEnvContext,
+                    new VariableVisualInfo() {
+                        IndentStep = -1,  // indent -1, as childrent is root level.
+                        NameWidth = NameColumn.ActualWidth,
+                        ValueWidth = ValueColumn.ActualWidth,
+                        TypeWidth = TypeColumn.ActualWidth });
 
                 DispatchInvoke(() =>
                 {
@@ -141,5 +169,117 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
             Application.Current.Dispatcher.BeginInvoke(guardedAction, priority);    // TODO: acquiring Application.Current.Dispatcher, create utility class for UI thread and use it
         }
+
+        #region Column Resizing
+
+        private void RegisterThumbEvents()
+        {
+            UnregisterThumbEvents();
+
+            LeftThumb.DragStarted += Thumb_DragStarted;
+            LeftThumb.DragDelta += Thumb_DragDelta;
+            LeftThumb.DragCompleted += Thumb_DragCompleted;
+            LeftThumb.MouseDoubleClick += Thumb_MouseDoubleClick;
+
+            RightThumb.DragStarted += Thumb_DragStarted;
+            RightThumb.DragDelta += Thumb_DragDelta;
+            RightThumb.DragCompleted += Thumb_DragCompleted;
+            RightThumb.MouseDoubleClick += Thumb_MouseDoubleClick;
+        }
+
+        private void UnregisterThumbEvents()
+        {
+            LeftThumb.DragStarted -= Thumb_DragStarted;
+            LeftThumb.DragDelta -= Thumb_DragDelta;
+            LeftThumb.DragCompleted -= Thumb_DragCompleted;
+            LeftThumb.MouseDoubleClick -= Thumb_MouseDoubleClick;
+
+            RightThumb.DragStarted -= Thumb_DragStarted;
+            RightThumb.DragDelta -= Thumb_DragDelta;
+            RightThumb.DragCompleted -= Thumb_DragCompleted;
+            RightThumb.MouseDoubleClick -= Thumb_MouseDoubleClick;
+        }
+
+        private double _nameWidth;
+        private double _typeWidth;
+        private void Thumb_DragStarted(object sender, DragStartedEventArgs e)
+        {
+            _nameWidth = NameColumn.Width;
+            _typeWidth = TypeColumn.Width;
+        }
+
+        private void Thumb_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            bool reset = false;
+            if (sender == LeftThumb)
+            {
+                var newNameWidth = _nameWidth + e.HorizontalChange;
+
+                if (newNameWidth > 5
+                    && (newNameWidth + _typeWidth + 10) < (HeaderRowGrid.ActualWidth))
+                {
+                    _nameWidth = newNameWidth;
+                    NameColumn.Width = newNameWidth;
+                    reset = true;
+                }
+            }
+            else if (sender == RightThumb)
+            {
+                var newTypeWidth = _typeWidth - e.HorizontalChange;
+
+                Debug.WriteLine("{0} {1} {2} {3}", HeaderRowGrid.ActualWidth, _nameWidth, _typeWidth, e.HorizontalChange);
+
+                if (newTypeWidth > 5
+                    && (_nameWidth + newTypeWidth + 10) < (HeaderRowGrid.ActualWidth))
+                {
+                    _typeWidth = newTypeWidth;
+                    TypeColumn.Width = newTypeWidth;
+                    reset = true;
+                }
+            }
+
+            if (reset)
+            {
+                ResetWidth();
+            }
+
+            e.Handled = true;
+        }
+
+        private void Thumb_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            _nameWidth = 0;
+            _typeWidth = 0;
+        }
+
+        private void Thumb_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+        }
+
+        private void ResetWidth()
+        {
+            if (_globalEnv != null)
+            {
+                SetWidth(_globalEnv);
+            }
+        }
+
+        // Depth first tree traverse
+        private void SetWidth(Variable v)
+        {
+            v.NameWidth = NameColumn.ActualWidth;
+            v.ValueWidth = ValueColumn.ActualWidth;
+            v.TypeWidth = TypeColumn.ActualWidth;
+
+            if (v.Children != null)
+            {
+                foreach (var child in v.Children)
+                {
+                    SetWidth(child);
+                }
+            }
+        }
+
+        #endregion
     }
 }

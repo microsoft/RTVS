@@ -80,7 +80,9 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
+    <Compile Include="DataInspect\HeaderScrollViewer.cs" />
     <Compile Include="Debugger\RDebugSessionProvider.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
