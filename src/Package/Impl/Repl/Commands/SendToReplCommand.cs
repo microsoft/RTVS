@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
@@ -78,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                 }
                 else if(selectedLines.Count > 0)
                 {
-                    replWindow.SubmitAsync(selectedLines);
+                    SubmitAsync(selectedLines, replWindow).DoNotWait();
                 }
 
                 if (line != null && line.LineNumber < snapshot.LineCount - 1)
@@ -98,6 +99,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
             }
 
             return CommandResult.Executed;
+        }
+
+        private static async Task SubmitAsync(List<string> selectedLines, ReplWindow replWindow) {
+            foreach (var selectedLine in selectedLines) {
+                await replWindow.SubmitAsync(new[] {selectedLine});
+            }
         }
 
         protected override void Dispose(bool disposing)
