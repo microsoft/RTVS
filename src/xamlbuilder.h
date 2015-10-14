@@ -111,6 +111,8 @@ namespace rhost {
             void path(double *x, double *y, int npoly, int *nper, bool winding, const std::string& fill_color, const std::string& stroke_color, double stroke_thickness, const std::string& line_dash, const std::string& line_join, const std::string& line_cap, double miter_limit) {
                 std::ostringstream stream;
 
+                // Path Markup Syntax
+                // https://msdn.microsoft.com/en-us/library/vstudio/ms752293(v=vs.100).aspx
                 stream << "<Path Data=\"";
                 if (winding) {
                     // Nonzero
@@ -123,6 +125,7 @@ namespace rhost {
                 for (int i = 0; i < npoly; i++) {
                     int points = nper[i];
                     stream << "M " << x[index] << "," << y[index] << " ";
+                    index++;
                     for (int j = 1; j < points; j++) {
                         stream << "L " << x[index] << "," << y[index] << " ";
                         index++;
