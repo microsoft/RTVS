@@ -13,7 +13,7 @@ namespace Microsoft.Languages.Editor.Completion
     }
 
     /// <summary>
-    /// Base completion controller
+    /// Base completion controller. Not language specific.
     /// </summary>
     public abstract class CompletionController : IIntellisenseController
     {
@@ -44,13 +44,9 @@ namespace Microsoft.Languages.Editor.Completion
             SignatureBroker = signatureBroker;
         }
 
-        public virtual void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
-        {
-        }
+        public abstract void ConnectSubjectBuffer(ITextBuffer subjectBuffer);
 
-        public virtual void DisconnectSubjectBuffer(ITextBuffer subjectBuffer)
-        {
-        }
+        public abstract void DisconnectSubjectBuffer(ITextBuffer subjectBuffer);
 
         public virtual void Detach(ITextView textView)
         {
@@ -63,25 +59,6 @@ namespace Microsoft.Languages.Editor.Completion
 
         public event EventHandler<CompletionCommittedEventArgs> CompletionCommitted;
         public event EventHandler<EventArgs> CompletionDismissed;
-
-        /// <summary>
-        /// Subtracts "offset" from the caret position and returns the character at that new position.
-        /// Returns zero for positions outside the bounds of the snapshot.
-        /// </summary>
-        protected char GetCharacterBeforeCaret(int offset = 1)
-        {
-            SnapshotPoint? caretPoint = TextView.Caret.Position.BufferPosition;
-            if (caretPoint.HasValue)
-            {
-                int position = caretPoint.Value.Position - offset;
-                if (position >= 0 && position < caretPoint.Value.Snapshot.Length)
-                {
-                    return caretPoint.Value.Snapshot[position];
-                }
-            }
-
-            return '\0';
-        }
 
         /// <summary>
         /// Should this key press commit a completion session?
@@ -384,7 +361,10 @@ namespace Microsoft.Languages.Editor.Completion
             return CommitCompletionSession('\0');
         }
 
-        // callback to allow derived controllers a chance to update CompletionSession.SelectedCompletionSet.SelectionStatus.Completion.InsertionText
+        /// <summary>
+        /// Gives derived controllers a chance to update 
+        /// CompletionSession.SelectedCompletionSet.SelectionStatus.Completion.InsertionText
+        /// </summary>
         protected virtual void UpdateInsertionText()
         {
         }
@@ -398,8 +378,10 @@ namespace Microsoft.Languages.Editor.Completion
         }
 
         /// <summary>
-        /// Filter the contents of the completion dropdown to only match what's been
-        /// typed so far.
+        /// Restricts the set of completions to those that match the applicability
+        /// text of the completion set, and then determines the best match.
+        /// R is case-sensitive so 't' is different from 'T' (the latter is 
+        /// a shortcut for 'TRUE').
         /// </summary>
         public virtual void FilterCompletionSession()
         {
@@ -505,6 +487,12 @@ namespace Microsoft.Languages.Editor.Completion
             }
         }
 
+        /// <summary>
+        /// Determines if current completion session is automatically invoked
+        /// such as when user types a trigger character. Oppisite is
+        /// when user explicitly invokes Edit > Intellisense > Show Members
+        /// or similar command such as Ctrl+J or Ctrl+Space.
+        /// </summary>
         protected bool IsAutoShownCompletion()
         {
             bool value = false;
@@ -513,6 +501,12 @@ namespace Microsoft.Languages.Editor.Completion
             return value;
         }
 
+        /// <summary>
+        /// Determines if current signature session is automatically invoked
+        /// such as when user types a trigger character. Oppisite is
+        /// when user explicitly invokes Edit > Intellisense > Parameter Info
+        /// or similar command such as Ctrl+Shift+Space.
+        /// </summary>
         protected bool IsAutoShownSignature()
         {
             bool value = false;

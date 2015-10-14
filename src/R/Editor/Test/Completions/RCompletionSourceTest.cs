@@ -52,13 +52,8 @@ namespace Microsoft.R.Editor.Test.Completions
 
             completionSets[0].Filter();
 
-            Assert.AreEqual("F", completionSets[0].Completions[0].DisplayText);
-            Assert.AreEqual("Logical Vectors", completionSets[0].Completions[0].Description);
-
-            Assert.AreEqual("factanal", completionSets[0].Completions[1].DisplayText);
-            Assert.AreEqual("Factor Analysis", completionSets[0].Completions[1].Description);
-
-            Assert.AreEqual("factor", completionSets[0].Completions[2].DisplayText);
+            Assert.AreEqual("factanal", completionSets[0].Completions[0].DisplayText);
+            Assert.AreEqual("Factors", completionSets[0].Completions[1].Description);
         }
 
         [TestMethod]
@@ -178,6 +173,25 @@ namespace Microsoft.R.Editor.Test.Completions
 
                 Assert.AreNotEqual(0, completionSets.Count);
                 Assert.AreNotEqual(0, completionSets[0].Completions.Count);
+            }
+        }
+
+        [TestMethod]
+        public void RCompletionSource_CaseSentivityTest()
+        {
+            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
+
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("x <- T", 6, completionSets);
+
+            Assert.AreEqual(1, completionSets.Count);
+
+            completionSets[0].Filter();
+            Assert.AreNotEqual(0, completionSets[0].Completions.Count);
+
+            for (int i = 0; i < completionSets[0].Completions.Count; i++)
+            {
+                Assert.AreEqual('T', completionSets[0].Completions[i].DisplayText[0]);
             }
         }
 

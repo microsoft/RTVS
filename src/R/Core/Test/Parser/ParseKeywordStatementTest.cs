@@ -106,5 +106,41 @@ IndentifierExpected Token [8...9)
 ";
             ParserTest.VerifyParse(expected, "return()");
         }
+
+        [TestMethod]
+        public void ParseTypeofTest()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    KeywordExpressionStatement  []
+        TokenNode  [typeof [0...6)]
+        TokenNode  [( [6...7)]
+        Expression  [1]
+            NumericalValue  [1 [7...8)]
+        TokenNode  [) [8...9)]
+";
+            ParserTest.VerifyParse(expected, "typeof(1)");
+        }
+
+        [TestMethod]
+        public void ParseSwitchTest()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    KeywordFunctionStatement  [0...11)
+        TokenNode  [switch [0...6)]
+        TokenNode  [( [6...7)]
+        ArgumentList  [7...10)
+            ExpressionArgument  [7...9)
+                Expression  [1]
+                    NumericalValue  [1 [7...8)]
+                TokenNode  [, [8...9)]
+            ExpressionArgument  [9...10)
+                Expression  [2]
+                    NumericalValue  [2 [9...10)]
+        TokenNode  [) [10...11)]
+";
+            ParserTest.VerifyParse(expected, "switch(1,2)");
+        }
     }
 }

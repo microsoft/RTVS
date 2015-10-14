@@ -116,6 +116,7 @@
     <Compile Include="Completion\Providers\PackagesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\FunctionCompletionProvider.cs" />
     <Compile Include="Completion\Providers\KeywordCompletionProvider.cs" />
+    <Compile Include="Completion\RCompletionSet.cs" />
     <Compile Include="Completion\RCompletionSource.cs" />
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />

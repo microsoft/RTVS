@@ -104,8 +104,8 @@ namespace Microsoft.R.Editor.Test.Formatting
 
             string expected =
 @"if (true) {
-    if (false) {
-    }
+  if (false) {
+  }
 }";
 
             Assert.AreEqual(expected, actual);

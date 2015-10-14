@@ -17,8 +17,8 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("if(true){if(false){}}");
             string expected =
 @"if (true) {
-    if (false) {
-    }
+  if (false) {
+  }
 }";
             Assert.AreEqual(expected, actual);
         }
@@ -30,8 +30,8 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("if(a == a+((b+c)/x)){if(func(a,b, c+2, x=2, ...)){}}");
             string expected =
 @"if (a == a + ((b + c) / x)) {
-    if (func(a, b, c + 2, x = 2, ...)) {
-    }
+  if (func(a, b, c + 2, x = 2, ...)) {
+  }
 }";
             Assert.AreEqual(expected, actual);
         }
@@ -68,11 +68,11 @@ namespace Microsoft.R.Core.Test.Formatting
             string expected =
 @"if (TRUE)
 {
-    1
+  1
 }
 else
 {
-    2
+  2
 }
 x <- 1";
             Assert.AreEqual(expected, actual);
@@ -89,15 +89,15 @@ x <- 1";
             string expected =
 @"if (TRUE)
 {
-    1
+  1
 }
 else if (FALSE)
 {
-    2
+  2
 }
 else
 {
-    3
+  3
 }
 x <- 1";
             Assert.AreEqual(expected, actual);
@@ -110,7 +110,7 @@ x <- 1";
             string actual = f.Format("if(true) x<-2");
             string expected =
 @"if (true)
-    x <- 2";
+  x <- 2";
             Assert.AreEqual(expected, actual);
         }
 
@@ -145,8 +145,8 @@ x <- 1";
             string actual = f.Format("if(true) if(false)   x<-2");
             string expected =
 @"if (true)
-    if (false)
-        x <- 2";
+  if (false)
+    x <- 2";
             Assert.AreEqual(expected, actual);
         }
 
@@ -157,9 +157,9 @@ x <- 1";
             string actual = f.Format("if(true) if(false)   x<-2 else {1}");
             string expected =
 @"if (true)
-    if (false) x <- 2 else {
-        1
-    }";
+  if (false) x <- 2 else {
+    1
+  }";
             Assert.AreEqual(expected, actual);
         }
 
@@ -170,12 +170,12 @@ x <- 1";
             string actual = f.Format("if(true) repeat { x <-1; next;} else z");
             string expected =
 @"if (true)
-    repeat {
-        x <- 1;
-        next;
-    }
+  repeat {
+    x <- 1;
+    next;
+  }
 else
-    z";
+  z";
             Assert.AreEqual(expected, actual);
         }
 
@@ -186,11 +186,10 @@ else
             string actual = f.Format("if(true) if(false) {  x<-2 } else 1");
             string expected =
 @"if (true)
-    if (false) {
-        x <- 2
-    }
-    else
-        1";
+  if (false) {
+    x <- 2
+  } else
+    1";
             Assert.AreEqual(expected, actual);
         }
 
@@ -201,7 +200,7 @@ else
             string actual = f.Format("repeat x<-2");
             string expected =
 @"repeat
-    x <- 2";
+  x <- 2";
             Assert.AreEqual(expected, actual);
         }
 
@@ -220,7 +219,7 @@ else
             string expected =
 @"
 if (intercept) {
-    x <- cbind(1, x)
+  x <- cbind(1, x)
 }
 ";
             Assert.AreEqual(expected, actual);
@@ -247,12 +246,12 @@ x<-3
             string expected =
 @"
 if (intercept) {
-    if (x > 1)
-        x <- 1
-    else
-        if (x > 2) {
-            x <- 3
-        }
+  if (x > 1)
+    x <- 1
+  else
+    if (x > 2) {
+      x <- 3
+    }
 }
 ";
             Assert.AreEqual(expected, actual);
@@ -275,9 +274,9 @@ x<-3
             string expected =
 @"
 if (intercept) {
-    x <- 1
+  x <- 1
 
-    x <- 3
+  x <- 3
 }
 ";
             Assert.AreEqual(expected, actual);
@@ -303,10 +302,10 @@ x<-3
 @"
 # comment1
 if (intercept) {
-    x <- 1
+  x <- 1
 
-    # comment2
-    x <- 3
+  # comment2
+  x <- 3
 }
 ";
             Assert.AreEqual(expected, actual);
@@ -322,7 +321,7 @@ if (intercept) {
 
             string expected =
 @"for (i in 1:6)
-    x[, i] = rowMeans(fmri[[i]])";
+  x[, i] = rowMeans(fmri[[i]])";
 
             Assert.AreEqual(expected, actual);
         }

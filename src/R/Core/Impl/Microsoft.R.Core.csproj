@@ -89,6 +89,7 @@
     <Compile Include="AST\RValueTokenNode.cs" />
     <Compile Include="AST\Search\AstSearch.cs" />
     <Compile Include="AST\Statements\Definitions\IExpressionStatement.cs" />
+    <Compile Include="AST\Statements\Definitions\IKeywordFunction.cs" />
     <Compile Include="AST\Statements\Definitions\IKeywordExpressionScope.cs" />
     <Compile Include="AST\Statements\Definitions\IKeywordExpression.cs" />
     <Compile Include="AST\Statements\Definitions\IKeywordScopeStatement.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="AST\Statements\EmptyStatement.cs" />
     <Compile Include="AST\Statements\Functions\FunctionStatement.cs" />
     <Compile Include="AST\Statements\KeywordExpression.cs" />
+    <Compile Include="AST\Statements\KeywordFunctionStatement.cs" />
     <Compile Include="AST\Statements\LibraryStatement.cs" />
     <Compile Include="AST\Statements\KeywordIdentifierStatement.cs" />
     <Compile Include="AST\Utility\AstWriter.cs" />

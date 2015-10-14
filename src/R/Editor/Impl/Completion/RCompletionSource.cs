@@ -73,13 +73,7 @@ namespace Microsoft.R.Editor.Completion
             completions.Sort(RCompletion.Compare);
             completions.RemoveDuplicates();
 
-            CompletionSet completionSet = new CompletionSet(
-                "R Completion",
-                "R Completion",
-                trackingSpan,
-                completions,
-                Enumerable.Empty<RCompletion>());
-
+            CompletionSet completionSet = new RCompletionSet(trackingSpan, completions);
             completionSets.Add(completionSet);
         }
 

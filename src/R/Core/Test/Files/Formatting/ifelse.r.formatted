@@ -2,11 +2,9 @@ while (guess != num) {
   guess <- readinteger()
   if (guess == num) {
     cat("Congratulations,", num, "is right.\n")
-  }
-  else if (guess < num) {
+  } else if (guess < num) {
     cat("It's bigger!\n'")
-  }
-  else
+  } else
     if (guess > num) {
       cat("It's smaller!\n")
     }

@@ -15,7 +15,7 @@ namespace Microsoft.R.Core.AST.Operators
     /// or function call as in x[1](a, b) or func(a)(b)(c).
     /// </summary>
     [DebuggerDisplay("FunctionCall, Args:{Arguments.Count} [{Start}...{End})")]
-    public sealed class FunctionCall : Operator, IFunction
+    public class FunctionCall : Operator, IFunction
     {
         /// <summary>
         /// 'virtual end' of the function call if closing

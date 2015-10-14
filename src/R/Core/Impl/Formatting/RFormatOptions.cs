@@ -2,13 +2,18 @@
 
 namespace Microsoft.R.Core.Formatting
 {
+    /// <summary>
+    /// R formatting options. Typical styles can be found at
+    /// http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml
+    /// http://adv-r.had.co.nz/Style.html
+    /// </summary>
     public class RFormatOptions
     {
         public bool BracesOnNewLine { get; set; } = false;
 
-        public int IndentSize { get; set; } = 4;
+        public int IndentSize { get; set; } = 2;
 
-        public int TabSize { get; set; } = 4;
+        public int TabSize { get; set; } = 2;
 
         public IndentType IndentType { get; set; } = IndentType.Spaces;
 
