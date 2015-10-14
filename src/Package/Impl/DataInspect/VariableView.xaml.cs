@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define PRINTTHUMB
+using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -204,8 +205,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         private double _typeWidth;
         private void Thumb_DragStarted(object sender, DragStartedEventArgs e)
         {
-            _nameWidth = NameColumn.Width;
-            _typeWidth = TypeColumn.Width;
+            _nameWidth = NameColumn.ActualWidth;
+            _typeWidth = TypeColumn.ActualWidth;
         }
 
         private void Thumb_DragDelta(object sender, DragDeltaEventArgs e)
@@ -214,7 +215,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             if (sender == LeftThumb)
             {
                 var newNameWidth = _nameWidth + e.HorizontalChange;
-
+#if PRINTTHUMB
+                Debug.WriteLine("LeftThumb:{0} {1} {2} {3}", HeaderRowGrid.ActualWidth, _nameWidth, _typeWidth, e.HorizontalChange);
+#endif
                 if (newNameWidth > 5
                     && (newNameWidth + _typeWidth + 10) < (HeaderRowGrid.ActualWidth))
                 {
@@ -226,9 +229,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             else if (sender == RightThumb)
             {
                 var newTypeWidth = _typeWidth - e.HorizontalChange;
-
-                Debug.WriteLine("{0} {1} {2} {3}", HeaderRowGrid.ActualWidth, _nameWidth, _typeWidth, e.HorizontalChange);
-
+#if PRINTTHUMB
+                Debug.WriteLine("RightThumb:{0} {1} {2} {3}", HeaderRowGrid.ActualWidth, _nameWidth, _typeWidth, e.HorizontalChange);
+#endif
                 if (newTypeWidth > 5
                     && (_nameWidth + newTypeWidth + 10) < (HeaderRowGrid.ActualWidth))
                 {
@@ -280,6 +283,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             }
         }
 
-        #endregion
+#endregion
     }
 }

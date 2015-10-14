@@ -4,18 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect"
-             xmlns:wpf="clr-namespace:Microsoft.VisualStudioTools.Wpf"
+             xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             Background="{DynamicResource {x:Static wpf:Controls.BackgroundKey}}"
-             Foreground="{DynamicResource {x:Static wpf:Controls.ForegroundKey}}"
-             FontFamily="Consolas"
+             Foreground="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextBrushKey}}"
              HorizontalAlignment="Stretch">
 
     <UserControl.Resources>
         <ResourceDictionary>
-            <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource ResourceKey={x:Static wpf:Controls.ScrollBarStyleKey}}" />
-
             <Style x:Key="HeaderScrollViewerControlTemplate" TargetType="{x:Type local:HeaderScrollViewer}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -30,10 +27,10 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
+                                <ContentPresenter Content="{TemplateBinding Header}" />
                                 <Rectangle x:Name="Corner"
                                    Grid.Column="1"
                                    Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="2"/>
-                                    <ContentPresenter Content="{TemplateBinding Header}" />
                                 <ScrollContentPresenter
                                     x:Name="PART_ScrollContentPresenter"
                                     CanContentScroll="{TemplateBinding CanContentScroll}"
@@ -46,14 +43,16 @@
                                    Maximum="{TemplateBinding ScrollableHeight}" Minimum="0"
                                    Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
                                    Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                   ViewportSize="{TemplateBinding ViewportHeight}"/>
+                                   ViewportSize="{TemplateBinding ViewportHeight}"
+                                   Style="{DynamicResource {x:Static vsshell:VsResourceKeys.ScrollBarStyleKey}}"/>
                                 <ScrollBar x:Name="PART_HorizontalScrollBar"
                                    AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow"
                                    Grid.Column="0" Grid.Row="2"
                                    Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal"
                                    Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
                                    Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                   ViewportSize="{TemplateBinding ViewportWidth}"/>
+                                   ViewportSize="{TemplateBinding ViewportWidth}"
+                                   Style="{DynamicResource {x:Static vsshell:VsResourceKeys.ScrollBarStyleKey}}"/>
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -74,17 +73,23 @@
             </Style>
 
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
-
                 <ResourceDictionary>
                     <local:LevelToIndentConverter x:Key="LevelToIndentConverter" />
 
                     <Style x:Key="CellBorderStyle" TargetType="{x:Type Border}">
-                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Controls.ControlBorderKey}}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}"/>
                         <Setter Property="BorderThickness" Value="0,0,1,0"/>
                         <Setter Property="SnapsToDevicePixels" Value="True"/>
                     </Style>
 
+                    <Style x:Key="CellTextBlockStyle" TargetType="{x:Type TextBlock}">
+                        <Setter Property="Padding" Value="3,0,3,0" />
+                        <Setter Property="TextWrapping" Value="NoWrap" />
+                        <Setter Property="ClipToBounds" Value="True" />
+                        <Setter Property="FontFamily" Value="Consolas" />
+                        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextBrushKey}}" />
+                    </Style>
+                    
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}"
                                   DataType="{x:Type local:Variable}">
                         <Grid>
@@ -92,27 +97,21 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Style="{DynamicResource CellBorderStyle}">
-                                <TextBlock Text="{Binding VariableValue}" Width="{Binding ValueWidth}"  Padding="3,0,3,0" TextWrapping="NoWrap" ClipToBounds="True"/>
+                            <Border Grid.Column="0" Style="{DynamicResource CellBorderStyle}" Width="{Binding ValueWidth}">
+                                <TextBlock Text="{Binding VariableValue}" Style="{StaticResource CellTextBlockStyle}"/>
                             </Border>
-                            <Border Grid.Column="1" Style="{DynamicResource CellBorderStyle}">
-                                <TextBlock Text="{Binding TypeName}" Width="{Binding TypeWidth}" Padding="3,0,3,0" TextWrapping="NoWrap" ClipToBounds="True"/>
+                            <Border Grid.Column="1" Style="{DynamicResource CellBorderStyle}" Width="{Binding TypeWidth}">
+                                <TextBlock Text="{Binding TypeName}" Style="{StaticResource CellTextBlockStyle}"/>
                             </Border>
                         </Grid>
                     </HierarchicalDataTemplate>
 
-                    <Style x:Key="HeaderCellBorderStyle" TargetType="{x:Type Border}">
-                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Controls.ControlBorderKey}}"/>
-                        <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="SnapsToDevicePixels" Value="True"/>
-                    </Style>
-
                     <Style x:Key="TreeViewItemStyle" TargetType="{x:Type TreeViewItem}">
-                        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Controls.BackgroundKey}}"/>
+                        <Setter Property="Background" Value="{DynamicResource {x:Static vsui:TreeViewColors.BackgroundBrushKey}}"/>
                         <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ItemsControl}}}"/>
                         <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ItemsControl}}}"/>
-                        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Controls.ForegroundKey}}"/>
-                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Controls.ControlBorderKey}}"/>
+                        <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Controls.ForegroundKey}}"/>-->
+                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}"/>
                         <Setter Property="BorderThickness" Value="0,0,0,1" />
                         <Setter Property="FocusVisualStyle">
                             <Setter.Value>
@@ -203,7 +202,7 @@
                                                         </ToggleButton.Style>
                                                     </ToggleButton>
                                                     <Border Grid.Column="2" Style="{DynamicResource CellBorderStyle}">
-                                                        <TextBlock Text="{Binding VariableName}" Padding="3,0,3,0" TextWrapping="NoWrap" ClipToBounds="True"/>
+                                                        <TextBlock Text="{Binding VariableName}" Style="{StaticResource CellTextBlockStyle}"/>
                                                     </Border>
                                                 </Grid>
                                                 
@@ -226,19 +225,19 @@
                                             <Setter Property="Visibility" TargetName="Expander" Value="Hidden"/>
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static wpf:Controls.HighlightKey}}"/>
-                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Controls.HighlightTextKey}}"/>
+                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveBrushKey}}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
                                         </Trigger>
                                         <MultiTrigger>
                                             <MultiTrigger.Conditions>
                                                 <Condition Property="IsSelected" Value="True"/>
                                                 <Condition Property="IsSelectionActive" Value="False"/>
                                             </MultiTrigger.Conditions>
-                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static wpf:Controls.ControlBackgroundKey}}"/>
-                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Controls.ControlForegroundKey}}"/>
+                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveBrushKey}}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static vsui:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
                                         </MultiTrigger>
                                         <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Controls.GrayTextKey}}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextDisabledBrushKey}}"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -274,29 +273,39 @@
                                   Style="{StaticResource HeaderScrollViewerControlTemplate}"
                                   VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
             <local:HeaderScrollViewer.Header>
-                <Grid x:Name="HeaderRowGrid">
+                <Grid x:Name="HeaderRowGrid" Margin="1,0,1,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" Style="{DynamicResource HeaderCellBorderStyle}">
-                        <Grid x:Name="NameColumn" Width="140">
-                            <TextBlock Text="Name" TextWrapping="NoWrap" />
-                        </Grid>
+                    <Grid.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="TextWrapping" Value="NoWrap" />
+                            <Setter Property="ClipToBounds" Value="True" />
+                            <Setter Property="TextAlignment" Value="Left" />
+                            <Setter Property="Padding" Value="8,3,8,3" />
+                        </Style>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsui:CommonControlsColors.ButtonBorderBrushKey}}"/>
+                            <Setter Property="BorderThickness" Value="0,1,1,1"/>
+                            <Setter Property="SnapsToDevicePixels" Value="True"/>
+                        </Style>
+                    </Grid.Resources>
+
+                    <Border x:Name="NameColumn" Grid.Column="0" BorderThickness="1" Width="200">
+                        <TextBlock Text="Name" />
                     </Border>
-                    <Border Grid.Column="1" Style="{DynamicResource HeaderCellBorderStyle}" >
-                        <Grid x:Name="ValueColumn">
-                            <TextBlock Text="Value" TextWrapping="NoWrap" />
+                    <Border  x:Name="ValueColumn" Grid.Column="1">
+                        <Grid>
+                            <TextBlock Text="Value"/>
                             <Thumb x:Name="LeftThumb" HorizontalAlignment="Left" Style="{StaticResource ColumnHeaderGripperStyle}"/>
                             <Thumb x:Name="RightThumb" HorizontalAlignment="Right" Style="{StaticResource ColumnHeaderGripperStyle}"/>
                         </Grid>
                     </Border>
-                    <Border Grid.Column="2" Style="{DynamicResource HeaderCellBorderStyle}">
-                        <Grid x:Name="TypeColumn" Width="100">
-                            <TextBlock Text="Type" TextWrapping="NoWrap"/>
-                        </Grid>
+                    <Border x:Name="TypeColumn" Grid.Column="2" Width="100">
+                        <TextBlock Text="Type"/>
                     </Border>
                 </Grid>
             </local:HeaderScrollViewer.Header>
