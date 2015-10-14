@@ -6,6 +6,7 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -69,8 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                 RCompletionController controller = RCompletionController.FromTextView(TextView);
                 if (controller != null)
                 {
-                    if (id == (int)VSConstants.VSStd2KCmdID.TAB ||
-                       id == (int)VSConstants.VSStd2KCmdID.RETURN)
+                    if (id == (int)VSConstants.VSStd2KCmdID.TAB)
                     {
                         // If completion is up, commit it
                         if (controller.HasActiveCompletionSession)
@@ -79,18 +79,24 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                             controller.DismissAllSessions();
                             return CommandResult.Executed;
                         }
+                        else
+                        {
+                            controller.DismissAllSessions();
+                            controller.ShowCompletion(autoShownCompletion: true);
+                            return CommandResult.Executed;
+                        }
+                    }
+                    else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)
+                    {
+                        // If completion is up, commit it
+                        if (controller.HasActiveCompletionSession && REditorSettings.CommitOnEnter)
+                        {
+                            controller.CommitCompletionSession();
+                            controller.DismissAllSessions();
+                        }
 
                         controller.DismissAllSessions();
-                        if (id == (int)VSConstants.VSStd2KCmdID.TAB)
-                        {
-                            controller.ShowCompletion(autoShownCompletion: true);
-                        }
-                        else if (id == (int)VSConstants.VSStd2KCmdID.RETURN)
-                        {
-                            // execute if the expression is complete
-                            ReplWindow.Current.ExecuteCurrentExpression(TextView);
-                        }
-
+                        ReplWindow.Current.ExecuteCurrentExpression(TextView);
                         return CommandResult.Executed;
                     }
                 }
