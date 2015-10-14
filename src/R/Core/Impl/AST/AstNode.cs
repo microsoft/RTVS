@@ -65,10 +65,10 @@ namespace Microsoft.R.Core.AST
             else if (child.Parent == this)
             {
 #if DEBUG
-                foreach (var c in _children)
-                {
-                    Debug.Assert(!TextRange.Intersect(c, child), "Children collection already contains overlapping node");
-                }
+                //foreach (var c in _children)
+                //{
+                //    Debug.Assert(!TextRange.Intersect(c, child), "Children collection already contains overlapping node");
+                //}
 #endif
                 _children.AddSorted(child);
             }
