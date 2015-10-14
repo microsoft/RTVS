@@ -154,7 +154,12 @@
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
-      
+
+      <!-- Same as above, but excludes commands that are already present in Interactive Window toolbar (like Restart). -->
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0600">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+      </Group>
+
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0300">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
@@ -183,6 +188,10 @@
       
       <!-- InteractiveWindow -->
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0700">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
 
@@ -226,7 +235,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0300" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionInterrupt"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -234,6 +243,18 @@
           <ButtonText>Interrupt R</ButtonText>
           <MenuText>&amp;Interrupt R</MenuText>
           <CommandName>Interrupt R</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
+        <Icon guid="ImageCatalogGuid" id="RemoteDebugger"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Attach Debugger</ButtonText>
+          <MenuText>A&amp;ttach Debugger</MenuText>
+          <CommandName>Attach Debugger</CommandName>
         </Strings>
       </Button>
 
@@ -246,17 +267,6 @@
           <ButtonText>Set Working Directory...</ButtonText>
           <MenuText>Set Working &amp;Directory...</MenuText>
           <CommandName>Set Working Directory</CommandName>
-        </Strings>
-      </Button>
-
-      <Button guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup"/>
-        <Icon guid="ImageCatalogGuid" id="RemoteDebugger"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <Strings>
-          <ButtonText>Attach Debugger</ButtonText>
-          <MenuText>A&amp;ttach Debugger</MenuText>
-          <CommandName>Attach Debugger</CommandName>
         </Strings>
       </Button>
       <!-- End Workspace flyout -->
@@ -734,6 +744,14 @@
       <Parent guid="guidRToolsCmdSet" id="plotToolbarZoomGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
   </CommandPlacements>
 
   <KeyBindings>
@@ -816,6 +834,7 @@
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
       <IDSymbol name="sessionSubMenuDirectoryGroup" value="553"/>
+      <IDSymbol name="sessionSubMenuRInteractiveGroup" value="554"/>
 
       <!-- Packages-->
       <IDSymbol name="icmdInstallPackages" value="601" />

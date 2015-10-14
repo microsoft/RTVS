@@ -22,6 +22,8 @@ namespace Microsoft.VisualStudio.Editor.Mocks
         private string _idePath;
         private string _editorPath;
         private string _privatePath;
+        private string _cpsPath;
+        private string _sharedPath;
 
         private static string _partsData;
         private static string _exportsData;
@@ -37,6 +39,19 @@ namespace Microsoft.VisualStudio.Editor.Mocks
             "Microsoft.VisualStudio.Text.UI.dll",
             "Microsoft.VisualStudio.Text.UI.Wpf.dll",
         };
+
+        private static string[] _cpsAssemblies = new string[]
+        {
+            "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
+            "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
+        };
+
+        private static string[] _projectAssemblies = new string[]
+         {
+            "Microsoft.VisualStudio.ProjectSystem.Utilities.v14.0.dll",
+            "Microsoft.VisualStudio.ProjectSystem.V14Only.dll",
+            "Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll",
+         };
 
         private static IEnumerable<string> _customMefAssemblies = new string[0];
 
@@ -63,6 +78,16 @@ namespace Microsoft.VisualStudio.Editor.Mocks
             if (asm == null && !string.IsNullOrEmpty(_idePath))
             {
                 string path = Path.Combine(_idePath, name);
+
+                if (File.Exists(path))
+                {
+                    asm = Assembly.LoadFrom(path);
+                }
+            }
+
+            if (asm == null && !string.IsNullOrEmpty(_sharedPath))
+            {
+                string path = Path.Combine(_sharedPath, name);
 
                 if (File.Exists(path))
                 {
@@ -112,6 +137,8 @@ namespace Microsoft.VisualStudio.Editor.Mocks
             _idePath = GetHostExePath();
             _editorPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Editor");
             _privatePath = Path.Combine(_idePath, @"PrivateAssemblies\");
+            _cpsPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Project");
+            _sharedPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Common Files\Microsoft Shared\MsEnv\PublicAssemblies");
 
             AggregateCatalog aggregateCatalog = new AggregateCatalog();
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -119,6 +146,24 @@ namespace Microsoft.VisualStudio.Editor.Mocks
             foreach (string asmName in _editorAssemblies)
             {
                 string asmPath = Path.Combine(_editorPath, asmName);
+                Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
+
+                AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
+                aggregateCatalog.Catalogs.Add(editorCatalog);
+            }
+
+            foreach (string asmName in _cpsAssemblies)
+            {
+                string asmPath = Path.Combine(_cpsPath, asmName);
+                Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
+
+                AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
+                aggregateCatalog.Catalogs.Add(editorCatalog);
+            }
+
+            foreach (string asmName in _projectAssemblies)
+            {
+                string asmPath = Path.Combine(_privatePath, asmName);
                 Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
 
                 AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);

@@ -96,7 +96,7 @@
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
-    <Compile Include="Repl\Commands\AttachDebuggerCommand.cs" />
+    <Compile Include="Repl\Workspace\AttachDebuggerCommand.cs" />
     <Compile Include="Repl\Commands\ReplTypingCommandHandler.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
     <Compile Include="Repl\RSessionExtensions.cs" />

@@ -123,6 +123,24 @@ grid.newpage()
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.15), Y(0.5) - W(0.2));
         }
 
+        [TestMethod]
+        public void Path() {
+            var code = @"grid.path(c(.1, .1, .9, .9, .2, .2, .8, .8), c(.1, .9, .9, .1, .2, .8, .8, .2), id=rep(1:2,each=4), rule='winding', gp=gpar(filled.contour='grey'))";
+            var doc = GridTest(code);
+            var shapes = doc.Descendants(XName.Get("Path", ns)).ToList();
+            Assert.AreEqual(1, shapes.Count);
+            string expected = string.Format("F 1 M {0},{1} L {2},{3} L {4},{5} L {6},{7} Z M {8},{9} L {10},{11} L {12},{13} L {14},{15} Z ",
+                X(.1), Y(.1),
+                X(.1), Y(.9),
+                X(.9), Y(.9),
+                X(.9), Y(.1),
+                X(.2), Y(.2),
+                X(.2), Y(.8),
+                X(.8), Y(.8),
+                X(.8), Y(.2));
+            CheckStringAttr(shapes[0], "Data", expected);
+        }
+
         private XDocument GridTest(string code) {
             return RunGraphicsTest(gridPrefixCode + "\n" + code + "\n");
         }

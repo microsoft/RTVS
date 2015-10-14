@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands
     [TestClass]
     public class CommandFactoryTest : UnitTestBase
     {
-        [TestMethod]
+        //[TestMethod]
         public void Package_CommandFactoryImportTest()
         {
             EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
