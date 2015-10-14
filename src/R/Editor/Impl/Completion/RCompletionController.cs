@@ -406,6 +406,9 @@ namespace Microsoft.R.Editor.Completion
             }
         }
 
+        /// <summary>
+        /// Updates insertion text so it excludes final commit character 
+        /// </summary>
         protected override void UpdateInsertionText()
         {
             if (CompletionSession != null && !IsMuteCharacter(_commitChar))

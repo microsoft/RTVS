@@ -361,7 +361,10 @@ namespace Microsoft.Languages.Editor.Completion
             return CommitCompletionSession('\0');
         }
 
-        // callback to allow derived controllers a chance to update CompletionSession.SelectedCompletionSet.SelectionStatus.Completion.InsertionText
+        /// <summary>
+        /// Gives derived controllers a chance to update 
+        /// CompletionSession.SelectedCompletionSet.SelectionStatus.Completion.InsertionText
+        /// </summary>
         protected virtual void UpdateInsertionText()
         {
         }
@@ -375,8 +378,10 @@ namespace Microsoft.Languages.Editor.Completion
         }
 
         /// <summary>
-        /// Filter the contents of the completion dropdown to only match what's been
-        /// typed so far.
+        /// Restricts the set of completions to those that match the applicability
+        /// text of the completion set, and then determines the best match.
+        /// R is case-sensitive so 't' is different from 'T' (the latter is 
+        /// a shortcut for 'TRUE').
         /// </summary>
         public virtual void FilterCompletionSession()
         {
