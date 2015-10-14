@@ -504,7 +504,12 @@ namespace Microsoft.R.Core.Tokens
 
         private static bool IsIdentifierCharacter(CharacterStream cs)
         {
-            return (cs.IsAnsiLetter() || cs.IsDecimal() || cs.CurrentChar == '.' || cs.CurrentChar == '_');
+            return IsIdentifierCharacter(cs.CurrentChar);
+        }
+
+        public static bool IsIdentifierCharacter(char ch)
+        {
+            return (CharacterStream.IsAnsiLetter(ch) || CharacterStream.IsDecimal(ch) || ch == '.' || ch == '_');
         }
 
         private static bool IsOpenBraceFollow(CharacterStream cs, int position)

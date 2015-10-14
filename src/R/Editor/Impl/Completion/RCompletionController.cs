@@ -22,6 +22,11 @@ namespace Microsoft.R.Editor.Completion
 {
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
+    /// <summary>
+    /// R-specific completion controller. Initiates, commits or dismisses
+    /// completion, signature and parameter help sessions depending 
+    /// on what was typed and the current editor context.
+    /// </summary>
     public sealed class RCompletionController : CompletionController, ICommandTarget
     {
         private ITextBuffer _textBuffer;
@@ -42,6 +47,11 @@ namespace Microsoft.R.Editor.Completion
             ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
         }
 
+        /// <summary>
+        /// Called when text buffer becomes visible in the text view.
+        /// The buffer may not be a top-level buffer in the graph and
+        /// may be projected into view.
+        /// </summary>
         public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
             if (_textBuffer == null)
@@ -53,10 +63,14 @@ namespace Microsoft.R.Editor.Completion
             {
                 ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
             }
-
-            base.ConnectSubjectBuffer(subjectBuffer);
         }
 
+        /// <summary>
+        /// Called when text buffer becomes invisible in the text view.
+        /// The buffer may not be a top-level buffer in the graph and
+        /// may be projected into view. Typically called when document
+        /// is closed or buffer is removed from the view buffer graph.
+        /// </summary>
         public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
             if (_textBuffer == subjectBuffer)
@@ -75,8 +89,6 @@ namespace Microsoft.R.Editor.Completion
 
                 _textBuffer = null;
             }
-
-            base.DisconnectSubjectBuffer(subjectBuffer);
         }
 
         private void OnDocumentReady(REditorDocument document)
@@ -215,6 +227,17 @@ namespace Microsoft.R.Editor.Completion
             return false;
         }
 
+        /// <summary>
+        /// Called before character type is passed down to the core editor
+        /// along the controll chain. Gives language-specific controller
+        /// a chance to initiate different action and potentially 'eat'
+        /// the character. For example, in R typing 'abc[TAB] should bring
+        /// up intellisense list rather than actually insert the tab character.
+        /// </summary>
+        /// <returns>
+        /// True if character was handled and should not be 
+        /// passed down to core editor or false otherwise.
+        /// </returns>
         public override bool OnPreTypeChar(char typedCharacter)
         {
             if (typedCharacter == '\t' && !HasActiveCompletionSession)
@@ -267,18 +290,29 @@ namespace Microsoft.R.Editor.Completion
             return false;
         }
 
+        /// <summary>
+        /// Determines if character is a re-trigger one. Re-trigger
+        /// means 'commit and trigger again' such as when user
+        /// hits $ that commits current session for the class/object
+        /// and trigger it again for object members.
+        /// </summary>
         protected override bool IsRetriggerChar(ICompletionSession session, char typedCharacter)
         {
-            switch (typedCharacter)
-            {
-                case '@':
-                case '$':
-                    return true;
-            }
+            //switch (typedCharacter)
+            //{
+            //    case '@':
+            //    case '$':
+            //        return true;
+            //}
 
             return false;
         }
 
+        /// <summary>
+        /// Called after character is typed. Gives language-specific completion
+        /// controller has a chance to dismiss or initiate completion and paramenter
+        /// help sessions depending on the current context.
+        /// </summary>
         public override void OnPostTypeChar(char typedCharacter)
         {
             if (typedCharacter == '(' || typedCharacter == ',')
@@ -324,6 +358,12 @@ namespace Microsoft.R.Editor.Completion
             base.OnPostTypeChar(typedCharacter);
         }
 
+        /// <summary>
+        /// Determines if current caret position is in the same function
+        /// argument list as before or is it a different one and signature 
+        /// help session should be dismissed and re-triggered. This is helpful
+        /// when user types nested function calls such as 'a(b(c(...), d(...)))'
+        /// </summary>
         private bool IsSameSignatureContext()
         {
             var sessions = SignatureBroker.GetSessions(TextView);

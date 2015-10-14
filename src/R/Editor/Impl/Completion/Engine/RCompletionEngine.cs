@@ -43,9 +43,15 @@ namespace Microsoft.R.Editor.Completion.Engine
                 return providers;
             }
 
-            if(IsInFunctionDefinitionArgumentName(context.AstRoot, context.Position))
+            if (IsInFunctionDefinitionArgumentName(context.AstRoot, context.Position))
             {
                 // No completion in function definition argument names
+                return providers;
+            }
+
+            if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position))
+            {
+                // No completion in data member names yet
                 return providers;
             }
 
@@ -60,7 +66,7 @@ namespace Microsoft.R.Editor.Completion.Engine
                     providers.Add(p.Value);
                 }
 
-                if(!context.IsInNameSpace())
+                if (!context.IsInNameSpace())
                 {
                     providers.Add(new PackagesCompletionProvider());
                 }
@@ -145,15 +151,20 @@ namespace Microsoft.R.Editor.Completion.Engine
             return false;
         }
 
+        /// <summary>
+        /// Determines if position is in the argument name. Typically used
+        /// to suppress general intellisense when typing function arguments 
+        /// in a function/ definition such as in 'x &lt;- function(a|'
+        /// </summary>
         internal static bool IsInFunctionDefinitionArgumentName(AstRoot ast, int position)
         {
             FunctionDefinition funcDef = ast.GetNodeOfTypeFromPosition<FunctionDefinition>(position);
-            if(funcDef == null || funcDef.OpenBrace == null || funcDef.Arguments == null)
+            if (funcDef == null || funcDef.OpenBrace == null || funcDef.Arguments == null)
             {
                 return false;
             }
 
-            if(position < funcDef.OpenBrace.End || position >= funcDef.SignatureEnd)
+            if (position < funcDef.OpenBrace.End || position >= funcDef.SignatureEnd)
             {
                 return false;
             }
@@ -171,7 +182,7 @@ namespace Microsoft.R.Editor.Completion.Engine
                 CommaSeparatedItem csi = funcDef.Arguments[i];
                 NamedArgument na = csi as NamedArgument;
 
-                if(position < csi.Start)
+                if (position < csi.Start)
                 {
                     break;
                 }
@@ -179,14 +190,42 @@ namespace Microsoft.R.Editor.Completion.Engine
                 end = csi.End;
                 if (position >= start && position <= end)
                 {
-                    if(na == null)
+                    if (na == null)
                     {
                         return true; // Suppress intellisense
                     }
 
-                    if(position <= na.EqualsSign.Start)
+                    if (position <= na.EqualsSign.Start)
                     {
                         return true; // Suppress intellisense
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if position is in object member. Typically used
+        /// to suppress general intellisense when typing data member 
+        /// name such as 'mtcars$|'
+        /// </summary>
+        internal static bool IsInObjectMemberName(ITextProvider textProvider, int position)
+        {
+            if (position > 0)
+            {
+                for (int i = position - 1; i >= 0; i--)
+                {
+                    char ch = textProvider[i];
+
+                    if (ch == '$' || ch == '@')
+                    {
+                        return true;
+                    }
+
+                    if (!RTokenizer.IsIdentifierCharacter(ch))
+                    {
+                        break;
                     }
                 }
             }
