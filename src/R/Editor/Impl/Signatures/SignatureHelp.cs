@@ -69,7 +69,11 @@ namespace Microsoft.R.Editor.Signatures
             }
             set
             {
-                _initialPosition = value.GetStartPoint(SubjectBuffer.CurrentSnapshot);
+                if (SubjectBuffer != null)
+                {
+                    _initialPosition = value.GetStartPoint(SubjectBuffer.CurrentSnapshot);
+                }
+
                 _applicableToSpan = value;
             }
         }
@@ -123,7 +127,7 @@ namespace Microsoft.R.Editor.Signatures
                 }
                 else
                 {
-                    IREditorDocument document = REditorDocument.FromTextBuffer(e.After.TextBuffer);
+                    IREditorDocument document = REditorDocument.TryFromTextBuffer(e.After.TextBuffer);
                     if (document != null)
                     {
                         SnapshotPoint? p = REditorDocument.MapCaretPositionFromView(TextView);
@@ -153,7 +157,7 @@ namespace Microsoft.R.Editor.Signatures
 
         public virtual void ComputeCurrentParameter(AstRoot ast, int position)
         {
-            if (Parameters == null || Parameters.Count == 0)
+            if (Parameters == null || Parameters.Count == 0 || SubjectBuffer == null)
             {
                 this.CurrentParameter = null;
                 return;
