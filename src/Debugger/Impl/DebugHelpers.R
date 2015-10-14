@@ -13,14 +13,17 @@
 .rtvs.eval_into <<- function(con, expr, env) {
   err <- NULL;
   tryCatch({
-    obj <- eval(parse(text = expr), env);
+    if (is.character(expr)) {
+      expr <- parse(text = expr);
+    }
+    obj <- eval(expr, env);
   }, error = function(e) {
     err <<- e;
   });
 
   if (is.null(err)) {
     repr <- .rtvs.repr(obj);
-    cat('"value": ', file = con, sep = '');
+    cat('"value":', file = con, sep = '');
     dput(repr, con);
     
     raw_value <- tryCatch({
@@ -29,11 +32,14 @@
       repr;
     })
     
-    cat(', "raw_value": ', file = con, sep = '');
+    cat(', "raw_value":', file = con, sep = '');
     dput(raw_value, con);
     
-    cat(', "type": ', file = con, sep = '');
+    cat(', "type":', file = con, sep = '');
     dput(typeof(obj), con);
+    
+    cat(', "attr_count":', file = con, sep = '');
+    dput(as.double(length(attributes(obj))), con);
   } else {
     cat('"error": ', file = con, sep = '');
     dput(conditionMessage(err), con);
@@ -51,7 +57,89 @@
   }, finally = {
     close(con);
   });
+  json
+}
 
+.rtvs.env_vars_into <<- function(con, env) {
+  cat('{', file = con, sep = '');
+  
+  is_first <- TRUE;
+  for (varname in ls(env, all.names = TRUE)) {
+    if (is_first) {
+      is_first <- FALSE;
+    } else {
+      cat(', ', file = con, sep = '');
+    }
+    
+    dput(varname, con);
+    cat(': {', file = con, sep = '');
+    code <- .Call(".rtvs.Call.unevaluated_promise", varname, env);
+    
+    if (!is.null(code)) {
+      cat('"promise":', file = con, sep = '');
+      dput(.rtvs.repr(code), con);
+    } else if (bindingIsActive(varname, env)) {
+      cat('"active_binding":true', file = con, sep = '');
+    } else {
+      .rtvs.eval_into(con, varname, env);
+    }
+    
+    cat('}', file = con, sep = '');
+  }
+  
+  cat('}\n', file = con, sep = '');
+}
+
+.rtvs.env_vars <<- function(env) {
+  con <- textConnection(NULL, open = "w");
+  on.exit(close(con), add = TRUE);
+  .rtvs.env_vars_into(con, env);
+  json <- paste0(textConnectionValue(con), collapse='');
+  json
+}
+
+.rtvs.children <<- function(obj) {
+  con <- textConnection(NULL, open = "w");
+  on.exit(close(con), add = TRUE);
+  
+  cat('{', file = con, sep = '');
+  
+  cat('"names": [', file = con, sep = '');
+  i <- 1
+  for (name in names(obj)) {
+    if (i != 1) {
+      cat(',', file = con, sep = '');
+    }
+    
+    if (is.character(name) && !is.na(name)) {
+      dput(name, con);
+    } else {
+      cat('null', file = con, sep = '');
+    }
+    
+    i <- i + 1;
+  }
+  cat(']', file = con, sep = '');
+  
+  count = length(obj)
+  if (count > 1 || is.list(obj) || is.language(obj)) {
+    cat(',"items": [', file = con, sep = '');
+    for (i in 1:count) {
+      cat((if (i == 1) '{' else ',{'), file = con, sep = '');
+      .rtvs.eval_into(con, quote(obj[[i]]), environment());
+      cat('}', file = con, sep = '');
+    }
+    cat(']', file = con, sep = '');
+  }
+  
+  if (is.environment(obj)) {
+    cat(',"env_vars": ', file = con, sep = '');
+    .rtvs.env_vars_into(con, env);
+  }
+
+  cat('}\n', file = con, sep = '');
+  
+  json <- paste0(textConnectionValue(con), collapse='');
   json
 }
 
@@ -101,46 +189,6 @@
   });
   
   json
-}
-
-
-.rtvs.env_vars <<- function(env) {
-  con <- textConnection(NULL, open = "w");
-  json <- "{}";
-  tryCatch({
-    cat('{', file = con, sep = '');
-    
-    is_first <- TRUE;
-    for (varname in ls(env)) {
-      if (is_first) {
-        is_first <- FALSE;
-      } else {
-        cat(', ', file = con, sep = '');
-      }
-      
-      dput(varname, con);
-      cat(': {', file = con, sep = '');
-      
-      code <- .Call(".rtvs.Call.unevaluated_promise", varname, env);
-      if (!is.null(code)) {
-        cat('"promise":', file = con, sep = '');
-        dput(.rtvs.repr(code), con);
-      } else if (bindingIsActive(varname, env)) {
-        cat('"active_binding":true', file = con, sep = '');
-      } else {
-        .rtvs.eval_into(con, varname, env);
-      }
-      
-      cat('}', file = con, sep = '');
-    }
-    
-    cat('}\n', file = con, sep = '');
-    json <- paste0(textConnectionValue(con), collapse='');
-  }, finally = {
-    close(con);
-  });
-  
-  json;
 }
 
 
