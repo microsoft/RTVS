@@ -1,0 +1,47 @@
+﻿using System;
+using Microsoft.VisualStudio.Shell;
+
+namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration
+{
+    public sealed class DeveloperActivityAttribute : RegistrationAttribute
+    {
+        private readonly string _projectType;
+        private readonly int _templateSet;
+        private readonly string _developerActivity;
+        private readonly int _sortPriority;
+
+        public DeveloperActivityAttribute(string developerActivity, string projectPackageType, int sortPriority, int templateSet = 1)
+        {
+            _developerActivity = developerActivity;
+            _projectType = projectPackageType;
+            _templateSet = templateSet;
+            _sortPriority = sortPriority;
+        }
+
+        public override void Register(RegistrationAttribute.RegistrationContext context)
+        {
+            Build().Register(context);
+
+            //var key = context.CreateKey("NewProjectTemplates\\TemplateDirs\\" + Guid.Parse(_projectType).ToString("B") + "\\/" + _templateSet);
+            //key.SetValue("DeveloperActivity", _developerActivity);
+            //key.SetValue("SortPriority", _sortPriority);
+            //key.SetValue("", _developerActivity);
+        }
+
+        public override void Unregister(RegistrationAttribute.RegistrationContext context)
+        {
+            Build().Unregister(context);
+        }
+
+        private RegistrationAttributeBuilder Build()
+        {
+            var builder = new RegistrationAttributeBuilder();
+            builder.Key("NewProjectTemplates\\TemplateDirs\\" + Guid.Parse(_projectType).ToString("B") + "\\/" + _templateSet)
+                .StringValue("", _developerActivity)
+                .StringValue("TemplatesDir", "\\.\\NullPath")
+                .StringValue("DeveloperActivity", _developerActivity)
+                .IntValue("SortPriority", _sortPriority);
+            return builder;
+        }
+    }
+}
