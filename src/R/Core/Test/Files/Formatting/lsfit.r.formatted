@@ -1,5 +1,5 @@
 x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
-	yname = NULL) {
+		yname = NULL) {
 	x <- as.matrix(x)
 	y <- as.matrix(y)
 	xnames <- colnames(x)
@@ -19,7 +19,7 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 	dimy <- dim(as.matrix(y))
 	if (any(!good)) {
 		warning(sprintf(ngettext(sum(!good), "%d missing value deleted",
-			"%d missing values deleted"), sum(!good)), domain = NA)
+						"%d missing values deleted"), sum(!good)), domain = NA)
 		x <- as.matrix(x)[good,, drop = FALSE]
 		y <- as.matrix(y)[good,, drop = FALSE]
 		wt <- wt[good]
@@ -31,19 +31,19 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 	nwts <- length(wt)
 	if (nry != nrx)
 		stop(sprintf(paste0(ngettext(nrx, "'X' matrix has %d case (row)",
-		 "'X' matrix has %d cases (rows)"), ", ", ngettext(nry,
-			   "'Y' has %d case (row)", "'Y' has %d cases (rows)")),
-			nrx, nry), domain = NA)
+				 "'X' matrix has %d cases (rows)"), ", ", ngettext(nry,
+							 "'Y' has %d case (row)", "'Y' has %d cases (rows)")),
+						nrx, nry), domain = NA)
 	if (nry < ncx)
 		stop(sprintf(paste0(ngettext(nry, "only %d case", "only %d cases"),
-			", ", ngettext(ncx, "but %d variable", "but %d variables")),
-			nry, ncx), domain = NA)
+						", ", ngettext(ncx, "but %d variable", "but %d variables")),
+						nry, ncx), domain = NA)
 	if (!is.null(wt)) {
 		if (any(wt < 0))
 			stop("negative weights not allowed")
 		if (nwts != nry)
 			stop(gettextf("number of weights = %d should equal %d (number of responses)",
-				nwts, nry), domain = NA)
+								nwts, nry), domain = NA)
 		wtmult <- wt ^ 0.5
 		if (any(wt == 0)) {
 			xzero <- as.matrix(x)[wt == 0,]
@@ -70,8 +70,7 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 	if (dimy[2L] == 1 && is.null(yname)) {
 		resids <- drop(resids)
 		names(z$coefficients) <- xnames
-	}
-	else {
+	} else {
 		colnames(resids) <- yname
 		colnames(z$effects) <- yname
 		dim(z$coefficients) <- c(ncx, ncy)
@@ -91,7 +90,7 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 		output <- c(output, list(wt = weights))
 	}
 	rqr <- list(qt = drop(z$effects), qr = z$qr, qraux = z$qraux,
-		rank = z$rank, pivot = z$pivot, tol = z$tol)
+				rank = z$rank, pivot = z$pivot, tol = z$tol)
 	oldClass(rqr) <- "qr"
 	output <- c(output, list(intercept = intercept, qr = rqr))
 	return (output)

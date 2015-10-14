@@ -262,6 +262,11 @@ namespace Microsoft.Languages.Core.Formatting
             }
         }
 
+        public void Remove(int start, int length)
+        {
+            _formattedText.Remove(start, length);
+        }
+
         public char LastCharacter
         {
             get

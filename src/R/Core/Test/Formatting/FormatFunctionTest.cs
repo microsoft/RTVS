@@ -17,7 +17,7 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("function(a,b) {return(a+b)}");
             string expected =
 @"function(a, b) {
-    return (a + b)
+  return (a + b)
 }";
             Assert.AreEqual(expected, actual);
         }
@@ -36,6 +36,7 @@ namespace Microsoft.R.Core.Test.Formatting
         {
             RFormatOptions options = new RFormatOptions();
             options.IndentType = IndentType.Tabs;
+            options.TabSize = 2;
 
             RFormatter f = new RFormatter(options);
             string original =
@@ -45,10 +46,10 @@ namespace Microsoft.R.Core.Test.Formatting
 ";
             string actual = f.Format(original);
             string expected =
-@"x <- function(x,
- intercept = TRUE, tolerance = 1e-07,
-	yname = NULL)
-";
+"x <- function(x,\r\n" +
+" intercept = TRUE, tolerance = 1e-07,\r\n" +
+"\t\tyname = NULL)\r\n";
+
             Assert.AreEqual(expected, actual);
         }
 
@@ -59,7 +60,7 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("x <- func(a,{return(b)})");
             string expected = 
 @"x <- func(a, {
-    return (b)
+  return (b)
 })";
             Assert.AreEqual(expected, actual);
         }
@@ -71,7 +72,7 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("x <- func({return(b)})");
             string expected =
 @"x <- func({
-    return (b)
+  return (b)
 })";
             Assert.AreEqual(expected, actual);
         }
@@ -83,12 +84,11 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("x <- func(a,{if(TRUE) {x} else {y}})");
             string expected = 
 @"x <- func(a, {
-    if (TRUE) {
-        x
-    }
-    else {
-        y
-    }
+  if (TRUE) {
+    x
+  } else {
+    y
+  }
 })";
             Assert.AreEqual(expected, actual);
         }
@@ -100,7 +100,7 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("x <- func(a,{if(TRUE) 1 else 2})");
             string expected = 
 @"x <- func(a, {
-    if (TRUE) 1 else 2
+  if (TRUE) 1 else 2
 })";
             Assert.AreEqual(expected, actual);
         }
@@ -116,7 +116,7 @@ if(TRUE) 1 else 2})";
             string actual = f.Format(original);
             string expected = 
 @"x <- func(a, {
-    if (TRUE) 1 else 2
+  if (TRUE) 1 else 2
 })";
 
             Assert.AreEqual(expected, actual);
@@ -133,12 +133,11 @@ if(TRUE) {1} else {2}})";
             string actual = f.Format(original);
             string expected =
 @"x <- func(a, {
-    if (TRUE) {
-        1
-    }
-    else {
-        2
-    }
+  if (TRUE) {
+    1
+  } else {
+    2
+  }
 })";
 
             Assert.AreEqual(expected, actual);
@@ -157,12 +156,11 @@ if(TRUE) {1} else {2}})";
             string actual = f.Format(original);
             string expected =
 @"x <- func(a, {
-    if (TRUE) {
-        1
-    }
-    else {
-        2
-    }
+  if (TRUE) {
+    1
+  } else {
+    2
+  }
 })";
             Assert.AreEqual(expected, actual);
         }
@@ -177,16 +175,16 @@ if(TRUE) {1} else {2}})";
             
             string original =
 @"x <- func(a,
-    {
+   {
       if(TRUE) 1 else 2
-    })";
+   })";
 
             string actual = f.Format(original);
             string expected =
 @"x <- func(a,
-    {
-        if (TRUE) 1 else 2
-    })";
+   {
+     if (TRUE) 1 else 2
+   })";
 
             Assert.AreEqual(expected, actual);
         }
@@ -198,7 +196,7 @@ if(TRUE) {1} else {2}})";
 
             string original =
 @"x <- func(a,
-    {
+   {
       if(TRUE) 
         if(FALSE) {x <-1} else x<-2
 else
@@ -208,16 +206,15 @@ else
             string actual = f.Format(original);
             string expected =
 @"x <- func(a, {
-    if (TRUE)
-        if (FALSE) {
-            x <- 1
-        }
-        else
-            x <- 2
-    else
-        if (z) x <- 1 else {
-            5
-        }
+  if (TRUE)
+    if (FALSE) {
+      x <- 1
+    } else
+      x <- 2
+  else
+    if (z) x <- 1 else {
+      5
+    }
 })";
 
             Assert.AreEqual(expected, actual);
@@ -233,7 +230,7 @@ else
             string actual = f.Format("function(a, b) {return(a+b)}");
             string expected =
 @"function(a,b) {
-    return (a + b)
+  return (a + b)
 }";
             Assert.AreEqual(expected, actual);
         }

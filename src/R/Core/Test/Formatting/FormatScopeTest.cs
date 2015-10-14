@@ -45,8 +45,8 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("{{}}");
             string expected =
 @"{
-    {
-    }
+  {
+  }
 }";
             Assert.AreEqual(expected, actual);
         }

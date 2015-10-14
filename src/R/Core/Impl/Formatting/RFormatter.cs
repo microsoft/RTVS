@@ -305,8 +305,19 @@ namespace Microsoft.R.Core.Formatting
                 {
                     // if (FALSE) {
                     //   x <- 1
-                    // }
-                    // else
+                    // } else
+                    // i.e. keep 'else' at the same line.
+                    if (!_options.BracesOnNewLine && _tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace)
+                    {
+                        while (_tb.LastCharacter == '\r' || _tb.LastCharacter == '\n')
+                        {
+                            // Undo line break
+                            _tb.Remove(_tb.Length - 1, 1);
+                        }
+
+                        _tb.AppendPreformattedText(" ");
+                    }
+
                     AppendKeyword();
                 }
 
@@ -352,8 +363,8 @@ namespace Microsoft.R.Core.Formatting
             bool addLineBreak = true;
 
             // Special case: preserve like break between 'else' and 'if'
-            // if user put it there so 'else if' remains on one line
-            // if user didn't put line break between them.
+            // if user put it there  'else if' remains on one line
+            // if user didn't then add line break between them.
 
             if (IsInArguments() ||
                 (keyword == "else" && _tokens.CurrentToken.IsKeywordText(_textProvider, "if") &&
