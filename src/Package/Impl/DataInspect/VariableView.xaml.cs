@@ -70,15 +70,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 ThreadHelper.Generic.BeginInvoke(
                     DispatcherPriority.Normal,
                     () =>
+                {
+                    if (_globalEnv == null)
                     {
-                        if (_globalEnv == null)
-                        {
-                            SetVariable(newVariable);
-                        }
-                        else
-                        {
-                            _globalEnv.Update(newVariable);
-                        }
+                        SetVariable(newVariable);
+                    }
+                    else
+                    {
+                        _globalEnv.Update(newVariable);
+                    }
                     });
             }
         }
