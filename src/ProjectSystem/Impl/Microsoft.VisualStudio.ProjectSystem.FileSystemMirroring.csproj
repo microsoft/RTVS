@@ -72,6 +72,7 @@
     <Compile Include="MsBuild\XProjHelpers.cs" />
     <Compile Include="MsBuild\XProperty.cs" />
     <Compile Include="MsBuild\XPropertyGroup.cs" />
+    <Compile Include="Package\Registration\DeveloperActivityAttribute.cs" />
     <Compile Include="Package\Registration\ProvideCpsProjectFactoryAttribute.cs" />
     <Compile Include="Package\Registration\ProvideProjectFileGeneratorAttribute.cs" />
     <Compile Include="Package\Registration\RegistrationAttributeBuilder.cs" />
