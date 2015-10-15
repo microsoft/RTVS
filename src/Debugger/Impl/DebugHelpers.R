@@ -25,76 +25,81 @@
   }, error = function(e) {
     err <<- e;
   });
-
-  if (is.null(err)) {
-    repr <- .rtvs.repr(obj);
-    cat('"value":', file = con, sep = '');
-    dput(repr, con);
-    
-    raw_value <- tryCatch({
-      paste0(toString(obj), collapse='');
-    }, error = function(e) {
-      repr;
-    })
-    
-    cat(',"raw_value":', file = con, sep = '');
-    dput(raw_value, con);
-    
-    cat(',"type":', file = con, sep = '');
-    dput(typeof(obj), con);
-    
-    cat(',"class":[', file = con, sep = '');
-    i <- 0;
-    for (cls in class(obj)) {
-      if (!is.character(cls) || is.na(cls)) {
-        next;
-      }
-      
-      i <- i + 1;
-      if (i != 1) {
-        cat(',', file = con, sep = '');
-      }
-      dput(cls, con);
-    }
-    cat(']', file = con, sep = '');
-    
-    cat(',"is_atomic":', (if (is.atomic(obj)) "true" else "false"), file = con, sep = '');
-        
-    cat(',"is_recursive":', (if (is.recursive(obj)) "true" else "false"), file = con, sep = '');
-            
-    cat(',"length":', file = con, sep = '');
-    dput(as.double(length(obj)), con);
-    
-    cat(',"slot_count":', file = con, sep = '');
-    dput(as.double(length(slotNames(obj))), con);
-    
-    cat(',"attr_count":', file = con, sep = '');
-    dput(as.double(length(attributes(obj))), con);
-  } else {
+  if (!is.null(err)) {
     cat('"error": ', file = con, sep = '');
     dput(conditionMessage(err), con);
+    return();
   }
+
+  repr <- .rtvs.repr(obj);
+  cat('"value":', file = con, sep = '');
+  dput(repr, con);
+  
+  raw_value <- tryCatch({
+    paste0(toString(obj), collapse='');
+  }, error = function(e) {
+    repr;
+  })
+  
+  cat(',"raw_value":', file = con, sep = '');
+  dput(raw_value, con);
+  
+  cat(',"type":', file = con, sep = '');
+  dput(typeof(obj), con);
+  
+  cat(',"class":[', file = con, sep = '');
+  commas <- 0;
+  for (cls in class(obj)) {
+    if (!is.character(cls) || is.na(cls)) {
+      next;
+    }
+    
+    if (commas != 0) {
+      cat(',', file = con, sep = '');
+    }
+    commas <- commas + 1;
+    
+    dput(cls, con);
+  }
+  cat(']', file = con, sep = '');
+  
+  cat(',"is_atomic":', (if (is.atomic(obj)) "true" else "false"), file = con, sep = '');
+      
+  cat(',"is_recursive":', (if (is.recursive(obj)) "true" else "false"), file = con, sep = '');
+          
+  cat(',"length":', file = con, sep = '');
+  dput(as.double(length(obj)), con);
+  
+  cat(',"slot_count":', file = con, sep = '');
+  dput(as.double(length(slotNames(class(obj)))), con);
+  
+  cat(',"attr_count":', file = con, sep = '');
+  dput(as.double(length(attributes(obj))), con);
 }
 
-.rtvs.children <<- function(obj) {
+.rtvs.children <<- function(obj, env) {
+  if (!missing(env)) {
+    obj <- eval(parse(text = obj), env);
+  }
+  
   con <- textConnection(NULL, open = "w");
   on.exit(close(con), add = TRUE);
   
   cat('{', file = con, sep = '');
+  commas <- 0;
   
   if (is.environment(obj)) {
-    i <- 0;
     for (name in ls(obj, all.names = TRUE)) {
       if (!is.character(name) || is.na(name) || name == "") {
         next; 
       }
       
-      i <- i + 1;
-      if (i != 1) {
+      if (commas != 0) {
         cat(',', file = con, sep = '');
       }
+      commas <- commas + 1;
       
-      dput(name, con);
+      dput(paste0('$', name, collapse=''), con);
       cat(': {', file = con, sep = '');
       
       code <- tryCatch({
@@ -117,17 +122,16 @@
   }
   
   if (isS4(obj)) {
-    i <- 0;
-    for (name in slotNames(obj)) {
+    for (name in slotNames(class(obj))) {
       if (!is.character(name) || is.na(name)) {
         next;
       }
       
-      i <- i + 1;
-      if (i != 1) {
+      if (commas != 0) {
         cat(',', file = con, sep = '');
       }
-        
+      commas <- commas + 1;
+      
       dput(paste0('@', name, collapse = ''), con);
       cat(':{', file = con, sep = '');
      .rtvs.eval(substitute(`@`(obj, name), list(name = name)), environment(), con);
@@ -143,14 +147,15 @@
     }
     
     for (i in 1:count) {
-      if (i != 1) {
+      if (commas != 0) {
         cat(',', file = con, sep = '');
       }
+      commas <- commas + 1;
       
       accessor <- paste0('[[', as.double(i), ']]', collapse = '');
 
       name <- names[[i]];
-      if (!is.null(name) && name != '' && match(name, names) == i) {
+      if (is.character(name) && !is.na(name) && name != '' && match(name, names) == i) {
         if (is.list(obj)) {
           accessor <- paste0('$', .rtvs.repr(as.symbol(name)), collapse = '');
         } else {

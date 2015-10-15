@@ -9,10 +9,11 @@ using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7StackFrame : IDebugStackFrame2, IDebugExpressionContext2, IDebugProperty2 {
-        private Lazy<IReadOnlyDictionary<string, DebugEvaluationResult>> _variables;
+        private IDebugProperty2 IDebugProperty2 => this;
+
+        private Lazy<IReadOnlyList<DebugEvaluationResult>> _variables;
 
         public AD7Engine Engine { get; }
-
         public DebugStackFrame StackFrame { get; }
 
         public AD7StackFrame(AD7Engine engine, DebugStackFrame stackFrame) {
@@ -25,7 +26,7 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugStackFrame2.EnumProperties(enum_DEBUGPROP_INFO_FLAGS dwFields, uint nRadix, ref Guid guidFilter, uint dwTimeout, out uint pcelt, out IEnumDebugPropertyInfo2 ppEnum) {
             pcelt = 0;
 
-            int hr = ((IDebugProperty2)this).EnumChildren(dwFields, nRadix, guidFilter, enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_ALL, null, dwTimeout, out ppEnum);
+            int hr = IDebugProperty2.EnumChildren(dwFields, nRadix, guidFilter, enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_ALL, null, dwTimeout, out ppEnum);
             if (hr < 0) {
                 return hr;
             }
@@ -144,8 +145,8 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
-            var infos = _variables.Value.Values
-                .OrderBy(v => v.Expression)
+            var infos = _variables.Value
+                .OrderBy(v => v.Name)
                 .Select(v => new AD7Property(this, v).GetDebugPropertyInfo(dwRadix, dwFields))
                 .ToArray();
             ppEnum = new AD7PropertyInfoEnum(infos);
