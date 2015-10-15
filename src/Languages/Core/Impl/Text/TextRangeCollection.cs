@@ -138,9 +138,21 @@ namespace Microsoft.Languages.Core.Text
             }
 
             int nextItemIndex = GetFirstItemAfterOrAtPosition(item.End);
-            Debug.Assert(nextItemIndex >= 0);
-
-            _items.Insert(nextItemIndex, item);
+            if (nextItemIndex < 0)
+            {
+                if (!CheckSorted())
+                {
+                    Debug.Assert(false, "Children collection must be sorted");
+                }
+                else
+                {
+                    Debug.Assert(false, "Children collection is sorted and yet no position to insert can be found");
+                }
+            }
+            else
+            {
+                _items.Insert(nextItemIndex, item);
+            }
         }
 
         /// <summary>
@@ -665,7 +677,7 @@ namespace Microsoft.Languages.Core.Text
             int first = GetFirstItemAfterPosition(range.Start);
 
             if (first < 0 || (!inclusiveEnds && this[first].Start >= range.End) || (inclusiveEnds && this[first].Start > range.End))
-            { 
+            {
                 return removed;
             }
 
@@ -938,6 +950,19 @@ namespace Microsoft.Languages.Core.Text
                 return TextRange.FromBounds(start, end);
 
             return TextRange.FromBounds(lowerBound, upperBound);
+        }
+
+        private bool CheckSorted()
+        {
+            for (int i = 0; i < Count - 1; i++)
+            {
+                if(_items[i].End > _items[i+1].Start)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         class RangeItemComparer : IComparer<T>
