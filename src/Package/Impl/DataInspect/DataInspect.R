@@ -1,23 +1,36 @@
 .rtvs.datainspect.print_into <<- function(con, obj, name, add.children, first.hundred) {
   cat('{', file = con, sep = '');
-  repr <- capture.output(str(obj, max.level = 0))
+
+  obj.type = typeof(obj)
+  obj.class = class(obj)
+  obj.length = length(obj)
+
+  rept <- ""
+  if (obj.length == 1) {
+    if (any(obj.class == "factor")) {
+      repr <- capture.output(str(levels(obj)[[obj]], max.level = 0, give.head = FALSE))
+    } else {
+      repr <- capture.output(str(obj, max.level = 0, give.head = FALSE))
+    }
+  } else {
+    repr <- capture.output(str(obj, max.level = 0, give.head = TRUE))
+  }
 
   cat('"name": ', file = con, sep = '');
   dput(name, file = con);
   cat(',', file = con, sep = '');
   cat('"class": "', file = con, sep = '');
-  cat(class(obj), file = con);
+  cat(obj.class, file = con);
   cat('"', file = con, sep = '');
   cat(',"value": ', file = con, sep = '');
   dput(repr[1], file = con);
   cat(',"type": ', file = con, sep = '');
-  dput(typeof(obj), file = con);
+  dput(obj.type, file = con);
   cat(',"length": ', file = con, sep = '');
   
-  l <- length(obj);
-  cat(l, file = con, sep='');
+  cat(obj.length, file = con, sep='');
 
-  if (((l > 1)||(typeof(obj)=="list")) && add.children){
+  if (((obj.length > 1)||(typeof(obj)=="list")) && add.children){
     cat(',', file = con, sep = '');
     .rtvs.datainspect.append_children(con, obj, first.hundred=first.hundred)
   }
