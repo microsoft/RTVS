@@ -14,9 +14,9 @@ namespace Microsoft.Languages.Editor.Utility
                     {
                         toInvoke();
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        Debug.Assert(false, "Guarded invoke caught exception");
+                        Debug.Assert(false, "Guarded invoke caught exception", e.Message);
                     }
                 };
 
