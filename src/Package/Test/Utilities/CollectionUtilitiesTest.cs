@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Utilities
 {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class CollectionUtilitiesTest
     {
