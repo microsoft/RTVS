@@ -16,6 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private static async Task GetScheduleEvaluationTask(this IRSession session, Func<IRSessionEvaluation, Task> function) {
+            TaskUtilities.AssertIsOnBackgroundThread();
             using (var evaluation = await session.BeginEvaluationAsync()) {
                 await function(evaluation);
             } 

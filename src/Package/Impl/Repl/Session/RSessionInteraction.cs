@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session
-{
-    internal sealed class RSessionInteraction : IRSessionInteraction
-    {
+namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+    internal sealed class RSessionInteraction : IRSessionInteraction {
         private readonly TaskCompletionSource<string> _requestTcs;
         private readonly TaskCompletionSource<object> _responseTcs;
 
@@ -19,8 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             TaskCompletionSource<object> responseTcs,
             string prompt,
             int maxLength,
-            IReadOnlyList<IRContext> contexts)
-        {
+            IReadOnlyList<IRContext> contexts) {
             _requestTcs = requestTcs;
             _responseTcs = responseTcs;
             Prompt = prompt;
@@ -28,14 +25,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             Contexts = contexts;
         }
 
-        public Task RespondAsync(string messageText)
-        {
+        public Task RespondAsync(string messageText) {
             _requestTcs.SetResult(messageText);
             return _responseTcs.Task;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             _requestTcs.TrySetCanceled();
         }
     }
