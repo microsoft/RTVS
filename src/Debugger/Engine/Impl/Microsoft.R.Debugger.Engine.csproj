@@ -75,8 +75,6 @@
     <Compile Include="AD7MemoryAddress.cs" />
     <Compile Include="AD7Module.cs" />
     <Compile Include="AD7PendingBreakpoint.cs" />
-    <Compile Include="AD7ProgramNode.cs" />
-    <Compile Include="AD7ProgramProvider.cs" />
     <Compile Include="AD7Property.cs" />
     <Compile Include="AD7StackFrame.cs" />
     <Compile Include="AD7Thread.cs" />

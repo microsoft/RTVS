@@ -29,6 +29,8 @@ namespace Microsoft.R.Debugger {
 
         public int Index { get; }
 
+        internal string SysFrame => $"sys.frame({Index})";
+
         public DebugStackFrame CallingFrame { get; }
 
         public string FileName { get; }
@@ -51,10 +53,10 @@ namespace Microsoft.R.Debugger {
             Index = index;
             CallingFrame = callingFrame;
 
-            FileName = (string)jFrame["filename"];
-            LineNumber = (int?)(double?)jFrame["line_number"];
-            Call = (string)jFrame["call"];
-            IsGlobal = (bool)jFrame["is_global"];
+            FileName = jFrame.Value<string>("filename");
+            LineNumber = jFrame.Value<int?>("line_number");
+            Call = jFrame.Value<string>("call");
+            IsGlobal = jFrame.Value<bool>("is_global");
 
             var match = _doTraceRegex.Match(Call);
             if (match.Success) {
@@ -103,18 +105,25 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        public Task<DebugEvaluationResult> EvaluateAsync(string expression) {
-            return Session.EvaluateAsync(this, expression, $"sys.frame({Index})");
+        public Task<DebugEvaluationResult> EvaluateAsync(string expression, string name = null) {
+            return Session.EvaluateAsync(this, expression, name, SysFrame);
         }
 
-        public async Task<IReadOnlyDictionary<string, DebugEvaluationResult>> GetVariablesAsync() {
-            var vars = new Dictionary<string, DebugEvaluationResult>();
-            var res = await Session.EvaluateRawAsync($".rtvs.env_vars(sys.frame({Index}))").ConfigureAwait(false);
-            var jFrameVars = JObject.Parse(res.Result);
+        public async Task<IReadOnlyList<DebugEvaluationResult>> GetVariablesAsync() {
+            var jFrameVars = await Session.InvokeDebugHelperAsync<JObject>($".rtvs.children({SysFrame})").ConfigureAwait(false);
+            Trace.Assert(
+                jFrameVars.Values().All(t => t is JObject),
+                $".rtvs.children(): object of objects expected.\n\n" + jFrameVars);
+
+            var vars = new List<DebugEvaluationResult>();
             foreach (var kv in jFrameVars) {
                 var name = kv.Key;
+                if (name.StartsWith("$")) {
+                    name = name.Substring(1);
+                }
+
                 var jEvalResult = (JObject)kv.Value;
-                vars[name] = DebugEvaluationResult.Parse(this, name, jEvalResult);
+                vars.Add(DebugEvaluationResult.Parse(this, name, name, jEvalResult));
             }
 
             return vars;

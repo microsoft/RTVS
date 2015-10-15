@@ -15,6 +15,9 @@ namespace Microsoft.R.Debugger.Engine {
     [ComVisible(true)]
     [Guid(DebuggerGuids.DebugEngineCLSIDString)]
     public sealed class AD7Engine : IDebugEngine2, IDebugEngineLaunch2, IDebugProgram3, IDebugSymbolSettings100 {
+        private IDebugEngine2 IDebugEngine2 => this;
+        private IDebugProgram2 IDebugProgram2 => this;
+
         private IDebugEventCallback2 _events;
         private RDebugPortSupplier.DebugProgram _program;
         private Guid _programId;
@@ -115,7 +118,12 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugEngine2.CauseBreak() {
             ThrowIfDisposed();
-            DebugSession.EvaluateAsync(null, "browser()").GetAwaiter().GetResult();
+            DebugSession.RSession.BeginInteractionAsync(isVisible: true).ContinueWith(async t => {
+                using (var inter = await t) {
+                    await inter.RespondAsync("browser()");
+                }
+            }).DoNotWait();
+
             return VSConstants.S_OK;
         }
 
@@ -209,7 +217,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugProgram2.CauseBreak() {
             ThrowIfDisposed();
-            return ((IDebugEngine2)this).CauseBreak();
+            return IDebugEngine2.CauseBreak();
         }
 
         int IDebugProgram2.Detach() {
@@ -354,43 +362,43 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram3.Attach(IDebugEventCallback2 pCallback) {
-            return ((IDebugProgram2)this).Attach(pCallback);
+            return IDebugProgram2.Attach(pCallback);
         }
 
         int IDebugProgram3.CanDetach() {
-            return ((IDebugProgram2)this).CanDetach();
+            return IDebugProgram2.CanDetach();
         }
 
         int IDebugProgram3.CauseBreak() {
-            return ((IDebugProgram2)this).CauseBreak();
+            return IDebugProgram2.CauseBreak();
         }
 
         int IDebugProgram3.Continue(IDebugThread2 pThread) {
-            return ((IDebugProgram2)this).Continue(pThread);
+            return IDebugProgram2.Continue(pThread);
         }
 
         int IDebugProgram3.Detach() {
-            return ((IDebugProgram2)this).Detach();
+            return IDebugProgram2.Detach();
         }
 
         int IDebugProgram3.EnumCodeContexts(IDebugDocumentPosition2 pDocPos, out IEnumDebugCodeContexts2 ppEnum) {
-            return ((IDebugProgram2)this).EnumCodeContexts(pDocPos, out ppEnum);
+            return IDebugProgram2.EnumCodeContexts(pDocPos, out ppEnum);
         }
 
         int IDebugProgram3.EnumCodePaths(string pszHint, IDebugCodeContext2 pStart, IDebugStackFrame2 pFrame, int fSource, out IEnumCodePaths2 ppEnum, out IDebugCodeContext2 ppSafety) {
-            return ((IDebugProgram2)this).EnumCodePaths(pszHint, pStart, pFrame, fSource, out ppEnum, out ppSafety);
+            return IDebugProgram2.EnumCodePaths(pszHint, pStart, pFrame, fSource, out ppEnum, out ppSafety);
         }
 
         int IDebugProgram3.EnumModules(out IEnumDebugModules2 ppEnum) {
-            return ((IDebugProgram2)this).EnumModules(out ppEnum);
+            return IDebugProgram2.EnumModules(out ppEnum);
         }
 
         int IDebugProgram3.EnumThreads(out IEnumDebugThreads2 ppEnum) {
-            return ((IDebugProgram2)this).EnumThreads(out ppEnum);
+            return IDebugProgram2.EnumThreads(out ppEnum);
         }
 
         int IDebugProgram3.Execute() {
-            return ((IDebugProgram2)this).Execute();
+            return IDebugProgram2.Execute();
         }
 
         int IDebugProgram3.ExecuteOnThread(IDebugThread2 pThread) {
@@ -400,31 +408,31 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram3.GetDebugProperty(out IDebugProperty2 ppProperty) {
-            return ((IDebugProgram2)this).GetDebugProperty(out ppProperty);
+            return IDebugProgram2.GetDebugProperty(out ppProperty);
         }
 
         int IDebugProgram3.GetDisassemblyStream(enum_DISASSEMBLY_STREAM_SCOPE dwScope, IDebugCodeContext2 pCodeContext, out IDebugDisassemblyStream2 ppDisassemblyStream) {
-            return ((IDebugProgram2)this).GetDisassemblyStream(dwScope, pCodeContext, out ppDisassemblyStream);
+            return IDebugProgram2.GetDisassemblyStream(dwScope, pCodeContext, out ppDisassemblyStream);
         }
 
         int IDebugProgram3.GetENCUpdate(out object ppUpdate) {
-            return ((IDebugProgram2)this).GetENCUpdate(out ppUpdate);
+            return IDebugProgram2.GetENCUpdate(out ppUpdate);
         }
 
         int IDebugProgram3.GetEngineInfo(out string pbstrEngine, out Guid pguidEngine) {
-            return ((IDebugProgram2)this).GetEngineInfo(out pbstrEngine, out pguidEngine);
+            return IDebugProgram2.GetEngineInfo(out pbstrEngine, out pguidEngine);
         }
 
         int IDebugProgram3.GetMemoryBytes(out IDebugMemoryBytes2 ppMemoryBytes) {
-            return ((IDebugProgram2)this).GetMemoryBytes(out ppMemoryBytes);
+            return IDebugProgram2.GetMemoryBytes(out ppMemoryBytes);
         }
 
         int IDebugProgram3.GetName(out string pbstrName) {
-            return ((IDebugProgram2)this).GetName(out pbstrName);
+            return IDebugProgram2.GetName(out pbstrName);
         }
 
         int IDebugProgram3.GetProcess(out IDebugProcess2 ppProcess) {
-            return ((IDebugProgram2)this).GetProcess(out ppProcess);
+            return IDebugProgram2.GetProcess(out ppProcess);
         }
 
         int IDebugProgram3.GetProgramId(out Guid pguidProgramId) {
@@ -433,15 +441,15 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram3.Step(IDebugThread2 pThread, enum_STEPKIND sk, enum_STEPUNIT Step) {
-            return ((IDebugProgram2)this).Step(pThread, sk, Step);
+            return IDebugProgram2.Step(pThread, sk, Step);
         }
 
         int IDebugProgram3.Terminate() {
-            return ((IDebugProgram2)this).Terminate();
+            return IDebugProgram2.Terminate();
         }
 
         int IDebugProgram3.WriteDump(enum_DUMPTYPE DUMPTYPE, string pszDumpUrl) {
-            return ((IDebugProgram2)this).WriteDump(DUMPTYPE, pszDumpUrl);
+            return IDebugProgram2.WriteDump(DUMPTYPE, pszDumpUrl);
         }
 
         int IDebugSymbolSettings100.SetSymbolLoadState(int bIsManual, int bLoadAdjacentSymbols, string bstrIncludeList, string bstrExcludeList) {

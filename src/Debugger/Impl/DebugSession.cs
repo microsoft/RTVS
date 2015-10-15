@@ -94,22 +94,39 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        internal async Task<REvaluationResult> EvaluateRawAsync(string expression) {
+        internal async Task<TToken> InvokeDebugHelperAsync<TToken>(string expression)
+            where TToken : JToken {
+
             ThrowIfDisposed();
+
+            REvaluationResult res;
             using (var eval = await RSession.BeginEvaluationAsync().ConfigureAwait(false)) {
-                var res = await eval.EvaluateAsync(expression, reentrant: false).ConfigureAwait(false);
+                res = await eval.EvaluateAsync(expression, reentrant: false).ConfigureAwait(false);
                 if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null) {
-                    Debug.Fail($"Internal debugger evaluation {expression} failed: {res}");
+                    Trace.Fail($"Internal debugger evaluation {expression} failed: {res}");
                     throw new REvaluationException(res);
                 }
-                return res;
             }
+
+            var token = JToken.Parse(res.Result);
+
+            var ttoken = token as TToken;
+            if (ttoken == null) {
+                string err = $"Expected to receive {typeof(TToken).Name} in response to {expression}, but got {token?.GetType().Name}";
+                Trace.Fail(err);
+                throw new JsonException(err);
+            }
+            return ttoken;
         }
 
-        public async Task<DebugEvaluationResult> EvaluateAsync(DebugStackFrame stackFrame, string expression, string env = "NULL") {
+        public Task<DebugEvaluationResult> EvaluateAsync(string expression, string name = null, string env = "NULL") {
+            return EvaluateAsync(null, expression, name, env);
+        }
+
+        public async Task<DebugEvaluationResult> EvaluateAsync(DebugStackFrame stackFrame, string expression, string name = null, string env = "NULL") {
             ThrowIfDisposed();
-            var res = await EvaluateRawAsync($".rtvs.eval({expression.ToRStringLiteral()}, {env})").ConfigureAwait(false);
-            return DebugEvaluationResult.Parse(stackFrame, expression, JObject.Parse(res.Result));
+            var jEvalResult = await InvokeDebugHelperAsync<JObject>($".rtvs.eval({expression.ToRStringLiteral()}, {env})").ConfigureAwait(false);
+            return DebugEvaluationResult.Parse(stackFrame, expression, name, jEvalResult);
         }
 
         public Task StepIntoAsync() {
@@ -125,7 +142,7 @@ namespace Microsoft.R.Debugger {
         }
 
         private async Task StepAsync(params string[] commands) {
-            Debug.Assert(commands.Length > 0);
+            Trace.Assert(commands.Length > 0);
             ThrowIfDisposed();
 
             _stepTcs = new TaskCompletionSource<object>();
@@ -152,37 +169,17 @@ namespace Microsoft.R.Debugger {
         public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync() {
             ThrowIfDisposed();
 
-            REvaluationResult res;
-            using (var eval = await RSession.BeginEvaluationAsync().ConfigureAwait(false)) {
-                res = await eval.EvaluateAsync(".rtvs.traceback()", reentrant: false).ConfigureAwait(false);
-            }
-
-            if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null) {
-                throw new InvalidDataException(".rtvs.traceback() failed");
-            }
-
-            JArray jFrames;
-            try {
-                jFrames = JArray.Parse(res.Result);
-            } catch (JsonException ex) {
-                throw new InvalidDataException("Failed to parse JSON returned by .rtvs.traceback()", ex);
-            }
+            var jFrames = await InvokeDebugHelperAsync<JArray>(".rtvs.traceback()").ConfigureAwait(false);
+            Trace.Assert(jFrames.All(t => t is JObject), ".rtvs.traceback(): array of objects expected.\n\n" + jFrames);
 
             var stackFrames = new List<DebugStackFrame>();
 
             DebugStackFrame lastFrame = null;
             int i = 0;
             foreach (JObject jFrame in jFrames) {
-                try {
-                    string fileName = (string)jFrame["filename"];
-                    int? lineNumber = (int?)(double?)jFrame["linenum"];
-                    bool isGlobal = (bool)jFrame["is_global"];
-                    var fallbackFrame = (_bpHitFrame != null && _bpHitFrame.Index == i) ? _bpHitFrame : null;
-                    lastFrame = new DebugStackFrame(this, i, lastFrame, jFrame, fallbackFrame);
-                    stackFrames.Add(lastFrame);
-                } catch (JsonException ex) {
-                    Debug.Fail(ex.ToString());
-                }
+                var fallbackFrame = (_bpHitFrame != null && _bpHitFrame.Index == i) ? _bpHitFrame : null;
+                lastFrame = new DebugStackFrame(this, i, lastFrame, jFrame, fallbackFrame);
+                stackFrames.Add(lastFrame);
                 ++i;
             }
 
@@ -192,8 +189,7 @@ namespace Microsoft.R.Debugger {
         public async Task<int> AddBreakpointAsync(string fileName, int lineNumber) {
             // Tracer expression must be in sync with DebugStackFrame._breakpointRegex
             var tracer = $"quote({{.rtvs.breakpoint({fileName.ToRStringLiteral()}, {lineNumber})}})";
-            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, tracer={tracer})")
-                .ConfigureAwait(false);
+            var res = await EvaluateAsync($"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, tracer={tracer})").ConfigureAwait(false);
             if (res is DebugErrorEvaluationResult) {
                 throw new InvalidOperationException($"{res.Expression}: {res}");
             }
@@ -212,13 +208,13 @@ namespace Microsoft.R.Debugger {
                 return 0;
             }
 
-            var res = await EvaluateAsync(null, $"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, clear=TRUE)").ConfigureAwait(false);
+            var res = await EvaluateAsync($"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, clear=TRUE)").ConfigureAwait(false);
             if (res is DebugErrorEvaluationResult) {
                 throw new InvalidOperationException($"{res.Expression}: {res}");
             }
 
             int count = --_breakpoints[location];
-            Debug.Assert(count >= 0);
+            Trace.Assert(count >= 0);
             if (count == 0) {
                 _breakpoints.Remove(location);
             }
