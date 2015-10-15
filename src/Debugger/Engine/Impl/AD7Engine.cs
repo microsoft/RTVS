@@ -9,38 +9,49 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Debugger.Engine {
     [ComVisible(true)]
     [Guid(DebuggerGuids.DebugEngineCLSIDString)]
     public sealed class AD7Engine : IDebugEngine2, IDebugEngineLaunch2, IDebugProgram3, IDebugSymbolSettings100 {
+        private IDebugEngine2 IDebugEngine2 => this;
+        private IDebugProgram2 IDebugProgram2 => this;
+
         private IDebugEventCallback2 _events;
         private RDebugPortSupplier.DebugProgram _program;
         private Guid _programId;
-        private bool _firstContinue = true, _sentContinue = false;
+        private bool _firstContinue = true;
+        private bool? _sentContinue = null;
 
         internal bool IsDisposed { get; private set; }
-
+        internal bool IsBrowsing { get; private set; }
         internal DebugSession DebugSession { get; private set; }
-
         internal AD7Thread MainThread { get; private set; }
-
-        internal bool IsInBrowseMode { get; set; }
 
         [Import]
         private IRSessionProvider RSessionProvider { get; set; }
 
         [Import]
-        private IDebugSessionProvider DebugSessionProvider {get;set;}
+        private IDebugSessionProvider DebugSessionProvider { get; set; }
 
         public AD7Engine() {
             var compModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
+            if (compModel == null) {
+                throw new InvalidOperationException($"{typeof(AD7Engine).FullName} requires {nameof(IComponentModel)} global service");
+            }
+
             compModel.DefaultCompositionService.SatisfyImportsOnce(this);
         }
 
         public void Dispose() {
-            IsDisposed = true;
+            if (IsDisposed) {
+                return;
+            }
+
+            DebugSession.Browse -= Session_Browse;
+            DebugSession.RSession.AfterRequest -= RSession_AfterRequest;
 
             _events = null;
             _program = null;
@@ -51,6 +62,8 @@ namespace Microsoft.R.Debugger.Engine {
             DebugSession = null;
             RSessionProvider = null;
             DebugSessionProvider = null;
+
+            IsDisposed = true;
         }
 
         private void ThrowIfDisposed() {
@@ -98,24 +111,34 @@ namespace Microsoft.R.Debugger.Engine {
 
             Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
-            DebugSession = DebugSessionProvider.GetDebugSession(_program.Session);
-            DebugSession.Browse += Session_Browse;
-            //DebugSession.RSession.AfterRequest += RSession_AfterRequest;
-            DebugSession.InitializeAsync().GetAwaiter().GetResult();
-
-            MainThread = new AD7Thread(this);
             _events = pCallback;
+            DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetAwaiter().GetResult();
+            MainThread = new AD7Thread(this);
 
+            // Send notification after acquiring the session - we need it in case there were any breakpoints pending before
+            // the attach, in which case we'll immediately get breakpoint creation requests as soon as we send these, and
+            // we will need the session to process them.
             AD7EngineCreateEvent.Send(this);
             AD7ProgramCreateEvent.Send(this);
             Send(new AD7LoadCompleteEvent(), AD7LoadCompleteEvent.IID);
+
+            // Register event handlers after notifying VS that debug engine has loaded. This order is important because
+            // we may get a Browse event immediately, and we want to raise a breakpoint notification in response to that
+            // to pause the debugger - but it will be ignored unless the engine has reported its creation.
+            DebugSession.RSession.AfterRequest += RSession_AfterRequest;
+            DebugSession.Browse += Session_Browse;
 
             return VSConstants.S_OK;
         }
 
         int IDebugEngine2.CauseBreak() {
             ThrowIfDisposed();
-            DebugSession.EvaluateAsync(null, "browser()").GetAwaiter().GetResult();
+            DebugSession.RSession.BeginInteractionAsync(isVisible: true).ContinueWith(async t => {
+                using (var inter = await t.ConfigureAwait(false)) {
+                    await inter.RespondAsync("browser()\n").ConfigureAwait(false);
+                }
+            }).DoNotWait();
+
             return VSConstants.S_OK;
         }
 
@@ -209,7 +232,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugProgram2.CauseBreak() {
             ThrowIfDisposed();
-            return ((IDebugEngine2)this).CauseBreak();
+            return IDebugEngine2.CauseBreak();
         }
 
         int IDebugProgram2.Detach() {
@@ -226,7 +249,7 @@ namespace Microsoft.R.Debugger.Engine {
             } else {
                 // If _sentContinue is true, then this is a dummy Continue issued to notify the
                 // debugger that user has explicitly entered something at the Browse prompt. 
-                if (!_sentContinue) {
+                if (_sentContinue != true) {
                     _sentContinue = true;
                     DebugSession.ExecuteBrowserCommandAsync("c").DoNotWait();
                 }
@@ -354,43 +377,43 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram3.Attach(IDebugEventCallback2 pCallback) {
-            return ((IDebugProgram2)this).Attach(pCallback);
+            return IDebugProgram2.Attach(pCallback);
         }
 
         int IDebugProgram3.CanDetach() {
-            return ((IDebugProgram2)this).CanDetach();
+            return IDebugProgram2.CanDetach();
         }
 
         int IDebugProgram3.CauseBreak() {
-            return ((IDebugProgram2)this).CauseBreak();
+            return IDebugProgram2.CauseBreak();
         }
 
         int IDebugProgram3.Continue(IDebugThread2 pThread) {
-            return ((IDebugProgram2)this).Continue(pThread);
+            return IDebugProgram2.Continue(pThread);
         }
 
         int IDebugProgram3.Detach() {
-            return ((IDebugProgram2)this).Detach();
+            return IDebugProgram2.Detach();
         }
 
         int IDebugProgram3.EnumCodeContexts(IDebugDocumentPosition2 pDocPos, out IEnumDebugCodeContexts2 ppEnum) {
-            return ((IDebugProgram2)this).EnumCodeContexts(pDocPos, out ppEnum);
+            return IDebugProgram2.EnumCodeContexts(pDocPos, out ppEnum);
         }
 
         int IDebugProgram3.EnumCodePaths(string pszHint, IDebugCodeContext2 pStart, IDebugStackFrame2 pFrame, int fSource, out IEnumCodePaths2 ppEnum, out IDebugCodeContext2 ppSafety) {
-            return ((IDebugProgram2)this).EnumCodePaths(pszHint, pStart, pFrame, fSource, out ppEnum, out ppSafety);
+            return IDebugProgram2.EnumCodePaths(pszHint, pStart, pFrame, fSource, out ppEnum, out ppSafety);
         }
 
         int IDebugProgram3.EnumModules(out IEnumDebugModules2 ppEnum) {
-            return ((IDebugProgram2)this).EnumModules(out ppEnum);
+            return IDebugProgram2.EnumModules(out ppEnum);
         }
 
         int IDebugProgram3.EnumThreads(out IEnumDebugThreads2 ppEnum) {
-            return ((IDebugProgram2)this).EnumThreads(out ppEnum);
+            return IDebugProgram2.EnumThreads(out ppEnum);
         }
 
         int IDebugProgram3.Execute() {
-            return ((IDebugProgram2)this).Execute();
+            return IDebugProgram2.Execute();
         }
 
         int IDebugProgram3.ExecuteOnThread(IDebugThread2 pThread) {
@@ -400,31 +423,31 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram3.GetDebugProperty(out IDebugProperty2 ppProperty) {
-            return ((IDebugProgram2)this).GetDebugProperty(out ppProperty);
+            return IDebugProgram2.GetDebugProperty(out ppProperty);
         }
 
         int IDebugProgram3.GetDisassemblyStream(enum_DISASSEMBLY_STREAM_SCOPE dwScope, IDebugCodeContext2 pCodeContext, out IDebugDisassemblyStream2 ppDisassemblyStream) {
-            return ((IDebugProgram2)this).GetDisassemblyStream(dwScope, pCodeContext, out ppDisassemblyStream);
+            return IDebugProgram2.GetDisassemblyStream(dwScope, pCodeContext, out ppDisassemblyStream);
         }
 
         int IDebugProgram3.GetENCUpdate(out object ppUpdate) {
-            return ((IDebugProgram2)this).GetENCUpdate(out ppUpdate);
+            return IDebugProgram2.GetENCUpdate(out ppUpdate);
         }
 
         int IDebugProgram3.GetEngineInfo(out string pbstrEngine, out Guid pguidEngine) {
-            return ((IDebugProgram2)this).GetEngineInfo(out pbstrEngine, out pguidEngine);
+            return IDebugProgram2.GetEngineInfo(out pbstrEngine, out pguidEngine);
         }
 
         int IDebugProgram3.GetMemoryBytes(out IDebugMemoryBytes2 ppMemoryBytes) {
-            return ((IDebugProgram2)this).GetMemoryBytes(out ppMemoryBytes);
+            return IDebugProgram2.GetMemoryBytes(out ppMemoryBytes);
         }
 
         int IDebugProgram3.GetName(out string pbstrName) {
-            return ((IDebugProgram2)this).GetName(out pbstrName);
+            return IDebugProgram2.GetName(out pbstrName);
         }
 
         int IDebugProgram3.GetProcess(out IDebugProcess2 ppProcess) {
-            return ((IDebugProgram2)this).GetProcess(out ppProcess);
+            return IDebugProgram2.GetProcess(out ppProcess);
         }
 
         int IDebugProgram3.GetProgramId(out Guid pguidProgramId) {
@@ -433,15 +456,15 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProgram3.Step(IDebugThread2 pThread, enum_STEPKIND sk, enum_STEPUNIT Step) {
-            return ((IDebugProgram2)this).Step(pThread, sk, Step);
+            return IDebugProgram2.Step(pThread, sk, Step);
         }
 
         int IDebugProgram3.Terminate() {
-            return ((IDebugProgram2)this).Terminate();
+            return IDebugProgram2.Terminate();
         }
 
         int IDebugProgram3.WriteDump(enum_DUMPTYPE DUMPTYPE, string pszDumpUrl) {
-            return ((IDebugProgram2)this).WriteDump(DUMPTYPE, pszDumpUrl);
+            return IDebugProgram2.WriteDump(DUMPTYPE, pszDumpUrl);
         }
 
         int IDebugSymbolSettings100.SetSymbolLoadState(int bIsManual, int bLoadAdjacentSymbols, string bstrIncludeList, string bstrExcludeList) {
@@ -450,29 +473,30 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void Session_Browse(object sender, EventArgs e) {
-            IsInBrowseMode = true;
+            IsBrowsing = true;
             _sentContinue = false;
+
             var bps = new AD7BoundBreakpointEnum(new IDebugBoundBreakpoint2[0]);
             var evt = new AD7BreakpointEvent(bps);
             Send(evt, AD7BreakpointEvent.IID);
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
-            if (IsInBrowseMode) {
-                IsInBrowseMode = false;
-                if (!_sentContinue) {
-                    // User has explicitly typed something at the Browse prompt, so tell the debugger that
-                    // we're moving on by issuing a dummy Continue request to switch it to the running state.
-                    _sentContinue = true;
+            if (!IsBrowsing) {
+                return;
+            }
+            IsBrowsing = false;
 
-                    IDebugProcess2 process;
-                    var ex = Marshal.GetExceptionForHR(_program.GetProcess(out process));
-                    Debug.Assert(ex == null);
-                    if (process != null) {
-                        ex = Marshal.GetExceptionForHR(((IDebugProcess3)process).Execute(MainThread));
-                        Debug.Assert(ex == null);
-                    }
-                }
+            if (_sentContinue == false) {
+                // User has explicitly typed something at the Browse prompt, so tell the debugger that
+                // we're moving on by issuing a dummy Continue request to switch it to the running state.
+                _sentContinue = true;
+
+                var vsShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+                Guid group = VSConstants.GUID_VSStandardCommandSet97;
+                object arg = null;
+                var ex = Marshal.GetExceptionForHR(vsShell.PostExecCommand(ref group, (uint)VSConstants.VSStd97CmdID.Start, 0, ref arg));
+                Trace.Assert(ex == null);
             }
         }
     }

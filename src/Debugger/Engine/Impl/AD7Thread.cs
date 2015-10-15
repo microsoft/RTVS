@@ -141,24 +141,11 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugThread100.GetThreadDisplayName(out string bstrDisplayName) {
-            bstrDisplayName = null; //""
+            bstrDisplayName = null;
             return VSConstants.E_NOTIMPL;
         }
 
         int IDebugThread100.GetThreadProperties100(uint dwFields, THREADPROPERTIES100[] ptp) {
-            //var ptp7 = new THREADPROPERTIES[1];
-            //Marshal.ThrowExceptionForHR(((IDebugThread2)this).GetThreadProperties((enum_THREADPROPERTY_FIELDS)(dwFields & 0x3F), ptp7));
-
-            //var tp = new THREADPROPERTIES100 {
-            //    bstrLocation = ptp7[0].bstrLocation,
-            //    bstrName = ptp7[0].bstrName,
-            //    bstrPriority = ptp7[0].bstrPriority,
-            //    dwFields = (uint)ptp7[0].dwFields,
-            //    dwSuspendCount = ptp7[0].dwSuspendCount,
-            //    dwThreadId = ptp7[0].dwThreadId,
-            //    dwThreadState = ptp7[0].dwThreadState
-            //};
-
             return VSConstants.E_NOTIMPL;
         }
 

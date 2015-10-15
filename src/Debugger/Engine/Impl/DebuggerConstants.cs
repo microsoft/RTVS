@@ -2,6 +2,7 @@
 
 namespace Microsoft.R.Debugger.Engine {
     internal static class DebuggerConstants {
+        public const int S_GETPARENT_NO_PARENT = unchecked((int)0x40531);
         public const int E_WIN32_INVALID_NAME = ((282) & 0x0000FFFF) | (7 << 16) | unchecked((int)0x80000000);
         public const int E_EVALUATE_BUSY_WITH_EVALUATION = unchecked((int)0x80040030);
         public const int E_EVALUATE_TIMEOUT = unchecked((int)0x80040031);

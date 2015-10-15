@@ -11,7 +11,15 @@ using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
-    internal class Variable : INotifyPropertyChanged  // TODO: BindableBase
+    internal class VariableVisualInfo   // TODO: remove this later
+    {
+        public int IndentStep { get; set; }
+        public double NameWidth { get; set; }
+        public double ValueWidth { get; set; }
+        public double TypeWidth { get; set; }
+    }
+
+    internal class Variable : BindableBase
     {
         private Variable(VariableEvaluationContext evaluationContext)
         {
@@ -19,20 +27,48 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             EvaluationContext = evaluationContext;
         }
 
+        private Variable _parent;
+        public Variable Parent
+        {
+            get { return _parent; }
+            private set
+            {
+                _parent = value;
+                if (_parent != null)
+                {
+                    IndentStep = _parent.IndentStep + 1;
+                    NameWidth = _parent.NameWidth;
+                    ValueWidth = _parent.ValueWidth;
+                    TypeWidth = _parent.TypeWidth;
+                }
+            }
+        }
+        public int IndentStep { get; private set; }
+
         public VariableEvaluationContext EvaluationContext { get; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
 
         /// <summary>
         /// Create Variable instance from R evaluation
         /// </summary>
         /// <param name="evaluation"></param>
         /// <returns></returns>
-        public static Variable Create(REvaluation evaluation, VariableEvaluationContext evaluationContext)
+        public static Variable Create(
+            Variable parent,
+            REvaluation evaluation,
+            VariableEvaluationContext evaluationContext,
+            VariableVisualInfo vvi = null)
         {
             const string DataFramePrefix = "'data.frame':";
             var instance = new Variable(evaluationContext);
+
+            instance.Parent = parent;
+            if (vvi != null)
+            {
+                instance.IndentStep = vvi.IndentStep;
+                instance.NameWidth = vvi.NameWidth;
+                instance.ValueWidth = vvi.ValueWidth;
+                instance.TypeWidth = vvi.TypeWidth;
+            }
 
             // Name
             instance.VariableName = evaluation.Name;
@@ -71,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             {
                 foreach (var child in evaluation.Children.Evals)
                 {
-                    instance.Children.Add(Variable.Create(child, evaluationContext));
+                    instance.Children.Add(Variable.Create(instance, child, evaluationContext));
                 }
             }
 
@@ -86,17 +122,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         public string VariableName
         {
             get { return _variableName; }
-            set
-            {
-                if (_variableName != value)
-                {
-                    _variableName = value;
-                    if (PropertyChanged != null)
-                    {
-                        PropertyChanged(this, new PropertyChangedEventArgs("VariableName"));
-                    }
-                }
-            }
+            set { SetProperty<string>(ref _variableName, value); }
         }
 
         private string _variableValue;
@@ -106,17 +132,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         public string VariableValue
         {
             get { return _variableValue; }
-            set
-            {
-                if (_variableValue != value)
-                {
-                    _variableValue = value;
-                    if (PropertyChanged != null)
-                    {
-                        PropertyChanged(this, new PropertyChangedEventArgs("VariableValue"));
-                    }
-                }
-            }
+            set { SetProperty<string>(ref _variableValue, value); }
         }
 
         private string _typeName;
@@ -126,17 +142,29 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         public string TypeName
         {
             get { return _typeName; }
-            set
-            {
-                if (_typeName != value)
-                {
-                    _typeName = value;
-                    if (PropertyChanged != null)
-                    {
-                        PropertyChanged(this, new PropertyChangedEventArgs("TypeName"));
-                    }
-                }
-            }
+            set { SetProperty<string>(ref _typeName, value); }
+        }
+
+        // TODO: repeating the same three times ugly!!! create column, columnheader and use binding
+        private double _nameWidth;
+        public double NameWidth
+        {
+            get { return _nameWidth; }
+            set { SetProperty<double>(ref _nameWidth, value); }
+        }
+
+        private double _valueWidth;
+        public double ValueWidth
+        {
+            get { return _valueWidth; }
+            set { SetProperty<double>(ref _valueWidth, value); }
+        }
+
+        private double _typeWidth;
+        public double TypeWidth
+        {
+            get { return _typeWidth; }
+            set { SetProperty<double>(ref _typeWidth, value); }
         }
 
         public bool HasChildren { get; private set; }

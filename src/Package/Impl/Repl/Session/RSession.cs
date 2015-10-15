@@ -70,9 +70,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             _hostRunTask = Task.Run(() => _host.CreateAndRun(RToolsSettings.GetRVersionPath()));
             this.ScheduleEvaluation(async e => {
-                await e.SetVsGraphicsDevice();
-                await e.SetDefaultWorkingDirectory();
-                await e.PrepareDataInspect();
+                await e.SetVsGraphicsDevice().ConfigureAwait(false);
+                await e.SetDefaultWorkingDirectory().ConfigureAwait(false);
+                await e.PrepareDataInspect().ConfigureAwait(false);
             });
 
             var initializationTask = _initializationTcs.Task;
@@ -85,14 +85,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 return;
             }
 
-            var request = await BeginInteractionAsync(false);
+            var request = await BeginInteractionAsync(false).ConfigureAwait(false);
             if (_hostRunTask.IsCompleted) {
                 request.Dispose();
                 return;
             }
 
-            await request.Quit();
-            await _hostRunTask;
+            await request.Quit().ConfigureAwait(false);
+            await _hostRunTask.ConfigureAwait(false);
         }
 
         Task IRCallbacks.Connected(string rVersion) {
@@ -139,7 +139,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             Task evaluationTask;
 
             if (isEvaluationAllowed) {
-                await EvaluateAll(contexts, ct);
+                await EvaluateAll(contexts, ct).ConfigureAwait(false);
                 evaluationCts = new CancellationTokenSource();
                 evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct);
             } else {
@@ -155,7 +155,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 ct.ThrowIfCancellationRequested();
 
                 try {
-                    consoleInput = await ReadNextRequest(prompt, len, ct);
+                    consoleInput = await ReadNextRequest(prompt, len, ct).ConfigureAwait(false);
                 } catch (TaskCanceledException) {
                     // If request was canceled through means other than our token, it indicates the refusal of
                     // that requestor to respond to that particular prompt, so move on to the next requestor.
@@ -166,7 +166,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             // If evaluation was allowed, cancel evaluation processing but await evaluation that is in progress
             evaluationCts?.Cancel();
-            await evaluationTask;
+            await evaluationTask.ConfigureAwait(false);
 
             OnAfterRequest(contexts, prompt, len, addToHistory);
 
@@ -174,7 +174,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         }
 
         private async Task<string> ReadNextRequest(string prompt, int len, CancellationToken ct) {
-            var requestSource = await _pendingRequestSources.ReceiveAsync(ct);
+            var requestSource = await _pendingRequestSources.ReceiveAsync(ct).ConfigureAwait(false);
 
             TaskCompletionSource<string> requestTcs = new TaskCompletionSource<string>();
             Interlocked.Exchange(ref _currentRequestSource, requestSource);
@@ -182,7 +182,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             requestSource.Request(prompt, len, requestTcs);
             ct.Register(delegate { requestTcs.TrySetCanceled(); });
 
-            string response = await requestTcs.Task;
+            string response = await requestTcs.Task.ConfigureAwait(false);
 
             Debug.Assert(response.Length < len); // len includes null terminator
             if (response.Length >= len) {
@@ -197,8 +197,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             while (!ct.IsCancellationRequested) {
                 try {
-                    var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
-                    await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
+                    var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct).ConfigureAwait(false);
+                    await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken).ConfigureAwait(false);
                 } catch (TaskCanceledException) {
                     return;
                 }
@@ -208,7 +208,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         private async Task EvaluateAll(IReadOnlyList<IRContext> contexts, CancellationToken ct) {
             RSessionEvaluationSource source;
             while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
-                await source.BeginEvaluationAsync(contexts, _host, ct);
+                await source.BeginEvaluationAsync(contexts, _host, ct).ConfigureAwait(false);
             }
         }
 
@@ -232,7 +232,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         async Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
             if (isEvaluationAllowed) {
-                await EvaluateAll(contexts, ct);
+                await EvaluateAll(contexts, ct).ConfigureAwait(false);
             }
 
             return YesNoCancel.Yes;

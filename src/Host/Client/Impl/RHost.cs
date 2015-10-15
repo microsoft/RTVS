@@ -58,17 +58,17 @@ namespace Microsoft.R.Host.Client {
                         var uri = new Uri("ws://localhost:" + DefaultPort);
                         for (int i = 0; ; ++i) {
                             try {
-                                await _socket.ConnectAsync(uri, ct);
+                                await _socket.ConnectAsync(uri, ct).ConfigureAwait(false);
                                 break;
                             } catch (WebSocketException) {
                                 if (i > 10) {
                                     throw;
                                 }
-                                await Task.Delay(100, ct);
+                                await Task.Delay(100, ct).ConfigureAwait(false);
                             }
                         }
 
-                        await Run(ct);
+                        await Run(ct).ConfigureAwait(false);
                     }
                 } catch (Exception ex) when (!(ex is OperationCanceledException)) { // TODO: replace with better logging
                     Trace.Fail("Exception in RHost run loop:\n" + ex);
@@ -88,8 +88,8 @@ namespace Microsoft.R.Host.Client {
         public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken)) {
             ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
             using (_socket = new ClientWebSocket()) {
-                await _socket.ConnectAsync(uri, ct);
-                await Run(ct);
+                await _socket.ConnectAsync(uri, ct).ConfigureAwait(false);
+                await Run(ct).ConfigureAwait(false);
             }
         }
 
@@ -102,16 +102,16 @@ namespace Microsoft.R.Host.Client {
             _isRunning = true;
             try {
                 try {
-                    var webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
+                    var webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct).ConfigureAwait(false);
                     string s = Encoding.UTF8.GetString(_buffer, 0, webSocketReceiveResult.Count);
                     var obj = JObject.Parse(s);
                     int protocolVersion = (int)(double)obj["protocol_version"];
                     Debug.Assert(protocolVersion == 1);
                     string rVersion = (string)obj["R_version"];
-                    await _callbacks.Connected(rVersion);
-                    await RunLoop(ct, allowEval: true);
+                    await _callbacks.Connected(rVersion).ConfigureAwait(false);
+                    await RunLoop(ct, allowEval: true).ConfigureAwait(false);
                 } finally {
-                    await _callbacks.Disconnected();
+                    await _callbacks.Disconnected().ConfigureAwait(false);
                 }
             } finally {
                 _isRunning = false;
@@ -123,7 +123,7 @@ namespace Microsoft.R.Host.Client {
                 WebSocketReceiveResult webSocketReceiveResult;
                 var s = string.Empty;
                 do {
-                    webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
+                    webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct).ConfigureAwait(false);
                     if (webSocketReceiveResult.CloseStatus != null) {
                         return null;
                     }
@@ -136,24 +136,24 @@ namespace Microsoft.R.Host.Client {
                 var evt = (string)obj["event"];
                 switch (evt) {
                     case "YesNoCancel":
-                        await YesNoCancel(contexts, obj, allowEval, ct);
+                        await YesNoCancel(contexts, obj, allowEval, ct).ConfigureAwait(false);
                         break;
 
                     case "ReadConsole":
-                        await ReadConsole(contexts, obj, allowEval, ct);
+                        await ReadConsole(contexts, obj, allowEval, ct).ConfigureAwait(false);
                         break;
 
                     case "WriteConsoleEx":
                         await
-                            _callbacks.WriteConsoleEx(contexts, (string)obj["buf"], (OutputType)(double)obj["otype"], ct);
+                            _callbacks.WriteConsoleEx(contexts, (string)obj["buf"], (OutputType)(double)obj["otype"], ct).ConfigureAwait(false);
                         break;
 
                     case "ShowMessage":
-                        await _callbacks.ShowMessage(contexts, (string)obj["s"], ct);
+                        await _callbacks.ShowMessage(contexts, (string)obj["s"], ct).ConfigureAwait(false);
                         break;
 
                     case "Busy":
-                        await _callbacks.Busy(contexts, (bool)obj["which"], ct);
+                        await _callbacks.Busy(contexts, (bool)obj["which"], ct).ConfigureAwait(false);
                         break;
 
                     case "CallBack":
@@ -163,7 +163,7 @@ namespace Microsoft.R.Host.Client {
                         return obj;
 
                     case "PlotXaml":
-                        await _callbacks.PlotXaml(contexts, (string)obj["filepath"], ct);
+                        await _callbacks.PlotXaml(contexts, (string)obj["filepath"], ct).ConfigureAwait(false);
                         // TODO: delete temporary xaml and bitmap files
                         break;
 
@@ -181,8 +181,8 @@ namespace Microsoft.R.Host.Client {
         private async Task YesNoCancel(RContext[] contexts, JObject obj, bool allowEval, CancellationToken ct) {
             try {
                 _canEval = allowEval;
-                YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], _canEval, ct);
-                await SendAsync((double)input, ct);
+                YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], _canEval, ct).ConfigureAwait(false);
+                await SendAsync((double)input, ct).ConfigureAwait(false);
             } finally {
                 _canEval = false;
             }
@@ -197,9 +197,9 @@ namespace Microsoft.R.Host.Client {
                 var len = (int)(double)obj["len"];
                 var addToHistory = (bool)obj["addToHistory"];
 
-                string input = await _callbacks.ReadConsole(contexts, prompt, buf, len, addToHistory, _canEval, ct);
+                string input = await _callbacks.ReadConsole(contexts, prompt, buf, len, addToHistory, _canEval, ct).ConfigureAwait(false);
                 input = input.Replace("\r\n", "\n");
-                await SendAsync(input, ct);
+                await SendAsync(input, ct).ConfigureAwait(false);
             } finally {
                 _canEval = false;
             }
@@ -212,7 +212,7 @@ namespace Microsoft.R.Host.Client {
 
             var response = JsonConvert.SerializeObject(input);
             byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-            await _socket.SendAsync(new ArraySegment<byte>(responseBytes, 0, responseBytes.Length), WebSocketMessageType.Text, true, ct);
+            await _socket.SendAsync(new ArraySegment<byte>(responseBytes, 0, responseBytes.Length), WebSocketMessageType.Text, true, ct).ConfigureAwait(false);
         }
 
         private static RContext[] GetContexts(JObject obj) {
@@ -240,9 +240,9 @@ namespace Microsoft.R.Host.Client {
                 });
 
                 var requestBytes = Encoding.UTF8.GetBytes(request);
-                await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct);
+                await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct).ConfigureAwait(false);
 
-                var obj = await RunLoop(ct, reentrant);
+                var obj = await RunLoop(ct, reentrant).ConfigureAwait(false);
 
                 JToken result, error, parseStatus;
                 obj.TryGetValue("result", out result);
