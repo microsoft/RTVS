@@ -109,24 +109,8 @@ namespace Microsoft.R.Debugger {
             return Session.EvaluateAsync(this, expression, name, SysFrame);
         }
 
-        public async Task<IReadOnlyList<DebugEvaluationResult>> GetVariablesAsync() {
-            var jFrameVars = await Session.InvokeDebugHelperAsync<JObject>($".rtvs.children({SysFrame})").ConfigureAwait(false);
-            Trace.Assert(
-                jFrameVars.Values().All(t => t is JObject),
-                $".rtvs.children(): object of objects expected.\n\n" + jFrameVars);
-
-            var vars = new List<DebugEvaluationResult>();
-            foreach (var kv in jFrameVars) {
-                var name = kv.Key;
-                if (name.StartsWith("$")) {
-                    name = name.Substring(1);
-                }
-
-                var jEvalResult = (JObject)kv.Value;
-                vars.Add(DebugEvaluationResult.Parse(this, name, name, jEvalResult));
-            }
-
-            return vars;
+        public Task<DebugEvaluationResult> GetEnvironmentAsync() {
+            return EvaluateAsync(SysFrame);
         }
     }
 }

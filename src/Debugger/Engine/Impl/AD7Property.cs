@@ -14,14 +14,22 @@ namespace Microsoft.R.Debugger.Engine {
 
         private Lazy<IReadOnlyList<DebugEvaluationResult>> _children;
 
+        public AD7Property Parent { get; }
         public AD7StackFrame StackFrame { get; }
         public DebugEvaluationResult EvaluationResult { get; }
         public bool IsSynthetic { get; }
+        public bool IsFrameEnvironment { get; }
 
-        public AD7Property(AD7StackFrame stackFrame, DebugEvaluationResult result, bool isSynthetic = false) {
+        public AD7Property(AD7Property parent, DebugEvaluationResult result, bool isSynthetic = false)
+            : this(parent.StackFrame, result, isSynthetic, false) {
+            Parent = parent;
+        }
+
+        public AD7Property(AD7StackFrame stackFrame, DebugEvaluationResult result, bool isSynthetic = false, bool isFrameEnvironment = false) {
             StackFrame = stackFrame;
             EvaluationResult = result;
             IsSynthetic = isSynthetic;
+            IsFrameEnvironment = isFrameEnvironment;
 
             _children = Lazy.Create(() =>
                 (EvaluationResult as DebugValueEvaluationResult).GetChildrenAsync()?.GetAwaiter().GetResult()
@@ -29,15 +37,18 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
-            var infos = _children.Value
-                //.OrderBy(v => v.Name)
-                .Select(v => new AD7Property(StackFrame, v).GetDebugPropertyInfo(dwRadix, dwFields));
+            IEnumerable<DebugEvaluationResult> children = _children.Value;
+            if (IsFrameEnvironment) {
+                children = children.OrderBy(v => v.Name);
+            }
+
+            var infos = children.Select(v => new AD7Property(this, v).GetDebugPropertyInfo(dwRadix, dwFields));
 
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
             if (valueResult != null && valueResult.HasAttributes == true) {
                 var attrResult = StackFrame.StackFrame.EvaluateAsync($"attributes({valueResult.Expression})", "attributes()").GetAwaiter().GetResult();
                 if (!(attrResult is DebugErrorEvaluationResult)) {
-                    var attrInfo = new AD7Property(StackFrame, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
+                    var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                     infos = new[] { attrInfo }.Concat(infos);
                 }
             }
@@ -67,8 +78,8 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProperty2.GetParent(out IDebugProperty2 ppParent) {
-            ppParent = null;
-            return VSConstants.E_NOTIMPL;
+            ppParent = Parent;
+            return ppParent != null ? VSConstants.S_OK : DebuggerConstants.S_GETPARENT_NO_PARENT;
         }
 
         int IDebugProperty2.GetPropertyInfo(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, uint dwTimeout, IDebugReference2[] rgpArgs, uint dwArgCount, DEBUG_PROPERTY_INFO[] pPropertyInfo) {
@@ -214,6 +225,9 @@ namespace Microsoft.R.Debugger.Engine {
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_NAME)) {
                 dpi.bstrName = EvaluationResult.Name;
+                if (Parent?.IsFrameEnvironment == true && dpi.bstrName?.StartsWith("$") == true) {
+                    dpi.bstrName = dpi.bstrName.Substring(1);
+                }
                 dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_NAME;
             }
 
