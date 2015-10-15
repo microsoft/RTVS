@@ -7,6 +7,9 @@ using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7MemoryAddress : IDebugCodeContext2, IDebugCodeContext100 {
+        private IDebugMemoryContext2 IDebugMemoryContext2 => this;
+        private IDebugCodeContext2 IDebugCodeContext2 => this;
+
         public AD7Engine Engine { get; }
 
         public string FileName { get; }
@@ -109,11 +112,11 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugCodeContext2.Add(ulong dwCount, out IDebugMemoryContext2 ppMemCxt) {
-            return ((IDebugMemoryContext2)this).Add(dwCount, out ppMemCxt);
+            return IDebugMemoryContext2.Add(dwCount, out ppMemCxt);
         }
 
         int IDebugCodeContext2.Compare(enum_CONTEXT_COMPARE Compare, IDebugMemoryContext2[] rgpMemoryContextSet, uint dwMemoryContextSetLen, out uint pdwMemoryContext) {
-            return ((IDebugCodeContext2)this).Compare(Compare, rgpMemoryContextSet, dwMemoryContextSetLen, out pdwMemoryContext);
+            return IDebugCodeContext2.Compare(Compare, rgpMemoryContextSet, dwMemoryContextSetLen, out pdwMemoryContext);
         }
 
         int IDebugCodeContext2.GetDocumentContext(out IDebugDocumentContext2 ppSrcCxt) {
@@ -122,7 +125,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugCodeContext2.GetInfo(enum_CONTEXT_INFO_FIELDS dwFields, CONTEXT_INFO[] pinfo) {
-            return ((IDebugMemoryContext2)this).GetInfo(dwFields, pinfo);
+            return IDebugMemoryContext2.GetInfo(dwFields, pinfo);
         }
 
         int IDebugCodeContext2.GetLanguageInfo(ref string pbstrLanguage, ref Guid pguidLanguage) {
@@ -132,11 +135,11 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugCodeContext2.GetName(out string pbstrName) {
-            return ((IDebugMemoryContext2)this).GetName(out pbstrName);
+            return IDebugMemoryContext2.GetName(out pbstrName);
         }
 
         int IDebugCodeContext2.Subtract(ulong dwCount, out IDebugMemoryContext2 ppMemCxt) {
-            return ((IDebugMemoryContext2)this).Subtract(dwCount, out ppMemCxt);
+            return IDebugMemoryContext2.Subtract(dwCount, out ppMemCxt);
         }
 
         int IDebugCodeContext100.GetProgram(out IDebugProgram2 ppProgram) {

@@ -141,6 +141,15 @@ grid.newpage()
             CheckStringAttr(shapes[0], "Data", expected);
         }
 
+        [TestMethod]
+        public void TextXmlEscape() {
+            var code = "grid.text('hello<>&\"', 0.1, 0.3)";
+            var doc = GridTest(code);
+            var shapes = doc.Descendants(XName.Get("TextBlock", ns)).ToList();
+            Assert.AreEqual(1, shapes.Count);
+            CheckStringAttr(shapes[0], "Text", "hello<>&\"");
+        }
+
         private XDocument GridTest(string code) {
             return RunGraphicsTest(gridPrefixCode + "\n" + code + "\n");
         }
