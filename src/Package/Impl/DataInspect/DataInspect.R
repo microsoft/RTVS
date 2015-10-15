@@ -68,13 +68,19 @@
   } else {
     varnames <- varnames[begin:end]
     is_first <- TRUE;
+    index <- 1
     for(varname in varnames) {
       if (is_first) {
         is_first <- FALSE;
       } else {
         cat(', ', file = con, sep = '');
       }
-      .rtvs.datainspect.print_into(con, obj[[varname]], varname, add.children=TRUE, first.hundred=TRUE);
+      if (varname == "") {
+        .rtvs.datainspect.print_into(con, obj[[index]], gettextf("[[%s]]", index), add.children=TRUE, first.hundred=TRUE);
+      } else {
+        .rtvs.datainspect.print_into(con, obj[[varname]], varname, add.children=TRUE, first.hundred=TRUE);
+      }
+      index <- index + 1
     }
   }
   cat(']}\n', file = con, sep = '');

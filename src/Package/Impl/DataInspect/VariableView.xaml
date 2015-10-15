@@ -265,9 +265,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="3">
-            <TextBlock x:Name="EnvironmentTextBlockLabel" Text="Environment: "></TextBlock>
-            <TextBlock x:Name="EnvironmentTextBlock" Text="No R Interactive" /> <!-- TODO: use resource for text -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,3,3,3">
+            <TextBlock x:Name="EnvironmentTextBlock" Text="Environment: No R Interactive" /> <!-- TODO: use resource for text -->
         </StackPanel>
         <local:HeaderScrollViewer  Grid.Row="1"
                                   Style="{StaticResource HeaderScrollViewerControlTemplate}"
