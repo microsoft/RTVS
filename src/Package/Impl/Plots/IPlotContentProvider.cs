@@ -6,7 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
     /// <summary>
     /// Plot content provider to load and consume plot content
     /// </summary>
-    internal interface IPlotContentProvider
+    internal interface IPlotContentProvider: IDisposable
     {
         /// <summary>
         /// Event raised when UIElement is loaded, content presenter listens to this event

@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
             // set content with presenter
             PlotContentProvider = new PlotContentProvider();
-            PlotContentProvider.PlotChanged += ContentProvider_PlotChanged; // TODO: when to unregister the event? for now, it's fine as 1:1 match Provider:Pane
+            PlotContentProvider.PlotChanged += ContentProvider_PlotChanged;
             Content = new XamlPresenter(PlotContentProvider);
 
             // initialize toolbar
@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
         }
 
-        public IPlotContentProvider PlotContentProvider { get; }
+        public IPlotContentProvider PlotContentProvider { get; private set; }
 
         private IEnumerable<ICommand> GetCommands()
         {
@@ -107,6 +107,18 @@ namespace Microsoft.VisualStudio.R.Package.Plots
         private string GetSaveFilePath()
         {
             return EditorShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotFileFilter, null,Resources.SavePlotDialogTitle);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (PlotContentProvider != null)
+            {
+                PlotContentProvider.PlotChanged -= ContentProvider_PlotChanged; 
+                PlotContentProvider.Dispose();
+                PlotContentProvider = null;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }
