@@ -9,6 +9,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Debugger.Engine {
@@ -39,11 +40,20 @@ namespace Microsoft.R.Debugger.Engine {
 
         public AD7Engine() {
             var compModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
+            if (compModel == null) {
+                throw new InvalidOperationException($"{typeof(AD7Engine).FullName} requires {nameof(IComponentModel)} global service");
+            }
+
             compModel.DefaultCompositionService.SatisfyImportsOnce(this);
         }
 
         public void Dispose() {
-            IsDisposed = true;
+            if (IsDisposed) {
+                return;
+            }
+
+            DebugSession.Browse -= Session_Browse;
+            DebugSession.RSession.AfterRequest -= RSession_AfterRequest;
 
             _events = null;
             _program = null;
@@ -54,6 +64,8 @@ namespace Microsoft.R.Debugger.Engine {
             DebugSession = null;
             RSessionProvider = null;
             DebugSessionProvider = null;
+
+            IsDisposed = true;
         }
 
         private void ThrowIfDisposed() {
@@ -103,7 +115,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             DebugSession = DebugSessionProvider.GetDebugSession(_program.Session);
             DebugSession.Browse += Session_Browse;
-            //DebugSession.RSession.AfterRequest += RSession_AfterRequest;
+            DebugSession.RSession.AfterRequest += RSession_AfterRequest;
             DebugSession.InitializeAsync().GetAwaiter().GetResult();
 
             MainThread = new AD7Thread(this);
@@ -473,13 +485,11 @@ namespace Microsoft.R.Debugger.Engine {
                     // we're moving on by issuing a dummy Continue request to switch it to the running state.
                     _sentContinue = true;
 
-                    IDebugProcess2 process;
-                    var ex = Marshal.GetExceptionForHR(_program.GetProcess(out process));
-                    Debug.Assert(ex == null);
-                    if (process != null) {
-                        ex = Marshal.GetExceptionForHR(((IDebugProcess3)process).Execute(MainThread));
-                        Debug.Assert(ex == null);
-                    }
+                    var vsShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+                    Guid group = VSConstants.GUID_VSStandardCommandSet97;
+                    object arg = null;
+                    var ex = Marshal.GetExceptionForHR(vsShell.PostExecCommand(ref group, (uint)VSConstants.VSStd97CmdID.Start, 0, ref arg));
+                    Trace.Assert(ex == null);
                 }
             }
         }

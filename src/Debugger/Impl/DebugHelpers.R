@@ -1,4 +1,4 @@
-.rtvs.repr <<- function(obj) {
+.rtvs.repr <- function(obj) {
   con <- textConnection(NULL, open = "w");
   on.exit(close(con), add = TRUE);
   
@@ -6,7 +6,7 @@
   paste0(textConnectionValue(con), collapse='\n')
 }
 
-.rtvs.eval <<- function(expr, env, con) {
+.rtvs.eval <- function(expr, env, con) {
   if (missing(con)) {
     con <- textConnection(NULL, open = "w");
     on.exit(close(con), add = TRUE);
@@ -75,9 +75,33 @@
   
   cat(',"attr_count":', file = con, sep = '');
   dput(as.double(length(attributes(obj))), con);
+  
+  cat(',"names_count":', file = con, sep = '');
+  dput(as.double(length(names(obj))), con);
+  
+  dim <- dim(obj);
+  if (is.integer(dim)) {
+    cat(',"dim":[', file = con, sep = '');
+    commas2 <- 0;
+    for (d in dim) {
+      if (commas2 != 0) {
+        cat(',', file = con, sep = '');
+      }
+      commas2 <- commas2 + 1;
+      dput(as.double(d), con);
+    }
+    cat(']', file = con, sep = '');
+  }
+  
+  if (is.environment(obj)) {
+    cat(',"env_name":', file = con, sep = '');
+    dput(environmentName(obj), con);
+    
+    cat(',"has_parent_env":', (if (identical(obj, emptyenv())) "false" else "true"), file = con, sep = '');
+  }
 }
 
-.rtvs.children <<- function(obj, env) {
+.rtvs.children <- function(obj, env) {
   if (!missing(env)) {
     obj <- eval(parse(text = obj), env);
   }
@@ -139,7 +163,7 @@
     }
   }
   
-  if (is(obj, "vector")) {
+  if (is(obj, "vector") || is.language(obj)) {
     count <- length(obj);
     names <- names(obj);
     if (!is.character(names)) {
@@ -176,7 +200,7 @@
 }
 
 
-.rtvs.traceback <<- function() {
+.rtvs.traceback <- function() {
   con <- textConnection(NULL, open = "w");
   on.exit(close(con), add = TRUE);
 
@@ -220,6 +244,6 @@
 }
 
 
-.rtvs.breakpoint <<- function(filename, line_number) {
+.rtvs.breakpoint <- function(filename, line_number) {
   browser()
 }
