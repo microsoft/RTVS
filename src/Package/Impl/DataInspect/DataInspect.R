@@ -5,10 +5,16 @@
   obj.class = class(obj)
   obj.length = length(obj)
 
-  if (obj.length == 1)
-    repr <- capture.output(str(obj, max.level = 0, give.head = FALSE))
-  else
+  rept <- ""
+  if (obj.length == 1) {
+    if (any(obj.class == "factor")) {
+      repr <- capture.output(str(levels(obj)[[obj]], max.level = 0, give.head = FALSE))
+    } else {
+      repr <- capture.output(str(obj, max.level = 0, give.head = FALSE))
+    }
+  } else {
     repr <- capture.output(str(obj, max.level = 0, give.head = TRUE))
+  }
 
   cat('"name": ', file = con, sep = '');
   dput(name, file = con);
