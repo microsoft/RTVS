@@ -21,11 +21,6 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Regis
         public override void Register(RegistrationAttribute.RegistrationContext context)
         {
             Build().Register(context);
-
-            //var key = context.CreateKey("NewProjectTemplates\\TemplateDirs\\" + Guid.Parse(_projectType).ToString("B") + "\\/" + _templateSet);
-            //key.SetValue("DeveloperActivity", _developerActivity);
-            //key.SetValue("SortPriority", _sortPriority);
-            //key.SetValue("", _developerActivity);
         }
 
         public override void Unregister(RegistrationAttribute.RegistrationContext context)
