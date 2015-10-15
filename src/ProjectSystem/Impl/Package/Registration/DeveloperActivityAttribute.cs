@@ -31,11 +31,13 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Regis
         private RegistrationAttributeBuilder Build()
         {
             var builder = new RegistrationAttributeBuilder();
-            builder.Key("NewProjectTemplates\\TemplateDirs\\" + Guid.Parse(_projectType).ToString("B") + "\\/" + _templateSet)
-                .StringValue("", _developerActivity)
-                .StringValue("TemplatesDir", "\\.\\NullPath")
-                .StringValue("DeveloperActivity", _developerActivity)
-                .IntValue("SortPriority", _sortPriority);
+            builder.Key("NewProjectTemplates\\TemplateDirs")
+                .GuidSubKey(_projectType)
+                    .SubKey("/" + _templateSet)
+                        .StringValue("", _developerActivity)
+                        .StringValue("TemplatesDir", "\\.\\NullPath")
+                        .StringValue("DeveloperActivity", _developerActivity)
+                        .IntValue("SortPriority", _sortPriority);
             return builder;
         }
     }
