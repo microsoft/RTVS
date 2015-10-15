@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Microsoft.Languages.Editor.Utility;
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
@@ -67,18 +67,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                         ValueWidth = ValueColumn.ActualWidth,
                         TypeWidth = TypeColumn.ActualWidth });
 
-                GuardedOperations.DispatchInvoke(() =>
-                {
-                    if (_globalEnv == null)
+                ThreadHelper.Generic.BeginInvoke(
+                    DispatcherPriority.Normal,
+                    () =>
                     {
-                        SetVariable(newVariable);
-                    }
-                    else
-                    {
-                        _globalEnv.Update(newVariable);
-                    }
-                },
-                DispatcherPriority.Normal);
+                        if (_globalEnv == null)
+                        {
+                            SetVariable(newVariable);
+                        }
+                        else
+                        {
+                            _globalEnv.Update(newVariable);
+                        }
+                    });
             }
         }
 
