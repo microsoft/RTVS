@@ -17,7 +17,7 @@
   l <- length(obj);
   cat(l, file = con, sep='');
 
-  if((l > 1) && add.children){
+  if (((l > 1)||(typeof(obj)=="list")) && add.children){
     cat(',', file = con, sep = '');
     .rtvs.datainspect.append_children(con, obj, first.hundred=first.hundred)
   }
