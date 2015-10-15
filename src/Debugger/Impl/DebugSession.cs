@@ -25,18 +25,18 @@ namespace Microsoft.R.Debugger {
         private TaskCompletionSource<object> _stepTcs;
         private BreakpointHitProcessingState _bpHitProcState;
         private DebugStackFrame _bpHitFrame;
-        private volatile EventHandler _browse;
+        private volatile EventHandler<DebugBrowseEventArgs> _browse;
         private readonly object _browseLock = new object();
 
-        // Key is filename + line number; value is the count of breakpoints set for that line.
-        private Dictionary<Tuple<string, int>, int> _breakpoints = new Dictionary<Tuple<string, int>, int>();
+        // Key is filename + line number.
+        private Dictionary<DebugBreakpointLocation, DebugBreakpoint> _breakpoints = new Dictionary<DebugBreakpointLocation, DebugBreakpoint>();
         public IRSession RSession { get; private set; }
         public bool IsBrowsing { get; private set; }
 
-        public event EventHandler Browse {
+        public event EventHandler<DebugBrowseEventArgs> Browse {
             add {
                 if (IsBrowsing) {
-                    value?.Invoke(this, EventArgs.Empty);
+                    value?.Invoke(this, new DebugBrowseEventArgs(false, null));
                 }
 
                 lock (_browseLock) {
@@ -210,40 +210,20 @@ namespace Microsoft.R.Debugger {
             return stackFrames;
         }
 
-        public async Task<int> AddBreakpointAsync(string fileName, int lineNumber) {
-            // Tracer expression must be in sync with DebugStackFrame._breakpointRegex
-            var tracer = $"quote({{.rtvs.breakpoint({fileName.ToRStringLiteral()}, {lineNumber})}})";
-            var res = await EvaluateAsync($"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, tracer={tracer})").ConfigureAwait(false);
-            if (res is DebugErrorEvaluationResult) {
-                throw new InvalidOperationException($"{res.Expression}: {res}");
+        public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location) {
+            DebugBreakpoint bp;
+            if (!_breakpoints.TryGetValue(location, out bp)) {
+                bp = new DebugBreakpoint(this, location);
+                _breakpoints.Add(location, bp);
             }
 
-            var location = Tuple.Create(fileName, lineNumber);
-            if (!_breakpoints.ContainsKey(location)) {
-                _breakpoints.Add(location, 0);
-            }
-
-            return ++_breakpoints[location];
+            await bp.SetBreakpointAsync().ConfigureAwait(false);
+            return bp;
         }
 
-        public async Task<int> RemoveBreakpointAsync(string fileName, int lineNumber) {
-            var location = Tuple.Create(fileName, lineNumber);
-            if (!_breakpoints.ContainsKey(location)) {
-                return 0;
-            }
-
-            var res = await EvaluateAsync($"setBreakpoint({fileName.ToRStringLiteral()}, {lineNumber}, clear=TRUE)").ConfigureAwait(false);
-            if (res is DebugErrorEvaluationResult) {
-                throw new InvalidOperationException($"{res.Expression}: {res}");
-            }
-
-            int count = --_breakpoints[location];
-            Trace.Assert(count >= 0);
-            if (count == 0) {
-                _breakpoints.Remove(location);
-            }
-
-            return count;
+        internal void RemoveBreakpoint(DebugBreakpoint breakpoint) {
+            Trace.Assert(breakpoint.Session == this);
+            _breakpoints.Remove(breakpoint.Location);
         }
 
         private bool IsBrowserContext(IReadOnlyList<IRContext> contexts) {
@@ -270,17 +250,19 @@ namespace Microsoft.R.Debugger {
             IsBrowsing = true;
 
             RSession.BeginInteractionAsync().ContinueWith(async t => {
-                using (var inter = await t) {
+                using (var inter = await t.ConfigureAwait(false)) {
                     if (inter.Contexts != contexts) {
                         // Someone else has already responded to this interaction.
                         InterruptBreakpointHitProcessing();
                         return;
                     }
 
+                    DebugStackFrame lastFrame = null;
+
                     switch (_bpHitProcState) {
                         case BreakpointHitProcessingState.None:
                             {
-                                var lastFrame = (await GetStackFramesAsync().ConfigureAwait(false)).LastOrDefault();
+                                lastFrame = (await GetStackFramesAsync().ConfigureAwait(false)).LastOrDefault();
                                 if (lastFrame?.FrameKind == DebugStackFrameKind.TracebackAfterBreakpoint) {
                                     // If we're stopped at a breakpoint, step out of .doTrace, so that the next stepping command that
                                     // happens is applied at the actual location inside the function where the breakpoint was set.
@@ -321,13 +303,31 @@ namespace Microsoft.R.Debugger {
                             break;
                     }
 
+                    if (lastFrame == null) {
+                        lastFrame = (await GetStackFramesAsync().ConfigureAwait(false)).LastOrDefault();
+                    }
+
+                    // Report breakpoints first, so that by the time step completion is reported, all actions associated
+                    // with breakpoints (e.g. printing messages for tracepoints) have already been completed.
+                    IReadOnlyCollection<DebugBreakpoint> breakpointsHit = null;
+                    if (lastFrame.FileName != null && lastFrame.LineNumber != null) {
+                        var location = new DebugBreakpointLocation(lastFrame.FileName, lastFrame.LineNumber.Value);
+                        DebugBreakpoint bp;
+                        if (_breakpoints.TryGetValue(location, out bp)) {
+                            bp.RaiseBreakpointHit();
+                            breakpointsHit = Enumerable.Repeat(bp, bp.UseCount).ToArray();
+                        }
+                    }
+
+                    bool isStepCompleted = false;
                     if (_stepTcs != null) {
                         var stepTcs = _stepTcs;
                         _stepTcs = null;
                         stepTcs.TrySetResult(null);
+                        isStepCompleted = true;
                     }
 
-                    _browse?.Invoke(this, EventArgs.Empty);
+                    _browse?.Invoke(this, new DebugBrowseEventArgs(isStepCompleted, breakpointsHit));
                 }
             }).DoNotWait();
         }
@@ -347,6 +347,16 @@ namespace Microsoft.R.Debugger {
 
         public REvaluationException(REvaluationResult result) {
             Result = result;
+        }
+    }
+
+    public class DebugBrowseEventArgs : EventArgs {
+        public bool IsStepCompleted { get; }
+        public IReadOnlyCollection<DebugBreakpoint> BreakpointsHit { get; }
+
+        public DebugBrowseEventArgs(bool isStepCompleted, IReadOnlyCollection<DebugBreakpoint> breakpointsHit) {
+            IsStepCompleted = isStepCompleted;
+            BreakpointsHit = breakpointsHit ?? new DebugBreakpoint[0];
         }
     }
 }

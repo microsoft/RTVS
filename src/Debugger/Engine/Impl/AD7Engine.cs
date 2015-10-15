@@ -472,13 +472,17 @@ namespace Microsoft.R.Debugger.Engine {
             return VSConstants.S_OK;
         }
 
-        private void Session_Browse(object sender, EventArgs e) {
+        private void Session_Browse(object sender, DebugBrowseEventArgs e) {
             IsBrowsing = true;
             _sentContinue = false;
 
-            var bps = new AD7BoundBreakpointEnum(new IDebugBoundBreakpoint2[0]);
-            var evt = new AD7BreakpointEvent(bps);
-            Send(evt, AD7BreakpointEvent.IID);
+            // If we hit a breakpoint or completed a step, we have already reported the stop from the corresponding handlers.
+            // Otherwise, this is just a random Browse prompt, so raise a dummy breakpoint event with no breakpoints to stop.
+            if (e.BreakpointsHit.Count == 0 && !e.IsStepCompleted) {
+                var bps = new AD7BoundBreakpointEnum(new IDebugBoundBreakpoint2[0]);
+                var evt = new AD7BreakpointEvent(bps);
+                Send(evt, AD7BreakpointEvent.IID);
+            }
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {

@@ -16,7 +16,6 @@ namespace Microsoft.R.Debugger.Engine {
         public AD7Engine Engine { get; }
 
         private bool IsDeleted => _state == enum_PENDING_BP_STATE.PBPS_DELETED;
-
         private bool IsEnabled => _state == enum_PENDING_BP_STATE.PBPS_ENABLED;
 
         public AD7PendingBreakpoint(AD7Engine engine, IDebugBreakpointRequest2 request) {
@@ -60,9 +59,7 @@ namespace Microsoft.R.Debugger.Engine {
             TEXT_POSITION start, end;
             GetLocation(out fileName, out lineNumber, out start, out end);
 
-            Engine.DebugSession.AddBreakpointAsync(fileName, lineNumber).GetAwaiter().GetResult();
-            _boundBreakpoint = new AD7BoundBreakpoint(this, _state);
-
+            _boundBreakpoint = new AD7BoundBreakpoint(this, new DebugBreakpointLocation(fileName, lineNumber), _state);
             return VSConstants.S_OK;
         }
 
