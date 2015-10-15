@@ -51,6 +51,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Regis
                 return this;
             }
 
+            public RegKey IntValue(string name, int data)
+            {
+                Values[name] = data;
+                return this;
+            }
+
             public RegKey GuidValue(string name, string data)
             {
                 if (data != null)
