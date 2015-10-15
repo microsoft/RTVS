@@ -22,21 +22,19 @@ namespace Microsoft.R.Debugger.Engine {
         private IDebugEventCallback2 _events;
         private RDebugPortSupplier.DebugProgram _program;
         private Guid _programId;
-        private bool _firstContinue = true, _sentContinue = false;
+        private bool _firstContinue = true;
+        private bool? _sentContinue = null;
 
         internal bool IsDisposed { get; private set; }
-
+        internal bool IsBrowsing { get; private set; }
         internal DebugSession DebugSession { get; private set; }
-
         internal AD7Thread MainThread { get; private set; }
-
-        internal bool IsInBrowseMode { get; set; }
 
         [Import]
         private IRSessionProvider RSessionProvider { get; set; }
 
         [Import]
-        private IDebugSessionProvider DebugSessionProvider {get;set;}
+        private IDebugSessionProvider DebugSessionProvider { get; set; }
 
         public AD7Engine() {
             var compModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
@@ -113,17 +111,22 @@ namespace Microsoft.R.Debugger.Engine {
 
             Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
-            DebugSession = DebugSessionProvider.GetDebugSession(_program.Session);
-            DebugSession.Browse += Session_Browse;
-            DebugSession.RSession.AfterRequest += RSession_AfterRequest;
-            DebugSession.InitializeAsync().GetAwaiter().GetResult();
-
-            MainThread = new AD7Thread(this);
             _events = pCallback;
+            DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetAwaiter().GetResult();
+            MainThread = new AD7Thread(this);
 
+            // Send notification after acquiring the session - we need it in case there were any breakpoints pending before
+            // the attach, in which case we'll immediately get breakpoint creation requests as soon as we send these, and
+            // we will need the session to process them.
             AD7EngineCreateEvent.Send(this);
             AD7ProgramCreateEvent.Send(this);
             Send(new AD7LoadCompleteEvent(), AD7LoadCompleteEvent.IID);
+
+            // Register event handlers after notifying VS that debug engine has loaded. This order is important because
+            // we may get a Browse event immediately, and we want to raise a breakpoint notification in response to that
+            // to pause the debugger - but it will be ignored unless the engine has reported its creation.
+            DebugSession.RSession.AfterRequest += RSession_AfterRequest;
+            DebugSession.Browse += Session_Browse;
 
             return VSConstants.S_OK;
         }
@@ -131,8 +134,8 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugEngine2.CauseBreak() {
             ThrowIfDisposed();
             DebugSession.RSession.BeginInteractionAsync(isVisible: true).ContinueWith(async t => {
-                using (var inter = await t) {
-                    await inter.RespondAsync("browser()");
+                using (var inter = await t.ConfigureAwait(false)) {
+                    await inter.RespondAsync("browser()\n").ConfigureAwait(false);
                 }
             }).DoNotWait();
 
@@ -246,7 +249,7 @@ namespace Microsoft.R.Debugger.Engine {
             } else {
                 // If _sentContinue is true, then this is a dummy Continue issued to notify the
                 // debugger that user has explicitly entered something at the Browse prompt. 
-                if (!_sentContinue) {
+                if (_sentContinue != true) {
                     _sentContinue = true;
                     DebugSession.ExecuteBrowserCommandAsync("c").DoNotWait();
                 }
@@ -470,27 +473,30 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void Session_Browse(object sender, EventArgs e) {
-            IsInBrowseMode = true;
+            IsBrowsing = true;
             _sentContinue = false;
+
             var bps = new AD7BoundBreakpointEnum(new IDebugBoundBreakpoint2[0]);
             var evt = new AD7BreakpointEvent(bps);
             Send(evt, AD7BreakpointEvent.IID);
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
-            if (IsInBrowseMode) {
-                IsInBrowseMode = false;
-                if (!_sentContinue) {
-                    // User has explicitly typed something at the Browse prompt, so tell the debugger that
-                    // we're moving on by issuing a dummy Continue request to switch it to the running state.
-                    _sentContinue = true;
+            if (!IsBrowsing) {
+                return;
+            }
+            IsBrowsing = false;
 
-                    var vsShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
-                    Guid group = VSConstants.GUID_VSStandardCommandSet97;
-                    object arg = null;
-                    var ex = Marshal.GetExceptionForHR(vsShell.PostExecCommand(ref group, (uint)VSConstants.VSStd97CmdID.Start, 0, ref arg));
-                    Trace.Assert(ex == null);
-                }
+            if (_sentContinue == false) {
+                // User has explicitly typed something at the Browse prompt, so tell the debugger that
+                // we're moving on by issuing a dummy Continue request to switch it to the running state.
+                _sentContinue = true;
+
+                var vsShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+                Guid group = VSConstants.GUID_VSStandardCommandSet97;
+                object arg = null;
+                var ex = Marshal.GetExceptionForHR(vsShell.PostExecCommand(ref group, (uint)VSConstants.VSStd97CmdID.Start, 0, ref arg));
+                Trace.Assert(ex == null);
             }
         }
     }

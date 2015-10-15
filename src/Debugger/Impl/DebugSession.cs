@@ -20,17 +20,35 @@ namespace Microsoft.R.Debugger {
             Continue
         }
 
+        private bool _isInitialized;
         private CancellationTokenSource _initialPromptCts = new CancellationTokenSource();
         private TaskCompletionSource<object> _stepTcs;
         private BreakpointHitProcessingState _bpHitProcState;
         private DebugStackFrame _bpHitFrame;
+        private volatile EventHandler _browse;
+        private readonly object _browseLock = new object();
 
         // Key is filename + line number; value is the count of breakpoints set for that line.
         private Dictionary<Tuple<string, int>, int> _breakpoints = new Dictionary<Tuple<string, int>, int>();
+        public IRSession RSession { get; private set; }
+        public bool IsBrowsing { get; private set; }
 
-        public IRSession RSession { get; set; }
+        public event EventHandler Browse {
+            add {
+                if (IsBrowsing) {
+                    value?.Invoke(this, EventArgs.Empty);
+                }
 
-        public event EventHandler Browse;
+                lock (_browseLock) {
+                    _browse += value;
+                }
+            }
+            remove {
+                lock (_browseLock) {
+                    _browse -= value;
+                }
+            }
+        }
 
         public DebugSession(IRSession session) {
             RSession = session;
@@ -52,6 +70,12 @@ namespace Microsoft.R.Debugger {
 
         public async Task InitializeAsync() {
             ThrowIfDisposed();
+
+            if (_isInitialized) {
+                throw new InvalidOperationException($"This {nameof(DebugSession)} has already been initialized");
+            } else {
+                _isInitialized = true;
+            }
 
             string helpers;
             using (var stream = typeof(DebugSession).Assembly.GetManifestResourceStream(typeof(DebugSession).Namespace + ".DebugHelpers.R"))
@@ -88,7 +112,7 @@ namespace Microsoft.R.Debugger {
         public async Task ExecuteBrowserCommandAsync(string command) {
             ThrowIfDisposed();
             using (var inter = await RSession.BeginInteractionAsync(isVisible: true).ConfigureAwait(false)) {
-                if (IsInBrowseMode(inter.Contexts)) {
+                if (IsBrowserContext(inter.Contexts)) {
                     await inter.RespondAsync(command + "\n").ConfigureAwait(false);
                 }
             }
@@ -222,7 +246,7 @@ namespace Microsoft.R.Debugger {
             return count;
         }
 
-        private bool IsInBrowseMode(IReadOnlyList<IRContext> contexts) {
+        private bool IsBrowserContext(IReadOnlyList<IRContext> contexts) {
             return contexts.SkipWhile(context => context.CallFlag.HasFlag(RContextType.Restart))
                 .FirstOrDefault()?.CallFlag.HasFlag(RContextType.Browser) == true;
         }
@@ -238,10 +262,12 @@ namespace Microsoft.R.Debugger {
         }
 
         private void ProcessBrowsePrompt(IReadOnlyList<IRContext> contexts) {
-            if (!IsInBrowseMode(contexts)) {
+            if (!IsBrowserContext(contexts)) {
                 InterruptBreakpointHitProcessing();
                 return;
             }
+
+            IsBrowsing = true;
 
             RSession.BeginInteractionAsync().ContinueWith(async t => {
                 using (var inter = await t) {
@@ -271,7 +297,7 @@ namespace Microsoft.R.Debugger {
                                     }
 
                                     // Set the destination for the next "c", which we will issue on the following prompt.
-                                    await inter.RespondAsync($"browserSetDebug({n})\n");
+                                    await inter.RespondAsync($"browserSetDebug({n})\n").ConfigureAwait(false);
                                     _bpHitProcState = BreakpointHitProcessingState.BrowserSetDebug;
                                     return;
                                 } else {
@@ -283,7 +309,7 @@ namespace Microsoft.R.Debugger {
                         case BreakpointHitProcessingState.BrowserSetDebug:
                             // We have issued a browserSetDebug() on the previous interaction prompt to set destination
                             // for the "c" command. Issue that command now, and move to the next step.
-                            await inter.RespondAsync("c\n");
+                            await inter.RespondAsync("c\n").ConfigureAwait(false);
                             _bpHitProcState = BreakpointHitProcessingState.Continue;
                             return;
 
@@ -301,7 +327,7 @@ namespace Microsoft.R.Debugger {
                         stepTcs.TrySetResult(null);
                     }
 
-                    Browse?.Invoke(this, EventArgs.Empty);
+                    _browse?.Invoke(this, EventArgs.Empty);
                 }
             }).DoNotWait();
         }
@@ -312,6 +338,7 @@ namespace Microsoft.R.Debugger {
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
+            IsBrowsing = false;
         }
     }
 
