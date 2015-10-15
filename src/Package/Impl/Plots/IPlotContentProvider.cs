@@ -13,6 +13,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots
         /// </summary>
         event EventHandler<PlotChangedEventArgs> PlotChanged;
 
+        /// <summary>
+        /// Loads file on next idle time. Typically used
+        /// in R plotting where several files may get produced
+        /// in a fast succession. Eliminates multiple file loads.
+        /// </summary>
+        /// <param name="filePath"></param>
         void LoadFileOnIdle(string filePath);
 
         /// <summary>
