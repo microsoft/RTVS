@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
     {
         public VariableWindowPane()
         {
-            Caption = "R Environment";
+            Caption = Resources.VariableWindowCaption;
             Content = new VariableView();
         }
     }

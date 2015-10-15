@@ -648,6 +648,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Variable Explorer.
+        /// </summary>
+        internal static string VariableWindowCaption {
+            get {
+                return ResourceManager.GetString("VariableWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Data Files (*.rdata)|*.rdata|All Files (*.*)|*.*.
         /// </summary>
         internal static string WorkspaceFileFilter {

@@ -8,18 +8,16 @@ using System.Windows.Data;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
-    public class LevelToMarginConverter : IValueConverter
+    internal class LevelToIndentConverter : IValueConverter
     {
-
-        public int LeftMargin { get; set; }
-        public int OtherMargin { get; set; }
-
         #region IValueConverter Members
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            int lvl = (int)value;
-            return new Thickness(6 * lvl, 2, 2, 2);
+            int level = (int)value;
+            double indentSize = (parameter == null) ? 16 : (double)parameter;
+
+            return level * indentSize;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
