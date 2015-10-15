@@ -231,6 +231,7 @@
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
+    <Compile Include="Utilities\CollectionUtilities.cs" />
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />
     <Compile Include="Utilities\TextBufferUtilities.cs" />
