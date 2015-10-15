@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Threading;
+using Microsoft.Languages.Editor.Utility;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
@@ -174,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         public void Update(Variable update)
         {
-            DispatchInvoke(() => UpdateInternal(update), DispatcherPriority.Normal);
+            GuardedOperations.DispatchInvoke(() => UpdateInternal(update), DispatcherPriority.Normal);
         }
 
         private void UpdateInternal(Variable update)    // TODO: optimize the iteration
@@ -193,24 +187,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 update.Children,
                 (s, u) => s.VariableName == u.VariableName,
                 (s, u) => s.UpdateInternal(u));
-        }
-
-        private static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
-        {
-            Action guardedAction =
-                () =>
-                {
-                    try
-                    {
-                        toInvoke();
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.Assert(false, "Guarded invoke caught exception", e.Message);
-                    }
-                };
-
-            Application.Current.Dispatcher.BeginInvoke(guardedAction, priority);    // TODO: acquiring Application.Current.Dispatcher, create utility class for UI thread and use it
         }
     }
 }
