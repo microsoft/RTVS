@@ -13,6 +13,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots
         /// </summary>
         event EventHandler<PlotChangedEventArgs> PlotChanged;
 
+        void LoadFileOnIdle(string filePath);
+
         /// <summary>
         /// Load a file to create plot UIElement
         /// </summary>

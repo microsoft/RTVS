@@ -3,6 +3,8 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xaml;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.Plots
 {
@@ -14,12 +16,18 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
         public event EventHandler<PlotChangedEventArgs> PlotChanged;
 
+        public void LoadFileOnIdle(string fileName)
+        {
+            IdleTimeAction.Cancel(typeof(PlotContentProvider));
+            IdleTimeAction.Create(() => LoadFile(fileName), 200, typeof(PlotContentProvider));
+        }
+
         public void LoadFile(string fileName)
         {
             UIElement element = null;
             try
             {
-                element = (UIElement) XamlServices.Load(fileName);
+                element = (UIElement)XamlServices.Load(fileName);
                 _lastLoadFile = fileName;
             }
             catch (Exception e)
@@ -43,7 +51,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
         private static UIElement CreateErrorContent(Exception e)
         {
-            return new TextBlock() {
+            return new TextBlock()
+            {
                 Text = e.ToString()    // TODO: change to user-friendly error XAML. TextBlock with exception is for dev
             };
         }
