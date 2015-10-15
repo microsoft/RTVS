@@ -109,7 +109,7 @@ namespace Microsoft.R.Debugger {
 
         public async Task<IReadOnlyDictionary<string, DebugEvaluationResult>> GetVariablesAsync() {
             var vars = new Dictionary<string, DebugEvaluationResult>();
-            var res = await Session.EvaluateRawAsync($".rtvs.env_vars(sys.frame({Index}))").ConfigureAwait(false);
+            var res = await Session.EvaluateRawAsync($".rtvs.children(sys.frame({Index}))").ConfigureAwait(false);
             var jFrameVars = JObject.Parse(res.Result);
             foreach (var kv in jFrameVars) {
                 var name = kv.Key;
