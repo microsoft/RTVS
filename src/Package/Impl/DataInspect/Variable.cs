@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
-using Microsoft.Languages.Editor.Utility;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
@@ -168,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         public void Update(Variable update)
         {
-            GuardedOperations.DispatchInvoke(() => UpdateInternal(update), DispatcherPriority.Normal);
+            ThreadHelper.Generic.BeginInvoke(DispatcherPriority.Normal, () => UpdateInternal(update));
         }
 
         private void UpdateInternal(Variable update)    // TODO: optimize the iteration

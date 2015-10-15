@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization.Json;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Resources;
-using System.Windows.Threading;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Newtonsoft.Json;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
@@ -152,7 +142,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             await RefreshVariableCollection();
         }
 
-        private static T Deserialize<T>(string response) where T : class
+        private static T Deserialize<T>(string response)
         {
             if(response == null)
             {
@@ -161,17 +151,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
             try
             {
-                var serializer = new DataContractJsonSerializer(typeof(T));
-                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(response)))
-                {
-                    return (T)serializer.ReadObject(stream);
-                }
+                return JsonConvert.DeserializeObject<T>(response);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.ToString());
 
-                return null;
+                return default(T);
             }
         }
     }
