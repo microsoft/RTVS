@@ -333,6 +333,8 @@ namespace rhost {
                 std::string escaped(text);
                 boost::algorithm::replace_all(escaped, "&", "&amp;");
                 boost::algorithm::replace_all(escaped, "\"", "&quot;");
+                boost::algorithm::replace_all(escaped, ">", "&gt;");
+                boost::algorithm::replace_all(escaped, "<", "&lt;");
                 return escaped;
             }
         };
