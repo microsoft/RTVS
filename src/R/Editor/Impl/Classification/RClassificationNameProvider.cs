@@ -29,13 +29,7 @@ namespace Microsoft.R.Editor.Classification
                 case RTokenType.Logical:
                 case RTokenType.Missing:
                 case RTokenType.Null:
-                    return PredefinedClassificationTypeNames.Keyword;
-
                 case RTokenType.Keyword:
-                    if (t.SubType == RTokenSubType.BuiltinFunction)
-                    {
-                        return RClassificationTypes.BuiltinFunction;
-                    }
                     return PredefinedClassificationTypeNames.Keyword;
 
                 case RTokenType.String:
@@ -61,7 +55,7 @@ namespace Microsoft.R.Editor.Classification
                 case RTokenType.Identifier:
                     if (t.SubType == RTokenSubType.BuiltinConstant)
                     {
-                        return RClassificationTypes.BuiltinFunction;
+                        return PredefinedClassificationTypeNames.Keyword;
                     }
                     else if (t.SubType == RTokenSubType.TypeFunction)
                     {
