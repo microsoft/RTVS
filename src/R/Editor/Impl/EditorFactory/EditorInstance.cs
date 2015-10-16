@@ -10,6 +10,9 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.EditorFactory
 {
+    /// <summary>
+    /// Represents instance of the editor to the host application
+    /// </summary>
     internal class EditorInstance : IEditorInstance
     {
         IEditorDocument _document;

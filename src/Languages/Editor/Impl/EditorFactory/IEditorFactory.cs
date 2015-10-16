@@ -3,7 +3,9 @@
 namespace Microsoft.Languages.Editor.EditorFactory
 {
     /// <summary>
-    /// Editor factory
+    /// Editor instance factory. Typically imported via MEF
+    /// in the host application editor factory such as in
+    /// IVsEditorFactory.CreateEditorInstance.
     /// </summary>
     public interface IEditorFactory
     {
