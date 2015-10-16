@@ -49,26 +49,29 @@ namespace Microsoft.R.Editor.Signatures
         internal int ComputeCurrentParameter(ITextSnapshot snapshot, AstRoot ast, int position)
         {
             ParameterInfo parameterInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
-            int index;
+            int index = 0;
 
-            // A function f <- function(foo, bar) is said to have formal parameters "foo" and "bar", 
-            // and the call f(foo=3, ba=13) is said to have (actual) arguments "foo" and "ba".
-            // R first matches all arguments that have exactly the same name as a formal parameter. 
-            // Two identical argument names cause an error. Then, R matches any argument names that
-            // partially matches a(yet unmatched) formal parameter. But if two argument names partially 
-            // match the same formal parameter, that also causes an error. Also, it only matches 
-            // formal parameters before ... So formal parameters after ... must be specified using 
-            // their full names. Then the unnamed arguments are matched in positional order to 
-            // the remaining formal arguments.
+            if (parameterInfo != null)
+            {
+                // A function f <- function(foo, bar) is said to have formal parameters "foo" and "bar", 
+                // and the call f(foo=3, ba=13) is said to have (actual) arguments "foo" and "ba".
+                // R first matches all arguments that have exactly the same name as a formal parameter. 
+                // Two identical argument names cause an error. Then, R matches any argument names that
+                // partially matches a(yet unmatched) formal parameter. But if two argument names partially 
+                // match the same formal parameter, that also causes an error. Also, it only matches 
+                // formal parameters before ... So formal parameters after ... must be specified using 
+                // their full names. Then the unnamed arguments are matched in positional order to 
+                // the remaining formal arguments.
 
-            int argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, REditorSettings.PartialArgumentNameMatch);
-            if (argumentIndexInSignature >= 0)
-            {
-                index = argumentIndexInSignature;
-            }
-            else
-            {
-                index = parameterInfo.ParameterIndex;
+                int argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, REditorSettings.PartialArgumentNameMatch);
+                if (argumentIndexInSignature >= 0)
+                {
+                    index = argumentIndexInSignature;
+                }
+                else
+                {
+                    index = parameterInfo.ParameterIndex;
+                }
             }
 
             return index;
