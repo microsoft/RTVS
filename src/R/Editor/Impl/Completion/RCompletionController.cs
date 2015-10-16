@@ -380,7 +380,7 @@ namespace Microsoft.R.Editor.Completion
                         IREditorDocument document = REditorDocument.FromTextBuffer(TextView.TextBuffer);
                         document.EditorTree.EnsureTreeReady();
 
-                        ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(
+                        ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(
                             document.EditorTree.AstRoot, _textBuffer.CurrentSnapshot,
                             TextView.Caret.Position.BufferPosition);
 

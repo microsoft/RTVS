@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Signatures
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
 
             // Retrieve parameter positions from the current text buffer snapshot
-            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
+            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
             if (parametersInfo != null)
             {
                 position = Math.Min(parametersInfo.SignatureEnd, position);
@@ -62,8 +62,7 @@ namespace Microsoft.R.Editor.Signatures
                 {
                     foreach (ISignatureInfo signatureInfo in functionInfo.Signatures)
                     {
-                        ISignature signature = CreateSignature(session, functionInfo, signatureInfo,
-                                                               parametersInfo, applicableToSpan, ast, position);
+                        ISignature signature = CreateSignature(session, functionInfo, signatureInfo, applicableToSpan, ast, position);
                         signatures.Add(signature);
                     }
 
@@ -107,15 +106,15 @@ namespace Microsoft.R.Editor.Signatures
 
         private ISignature CreateSignature(ISignatureHelpSession session,
                                        IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
-                                       ParametersInfo parametersInfo, ITrackingSpan span, 
-                                       AstRoot ast, int position)
+                                       ITrackingSpan span, AstRoot ast, int position)
         {
-            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionInfo.Name, string.Empty);
+            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionInfo.Name, string.Empty, signatureInfo);
             List<IParameter> paramList = new List<IParameter>();
 
             // Locus points in the pretty printed signature (the one displayed in the tooltip)
             var locusPoints = new List<int>();
-            sig.Content = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
+            string signatureString = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
+            sig.Content = signatureString;
             sig.ApplicableToSpan = span;
 
             sig.Documentation = functionInfo.Description.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
@@ -138,14 +137,14 @@ namespace Microsoft.R.Editor.Signatures
                     paramList.Add(
                         new SignatureParameter(
                             p.Description.Wrap(
-                                Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length)), 
+                                Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length)),
                                 locus, locus, p.Name, sig));
                 }
             }
 
             sig.Parameters = new ReadOnlyCollection<IParameter>(paramList);
             sig.ComputeCurrentParameter(ast, position);
-
+            
             return sig;
         }
 

@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
@@ -30,7 +31,7 @@ namespace Microsoft.R.Support.Test.Functions
                 {
                     FunctionInfoTest1_TestBody(evt);
                 }
-            });
+            }, EditorTestCompositionCatalog.Current);
         }
 
         [TestMethod]
@@ -45,9 +46,9 @@ namespace Microsoft.R.Support.Test.Functions
 
                 if (result != null && !evt.IsSet)
                 {
-                    FunctionInfoTest1_TestBody(evt);
+                    FunctionInfoTest2_TestBody(evt);
                 }
-            });
+            }, EditorTestCompositionCatalog.Current);
         }
 
         private void FunctionInfoTest1_TestBody(ManualResetEventSlim completed)

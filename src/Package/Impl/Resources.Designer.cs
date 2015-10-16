@@ -477,6 +477,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Match partially typed argument names.
+        /// </summary>
+        internal static string Settings_PartialArgumentNameMatch {
+            get {
+                return ResourceManager.GetString("Settings_PartialArgumentNameMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When typing argument name in a function call, signature help shows description for the argument that is the best match.
+        /// </summary>
+        internal static string Settings_PartialArgumentNameMatch_Description {
+            get {
+                return ResourceManager.GetString("Settings_PartialArgumentNameMatch_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Interactive window.
         /// </summary>
         internal static string Settings_ReplCategory {

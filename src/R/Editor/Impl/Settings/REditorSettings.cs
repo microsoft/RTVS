@@ -16,6 +16,7 @@ namespace Microsoft.R.Editor.Settings
         public const string CompletionOnFirstCharKey = "CompletionOnFirstChar";
         public const string SendToReplOnCtrlEnterKey = "SendToReplOnCtrlEnter";
         public const string SyntaxCheckInReplKey = "SyntaxCheckInRepl";
+        public const string PartialArgumentNameMatchKey = "PartialArgumentNameMatch";
 
         private static bool _initialized = false;
         private static RFormatOptions _formatOptions = new RFormatOptions();
@@ -264,11 +265,7 @@ namespace Microsoft.R.Editor.Settings
 
         public static bool SyntaxCheckInRepl
         {
-            get
-            {
-                return Storage.GetBoolean(REditorSettings.SyntaxCheckInReplKey, false);
-            }
-
+            get { return Storage.GetBoolean(REditorSettings.SyntaxCheckInReplKey, false); }
             set
             {
                 if (IsWritable)
@@ -276,6 +273,15 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
+        public static bool PartialArgumentNameMatch
+        {
+            get { return Storage.GetBoolean(REditorSettings.PartialArgumentNameMatchKey, false); }
+            set
+            {
+                if (IsWritable)
+                    WritableStorage.SetBoolean(REditorSettings.PartialArgumentNameMatchKey, value);
+            }
+        }
 
         public static RFormatOptions FormatOptions
         {

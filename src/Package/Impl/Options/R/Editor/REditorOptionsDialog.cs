@@ -69,6 +69,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
             set { REditorSettings.ShowCompletionOnFirstChar = value; }
         }
 
+        [LocCategory("Settings_IntellisenseCategory")]
+        [CustomLocDisplayName("Settings_PartialArgumentNameMatch")]
+        [LocDescription("Settings_PartialArgumentNameMatch_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(false)]
+        public bool PartialArgumentNameMatch
+        {
+            get { return REditorSettings.PartialArgumentNameMatch; }
+            set { REditorSettings.PartialArgumentNameMatch = value; }
+        }
+
         //[LocCategory("Settings_IntellisenseCategory")]
         //[CustomLocDisplayName("Settings_ShowTclFunctions")]
         //[LocDescription("Settings_ShowTclFunctions_Description")]

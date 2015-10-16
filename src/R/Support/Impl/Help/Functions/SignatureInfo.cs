@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.R.Support.Help.Definitions;
 
@@ -14,6 +15,12 @@ namespace Microsoft.R.Support.Help.Functions
         /// </summary>
         public IReadOnlyList<IArgumentInfo> Arguments { get; internal set; }
 
+        /// <summary>
+        /// Creates formatted signature that is presented to the user
+        /// during function parameter completion. Optionally provides
+        /// locus points (locations withing the string) for each function
+        /// parameter.
+        /// </summary>
         public string GetSignatureString(string functionName, List<int> locusPoints = null)
         {
             var sb = new StringBuilder(functionName);
@@ -33,7 +40,6 @@ namespace Microsoft.R.Support.Help.Functions
                 {
                     sb.Append(" = ");
                     sb.Append(arg.DefaultValue);
-
                 }
 
                 if (i < Arguments.Count - 1)
@@ -53,6 +59,80 @@ namespace Microsoft.R.Support.Help.Functions
 
             sb.Append(')');
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Given argument name returns index of the argument in the signature.
+        /// Performs full and then partial matching fof the argument name.
+        /// </summary>
+        /// <param name="argumentName">Name of the argument</param>
+        /// <param name="partialMatch">
+        /// If true, partial match will be performed 
+        /// if exact match is not found
+        /// </param>
+        /// <returns>Argument index or -1 if argumen is not named or was not found</returns>
+        public int GetArgumentIndex(string argumentName, bool partialMatch)
+        {
+            // A function f <- function(foo, bar) is said to have formal parameters "foo" and "bar", 
+            // and the call f(foo=3, ba=13) is said to have (actual) arguments "foo" and "ba".
+            // R first matches all arguments that have exactly the same name as a formal parameter. 
+            // Two identical argument names cause an error. Then, R matches any argument names that
+            // partially matches a(yet unmatched) formal parameter. But if two argument names partially 
+            // match the same formal parameter, that also causes an error. Also, it only matches 
+            // formal parameters before .... So formal parameters after ... must be specified using 
+            // their full names. Then the unnamed arguments are matched in positional order to 
+            // the remaining formal arguments.
+
+            if(string.IsNullOrEmpty(argumentName))
+            {
+                return -1;
+            }
+
+            // full name match first
+            for (int i = 0; i < Arguments.Count; i++)
+            {
+                IArgumentInfo argInfo = Arguments[i];
+                if(argInfo.Name.Equals(argumentName, StringComparison.Ordinal))
+                {
+                    return i;
+                }
+            }
+
+            if(!partialMatch)
+            {
+                return -1;
+            }
+
+            // Try partial match. Only match unique or longest
+            int minLengthDifference = Int32.MaxValue;
+            int index = -1;
+            bool unique = true;
+
+            for (int i = 0; i < Arguments.Count; i++)
+            {
+                IArgumentInfo argInfo = Arguments[i];
+                if (argInfo.Name.StartsWith(argumentName, StringComparison.Ordinal))
+                {
+                    int lengthDifference = argInfo.Name.Length - argumentName.Length;
+                    if (lengthDifference < minLengthDifference)
+                    {
+                        minLengthDifference = lengthDifference;
+                        index = i;
+                        unique = true;
+                    }
+                    else if(index >= 0)
+                    {
+                        unique = false;
+                    }
+                }
+
+                if(argInfo.IsEllipsis)
+                {
+                    break;
+                }
+            }
+
+            return unique ? index : -1;
         }
         #endregion
     }
