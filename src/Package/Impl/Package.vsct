@@ -658,9 +658,9 @@
     </CommandPlacement>
 
     <!-- Show plot window -->
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotWindow" priority="0x0500">
+    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotWindow" priority="0x0500">
       <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
-    </CommandPlacement>
+    </CommandPlacement>-->
 
     <!-- Show R Interactive -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdShowReplWindow" priority="0x0500">
