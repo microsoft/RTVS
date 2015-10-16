@@ -20,6 +20,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
+                new GoToEditorOptionsCommand(),
 
                 new LoadWorkspaceCommand(rSessionProvider, projectServiceAccessor),
                 new SaveWorkspaceCommand(rSessionProvider, projectServiceAccessor),

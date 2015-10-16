@@ -84,6 +84,7 @@
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\HeaderScrollViewer.cs" />
     <Compile Include="Debugger\RDebugSessionProvider.cs" />
+    <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
     <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
