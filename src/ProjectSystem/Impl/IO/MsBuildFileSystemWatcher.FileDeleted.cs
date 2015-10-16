@@ -43,7 +43,11 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 
 				changeset.RemovedFiles.Add(relativePath);
 			}
-		}
+
+            public override string ToString() {
+                return $"File deleted: {_fullPath}";
+            }
+        }
 
 	}
 }
