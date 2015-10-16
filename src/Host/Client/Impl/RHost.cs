@@ -73,14 +73,19 @@ namespace Microsoft.R.Host.Client {
 
                         await Run(ct);
                     }
-                } catch (Exception ex) when (!(ex is OperationCanceledException)) { // TODO: replace with better logging
+                } catch (OperationCanceledException) when(ct.IsCancellationRequested) {
+                    // Expected cancellation, do not propagate, just exit process
+                } catch (Exception ex) { 
                     Trace.Fail("Exception in RHost run loop:\n" + ex);
                     throw;
                 } finally {
                     if (!_process.HasExited) {
                         try {
                             _process.WaitForExit(500);
-                            _process.Kill();
+                            if (!_process.HasExited) {
+                                _process.Kill();
+                                _process.WaitForExit();
+                            }
                         } catch (InvalidOperationException) {
                         }
                     }

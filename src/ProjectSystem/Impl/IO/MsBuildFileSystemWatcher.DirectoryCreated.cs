@@ -67,6 +67,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                     }
                 }
             }
+
+            public override string ToString() {
+                return $"Directory created: {_directoryFullPath}";
+            }
         }
     }
 }

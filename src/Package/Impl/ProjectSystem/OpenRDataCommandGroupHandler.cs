@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus status) {
-            if (_commandIds.Contains(commandId)) {
+            if (_sessionProvider.Current != null && _commandIds.Contains(commandId)) {
                 if (nodes.Any(IsRData)) {
                     status |= CommandStatus.Supported | CommandStatus.Enabled;
                     return Task.FromResult(new CommandStatusResult(true, commandText, status));
@@ -74,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             var messageResult = EditorShell.Current.ShowYesNoMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath));
             if (!messageResult) {
-                return false;
+                return true;
             }
 
             using (var evaluation = await session.BeginEvaluationAsync()) {

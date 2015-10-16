@@ -80,6 +80,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
                     items.Add(newPrefix + item.Substring(oldPrefix.Length));
                 }
             }
+
+            public override string ToString() {
+                return $"Directory renamed: {_oldFullPath} -> {_fullPath}";
+            }
         }
     }
 }

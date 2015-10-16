@@ -29,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _submitAsyncActionBlock = new ActionBlock<IReadOnlyCollection<string>>(new Func<IReadOnlyCollection<string>, Task>(ProcessSubmitAsync));
         }
 
-
         public static ReplWindow Current => _instance.Value;
 
         public Task SubmitAsync(IReadOnlyCollection<string> input) {
@@ -37,9 +36,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private async Task ProcessSubmitAsync(IReadOnlyCollection<string> input) {
-            foreach (var selectedLine in input) {
-                IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
-                if (current != null) {
+            IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
+            if (current != null) {
+                foreach (var selectedLine in input) {
+                    if (current.InteractiveWindow.IsResetting) {
+                        return;
+                    }
+
                     await current.InteractiveWindow.SubmitAsync(new[] { selectedLine });
                 }
             }

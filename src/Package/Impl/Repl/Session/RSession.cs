@@ -88,14 +88,22 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
+            var requestTask = BeginInteractionAsync(false);
+            await Task.WhenAny(requestTask, Task.Delay(100)).Unwrap();
 
-            var request = await BeginInteractionAsync(false);
             if (_hostRunTask.IsCompleted) {
-                request.Dispose();
+                requestTask
+                    .ContinueWith(t => t.Result.Dispose(), TaskContinuationOptions.OnlyOnRanToCompletion)
+                    .DoNotWait();
                 return;
             }
 
-            await request.Quit();
+            if (requestTask.Status == TaskStatus.RanToCompletion) {
+                await requestTask.Result.Quit();
+            } else {
+                _host?.Dispose();
+            }
+
             await _hostRunTask;
         }
 
@@ -108,18 +116,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
             currentRequest?.Complete();
 
-            IList<RSessionRequestSource> requestSources;
-            if (_pendingRequestSources.TryReceiveAll(out requestSources)) {
-                foreach (var requestSource in requestSources) {
-                    requestSource.TryCancel();
-                }
+            RSessionRequestSource requestSource;
+            while (_pendingRequestSources.TryReceive(out requestSource)) {
+                requestSource.TryCancel();
             }
 
-            IList<RSessionEvaluationSource> evalSources;
-            if (_pendingEvaluationSources.TryReceiveAll(out evalSources)) {
-                foreach (var evalSource in evalSources) {
-                    evalSource.TryCancel();
-                }
+            RSessionEvaluationSource evalSource;
+            while (_pendingEvaluationSources.TryReceive(out evalSource)) {
+                evalSource.TryCancel();
             }
 
             _contexts = null;
@@ -161,7 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
                 try {
                     consoleInput = await ReadNextRequest(prompt, len, ct);
-                } catch (TaskCanceledException) {
+                } catch (OperationCanceledException) {
                     // If request was canceled through means other than our token, it indicates the refusal of
                     // that requestor to respond to that particular prompt, so move on to the next requestor.
                     // If it was canceled through the token, then host itself is shutting down, and cancellation
@@ -206,7 +210,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 try {
                     var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
                     await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
-                } catch (TaskCanceledException) {
+                } catch (OperationCanceledException) {
                     return;
                 }
             }
