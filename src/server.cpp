@@ -16,10 +16,24 @@ namespace rhost {
             std::promise<ws_server_type::connection_ptr> ws_conn_promise;
             ws_server_type::connection_ptr ws_conn;
             std::unique_ptr<std::promise<picojson::value>> response_promise;
+            bool allow_callbacks = true;
             std::atomic<bool> is_connection_closed = false;
             std::atomic<int> nesting_level = 0;
 
-            picojson::object r_eval(const std::string& expr) {
+            std::error_code send_json(ws_server_type::connection_type& conn, const picojson::value& value) {
+                std::string json = value.serialize();
+#ifdef TRACE_JSON
+                for (int i = 0; i < nesting_level; ++i) fputc('\t', stderr);
+                fprintf(stderr, "<<< %s\n\n", json.c_str());
+#endif
+                return conn.send(json, websocketpp::frame::opcode::text);
+            }
+
+            std::error_code send_json(ws_server_type::connection_type& conn, const picojson::object& obj) {
+                return send_json(conn, picojson::value(obj));
+            }
+
+            picojson::object r_eval(const std::string& expr, SEXP env) {
                 picojson::object obj;
                 obj["event"] = picojson::value("eval");
 
@@ -36,7 +50,7 @@ namespace rhost {
                         picojson::object res;
 
                         int has_error;
-                        SEXP sexp_result = R_tryEvalSilent(VECTOR_ELT(sexp_parsed, i), R_GlobalEnv, &has_error);
+                        SEXP sexp_result = R_tryEvalSilent(VECTOR_ELT(sexp_parsed, i), env, &has_error);
                         if (has_error) {
                             obj["error"] = picojson::value(R_curErrorBuf());
                         }
@@ -53,19 +67,6 @@ namespace rhost {
                 return obj;
             }
 
-            std::error_code send_json(ws_server_type::connection_type& conn, const picojson::value& value) {
-                std::string json = value.serialize();
-#ifdef TRACE_JSON
-                for (int i = 0; i < nesting_level; ++i) fputc('\t', stderr);
-                fprintf(stderr, "<<< %s\n\n", json.c_str());
-#endif
-                return conn.send(json, websocketpp::frame::opcode::text);
-            }
-
-            std::error_code send_json(ws_server_type::connection_type& conn, const picojson::object& obj) {
-                return send_json(conn, picojson::value(obj));
-            }
-
             template<class F>
             picojson::value with_response(F&& f) {
                 response_promise = std::make_unique<std::promise<picojson::value>>();
@@ -80,8 +81,7 @@ namespace rhost {
                         R_WaitEvent();
                         R_ProcessEvents();
                         if (is_connection_closed) {
-                            R_Suicide("Lost connection to client.");
-                            assert(false); // not reachable
+                            fatal_error("Lost connection to client.");
                         }
                     }
 
@@ -92,13 +92,50 @@ namespace rhost {
                         const auto& obj = r.get<picojson::object>();
                         auto it = obj.find("command");
                         if (it != obj.end() && it->second.is<std::string>() && it->second.get<std::string>() == "eval") {
+                            bool old_allow_callbacks = allow_callbacks;
+                            SCOPE_WARDEN(restore_allow_callbacks, {
+                                allow_callbacks = old_allow_callbacks;
+                            });
+
                             std::string expr;
                             it = obj.find("expr");
                             if (it != obj.end() && it->second.is<std::string>()) {
                                 expr = it->second.get<std::string>();
+                            } else {
+                                fatal_error("'eval': 'expr' must be present, and must be a string.");
                             }
 
-                            picojson::object result = r_eval(expr);
+                            SEXP env = R_GlobalEnv;
+                            it = obj.find("env");
+                            if (it != obj.end()) {
+                                if (!it->second.is<std::string>()) {
+                                    fatal_error("'eval': 'env' must be a string.");
+                                }
+
+                                std::string env_name = it->second.get<std::string>();
+                                if (env_name == "global") {
+                                    env = R_GlobalEnv;
+                                } else if (env_name == "base") {
+                                    env = R_BaseEnv;
+                                } else if (env_name == "empty") {
+                                    env = R_EmptyEnv;
+                                } else {
+                                    fatal_error("'eval': 'env' must be one of: 'global', 'base', 'empty'.");
+                                }
+                            }
+
+                            allow_callbacks = true;
+                            it = obj.find("allow_callbacks");
+                            if (it != obj.end()) {
+                                if (!it->second.is<bool>()) {
+                                    fatal_error("'eval': 'allow_callbacks' must be a boolean.");
+                                }
+
+                                allow_callbacks = it->second.get<bool>();
+                            }
+
+                            picojson::object result = r_eval(expr, env);
+
                             response_promise = std::make_unique<std::promise<picojson::value>>();
                             send_json(*ws_conn, result);
                         }
@@ -128,6 +165,9 @@ namespace rhost {
                 if (is_connection_closed) {
                     return 1;
                 }
+                if (!allow_callbacks) {
+                    Rf_error("ReadConsole: blocking callback not allowed during eval.");
+                }
 
                 picojson::object obj;
                 add_context(obj);
@@ -146,8 +186,7 @@ namespace rhost {
                         return 0;
                     }
                     if (!resp.is<std::string>()) {
-                        fprintf(stderr, "!!! ERROR: expected string, got %s\n", resp.to_str().c_str());
-                        return 0;
+                        fatal_error("ReadConsole: expected string, got %s\n", resp.to_str().c_str());
                     }
 
                     std::string s = from_utf8(resp.get<std::string>());
@@ -177,14 +216,6 @@ namespace rhost {
             }
 
             extern "C" void CallBack() {
-#if false
-                picojson::object obj;
-                add_context(obj);
-
-                obj["event"] = picojson::value("CallBack");
-
-                send_json(*ws_conn, obj);
-#endif
             }
 
             extern "C" void ShowMessage(const char* s) {
@@ -205,6 +236,9 @@ namespace rhost {
                 if (is_connection_closed) {
                     return 0;
                 }
+                if (!allow_callbacks) {
+                    Rf_error("YesNoCancel: blocking callback not allowed during eval.");
+                }
 
                 picojson::object obj;
                 obj["event"] = picojson::value("YesNoCancel");
@@ -218,8 +252,7 @@ namespace rhost {
                     return 0;
                 }
                 if (!resp.is<double>()) {
-                    fprintf(stderr, "!!! ERROR: expected double, got %s\n", resp.to_str().c_str());
-                    return 0;
+                    fatal_error("YesNoCancel: expected number, got %s\n", resp.to_str().c_str());
                 }
 
                 return static_cast<int>(resp.get<double>());
@@ -241,8 +274,7 @@ namespace rhost {
 
             void on_ws_message(websocketpp::connection_hdl hdl, ws_server_type::message_ptr msg) {
                 if (!response_promise) {
-                    fprintf(stderr, "Message received when no messages are expected: %s\n", msg->get_payload().c_str());
-                    return;
+                    fatal_error("Message received when no messages are expected: %s\n", msg->get_payload().c_str());
                 }
 
                 const std::string& json = msg->get_payload();
@@ -255,8 +287,7 @@ namespace rhost {
                 picojson::value v;
                 std::string err = picojson::parse(v, json);
                 if (!err.empty()) {
-                    fprintf(stderr, "Couldn't parse message: %s\n%s", json.c_str(), err.c_str());
-                    return;
+                    fatal_error("Couldn't parse message: %s\n%s", json.c_str(), err.c_str());
                 }
 
                 response_promise->set_value(v);
@@ -272,8 +303,7 @@ namespace rhost {
                 }
             }
 
-            void connection_close_handler(websocketpp::connection_hdl h)
-            {
+            void connection_close_handler(websocketpp::connection_hdl h) {
                 is_connection_closed = true;
                 unblock_message_loop();
             }
