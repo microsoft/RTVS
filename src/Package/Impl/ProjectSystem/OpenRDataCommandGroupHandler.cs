@@ -74,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             var messageResult = EditorShell.Current.ShowYesNoMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath));
             if (!messageResult) {
-                return false;
+                return true;
             }
 
             using (var evaluation = await session.BeginEvaluationAsync()) {

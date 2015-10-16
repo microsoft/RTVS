@@ -37,9 +37,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private async Task ProcessSubmitAsync(IReadOnlyCollection<string> input) {
-            foreach (var selectedLine in input) {
-                IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
-                if (current != null) {
+            IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
+            if (current != null) {
+                foreach (var selectedLine in input) {
+                    if (current.InteractiveWindow.IsResetting) {
+                        return;
+                    }
+
                     await current.InteractiveWindow.SubmitAsync(new[] { selectedLine });
                 }
             }
