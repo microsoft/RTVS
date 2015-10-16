@@ -23,7 +23,7 @@ namespace Microsoft.R.Debugger.Engine {
             return twdf;
         });
 
-        public static void GetResultOnUIThread(this Task task, int delay = 0) {
+        public static void GetResultOnUIThread(this Task task, int delay = 1) {
             var syncContext = SynchronizationContext.Current;
             if (syncContext == null) {
                 string err = $"{nameof(GetResultOnUIThread)} called from a background thread";
