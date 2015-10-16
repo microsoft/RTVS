@@ -6,12 +6,20 @@ namespace Microsoft.VisualStudio.R.Package.Plots
     /// <summary>
     /// Plot content provider to load and consume plot content
     /// </summary>
-    internal interface IPlotContentProvider
+    internal interface IPlotContentProvider: IDisposable
     {
         /// <summary>
         /// Event raised when UIElement is loaded, content presenter listens to this event
         /// </summary>
         event EventHandler<PlotChangedEventArgs> PlotChanged;
+
+        /// <summary>
+        /// Loads file on next idle time. Typically used
+        /// in R plotting where several files may get produced
+        /// in a fast succession. Eliminates multiple file loads.
+        /// </summary>
+        /// <param name="filePath"></param>
+        void LoadFileOnIdle(string filePath);
 
         /// <summary>
         /// Load a file to create plot UIElement

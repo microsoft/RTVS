@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Threading;
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
@@ -66,7 +67,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                         ValueWidth = ValueColumn.ActualWidth,
                         TypeWidth = TypeColumn.ActualWidth });
 
-                DispatchInvoke(() =>
+                ThreadHelper.Generic.BeginInvoke(
+                    DispatcherPriority.Normal,
+                    () =>
                 {
                     if (_globalEnv == null)
                     {
@@ -76,8 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                     {
                         _globalEnv.Update(newVariable);
                     }
-                },
-                DispatcherPriority.Normal);
+                    });
             }
         }
 
@@ -151,24 +153,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 default:
                     throw new NotSupportedException();
             }
-        }
-
-        private static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
-        {
-            Action guardedAction =
-                () =>
-                {
-                    try
-                    {
-                        toInvoke();
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.Assert(false, "Guarded invoke caught exception", e.Message);
-                    }
-                };
-
-            Application.Current.Dispatcher.BeginInvoke(guardedAction, priority);    // TODO: acquiring Application.Current.Dispatcher, create utility class for UI thread and use it
         }
 
         #region Column Resizing

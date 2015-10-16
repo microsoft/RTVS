@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session
-{
-    internal sealed class RSessionRequestSource
-    {
+namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+    internal sealed class RSessionRequestSource {
         private readonly TaskCompletionSource<IRSessionInteraction> _createRequestTcs;
         private readonly TaskCompletionSource<object> _responseTcs;
 
@@ -13,8 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
         public bool IsVisible { get; }
         public IReadOnlyList<IRContext> Contexts { get; }
 
-        public RSessionRequestSource(bool isVisible, IReadOnlyList<IRContext> contexts)
-        {
+        public RSessionRequestSource(bool isVisible, IReadOnlyList<IRContext> contexts) {
             _createRequestTcs = new TaskCompletionSource<IRSessionInteraction>();
             _responseTcs = new TaskCompletionSource<object>();
 
@@ -22,19 +19,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             Contexts = contexts ?? new[] { RHost.TopLevelContext };
         }
 
-        public void Request(string prompt, int maxLength, TaskCompletionSource<string> requestTcs)
-        {
+        public void Request(string prompt, int maxLength, TaskCompletionSource<string> requestTcs) {
             var request = new RSessionInteraction(requestTcs, _responseTcs, prompt, maxLength, Contexts);
             _createRequestTcs.SetResult(request);
         }
 
-        public void Fail(string text)
-        {
+        public void Fail(string text) {
             _responseTcs.SetException(new RException(text));
         }
 
-        public void Complete()
-        {
+        public void Complete() {
             _responseTcs.SetResult(null);
         }
 
