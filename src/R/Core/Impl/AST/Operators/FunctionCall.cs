@@ -106,17 +106,14 @@ namespace Microsoft.R.Core.AST.Operators
             for (int i = 0; i < Arguments.Count; i++)
             {
                 IAstNode arg = Arguments[i];
-                if (!(arg is ErrorArgument))
+                if (arg is ErrorArgument)
                 {
-                    if (position < arg.End || (arg is MissingArgument && arg.Start == arg.End && arg.Start == 0))
-                    {
-                        return i;
-                    }
+                    continue;
                 }
-                else
+
+                if (position < arg.End || (arg is MissingArgument && arg.Start == arg.End && arg.Start == 0))
                 {
-                    Debug.Assert(i == Arguments.Count - 1, "Stub argument must be the last one");
-                    break;
+                    return i;
                 }
             }
 
