@@ -16,5 +16,17 @@ namespace Microsoft.R.Support.Help.Definitions
         /// parameter.
         /// </summary>
         string GetSignatureString(string functionName, List<int> locusPoints = null);
+
+        /// <summary>
+        /// Given argument name returns index of the argument in the signature.
+        /// Performs full and then partial matching fof the argument name.
+        /// </summary>
+        /// <param name="argumentName">Name of the argument</param>
+        /// <param name="partialMatch">
+        /// If true, partial match will be performed 
+        /// if exact match is not found
+        /// </param>
+        /// <returns>Argument index or -1 if argumen is not named or was not found</returns>
+        int GetArgumentIndex(string argumentName, bool partialMatch);
     }
 }

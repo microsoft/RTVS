@@ -2,7 +2,7 @@
 
 namespace Microsoft.Languages.Editor.Test.Utility
 {
-    internal sealed class EditorTestCompositionCatalog: TestCompositionCatalog
+    public sealed class EditorTestCompositionCatalog: TestCompositionCatalog
     {
         private static EditorTestCompositionCatalog _instance;
 

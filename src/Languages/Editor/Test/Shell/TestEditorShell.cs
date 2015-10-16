@@ -28,7 +28,6 @@ namespace Microsoft.Languages.Editor.Tests.Shell
             {
                 if (_instance == null)
                 {
-
                     var compositionService = catalog.CompositionService;
                     var exportProvider = catalog.ExportProvider;
 
