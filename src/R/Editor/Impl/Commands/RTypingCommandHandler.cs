@@ -27,6 +27,23 @@ namespace Microsoft.R.Editor.Commands
         {
         }
 
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
+        {
+            if (group == VSConstants.VSStd2K)
+            {
+                char typedChar = GetTypedChar(group, id, inputArg);
+                if(typedChar != '\0')
+                {
+                    // Let provisional text completion check if the new character
+                    // position in the tree inside existing string so it doesn't.
+                    // complete " inside "".
+                    SeparatorCompletion.BeforeTypeCharacter(TextView, typedChar);
+                }
+            }
+
+            return base.Invoke(group, id, inputArg, ref outputArg);
+        }
+
         #region ICommand
         public override void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
         {
