@@ -70,6 +70,7 @@ namespace Microsoft.R.Debugger {
 
         public async Task InitializeAsync() {
             ThrowIfDisposed();
+            await TaskUtilities.SwitchToBackgroundThread();
 
             if (_isInitialized) {
                 throw new InvalidOperationException($"This {nameof(DebugSession)} has already been initialized");
@@ -80,13 +81,13 @@ namespace Microsoft.R.Debugger {
             string helpers;
             using (var stream = typeof(DebugSession).Assembly.GetManifestResourceStream(typeof(DebugSession).Namespace + ".DebugHelpers.R"))
             using (var reader = new StreamReader(stream)) {
-                helpers = await reader.ReadToEndAsync().ConfigureAwait(false);
+                helpers = await reader.ReadToEndAsync();
             }
             helpers = helpers.Replace("\r", "");
 
             REvaluationResult res;
-            using (var eval = await RSession.BeginEvaluationAsync().ConfigureAwait(false)) {
-                res = await eval.EvaluateAsync(helpers, reentrant: false).ConfigureAwait(false);
+            using (var eval = await RSession.BeginEvaluationAsync()) {
+                res = await eval.EvaluateAsync(helpers, reentrant: false);
             }
 
             if (res.ParseStatus != RParseStatus.OK) {
@@ -99,7 +100,7 @@ namespace Microsoft.R.Debugger {
             // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
             // grab an interaction and check the prompt.
             RSession.BeginInteractionAsync().ContinueWith(async t => {
-                using (var inter = await t.ConfigureAwait(false)) {
+                using (var inter = await t) {
                     // If we got AfterRequest before we got here, then that has already taken care of
                     // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.
                     _initialPromptCts.Token.ThrowIfCancellationRequested();
@@ -111,9 +112,11 @@ namespace Microsoft.R.Debugger {
 
         public async Task ExecuteBrowserCommandAsync(string command) {
             ThrowIfDisposed();
-            using (var inter = await RSession.BeginInteractionAsync(isVisible: true).ConfigureAwait(false)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            using (var inter = await RSession.BeginInteractionAsync(isVisible: true)) {
                 if (IsBrowserContext(inter.Contexts)) {
-                    await inter.RespondAsync(command + "\n").ConfigureAwait(false);
+                    await inter.RespondAsync(command + "\n");
                 }
             }
         }
@@ -121,11 +124,12 @@ namespace Microsoft.R.Debugger {
         internal async Task<TToken> InvokeDebugHelperAsync<TToken>(string expression)
             where TToken : JToken {
 
+            TaskUtilities.AssertIsOnBackgroundThread();
             ThrowIfDisposed();
 
             REvaluationResult res;
-            using (var eval = await RSession.BeginEvaluationAsync().ConfigureAwait(false)) {
-                res = await eval.EvaluateAsync(expression, reentrant: false).ConfigureAwait(false);
+            using (var eval = await RSession.BeginEvaluationAsync()) {
+                res = await eval.EvaluateAsync(expression, reentrant: false);
                 if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null) {
                     Trace.Fail($"Internal debugger evaluation {expression} failed: {res}");
                     throw new REvaluationException(res);
@@ -149,7 +153,9 @@ namespace Microsoft.R.Debugger {
 
         public async Task<DebugEvaluationResult> EvaluateAsync(DebugStackFrame stackFrame, string expression, string name = null, string env = "NULL") {
             ThrowIfDisposed();
-            var jEvalResult = await InvokeDebugHelperAsync<JObject>($".rtvs.eval({expression.ToRStringLiteral()}, {env})").ConfigureAwait(false);
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var jEvalResult = await InvokeDebugHelperAsync<JObject>($".rtvs.eval({expression.ToRStringLiteral()}, {env})");
             return DebugEvaluationResult.Parse(stackFrame, expression, name, jEvalResult);
         }
 
@@ -168,14 +174,15 @@ namespace Microsoft.R.Debugger {
         private async Task StepAsync(params string[] commands) {
             Trace.Assert(commands.Length > 0);
             ThrowIfDisposed();
+            await TaskUtilities.SwitchToBackgroundThread();
 
             _stepTcs = new TaskCompletionSource<object>();
             for (int i = 0; i < commands.Length - 1; ++i) {
-                await ExecuteBrowserCommandAsync(commands[i]).ConfigureAwait(false);
+                await ExecuteBrowserCommandAsync(commands[i]);
             }
 
             ExecuteBrowserCommandAsync(commands.Last()).DoNotWait();
-            await _stepTcs.Task.ConfigureAwait(false);
+            await _stepTcs.Task;
         }
 
         public bool CancelStep() {
@@ -192,8 +199,9 @@ namespace Microsoft.R.Debugger {
 
         public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync() {
             ThrowIfDisposed();
+            await TaskUtilities.SwitchToBackgroundThread();
 
-            var jFrames = await InvokeDebugHelperAsync<JArray>(".rtvs.traceback()").ConfigureAwait(false);
+            var jFrames = await InvokeDebugHelperAsync<JArray>(".rtvs.traceback()");
             Trace.Assert(jFrames.All(t => t is JObject), ".rtvs.traceback(): array of objects expected.\n\n" + jFrames);
 
             var stackFrames = new List<DebugStackFrame>();
@@ -211,13 +219,15 @@ namespace Microsoft.R.Debugger {
         }
 
         public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             DebugBreakpoint bp;
             if (!_breakpoints.TryGetValue(location, out bp)) {
                 bp = new DebugBreakpoint(this, location);
                 _breakpoints.Add(location, bp);
             }
 
-            await bp.SetBreakpointAsync().ConfigureAwait(false);
+            await bp.SetBreakpointAsync();
             return bp;
         }
 
@@ -250,7 +260,7 @@ namespace Microsoft.R.Debugger {
             IsBrowsing = true;
 
             RSession.BeginInteractionAsync().ContinueWith(async t => {
-                using (var inter = await t.ConfigureAwait(false)) {
+                using (var inter = await t) {
                     if (inter.Contexts != contexts) {
                         // Someone else has already responded to this interaction.
                         InterruptBreakpointHitProcessing();
@@ -262,7 +272,7 @@ namespace Microsoft.R.Debugger {
                     switch (_bpHitProcState) {
                         case BreakpointHitProcessingState.None:
                             {
-                                lastFrame = (await GetStackFramesAsync().ConfigureAwait(false)).LastOrDefault();
+                                lastFrame = (await GetStackFramesAsync()).LastOrDefault();
                                 if (lastFrame?.FrameKind == DebugStackFrameKind.TracebackAfterBreakpoint) {
                                     // If we're stopped at a breakpoint, step out of .doTrace, so that the next stepping command that
                                     // happens is applied at the actual location inside the function where the breakpoint was set.
@@ -279,7 +289,7 @@ namespace Microsoft.R.Debugger {
                                     }
 
                                     // Set the destination for the next "c", which we will issue on the following prompt.
-                                    await inter.RespondAsync($"browserSetDebug({n})\n").ConfigureAwait(false);
+                                    await inter.RespondAsync($"browserSetDebug({n})\n");
                                     _bpHitProcState = BreakpointHitProcessingState.BrowserSetDebug;
                                     return;
                                 } else {
@@ -291,7 +301,7 @@ namespace Microsoft.R.Debugger {
                         case BreakpointHitProcessingState.BrowserSetDebug:
                             // We have issued a browserSetDebug() on the previous interaction prompt to set destination
                             // for the "c" command. Issue that command now, and move to the next step.
-                            await inter.RespondAsync("c\n").ConfigureAwait(false);
+                            await inter.RespondAsync("c\n");
                             _bpHitProcState = BreakpointHitProcessingState.Continue;
                             return;
 
@@ -304,7 +314,7 @@ namespace Microsoft.R.Debugger {
                     }
 
                     if (lastFrame == null) {
-                        lastFrame = (await GetStackFramesAsync().ConfigureAwait(false)).LastOrDefault();
+                        lastFrame = (await GetStackFramesAsync()).LastOrDefault();
                     }
 
                     // Report breakpoints first, so that by the time step completion is reported, all actions associated

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 
 namespace Microsoft.R.Debugger {
     public struct DebugBreakpointLocation : IEquatable<DebugBreakpointLocation> {
@@ -45,10 +46,12 @@ namespace Microsoft.R.Debugger {
         }
 
         internal async Task SetBreakpointAsync() {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             // Tracer expression must be in sync with DebugStackFrame._breakpointRegex
             var location = $"{Location.FileName.ToRStringLiteral()}, {Location.LineNumber}";
             var tracer = $"quote({{.rtvs.breakpoint({location})}})";
-            var res = await Session.EvaluateAsync($"setBreakpoint({location}, tracer={tracer})").ConfigureAwait(false);
+            var res = await Session.EvaluateAsync($"setBreakpoint({location}, tracer={tracer})");
             if (res is DebugErrorEvaluationResult) {
                 throw new InvalidOperationException($"{res.Expression}: {res}");
             }
@@ -57,8 +60,10 @@ namespace Microsoft.R.Debugger {
 
         public async Task DeleteAsync() {
             Trace.Assert(UseCount > 0);
+            await TaskUtilities.SwitchToBackgroundThread();
+
             if (--UseCount == 0) {
-                var res = await Session.EvaluateAsync($"setBreakpoint({Location.FileName.ToRStringLiteral()}, {Location.LineNumber}, clear=TRUE)").ConfigureAwait(false);
+                var res = await Session.EvaluateAsync($"setBreakpoint({Location.FileName.ToRStringLiteral()}, {Location.LineNumber}, clear=TRUE)");
                 if (res is DebugErrorEvaluationResult) {
                     throw new InvalidOperationException($"{res.Expression}: {res}");
                 }
