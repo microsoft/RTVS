@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             _hostRunTask = _host.CreateAndRun(RToolsSettings.GetRVersionPath());
             this.ScheduleEvaluation(async e => {
-                await e.SetVsGraphicsDevice();
+                //await e.SetVsGraphicsDevice();
                 await e.SetDefaultWorkingDirectory();
                 await e.PrepareDataInspect();
             });
