@@ -2,6 +2,9 @@
 
 namespace Microsoft.R.Actions.Logging
 {
+    /// <summary>
+    /// Implementation of a text log that has multiple text lines.
+    /// </summary>
     public class LinesLog : StringLog, IActionLinesLog
     {
         private readonly char[] _lineBreaks = new char[] { '\n' };

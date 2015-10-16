@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Actions.Logging
 {
+    /// <summary>
+    /// Log that writes data into a string.
+    /// </summary>
     public class StringLog : IActionLog
     {
         private StringBuilder _sb = new StringBuilder();

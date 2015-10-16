@@ -5,6 +5,13 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Languages
 {
+    /// <summary>
+    /// Basic language service implementation for Visual Studio.
+    /// Mostly provides interfaces that return 'not implemented'
+    /// since VS architecture changed since and colorization, 
+    /// formatting and similar operations are implemented in objects
+    /// exported via MEF and imported by the core editor directly.
+    /// </summary>
     internal class BaseLanguageService : IVsLanguageInfo, IVsLanguageTextOps, IVsLanguageDebugInfo, IVsFormatFilterProvider
     {
         private string _languageName;
