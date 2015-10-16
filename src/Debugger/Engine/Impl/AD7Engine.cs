@@ -112,7 +112,7 @@ namespace Microsoft.R.Debugger.Engine {
             Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
             _events = pCallback;
-            DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetAwaiter().GetResult();
+            DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetResultOnUIThread();
             MainThread = new AD7Thread(this);
 
             // Send notification after acquiring the session - we need it in case there were any breakpoints pending before

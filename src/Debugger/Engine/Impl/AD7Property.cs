@@ -32,7 +32,7 @@ namespace Microsoft.R.Debugger.Engine {
             IsFrameEnvironment = isFrameEnvironment;
 
             _children = Lazy.Create(() =>
-                (EvaluationResult as DebugValueEvaluationResult).GetChildrenAsync()?.GetAwaiter().GetResult()
+                (EvaluationResult as DebugValueEvaluationResult).GetChildrenAsync()?.GetResultOnUIThread()
                 ?? new DebugEvaluationResult[0]);
         }
 
@@ -46,7 +46,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
             if (valueResult != null && valueResult.HasAttributes == true) {
-                var attrResult = StackFrame.StackFrame.EvaluateAsync($"attributes({valueResult.Expression})", "attributes()").GetAwaiter().GetResult();
+                var attrResult = StackFrame.StackFrame.EvaluateAsync($"attributes({valueResult.Expression})", "attributes()").GetResultOnUIThread();
                 if (!(attrResult is DebugErrorEvaluationResult)) {
                     var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                     infos = new[] { attrInfo }.Concat(infos);
@@ -198,7 +198,7 @@ namespace Microsoft.R.Debugger.Engine {
             errorString = null;
 
             // TODO: dwRadix
-            var setResult = EvaluationResult.SetValueAsync(pszValue).GetAwaiter().GetResult() as DebugErrorEvaluationResult;
+            var setResult = EvaluationResult.SetValueAsync(pszValue).GetResultOnUIThread() as DebugErrorEvaluationResult;
             if (setResult != null) {
                 errorString = setResult.ErrorText;
                 return VSConstants.E_FAIL;

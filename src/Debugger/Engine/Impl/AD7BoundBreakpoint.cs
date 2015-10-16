@@ -70,12 +70,12 @@ namespace Microsoft.R.Debugger.Engine {
                 if (state == enum_BP_STATE.BPS_DISABLED || state == enum_BP_STATE.BPS_DELETED) {
                     if (DebugBreakpoint != null) {
                         DebugBreakpoint.BreakpointHit -= DebugBreakpoint_BreakpointHit;
-                        DebugBreakpoint.DeleteAsync().GetAwaiter().GetResult();
+                        DebugBreakpoint.DeleteAsync().GetResultOnUIThread();
                     }
                 }
             } else {
                 if (state == enum_BP_STATE.BPS_ENABLED) {
-                    DebugBreakpoint = Engine.DebugSession.CreateBreakpointAsync(Location).GetAwaiter().GetResult();
+                    DebugBreakpoint = Engine.DebugSession.CreateBreakpointAsync(Location).GetResultOnUIThread();
                     DebugBreakpoint.BreakpointHit += DebugBreakpoint_BreakpointHit;
                 }
             }
