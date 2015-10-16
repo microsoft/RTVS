@@ -326,4 +326,7 @@
   <data name="Settings_PartialArgumentNameMatch_Description" xml:space="preserve">
     <value>When typing argument name in a function call, signature help shows description for the argument that is the best match</value>
   </data>
+  <data name="Error_RestartVsAfterRInstalled" xml:space="preserve">
+    <value>R for Windows is found. Please restart Visual Studio for changes to take effect.</value>
+  </data>
 </root>

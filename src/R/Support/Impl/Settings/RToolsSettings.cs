@@ -14,7 +14,7 @@ namespace Microsoft.R.Support.Settings
         // Exported by the host package
         internal static IRToolsSettings ToolsSettings { get; set; }
 
-        public static void VerifyRIsInstalled(ExportProvider exportProvider)
+        public static bool VerifyRIsInstalled(ExportProvider exportProvider)
         {
             Init(exportProvider);
 
@@ -26,7 +26,7 @@ namespace Microsoft.R.Support.Settings
 
                 if (rExeExists && rTermExists)
                 {
-                    return;
+                    return true;
                 }
             }
             else
@@ -38,6 +38,8 @@ namespace Microsoft.R.Support.Settings
             EditorShell.Current.ShowErrorMessage(message);
 
             Process.Start("https://cran.r-project.org");
+
+            return false;
         }
 
         public static void GoToRInstallPage()

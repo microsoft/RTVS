@@ -151,6 +151,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R for Windows is found. Please restart Visual Studio for changes to take effect..
+        /// </summary>
+        internal static string Error_RestartVsAfterRInstalled {
+            get {
+                return ResourceManager.GetString("Error_RestartVsAfterRInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
         internal static string InputIsTooLong {

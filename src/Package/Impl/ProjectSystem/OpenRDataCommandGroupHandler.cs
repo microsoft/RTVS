@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus status) {
-            if (_commandIds.Contains(commandId)) {
+            if (_sessionProvider.Current != null && _commandIds.Contains(commandId)) {
                 if (nodes.Any(IsRData)) {
                     status |= CommandStatus.Supported | CommandStatus.Enabled;
                     return Task.FromResult(new CommandStatusResult(true, commandText, status));

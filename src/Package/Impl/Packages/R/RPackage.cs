@@ -59,10 +59,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         public static RPackage Current { get; private set; }
 
-        public RInteractiveWindowProvider InteractiveWindowProvider
-        {
-            get { return _interactiveWindowProvider.Value; }
-        }
+        public RInteractiveWindowProvider InteractiveWindowProvider => _interactiveWindowProvider.Value;
 
         protected override void Initialize()
         {
@@ -70,10 +67,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
             base.Initialize();
 
-            IComponentModel componentModel = GetService(typeof(SComponentModel)) as IComponentModel;
-            RToolsSettings.VerifyRIsInstalled(componentModel.DefaultExportProvider);
             ReplShortcutSetting.Initialize();
-
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
         }
 

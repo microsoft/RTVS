@@ -29,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _submitAsyncActionBlock = new ActionBlock<IReadOnlyCollection<string>>(new Func<IReadOnlyCollection<string>, Task>(ProcessSubmitAsync));
         }
 
-
         public static ReplWindow Current => _instance.Value;
 
         public Task SubmitAsync(IReadOnlyCollection<string> input) {

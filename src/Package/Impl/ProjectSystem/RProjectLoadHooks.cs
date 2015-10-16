@@ -44,8 +44,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
             // Force REPL window up
             await ReplWindow.EnsureReplWindow();
 
-            using (var evaluation = await _sessionProvider.Current.BeginEvaluationAsync()) {
-                await evaluation.SetWorkingDirectory(_projectDirectory);
+            var currentSession = _sessionProvider.Current;
+            if (currentSession != null) {
+                using (var evaluation = await _sessionProvider.Current.BeginEvaluationAsync()) {
+                    await evaluation.SetWorkingDirectory(_projectDirectory);
+                }
             }
         }
 
