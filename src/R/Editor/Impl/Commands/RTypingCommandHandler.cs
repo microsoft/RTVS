@@ -16,8 +16,9 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Commands
 {
     /// <summary>
-    /// Processes typing in the document. Implements ICommandTarget to 
-    /// receive typing as commands
+    /// Processes typing in the R editor document. 
+    /// Implements <seealso cref="ICommandTarget" /> 
+    /// to receive typing as commands
     /// </summary>
     internal class RTypingCommandHandler : TypingCommandHandler
     {
@@ -56,6 +57,9 @@ namespace Microsoft.R.Editor.Commands
             get { return ServiceManager.GetService<RCompletionController>(TextView); }
         }
 
+        /// <summary>
+        /// Handles completion of braces in R document
+        /// </summary>
         protected virtual void HandleCompletion(char typedChar)
         {
             switch (typedChar)

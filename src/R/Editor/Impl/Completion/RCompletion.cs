@@ -6,6 +6,9 @@ namespace Microsoft.R.Editor.Completion
 {
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
+    /// <summary>
+    /// Completion entry in the R intellisense completion set
+    /// </summary>
     [DebuggerDisplay("{DisplayText}")]
     public class RCompletion : Completion, IComparable<RCompletion>
     {

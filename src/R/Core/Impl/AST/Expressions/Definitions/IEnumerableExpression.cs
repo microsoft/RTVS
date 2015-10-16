@@ -9,8 +9,19 @@ namespace Microsoft.R.Core.AST.Expressions.Definitions
     /// </summary>
     public interface IEnumerableExpression: IAstNode
     {
+        /// <summary>
+        /// Name of variable in 'for(variable_name in ...)'
+        /// </summary>
         TokenNode VariableName { get; }
+
+        /// <summary>
+        /// Token of the 'in' operator
+        /// </summary>
         TokenNode InOperator { get; }
+
+        /// <summary>
+        /// Expression in 'for(variable_name in expression)'
+        /// </summary>
         IExpression Expression { get; }
     }
 }

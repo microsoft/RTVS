@@ -13,8 +13,19 @@ namespace Microsoft.R.Core.AST.Expressions
     public sealed class EnumerableExpression : AstNode, IEnumerableExpression
     {
         #region IEnumerableExpression
+        /// <summary>
+        /// Name of variable in 'for(variable_name in ...)'
+        /// </summary>
         public TokenNode VariableName { get; private set; }
+        
+        /// <summary>
+        /// Token of the 'in' operator
+        /// </summary>
         public TokenNode InOperator { get; private set; }
+
+        /// <summary>
+        /// Expression in 'for(variable_name in expression)'
+        /// </summary>
         public IExpression Expression { get; private set; }
         #endregion
 

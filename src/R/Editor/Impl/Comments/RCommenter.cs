@@ -8,7 +8,8 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Comments
 {
     /// <summary>
-    /// Provides functionality for comment/uncomment commands
+    /// Provides functionality for comment/uncomment lines
+    /// in R editor document
     /// </summary>
     public static class RCommenter
     {
