@@ -106,7 +106,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task<DebugEvaluationResult> GetEnvironmentAsync() {
-            return EvaluateAsync(SysFrame);
+            return EvaluateAsync("environment()");
         }
     }
 }
