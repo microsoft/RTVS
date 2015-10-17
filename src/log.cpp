@@ -26,7 +26,8 @@ namespace rhost {
             tm tm;
             localtime_s(&tm, &t);
 
-            strftime(filename + strlen(filename), sizeof filename, "/Microsoft.R.Host_%Y%m%d_%H%M%S.log", &tm);
+            size_t len = strlen(filename);
+            strftime(filename + len, sizeof filename - len, "/Microsoft.R.Host_%Y%m%d_%H%M%S.log", &tm);
 
             logfile = fopen(filename, "wc");
             if (!logfile) {
