@@ -1,15 +1,19 @@
 #include "stdafx.h"
+#include "log.h"
 #include "server.h"
 #include "Rapi.h"
 #include "vsgd.h"
 #include "r_util.h"
 
+using namespace rhost::log;
+
 const unsigned PORT = 5118;
 
 int main(int argc, char** argv) {
     setlocale(LC_NUMERIC, "C");
+    init_log();
 
-    fprintf(stderr, "Waiting for connection on port %u ...\n", PORT);
+    logf("Waiting for connection on port %u ...\n", PORT);
     rhost::server::wait_for_client(PORT);
 
     R_setStartTime();

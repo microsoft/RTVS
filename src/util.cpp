@@ -1,12 +1,15 @@
 #include "stdafx.h"
 #include "util.h"
+#include "log.h"
+
+using namespace rhost::log;
 
 namespace rhost {
     namespace util {
         void fatal_error(const char* format, va_list va) {
             char message[0xFFFF];
             vsprintf_s(message, format, va);
-            fprintf(stderr, "ERROR: %s\n", message);
+            logf("Fatal error: %s\n", message);
             R_Suicide(message);
         }
 

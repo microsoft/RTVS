@@ -1,9 +1,11 @@
 #include "server.h"
+#include "log.h"
 #include "crtutils.h"
 #include "eval.h"
 #include "util.h"
 
 using namespace std::literals;
+using namespace rhost::log;
 using namespace rhost::util;
 using namespace rhost::eval;
 
@@ -19,13 +21,11 @@ namespace rhost {
             std::unique_ptr<std::promise<picojson::value>> response_promise;
             bool allow_callbacks = true;
             std::atomic<bool> is_connection_closed = false;
-            std::atomic<int> nesting_level = 0;
 
             std::error_code send_json(ws_server_type::connection_type& conn, const picojson::value& value) {
                 std::string json = value.serialize();
 #ifdef TRACE_JSON
-                for (int i = 0; i < nesting_level; ++i) fputc('\t', stderr);
-                fprintf(stderr, "<<< %s\n\n", json.c_str());
+                logf("<<< %s\n\n", json.c_str());
 #endif
                 return conn.send(json, websocketpp::frame::opcode::text);
             }
@@ -39,7 +39,7 @@ namespace rhost {
                 response_promise = std::make_unique<std::promise<picojson::value>>();
                 f();
 
-                ++nesting_level;
+                indent_log(+1);
 
                 picojson::value r;
                 do {
@@ -113,14 +113,19 @@ namespace rhost {
                             if (result.has_value) {
                                 result_obj["result"] = picojson::value(result.value);
                             }
-
+#ifdef TRACE_JSON
+                            indent_log(+1);
+#endif
                             response_promise = std::make_unique<std::promise<picojson::value>>();
                             send_json(*ws_conn, result_obj);
+#ifdef TRACE_JSON
+                            indent_log(-1);
+#endif
                         }
                     }
                 } while (response_promise);
 
-                --nesting_level;
+                indent_log(-1);
                 return r;
             }
 
@@ -258,8 +263,7 @@ namespace rhost {
                 const std::string& json = msg->get_payload();
 
 #ifdef TRACE_JSON
-                for (int i = 0; i < nesting_level; ++i) fputc('\t', stderr);
-                fprintf(stderr, ">>> %s\n\n", json.c_str());
+                logf(">>> %s\n\n", json.c_str());
 #endif
 
                 picojson::value v;

@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClCompile Include="crtutils.cpp" />
     <ClCompile Include="eval.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="r_util.cpp" />
     <ClCompile Include="server.cpp" />
@@ -179,6 +180,7 @@
   <ItemGroup>
     <ClInclude Include="crtutils.h" />
     <ClInclude Include="eval.h" />
+    <ClInclude Include="log.h" />
     <ClInclude Include="Rapi.h" />
     <ClInclude Include="Rgraphicsapi.h" />
     <ClInclude Include="r_util.h" />

@@ -6,11 +6,14 @@
 #include <csetjmp>
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
 #include <future>
 #include <string>
 #include <thread>
 #include <tuple>
 #include <utility>
+
+#include "boost/algorithm/string.hpp"
 
 #include "picojson.h"
 

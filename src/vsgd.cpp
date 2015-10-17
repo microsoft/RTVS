@@ -1,11 +1,12 @@
-#include <fstream>
-
-#include "boost/algorithm/string.hpp"
-
+#include "stdafx.h"
+#include "log.h"
 #include "xamlbuilder.h"
 #include "Rgraphicsapi.h"
 #include "server.h"
 #include "crtutils.h"
+
+using namespace rhost::log;
+
 
 typedef struct {
     double width;
@@ -32,12 +33,6 @@ typedef XamlDeviceDesc* pXamlDeviceDesc;
 
 #define DEFAULT_FONT_NAME       "Arial"
 
-static void trace(const char *text, ...) {
-    va_list args;
-    va_start(args, text);
-    printf(text, args);
-    va_end(args);
-}
 
 static double string_width(const char *str, double ps, int fontface) {
     SIZE size;
@@ -202,13 +197,13 @@ static void write_bitmap(std::ofstream& f, unsigned int *raster, int w, int h) {
 
 extern "C" void VSGD_Activate(pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Activate\n");
+        logf("VSGD_Activate\n");
     }
 }
 
 extern "C" void VSGD_Circle(double x, double y, double r, pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Circle(x=%f,y=%f,r=%f)\n", x, y, r);
+        logf("VSGD_Circle(x=%f,y=%f,r=%f)\n", x, y, r);
     }
 
     double top = y - r;
@@ -226,7 +221,7 @@ extern "C" void VSGD_Circle(double x, double y, double r, pGEcontext gc, pDevDes
 
 extern "C" void VSGD_Clip(double x0, double x1, double y0, double y1, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Clip(x0=%f,x1=%f,y0=%f,y1=%f)\n", x0, x1, y0, y1);
+        logf("VSGD_Clip(x0=%f,x1=%f,y0=%f,y1=%f)\n", x0, x1, y0, y1);
     }
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
@@ -235,7 +230,7 @@ extern "C" void VSGD_Clip(double x0, double x1, double y0, double y1, pDevDesc d
 
 extern "C" void VSGD_Close(pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Close\n");
+        logf("VSGD_Close\n");
     }
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
@@ -254,13 +249,13 @@ extern "C" void VSGD_Close(pDevDesc dd) {
 
 extern "C" void VSGD_Deactivate(pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Deactivate\n");
+        logf("VSGD_Deactivate\n");
     }
 }
 
 extern "C"  Rboolean VSGD_Locator(double *x, double *y, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Locator\n");
+        logf("VSGD_Locator\n");
     }
 
     *x = 0;
@@ -271,7 +266,7 @@ extern "C"  Rboolean VSGD_Locator(double *x, double *y, pDevDesc dd) {
 
 extern "C" void VSGD_Line(double x1, double y1, double x2, double y2, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Line(x1=%f,y1=%f,x2=%f,y2=%f)\n", x1, y1, x2, y2);
+        logf("VSGD_Line(x1=%f,y1=%f,x2=%f,y2=%f)\n", x1, y1, x2, y2);
     }
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
@@ -284,7 +279,7 @@ extern "C" void VSGD_Line(double x1, double y1, double x2, double y2, const pGEc
 
 extern "C" void VSGD_MetricInfo(int c, const pGEcontext gc, double* ascent, double* descent, double* width, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_MetricInfo(c=%d)\n", c);
+        logf("VSGD_MetricInfo(c=%d)\n", c);
     }
 
     *ascent = 0;
@@ -292,13 +287,13 @@ extern "C" void VSGD_MetricInfo(int c, const pGEcontext gc, double* ascent, doub
     *width = 0;
 
     if (TRACING(dd)) {
-        trace("  {ascent=%f,descent=%f,width=%f}\n", *ascent, *descent, *width);
+        logf("  {ascent=%f,descent=%f,width=%f}\n", *ascent, *descent, *width);
     }
 }
 
 extern "C" void VSGD_Mode(int mode, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Mode(mode=%d)\n", mode);
+        logf("VSGD_Mode(mode=%d)\n", mode);
     }
 
     if (mode == 0) {
@@ -313,7 +308,7 @@ extern "C" void VSGD_Mode(int mode, pDevDesc dd) {
 
 extern "C" void VSGD_NewPage(const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_NewPage\n");
+        logf("VSGD_NewPage\n");
     }
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
@@ -322,11 +317,11 @@ extern "C" void VSGD_NewPage(const pGEcontext gc, pDevDesc dd) {
 
 extern "C" void VSGD_Polygon(int n, double *x, double *y, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Polygon([");
+        logf("VSGD_Polygon([");
         for (int i = 0; i < n; i++) {
-            trace("(%f,%f)", x[i], y[i]);
+            logf("(%f,%f)", x[i], y[i]);
         }
-        trace("])\n");
+        logf("])\n");
     }
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
@@ -339,11 +334,11 @@ extern "C" void VSGD_Polygon(int n, double *x, double *y, const pGEcontext gc, p
 
 extern "C" void VSGD_Polyline(int n, double *x, double *y, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Polyline([");
+        logf("VSGD_Polyline([");
         for (int i = 0; i < n; i++) {
-            trace("(%f,%f)", x[i], y[i]);
+            logf("(%f,%f)", x[i], y[i]);
         }
-        trace("])\n");
+        logf("])\n");
     }
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
@@ -356,7 +351,7 @@ extern "C" void VSGD_Polyline(int n, double *x, double *y, const pGEcontext gc, 
 
 extern "C" void VSGD_Rect(double x0, double y0, double x1, double y1, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Rect(x0=%f,y0=%f,x1=%f,y1=%f\n", x0, y0, x1, y1);
+        logf("VSGD_Rect(x0=%f,y0=%f,x1=%f,y1=%f\n", x0, y0, x1, y1);
     }
 
     double left = fmin(x0, x1);
@@ -374,18 +369,18 @@ extern "C" void VSGD_Rect(double x0, double y0, double x1, double y1, const pGEc
 
 extern "C" void VSGD_Path(double *x, double *y, int npoly, int *nper, Rboolean winding, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Path(xy=[");
+        logf("VSGD_Path(xy=[");
         int index = 0;
         for (int i = 0; i < npoly; i++) {
             int points = nper[i];
-            trace("{");
+            logf("{");
             for (int j = 0; j < points; j++) {
-                trace("(%f,%f)", x[index], y[index]);
+                logf("(%f,%f)", x[index], y[index]);
                 index++;
             }
-            trace("}");
+            logf("}");
         }
-        trace("],winding=%d)\n", winding);
+        logf("],winding=%d)\n", winding);
     }
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
@@ -398,7 +393,7 @@ extern "C" void VSGD_Path(double *x, double *y, int npoly, int *nper, Rboolean w
 
 extern "C" void VSGD_Raster(unsigned int *raster, int w, int h, double x, double y, double width, double height, double rot, Rboolean interpolate, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Raster(w=%d,h=%d,x=%f,y=%f,width=%f,height=%f,rot=%f,interpolate=%d)\n", w, h, x, y, width, height, rot, interpolate);
+        logf("VSGD_Raster(w=%d,h=%d,x=%f,y=%f,width=%f,height=%f,rot=%f,interpolate=%d)\n", w, h, x, y, width, height, rot, interpolate);
     }
 
     pXamlDeviceDesc xdd = (pXamlDeviceDesc)dd->deviceSpecific;
@@ -416,7 +411,7 @@ extern "C" void VSGD_Raster(unsigned int *raster, int w, int h, double x, double
 
 extern "C" SEXP VSGD_Cap(pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Cap()\n");
+        logf("VSGD_Cap()\n");
     }
 
     return R_NilValue;
@@ -424,7 +419,7 @@ extern "C" SEXP VSGD_Cap(pDevDesc dd) {
 
 extern "C" void VSGD_Size(double *left, double *right, double *bottom, double *top, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Size()\n");
+        logf("VSGD_Size()\n");
     }
 
     *left = dd->left;
@@ -435,14 +430,14 @@ extern "C" void VSGD_Size(double *left, double *right, double *bottom, double *t
 
 extern "C" double VSGD_StrWidth(const char *str, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_StrWidth(str='%s')\n", str);
-        trace("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex);
+        logf("VSGD_StrWidth(str='%s')\n", str);
+        logf("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex);
     }
 
     double width = string_width(str, gc->ps * gc->cex, gc->fontface);
 
     if (TRACING(dd)) {
-        trace("  {return=%f}\n", width);
+        logf("  {return=%f}\n", width);
     }
 
     return width;
@@ -450,8 +445,8 @@ extern "C" double VSGD_StrWidth(const char *str, const pGEcontext gc, pDevDesc d
 
 extern "C" void VSGD_Text(double x, double y, const char *str, double rot, double hadj, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_Text(x=%f,y=%f,str='%s',rot=%f,hadj=%f\n", x, y, str, rot, hadj);
-        trace("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f',col='%d'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex, gc->col);
+        logf("VSGD_Text(x=%f,y=%f,str='%s',rot=%f,hadj=%f\n", x, y, str, rot, hadj);
+        logf("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f',col='%d'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex, gc->col);
     }
 
     y -= gc->ps * gc->cex;
@@ -465,13 +460,13 @@ extern "C" void VSGD_Text(double x, double y, const char *str, double rot, doubl
 
 extern "C" void VSGD_OnExit(pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_OnExit\n");
+        logf("VSGD_OnExit\n");
     }
 }
 
 extern "C"  Rboolean VSGD_NewFrameConfirm(pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_NewFrameConfirm\n");
+        logf("VSGD_NewFrameConfirm\n");
     }
 
     return R_FALSE;
@@ -479,8 +474,8 @@ extern "C"  Rboolean VSGD_NewFrameConfirm(pDevDesc dd) {
 
 extern "C"  void VSGD_TextUTF8(double x, double y, const char *str, double rot, double hadj, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_TextUTF8(x=%f,y=%f,str='%s',rot=%f,hadj=%f\n", x, y, str, rot, hadj);
-        trace("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f',col='%d'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex, gc->col);
+        logf("VSGD_TextUTF8(x=%f,y=%f,str='%s',rot=%f,hadj=%f\n", x, y, str, rot, hadj);
+        logf("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f',col='%d'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex, gc->col);
     }
 
     y -= gc->ps * gc->cex;
@@ -494,14 +489,14 @@ extern "C"  void VSGD_TextUTF8(double x, double y, const char *str, double rot, 
 
 extern "C"  double VSGD_StrWidthUTF8(const char *str, const pGEcontext gc, pDevDesc dd) {
     if (TRACING(dd)) {
-        trace("VSGD_StrWidthUTF8(str='%s')\n", str);
-        trace("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex);
+        logf("VSGD_StrWidthUTF8(str='%s')\n", str);
+        logf("  <fontface=%d,fontfamily='%s',ps='%f',cex='%f'>\n", gc->fontface, gc->fontfamily, gc->ps, gc->cex);
     }
 
     double width = string_width(str, gc->ps * gc->cex, gc->fontface);
 
     if (TRACING(dd)) {
-        trace("  {return=%f}\n", width);
+        logf("  {return=%f}\n", width);
     }
 
     return width;
@@ -509,7 +504,7 @@ extern "C"  double VSGD_StrWidthUTF8(const char *str, const pGEcontext gc, pDevD
 
 extern "C"  void VSGD_EventHelper(pDevDesc dd, int code) {
     if (TRACING(dd)) {
-        trace("VSGD_EventHelper(code=%d)\n", code);
+        logf("VSGD_EventHelper(code=%d)\n", code);
     }
 
     // TODO: figure out the right time to send the plot
@@ -520,7 +515,7 @@ extern "C"  void VSGD_EventHelper(pDevDesc dd, int code) {
 
 extern "C"  int VSGD_Holdflush(pDevDesc dd, int level) {
     if (TRACING(dd)) {
-        trace("VSGD_Holdflush(level=%d)\n", level);
+        logf("VSGD_Holdflush(level=%d)\n", level);
     }
 
     // TODO: figure out the right time to send the plot
