@@ -179,6 +179,8 @@ extern "C" {
     extern SEXP R_tryEval(SEXP, SEXP, int*);
     extern SEXP R_tryEvalSilent(SEXP, SEXP, int*);
     extern const char *R_curErrorBuf();
+    extern void R_PreserveObject(SEXP);
+    extern void R_ReleaseObject(SEXP);
 
     extern int Rf_initialize_R(int ac, char** av);
     extern int Rf_initEmbeddedR(int argc, char** argv);

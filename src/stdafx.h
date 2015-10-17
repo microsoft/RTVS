@@ -9,6 +9,8 @@
 #include <future>
 #include <string>
 #include <thread>
+#include <tuple>
+#include <utility>
 
 #include "picojson.h"
 

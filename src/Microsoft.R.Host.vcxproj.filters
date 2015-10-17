@@ -6,6 +6,8 @@
     <ClCompile Include="crtutils.cpp" />
     <ClCompile Include="vsgd.cpp" />
     <ClCompile Include="r_util.cpp" />
+    <ClCompile Include="util.cpp" />
+    <ClCompile Include="eval.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -17,6 +19,7 @@
     <ClInclude Include="xamlbuilder.h" />
     <ClInclude Include="vsgd.h" />
     <ClInclude Include="r_util.h" />
+    <ClInclude Include="eval.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

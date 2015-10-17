@@ -33,40 +33,6 @@ namespace rhost {
                 return send_json(conn, picojson::value(obj));
             }
 
-            picojson::object r_eval(const std::string& expr, SEXP env) {
-                picojson::object obj;
-                obj["event"] = picojson::value("eval");
-
-                SEXP sexp_expr = Rf_protect(Rf_allocVector3(STRSXP, 1, nullptr));
-                SET_STRING_ELT(sexp_expr, 0, Rf_mkChar(expr.c_str()));
-
-                ParseStatus ps;
-                SEXP sexp_parsed = Rf_protect(R_ParseVector(sexp_expr, -1, &ps, R_NilValue));
-                obj["ParseStatus"] = picojson::value(static_cast<double>(ps));
-
-                if (ps == PARSE_OK) {
-                    picojson::array results(Rf_length(sexp_parsed));
-                    for (int i = 0; i < results.size(); ++i) {
-                        picojson::object res;
-
-                        int has_error;
-                        SEXP sexp_result = R_tryEvalSilent(VECTOR_ELT(sexp_parsed, i), env, &has_error);
-                        if (has_error) {
-                            obj["error"] = picojson::value(R_curErrorBuf());
-                        }
-
-                        if (sexp_result) {
-                            sexp_result = Rf_protect(Rf_asChar(sexp_result));
-                            obj["result"] = picojson::value(R_CHAR(sexp_result));
-                            Rf_unprotect(1);
-                        }
-                    }
-                }
-
-                Rf_unprotect(2);
-                return obj;
-            }
-
             template<class F>
             picojson::value with_response(F&& f) {
                 response_promise = std::make_unique<std::promise<picojson::value>>();
@@ -134,10 +100,21 @@ namespace rhost {
                                 allow_callbacks = it->second.get<bool>();
                             }
 
-                            picojson::object result = r_eval(expr, env);
+                            ParseStatus parse_status;
+                            auto result = r_eval_str(expr, env, parse_status);
+
+                            picojson::object result_obj;
+                            result_obj["event"] = picojson::value("eval");
+                            result_obj["ParseStatus"] = picojson::value(static_cast<double>(parse_status));
+                            if (result.has_error) {
+                                result_obj["error"] = picojson::value(result.error);
+                            }
+                            if (result.has_value) {
+                                result_obj["result"] = picojson::value(result.value);
+                            }
 
                             response_promise = std::make_unique<std::promise<picojson::value>>();
-                            send_json(*ws_conn, result);
+                            send_json(*ws_conn, result_obj);
                         }
                     }
                 } while (response_promise);
