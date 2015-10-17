@@ -14,7 +14,7 @@ namespace Microsoft.R.Support.Settings
             {
                 if(_instance == null)
                 {
-                    _instance = _exportProvider.GetExport<IRToolsSettings>().Value;
+                    _instance = _exportProvider != null ? _exportProvider.GetExport<IRToolsSettings>().Value : null;
                 }
 
                 return _instance;
@@ -24,6 +24,7 @@ namespace Microsoft.R.Support.Settings
                 _instance = value;
             }
         }
+
         public static void Init(ExportProvider exportProvider)
         {
             _exportProvider = exportProvider;

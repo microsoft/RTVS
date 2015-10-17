@@ -9,6 +9,11 @@ using Microsoft.Win32;
 
 namespace Microsoft.R.Support.Utility
 {
+    /// <summary>
+    /// Verifies that R is installed in the folder
+    /// specified in settings. If nothing is specified
+    /// settings try and find highest version.
+    /// </summary>
     public static class RInstallation
     {
         public static bool VerifyRIsInstalled()
@@ -39,7 +44,7 @@ namespace Microsoft.R.Support.Utility
 
         public static void GoToRInstallPage()
         {
-            Process.Start("http://google.com");
+            Process.Start("https://cran.r-project.org/");
         }
 
         /// <summary>
@@ -47,13 +52,13 @@ namespace Microsoft.R.Support.Utility
         /// </summary>
         public static string GetRInstallPath()
         {
-            string rVersion = RToolsSettings.Current.RVersion;
+            string rVersion = RToolsSettings.Current != null ? RToolsSettings.Current.RVersion : null;
             string installPath = null;
 
-            if (rVersion[0] != '[') // [Latest] (localized)
+            if (!string.IsNullOrEmpty(rVersion) && rVersion[0] != '[') // [Latest] (localized)
             {
                 // First try user-specified options
-                installPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"\R\", rVersion);
+                installPath = GetRVersionInstallPathFromRegistry(rVersion);
             }
 
             if (string.IsNullOrEmpty(installPath) || !Directory.Exists(installPath))
@@ -65,7 +70,9 @@ namespace Microsoft.R.Support.Utility
         }
 
         /// <summary>
-        /// Retrieves path to the installed R engine binaries folder
+        /// Retrieves path to the installed R engine binaries folder.
+        /// R version is retrieved from settings or, af none is set,
+        /// highest version is retrieved from registry.
         /// </summary>
         public static string GetBinariesFolder()
         {
@@ -93,9 +100,13 @@ namespace Microsoft.R.Support.Utility
             return binFolder;
         }
 
+        /// <summary>
+        /// Retrieves path to the latest (highest version) R installation
+        /// from registry. Typically in the form 'Program Files\R\R-3.2.1'
+        /// </summary>
         public static string GetLatestEnginePathFromRegistry()
         {
-            string[] installedEngines = GetInstalledEnginesFromRegistry();
+            string[] installedEngines = GetInstalledEngineVersionsFromRegistry();
             string highestVersionName = string.Empty;
             Version highest = null;
 
@@ -117,10 +128,15 @@ namespace Microsoft.R.Support.Utility
                 }
             }
 
-            return highestVersionName;
+            return GetRVersionInstallPathFromRegistry(highestVersionName);
         }
 
-        public static string[] GetInstalledEnginesFromRegistry()
+        /// <summary>
+        /// Retrieves installed R versions. Returns array of strings
+        /// that typically look like 'R-3.2.1' and typically are
+        /// subfolders of 'Program Files\R'
+        /// </summary>
+        public static string[] GetInstalledEngineVersionsFromRegistry()
         {
             List<string> enginePaths = new List<string>();
 
@@ -136,12 +152,12 @@ namespace Microsoft.R.Support.Utility
                     if (rKey == null)
                     {
                         // Possibly 64-bit machine with only 32-bit R installed
-                        rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R");
+                        // This is not supported as we require 64-bit R.
+                        // rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R");
                     }
 
                     if (rKey == null)
                     {
-                        // Possibly 64-bit machine with only 32-bit R installed
                         rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R64");
                     }
 
@@ -164,6 +180,23 @@ namespace Microsoft.R.Support.Utility
             }
 
             return new string[0];
+        }
+
+        private static string GetRVersionInstallPathFromRegistry(string version)
+        {
+            // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
+            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default))
+            {
+                using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version))
+                {
+                    if (rKey != null)
+                    {
+                        return rKey.GetValue("InstallPath") as string;
+                    }
+                }
+            }
+
+            return string.Empty;
         }
     }
 }

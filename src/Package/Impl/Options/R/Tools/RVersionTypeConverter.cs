@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools
             List<string> values = new List<string>();
 
             values.Add(Resources.Settings_RVersion_Latest);
-            values.AddRange(RInstallation.GetInstalledEnginesFromRegistry());
+            values.AddRange(RInstallation.GetInstalledEngineVersionsFromRegistry());
 
             StandardValuesCollection coll = new StandardValuesCollection(values);
             return coll;

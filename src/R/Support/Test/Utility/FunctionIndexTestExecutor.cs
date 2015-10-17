@@ -25,7 +25,7 @@ namespace Microsoft.R.Support.Test.Utility
             {
                 if (_closed)
                 {
-                    RToolsSettings.ToolsSettings = new TestRToolsSettings();
+                    RToolsSettings.Current = new TestRToolsSettings();
 
                     FunctionIndex.Initialize();
                     FunctionIndex.BuildIndexAsync().Wait();
