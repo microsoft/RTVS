@@ -2,7 +2,9 @@
 {
     public interface IRToolsSettings
     {
-        string RVersionPath { get; set; }
+        void LoadFromStorage();
+
+        string RVersion { get; set; }
 
         string CranMirror { get; set; }
     }

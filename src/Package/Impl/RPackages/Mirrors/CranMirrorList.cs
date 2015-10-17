@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
 {
@@ -18,8 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
         {
             get
             {
-                Init();
-
                 List<string> names = new List<string>();
                 foreach (var m in _mirrors)
                 {
@@ -34,8 +32,6 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
         {
             get
             {
-                Init();
-
                 List<string> urls = new List<string>();
                 foreach (var m in _mirrors)
                 {
@@ -48,41 +44,43 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
 
         public static string UrlFromName(string name)
         {
-            Init();
-
             CranMirrorEntry e = _mirrors.FirstOrDefault((x) => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             return e != null ? e.Name : null;
         }
 
-        private static void Init()
+        public static void Download()
         {
             if (_mirrors.Length > 0 && !localCopy)
             {
                 return;
             }
 
-            Task.Run(() =>
-            {
-                IReadOnlyCollection<string> mirrors = new string[] { "https://cran.rstudio.com" };
-                _cranCsvFileTempPath = Path.Combine(Path.GetTempPath(), "CRAN_mirrors.csv");
+            _cranCsvFileTempPath = Path.Combine(Path.GetTempPath(), "CRAN_mirrors.csv");
 
-                using (WebClient webClient = new WebClient())
-                {
-                    webClient.DownloadFile(new Uri("https://cran.r-project.org/CRAN_mirrors.csv", UriKind.Absolute), _cranCsvFileTempPath);
-                }
-            }).Wait(1000);
-
-            string content = null;
-            try
+            using (WebClient webClient = new WebClient())
             {
-                if (File.Exists(_cranCsvFileTempPath))
-                {
-                    var sr = new StreamReader(_cranCsvFileTempPath);
-                    content = sr.ReadToEnd();
-                    localCopy = false;
-                }
+                webClient.DownloadFileCompleted += OnDownloadFileCompleted;
+                webClient.DownloadFileAsync(new Uri("https://cran.r-project.org/CRAN_mirrors.csv", UriKind.Absolute), _cranCsvFileTempPath);
             }
-            catch (IOException) { }
+        }
+
+        private static void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            string content = null;
+
+            if (!e.Cancelled && e.Error != null)
+            {
+                try
+                {
+                    if (File.Exists(_cranCsvFileTempPath))
+                    {
+                        var sr = new StreamReader(_cranCsvFileTempPath);
+                        content = sr.ReadToEnd();
+                        localCopy = false;
+                    }
+                }
+                catch (IOException) { }
+            }
 
             if (content == null)
             {

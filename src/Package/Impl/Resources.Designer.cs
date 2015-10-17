@@ -441,16 +441,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CRAN.
-        /// </summary>
-        internal static string Settings_CranCategory {
-            get {
-                return ResourceManager.GetString("Settings_CranCategory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mirror.
+        ///   Looks up a localized string similar to CRAN Mirror.
         /// </summary>
         internal static string Settings_CranMirror {
             get {
@@ -513,6 +504,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to General.
+        /// </summary>
+        internal static string Settings_GeneralCategory {
+            get {
+                return ResourceManager.GetString("Settings_GeneralCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IntelliSense.
         /// </summary>
         internal static string Settings_IntellisenseCategory {
@@ -563,6 +563,33 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Settings_ReplSyntaxCheck_Description {
             get {
                 return ResourceManager.GetString("Settings_ReplSyntaxCheck_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Engine (64-bit).
+        /// </summary>
+        internal static string Settings_RVersion {
+            get {
+                return ResourceManager.GetString("Settings_RVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version of R to use (64-bit only)..
+        /// </summary>
+        internal static string Settings_RVersion_Description {
+            get {
+                return ResourceManager.GetString("Settings_RVersion_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Latest].
+        /// </summary>
+        internal static string Settings_RVersion_Latest {
+            get {
+                return ResourceManager.GetString("Settings_RVersion_Latest", resourceCulture);
             }
         }
         

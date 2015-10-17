@@ -1,19 +1,19 @@
 ﻿using System;
-using System.ComponentModel.Composition.Hosting;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Support.Settings;
 using Microsoft.Win32;
 
-namespace Microsoft.R.Support.Settings
+namespace Microsoft.R.Support.Utility
 {
-    public static class RUtility
+    public static class RInstallation
     {
         public static bool VerifyRIsInstalled()
         {
-            string rPath = GetRVersionPath();
+            string rPath = RInstallation.GetRInstallPath();
             if (!string.IsNullOrEmpty(rPath))
             {
                 bool rExeExists = File.Exists(Path.Combine(rPath, @"bin\R.exe"));
@@ -28,7 +28,7 @@ namespace Microsoft.R.Support.Settings
             {
                 rPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "R");
             }
-            
+
             string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled, rPath);
             EditorShell.Current.ShowErrorMessage(message);
 
@@ -45,15 +45,20 @@ namespace Microsoft.R.Support.Settings
         /// <summary>
         /// Retrieves path to the installed R engine root folder
         /// </summary>
-        public static string GetRVersionPath()
+        public static string GetRInstallPath()
         {
+            string rVersion = RToolsSettings.Current.RVersion;
             string installPath = null;
 
-            // First try user-specified options
-            installPath = RToolsSettings.Current.RVersionPath;
-            if (string.IsNullOrEmpty(installPath))
+            if (rVersion[0] != '[') // [Latest] (localized)
             {
-                installPath = RUtility.GetEnginePathFromRegistry();
+                // First try user-specified options
+                installPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"\R\", rVersion);
+            }
+
+            if (string.IsNullOrEmpty(installPath) || !Directory.Exists(installPath))
+            {
+                installPath = RInstallation.GetLatestEnginePathFromRegistry();
             }
 
             return installPath;
@@ -65,7 +70,7 @@ namespace Microsoft.R.Support.Settings
         public static string GetBinariesFolder()
         {
             string binFolder = null;
-            string installPath = RToolsSettings.Current.RVersionPath;
+            string installPath = RInstallation.GetRInstallPath();
 
             if (!string.IsNullOrEmpty(installPath))
             {
@@ -88,9 +93,36 @@ namespace Microsoft.R.Support.Settings
             return binFolder;
         }
 
-        public static string GetEnginePathFromRegistry()
+        public static string GetLatestEnginePathFromRegistry()
         {
-            string enginePath = null;
+            string[] installedEngines = GetInstalledEnginesFromRegistry();
+            string highestVersionName = string.Empty;
+            Version highest = null;
+
+            foreach (string name in installedEngines)
+            {
+                Version v = new Version(name);
+                if (highest != null)
+                {
+                    if (v > highest)
+                    {
+                        highest = v;
+                        highestVersionName = name;
+                    }
+                }
+                else
+                {
+                    highest = v;
+                    highestVersionName = name;
+                }
+            }
+
+            return highestVersionName;
+        }
+
+        public static string[] GetInstalledEnginesFromRegistry()
+        {
+            List<string> enginePaths = new List<string>();
 
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
@@ -107,50 +139,18 @@ namespace Microsoft.R.Support.Settings
                         rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R");
                     }
 
+                    if (rKey == null)
+                    {
+                        // Possibly 64-bit machine with only 32-bit R installed
+                        rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R64");
+                    }
+
                     if (rKey != null)
                     {
-                        enginePath = rKey.GetValue("InstallPath") as string;
-                    }
-
-                    if (string.IsNullOrEmpty(enginePath))
-                    {
-                        Version highest = null;
-                        string highestVersionSubkeyName = null;
-
-                        string[] subkeyNames = rKey.GetSubKeyNames();
-                        foreach (string name in subkeyNames)
-                        {
-                            try
-                            {
-                                Version v = new Version(name);
-                                if (highest != null)
-                                {
-                                    if (v > highest)
-                                    {
-                                        highest = v;
-                                        highestVersionSubkeyName = name;
-                                    }
-                                }
-                                else
-                                {
-                                    highest = v;
-                                    highestVersionSubkeyName = name;
-                                }
-                            }
-                            catch (Exception) { }
-                        }
-
-                        if (!string.IsNullOrEmpty(highestVersionSubkeyName))
-                        {
-                            RegistryKey subKey = rKey.OpenSubKey(highestVersionSubkeyName);
-                            if (rKey != null)
-                            {
-                                enginePath = subKey.GetValue("InstallPath") as string;
-                            }
-                        }
+                        return rKey.GetSubKeyNames();
                     }
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     return null;
                 }
@@ -163,8 +163,7 @@ namespace Microsoft.R.Support.Settings
                 }
             }
 
-            Debug.Assert(enginePath != null);
-            return enginePath;
+            return new string[0];
         }
     }
 }

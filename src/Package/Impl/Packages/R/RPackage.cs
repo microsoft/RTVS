@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.R.Debugger.Engine.PortSupplier;
+using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 
 namespace Microsoft.VisualStudio.R.Packages.R
 {
@@ -64,6 +65,8 @@ namespace Microsoft.VisualStudio.R.Packages.R
         protected override void Initialize()
         {
             Current = this;
+
+            CranMirrorList.Download();
             RToolsSettings.Init(AppShell.Current.ExportProvider);
 
             base.Initialize();

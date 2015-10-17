@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
+using Microsoft.R.Support.Utility;
 
-namespace Microsoft.VisualStudio.R.Package.Options.Common
+namespace Microsoft.VisualStudio.R.Package.Options.R.Tools
 {
-    internal sealed class CranMirrorTypeConverter : ExpandableObjectConverter
+    internal sealed class RVersionTypeConverter : ExpandableObjectConverter
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
@@ -14,7 +15,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            StandardValuesCollection coll = new StandardValuesCollection(CranMirrorList.MirrorNames);
+            List<string> values = new List<string>();
+
+            values.Add(Resources.Settings_RVersion_Latest);
+            values.AddRange(RInstallation.GetInstalledEnginesFromRegistry());
+
+            StandardValuesCollection coll = new StandardValuesCollection(values);
             return coll;
         }
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)

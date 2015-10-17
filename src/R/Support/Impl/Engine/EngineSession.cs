@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Utility;
 
 namespace Microsoft.R.Support.Engine
 {
@@ -64,7 +64,7 @@ namespace Microsoft.R.Support.Engine
             {
                 if (_rProcess == null || _rProcess.HasExited)
                 {
-                    string binPath = RUtility.GetBinariesFolder();
+                    string binPath = RInstallation.GetBinariesFolder();
 
                     if (!string.IsNullOrEmpty(binPath))
                     {
