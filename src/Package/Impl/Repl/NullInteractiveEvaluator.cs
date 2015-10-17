@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public Task<ExecutionResult> InitializeAsync() => ExecutionResult.Failed;
 
         public Task<ExecutionResult> ResetAsync(bool initialize = true) {
-            if (initialize && RToolsSettings.VerifyRIsInstalled(AppShell.Current.ExportProvider)) {
+            if (initialize && RUtility.VerifyRIsInstalled()) {
                 EditorShell.Current.ShowErrorMessage(Resources.Error_RestartVsAfterRInstalled);
             }
 

@@ -154,6 +154,7 @@
     <Compile Include="Settings\Definitions\IRToolsSettings.cs" />
     <Compile Include="Settings\RToolsSettings.cs" />
     <Compile Include="Utility\AsyncData.cs" />
+    <Compile Include="Utility\RUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />

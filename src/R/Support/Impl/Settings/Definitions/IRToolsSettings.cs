@@ -2,6 +2,8 @@
 {
     public interface IRToolsSettings
     {
-        string GetRVersionPath();
+        string RVersionPath { get; set; }
+
+        string CranMirror { get; set; }
     }
 }

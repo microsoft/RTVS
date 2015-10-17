@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.Formatting;
@@ -21,11 +22,11 @@ namespace Microsoft.R.Editor.Settings
         private static bool _initialized = false;
         private static RFormatOptions _formatOptions = new RFormatOptions();
 
-        private static IEditorSettingsStorage Storage
+        private static ISettingsStorage Storage
         {
             get
             {
-                var storage = EditorShell.GetSettings(RContentTypeDefinition.LanguageName) as IEditorSettingsStorage;
+                var storage = EditorShell.GetSettings(RContentTypeDefinition.LanguageName) as ISettingsStorage;
 
                 if (!_initialized)
                 {
@@ -37,14 +38,14 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
-        public static IWritableEditorSettingsStorage WritableStorage
+        public static IWritableSettingsStorage WritableStorage
         {
-            get { return Storage as IWritableEditorSettingsStorage; }
+            get { return Storage as IWritableSettingsStorage; }
         }
 
         private static bool IsWritable
         {
-            get { return Storage is IWritableEditorSettingsStorage; }
+            get { return Storage is IWritableSettingsStorage; }
         }
 
         public static event EventHandler<EventArgs> Changed;

@@ -79,6 +79,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to download CRAN mirror list. The request has been canceled..
+        /// </summary>
+        internal static string CranMirrorListRequestCanceled {
+            get {
+                return ResourceManager.GetString("CranMirrorListRequestCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Control+E, Control+E.
         /// </summary>
         internal static string CtrlECtrlE {
@@ -428,6 +437,33 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Settings_CompletionCategory {
             get {
                 return ResourceManager.GetString("Settings_CompletionCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CRAN.
+        /// </summary>
+        internal static string Settings_CranCategory {
+            get {
+                return ResourceManager.GetString("Settings_CranCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mirror.
+        /// </summary>
+        internal static string Settings_CranMirror {
+            get {
+                return ResourceManager.GetString("Settings_CranMirror", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default CRAN mirror for package installations.
+        /// </summary>
+        internal static string Settings_CranMirror_Description {
+            get {
+                return ResourceManager.GetString("Settings_CranMirror_Description", resourceCulture);
             }
         }
         

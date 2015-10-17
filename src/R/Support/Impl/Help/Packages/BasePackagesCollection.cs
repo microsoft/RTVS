@@ -12,7 +12,7 @@ namespace Microsoft.R.Support.Help.Packages
 
         private static string GetInstallPath()
         {
-            string rVersionPath = RToolsSettings.GetRVersionPath();
+            string rVersionPath = RToolsSettings.Current.RVersionPath;
             return Path.Combine(rVersionPath, "library");
         }
     }

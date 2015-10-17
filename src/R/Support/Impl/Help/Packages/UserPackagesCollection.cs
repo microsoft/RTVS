@@ -53,7 +53,7 @@ namespace Microsoft.R.Support.Help.Packages
 
         internal static string GetReducedVersion()
         {
-            string rVersionPath = RToolsSettings.GetRVersionPath();
+            string rVersionPath = RToolsSettings.Current.RVersionPath;
             string version = Path.GetFileName(rVersionPath);
 
             int index = version.IndexOf("R-", StringComparison.Ordinal);

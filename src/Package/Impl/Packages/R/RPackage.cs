@@ -64,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
         protected override void Initialize()
         {
             Current = this;
+            RToolsSettings.Init(AppShell.Current.ExportProvider);
 
             base.Initialize();
 

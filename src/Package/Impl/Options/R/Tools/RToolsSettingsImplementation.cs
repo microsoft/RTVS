@@ -6,10 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
     [Export(typeof(IRToolsSettings))]
     internal sealed class RToolsSettingsImplementation : IRToolsSettings
     {
-        public string GetRVersionPath()
-        {
-            // TODO: implement
-            return string.Empty;
-        }
+        public string RVersionPath { get; set; } = string.Empty;
+        public string CranMirror { get; set; }
     }
 }

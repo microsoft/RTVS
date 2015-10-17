@@ -64,7 +64,7 @@ namespace Microsoft.R.Support.Engine
             {
                 if (_rProcess == null || _rProcess.HasExited)
                 {
-                    string binPath = RToolsSettings.GetBinariesFolder();
+                    string binPath = RUtility.GetBinariesFolder();
 
                     if (!string.IsNullOrEmpty(binPath))
                     {

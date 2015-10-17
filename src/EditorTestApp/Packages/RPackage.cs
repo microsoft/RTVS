@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.Settings;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Text.Editor;
@@ -22,7 +22,7 @@ namespace Microsoft.Languages.Editor.Application.Packages
     }
 
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IWritableEditorSettingsStorage))]
+    [Export(typeof(IWritableSettingsStorage))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Test settings")]
     [Order(Before = "Default")]

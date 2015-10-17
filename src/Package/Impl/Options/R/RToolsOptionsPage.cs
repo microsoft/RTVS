@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
+using Microsoft.VisualStudio.R.Package.Options.Common;
+using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R
@@ -21,6 +24,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
         {
             get { return REditorSettings.SendToReplOnCtrlEnter; }
             set { REditorSettings.SendToReplOnCtrlEnter = value; }
+        }
+
+        [LocCategory("Settings_CranCategory")]
+        [CustomLocDisplayName("Settings_CranMirror")]
+        [LocDescription("Settings_CranMirror_Description")]
+        [TypeConverter(typeof(CranMirrorTypeConverter))]
+        [DefaultValue("0-Cloud [https]")]
+        public string CranMirror
+        {
+            get { return RToolsSettings.Current.CranMirror; }
+            set { RToolsSettings.Current.CranMirror = value; }
         }
     }
 }

@@ -329,4 +329,16 @@
   <data name="Error_RestartVsAfterRInstalled" xml:space="preserve">
     <value>R for Windows is found. Please restart Visual Studio for changes to take effect.</value>
   </data>
+  <data name="CranMirrorListRequestCanceled" xml:space="preserve">
+    <value>Unable to download CRAN mirror list. The request has been canceled.</value>
+  </data>
+  <data name="Settings_CranCategory" xml:space="preserve">
+    <value>CRAN</value>
+  </data>
+  <data name="Settings_CranMirror" xml:space="preserve">
+    <value>Mirror</value>
+  </data>
+  <data name="Settings_CranMirror_Description" xml:space="preserve">
+    <value>Default CRAN mirror for package installations</value>
+  </data>
 </root>

@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             IInteractiveEvaluator evaluator;
             EventHandler textViewOnClosed;
 
-            if (RToolsSettings.VerifyRIsInstalled(AppShell.Current.ExportProvider)) {
+            if (RUtility.VerifyRIsInstalled()) {
                 var session = SessionProvider.Create(instanceId);
                 evaluator = new RInteractiveEvaluator(session);
 
