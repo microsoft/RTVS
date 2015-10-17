@@ -1,10 +1,11 @@
 #include "server.h"
 #include "crtutils.h"
+#include "eval.h"
 #include "util.h"
-#include "Rapi.h"
 
-using namespace rhost::util;
 using namespace std::literals;
+using namespace rhost::util;
+using namespace rhost::eval;
 
 namespace rhost {
     namespace server {
