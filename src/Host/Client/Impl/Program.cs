@@ -17,7 +17,7 @@ namespace Microsoft.R.Host.Client {
         public void Dispose() {
         }
 
-        public Task Busy(IReadOnlyList<IRContext> contexts, bool which, CancellationToken ct) {
+        public Task Busy(bool which, CancellationToken ct) {
             return Task.FromResult(true);
         }
 
@@ -29,15 +29,15 @@ namespace Microsoft.R.Host.Client {
             return Task.CompletedTask;
         }
 
-        public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+        public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
             return (await ReadLineAsync(prompt, isEvaluationAllowed, ct)) + "\n";
         }
 
-        public async Task ShowMessage(IReadOnlyList<IRContext> contexts, string s, CancellationToken ct) {
+        public async Task ShowMessage(string s, CancellationToken ct) {
             await Console.Error.WriteLineAsync(s);
         }
 
-        public async Task WriteConsoleEx(IReadOnlyList<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
+        public async Task WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
             var writer = otype == OutputType.Output ? Console.Out : Console.Error;
             await writer.WriteAsync(buf);
         }
@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task PlotXaml(IReadOnlyList<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
+        public async Task PlotXaml(string xamlFilePath, CancellationToken ct) {
             await Console.Error.WriteLineAsync(xamlFilePath);
         }
 

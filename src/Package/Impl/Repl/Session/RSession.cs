@@ -21,8 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         public event EventHandler<RRequestEventArgs> BeforeRequest;
         public event EventHandler<RRequestEventArgs> AfterRequest;
-        public event EventHandler<RResponseEventArgs> Response;
-        public event EventHandler<RErrorEventArgs> Error;
+        public event EventHandler<ROutputEventArgs> Output;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
 
@@ -125,11 +124,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _contexts = null;
             Prompt = string.Empty;
 
-            OnDisconnected();
+            Disconnected?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
         }
 
-        async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+        async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
@@ -138,7 +137,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             Prompt = prompt;
             MaxLength = len;
 
-            OnBeforeRequest(contexts, prompt, len, addToHistory);
+            var requestEventArgs = new RRequestEventArgs(contexts, prompt, len, addToHistory);
+            BeforeRequest?.Invoke(this, requestEventArgs);
 
             CancellationTokenSource evaluationCts;
             Task evaluationTask;
@@ -156,9 +156,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             string consoleInput = null;
 
-            while (consoleInput == null) {
+            do {
                 ct.ThrowIfCancellationRequested();
-
                 try {
                     consoleInput = await ReadNextRequest(prompt, len, ct);
                 } catch (TaskCanceledException) {
@@ -167,13 +166,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                     // If it was canceled through the token, then host itself is shutting down, and cancellation
                     // will be propagated on the entry to next iteration of this loop.
                 }
-            }
+            } while (consoleInput == null);
 
             // If evaluation was allowed, cancel evaluation processing but await evaluation that is in progress
             evaluationCts?.Cancel();
             await evaluationTask;
 
-            OnAfterRequest(contexts, prompt, len, addToHistory);
+            AfterRequest?.Invoke(this, requestEventArgs);
 
             return consoleInput;
         }
@@ -221,20 +220,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
-        Task IRCallbacks.WriteConsoleEx(IReadOnlyList<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
-            if (otype == OutputType.Error) {
-                OnError(contexts, buf);
+        Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
+            Output?.Invoke(this, new ROutputEventArgs(otype, buf));
 
+            if (otype == OutputType.Error) {
                 var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
                 currentRequest?.Fail(buf);
-            } else {
-                OnResponse(contexts, buf);
             }
 
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.ShowMessage(IReadOnlyList<IRContext> contexts, string message, CancellationToken ct) {
+        async Task IRCallbacks.ShowMessage(string message, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
             EditorShell.Current.ShowErrorMessage(message);
         }
@@ -249,11 +246,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return YesNoCancel.Yes;
         }
 
-        Task IRCallbacks.Busy(IReadOnlyList<IRContext> contexts, bool which, CancellationToken ct) {
+        Task IRCallbacks.Busy(bool which, CancellationToken ct) {
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.PlotXaml(IReadOnlyList<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
+        async Task IRCallbacks.PlotXaml(string xamlFilePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
             var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);  // TODO: acquire plot content provider through service
@@ -294,29 +291,5 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 handlers(this, args);
             }
         }
-
-        private void OnResponse(IReadOnlyList<IRContext> contexts, string message) {
-            var handlers = Response;
-            if (handlers != null) {
-                var args = new RResponseEventArgs(contexts, message);
-                handlers(this, args);
-            }
-        }
-
-        private void OnError(IReadOnlyList<IRContext> contexts, string message) {
-            var handlers = Error;
-            if (handlers != null) {
-                var args = new RErrorEventArgs(contexts, message);
-                handlers(this, args);
-            }
-        }
-
-        private void OnDisconnected() {
-            var handlers = Disconnected;
-            if (handlers != null) {
-                var args = new EventArgs();
-                handlers(this, args);
-            }
-        }
-    }
+   }
 }

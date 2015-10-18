@@ -241,7 +241,7 @@ grid.newpage()
             public void Dispose() {
             }
 
-            public Task Busy(IReadOnlyList<IRContext> contexts, bool which, CancellationToken ct) {
+            public Task Busy(bool which, CancellationToken ct) {
                 return Task.FromResult(true);
             }
 
@@ -253,7 +253,7 @@ grid.newpage()
                 return Task.CompletedTask;
             }
 
-            public Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+            public Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
                 // We're getting called a few times here
                 // First time, send over the code to execute
                 // After that, send nothing
@@ -262,11 +262,11 @@ grid.newpage()
                 return Task.FromResult(code);
             }
 
-            public async Task ShowMessage(IReadOnlyList<IRContext> contexts, string s, CancellationToken ct) {
+            public async Task ShowMessage(string s, CancellationToken ct) {
                 await Console.Error.WriteLineAsync(s);
             }
 
-            public async Task WriteConsoleEx(IReadOnlyList<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
+            public async Task WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
                 var writer = otype == OutputType.Output ? Console.Out : Console.Error;
                 await writer.WriteAsync(buf);
             }
@@ -275,7 +275,7 @@ grid.newpage()
                 return Task.FromResult<YesNoCancel>(Microsoft.R.Host.Client.YesNoCancel.Yes);
             }
 
-            public Task PlotXaml(IReadOnlyList<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
+            public Task PlotXaml(string xamlFilePath, CancellationToken ct) {
                 XamlFilePaths.Add(xamlFilePath);
                 return Task.CompletedTask;
             }
