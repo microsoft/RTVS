@@ -31,9 +31,9 @@ namespace rhost {
 
             logfile = fopen(filename, "wc");
             if (!logfile) {
-                fprintf(stderr, "Error creating logfile: %s\n", filename);
-                assert(!"Error creating logfile.");
-                exit(EXIT_FAILURE);
+                std::string error = "Error creating logfile: " + std::string(filename) + "\r\n";
+                fputs(error.c_str(), stderr);
+                MessageBoxA(HWND_DESKTOP, error.c_str(), "Microsoft R Host", MB_OK | MB_ICONWARNING);
             }
         }
 
@@ -43,11 +43,13 @@ namespace rhost {
             va_copy(va2, va);
 #endif
 
-            for (int i = 0; i < indent; ++i) {
-                fputc('\t', logfile);
+            if (logfile) {
+                for (int i = 0; i < indent; ++i) {
+                    fputc('\t', logfile);
+                }
+                vfprintf(logfile, format, va);
+                fflush(logfile);
             }
-            vfprintf(logfile, format, va);
-            fflush(logfile);
 
 #ifndef NDEBUG
             for (int i = 0; i < indent; ++i) {
