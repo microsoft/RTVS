@@ -468,7 +468,7 @@ namespace Microsoft.R.Core.Tokens
                     {
                         identifier = true;
                     }
-                    else if (_cs.CurrentChar == ':' || _cs.NextChar == ':')
+                    else if (_cs.CurrentChar == ':' && _cs.NextChar == ':')
                     {
                         identifier = true;
                     }
