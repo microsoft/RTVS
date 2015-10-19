@@ -25,13 +25,15 @@ namespace Microsoft.R.Host.Client {
             public JToken[] Arguments;
 
             public override string ToString() {
-                JToken token;
-                if (RequestId == null) {
-                    token = new JArray(new object[] { Id, Name }.Concat(Arguments).ToArray());
-                } else {
-                    token = new JObject(new JProperty(RequestId, new JArray(new object[] { Id }.Concat(Arguments).ToArray())));
+                var array = new JArray(Id);
+
+                if (RequestId != null) {
+                    array.Add(":");
+                    array.Add(RequestId);
                 }
-                return token.ToString();
+
+                array.Add(Arguments);
+                return array.ToString();
             }
 
             public void ExpectArguments(int min, int max = -1) {
@@ -109,7 +111,7 @@ namespace Microsoft.R.Host.Client {
         private ClientWebSocket _socket;
         private byte[] _buffer = new byte[0x100000];
         private bool _isRunning, _canEval;
-        private int _lastMessageId;
+        private long _nextMessageId = 1;
 
         public RHost(IRCallbacks callbacks) {
             _callbacks = callbacks;
@@ -119,7 +121,7 @@ namespace Microsoft.R.Host.Client {
             _cts.Cancel();
         }
 
-        private async Task<Message> ReceiveMessage(CancellationToken ct) {
+        private async Task<Message> ReceiveMessageAsync(CancellationToken ct) {
             var sb = new StringBuilder();
             WebSocketReceiveResult wsrr;
             do {
@@ -136,51 +138,50 @@ namespace Microsoft.R.Host.Client {
             }
 
             var message = new Message();
-            var array = token as JArray;
-            if (array != null) {
-                if (array.Count < 2) {
-                    throw new InvalidDataException("Message body must have at least 2 entries:\n\n" + token);
+
+            var body = token as JArray;
+            if (body == null) {
+                throw new InvalidDataException("Message must be an array:\n\n" + token);
+            }
+            if (body.Count < 2) {
+                throw new InvalidDataException("Message must have form [id, name, ...]:\n\n" + token);
+            }
+
+            var id = body[0];
+            if (id.Type != JTokenType.String) {
+                throw new InvalidDataException("Message id must be a string:\n\n" + token);
+            }
+            message.Id = (string)id;
+
+            var name = body[1];
+            if (name.Type != JTokenType.String) {
+                throw new InvalidDataException("Message name must be a string:\n\n" + token);
+            }
+            message.Name = (string)name;
+
+            int argsOffset = 2;
+
+            if (message.Name == ":") {
+                if (body.Count < 4) {
+                    throw new InvalidDataException("Response message must have form [id, \":\", request_id, name, ...]:\n\n" + token);
                 }
 
-                var id = array[0];
-                if (id.Type != JTokenType.String) {
-                    throw new InvalidDataException("Message ID must be a string:\n\n" + token);
+                var requestId = body[2];
+                if (requestId.Type != JTokenType.String) {
+                    throw new InvalidDataException("Response message request_id must be a string:\n\n" + token);
                 }
-                message.Id = (string)id;
+                message.RequestId = (string)requestId;
 
-                var name = array[1];
+                name = body[3];
                 if (name.Type != JTokenType.String) {
-                    throw new InvalidDataException("Message name must be a string:\n\n" + token);
+                    throw new InvalidDataException("Response message name must be a string:\n\n" + token);
                 }
                 message.Name = (string)name;
 
-                message.Arguments = array.Skip(2).ToArray();
-            } else {
-                var obj = token as JObject;
-                if (obj != null) {
-                    if (obj.Count != 1) {
-                        throw new InvalidDataException("Response message must have exactly one entry:\n\n" + token);
-                    }
-
-                    var prop = obj.Properties().First();
-                    message.RequestId = prop.Name;
-
-                    array = prop.Value as JArray;
-                    if (array == null || array.Count < 1) {
-                        throw new InvalidDataException("Response message body must be an array with at least one entry:\n\n" + token);
-                    }
-
-                    var id = array[0];
-                    if (id.Type != JTokenType.String) {
-                        throw new InvalidDataException("Message ID must be a string:\n\n" + token);
-                    }
-                    message.Id = (string)id;
-
-                    message.Arguments = array.Skip(1).ToArray();
-                } else {
-                    throw new InvalidDataException("Message is neither an array nor an object:\n\n" + token);
-                }
+                argsOffset += 2;
             }
+
+            message.Arguments = body.Skip(argsOffset).ToArray();
 
             return message;
         }
@@ -197,19 +198,24 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private JArray CreateMessage(CancellationToken ct, IEnumerable<object> args) {
-            return new JArray("~>" + (++_lastMessageId), args);
+        private JArray CreateMessage(CancellationToken ct, out string id, string name, params object[] args) {
+            id = "$#" + _nextMessageId;
+            _nextMessageId += 2;
+            return new JArray(id, name, args);
         }
 
-        private Task SendAsync(string name, CancellationToken ct, params object[] args) {
-            var message = CreateMessage(ct, new[] { name }.Concat(args));
-            return SendAsync(message, ct);
+        private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
+            string id;
+            var message = CreateMessage(ct, out id, name, args);
+            await SendAsync(message, ct);
+            return id;
         }
 
-        private Task RespondAsync(Message request, CancellationToken ct, params object[] args) {
-            var body = CreateMessage(ct, args);
-            var message = new JObject(new JProperty(request.Id, body));
-            return SendAsync(message, ct);
+        private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
+            string id;
+            var message = CreateMessage(ct, out id, ":", request.Id, request.Name, args);
+            await SendAsync(message, ct);
+            return id;
         }
 
         private async Task Run(CancellationToken ct) {
@@ -222,8 +228,8 @@ namespace Microsoft.R.Host.Client {
             _isRunning = true;
             try {
                 try {
-                    var message = await ReceiveMessage(ct);
-                    if (message.Name != "Microsoft.R.Host") {
+                    var message = await ReceiveMessageAsync(ct);
+                    if (message.Name != "Microsoft.R.Host" || message.RequestId != null) {
                         throw new InvalidDataException("Microsoft.R.Host handshake expected:\n\n" + message);
                     }
 
@@ -251,7 +257,7 @@ namespace Microsoft.R.Host.Client {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             while (!ct.IsCancellationRequested) {
-                var message = await ReceiveMessage(ct);
+                var message = await ReceiveMessageAsync(ct);
                 if (message == null) {
                     return null;
                 } else if (message.RequestId != null) {
@@ -259,31 +265,33 @@ namespace Microsoft.R.Host.Client {
                 }
 
                 switch (message.Name) {
-                    case "R.YesNoCancel?":
+                    case "?":
                         await YesNoCancel(message, allowEval, ct);
                         break;
 
-                    case "R.ReadConsole?":
+                    case ">":
+                    case ">@":
                         await ReadConsole(message, allowEval, ct);
                         break;
 
-                    case "R.WriteConsoleEx":
-                        message.ExpectArguments(2);
-                        await _callbacks.WriteConsoleEx(message.GetString(0), (OutputType)message.GetInt32(1), ct);
+                    case "!":
+                    case "!!":
+                        message.ExpectArguments(1);
+                        await _callbacks.WriteConsoleEx(message.GetString(0), (message.Name.Length == 1 ? OutputType.Output : OutputType.Error), ct);
                         break;
 
-                    case "R.ShowMessage":
+                    case "![]":
+                        message.ExpectArguments(1);
                         await _callbacks.ShowMessage(message.GetString(0), ct);
                         break;
 
-                    case "R.Busy":
-                        await _callbacks.Busy(message.GetBoolean(0), ct);
+                    case "~+":
+                    case "~-":
+                        message.ExpectArguments(0);
+                        await _callbacks.Busy(message.Name[1] == '+', ct);
                         break;
 
-                    case "R.CallBack":
-                        break;
-
-                    case "Microsoft.R.Host.PlotXaml":
+                    case "PlotXaml":
                         await _callbacks.PlotXaml(message.GetString(0), ct);
                         // TODO: delete temporary xaml and bitmap files
                         break;
@@ -322,17 +330,41 @@ namespace Microsoft.R.Host.Client {
                 _canEval = false;
             }
 
-            await RespondAsync(request, ct, (int)input);
+            string response;
+            switch (input) {
+                case Client.YesNoCancel.No:
+                    response = "M";
+                    break;
+                case Client.YesNoCancel.Cancel:
+                    response = "C";
+                    break;
+                case Client.YesNoCancel.Yes:
+                    response = "Y";
+                    break;
+                default:
+                    {
+                        string error =
+                            nameof(RHost) + "." + nameof(YesNoCancel) + ": " +
+                            nameof(IRCallbacks) + "." + nameof(IRCallbacks.YesNoCancel) +
+                            " returned an invalid " + nameof(Client.YesNoCancel) +
+                            " value " + input;
+                        Trace.Fail(error);
+                        throw new InvalidOperationException(error);
+                    }
+            }
+
+            await RespondAsync(request, ct, response);
         }
 
         private async Task ReadConsole(Message request, bool allowEval, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            request.ExpectArguments(4, 5);
+            request.ExpectArguments(request.Name == ">" ? 4 : 5);
+
             var contexts = GetContexts(request);
-            var prompt = request.GetString(1);
-            var len = request.GetInt32(2);
-            var addToHistory = request.GetBoolean(3);
+            var len = request.GetInt32(1);
+            var addToHistory = request.GetBoolean(2);
+            var prompt = request.GetString(3);
 
             string input;
             try {
@@ -355,13 +387,21 @@ namespace Microsoft.R.Host.Client {
 
             _canEval = false;
             try {
-                await SendAsync("=", ct, expression.Replace("\r\n", "\n"));
-                var response = await RunLoop(ct, reentrant);
-                response.ExpectArguments(3, 3);
+                string name = (reentrant ? "=@" : "=");
+                var id = await SendAsync(name, ct, expression.Replace("\r\n", "\n"));
 
+                var response = await RunLoop(ct, reentrant);
+                if (response.RequestId != id || response.Name != name) {
+                    throw new InvalidOperationException(string.Format(
+                        "Mismatched response [...,\"{0}\",\"{1}\",...] to evaluation request [\"{2}\",\"{3}\",...]",
+                        response.Id, response.Name, id, name));
+                }
+
+                response.ExpectArguments(3, 3);
                 var parseStatus = response.GetEnum<RParseStatus>(0, "NULL", "OK", "INCOMPLETE", "ERROR", "EOF");
                 var error = response.GetString(1, allowNull: true);
                 var result = response.GetString(2, allowNull: true);
+
                 return new REvaluationResult(result, error, parseStatus);
             } finally {
                 _canEval = true;
