@@ -87,7 +87,7 @@ namespace Microsoft.R.Debugger {
 
             REvaluationResult res;
             using (var eval = await RSession.BeginEvaluationAsync()) {
-                res = await eval.EvaluateAsync(helpers, reentrant: false);
+                res = await eval.EvaluateAsync(helpers);
             }
 
             if (res.ParseStatus != RParseStatus.OK) {
@@ -129,22 +129,21 @@ namespace Microsoft.R.Debugger {
 
             REvaluationResult res;
             using (var eval = await RSession.BeginEvaluationAsync()) {
-                res = await eval.EvaluateAsync(expression, reentrant: false);
-                if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.Result == null) {
+                res = await eval.EvaluateAsync(expression, REvaluationKind.Json);
+                if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.JsonResult == null) {
                     Trace.Fail($"Internal debugger evaluation {expression} failed: {res}");
                     throw new REvaluationException(res);
                 }
             }
 
-            var token = JToken.Parse(res.Result);
-
-            var ttoken = token as TToken;
-            if (ttoken == null) {
-                string err = $"Expected to receive {typeof(TToken).Name} in response to {expression}, but got {token?.GetType().Name}";
+            var token = res.JsonResult as TToken;
+            if (token == null) {
+                string err = $"Expected to receive {typeof(TToken).Name} in response to {expression}, but got {res.JsonResult?.GetType().Name}";
                 Trace.Fail(err);
                 throw new JsonException(err);
             }
-            return ttoken;
+
+            return token;
         }
 
         public Task<DebugEvaluationResult> EvaluateAsync(string expression, string name = null, string env = "NULL") {

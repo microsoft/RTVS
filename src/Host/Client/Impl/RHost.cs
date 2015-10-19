@@ -36,36 +36,30 @@ namespace Microsoft.R.Host.Client {
                 return array.ToString();
             }
 
-            public void ExpectArguments(int min, int max = -1) {
-                if (max < 0) {
-                    max = min;
-                }
-
-                if (Arguments.Length < min || Arguments.Length > max) {
-                    string error =
-                        (Name != null ? Name + ": " : "") +
-                        min +
-                        (max == min ? "" : " to " + max) +
-                        " arguments expected:\n\n" + this;
-                    throw new InvalidDataException(error);
+            public void ExpectArguments(int count) {
+                if (Arguments.Length != count) {
+                    throw ProtocolError($"{count} arguments expected:", this);
                 }
             }
 
-            public JToken GetArgument(int i, params JTokenType[] expectedTypes) {
+            public JToken GetArgument(int i, JTokenType expectedType) {
                 var arg = Arguments[i];
-                if (!expectedTypes.Any(t => t == arg.Type)) {
-                    string error =
-                        (Name != null ? Name + ": a" : "A") +
-                        "rgument #" + i + " must be " +
-                        string.Join(" or ", expectedTypes) +
-                        ":\n\n" + this;
-                    throw new InvalidDataException(error);
+                if (arg.Type != expectedType) {
+                    throw ProtocolError($"Argument #{i} must be {expectedType}:", this);
+                }
+                return arg;
+            }
+
+            public JToken GetArgument(int i, JTokenType expectedType1, JTokenType expectedType2) {
+                var arg = Arguments[i];
+                if (arg.Type != expectedType1 && arg.Type != expectedType2) {
+                    throw ProtocolError($"Argument #{i} must be {expectedType1} or {expectedType2}:", this);
                 }
                 return arg;
             }
 
             public string GetString(int i, bool allowNull = false) {
-                var arg = GetArgument(i, allowNull ? new[] { JTokenType.String, JTokenType.Null } : new[] { JTokenType.String });
+                var arg = allowNull ? GetArgument(i, JTokenType.String, JTokenType.Null): GetArgument(i, JTokenType.String);
                 if (arg.Type == JTokenType.Null) {
                     return null;
                 }
@@ -91,12 +85,7 @@ namespace Microsoft.R.Host.Client {
 
                 int n = Array.IndexOf(names, (string)arg);
                 if (n < 0) {
-                    string error =
-                        (Name != null ? Name + ": a" : "A") +
-                        "rgument #" + i + " must be integer, or one of: " +
-                        string.Join(", ", names) +
-                        ":\n\n" + this;
-                    throw new InvalidDataException(error);
+                    throw ProtocolError($"Argument #{i} must be integer, or one of: {string.Join(", ", names)}:", this);
                 }
 
                 return (TEnum)(object)n;
@@ -121,6 +110,15 @@ namespace Microsoft.R.Host.Client {
             _cts.Cancel();
         }
 
+        private static Exception ProtocolError(FormattableString fs, object message = null) {
+            var s = fs.ToString(CultureInfo.InvariantCulture);
+            if (message != null) {
+                s += "\n\n" + message;
+            }
+            Trace.Fail(s);
+            return new InvalidDataException(s);
+        }
+
         private async Task<Message> ReceiveMessageAsync(CancellationToken ct) {
             var sb = new StringBuilder();
             WebSocketReceiveResult wsrr;
@@ -141,21 +139,21 @@ namespace Microsoft.R.Host.Client {
 
             var body = token as JArray;
             if (body == null) {
-                throw new InvalidDataException("Message must be an array:\n\n" + token);
+                throw ProtocolError($"Message must be an array:", token);
             }
             if (body.Count < 2) {
-                throw new InvalidDataException("Message must have form [id, name, ...]:\n\n" + token);
+                throw ProtocolError($"Message must have form [id, name, ...]:", token);
             }
 
             var id = body[0];
             if (id.Type != JTokenType.String) {
-                throw new InvalidDataException("Message id must be a string:\n\n" + token);
+                throw ProtocolError($"Message id must be a string:", token);
             }
             message.Id = (string)id;
 
             var name = body[1];
             if (name.Type != JTokenType.String) {
-                throw new InvalidDataException("Message name must be a string:\n\n" + token);
+                throw ProtocolError($"Message name must be a string:", token);
             }
             message.Name = (string)name;
 
@@ -163,18 +161,18 @@ namespace Microsoft.R.Host.Client {
 
             if (message.Name == ":") {
                 if (body.Count < 4) {
-                    throw new InvalidDataException("Response message must have form [id, \":\", request_id, name, ...]:\n\n" + token);
+                    throw ProtocolError($"Response message must have form [id, ':', request_id, name, ...]:", token);
                 }
 
                 var requestId = body[2];
                 if (requestId.Type != JTokenType.String) {
-                    throw new InvalidDataException("Response message request_id must be a string:\n\n" + token);
+                    throw ProtocolError($"Response message request_id must be a string:", token);
                 }
                 message.RequestId = (string)requestId;
 
                 name = body[3];
                 if (name.Type != JTokenType.String) {
-                    throw new InvalidDataException("Response message name must be a string:\n\n" + token);
+                    throw ProtocolError($"Response message name must be a string:", token);
                 }
                 message.Name = (string)name;
 
@@ -199,7 +197,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         private JArray CreateMessage(CancellationToken ct, out string id, string name, params object[] args) {
-            id = "$#" + _nextMessageId;
+            id = "#" + _nextMessageId + "#";
             _nextMessageId += 2;
             return new JArray(id, name, args);
         }
@@ -230,12 +228,12 @@ namespace Microsoft.R.Host.Client {
                 try {
                     var message = await ReceiveMessageAsync(ct);
                     if (message.Name != "Microsoft.R.Host" || message.RequestId != null) {
-                        throw new InvalidDataException("Microsoft.R.Host handshake expected:\n\n" + message);
+                        throw ProtocolError($"Microsoft.R.Host handshake expected:", message);
                     }
 
                     var protocolVersion = message.GetInt32(0);
                     if (protocolVersion != 1) {
-                        throw new InvalidDataException("Unsupported RHost protocol version:\n\n" + message);
+                        throw ProtocolError($"Unsupported RHost protocol version:", message);
                     }
 
                     var rVersion = message.GetString(1);
@@ -243,7 +241,7 @@ namespace Microsoft.R.Host.Client {
 
                     message = await RunLoop(ct, allowEval: true);
                     if (message != null) {
-                        throw new InvalidDataException("Unexpected response message:\n\n" + message);
+                        throw ProtocolError($"Unexpected host response message:", message);
                     }
                 } finally {
                     await _callbacks.Disconnected();
@@ -270,25 +268,28 @@ namespace Microsoft.R.Host.Client {
                         break;
 
                     case ">":
-                    case ">@":
                         await ReadConsole(message, allowEval, ct);
                         break;
 
                     case "!":
                     case "!!":
                         message.ExpectArguments(1);
-                        await _callbacks.WriteConsoleEx(message.GetString(0), (message.Name.Length == 1 ? OutputType.Output : OutputType.Error), ct);
+                        await _callbacks.WriteConsoleEx(
+                            message.GetString(0, allowNull: true),
+                            message.Name.Length == 1 ? OutputType.Output : OutputType.Error,
+                            ct);
                         break;
 
                     case "![]":
                         message.ExpectArguments(1);
-                        await _callbacks.ShowMessage(message.GetString(0), ct);
+                        await _callbacks.ShowMessage(message.GetString(0, allowNull: true), ct);
                         break;
 
                     case "~+":
+                        await _callbacks.Busy(true, ct);
+                        break;
                     case "~-":
-                        message.ExpectArguments(0);
-                        await _callbacks.Busy(message.Name[1] == '+', ct);
+                        await _callbacks.Busy(false, ct);
                         break;
 
                     case "PlotXaml":
@@ -297,7 +298,7 @@ namespace Microsoft.R.Host.Client {
                         break;
 
                     default:
-                        throw new InvalidDataException("Unrecognized name:\n\n" + message);
+                        throw ProtocolError($"Unrecognized host message name:", message);
                 }
             }
 
@@ -308,7 +309,7 @@ namespace Microsoft.R.Host.Client {
             var contexts = message.GetArgument(0, JTokenType.Array)
                 .Select((token, i) => {
                     if (token.Type != JTokenType.Integer) {
-                        throw new InvalidDataException("Element #" + i + " of context array must be an integer:\n\n" + message);
+                        throw ProtocolError($"Element #{i} of context array must be an integer:", message);
                     }
                     return new RContext((RContextType)(int)token);
                 });
@@ -320,7 +321,7 @@ namespace Microsoft.R.Host.Client {
 
             request.ExpectArguments(2);
             var contexts = GetContexts(request);
-            var s = request.GetString(1);
+            var s = request.GetString(1, allowNull: true);
 
             YesNoCancel input;
             try {
@@ -343,13 +344,9 @@ namespace Microsoft.R.Host.Client {
                     break;
                 default:
                     {
-                        string error =
-                            nameof(RHost) + "." + nameof(YesNoCancel) + ": " +
-                            nameof(IRCallbacks) + "." + nameof(IRCallbacks.YesNoCancel) +
-                            " returned an invalid " + nameof(Client.YesNoCancel) +
-                            " value " + input;
-                        Trace.Fail(error);
-                        throw new InvalidOperationException(error);
+                        FormattableString error = $"YesNoCancel: callback returned an invalid value: {input}";
+                        Trace.Fail(error.ToString(CultureInfo.InvariantCulture));
+                        throw new InvalidOperationException(error.ToString(CultureInfo.InvariantCulture));
                     }
             }
 
@@ -359,12 +356,13 @@ namespace Microsoft.R.Host.Client {
         private async Task ReadConsole(Message request, bool allowEval, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            request.ExpectArguments(request.Name == ">" ? 4 : 5);
+            request.ExpectArguments(5);
 
             var contexts = GetContexts(request);
             var len = request.GetInt32(1);
             var addToHistory = request.GetBoolean(2);
-            var prompt = request.GetString(3);
+            var retryReason = request.GetString(3, allowNull: true);
+            var prompt = request.GetString(4, allowNull: true);
 
             string input;
             try {
@@ -378,31 +376,51 @@ namespace Microsoft.R.Host.Client {
             await RespondAsync(request, ct, input);
         }
 
-        public async Task<REvaluationResult> EvaluateAsync(string expression, bool reentrant, CancellationToken ct) {
+        public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (!_canEval) {
                 throw new InvalidOperationException("EvaluateAsync can only be called while ReadConsole or YesNoCancel is pending.");
             }
 
+            bool reentrant = false, jsonResult = false;
+
+            var nameBuilder = new StringBuilder("=");
+            if (kind.HasFlag(REvaluationKind.Reentrant)) {
+                nameBuilder.Append('@');
+                reentrant = true;
+            }
+            if (kind.HasFlag(REvaluationKind.Json)) {
+                nameBuilder.Append('j');
+                jsonResult = true;
+            }
+            if (kind.HasFlag(REvaluationKind.BaseEnv)) {
+                nameBuilder.Append('B');
+            }
+            if (kind.HasFlag(REvaluationKind.EmptyEnv)) {
+                nameBuilder.Append('E');
+            }
+            var name = nameBuilder.ToString();
+
             _canEval = false;
             try {
-                string name = (reentrant ? "=@" : "=");
-                var id = await SendAsync(name, ct, expression.Replace("\r\n", "\n"));
+                expression = expression.Replace("\r\n", "\n");
+                var id = await SendAsync(name, ct, expression);
 
                 var response = await RunLoop(ct, reentrant);
                 if (response.RequestId != id || response.Name != name) {
-                    throw new InvalidOperationException(string.Format(
-                        "Mismatched response [...,\"{0}\",\"{1}\",...] to evaluation request [\"{2}\",\"{3}\",...]",
-                        response.Id, response.Name, id, name));
+                    throw ProtocolError($"Mismatched host response ['{response.Id}',':','{response.Name}',...] to evaluation request ['{id}','{name}','{expression}']");
                 }
 
-                response.ExpectArguments(3, 3);
+                response.ExpectArguments(3);
                 var parseStatus = response.GetEnum<RParseStatus>(0, "NULL", "OK", "INCOMPLETE", "ERROR", "EOF");
                 var error = response.GetString(1, allowNull: true);
-                var result = response.GetString(2, allowNull: true);
 
-                return new REvaluationResult(result, error, parseStatus);
+                if (jsonResult) {
+                    return new REvaluationResult(response.Arguments[2], error, parseStatus);
+                } else {
+                    return new REvaluationResult(response.GetString(2, allowNull: true), error, parseStatus);
+                }
             } finally {
                 _canEval = true;
             }

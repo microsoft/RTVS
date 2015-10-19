@@ -10,6 +10,6 @@ namespace Microsoft.R.Host.Client {
         /// If <c>true</c>, nested evaluations are possible if R transitions to the state allowing evaluation
         /// while evaluating this expression. Otherwise, no nested evaluations are possible.
         /// </param>
-        Task<REvaluationResult> EvaluateAsync(string expression, bool reentrant);
+        Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal);
     }
 }

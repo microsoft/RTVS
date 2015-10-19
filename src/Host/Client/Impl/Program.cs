@@ -9,9 +9,13 @@ namespace Microsoft.R.Host.Client {
         private int _nesting;
 
         static void Main(string[] args) {
+            Console.CancelKeyPress += Console_CancelKeyPress;
             var host = new RHost(new Program());
             host.CreateAndRun(args[0]).GetAwaiter().GetResult();
             _evaluator = host;
+        }
+
+        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {
         }
 
         public void Dispose() {
@@ -76,12 +80,14 @@ namespace Microsoft.R.Host.Client {
                         s = s.Remove(0, 1);
                     } else if (s.StartsWith("$", StringComparison.OrdinalIgnoreCase) && isEvaluationAllowed) {
                         s = s.Remove(0, 1);
-                        bool reentrant = true;
+
+                        var kind = REvaluationKind.Normal;
                         if (s.StartsWith("!", StringComparison.OrdinalIgnoreCase)) {
-                            reentrant = false;
+                            kind |= REvaluationKind.Reentrant;
                             s = s.Remove(0, 1);
                         }
-                        var er = await _evaluator.EvaluateAsync(s, reentrant, ct);
+
+                        var er = await _evaluator.EvaluateAsync(s, kind, ct);
                         await Console.Out.WriteLineAsync(er.ToString());
                         continue;
                     }

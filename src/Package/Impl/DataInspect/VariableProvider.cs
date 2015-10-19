@@ -115,14 +115,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             REvaluationResult response;
             using (var interactor = await _rSession.BeginEvaluationAsync())
             {
-                response = await interactor.EvaluateAsync(
-                    _monitorContext.GetQueryString(),
-                    false);
+                response = await interactor.EvaluateAsync(_monitorContext.GetQueryString());
             }
 
             if (response.ParseStatus == RParseStatus.OK)
             {
-                var evaluation = Deserialize<REvaluation>(response.Result);
+                var evaluation = Deserialize<REvaluation>(response.StringResult);
                 if (evaluation != null)
                 {
                     if (VariableChanged != null)

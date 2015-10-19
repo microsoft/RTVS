@@ -38,11 +38,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 options(device='.rtvs.vsgd')
 ";
 
-            return evaluation.EvaluateAsync(script, reentrant: false);
+            return evaluation.EvaluateAsync(script);
         }
 
         private static Task<REvaluationResult> EvaluateNonReentrantAsync(this IRSessionEvaluation evaluation, FormattableString commandText) {
-            return evaluation.EvaluateAsync(FormattableString.Invariant(commandText), reentrant: false);
+            return evaluation.EvaluateAsync(FormattableString.Invariant(commandText));
         }
 
         public static Task<REvaluationResult> PrepareDataInspect(this IRSessionEvaluation evaluation)
@@ -59,7 +59,7 @@ options(device='.rtvs.vsgd')
             }
             script += "\n";
 
-            return evaluation.EvaluateAsync(script, reentrant: false);
+            return evaluation.EvaluateAsync(script);
         }
     }
 }
