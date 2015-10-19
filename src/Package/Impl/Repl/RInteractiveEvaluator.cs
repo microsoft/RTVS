@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.InteractiveWindow.Commands;
@@ -53,8 +54,29 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             return ExecutionResult.Success;
         }
 
-        public bool CanExecuteCode(string text) {
-            return Session.IsHostRunning;
+        public bool CanExecuteCode(string text)
+        {
+            var ast = RParser.Parse(text);
+            if (ast.Errors.Count > 0)
+            {
+                // if we have any errors other than an incomplete statement send the
+                // bad code to R.  Otherwise continue reading input.
+                foreach (var error in ast.Errors)
+                {
+                    if (error.ErrorType != ParseErrorType.CloseCurlyBraceExpected &&
+                        error.ErrorType != ParseErrorType.CloseBraceExpected &&
+                        error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
+                        error.ErrorType != ParseErrorType.FunctionBodyExpected &&
+                        error.ErrorType != ParseErrorType.OperandExpected)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         public async Task<ExecutionResult> ExecuteCodeAsync(string text) {
@@ -92,7 +114,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public string GetPrompt() {
-            return Session.Prompt;
+            // TODO: We should support dynamically getting the prompt at runtime
+            // if the user changes it
+            if (CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot.LineCount > 1)
+            {
+                return "+ ";
+            }
+            return "> ";
         }
 
         public IInteractiveWindow CurrentWindow { get; set; }

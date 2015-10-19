@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -21,26 +22,43 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private uint _windowFrameEventsCookie;
         private IVsInteractiveWindow _lastUsedReplWindow;
         private static readonly Lazy<ReplWindow> _instance = new Lazy<ReplWindow>(() => new ReplWindow());
-        private readonly ActionBlock<IReadOnlyCollection<string>> _submitAsyncActionBlock;
 
         public ReplWindow() {
             IVsUIShell7 shell = AppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
             _windowFrameEventsCookie = shell.AdviseWindowFrameEvents(this);
-            _submitAsyncActionBlock = new ActionBlock<IReadOnlyCollection<string>>(new Func<IReadOnlyCollection<string>, Task>(ProcessSubmitAsync));
         }
 
 
         public static ReplWindow Current => _instance.Value;
 
-        public Task SubmitAsync(IReadOnlyCollection<string> input) {
-            return input.Count > 0 ? _submitAsyncActionBlock.SendAsync(input) : Task.CompletedTask;
-        }
-
-        private async Task ProcessSubmitAsync(IReadOnlyCollection<string> input) {
-            foreach (var selectedLine in input) {
-                IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
-                if (current != null) {
-                    await current.InteractiveWindow.SubmitAsync(new[] { selectedLine });
+        /// <summary>
+        /// Inserts the provided code into the current input buffer at the current caret location.
+        /// 
+        /// If the current input becomes complete after inserting the code then the input is executed.  
+        /// 
+        /// If the code is not complete and addNewLine is true then a new line character is appended 
+        /// to the end of the input.
+        /// </summary>
+        /// <param name="code">The code to be inserted</param>
+        /// <param name="addNewLine">True to add a new line on non-complete inputs.</param>
+        public void InsertCodeMaybeExecute(string code, bool addNewLine)
+        {
+            IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
+            if (current != null)
+            {
+                current.InteractiveWindow.InsertCode(code);
+                var fullCode = current.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.GetText();
+                
+                if (current.InteractiveWindow.Evaluator.CanExecuteCode(fullCode))
+                {
+                    // the code is complete, go ahead and execute it...
+                    current.InteractiveWindow.Operations.ExecuteInput();
+                }
+                else if (addNewLine)
+                {
+                    // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
+                    // function() {
+                    current.InteractiveWindow.InsertCode(current.InteractiveWindow.TextView.Options.GetNewLineCharacter());
                 }
             }
         }
