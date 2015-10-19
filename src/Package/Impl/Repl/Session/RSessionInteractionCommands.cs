@@ -3,8 +3,8 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Session {
     public static class RSessionInteractionCommands {
-        public static async Task Quit(this IRSessionInteraction interaction) {
-            await interaction.RespondAsync("q()\n").ConfigureAwait(false);
+        public static Task Quit(this IRSessionInteraction interaction) {
+            return interaction.RespondAsync("q()\n");
         }
     }
 }

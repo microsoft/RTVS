@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugBreakpoint.cs" />
     <Compile Include="DebugSession.cs" />
     <Compile Include="DebugEvaluationResult.cs" />
     <Compile Include="DebugUtilities.cs" />

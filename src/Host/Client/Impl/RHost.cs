@@ -7,6 +7,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -34,6 +35,8 @@ namespace Microsoft.R.Host.Client {
         }
 
         public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
             string rBinPath = Path.Combine(rHome, RBinPathX64);
 
@@ -58,26 +61,31 @@ namespace Microsoft.R.Host.Client {
                         var uri = new Uri("ws://localhost:" + DefaultPort);
                         for (int i = 0; ; ++i) {
                             try {
-                                await _socket.ConnectAsync(uri, ct).ConfigureAwait(false);
+                                await _socket.ConnectAsync(uri, ct);
                                 break;
                             } catch (WebSocketException) {
                                 if (i > 10) {
                                     throw;
                                 }
-                                await Task.Delay(100, ct).ConfigureAwait(false);
+                                await Task.Delay(100, ct);
                             }
                         }
 
-                        await Run(ct).ConfigureAwait(false);
+                        await Run(ct);
                     }
-                } catch (Exception ex) when (!(ex is OperationCanceledException)) { // TODO: replace with better logging
+                } catch (OperationCanceledException) when(ct.IsCancellationRequested) {
+                    // Expected cancellation, do not propagate, just exit process
+                } catch (Exception ex) { 
                     Trace.Fail("Exception in RHost run loop:\n" + ex);
                     throw;
                 } finally {
                     if (!_process.HasExited) {
                         try {
                             _process.WaitForExit(500);
-                            _process.Kill();
+                            if (!_process.HasExited) {
+                                _process.Kill();
+                                _process.WaitForExit();
+                            }
                         } catch (InvalidOperationException) {
                         }
                     }
@@ -86,14 +94,18 @@ namespace Microsoft.R.Host.Client {
         }
 
         public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
             using (_socket = new ClientWebSocket()) {
-                await _socket.ConnectAsync(uri, ct).ConfigureAwait(false);
-                await Run(ct).ConfigureAwait(false);
+                await _socket.ConnectAsync(uri, ct);
+                await Run(ct);
             }
         }
 
         private async Task Run(CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             if (_isRunning) {
                 throw new InvalidOperationException("This host is already running.");
             }
@@ -102,16 +114,16 @@ namespace Microsoft.R.Host.Client {
             _isRunning = true;
             try {
                 try {
-                    var webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct).ConfigureAwait(false);
+                    var webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
                     string s = Encoding.UTF8.GetString(_buffer, 0, webSocketReceiveResult.Count);
                     var obj = JObject.Parse(s);
                     int protocolVersion = (int)(double)obj["protocol_version"];
                     Debug.Assert(protocolVersion == 1);
                     string rVersion = (string)obj["R_version"];
-                    await _callbacks.Connected(rVersion).ConfigureAwait(false);
-                    await RunLoop(ct, allowEval: true).ConfigureAwait(false);
+                    await _callbacks.Connected(rVersion);
+                    await RunLoop(ct, allowEval: true);
                 } finally {
-                    await _callbacks.Disconnected().ConfigureAwait(false);
+                    await _callbacks.Disconnected();
                 }
             } finally {
                 _isRunning = false;
@@ -119,11 +131,13 @@ namespace Microsoft.R.Host.Client {
         }
 
         private async Task<JObject> RunLoop(CancellationToken ct, bool allowEval) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             while (!ct.IsCancellationRequested) {
                 WebSocketReceiveResult webSocketReceiveResult;
                 var s = string.Empty;
                 do {
-                    webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct).ConfigureAwait(false);
+                    webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
                     if (webSocketReceiveResult.CloseStatus != null) {
                         return null;
                     }
@@ -136,24 +150,24 @@ namespace Microsoft.R.Host.Client {
                 var evt = (string)obj["event"];
                 switch (evt) {
                     case "YesNoCancel":
-                        await YesNoCancel(contexts, obj, allowEval, ct).ConfigureAwait(false);
+                        await YesNoCancel(contexts, obj, allowEval, ct);
                         break;
 
                     case "ReadConsole":
-                        await ReadConsole(contexts, obj, allowEval, ct).ConfigureAwait(false);
+                        await ReadConsole(contexts, obj, allowEval, ct);
                         break;
 
                     case "WriteConsoleEx":
                         await
-                            _callbacks.WriteConsoleEx(contexts, (string)obj["buf"], (OutputType)(double)obj["otype"], ct).ConfigureAwait(false);
+                            _callbacks.WriteConsoleEx(contexts, (string)obj["buf"], (OutputType)(double)obj["otype"], ct);
                         break;
 
                     case "ShowMessage":
-                        await _callbacks.ShowMessage(contexts, (string)obj["s"], ct).ConfigureAwait(false);
+                        await _callbacks.ShowMessage(contexts, (string)obj["s"], ct);
                         break;
 
                     case "Busy":
-                        await _callbacks.Busy(contexts, (bool)obj["which"], ct).ConfigureAwait(false);
+                        await _callbacks.Busy(contexts, (bool)obj["which"], ct);
                         break;
 
                     case "CallBack":
@@ -163,7 +177,7 @@ namespace Microsoft.R.Host.Client {
                         return obj;
 
                     case "PlotXaml":
-                        await _callbacks.PlotXaml(contexts, (string)obj["filepath"], ct).ConfigureAwait(false);
+                        await _callbacks.PlotXaml(contexts, (string)obj["filepath"], ct);
                         // TODO: delete temporary xaml and bitmap files
                         break;
 
@@ -179,16 +193,20 @@ namespace Microsoft.R.Host.Client {
         }
 
         private async Task YesNoCancel(RContext[] contexts, JObject obj, bool allowEval, CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             try {
                 _canEval = allowEval;
-                YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], _canEval, ct).ConfigureAwait(false);
-                await SendAsync((double)input, ct).ConfigureAwait(false);
+                YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], _canEval, ct);
+                await SendAsync((double)input, ct);
             } finally {
                 _canEval = false;
             }
         }
 
         private async Task ReadConsole(RContext[] contexts, JObject obj, bool allowEval, CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             try {
                 _canEval = allowEval;
 
@@ -197,22 +215,24 @@ namespace Microsoft.R.Host.Client {
                 var len = (int)(double)obj["len"];
                 var addToHistory = (bool)obj["addToHistory"];
 
-                string input = await _callbacks.ReadConsole(contexts, prompt, buf, len, addToHistory, _canEval, ct).ConfigureAwait(false);
+                string input = await _callbacks.ReadConsole(contexts, prompt, buf, len, addToHistory, _canEval, ct);
                 input = input.Replace("\r\n", "\n");
-                await SendAsync(input, ct).ConfigureAwait(false);
+                await SendAsync(input, ct);
             } finally {
                 _canEval = false;
             }
         }
 
         private async Task SendAsync<T>(T input, CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             if (ct.IsCancellationRequested) {
                 return;
             }
 
             var response = JsonConvert.SerializeObject(input);
             byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-            await _socket.SendAsync(new ArraySegment<byte>(responseBytes, 0, responseBytes.Length), WebSocketMessageType.Text, true, ct).ConfigureAwait(false);
+            await _socket.SendAsync(new ArraySegment<byte>(responseBytes, 0, responseBytes.Length), WebSocketMessageType.Text, true, ct);
         }
 
         private static RContext[] GetContexts(JObject obj) {
@@ -228,6 +248,8 @@ namespace Microsoft.R.Host.Client {
         }
 
         async Task<REvaluationResult> IRExpressionEvaluator.EvaluateAsync(string expression, bool reentrant, CancellationToken ct) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             if (!_canEval) {
                 throw new InvalidOperationException("EvaluateAsync can only be called while ReadConsole or YesNoCancel is pending.");
             }
@@ -240,9 +262,9 @@ namespace Microsoft.R.Host.Client {
                 });
 
                 var requestBytes = Encoding.UTF8.GetBytes(request);
-                await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct).ConfigureAwait(false);
+                await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct);
 
-                var obj = await RunLoop(ct, reentrant).ConfigureAwait(false);
+                var obj = await RunLoop(ct, reentrant);
 
                 JToken result, error, parseStatus;
                 obj.TryGetValue("result", out result);

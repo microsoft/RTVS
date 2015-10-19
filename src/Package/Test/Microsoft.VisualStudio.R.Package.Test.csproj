@@ -168,6 +168,7 @@
     <Compile Include="Commands\ReplCommandTest.cs" />
     <Compile Include="Mocks\VsRegisterProjectGeneratorsMock.cs" />
     <Compile Include="Package\RPackageTest.cs" />
+    <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\RPackageTestCompositionCatalog.cs" />
     <Compile Include="Utility\TestInstanceFactory.cs" />
     <Compile Include="Utility\TestPackage.cs" />

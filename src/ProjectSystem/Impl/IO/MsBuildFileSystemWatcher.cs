@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,14 +64,17 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             _fileWatcher.Created += (sender, e) => Enqueue(new FileCreated(_directory, _fileSystem, _fileSystemFilter, e.FullPath));
             _fileWatcher.Deleted += (sender, e) => Enqueue(new FileDeleted(_directory, e.FullPath));
             _fileWatcher.Renamed += (sender, e) => Enqueue(new FileRenamed(_directory, _fileSystem, _fileSystemFilter, e.OldFullPath, e.FullPath));
+            _fileWatcher.Error += (sender, e) => TraceError("File Watcher", e);
 
             _directoryWatcher = CreateFileSystemWatcher(NotifyFilters.DirectoryName);
             _directoryWatcher.Created += (sender, e) => Enqueue(new DirectoryCreated(_directory, _fileSystem, _fileSystemFilter, e.FullPath));
             _directoryWatcher.Deleted += (sender, e) => Enqueue(new DirectoryDeleted(_directory, e.FullPath));
             _directoryWatcher.Renamed += (sender, e) => Enqueue(new DirectoryRenamed(_directory, _fileSystem, _fileSystemFilter, e.OldFullPath, e.FullPath));
+            _directoryWatcher.Error += (sender, e) => TraceError("Directory Watcher", e);
 
             _attributesWatcher = CreateFileSystemWatcher(NotifyFilters.Attributes);
             _attributesWatcher.Changed += (sender, e) => Enqueue(new AttributesChanged(e.Name, e.FullPath));
+            _attributesWatcher.Error += (sender, e) => TraceError("Attributes Watcher", e);
         }
 
         private void Enqueue(IFileSystemChange change)
@@ -91,31 +95,34 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 
         private async Task ConsumeWaitPublish()
         {
-            var changeset = new Changeset();
-            while (!_queue.IsEmpty)
-            {
-                Consume(changeset);
-                await Task.Delay(_delayMilliseconds);
-            }
+            try {
+                var changeset = new Changeset();
+                while (!_queue.IsEmpty) {
+                    Consume(changeset);
+                    await Task.Delay(_delayMilliseconds);
+                }
 
-            if (!changeset.IsEmpty())
-            {
-                _broadcastBlock.Post(changeset);
-            }
-
-            _consumerIsWorking = 0;
-            if (!_queue.IsEmpty)
-            {
-                StartConsumer();
+                if (!changeset.IsEmpty()) {
+                    _broadcastBlock.Post(changeset);
+                }
+            } finally {
+                _consumerIsWorking = 0;
+                if (!_queue.IsEmpty) {
+                    StartConsumer();
+                }
             }
         }
 
         private void Consume(Changeset changeset)
         {
             IFileSystemChange change;
-            while (_queue.TryDequeue(out change))
-            {
-                change.Apply(changeset);
+            while (_queue.TryDequeue(out change)) {
+                try {
+                    change.Apply(changeset);
+                } catch (Exception e) {
+                    Trace.Fail($"Failed to apply change {change}:\n{e}");
+                    throw;
+                }
             }
         }
 
@@ -144,6 +151,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
         private interface IFileSystemChange
         {
             void Apply(Changeset changeset);
+        }
+
+        private void TraceError(string watcherName, ErrorEventArgs errorEventArgs) {
+            Trace.Fail($"Error in {watcherName}:\n{errorEventArgs.GetException()}");
         }
 
         public class Changeset

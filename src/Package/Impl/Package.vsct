@@ -60,7 +60,8 @@
 
       <!-- Plots flyout -->
       <Menu guid="guidRToolsCmdSet" id="plotSubMenu" type="Menu" priority="0x0300">
-        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
+        <!-- Switched off until metafile plots are available -->
+        <!--<Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>-->
         <Strings>
           <ButtonText>Plots</ButtonText>
           <MenuText>&amp;Plots</MenuText>
@@ -503,7 +504,17 @@
       <!-- End Windows flyout -->
 
       <!-- Options... (last in the top level menu) -->
-      <Button guid="guidRToolsCmdSet" id="icmdGoToRToolsOptions" priority="0x0100" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdGoToREditorOptions" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="toolsOptionsGroup"/>
+        <Icon guid="ImageCatalogGuid" id="SettingsFile"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Editor Options...</ButtonText>
+          <CommandName>R Editor Options</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdGoToRToolsOptions" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="toolsOptionsGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellOptions"/>
         <Strings>
@@ -657,9 +668,9 @@
     </CommandPlacement>
 
     <!-- Show plot window -->
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotWindow" priority="0x0500">
+    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotWindow" priority="0x0500">
       <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
-    </CommandPlacement>
+    </CommandPlacement>-->
 
     <!-- Show R Interactive -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdShowReplWindow" priority="0x0500">
@@ -820,6 +831,7 @@
       <!-- General -->
       <IDSymbol name="icmdGoToFormattingOptions" value="400" />
       <IDSymbol name="icmdGoToRToolsOptions" value="401" />
+      <IDSymbol name="icmdGoToREditorOptions" value="402" />
 
       <!-- REPL-->
       <IDSymbol name="icmdSendToRepl" value="501" />

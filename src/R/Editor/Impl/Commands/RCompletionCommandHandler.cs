@@ -5,6 +5,9 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Commands
 {
+    /// <summary>
+    /// Completion controller in R code editor
+    /// </summary>
     internal sealed class RCompletionCommandHandler : CompletionCommandHandler
     {
         public RCompletionCommandHandler(ITextView textView)

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
@@ -60,24 +61,25 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return source.Task;
         }
 
-        public Task StartHostAsync() {
+        public async Task StartHostAsync() {
             if (_hostRunTask != null && !_hostRunTask.IsCompleted) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
+            await TaskUtilities.SwitchToBackgroundThread();
+
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
 
-            _hostRunTask = Task.Run(() => _host.CreateAndRun(RToolsSettings.GetRVersionPath()));
+            _hostRunTask = _host.CreateAndRun(RToolsSettings.GetRVersionPath());
             this.ScheduleEvaluation(async e => {
-                await e.SetVsGraphicsDevice().ConfigureAwait(false);
-                await e.SetDefaultWorkingDirectory().ConfigureAwait(false);
-                await e.PrepareDataInspect().ConfigureAwait(false);
+                //await e.SetVsGraphicsDevice();
+                await e.SetDefaultWorkingDirectory();
+                await e.PrepareDataInspect();
             });
 
             var initializationTask = _initializationTcs.Task;
-
-            return Task.WhenAny(initializationTask, _hostRunTask).Unwrap();
+            await Task.WhenAny(initializationTask, _hostRunTask).Unwrap();
         }
 
         public async Task StopHostAsync() {
@@ -85,14 +87,24 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 return;
             }
 
-            var request = await BeginInteractionAsync(false).ConfigureAwait(false);
+            await TaskUtilities.SwitchToBackgroundThread();
+            var requestTask = BeginInteractionAsync(false);
+            await Task.WhenAny(requestTask, Task.Delay(100)).Unwrap();
+
             if (_hostRunTask.IsCompleted) {
-                request.Dispose();
+                requestTask
+                    .ContinueWith(t => t.Result.Dispose(), TaskContinuationOptions.OnlyOnRanToCompletion)
+                    .DoNotWait();
                 return;
             }
 
-            await request.Quit().ConfigureAwait(false);
-            await _hostRunTask.ConfigureAwait(false);
+            if (requestTask.Status == TaskStatus.RanToCompletion) {
+                await requestTask.Result.Quit();
+            } else {
+                _host?.Dispose();
+            }
+
+            await _hostRunTask;
         }
 
         Task IRCallbacks.Connected(string rVersion) {
@@ -101,22 +113,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         }
 
         Task IRCallbacks.Disconnected() {
-
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
             currentRequest?.Complete();
 
-            IList<RSessionRequestSource> requestSources;
-            if (_pendingRequestSources.TryReceiveAll(out requestSources)) {
-                foreach (var requestSource in requestSources) {
-                    requestSource.TryCancel();
-                }
+            RSessionRequestSource requestSource;
+            while (_pendingRequestSources.TryReceive(out requestSource)) {
+                requestSource.TryCancel();
             }
 
-            IList<RSessionEvaluationSource> evalSources;
-            if (_pendingEvaluationSources.TryReceiveAll(out evalSources)) {
-                foreach (var evalSource in evalSources) {
-                    evalSource.TryCancel();
-                }
+            RSessionEvaluationSource evalSource;
+            while (_pendingEvaluationSources.TryReceive(out evalSource)) {
+                evalSource.TryCancel();
             }
 
             _contexts = null;
@@ -127,6 +134,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         }
 
         async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
 
             _contexts = contexts;
@@ -139,7 +148,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             Task evaluationTask;
 
             if (isEvaluationAllowed) {
-                await EvaluateAll(contexts, ct).ConfigureAwait(false);
+                await EvaluateAll(contexts, ct);
                 evaluationCts = new CancellationTokenSource();
                 evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct);
             } else {
@@ -155,8 +164,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 ct.ThrowIfCancellationRequested();
 
                 try {
-                    consoleInput = await ReadNextRequest(prompt, len, ct).ConfigureAwait(false);
-                } catch (TaskCanceledException) {
+                    consoleInput = await ReadNextRequest(prompt, len, ct);
+                } catch (OperationCanceledException) {
                     // If request was canceled through means other than our token, it indicates the refusal of
                     // that requestor to respond to that particular prompt, so move on to the next requestor.
                     // If it was canceled through the token, then host itself is shutting down, and cancellation
@@ -166,7 +175,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             // If evaluation was allowed, cancel evaluation processing but await evaluation that is in progress
             evaluationCts?.Cancel();
-            await evaluationTask.ConfigureAwait(false);
+            await evaluationTask;
 
             OnAfterRequest(contexts, prompt, len, addToHistory);
 
@@ -174,15 +183,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         }
 
         private async Task<string> ReadNextRequest(string prompt, int len, CancellationToken ct) {
-            var requestSource = await _pendingRequestSources.ReceiveAsync(ct).ConfigureAwait(false);
+            TaskUtilities.AssertIsOnBackgroundThread();
 
+            var requestSource = await _pendingRequestSources.ReceiveAsync(ct);
             TaskCompletionSource<string> requestTcs = new TaskCompletionSource<string>();
             Interlocked.Exchange(ref _currentRequestSource, requestSource);
 
             requestSource.Request(prompt, len, requestTcs);
             ct.Register(delegate { requestTcs.TrySetCanceled(); });
 
-            string response = await requestTcs.Task.ConfigureAwait(false);
+            string response = await requestTcs.Task;
 
             Debug.Assert(response.Length < len); // len includes null terminator
             if (response.Length >= len) {
@@ -193,22 +203,25 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         }
 
         private async Task EvaluateUntilCancelled(IReadOnlyList<IRContext> contexts, CancellationToken evaluationCancellationToken, CancellationToken hostCancellationToken) {
-            var ct = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken).Token;
+            TaskUtilities.AssertIsOnBackgroundThread();
 
+            var ct = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken).Token;
             while (!ct.IsCancellationRequested) {
                 try {
-                    var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct).ConfigureAwait(false);
-                    await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken).ConfigureAwait(false);
-                } catch (TaskCanceledException) {
+                    var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
+                    await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
+                } catch (OperationCanceledException) {
                     return;
                 }
             }
         }
 
         private async Task EvaluateAll(IReadOnlyList<IRContext> contexts, CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             RSessionEvaluationSource source;
             while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
-                await source.BeginEvaluationAsync(contexts, _host, ct).ConfigureAwait(false);
+                await source.BeginEvaluationAsync(contexts, _host, ct);
             }
         }
 
@@ -231,8 +244,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         }
 
         async Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             if (isEvaluationAllowed) {
-                await EvaluateAll(contexts, ct).ConfigureAwait(false);
+                await EvaluateAll(contexts, ct);
             }
 
             return YesNoCancel.Yes;
@@ -246,13 +261,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
             var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);  // TODO: acquire plot content provider through service
-
             if (frame != null) {
                 object docView;
                 ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
                 if (docView != null) {
                     PlotWindowPane pane = (PlotWindowPane)docView;
-                    pane.PlotContentProvider.LoadFile(xamlFilePath);
+                    pane.PlotContentProvider.LoadFileOnIdle(xamlFilePath);
 
                     frame.ShowNoActivate();
                 }

@@ -47,6 +47,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 
                 changeset.RemovedDirectories.Add(relativePath);
             }
+
+            public override string ToString() {
+                return $"Directory deleted: {_fullPath}";
+            }
         }
     }
 }

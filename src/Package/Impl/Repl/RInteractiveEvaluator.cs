@@ -6,7 +6,6 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
-using Microsoft.VisualStudio.InteractiveWindow.Commands;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
@@ -41,17 +40,21 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
-            if (Session.IsHostRunning) {
-                CurrentWindow.WriteLine(Resources.MicrosoftRHostStopping);
-                await Session.StopHostAsync();
-            }
+            try {
+                if (Session.IsHostRunning) {
+                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping);
+                    await Session.StopHostAsync();
+                }
 
-            if (initialize) {
-                CurrentWindow.WriteLine(Resources.MicrosoftRHostStarting);
-                return await InitializeAsync();
-            }
+                if (initialize) {
+                    CurrentWindow.WriteError(Resources.MicrosoftRHostStarting);
+                    return await InitializeAsync();
+                }
 
-            return ExecutionResult.Success;
+                return ExecutionResult.Success;
+            } catch (Exception) {
+                return ExecutionResult.Failure;
+            }
         }
 
         public bool CanExecuteCode(string text)
@@ -94,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             } catch (RException) {
                 // It was already reported via RSession.Error and printed out; just return failure.
                 return ExecutionResult.Failure;
-            } catch (TaskCanceledException) {
+            } catch (OperationCanceledException) {
                 // Cancellation reason was already reported via RSession.Error and printed out; just return failure.
                 return ExecutionResult.Failure;
             } catch (Exception ex) {

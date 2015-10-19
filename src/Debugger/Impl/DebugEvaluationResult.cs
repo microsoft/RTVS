@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
+using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Debugger {
@@ -89,12 +88,14 @@ namespace Microsoft.R.Debugger {
         }
 
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync() {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
             var call = $".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame})";
-            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JObject>(call).ConfigureAwait(false);
+            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JObject>(call);
             Trace.Assert(
                 jChildren.Values().All(t => t is JObject),
                 $".rtvs.children(): object of objects expected.\n\n" + jChildren);

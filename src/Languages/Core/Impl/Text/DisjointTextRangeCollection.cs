@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Microsoft.Languages.Core.Text
 {
     /// <summary>
-    /// A collection of text ranges that are not next next to another. 
+    /// A collection of text ranges that are not next to another. 
     /// Ranges must not overlap. Can be sorted by range start positions. 
     /// Can be searched in order to locate range that contains given 
     /// position or range that starts at a given position.

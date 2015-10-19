@@ -78,6 +78,7 @@
     <Compile Include="StackExtensions.cs" />
     <Compile Include="StringBuilderExtensions.cs" />
     <Compile Include="TaskExtensions.cs" />
+    <Compile Include="TaskUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />

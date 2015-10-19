@@ -7,6 +7,11 @@ using Microsoft.R.Actions.Utility;
 
 namespace Microsoft.R.Actions.Script
 {
+    /// <summary>
+    /// Implements execution of R command.
+    /// Can be used during setup or in other scenarios
+    /// where code needs to execute something in R.
+    /// </summary>
     public sealed class RCommand : IDisposable
     {
         private Process _rProcess;

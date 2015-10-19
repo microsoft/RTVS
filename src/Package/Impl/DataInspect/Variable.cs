@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.R.Package.Utilities;
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
@@ -173,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         public void Update(Variable update)
         {
-            DispatchInvoke(() => UpdateInternal(update), DispatcherPriority.Normal);
+            ThreadHelper.Generic.BeginInvoke(DispatcherPriority.Normal, () => UpdateInternal(update));
         }
 
         private void UpdateInternal(Variable update)    // TODO: optimize the iteration
@@ -187,55 +182,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             TypeName = update.TypeName;
             HasChildren = update.HasChildren;
 
-            // remove
-            var removed = (from v in Children
-                          where !update.Children.Any((u) => (v.VariableName == u.VariableName))
-                          select v).ToList();
-            var nonRemoved = (from v in update.Children
-                           where !removed.Any((u) => (v.VariableName == u.VariableName))
-                           select v).ToList();
-
-            foreach (var item in removed)
-            {
-                Children.Remove(item);
-            }
-
-            List<Variable> newVariables  = new List<Variable>();
-            foreach (var newitem in nonRemoved)
-            {
-                var old = Children.FirstOrDefault((u) => (u.VariableName == newitem.VariableName));
-                if (old == null)
-                {
-                    newVariables.Add(newitem);
-                }
-                else
-                {
-                    old.UpdateInternal(newitem);
-                }
-            }
-
-            foreach (var item in newVariables)
-            {
-                Children.Add(item);
-            }
-        }
-
-        private static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
-        {
-            Action guardedAction =
-                () =>
-                {
-                    try
-                    {
-                        toInvoke();
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.Assert(false, "Guarded invoke caught exception", e.Message);
-                    }
-                };
-
-            Application.Current.Dispatcher.BeginInvoke(guardedAction, priority);    // TODO: acquiring Application.Current.Dispatcher, create utility class for UI thread and use it
+            // assume Children is in order
+            Children.InplaceUpdate(
+                update.Children,
+                (s, u) => s.VariableName == u.VariableName,
+                (s, u) => s.UpdateInternal(u));
         }
     }
 }

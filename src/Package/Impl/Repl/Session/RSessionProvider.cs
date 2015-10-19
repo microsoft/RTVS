@@ -18,14 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             if (!_sessions.TryAdd(sessionId, session)) {
                 Debug.Fail(string.Format(CultureInfo.InvariantCulture, "Session with id {0} is created already", sessionId));
                 return _sessions[sessionId];
-            } else {
-                IRSession currentSessionAfterAdd = this.Current;
+            }
 
-                if (!object.Equals(currentSession, currentSessionAfterAdd)) {
-                    if (CurrentSessionChanged != null) {
-                        CurrentSessionChanged(this, EventArgs.Empty);
-                    }
-                }
+            IRSession currentSessionAfterAdd = this.Current;
+
+            if (!Equals(currentSession, currentSessionAfterAdd)) {
+                CurrentSessionChanged?.Invoke(this, EventArgs.Empty);
             }
 
             return session;

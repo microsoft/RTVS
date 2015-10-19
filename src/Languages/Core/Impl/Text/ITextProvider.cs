@@ -3,9 +3,9 @@
 namespace Microsoft.Languages.Core.Text
 {
     /// <summary>
-    /// Text provider. HTML parser calls this interface to retrieve text.
+    /// Text provider. Parser calls this interface to retrieve text.
     /// Can be implemented on a string <seealso cref="TextStream"/> or
-    /// on a Visual Studio ITextBuffer (see Microsoft.R.Editor implementation)
+    /// over Visual Studio ITextBuffer (see Microsoft.R.Editor implementation)
     /// </summary>
     public interface ITextProvider
     {

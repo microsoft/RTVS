@@ -10,23 +10,6 @@ namespace Microsoft.R.Editor.Classification
     internal sealed class ClassificationDefinitions
     {
         [Export]
-        [Name("R Builtin Function")]
-        internal ClassificationTypeDefinition BuiltinClassificationType { get; set; }
-
-        [Export(typeof(EditorFormatDefinition))]
-        [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "R Builtin Function")]
-        [Name("R Builtin Function")]
-        internal sealed class BuiltinClassificationFormat : ClassificationFormatDefinition
-        {
-            public BuiltinClassificationFormat()
-            {
-                ForegroundColor = Colors.Navy;
-                this.DisplayName = Resources.ColorName_R_Builtin;
-            }
-        }
-
-        [Export]
         [Name("R Type Function")]
         internal ClassificationTypeDefinition TypeFunctionClassificationType { get; set; }
 

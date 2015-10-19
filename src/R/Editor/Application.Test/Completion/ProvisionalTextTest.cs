@@ -11,7 +11,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion
     public sealed class RProvisionalTextTest
     {
         [TestMethod]
-        public void R_ProvisionalText1()
+        public void R_ProvisionalText01()
         {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
@@ -36,6 +36,42 @@ namespace Microsoft.R.Editor.Application.Test.Completion
                 script.DoIdle(1000);
 
                 expected = "{([\"\"])}";
+                actual = script.EditorText;
+
+                Assert.AreEqual(expected, actual);
+            }
+            finally
+            {
+                script.Close();
+            }
+        }
+
+        [TestMethod]
+        public void R_ProvisionalText02()
+        {
+            var script = new TestScript(RContentTypeDefinition.ContentType);
+
+            try
+            {
+                script.Type("c(\"");
+
+                string expected = "c(\"\")";
+                string actual = script.EditorText;
+
+                Assert.AreEqual(expected, actual);
+
+                // Move caret outside of the provisional text area 
+                // and back so provisional text becomes permanent.
+                script.MoveRight();
+                script.MoveLeft();
+
+                // Let parser hit on idle so AST updates
+                script.DoIdle(300);
+
+                // There should not be completion inside ""
+                script.Type("\"");
+
+                expected = "c(\"\"\")";
                 actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);

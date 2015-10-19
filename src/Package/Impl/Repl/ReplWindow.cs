@@ -28,7 +28,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _windowFrameEventsCookie = shell.AdviseWindowFrameEvents(this);
         }
 
-
         public static ReplWindow Current => _instance.Value;
 
         /// <summary>
@@ -46,6 +45,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
             if (current != null)
             {
+                if (current.InteractiveWindow.IsResetting)
+                {
+                    return;
+                }
+
                 current.InteractiveWindow.InsertCode(code);
                 var fullCode = current.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.GetText();
                 

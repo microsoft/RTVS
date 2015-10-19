@@ -133,7 +133,7 @@ namespace Microsoft.R.Editor.Completion
         }
 
         /// <summary>
-        /// Should this key press commit a completion session?
+        /// Should this key commit a completion session?
         /// </summary>
         public override bool IsCommitChar(char typedChar)
         {
@@ -145,24 +145,30 @@ namespace Microsoft.R.Editor.Completion
 
                 if (completionText == "else" || completionText == "repeat")
                 {
+                    // { after 'else' or 'repeat' completes keyword
                     if (typedChar == '{')
                         return true;
 
+                    // Space completes if selection is unique
                     if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
                         return true;
 
                     return false;
                 }
 
+                // ';' completes after next or break keyword
                 if (completionText == "break" || completionText == "next")
                 {
                     if (typedChar == ';')
                         return true;
 
+                    // Space completes if selection is unique
                     if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
                         return true;
                 }
 
+                // Handle ( after keyword that is usually followed by expression in braces
+                // such as for(), if(), library(), ...
                 if (completionText == "if" || completionText == "for" || completionText == "while" ||
                     completionText == "return" || completionText == "library" || completionText == "require")
                 {
@@ -262,7 +268,7 @@ namespace Microsoft.R.Editor.Completion
         }
 
         /// <summary>
-        /// Should this key press start a completion session?
+        /// Should this key press trigger a completion session?
         /// </summary>
         public override bool IsTriggerChar(char typedCharacter)
         {
@@ -380,7 +386,7 @@ namespace Microsoft.R.Editor.Completion
                         IREditorDocument document = REditorDocument.FromTextBuffer(TextView.TextBuffer);
                         document.EditorTree.EnsureTreeReady();
 
-                        ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(
+                        ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(
                             document.EditorTree.AstRoot, _textBuffer.CurrentSnapshot,
                             TextView.Caret.Position.BufferPosition);
 

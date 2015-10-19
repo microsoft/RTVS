@@ -5,6 +5,8 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
+using Microsoft.R.Editor.Settings;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -22,12 +24,15 @@ namespace Microsoft.R.Editor.Signatures
         private IParameter _currentParameter;
         private ITrackingSpan _applicableToSpan;
         private int _initialPosition;
+        private ISignatureInfo _signatureInfo;
 
         public string FunctionName { get; private set; }
 
-        public SignatureHelp(ISignatureHelpSession session, ITextBuffer subjectBuffer, string functionName, string documentation)
+        public SignatureHelp(ISignatureHelpSession session, ITextBuffer subjectBuffer, string functionName, 
+                             string documentation, ISignatureInfo signatureInfo)
         {
             FunctionName = functionName;
+            _signatureInfo = signatureInfo;
 
             Documentation = documentation;
             Parameters = null;
@@ -41,10 +46,35 @@ namespace Microsoft.R.Editor.Signatures
             SubjectBuffer.Changed += OnSubjectBufferChanged;
         }
 
-        internal static int ComputeCurrentParameter(ITextSnapshot snapshot, AstRoot ast, int position)
+        internal int ComputeCurrentParameter(ITextSnapshot snapshot, AstRoot ast, int position)
         {
-            ParametersInfo parameterInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
-            return parameterInfo != null ? parameterInfo.ParameterIndex : 0;
+            ParameterInfo parameterInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
+            int index = 0;
+
+            if (parameterInfo != null)
+            {
+                // A function f <- function(foo, bar) is said to have formal parameters "foo" and "bar", 
+                // and the call f(foo=3, ba=13) is said to have (actual) arguments "foo" and "ba".
+                // R first matches all arguments that have exactly the same name as a formal parameter. 
+                // Two identical argument names cause an error. Then, R matches any argument names that
+                // partially matches a(yet unmatched) formal parameter. But if two argument names partially 
+                // match the same formal parameter, that also causes an error. Also, it only matches 
+                // formal parameters before ... So formal parameters after ... must be specified using 
+                // their full names. Then the unnamed arguments are matched in positional order to 
+                // the remaining formal arguments.
+
+                int argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, REditorSettings.PartialArgumentNameMatch);
+                if (argumentIndexInSignature >= 0)
+                {
+                    index = argumentIndexInSignature;
+                }
+                else
+                {
+                    index = parameterInfo.ParameterIndex;
+                }
+            }
+
+            return index;
         }
 
         #region ISignature

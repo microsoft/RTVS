@@ -5,10 +5,13 @@ using Microsoft.R.Actions.Logging;
 
 namespace Microsoft.R.Actions.Script
 {
+    /// <summary>
+    /// Implements installation of R packages with dependencies
+    /// </summary>
     public static class InstallPackages
     {
         /// <summary>
-        /// Asynchronously install a set of R packages with dependencies
+        /// Asynchronously installs a set of R packages with dependencies
         /// </summary>
         public static RCommand Install(IEnumerable<string> packageNames, IActionLog log)
         {

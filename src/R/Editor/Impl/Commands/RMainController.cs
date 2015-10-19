@@ -18,6 +18,9 @@ namespace Microsoft.R.Editor.Commands
             ServiceManager.AddService<RMainController>(this, textView);
         }
 
+        /// <summary>
+        /// Attaches command controller to the view and projected buffer
+        /// </summary>
         public static RMainController Attach(ITextView textView, ITextBuffer textBuffer)
         {
             RMainController controller = FromTextView(textView);
@@ -29,6 +32,9 @@ namespace Microsoft.R.Editor.Commands
             return controller;
         }
 
+        /// <summary>
+        /// Retrieves R command controller from text view
+        /// </summary>
         public static RMainController FromTextView(ITextView textView)
         {
             return ServiceManager.GetService<RMainController>(textView);

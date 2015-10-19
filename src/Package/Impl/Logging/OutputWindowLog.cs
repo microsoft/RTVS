@@ -8,6 +8,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Logging
 {
+    /// <summary>
+    /// Implements
+    /// </summary>
     public abstract class OutputWindowLog: LinesLog
     {
         private IVsOutputWindowPane _pane;

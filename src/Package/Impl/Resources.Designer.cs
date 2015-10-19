@@ -151,6 +151,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R for Windows is found. Please restart Visual Studio for changes to take effect..
+        /// </summary>
+        internal static string Error_RestartVsAfterRInstalled {
+            get {
+                return ResourceManager.GetString("Error_RestartVsAfterRInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
         internal static string InputIsTooLong {
@@ -473,6 +482,24 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Settings_IntellisenseCategory {
             get {
                 return ResourceManager.GetString("Settings_IntellisenseCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Match partially typed argument names.
+        /// </summary>
+        internal static string Settings_PartialArgumentNameMatch {
+            get {
+                return ResourceManager.GetString("Settings_PartialArgumentNameMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When typing argument name in a function call, signature help shows description for the argument that is the best match.
+        /// </summary>
+        internal static string Settings_PartialArgumentNameMatch_Description {
+            get {
+                return ResourceManager.GetString("Settings_PartialArgumentNameMatch_Description", resourceCulture);
             }
         }
         

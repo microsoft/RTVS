@@ -4,6 +4,7 @@ using System.Threading;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.R.Support.Test.Utility
 {
@@ -13,9 +14,9 @@ namespace Microsoft.R.Support.Test.Utility
         private static object _lockObject = new object();
         private static bool _closed = true;
 
-        public static void ExecuteTest(Action<ManualResetEventSlim> action)
+        public static void ExecuteTest(Action<ManualResetEventSlim> action, ITestCompositionCatalog catalog)
         {
-            SequentialEditorTestExecutor.ExecuteTest(action, InitFunctionIndex, DisposeFunctionIndex);
+            SequentialEditorTestExecutor.ExecuteTest(action, InitFunctionIndex, DisposeFunctionIndex, catalog);
         }
 
         private static void InitFunctionIndex()

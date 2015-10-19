@@ -2,7 +2,9 @@
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.AST.Functions.Definitions;
+using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
@@ -106,21 +108,42 @@ namespace Microsoft.R.Core.AST.Operators
             for (int i = 0; i < Arguments.Count; i++)
             {
                 IAstNode arg = Arguments[i];
-                if (!(arg is ErrorArgument))
+                if (arg is ErrorArgument)
                 {
-                    if (position < arg.End || (arg is MissingArgument && arg.Start == arg.End && arg.Start == 0))
-                    {
-                        return i;
-                    }
+                    continue;
                 }
-                else
+
+                if (position < arg.End || (arg is MissingArgument && arg.Start == arg.End && arg.Start == 0))
                 {
-                    Debug.Assert(i == Arguments.Count - 1, "Stub argument must be the last one");
-                    break;
+                    return i;
                 }
             }
 
             return Arguments.Count - 1;
+        }
+
+        public string GetParameterName(int index)
+        {
+            if(index < 0 || index > Arguments.Count-1)
+            {
+                return string.Empty;
+            }
+
+            CommaSeparatedItem arg = Arguments[index];
+            if(arg is NamedArgument)
+            {
+                return ((NamedArgument)arg).Name;
+            }
+            else if(arg is ExpressionArgument)
+            {
+                IExpression exp = ((ExpressionArgument)arg).ArgumentValue;
+                if(exp.Children.Count == 1 && exp.Children[0] is Variable)
+                {
+                    return ((Variable)exp.Children[0]).Name;
+                }
+            }
+
+            return string.Empty;
         }
 
         public override bool Parse(ParseContext context, IAstNode parent)

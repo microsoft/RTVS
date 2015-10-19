@@ -30,11 +30,12 @@ namespace Microsoft.R.Editor.Signatures
         /// Given position in a text buffer finds method name, 
         /// parameter index as well as where method signature ends.
         /// </summary>
-        public static ParametersInfo GetParametersInfoFromBuffer(AstRoot astRoot, ITextSnapshot snapshot, int position)
+        public static ParameterInfo GetParametersInfoFromBuffer(AstRoot astRoot, ITextSnapshot snapshot, int position)
         {
             FunctionCall functionCall;
             Variable functionVariable;
             int parameterIndex = -1;
+            string parameterName;
 
             if (!GetFunction(astRoot, ref position, out functionCall, out functionVariable))
             {
@@ -42,10 +43,11 @@ namespace Microsoft.R.Editor.Signatures
             }
 
             parameterIndex = functionCall.GetParameterIndex(position);
+            parameterName = functionCall.GetParameterName(parameterIndex);
 
             if (!string.IsNullOrEmpty(functionVariable.Name) && functionCall != null && parameterIndex >= 0)
             {
-                return new ParametersInfo(functionVariable.Name, functionCall, parameterIndex);
+                return new ParameterInfo(functionVariable.Name, functionCall, parameterIndex, parameterName);
             }
 
             return null;

@@ -157,7 +157,7 @@ namespace Microsoft.R.Debugger.Engine {
             _stackFrames = Lazy.Create(() =>
                 (IReadOnlyList<DebugStackFrame>)
                 Engine.DebugSession.GetStackFramesAsync()
-                .GetAwaiter().GetResult()
+                .GetResultOnUIThread()
                 .Where(f => !f.IsDebuggerInternal)
                 .Reverse()
                 .ToArray());

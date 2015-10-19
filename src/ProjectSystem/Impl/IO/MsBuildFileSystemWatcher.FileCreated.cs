@@ -44,6 +44,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 
                 changeset.AddedFiles.Add(relativePath);
             }
+
+            public override string ToString() {
+                return $"File created: {_fullPath}";
+            }
         }
     }
 }

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Debugger {
@@ -110,7 +106,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task<DebugEvaluationResult> GetEnvironmentAsync() {
-            return EvaluateAsync(SysFrame);
+            return EvaluateAsync("environment()");
         }
     }
 }

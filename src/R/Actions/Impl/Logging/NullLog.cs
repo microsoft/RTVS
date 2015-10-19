@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Actions.Logging
 {
+    /// <summary>
+    /// Logger that does nothing
+    /// </summary>
     public sealed class NullLog : IActionLinesLog
     {
         public Task WriteAsync(MessageCategory category, string message)

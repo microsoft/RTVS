@@ -70,7 +70,6 @@
     <Compile Include="AD7DocumentContext.cs" />
     <Compile Include="AD7Engine.cs" />
     <Compile Include="AD7Enums.cs" />
-    <Compile Include="AD7EvalErrorProperty.cs" />
     <Compile Include="AD7Events.cs" />
     <Compile Include="AD7MemoryAddress.cs" />
     <Compile Include="AD7Module.cs" />
@@ -87,6 +86,7 @@
     <Compile Include="PortSupplier\RDebugPortSupplier.DebugProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AD7Expression.cs" />
+    <Compile Include="TaskExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
