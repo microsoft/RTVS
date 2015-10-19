@@ -5,6 +5,8 @@ namespace Microsoft.R.Support.Settings
 {
     public static class RToolsSettings
     {
+        private static object _lock = new object();
+
         private static IRToolsSettings _instance;
         private static ExportProvider _exportProvider;
 
@@ -12,9 +14,13 @@ namespace Microsoft.R.Support.Settings
         {
             get
             {
-                if(_instance == null)
+                lock(_lock)
                 {
-                    _instance = _exportProvider != null ? _exportProvider.GetExport<IRToolsSettings>().Value : null;
+                    if (_instance == null)
+                    {
+                        _instance = _exportProvider != null ? _exportProvider.GetExport<IRToolsSettings>().Value : null;
+                        _instance.LoadFromStorage();
+                    }
                 }
 
                 return _instance;

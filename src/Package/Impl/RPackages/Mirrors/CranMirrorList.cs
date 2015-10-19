@@ -5,15 +5,23 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using Microsoft.VisualStudio.R.Package.Repl.Session;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
 {
+    /// <summary>
+    /// Represents collection of CRAN mirrors. Default list is packaged
+    /// as a CSV file in resources. Up to date list is downloaded and
+    /// cached in TEMP folder when it is possible.
+    /// </summary>
     internal static class CranMirrorList
     {
         private static string _cranCsvFileTempPath;
         private static CranMirrorEntry[] _mirrors = new CranMirrorEntry[0];
-        private static bool localCopy;
 
+        /// <summary>
+        /// Returns list of mirror names such as [Cloud 0] or 'Brazil'
+        /// </summary>
         public static string[] MirrorNames
         {
             get
@@ -28,6 +36,9 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
             }
         }
 
+        /// <summary>
+        /// Retrieves list of CRAN mirror URLs
+        /// </summary>
         public static string[] MirrorUrls
         {
             get
@@ -42,20 +53,49 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
             }
         }
 
+        /// <summary>
+        /// Given CRAN mirror name returns its URL.
+        /// If no mirror found, returns default URL
+        /// of RStudio CRAN redirector.
+        /// </summary>
         public static string UrlFromName(string name)
         {
             CranMirrorEntry e = _mirrors.FirstOrDefault((x) => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-            return e != null ? e.Name : null;
+            return e != null ? e.Url : "https://cran.rstudio.com";
         }
 
+        /// <summary>
+        /// Initiates download of the CRAN mirror list
+        /// fro the CRAN project site.
+        /// </summary>
         public static void Download()
         {
-            if (_mirrors.Length > 0 && !localCopy)
+            if (_mirrors.Length > 0)
             {
                 return;
             }
 
+            // First set up local copy since download is async
+            // and we may need data before it completes. Try file
+            // downloaded earlier, if any. If there is none, try
+            // reading local resource.
+
             _cranCsvFileTempPath = Path.Combine(Path.GetTempPath(), "CRAN_mirrors.csv");
+            StreamReader streamReader;
+
+            if (File.Exists(_cranCsvFileTempPath))
+            {
+                streamReader = new StreamReader(_cranCsvFileTempPath);
+            }
+            else
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceStream = assembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.RPackages.Mirrors.CranMirrors.csv");
+                streamReader = new StreamReader(resourceStream);
+            }
+
+            string content = streamReader.ReadToEnd();
+            ReadCsv(content);
 
             using (WebClient webClient = new WebClient())
             {
@@ -76,23 +116,15 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
                     {
                         var sr = new StreamReader(_cranCsvFileTempPath);
                         content = sr.ReadToEnd();
-                        localCopy = false;
                     }
                 }
                 catch (IOException) { }
             }
 
-            if (content == null)
+            if (content != null)
             {
-                // read local resource
-                var assembly = Assembly.GetExecutingAssembly();
-                var resourceStream = assembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.RPackages.Mirrors.CranMirrors.csv");
-                var streamReader = new StreamReader(resourceStream);
-                content = streamReader.ReadToEnd();
-                localCopy = true;
+                ReadCsv(content);
             }
-
-            ReadCsv(content);
         }
 
         private static void ReadCsv(string content)

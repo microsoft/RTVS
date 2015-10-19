@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Options.R
 {
     public class RToolsOptionsPage : DialogPage
-	{
+    {
         public RToolsOptionsPage()
         {
             this.SettingsRegistryPath = @"UserSettings\R_Tools";
@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
         [CustomLocDisplayName("Settings_RVersion")]
         [LocDescription("Settings_RVersion_Description")]
         [TypeConverter(typeof(RVersionTypeConverter))]
-         public string RVersion
+        public string RVersion
         {
             get { return RToolsSettings.Current.RVersion; }
             set { RToolsSettings.Current.RVersion = value; }
