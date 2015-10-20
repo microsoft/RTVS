@@ -75,8 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             if (targetLine == line && 
-                selection.StreamSelectionSpan.Length == 0/* && 
-                !String.IsNullOrWhiteSpace(line.GetText())*/)
+                selection.StreamSelectionSpan.Length == 0)
             {
                 // we're at the end of the buffer, we don't want to continue executing
                 TextView.Caret.PositionChanged += Caret_PositionChanged;
