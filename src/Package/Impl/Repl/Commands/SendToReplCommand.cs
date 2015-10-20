@@ -59,6 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
+            ReplWindow.Show();
             replWindow.EnqueueCode(text, addNewLine);
 
             var targetLine = line;

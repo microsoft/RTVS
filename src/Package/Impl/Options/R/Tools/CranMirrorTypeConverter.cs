@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools
 {
-    internal sealed class CranMirrorTypeConverter : ExpandableObjectConverter
+    internal sealed class CranMirrorTypeConverter : TypeConverter
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {

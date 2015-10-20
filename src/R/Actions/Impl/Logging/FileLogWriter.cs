@@ -3,22 +3,19 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using static System.FormattableString;
 
 namespace Microsoft.R.Actions.Logging {
     public sealed class FileLogWriter : IActionLogWriter {
         private readonly char[] _lineBreaks = { '\n' };
         private readonly string _filePath;
+        private readonly ActionBlock<string> _messages;
 
-        public FileLogWriter(string filePath) {
-            _filePath = filePath;
-        }
-
-        public async Task WriteAsync(MessageCategory category, string message) {
+        private async Task WriteToFile(string message) {
             try {
-                var str = GetStringToWrite(category, message);
                 using (var stream = File.AppendText(_filePath)) {
-                    await stream.WriteAsync(str);
+                    await stream.WriteAsync(message);
                 }
             } catch (UnauthorizedAccessException ex) {
                 Trace.Fail(ex.ToString());
@@ -28,7 +25,18 @@ namespace Microsoft.R.Actions.Logging {
                 Trace.Fail(ex.ToString());
             } catch (NotSupportedException ex) {
                 Trace.Fail(ex.ToString());
+            } catch (IOException ex) {
+                Trace.Fail(ex.ToString());
             }
+        }
+
+        public FileLogWriter(string filePath) {
+            _filePath = filePath;
+            _messages = new ActionBlock<string>(new Func<string, Task>(WriteToFile));
+        }
+
+        public Task WriteAsync(MessageCategory category, string message) {
+            return _messages.SendAsync(GetStringToWrite(category, message));
         }
 
         private string GetStringToWrite(MessageCategory category, string message) {

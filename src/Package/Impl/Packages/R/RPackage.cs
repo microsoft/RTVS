@@ -67,17 +67,17 @@ namespace Microsoft.VisualStudio.R.Packages.R
             Current = this;
 
             CranMirrorList.Download();
-            RToolsSettings.Init(AppShell.Current.ExportProvider);
-
+ 
             base.Initialize();
 
+            RToolsSettings.Init(AppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (_indexBuildingTask != null)
+            if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted)
             {
                 _indexBuildingTask.Wait(2000);
                 _indexBuildingTask = null;

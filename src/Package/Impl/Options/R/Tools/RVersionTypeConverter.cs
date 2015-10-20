@@ -6,7 +6,7 @@ using Microsoft.R.Support.Utility;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools
 {
-    internal sealed class RVersionTypeConverter : ExpandableObjectConverter
+    internal sealed class RVersionTypeConverter : TypeConverter
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
