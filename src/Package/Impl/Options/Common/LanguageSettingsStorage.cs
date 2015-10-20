@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -16,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
     /// </summary>
     public abstract class LanguageSettingsStorage
         : IVsTextManagerEvents4
-        , IWritableEditorSettingsStorage
+        , IWritableSettingsStorage
         , IDisposable
     {
         public event EventHandler<EventArgs> SettingsChanged;

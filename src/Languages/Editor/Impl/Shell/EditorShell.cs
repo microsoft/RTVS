@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows.Threading;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Languages.Editor.Settings;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Undo;
-using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Shell
 {
@@ -26,7 +20,7 @@ namespace Microsoft.Languages.Editor.Shell
         public static string HostUserFolder { get; private set; }
         public static int HostLocaleId { get; private set; }
 
-        private static Dictionary<string, IEditorSettingsStorage> _settingStorageMap = new Dictionary<string, IEditorSettingsStorage>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, ISettingsStorage> _settingStorageMap = new Dictionary<string, ISettingsStorage>(StringComparer.OrdinalIgnoreCase);
         private static object _lock = new object();
         private static IEditorShell _shell;
 
@@ -118,9 +112,9 @@ namespace Microsoft.Languages.Editor.Shell
             }
         }
 
-        public static IEditorSettingsStorage GetSettings(string contentTypeName)
+        public static ISettingsStorage GetSettings(string contentTypeName)
         {
-            IEditorSettingsStorage settingsStorage = null;
+            ISettingsStorage settingsStorage = null;
 
             lock (_lock)
             {
@@ -137,23 +131,23 @@ namespace Microsoft.Languages.Editor.Shell
             var contentType = contentTypeRegistry.GetContentType(contentTypeName);
             Debug.Assert(contentType != null, "Cannot find content type object for " + contentTypeName);
 
-            settingsStorage = ComponentLocatorForOrderedContentType<IWritableEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
+            settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(contentType);
 
             if (settingsStorage == null)
             {
-                settingsStorage = ComponentLocatorForOrderedContentType<IEditorSettingsStorage>.FindFirstOrderedComponent(contentType);
+                settingsStorage = ComponentLocatorForOrderedContentType<ISettingsStorage>.FindFirstOrderedComponent(contentType);
             }
 
             if (settingsStorage == null)
             {
-                var storages = ComponentLocatorForContentType<IWritableEditorSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
+                var storages = ComponentLocatorForContentType<IWritableSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
                 if (storages.Count() > 0)
                     settingsStorage = storages.First().Value;
             }
 
             if (settingsStorage == null)
             {
-                var readonlyStorages = ComponentLocatorForContentType<IEditorSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
+                var readonlyStorages = ComponentLocatorForContentType<ISettingsStorage, IComponentContentTypes>.ImportMany(contentType);
                 if (readonlyStorages.Count() > 0)
                     settingsStorage = readonlyStorages.First().Value;
             }
@@ -231,14 +225,14 @@ namespace Microsoft.Languages.Editor.Shell
 
         private static void DisposeSettings()
         {
-            List<IEditorSettingsStorage> settings = new List<IEditorSettingsStorage>();
+            List<ISettingsStorage> settings = new List<ISettingsStorage>();
             lock (_lock)
             {
                 settings.AddRange(_settingStorageMap.Values);
                 _settingStorageMap.Clear();
             }
 
-            foreach (IEditorSettingsStorage setting in settings)
+            foreach (ISettingsStorage setting in settings)
             {
                 if (setting is IDisposable)
                 {

@@ -1,18 +1,17 @@
-using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Utility;
 using Microsoft.VisualStudio.InteractiveWindow;
-using Microsoft.VisualStudio.R.Package.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.Repl {
+namespace Microsoft.VisualStudio.R.Package.Repl
+{
     internal sealed class NullInteractiveEvaluator : IInteractiveEvaluator {
         public void Dispose() {}
 
         public Task<ExecutionResult> InitializeAsync() => ExecutionResult.Failed;
 
         public Task<ExecutionResult> ResetAsync(bool initialize = true) {
-            if (initialize && RToolsSettings.VerifyRIsInstalled(AppShell.Current.ExportProvider)) {
+            if (initialize && RInstallation.VerifyRIsInstalled()) {
                 EditorShell.Current.ShowErrorMessage(Resources.Error_RestartVsAfterRInstalled);
             }
 

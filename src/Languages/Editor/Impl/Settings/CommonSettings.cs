@@ -1,4 +1,5 @@
 ﻿using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Core.Settings;
 
 namespace Microsoft.Languages.Editor.Settings
 {
@@ -16,42 +17,42 @@ namespace Microsoft.Languages.Editor.Settings
         public const string ShowInternalFunctionsKey = "ShowInternalFunctions";
         public const string ShowTclFunctionsKey = "ShowTclFunctions";
 
-        public static bool GetAutoFormat(IEditorSettingsStorage storage)
+        public static bool GetAutoFormat(ISettingsStorage storage)
         {
             return storage.GetBoolean(AutoFormatKey, true);
         }
 
-        public static bool GetCompletionEnabled(IEditorSettingsStorage storage)
+        public static bool GetCompletionEnabled(ISettingsStorage storage)
         {
             return storage.GetBoolean(CompletionEnabledKey, true);
         }
 
-        public static int GetFormatterIndentSize(IEditorSettingsStorage storage)
+        public static int GetFormatterIndentSize(ISettingsStorage storage)
         {
             return storage.GetInteger(FormatterIndentSizeKey, 4);
         }
 
-        public static IndentType GetFormatterIndentType(IEditorSettingsStorage storage)
+        public static IndentType GetFormatterIndentType(ISettingsStorage storage)
         {
             return (IndentType)storage.GetInteger(FormatterIndentTypeKey, (int)IndentType.Spaces);
         }
 
-        public static int GetFormatterTabSize(IEditorSettingsStorage storage)
+        public static int GetFormatterTabSize(ISettingsStorage storage)
         {
             return storage.GetInteger(FormatterTabSizeKey, 4);
         }
 
-        public static IndentStyle GetIndentStyle(IEditorSettingsStorage storage)
+        public static IndentStyle GetIndentStyle(ISettingsStorage storage)
         {
             return (IndentStyle)storage.GetInteger(IndentStyleKey, (int)IndentStyle.Smart);
         }
 
-        public static bool GetSignatureHelpEnabled(IEditorSettingsStorage storage)
+        public static bool GetSignatureHelpEnabled(ISettingsStorage storage)
         {
             return storage.GetBoolean(SignatureHelpEnabledKey, true);
         }
 
-        public static bool GetValidationEnabled(IEditorSettingsStorage storage)
+        public static bool GetValidationEnabled(ISettingsStorage storage)
         {
             return storage.GetBoolean(ValidationEnabledKey, true);
         }

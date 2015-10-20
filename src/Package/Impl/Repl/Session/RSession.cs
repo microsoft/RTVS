@@ -7,14 +7,15 @@ using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Utility;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+namespace Microsoft.VisualStudio.R.Package.Repl.Session
+{
     internal sealed class RSession : IRSession, IRCallbacks {
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
@@ -71,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
 
-            _hostRunTask = _host.CreateAndRun(RToolsSettings.GetRVersionPath());
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath());
             this.ScheduleEvaluation(async e => {
                 //await e.SetVsGraphicsDevice();
                 await e.SetDefaultWorkingDirectory();

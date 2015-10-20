@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Support.Settings.Definitions;
 
@@ -8,9 +9,20 @@ namespace Microsoft.R.Support.Test.Utility
     [Export(typeof(IRToolsSettings))]
     class TestRToolsSettings : IRToolsSettings
     {
-        public string GetRVersionPath()
+        public string CranMirror
         {
-            return string.Empty;
+            get { return string.Empty; }
+            set { }
+        }
+
+        public string RVersion
+        { 
+            get { return "[Latest]"; }
+            set { }
+        }
+
+        public void LoadFromStorage()
+        {
         }
     }
 }

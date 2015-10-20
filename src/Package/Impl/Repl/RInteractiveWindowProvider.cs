@@ -2,10 +2,9 @@
 using System.ComponentModel.Composition;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Utility;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
-using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Utilities;
@@ -33,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             IInteractiveEvaluator evaluator;
             EventHandler textViewOnClosed;
 
-            if (RToolsSettings.VerifyRIsInstalled(AppShell.Current.ExportProvider)) {
+            if (RInstallation.VerifyRIsInstalled()) {
                 var session = SessionProvider.Create(instanceId);
                 evaluator = new RInteractiveEvaluator(session);
 

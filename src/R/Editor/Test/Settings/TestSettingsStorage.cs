@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.Languages.Editor.Settings;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.Test.Settings
 {
-    [Export(typeof(IWritableEditorSettingsStorage))]
+    [Export(typeof(IWritableSettingsStorage))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Test Editor settings")]
     [Order(Before = "Default")]
-    public class TestSettingsStorage : IWritableEditorSettingsStorage
+    public class TestSettingsStorage : IWritableSettingsStorage
     {
         Dictionary<string, object> _settings = new Dictionary<string, object>();
 

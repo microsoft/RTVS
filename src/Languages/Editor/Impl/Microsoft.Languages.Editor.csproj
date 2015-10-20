@@ -131,7 +131,6 @@
     <Compile Include="Shell\IEditorShell.cs" />
     <Compile Include="Shell\EditorShell.cs" />
     <Compile Include="Settings\CommonSettings.cs" />
-    <Compile Include="Settings\IEditorSettingsStorage.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskList.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskListItem.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskListItemSource.cs" />
