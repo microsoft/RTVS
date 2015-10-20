@@ -23,7 +23,7 @@ namespace Microsoft.R.Actions.Test.Logging
         [TestMethod]
         public void Logging_LinesLogTest()
         {
-            IActionLinesLog log = new LinesLog();
+            IActionLinesLog log = new LinesLog(NullLogWriter.Instance);
 
             log.WriteAsync(MessageCategory.Error, "message1").Wait();
             log.WriteLineAsync(MessageCategory.Error, " message2").Wait();

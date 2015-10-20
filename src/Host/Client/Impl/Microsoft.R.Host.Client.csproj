@@ -48,7 +48,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -63,6 +62,7 @@
     <Compile Include="MicrosoftRHostMissingException.cs" />
     <Compile Include="OutputType.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="RHostLoggingExtensions.cs" />
     <Compile Include="RRequestEventArgs.cs" />
     <Compile Include="RContext.cs" />
     <Compile Include="RContextType.cs" />
@@ -80,6 +80,10 @@
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Actions\Impl\Microsoft.R.Actions.csproj">
+      <Project>{B68D4AD2-2DC2-473E-AB06-408172C4FB92}</Project>
+      <Name>Microsoft.R.Actions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{C1957D47-B0B4-42E0-BC08-0D5E96E47FE4}</Project>
