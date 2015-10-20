@@ -8,6 +8,8 @@ namespace Microsoft.R.Actions.Logging
     /// </summary>
     public sealed class NullLog : IActionLinesLog
     {
+        public static IActionLinesLog Instance { get; } = new NullLog();
+
         public Task WriteAsync(MessageCategory category, string message)
         {
             return Task.CompletedTask;
@@ -23,14 +25,8 @@ namespace Microsoft.R.Actions.Logging
             return Task.CompletedTask;
         }
 
-        public string Content
-        {
-            get { return string.Empty; }
-        }
+        public string Content => string.Empty;
 
-        public IReadOnlyList<string> Lines
-        {
-            get { return new string[0]; }
-        }
+        public IReadOnlyList<string> Lines => new string[0];
     }
 }

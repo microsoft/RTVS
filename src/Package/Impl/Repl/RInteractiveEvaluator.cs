@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -41,17 +42,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
                 if (Session.IsHostRunning) {
-                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping);
+                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
                     await Session.StopHostAsync();
                 }
 
-                if (initialize) {
-                    CurrentWindow.WriteError(Resources.MicrosoftRHostStarting);
-                    return await InitializeAsync();
+                if (!initialize) {
+                    return ExecutionResult.Success;
                 }
 
-                return ExecutionResult.Success;
-            } catch (Exception) {
+                CurrentWindow.WriteError(Resources.MicrosoftRHostStarting + Environment.NewLine);
+                return await InitializeAsync();
+            } catch (Exception ex) {
+                Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
                 return ExecutionResult.Failure;
             }
         }

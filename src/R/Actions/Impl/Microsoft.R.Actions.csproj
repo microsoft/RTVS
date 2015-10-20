@@ -61,8 +61,11 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Logging\FileLogWriter.cs" />
     <Compile Include="Logging\IActionLinesLog.cs" />
+    <Compile Include="Logging\IActionLogWriter.cs" />
     <Compile Include="Logging\LinesLog.cs" />
+    <Compile Include="Logging\NullLogWriter.cs" />
     <Compile Include="Logging\StringLog.cs" />
     <Compile Include="Logging\NullLog.cs" />
     <Compile Include="Resources.Designer.cs">

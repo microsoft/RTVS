@@ -17,6 +17,8 @@ using Task = System.Threading.Tasks.Task;
 namespace Microsoft.VisualStudio.R.Package.Repl.Session
 {
     internal sealed class RSession : IRSession, IRCallbacks {
+        private static string DefaultPrompt = "> ";
+
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
 
@@ -36,8 +38,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
 
-        public int Id { get; private set; }
-        public string Prompt { get; private set; } = "> ";
+        public int Id { get; }
+        public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _hostRunTask != null && !_hostRunTask.IsCompleted;
 
@@ -109,6 +111,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
         }
 
         Task IRCallbacks.Connected(string rVersion) {
+            Prompt = DefaultPrompt;
             _initializationTcs.SetResult(null);
             return Task.CompletedTask;
         }
