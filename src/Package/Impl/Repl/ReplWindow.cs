@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         class PendingSubmission
         {
             public string Code;
-            public bool IsComplete;
+            public bool AddNewLine;
         }
 
         public ReplWindow() {
@@ -37,29 +37,42 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public static ReplWindow Current => _instance.Value;
 
-        private void ReadyForInput()
+        private void ProcessQueuedInput()
         {
-            IVsInteractiveWindow window = _instance.Value.GetInteractiveWindow();
-            if (window  != null && _pendingInputs.Count != 0)
+            IVsInteractiveWindow interactive = _instance.Value.GetInteractiveWindow();
+            if (interactive  != null)
             {
-                var cur = _pendingInputs.First.Value;
-                _pendingInputs.RemoveFirst();
+                var window = interactive.InteractiveWindow;
 
-                if (cur.IsComplete)
+                // Process all of our pending inputs until we get a complete statement
+                while (_pendingInputs.Count != 0)
                 {
-                    // We have a complete input, go ahead and submit it.
-                    window.InteractiveWindow.SubmitAsync(new[] { cur.Code });
-                }
-                else
-                {
-                    // We have an incomplete input, insert it into the input buffer
-                    window.InteractiveWindow.InsertCode(cur.Code);
+                    var cur = _pendingInputs.First.Value;
+                    _pendingInputs.RemoveFirst();
+
+                    window.InsertCode(cur.Code);
+                    string fullCode = window.CurrentLanguageBuffer.CurrentSnapshot.GetText();
+
+                    if (window.Evaluator.CanExecuteCode(fullCode))
+                    {
+                        // the code is complete, execute it now
+                        window.Operations.ExecuteInput();
+                        break;
+                    }
+                    else if (cur.AddNewLine)
+                    {
+                        // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
+                        // function() {
+                        window.InsertCode(window.TextView.Options.GetNewLineCharacter());
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// Inserts the provided code into the current input buffer at the current caret location.
+        /// Enqueues the provided code for execution.  If there's no current execution the code is
+        /// inserted at the caret position.  Otherwise the code is stored for when the current
+        /// execution is completed.
         /// 
         /// If the current input becomes complete after inserting the code then the input is executed.  
         /// 
@@ -68,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         /// <param name="code">The code to be inserted</param>
         /// <param name="addNewLine">True to add a new line on non-complete inputs.</param>
-        public void InsertCodeMaybeExecute(string code, bool addNewLine)
+        public void EnqueueCode(string code, bool addNewLine)
         {
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
             if (current != null)
@@ -78,59 +91,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                     return;
                 }
 
-                if (current.InteractiveWindow.IsRunning || _pendingInputs.Count > 0)
+                // add the input to our queue...
+                _pendingInputs.AddLast(new PendingSubmission() { Code = code, AddNewLine = addNewLine });
+
+                if (!current.InteractiveWindow.IsRunning)
                 {
-                    // we're currently running, we need to save the input until we're ready for 
-                    // the next input.
-                    AddDelayedInput(code, addNewLine, current);
+                    // and process the queue if we weren't currently running
+                    ProcessQueuedInput();
                 }
-                else
-                {
-                    // We're not running, we can add the code to the current input, and submit it
-                    // if necessary.
-                    InsertCodeToCurrentInput(code, addNewLine, current);
-                }
-            }
-        }
-
-        private static void InsertCodeToCurrentInput(string code, bool addNewLine, IVsInteractiveWindow current)
-        {
-            current.InteractiveWindow.InsertCode(code);
-            string fullCode = current.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.GetText();
-
-
-            if (current.InteractiveWindow.Evaluator.CanExecuteCode(fullCode))
-            {
-                // the code is complete, go ahead and execute it...
-                current.InteractiveWindow.Operations.ExecuteInput();
-            }
-            else if (addNewLine)
-            {
-                // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
-                // function() {
-                current.InteractiveWindow.InsertCode(current.InteractiveWindow.TextView.Options.GetNewLineCharacter());
-            }
-        }
-
-        private void AddDelayedInput(string code, bool addNewLine, IVsInteractiveWindow current)
-        {
-            // we need to append the code...
-            if (_pendingInputs.Count == 0 || _pendingInputs.Last.Value.IsComplete)
-            {
-                _pendingInputs.AddLast(new PendingSubmission() { Code = code });
-            }
-            else
-            {
-                _pendingInputs.Last.Value.Code += code;
-            }
-
-            if (current.InteractiveWindow.Evaluator.CanExecuteCode(_pendingInputs.Last.Value.Code))
-            {
-                _pendingInputs.Last.Value.IsComplete = true;
-            }
-            else if (addNewLine)
-            {
-                _pendingInputs.Last.Value.Code += current.InteractiveWindow.TextView.Options.GetNewLineCharacter();
             }
         }
 
@@ -261,12 +229,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                     frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView);
                     if (_lastUsedReplWindow != null)
                     {
-                        _lastUsedReplWindow.InteractiveWindow.ReadyForInput -= ReadyForInput;
+                        _lastUsedReplWindow.InteractiveWindow.ReadyForInput -= ProcessQueuedInput;
                     }
                     _lastUsedReplWindow = docView as IVsInteractiveWindow;
                     if (_lastUsedReplWindow != null)
                     {
-                        _lastUsedReplWindow.InteractiveWindow.ReadyForInput += ReadyForInput;
+                        _lastUsedReplWindow.InteractiveWindow.ReadyForInput += ProcessQueuedInput;
                     }
                     return _lastUsedReplWindow != null;
                 }

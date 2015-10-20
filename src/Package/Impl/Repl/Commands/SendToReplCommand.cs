@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class SendToReplCommand : ViewCommand {
         private ReplWindow _replWindow;
+        private static object _executedToEnd = new object();
 
         public SendToReplCommand(ITextView textView, ITextBuffer textBuffer) :
             base(textView, new[]
@@ -40,6 +41,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             {
                 return CommandResult.Disabled;
             }
+            else if (TextView.Properties.ContainsProperty(_executedToEnd))
+            {
+                return CommandResult.Executed;
+            }
 
             string text;
             bool addNewLine = false;
@@ -54,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
-            replWindow.InsertCodeMaybeExecute(text, addNewLine);
+            replWindow.EnqueueCode(text, addNewLine);
 
             var targetLine = line;
             while (targetLine.LineNumber < snapshot.LineCount - 1)
@@ -70,19 +75,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             if (targetLine == line && 
-                selection.StreamSelectionSpan.Length == 0 && 
-                !String.IsNullOrWhiteSpace(line.GetText()))
+                selection.StreamSelectionSpan.Length == 0/* && 
+                !String.IsNullOrWhiteSpace(line.GetText())*/)
             {
-                // we're at the end of the buffer, make sure we end on a blank line so we
-                // don't keep executing the last line multiple times when holding down
-                // ctrl-enter
-                var newSnapshot = TextView.TextBuffer.Insert(
-                    TextView.TextBuffer.CurrentSnapshot.Length, 
-                    TextView.Options.GetNewLineCharacter()
-                );
-                var newLastLine = newSnapshot.GetLineFromLineNumber(newSnapshot.LineCount - 1).Start;
-                TextView.Caret.MoveTo(newLastLine);
-                TextView.Caret.EnsureVisible();
+                // we're at the end of the buffer, we don't want to continue executing
+                TextView.Caret.PositionChanged += Caret_PositionChanged;
+                TextView.Properties[_executedToEnd] = this;
             }
 
             // Take focus back if REPL window has stolen it
@@ -94,6 +92,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
             
             return CommandResult.Executed;
+        }
+
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            TextView.Properties.RemoveProperty(_executedToEnd);
+            TextView.Caret.PositionChanged -= Caret_PositionChanged;
         }
 
         protected override void Dispose(bool disposing) {
