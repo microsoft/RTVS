@@ -117,13 +117,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public string GetPrompt() {
-            // TODO: We should support dynamically getting the prompt at runtime
-            // if the user changes it
             if (CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot.LineCount > 1)
             {
+                // TODO: We should support dynamically getting the prompt at runtime
+                // if the user changes it
                 return "+ ";
             }
-            return "> ";
+            return Session.Prompt;
         }
 
         public IInteractiveWindow CurrentWindow { get; set; }
