@@ -136,7 +136,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             public VariableInfo(REvaluation e)
             {
                 this.Name = e.Name;
-                if (e.TypeName == "function")
+                if (e.TypeName == "closure")
                 {
                     ItemType = NamedItemType.Function;
                 }
