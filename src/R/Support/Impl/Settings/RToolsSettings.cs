@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition.Hosting;
+using System.Diagnostics;
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.R.Support.Settings
@@ -18,8 +19,9 @@ namespace Microsoft.R.Support.Settings
                 {
                     if (_instance == null)
                     {
+                        Debug.Assert(_exportProvider != null);
                         _instance = _exportProvider != null ? _exportProvider.GetExport<IRToolsSettings>().Value : null;
-                        _instance.LoadFromStorage();
+                        _instance?.LoadFromStorage();
                     }
                 }
 

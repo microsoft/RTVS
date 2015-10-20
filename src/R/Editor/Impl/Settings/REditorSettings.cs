@@ -26,7 +26,7 @@ namespace Microsoft.R.Editor.Settings
         {
             get
             {
-                var storage = EditorShell.GetSettings(RContentTypeDefinition.LanguageName) as ISettingsStorage;
+                var storage = (ISettingsStorage)EditorShell.GetSettings(RContentTypeDefinition.LanguageName);
 
                 if (!_initialized)
                 {

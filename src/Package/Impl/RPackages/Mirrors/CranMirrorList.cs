@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using Microsoft.VisualStudio.R.Package.Repl.Session;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
 {
@@ -24,16 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
         /// </summary>
         public static string[] MirrorNames
         {
-            get
-            {
-                List<string> names = new List<string>();
-                foreach (var m in _mirrors)
-                {
-                    names.Add(m.Name);
-                }
-
-                return names.ToArray();
-            }
+            get { return _mirrors.Select(m => m.Name).ToArray(); }
         }
 
         /// <summary>
@@ -41,16 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
         /// </summary>
         public static string[] MirrorUrls
         {
-            get
-            {
-                List<string> urls = new List<string>();
-                foreach (var m in _mirrors)
-                {
-                    urls.Add(m.Url);
-                }
-
-                return urls.ToArray();
-            }
+            get { return _mirrors.Select(m => m.Url).ToArray(); }
         }
 
         /// <summary>
@@ -81,20 +62,25 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors
             // reading local resource.
 
             _cranCsvFileTempPath = Path.Combine(Path.GetTempPath(), "CRAN_mirrors.csv");
-            StreamReader streamReader;
+            string content;
 
             if (File.Exists(_cranCsvFileTempPath))
             {
-                streamReader = new StreamReader(_cranCsvFileTempPath);
+                using (var streamReader = new StreamReader(_cranCsvFileTempPath))
+                {
+                    content = streamReader.ReadToEnd();
+                }
             }
             else
             {
                 var assembly = Assembly.GetExecutingAssembly();
                 var resourceStream = assembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.RPackages.Mirrors.CranMirrors.csv");
-                streamReader = new StreamReader(resourceStream);
+                using (var streamReader = new StreamReader(resourceStream))
+                {
+                    content = streamReader.ReadToEnd();
+                }
             }
 
-            string content = streamReader.ReadToEnd();
             ReadCsv(content);
 
             using (WebClient webClient = new WebClient())

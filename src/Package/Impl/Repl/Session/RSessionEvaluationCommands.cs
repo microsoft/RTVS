@@ -44,13 +44,13 @@ options(device='.rtvs.vsgd')
             return evaluation.EvaluateAsync(script, reentrant: false);
         }
 
-        public static Task<REvaluationResult> SetVsCranSelection(this IRSessionEvaluation evaluation)
+        public static Task<REvaluationResult> SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl)
         {
             var script = 
-"    local({\r\n" + 
-"      r <- getOption(\"repos\")\r\n"+
-"      r[\"CRAN\"] <- \"" + CranMirrorList.UrlFromName(RToolsSettings.Current.CranMirror) + "\"\r\n" +
-"      options(repos=r)})";
+@"    local({
+        r <- getOption('repos')
+        r['CRAN'] <- '" + mirrorUrl + @"'
+        options(repos = r)})";
 
             return evaluation.EvaluateAsync(script, reentrant: false);
         }

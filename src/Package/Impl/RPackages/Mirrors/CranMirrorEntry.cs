@@ -2,9 +2,9 @@
 {
     public sealed class CranMirrorEntry
     {
-        public string Name;
-        public string Country;
-        public string City;
-        public string Url;
+        public string Name { get; set; }
+        public string Country { get; set; }
+        public string City { get; set; }
+        public string Url { get; set; }
     }
 }

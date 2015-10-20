@@ -166,10 +166,7 @@ namespace Microsoft.R.Support.Utility
                         return rKey.GetSubKeyNames();
                     }
                 }
-                catch (Exception)
-                {
-                    return null;
-                }
+                catch (Exception) { }
                 finally
                 {
                     if (rKey != null)
