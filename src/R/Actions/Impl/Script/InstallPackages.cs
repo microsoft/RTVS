@@ -43,7 +43,7 @@ namespace Microsoft.R.Actions.Script
         public static bool IsInstalled(string packageName, int msTimeout)
         {
             string expression = "installed.packages()";
-            IActionLinesLog log = new LinesLog();
+            IActionLinesLog log = new LinesLog(NullLogWriter.Instance);
 
             bool result = RCommand.ExecuteRExpression(expression, log, msTimeout);
             if (result)

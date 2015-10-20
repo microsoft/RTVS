@@ -6,32 +6,23 @@ using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Logging
-{
-    /// <summary>
-    /// Implements
-    /// </summary>
-    public abstract class OutputWindowLog: LinesLog
-    {
+namespace Microsoft.VisualStudio.R.Package.Logging {
+    internal sealed class OutputWindowLogWriter : IActionLogWriter {
         private IVsOutputWindowPane _pane;
         private Guid _paneGuid;
-        private string _windowName;
+        private readonly string _windowName;
 
-        protected OutputWindowLog(Guid paneGuid, string windowName)
-        {
+        public OutputWindowLogWriter(Guid paneGuid, string windowName) {
             _paneGuid = paneGuid;
             _windowName = windowName;
         }
 
-        private void EnsurePaneVisible()
-        {
-            if (_pane == null)
-            {
+        private void EnsurePaneVisible() {
+            if (_pane == null) {
                 // TODO: consider using IVsOutputWindow3.CreatePane2 and colorize the output
-                IVsOutputWindow outputWindow = AppShell.Current.GetGlobalService<IVsOutputWindow>(typeof(SVsOutputWindow)) as IVsOutputWindow;
+                IVsOutputWindow outputWindow = AppShell.Current.GetGlobalService<IVsOutputWindow>(typeof(SVsOutputWindow));
                 outputWindow.GetPane(ref _paneGuid, out _pane);
-                if (_pane == null)
-                {
+                if (_pane == null) {
                     outputWindow.CreatePane(ref _paneGuid, _windowName, fInitVisible: 1, fClearWithSolution: 1);
                     outputWindow.GetPane(ref _paneGuid, out _pane);
 
@@ -43,22 +34,15 @@ namespace Microsoft.VisualStudio.R.Package.Logging
 
             DTE dte = AppShell.Current.GetGlobalService<DTE>();
             Window window = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
-            if (window != null)
-            {
-                window.Activate();
-            }
+            window?.Activate();
         }
 
-        #region IActionLog
-        public override Task WriteAsync(MessageCategory category, string message)
-        {
-            base.WriteAsync(category, message);
+        public Task WriteAsync(MessageCategory category, string message) {
 
             EnsurePaneVisible();
             _pane.OutputStringThreadSafe(message);
 
             return Task.CompletedTask;
         }
-        #endregion
     }
 }

@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Shell;
@@ -41,23 +43,45 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
                 if (Session.IsHostRunning) {
-                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping);
+                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
                     await Session.StopHostAsync();
                 }
 
-                if (initialize) {
-                    CurrentWindow.WriteError(Resources.MicrosoftRHostStarting);
-                    return await InitializeAsync();
+                if (!initialize) {
+                    return ExecutionResult.Success;
                 }
 
-                return ExecutionResult.Success;
-            } catch (Exception) {
+                CurrentWindow.WriteError(Resources.MicrosoftRHostStarting + Environment.NewLine);
+                return await InitializeAsync();
+            } catch (Exception ex) {
+                Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
                 return ExecutionResult.Failure;
             }
         }
 
-        public bool CanExecuteCode(string text) {
-            return Session.IsHostRunning;
+        public bool CanExecuteCode(string text)
+        {
+            var ast = RParser.Parse(text);
+            if (ast.Errors.Count > 0)
+            {
+                // if we have any errors other than an incomplete statement send the
+                // bad code to R.  Otherwise continue reading input.
+                foreach (var error in ast.Errors)
+                {
+                    if (error.ErrorType != ParseErrorType.CloseCurlyBraceExpected &&
+                        error.ErrorType != ParseErrorType.CloseBraceExpected &&
+                        error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
+                        error.ErrorType != ParseErrorType.FunctionBodyExpected &&
+                        error.ErrorType != ParseErrorType.OperandExpected)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         public async Task<ExecutionResult> ExecuteCodeAsync(string text) {
@@ -95,6 +119,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public string GetPrompt() {
+            if (CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot.LineCount > 1)
+            {
+                // TODO: We should support dynamically getting the prompt at runtime
+                // if the user changes it
+                return "+ ";
+            }
             return Session.Prompt;
         }
 

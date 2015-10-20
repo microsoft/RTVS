@@ -9,28 +9,30 @@ namespace Microsoft.R.Actions.Logging
     /// </summary>
     public class StringLog : IActionLog
     {
-        private StringBuilder _sb = new StringBuilder();
+        private readonly IActionLogWriter _logWriter;
+        private readonly StringBuilder _sb = new StringBuilder();
 
-        public virtual Task WriteAsync(MessageCategory category, string message)
-        {
-            _sb.Append(message);
-            return Task.CompletedTask;
+        public StringLog(IActionLogWriter logWriter) {
+            _logWriter = logWriter ?? NullLogWriter.Instance;
         }
 
-        public virtual Task WriteFormatAsync(MessageCategory category, string format, params object[] arguments)
+        public Task WriteAsync(MessageCategory category, string message)
+        {
+            _sb.Append(message);
+            return _logWriter.WriteAsync(category, message);
+        }
+
+        public Task WriteFormatAsync(MessageCategory category, string format, params object[] arguments)
         {
             string message = string.Format(CultureInfo.InvariantCulture, format, arguments);
             return WriteAsync(category, message);
         }
 
-        public virtual Task WriteLineAsync(MessageCategory category, string message)
+        public Task WriteLineAsync(MessageCategory category, string message)
         {
             return WriteAsync(category, message + "\r\n");
         }
 
-        public virtual string Content
-        {
-            get { return _sb.ToString(); }
-        }
+        public virtual string Content => _sb.ToString();
     }
 }

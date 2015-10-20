@@ -25,9 +25,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R
             get { return _cranMirror; }
             set
             {
-                if (_cranMirror == value)
-                    return;
-
                 _cranMirror = value;
                 // Setting mirror reques running code in R host
                 // which async and cannot be done correctly here.

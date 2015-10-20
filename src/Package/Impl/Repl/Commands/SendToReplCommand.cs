@@ -8,6 +8,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
@@ -31,53 +32,67 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             ITextSelection selection = TextView.Selection;
             ITextSnapshot snapshot = TextView.TextBuffer.CurrentSnapshot;
-            List<string> selectedLines = new List<string>();
-            ITextSnapshotLine line = null;
-
-            if (selection.StreamSelectionSpan.Length == 0) {
-                int position = selection.Start.Position;
-                line = snapshot.GetLineFromPosition(position);
-                selectedLines.Add(line.GetText());
-            } else {
-                VirtualSnapshotSpan span = TextView.Selection.StreamSelectionSpan;
-                ITextSnapshot s = span.Snapshot;
-                int start = span.Start.Position.Position;
-                int end = span.End.Position.Position;
-
-                int startLineNumber = s.GetLineNumberFromPosition(start);
-                int endLineNumber = s.GetLineNumberFromPosition(end);
-
-                if (end == s.GetLineFromLineNumber(endLineNumber).Start) {
-                    endLineNumber--;
-                }
-
-                for (int i = startLineNumber; i <= endLineNumber; i++) {
-                    line = s.GetLineFromLineNumber(i);
-                    selectedLines.Add(line.GetText());
-                }
-            }
-
             ReplWindow replWindow = ReplWindow.Current;
+            int position = selection.Start.Position;
+            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
 
-            // Send text to REPL. In case when multiple lines are selected
-            // send lines one by one as if user typed them manually.
-            if (replWindow != null) {
+            if (replWindow == null)
+            {
+                return CommandResult.Disabled;
+            }
 
-                replWindow.SubmitAsync(selectedLines).DoNotWait();
-                if (line != null && line.LineNumber < snapshot.LineCount - 1) {
-                    ITextSnapshotLine nextLine = snapshot.GetLineFromLineNumber(line.LineNumber + 1);
-                    TextView.Caret.MoveTo(new SnapshotPoint(snapshot, nextLine.Start));
+            string text;
+            bool addNewLine = false;
+            if (selection.StreamSelectionSpan.Length == 0)
+            {
+                text = line.GetText();
+                addNewLine = true;
+            }
+            else
+            {
+                text = TextView.Selection.StreamSelectionSpan.GetText();
+                line = TextView.Selection.End.Position.GetContainingLine();
+            }
+
+            replWindow.InsertCodeMaybeExecute(text, addNewLine);
+
+            var targetLine = line;
+            while (targetLine.LineNumber < snapshot.LineCount - 1)
+            {
+                targetLine = snapshot.GetLineFromLineNumber(targetLine.LineNumber + 1);
+                // skip over blank lines, unless it's the last line, in which case we want to land on it no matter what
+                if (!String.IsNullOrWhiteSpace(targetLine.GetText()) || targetLine.LineNumber == snapshot.LineCount - 1)
+                {
+                    TextView.Caret.MoveTo(new SnapshotPoint(snapshot, targetLine.Start));
                     TextView.Caret.EnsureVisible();
-                }
-
-                // Take focus back if REPL window has stolen it
-                if (!TextView.HasAggregateFocus) {
-                    IVsEditorAdaptersFactoryService adapterService = EditorShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
-                    IVsTextView tv = adapterService.GetViewAdapter(TextView);
-                    tv.SendExplicitFocus();
+                    break;
                 }
             }
 
+            if (targetLine == line && 
+                selection.StreamSelectionSpan.Length == 0 && 
+                !String.IsNullOrWhiteSpace(line.GetText()))
+            {
+                // we're at the end of the buffer, make sure we end on a blank line so we
+                // don't keep executing the last line multiple times when holding down
+                // ctrl-enter
+                var newSnapshot = TextView.TextBuffer.Insert(
+                    TextView.TextBuffer.CurrentSnapshot.Length, 
+                    TextView.Options.GetNewLineCharacter()
+                );
+                var newLastLine = newSnapshot.GetLineFromLineNumber(newSnapshot.LineCount - 1).Start;
+                TextView.Caret.MoveTo(newLastLine);
+                TextView.Caret.EnsureVisible();
+            }
+
+            // Take focus back if REPL window has stolen it
+            if (!TextView.HasAggregateFocus)
+            {
+                IVsEditorAdaptersFactoryService adapterService = EditorShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
+                IVsTextView tv = adapterService.GetViewAdapter(TextView);
+                tv.SendExplicitFocus();
+            }
+            
             return CommandResult.Executed;
         }
 

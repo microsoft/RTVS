@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
@@ -8,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Actions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -21,13 +21,17 @@ namespace Microsoft.R.Host.Client {
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly IRCallbacks _callbacks;
+        private readonly LinesLog _log;
         private Process _process;
         private ClientWebSocket _socket;
         private byte[] _buffer;
         private bool _isRunning, _canEval;
+        private int _rLoopDepth;
+        private ulong _messageId;
 
         public RHost(IRCallbacks callbacks) {
             _callbacks = callbacks;
+            _log = new LinesLog(FileLogWriter.InTempFolder("Microsoft.R.Host.Client"));
         }
 
         public void Dispose() {
@@ -52,6 +56,7 @@ namespace Microsoft.R.Host.Client {
 
             using (this)
             using (_process = Process.Start(psi)) {
+                _log.RHostProcessStarted(psi);
                 _process.EnableRaisingEvents = true;
                 _process.Exited += delegate { Dispose(); };
 
@@ -62,9 +67,11 @@ namespace Microsoft.R.Host.Client {
                         for (int i = 0; ; ++i) {
                             try {
                                 await _socket.ConnectAsync(uri, ct);
+                                _log.ConnectedToRHostWebSocket(uri, i);
                                 break;
                             } catch (WebSocketException) {
                                 if (i > 10) {
+                                    _log.FailedToConnectToRHost(uri);
                                     throw;
                                 }
                                 await Task.Delay(100, ct);
@@ -89,6 +96,7 @@ namespace Microsoft.R.Host.Client {
                         } catch (InvalidOperationException) {
                         }
                     }
+                    _log.RHostProcessExited();
                 }
             }
         }
@@ -121,8 +129,10 @@ namespace Microsoft.R.Host.Client {
                     Debug.Assert(protocolVersion == 1);
                     string rVersion = (string)obj["R_version"];
                     await _callbacks.Connected(rVersion);
-                    await RunLoop(ct, allowEval: true);
+                    _log.EnterRLoop(_rLoopDepth);
+                    await RunLoop(ct, allowEval: true, depth: 0);
                 } finally {
+                    _log.ExitRLoop(_rLoopDepth);
                     await _callbacks.Disconnected();
                 }
             } finally {
@@ -130,7 +140,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task<JObject> RunLoop(CancellationToken ct, bool allowEval) {
+        private async Task<JObject> RunLoop(CancellationToken ct, bool allowEval, int depth) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             while (!ct.IsCancellationRequested) {
@@ -144,17 +154,19 @@ namespace Microsoft.R.Host.Client {
                     s += Encoding.UTF8.GetString(_buffer, 0, webSocketReceiveResult.Count);
                 } while (!webSocketReceiveResult.EndOfMessage);
 
+                // TODO: id should be taken from received message when RHost starts providing it
+                _log.Response(s, depth, _messageId);
                 JObject obj = JObject.Parse(s);
                 var contexts = GetContexts(obj);
 
                 var evt = (string)obj["event"];
                 switch (evt) {
                     case "YesNoCancel":
-                        await YesNoCancel(contexts, obj, allowEval, ct);
+                        await YesNoCancel(contexts, obj, allowEval, depth, ct);
                         break;
 
                     case "ReadConsole":
-                        await ReadConsole(contexts, obj, allowEval, ct);
+                        await ReadConsole(contexts, obj, allowEval, depth, ct);
                         break;
 
                     case "WriteConsoleEx":
@@ -192,19 +204,19 @@ namespace Microsoft.R.Host.Client {
             return null;
         }
 
-        private async Task YesNoCancel(RContext[] contexts, JObject obj, bool allowEval, CancellationToken ct) {
+        private async Task YesNoCancel(RContext[] contexts, JObject obj, bool allowEval, int depth, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             try {
                 _canEval = allowEval;
                 YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], _canEval, ct);
-                await SendAsync((double)input, ct);
+                await SendAsync((double)input, depth, ct);
             } finally {
                 _canEval = false;
             }
         }
 
-        private async Task ReadConsole(RContext[] contexts, JObject obj, bool allowEval, CancellationToken ct) {
+        private async Task ReadConsole(RContext[] contexts, JObject obj, bool allowEval, int depth, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             try {
@@ -217,22 +229,23 @@ namespace Microsoft.R.Host.Client {
 
                 string input = await _callbacks.ReadConsole(contexts, prompt, buf, len, addToHistory, _canEval, ct);
                 input = input.Replace("\r\n", "\n");
-                await SendAsync(input, ct);
+                await SendAsync(input, depth, ct);
             } finally {
                 _canEval = false;
             }
         }
 
-        private async Task SendAsync<T>(T input, CancellationToken ct) {
+        private async Task SendAsync<T>(T input, int depth, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             if (ct.IsCancellationRequested) {
                 return;
             }
 
-            var response = JsonConvert.SerializeObject(input);
-            byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+            var request = JsonConvert.SerializeObject(input);
+            byte[] responseBytes = Encoding.UTF8.GetBytes(request);
             await _socket.SendAsync(new ArraySegment<byte>(responseBytes, 0, responseBytes.Length), WebSocketMessageType.Text, true, ct);
+            _log.Request(request, depth, ++_messageId);
         }
 
         private static RContext[] GetContexts(JObject obj) {
@@ -256,15 +269,20 @@ namespace Microsoft.R.Host.Client {
 
             _canEval = false;
             try {
-                string request = JsonConvert.SerializeObject(new {
+                await SendAsync(new {
                     command = "eval",
                     expr = expression.Replace("\r\n", "\n")
-                });
+                }, _rLoopDepth, ct);
 
-                var requestBytes = Encoding.UTF8.GetBytes(request);
-                await _socket.SendAsync(new ArraySegment<byte>(requestBytes, 0, requestBytes.Length), WebSocketMessageType.Text, true, ct);
-
-                var obj = await RunLoop(ct, reentrant);
+                JObject obj;
+                try {
+                    _rLoopDepth++;
+                    _log.EnterRLoop(_rLoopDepth);
+                    obj = await RunLoop(ct, reentrant, _rLoopDepth);
+                } finally {
+                    _log.ExitRLoop(_rLoopDepth);
+                    _rLoopDepth--;
+                }
 
                 JToken result, error, parseStatus;
                 obj.TryGetValue("result", out result);

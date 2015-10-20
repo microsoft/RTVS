@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Test.IO.SubstituteFactories;
+using Microsoft.R.Actions.Logging;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
@@ -38,7 +39,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
 
                 _taskScheduler = new ControlledTaskScheduler(SynchronizationContext.Current);
 
-                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 50, _fileSystem, _fileSystemFilter, _taskScheduler);
+                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 50, _fileSystem, _fileSystemFilter, _taskScheduler, NullLog.Instance);
                 _taskScheduler.Link(_fileSystemWatcher.SourceBlock, c => { _changeset = c; });
 
                 _fileSystemWatcher.Start();
