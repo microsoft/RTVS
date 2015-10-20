@@ -83,6 +83,7 @@
     <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\HeaderScrollViewer.cs" />
+    <Compile Include="DataInspect\WorkspaceVariableProvider.cs" />
     <Compile Include="Debugger\RDebugSessionProvider.cs" />
     <Compile Include="Options\R\Tools\RVersionTypeConverter.cs" />
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />

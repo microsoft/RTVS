@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Newtonsoft.Json;
@@ -28,6 +30,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
     internal class VariableProvider
     {
+        public static VariableProvider Current => _instance.Value;
+        public VariableEvaluationContext GlobalContext { get; private set; }
+
+        private static Lazy<VariableProvider> _instance = new Lazy<VariableProvider>(() => new VariableProvider());
         private IRSession _rSession;
         private VariableEvaluationContext _monitorContext;
 
@@ -36,20 +42,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             var sessionProvider = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
-            SetRSession(sessionProvider.Current);   // TODO: f ind a place to SetRSession to null, watch out memory leak
+            IdleTimeAction.Create(async () =>
+            {
+                await SetRSession(sessionProvider.Current);   // TODO: find a place to SetRSession to null, watch out memory leak
+                await InitializeData();
+            }, 10, typeof(VariableProvider));
         }
 
         #region Public
-
         /// <summary>
         /// R current session change triggers this SessionsChanged event
         /// </summary>
         public event EventHandler SessionsChanged;
-
         public event EventHandler<VariableChangedArgs> VariableChanged;
-
         #endregion
-
 
         #region RSession related event handler
 
@@ -65,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// <summary>
         /// IRSessionProvider.CurrentSessionChanged handler. When current session changes, this is called
         /// </summary>
-        private void RSessionProvider_CurrentChanged(object sender, EventArgs e)
+        private async void RSessionProvider_CurrentChanged(object sender, EventArgs e)
         {
             var sessionProvider = sender as IRSessionProvider;
             Debug.Assert(sessionProvider != null);
@@ -75,14 +81,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                 var session = sessionProvider.Current;
                 if (!object.Equals(session, _rSession))
                 {
-                    SetRSession(session);
+                    await SetRSession(session);
                 }
             }
         }
 
         #endregion
 
-        private void SetRSession(IRSession session)
+        private async Task InitializeData()
+        {
+            GlobalContext = new VariableEvaluationContext()
+            {
+                Environment = VariableEvaluationContext.GlobalEnv,
+                VariableName = VariableEvaluationContext.GlobalEnv
+            };
+
+            await SetMonitorContext(GlobalContext);
+        }
+
+        private async Task SetRSession(IRSession session)
         {
             // unregister event handler from old session
             if (_rSession != null)
@@ -95,9 +112,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             if (_rSession != null)
             {
                 _rSession.BeforeRequest += RSession_BeforeRequest;
-
                 Task t = RefreshVariableCollection();   // TODO: have a no-await wrapper to handle side effects
             }
+
+            await InitializeData();
 
             if (SessionsChanged != null)
             {
@@ -107,7 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         private async Task RefreshVariableCollection()
         {
-            if(_rSession == null)
+            if (_rSession == null)
             {
                 return;
             }
@@ -138,13 +156,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         public async Task SetMonitorContext(VariableEvaluationContext context) // TODO: rename to monitor
         {
             _monitorContext = context;
-
             await RefreshVariableCollection();
         }
 
         private static T Deserialize<T>(string response)
         {
-            if(response == null)
+            if (response == null)
             {
                 return default(T);
             }
