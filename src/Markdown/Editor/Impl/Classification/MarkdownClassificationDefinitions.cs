@@ -67,7 +67,7 @@ namespace Microsoft.Markdown.Editor.Classification
         {
             public MdBoldClassificationFormat()
             {
-                ForegroundColor = Colors.Navy;
+                ForegroundColor = Colors.Magenta;
                 this.IsBold = true;
                 this.DisplayName = Resources.ColorName_MD_Bold;
             }
@@ -88,7 +88,7 @@ namespace Microsoft.Markdown.Editor.Classification
         {
             public MdItalicClassificationFormat()
             {
-                ForegroundColor = Colors.Navy;
+                ForegroundColor = Colors.Magenta;
                 this.IsItalic = true;
                 this.DisplayName = Resources.ColorName_MD_Italic;
             }
@@ -106,7 +106,7 @@ namespace Microsoft.Markdown.Editor.Classification
         {
             public MdBoldItalicClassificationFormat()
             {
-                ForegroundColor = Colors.Navy;
+                ForegroundColor = Colors.Magenta;
                 this.IsItalic = true;
                 this.IsBold = true;
                 this.DisplayName = Resources.ColorName_MD_BoldItalic;
@@ -130,7 +130,7 @@ namespace Microsoft.Markdown.Editor.Classification
         {
             public MdListItemClassificationFormat()
             {
-                ForegroundColor = Colors.Maroon;
+                ForegroundColor = Colors.YellowGreen;
                 this.DisplayName = Resources.ColorName_MD_ListItem;
             }
         }

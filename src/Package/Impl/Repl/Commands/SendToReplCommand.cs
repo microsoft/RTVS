@@ -54,6 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
+            ReplWindow.Show();
             replWindow.InsertCodeMaybeExecute(text, addNewLine);
 
             var targetLine = line;
