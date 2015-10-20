@@ -22,6 +22,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private uint _windowFrameEventsCookie;
         private IVsInteractiveWindow _lastUsedReplWindow;
         private static readonly Lazy<ReplWindow> _instance = new Lazy<ReplWindow>(() => new ReplWindow());
+        LinkedList<PendingSubmission> _pendingInputs = new LinkedList<PendingSubmission>();
+
+        class PendingSubmission
+        {
+            public string Code;
+            public bool IsComplete;
+        }
 
         public ReplWindow() {
             IVsUIShell7 shell = AppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
@@ -29,6 +36,27 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public static ReplWindow Current => _instance.Value;
+
+        private void ReadyForInput()
+        {
+            IVsInteractiveWindow window = _instance.Value.GetInteractiveWindow();
+            if (window  != null && _pendingInputs.Count != 0)
+            {
+                var cur = _pendingInputs.First.Value;
+                _pendingInputs.RemoveFirst();
+
+                if (cur.IsComplete)
+                {
+                    // We have a complete input, go ahead and submit it.
+                    window.InteractiveWindow.SubmitAsync(new[] { cur.Code });
+                }
+                else
+                {
+                    // We have an incomplete input, insert it into the input buffer
+                    window.InteractiveWindow.InsertCode(cur.Code);
+                }
+            }
+        }
 
         /// <summary>
         /// Inserts the provided code into the current input buffer at the current caret location.
@@ -50,20 +78,59 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                     return;
                 }
 
-                current.InteractiveWindow.InsertCode(code);
-                var fullCode = current.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.GetText();
-                
-                if (current.InteractiveWindow.Evaluator.CanExecuteCode(fullCode))
+                if (current.InteractiveWindow.IsRunning || _pendingInputs.Count > 0)
                 {
-                    // the code is complete, go ahead and execute it...
-                    current.InteractiveWindow.Operations.ExecuteInput();
+                    // we're currently running, we need to save the input until we're ready for 
+                    // the next input.
+                    AddDelayedInput(code, addNewLine, current);
                 }
-                else if (addNewLine)
+                else
                 {
-                    // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
-                    // function() {
-                    current.InteractiveWindow.InsertCode(current.InteractiveWindow.TextView.Options.GetNewLineCharacter());
+                    // We're not running, we can add the code to the current input, and submit it
+                    // if necessary.
+                    InsertCodeToCurrentInput(code, addNewLine, current);
                 }
+            }
+        }
+
+        private static void InsertCodeToCurrentInput(string code, bool addNewLine, IVsInteractiveWindow current)
+        {
+            current.InteractiveWindow.InsertCode(code);
+            string fullCode = current.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.GetText();
+
+
+            if (current.InteractiveWindow.Evaluator.CanExecuteCode(fullCode))
+            {
+                // the code is complete, go ahead and execute it...
+                current.InteractiveWindow.Operations.ExecuteInput();
+            }
+            else if (addNewLine)
+            {
+                // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
+                // function() {
+                current.InteractiveWindow.InsertCode(current.InteractiveWindow.TextView.Options.GetNewLineCharacter());
+            }
+        }
+
+        private void AddDelayedInput(string code, bool addNewLine, IVsInteractiveWindow current)
+        {
+            // we need to append the code...
+            if (_pendingInputs.Count == 0 || _pendingInputs.Last.Value.IsComplete)
+            {
+                _pendingInputs.AddLast(new PendingSubmission() { Code = code });
+            }
+            else
+            {
+                _pendingInputs.Last.Value.Code += code;
+            }
+
+            if (current.InteractiveWindow.Evaluator.CanExecuteCode(_pendingInputs.Last.Value.Code))
+            {
+                _pendingInputs.Last.Value.IsComplete = true;
+            }
+            else if (addNewLine)
+            {
+                _pendingInputs.Last.Value.Code += current.InteractiveWindow.TextView.Options.GetNewLineCharacter();
             }
         }
 
@@ -192,7 +259,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 if (property == RGuidList.ReplInteractiveWindowProviderGuid) {
                     object docView;
                     frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView);
+                    if (_lastUsedReplWindow != null)
+                    {
+                        _lastUsedReplWindow.InteractiveWindow.ReadyForInput -= ReadyForInput;
+                    }
                     _lastUsedReplWindow = docView as IVsInteractiveWindow;
+                    if (_lastUsedReplWindow != null)
+                    {
+                        _lastUsedReplWindow.InteractiveWindow.ReadyForInput += ReadyForInput;
+                    }
                     return _lastUsedReplWindow != null;
                 }
             }
