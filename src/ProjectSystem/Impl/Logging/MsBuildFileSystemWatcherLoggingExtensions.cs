@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.R.Actions.Logging;
@@ -25,8 +26,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
             log.WriteLineAsync(MessageCategory.General, "File system changes consumer finished");
         }
 
-        public static void WatcherHandleChange(this IActionLog log, string change) {
-            log.WriteLineAsync(MessageCategory.General, $"Handle change: {change}");
+        public static void WatcherApplyChange(this IActionLog log, string change) {
+            log.WriteLineAsync(MessageCategory.General, $"Apply change: {change}");
+        }
+
+        public static void WatcherApplyChangeFailed(this IActionLog log, string change, Exception exception) {
+            log.WriteLineAsync(MessageCategory.Error, $"Failed to apply change '{change}':{exception}");
         }
 
         public static void WatcherChangesetSent(this IActionLog log, MsBuildFileSystemWatcher.Changeset changeset) {
@@ -40,6 +45,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
                 .AppendWatcherChangesetPart(changeset.RemovedDirectories, "Removed Directories:");
 
             log.WriteAsync(MessageCategory.General, sb.ToString());
+        }
+
+        public static void ErrorInFileWatcher(this IActionLog log, string watcherName, Exception e) {
+            log.WriteAsync(MessageCategory.Error, $"{watcherName} failed with exception:{e}");
         }
 
         private static StringBuilder AppendWatcherChangesetPart(this StringBuilder sb, HashSet<string> changesetPart, string name) {

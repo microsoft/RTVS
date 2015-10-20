@@ -130,9 +130,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             IFileSystemChange change;
             while (_queue.TryDequeue(out change)) {
                 try {
-                    _log.WatcherHandleChange(change.ToString());
+                    _log.WatcherApplyChange(change.ToString());
                     change.Apply(changeset);
                 } catch (Exception e) {
+                    _log.WatcherApplyChangeFailed(change.ToString(), e);
                     Trace.Fail($"Failed to apply change {change}:\n{e}");
                     throw;
                 }
@@ -167,6 +168,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
         }
 
         private void TraceError(string watcherName, ErrorEventArgs errorEventArgs) {
+            _log.ErrorInFileWatcher(watcherName, errorEventArgs.GetException());
             Trace.Fail($"Error in {watcherName}:\n{errorEventArgs.GetException()}");
         }
 
