@@ -223,33 +223,6 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
-        //public static bool ShowInternalFunctions
-        //{
-        //    get
-        //    {
-        //        return Storage.GetBoolean(CommonSettings.ShowInternalFunctionsKey, false);
-        //    }
-
-        //    set
-        //    {
-        //        if (IsWritable)
-        //            WritableStorage.SetBoolean(CommonSettings.ShowInternalFunctionsKey, value);
-        //    }
-        //}
-        //public static bool ShowTclFunctions
-        //{
-        //    get
-        //    {
-        //        return Storage.GetBoolean(CommonSettings.ShowTclFunctionsKey, false);
-        //    }
-
-        //    set
-        //    {
-        //        if (IsWritable)
-        //            WritableStorage.SetBoolean(CommonSettings.ShowTclFunctionsKey, value);
-        //    }
-        //}
-
         public static bool SendToReplOnCtrlEnter
         {
             get

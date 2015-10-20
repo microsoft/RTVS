@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.Composition.Hosting;
-using System.Diagnostics;
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.R.Support.Settings
@@ -13,29 +12,15 @@ namespace Microsoft.R.Support.Settings
 
         public static IRToolsSettings Current
         {
-            get
-            {
-                lock(_lock)
-                {
-                    if (_instance == null)
-                    {
-                        Debug.Assert(_exportProvider != null);
-                        _instance = _exportProvider != null ? _exportProvider.GetExport<IRToolsSettings>().Value : null;
-                        _instance?.LoadFromStorage();
-                    }
-                }
-
-                return _instance;
-            }
-            internal set
-            {
-                _instance = value;
-            }
+            get { return _instance; }
+            internal set { _instance = value; }
         }
 
         public static void Init(ExportProvider exportProvider)
         {
             _exportProvider = exportProvider;
+            _instance = _exportProvider != null ? _exportProvider.GetExport<IRToolsSettings>().Value : null;
+            _instance?.LoadFromStorage();
         }
     }
 }
