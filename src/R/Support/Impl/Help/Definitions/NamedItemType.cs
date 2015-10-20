@@ -9,7 +9,6 @@
         Package,
         Function,
         Constant,
-        Parameter,
-        Variable
+        Parameter
     }
 }

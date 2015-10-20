@@ -14,13 +14,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
     public partial class VariableView : UserControl
     {
+        private readonly VariableProvider _variableProvider;
         private Variable _globalEnv;
+        private VariableEvaluationContext _globalEnvContext;
 
         public VariableView()
         {
             InitializeComponent();
 
-            VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
+            _variableProvider = new VariableProvider();
+            _variableProvider.SessionsChanged += VariableProvider_SessionsChanged;
+            _variableProvider.VariableChanged += VariableProvider_VariableChanged;
+
+            InitializeData();
 
             Loaded += VariableView_Loaded;
             Unloaded += VariableView_Unloaded;
@@ -44,12 +50,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             UnregisterThumbEvents();
         }
 
+        private void VariableProvider_SessionsChanged(object sender, EventArgs e)
+        {
+            InitializeData();
+        }
+
         private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e)
         {
             if (e.NewVariable != null
-                && e.NewVariable.Name == VariableProvider.Current.GlobalEnvContext.VariableName)
+                && e.NewVariable.Name == _globalEnvContext.VariableName)
             {
-                var newVariable = Variable.Create(null, e.NewVariable, VariableProvider.Current.GlobalEnvContext,
+                var newVariable = Variable.Create(null, e.NewVariable, _globalEnvContext,
                     new VariableVisualInfo() {
                         IndentStep = -1,  // indent -1, as childrent is root level.
                         NameWidth = NameColumn.ActualWidth,
@@ -70,6 +81,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                     }
                     });
             }
+        }
+
+        public void InitializeData()
+        {
+            Task t = Task.Run(async () =>   // no await
+            {
+                _globalEnvContext = new VariableEvaluationContext()
+                {
+                    Environment = VariableEvaluationContext.GlobalEnv,
+                    VariableName = VariableEvaluationContext.GlobalEnv
+                };
+
+                await _variableProvider.SetMonitorContext(_globalEnvContext);
+            });
         }
 
         private void SetVariable(Variable variable)

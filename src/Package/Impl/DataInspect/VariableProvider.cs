@@ -26,37 +26,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         public REvaluation NewVariable { get; set; }
     }
 
-    internal sealed class VariableProvider
+    internal class VariableProvider
     {
-        private static Lazy<VariableProvider> _instance = new Lazy<VariableProvider>(() => new VariableProvider());
-
         private IRSession _rSession;
         private VariableEvaluationContext _monitorContext;
 
-        public static VariableProvider Current => _instance.Value;
-
-        private VariableProvider()
+        public VariableProvider()
         {
             var sessionProvider = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
-            SetRSession(sessionProvider.Current);   // TODO: find a place to SetRSession to null, watch out memory leak
-
-            InitializeData();
-        }
-
-        private void InitializeData()
-        {
-            Task t = Task.Run(async () =>   // no await
-            {
-                GlobalEnvContext = new VariableEvaluationContext()
-                {
-                    Environment = VariableEvaluationContext.GlobalEnv,
-                    VariableName = VariableEvaluationContext.GlobalEnv
-                };
-
-                await SetMonitorContext(GlobalEnvContext);
-            });
+            SetRSession(sessionProvider.Current);   // TODO: f ind a place to SetRSession to null, watch out memory leak
         }
 
         #region Public
@@ -67,8 +47,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         public event EventHandler SessionsChanged;
 
         public event EventHandler<VariableChangedArgs> VariableChanged;
-
-        public VariableEvaluationContext GlobalEnvContext { get; private set; }
 
         #endregion
 
@@ -120,8 +98,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
                 Task t = RefreshVariableCollection();   // TODO: have a no-await wrapper to handle side effects
             }
-
-            InitializeData();
 
             if (SessionsChanged != null)
             {
