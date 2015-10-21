@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
@@ -12,7 +14,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Host.Client {
-    public sealed class RHost : IDisposable, IRExpressionEvaluator {
+    public sealed partial class RHost : IDisposable, IRExpressionEvaluator {
+        private readonly string[] parseStatusNames = { "NULL", "OK", "INCOMPLETE", "ERROR", "EOF" };
+
         public const int DefaultPort = 5118;
         public const string RHostExe = "Microsoft.R.Host.exe";
         public const string RBinPathX64 = @"bin\x64";
@@ -24,10 +28,10 @@ namespace Microsoft.R.Host.Client {
         private readonly LinesLog _log;
         private Process _process;
         private ClientWebSocket _socket;
-        private byte[] _buffer;
+        private byte[] _buffer = new byte[0x100000];
         private bool _isRunning, _canEval;
         private int _rLoopDepth;
-        private ulong _messageId;
+        private long _nextMessageId = 1;
 
         public RHost(IRCallbacks callbacks) {
             _callbacks = callbacks;
@@ -36,6 +40,37 @@ namespace Microsoft.R.Host.Client {
 
         public void Dispose() {
             _cts.Cancel();
+        }
+
+        private static Exception ProtocolError(FormattableString fs, object message = null) {
+            var s = fs.ToString(CultureInfo.InvariantCulture);
+            if (message != null) {
+                s += "\n\n" + message;
+            }
+            Trace.Fail(s);
+            return new InvalidDataException(s);
+        }
+
+        private async Task<Message> ReceiveMessageAsync(CancellationToken ct) {
+            var sb = new StringBuilder();
+            WebSocketReceiveResult wsrr;
+            do {
+                wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
+                if (wsrr.CloseStatus != null) {
+                    return null;
+                }
+                sb.Append(Encoding.UTF8.GetString(_buffer, 0, wsrr.Count));
+            } while (!wsrr.EndOfMessage);
+
+            var json = sb.ToString();
+            _log.Response(json, _rLoopDepth);
+
+            var token = JToken.Parse(json);
+            if (token == null) {
+                return null;
+            }
+
+            return new Message(token);
         }
 
         public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
@@ -80,9 +115,9 @@ namespace Microsoft.R.Host.Client {
 
                         await Run(ct);
                     }
-                } catch (OperationCanceledException) when(ct.IsCancellationRequested) {
+                } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
                     // Expected cancellation, do not propagate, just exit process
-                } catch (Exception ex) { 
+                } catch (Exception ex) {
                     Trace.Fail("Exception in RHost run loop:\n" + ex);
                     throw;
                 } finally {
@@ -118,21 +153,27 @@ namespace Microsoft.R.Host.Client {
                 throw new InvalidOperationException("This host is already running.");
             }
 
-            _buffer = new byte[0x10000];
             _isRunning = true;
             try {
                 try {
-                    var webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
-                    string s = Encoding.UTF8.GetString(_buffer, 0, webSocketReceiveResult.Count);
-                    var obj = JObject.Parse(s);
-                    int protocolVersion = (int)(double)obj["protocol_version"];
-                    Debug.Assert(protocolVersion == 1);
-                    string rVersion = (string)obj["R_version"];
+                    var message = await ReceiveMessageAsync(ct);
+                    if (message.Name != "Microsoft.R.Host" || message.RequestId != null) {
+                        throw ProtocolError($"Microsoft.R.Host handshake expected:", message);
+                    }
+
+                    var protocolVersion = message.GetInt32(0, "protocol_version");
+                    if (protocolVersion != 1) {
+                        throw ProtocolError($"Unsupported RHost protocol version:", message);
+                    }
+
+                    var rVersion = message.GetString(1, "R_version");
                     await _callbacks.Connected(rVersion);
-                    _log.EnterRLoop(_rLoopDepth);
-                    await RunLoop(ct, allowEval: true, depth: 0);
+
+                    message = await RunLoop(ct, allowEval: true);
+                    if (message != null) {
+                        throw ProtocolError($"Unexpected host response message:", message);
+                    }
                 } finally {
-                    _log.ExitRLoop(_rLoopDepth);
                     await _callbacks.Disconnected();
                 }
             } finally {
@@ -140,159 +181,211 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task<JObject> RunLoop(CancellationToken ct, bool allowEval, int depth) {
+        private async Task<Message> RunLoop(CancellationToken ct, bool allowEval) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            while (!ct.IsCancellationRequested) {
-                WebSocketReceiveResult webSocketReceiveResult;
-                var s = string.Empty;
-                do {
-                    webSocketReceiveResult = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
-                    if (webSocketReceiveResult.CloseStatus != null) {
+            try {
+                _log.EnterRLoop(_rLoopDepth++);
+                while (!ct.IsCancellationRequested) {
+                    var message = await ReceiveMessageAsync(ct);
+                    if (message == null) {
                         return null;
+                    } else if (message.RequestId != null) {
+                        return message;
                     }
-                    s += Encoding.UTF8.GetString(_buffer, 0, webSocketReceiveResult.Count);
-                } while (!webSocketReceiveResult.EndOfMessage);
 
-                // TODO: id should be taken from received message when RHost starts providing it
-                _log.Response(s, depth, _messageId);
-                JObject obj = JObject.Parse(s);
-                var contexts = GetContexts(obj);
+                    switch (message.Name) {
+                        case "?":
+                            await YesNoCancel(message, allowEval, ct);
+                            break;
 
-                var evt = (string)obj["event"];
-                switch (evt) {
-                    case "YesNoCancel":
-                        await YesNoCancel(contexts, obj, allowEval, depth, ct);
-                        break;
+                        case ">":
+                            await ReadConsole(message, allowEval, ct);
+                            break;
 
-                    case "ReadConsole":
-                        await ReadConsole(contexts, obj, allowEval, depth, ct);
-                        break;
+                        case "!":
+                        case "!!":
+                            message.ExpectArguments(1);
+                            await _callbacks.WriteConsoleEx(
+                                message.GetString(0, "buf", allowNull: true),
+                                message.Name.Length == 1 ? OutputType.Output : OutputType.Error,
+                                ct);
+                            break;
 
-                    case "WriteConsoleEx":
-                        await
-                            _callbacks.WriteConsoleEx(contexts, (string)obj["buf"], (OutputType)(double)obj["otype"], ct);
-                        break;
+                        case "![]":
+                            message.ExpectArguments(1);
+                            await _callbacks.ShowMessage(message.GetString(0, "s", allowNull: true), ct);
+                            break;
 
-                    case "ShowMessage":
-                        await _callbacks.ShowMessage(contexts, (string)obj["s"], ct);
-                        break;
+                        case "~+":
+                            await _callbacks.Busy(true, ct);
+                            break;
+                        case "~-":
+                            await _callbacks.Busy(false, ct);
+                            break;
 
-                    case "Busy":
-                        await _callbacks.Busy(contexts, (bool)obj["which"], ct);
-                        break;
+                        case "PlotXaml":
+                            await _callbacks.PlotXaml(message.GetString(0, "xaml_file_path"), ct);
+                            // TODO: delete temporary xaml and bitmap files
+                            break;
 
-                    case "CallBack":
-                        break;
-
-                    case "eval":
-                        return obj;
-
-                    case "PlotXaml":
-                        await _callbacks.PlotXaml(contexts, (string)obj["filepath"], ct);
-                        // TODO: delete temporary xaml and bitmap files
-                        break;
-
-                    case "exit":
-                        return null;
-
-                    default:
-                        throw new InvalidDataException("Unknown event type " + evt);
+                        default:
+                            throw ProtocolError($"Unrecognized host message name:", message);
+                    }
                 }
+            } finally {
+                _log.ExitRLoop(--_rLoopDepth);
             }
 
             return null;
         }
 
-        private async Task YesNoCancel(RContext[] contexts, JObject obj, bool allowEval, int depth, CancellationToken ct) {
+        private async Task YesNoCancel(Message request, bool allowEval, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
+            request.ExpectArguments(2);
+            var contexts = GetContexts(request);
+            var s = request.GetString(1, "s", allowNull: true);
+
+            YesNoCancel input;
             try {
                 _canEval = allowEval;
-                YesNoCancel input = await _callbacks.YesNoCancel(contexts, (string)obj["s"], _canEval, ct);
-                await SendAsync((double)input, depth, ct);
+                input = await _callbacks.YesNoCancel(contexts, s, _canEval, ct);
             } finally {
                 _canEval = false;
             }
+
+            string response;
+            switch (input) {
+                case Client.YesNoCancel.No:
+                    response = "N";
+                    break;
+                case Client.YesNoCancel.Cancel:
+                    response = "C";
+                    break;
+                case Client.YesNoCancel.Yes:
+                    response = "Y";
+                    break;
+                default:
+                    {
+                        FormattableString error = $"YesNoCancel: callback returned an invalid value: {input}";
+                        Trace.Fail(error.ToString(CultureInfo.InvariantCulture));
+                        throw new InvalidOperationException(error.ToString(CultureInfo.InvariantCulture));
+                    }
+            }
+
+            await RespondAsync(request, ct, response);
         }
 
-        private async Task ReadConsole(RContext[] contexts, JObject obj, bool allowEval, int depth, CancellationToken ct) {
+        private async Task ReadConsole(Message request, bool allowEval, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
+            request.ExpectArguments(5);
+
+            var contexts = GetContexts(request);
+            var len = request.GetInt32(1, "len");
+            var addToHistory = request.GetBoolean(2, "addToHistory");
+            var retryReason = request.GetString(3, "retry_reason", allowNull: true);
+            var prompt = request.GetString(4, "prompt", allowNull: true);
+
+            string input;
             try {
                 _canEval = allowEval;
-
-                var prompt = (string)obj["prompt"];
-                var buf = (string)obj["buf"];
-                var len = (int)(double)obj["len"];
-                var addToHistory = (bool)obj["addToHistory"];
-
-                string input = await _callbacks.ReadConsole(contexts, prompt, buf, len, addToHistory, _canEval, ct);
-                input = input.Replace("\r\n", "\n");
-                await SendAsync(input, depth, ct);
+                input = await _callbacks.ReadConsole(contexts, prompt, len, addToHistory, _canEval, ct);
             } finally {
                 _canEval = false;
             }
+
+            input = input.Replace("\r\n", "\n");
+            await RespondAsync(request, ct, input);
         }
 
-        private async Task SendAsync<T>(T input, int depth, CancellationToken ct) {
+        private async Task SendAsync(JToken token, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            if (ct.IsCancellationRequested) {
-                return;
-            }
+            var json = JsonConvert.SerializeObject(token);
+            byte[] buffer = Encoding.UTF8.GetBytes(json);
+            await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
 
-            var request = JsonConvert.SerializeObject(input);
-            byte[] responseBytes = Encoding.UTF8.GetBytes(request);
-            await _socket.SendAsync(new ArraySegment<byte>(responseBytes, 0, responseBytes.Length), WebSocketMessageType.Text, true, ct);
-            _log.Request(request, depth, ++_messageId);
+            _log.Request(json, _rLoopDepth);
         }
 
-        private static RContext[] GetContexts(JObject obj) {
-            JToken contextsArray;
-            if (!obj.TryGetValue("contexts", out contextsArray)) {
-                return new RContext[0];
-            }
-
-            return ((JArray)contextsArray)
-                .Cast<JObject>()
-                .Select(ctx => new RContext((RContextType)(double)ctx["callflag"]))
-                .ToArray();
+        private static RContext[] GetContexts(Message message) {
+            var contexts = message.GetArgument(0, "contexts", JTokenType.Array)
+                .Select((token, i) => {
+                    if (token.Type != JTokenType.Integer) {
+                        throw ProtocolError($"Element #{i} of context array must be an integer:", message);
+                    }
+                    return new RContext((RContextType)(int)token);
+                });
+            return contexts.ToArray();
         }
 
-        async Task<REvaluationResult> IRExpressionEvaluator.EvaluateAsync(string expression, bool reentrant, CancellationToken ct) {
+        private JArray CreateMessage(CancellationToken ct, out string id, string name, params object[] args) {
+            id = "#" + _nextMessageId + "#";
+            _nextMessageId += 2;
+            return new JArray(id, name, args);
+        }
+
+        private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
+            string id;
+            var message = CreateMessage(ct, out id, name, args);
+            await SendAsync(message, ct);
+            return id;
+        }
+
+        private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
+            string id;
+            var message = CreateMessage(ct, out id, ":", request.Id, request.Name, args);
+            await SendAsync(message, ct);
+            return id;
+        }
+
+        public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (!_canEval) {
                 throw new InvalidOperationException("EvaluateAsync can only be called while ReadConsole or YesNoCancel is pending.");
             }
 
+            bool reentrant = false, jsonResult = false;
+
+            var nameBuilder = new StringBuilder("=");
+            if (kind.HasFlag(REvaluationKind.Reentrant)) {
+                nameBuilder.Append('@');
+                reentrant = true;
+            }
+            if (kind.HasFlag(REvaluationKind.Json)) {
+                nameBuilder.Append('j');
+                jsonResult = true;
+            }
+            if (kind.HasFlag(REvaluationKind.BaseEnv)) {
+                nameBuilder.Append('B');
+            }
+            if (kind.HasFlag(REvaluationKind.EmptyEnv)) {
+                nameBuilder.Append('E');
+            }
+            var name = nameBuilder.ToString();
+
             _canEval = false;
             try {
-                await SendAsync(new {
-                    command = "eval",
-                    expr = expression.Replace("\r\n", "\n")
-                }, _rLoopDepth, ct);
+                expression = expression.Replace("\r\n", "\n");
+                var id = await SendAsync(name, ct, expression);
 
-                JObject obj;
-                try {
-                    _rLoopDepth++;
-                    _log.EnterRLoop(_rLoopDepth);
-                    obj = await RunLoop(ct, reentrant, _rLoopDepth);
-                } finally {
-                    _log.ExitRLoop(_rLoopDepth);
-                    _rLoopDepth--;
+                var response = await RunLoop(ct, reentrant);
+                if (response.RequestId != id || response.Name != name) {
+                    throw ProtocolError($"Mismatched host response ['{response.Id}',':','{response.Name}',...] to evaluation request ['{id}','{name}','{expression}']");
                 }
 
-                JToken result, error, parseStatus;
-                obj.TryGetValue("result", out result);
-                obj.TryGetValue("error", out error);
-                obj.TryGetValue("ParseStatus", out parseStatus);
+                response.ExpectArguments(3);
+                var parseStatus = response.GetEnum<RParseStatus>(0, "parseStatus", parseStatusNames);
+                var error = response.GetString(1, "error", allowNull: true);
 
-                return new REvaluationResult(
-                    result != null ? (string)result : null,
-                    error != null ? (string)error : null,
-                    parseStatus != null ? (RParseStatus)(double)parseStatus : RParseStatus.Null);
+                if (jsonResult) {
+                    return new REvaluationResult(response[2], error, parseStatus);
+                } else {
+                    return new REvaluationResult(response.GetString(2, "value", allowNull: true), error, parseStatus);
+                }
             } finally {
                 _canEval = true;
             }

@@ -38,12 +38,12 @@ namespace Microsoft.R.Host.Client {
             log.WriteLineAsync(MessageCategory.General, Invariant($"Exit R loop, depth={depth}"));
         }
 
-        public static void Request(this IActionLog log, string request, int depth, ulong id) {
-            log.WriteLineAsync(MessageCategory.General, Invariant($"[Request,depth={depth},id={id}]:{request}"));
+        public static void Request(this IActionLog log, string request, int depth) {
+            log.WriteLineAsync(MessageCategory.General, Invariant($"[Request,depth={depth}]:{request}"));
         }
 
-        public static void Response(this IActionLog log, string response, int depth, ulong id) {
-            log.WriteLineAsync(MessageCategory.General, Invariant($"[Response,depth={depth},id={id}]:{response}"));
+        public static void Response(this IActionLog log, string response, int depth) {
+            log.WriteLineAsync(MessageCategory.General, Invariant($"[Response,depth={depth}]:{response}"));
         }
     }
 }

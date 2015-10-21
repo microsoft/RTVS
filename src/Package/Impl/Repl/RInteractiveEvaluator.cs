@@ -16,14 +16,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public RInteractiveEvaluator(IRSession session) {
             Session = session;
-            Session.Response += SessionOnResponse;
-            Session.Error += SessionOnError;
+            Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
         }
 
         public void Dispose() {
-            Session.Response -= SessionOnResponse;
-            Session.Error -= SessionOnError;
+            Session.Output -= SessionOnOutput;
             Session.Disconnected -= SessionOnDisconnected;
         }
 
@@ -130,12 +128,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public IInteractiveWindow CurrentWindow { get; set; }
 
-        private void SessionOnResponse(object sender, RResponseEventArgs args) {
-            Write(args.Message).DoNotWait();
-        }
-
-        private void SessionOnError(object sender, RErrorEventArgs args) {
-            WriteError(args.Message).DoNotWait();
+        private void SessionOnOutput(object sender, ROutputEventArgs args) {
+            if (args.OutputType == OutputType.Output) {
+                Write(args.Message).DoNotWait();
+            } else {
+                WriteError(args.Message).DoNotWait();
+            }
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {

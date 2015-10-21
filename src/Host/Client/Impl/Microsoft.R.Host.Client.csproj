@@ -62,15 +62,15 @@
     <Compile Include="MicrosoftRHostMissingException.cs" />
     <Compile Include="OutputType.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="RHost.Message.cs" />
     <Compile Include="RHostLoggingExtensions.cs" />
     <Compile Include="RRequestEventArgs.cs" />
     <Compile Include="RContext.cs" />
     <Compile Include="RContextType.cs" />
-    <Compile Include="RErrorEventArgs.cs" />
     <Compile Include="RException.cs" />
     <Compile Include="RHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RResponseEventArgs.cs" />
+    <Compile Include="ROutputEventArgs.cs" />
     <Compile Include="YesNoCancel.cs" />
   </ItemGroup>
   <ItemGroup>
