@@ -360,18 +360,34 @@ namespace Microsoft.R.Core.AST.Expressions
             // Separate expression from function call. In case of 
             // function call previous token is either closing indexer 
             // brace or closing function brace. Identifier with brace 
-            // is handled up above.
+            // is handled up above. 
+            // Indentifier followed by a brace needs to be analyzed
+            // so we can tell between previous expression that ended
+            // with identifier and identifier that is a function name:
+            //
+            //      a <- 2*b
+            //      (expression)
+            //
+            // in this case b is not a function name. Similarly,
+            //
+            //      a <- 2*b[1]
+            //      (expression)
+            //
+            // is not a function call operator over b[1].
 
-            if (tokens.PreviousToken.TokenType == RTokenType.CloseBrace ||
-                tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
-                tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
-                tokens.PreviousToken.TokenType == RTokenType.Identifier)
+            if (!context.Tokens.IsLineBreakAfter(context.TextProvider, tokens.Position - 1))
             {
-                FunctionCall functionCall = new FunctionCall();
-                functionCall.Parse(context, null);
+                if (tokens.PreviousToken.TokenType == RTokenType.CloseBrace ||
+                    tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
+                    tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
+                    tokens.PreviousToken.TokenType == RTokenType.Identifier)
+                {
+                    FunctionCall functionCall = new FunctionCall();
+                    functionCall.Parse(context, null);
 
-                errorType = HandleFunctionOrIndexer(functionCall);
-                return OperationType.Function;
+                    errorType = HandleFunctionOrIndexer(functionCall);
+                    return OperationType.Function;
+                }
             }
 
             Group group = new Group();
