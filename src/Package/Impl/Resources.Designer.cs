@@ -142,7 +142,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to launch Microsoft Outlook.
+        ///   Looks up a localized string similar to Unable to launch Microsoft Outlook. Please attach RTVSLogs.zip file from your user TEMP folder to an e-mail message and send it to rtvscore@microsoft.com.
         /// </summary>
         internal static string Error_CannotFindOutlook {
             get {

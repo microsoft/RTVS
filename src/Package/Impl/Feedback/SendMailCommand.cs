@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -12,6 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             Application outlookApp = new Application();
             if (outlookApp == null) {
                 EditorShell.Current.ShowErrorMessage(Resources.Error_CannotFindOutlook);
+                Process.Start(Path.GetTempPath());
                 return;
             }
 
