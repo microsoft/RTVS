@@ -216,6 +216,70 @@ namespace Microsoft.R.Host.Client {
             return id;
         }
 
+        public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
+            string rBinPath = Path.Combine(rHome, RBinPathX64);
+
+            if (!File.Exists(rhostExe)) {
+                throw new MicrosoftRHostMissingException();
+            }
+
+            psi = psi ?? new ProcessStartInfo();
+            psi.FileName = rhostExe;
+            psi.UseShellExecute = false;
+            psi.EnvironmentVariables["R_HOME"] = rHome;
+            psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
+
+            using (this)
+            using (_process = Process.Start(psi)) {
+                _process.EnableRaisingEvents = true;
+                _process.Exited += delegate { Dispose(); };
+
+                try {
+                    ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
+                    using (_socket = new ClientWebSocket()) {
+                        var uri = new Uri("ws://localhost:" + DefaultPort);
+                        for (int i = 0; ; ++i) {
+                            try {
+                                await _socket.ConnectAsync(uri, ct);
+                                break;
+                            } catch (WebSocketException) {
+                                if (i > 10) {
+                                    throw;
+                                }
+                                await Task.Delay(100, ct);
+                            }
+                        }
+
+                        await Run(ct);
+                    }
+                } catch (Exception ex) when (!(ex is OperationCanceledException)) { // TODO: replace with better logging
+                    Trace.Fail("Exception in RHost run loop:\n" + ex);
+                    throw;
+                } finally {
+                    if (!_process.HasExited) {
+                        try {
+                            _process.WaitForExit(500);
+                            _process.Kill();
+                        } catch (InvalidOperationException) {
+                        }
+                    }
+                }
+            }
+        }
+
+        public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
+            using (_socket = new ClientWebSocket()) {
+                await _socket.ConnectAsync(uri, ct);
+                await Run(ct);
+            }
+        }
+
         private async Task Run(CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
@@ -423,70 +487,6 @@ namespace Microsoft.R.Host.Client {
                 }
             } finally {
                 _canEval = true;
-            }
-        }
-
-        public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
-            string rBinPath = Path.Combine(rHome, RBinPathX64);
-
-            if (!File.Exists(rhostExe)) {
-                throw new MicrosoftRHostMissingException();
-            }
-
-            psi = psi ?? new ProcessStartInfo();
-            psi.FileName = rhostExe;
-            psi.UseShellExecute = false;
-            psi.EnvironmentVariables["R_HOME"] = rHome;
-            psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
-
-            using (this)
-            using (_process = Process.Start(psi)) {
-                _process.EnableRaisingEvents = true;
-                _process.Exited += delegate { Dispose(); };
-
-                try {
-                    ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-                    using (_socket = new ClientWebSocket()) {
-                        var uri = new Uri("ws://localhost:" + DefaultPort);
-                        for (int i = 0; ; ++i) {
-                            try {
-                                await _socket.ConnectAsync(uri, ct);
-                                break;
-                            } catch (WebSocketException) {
-                                if (i > 10) {
-                                    throw;
-                                }
-                                await Task.Delay(100, ct);
-                            }
-                        }
-
-                        await Run(ct);
-                    }
-                } catch (Exception ex) when (!(ex is OperationCanceledException)) { // TODO: replace with better logging
-                    Trace.Fail("Exception in RHost run loop:\n" + ex);
-                    throw;
-                } finally {
-                    if (!_process.HasExited) {
-                        try {
-                            _process.WaitForExit(500);
-                            _process.Kill();
-                        } catch (InvalidOperationException) {
-                        }
-                    }
-                }
-            }
-        }
-
-        public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-            using (_socket = new ClientWebSocket()) {
-                await _socket.ConnectAsync(uri, ct);
-                await Run(ct);
             }
         }
     }
