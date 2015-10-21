@@ -62,6 +62,7 @@
     <Compile Include="MicrosoftRHostMissingException.cs" />
     <Compile Include="OutputType.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="RHost.Message.cs" />
     <Compile Include="RHostLoggingExtensions.cs" />
     <Compile Include="RRequestEventArgs.cs" />
     <Compile Include="RContext.cs" />
