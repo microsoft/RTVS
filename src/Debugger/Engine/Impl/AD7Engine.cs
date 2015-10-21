@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
+using static System.FormattableString;
 
 namespace Microsoft.R.Debugger.Engine {
     [ComVisible(true)]
@@ -39,7 +40,7 @@ namespace Microsoft.R.Debugger.Engine {
         public AD7Engine() {
             var compModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
             if (compModel == null) {
-                throw new InvalidOperationException($"{typeof(AD7Engine).FullName} requires {nameof(IComponentModel)} global service");
+                throw new InvalidOperationException(Invariant($"{typeof(AD7Engine).FullName} requires {nameof(IComponentModel)} global service"));
             }
 
             compModel.DefaultCompositionService.SatisfyImportsOnce(this);

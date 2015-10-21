@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
+using static System.FormattableString;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7PendingBreakpoint : IDebugPendingBreakpoint2 {
@@ -76,7 +75,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugPendingBreakpoint2.Enable(int fEnable) {
             if (_state == enum_PENDING_BP_STATE.PBPS_DELETED) {
-                Debug.Fail($"Trying to enable or disable a deleted {nameof(AD7PendingBreakpoint)}");
+                Debug.Fail(Invariant($"Trying to enable or disable a deleted {nameof(AD7PendingBreakpoint)}"));
                 return VSConstants.E_FAIL;
             }
 

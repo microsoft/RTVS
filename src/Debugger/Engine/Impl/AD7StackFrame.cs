@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio;

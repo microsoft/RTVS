@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
     public sealed class DebugSession : IDisposable {
@@ -73,7 +74,7 @@ namespace Microsoft.R.Debugger {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (_isInitialized) {
-                throw new InvalidOperationException($"This {nameof(DebugSession)} has already been initialized");
+                throw new InvalidOperationException(Invariant($"This {nameof(DebugSession)} has already been initialized"));
             } else {
                 _isInitialized = true;
             }
@@ -131,14 +132,14 @@ namespace Microsoft.R.Debugger {
             using (var eval = await RSession.BeginEvaluationAsync()) {
                 res = await eval.EvaluateAsync(expression, REvaluationKind.Json);
                 if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.JsonResult == null) {
-                    Trace.Fail($"Internal debugger evaluation {expression} failed: {res}");
+                    Trace.Fail(Invariant($"Internal debugger evaluation {expression} failed: {res}"));
                     throw new REvaluationException(res);
                 }
             }
 
             var token = res.JsonResult as TToken;
             if (token == null) {
-                string err = $"Expected to receive {typeof(TToken).Name} in response to {expression}, but got {res.JsonResult?.GetType().Name}";
+                var err = Invariant($"Expected to receive {typeof(TToken).Name} in response to {expression}, but got {res.JsonResult?.GetType().Name}");
                 Trace.Fail(err);
                 throw new JsonException(err);
             }
@@ -154,7 +155,7 @@ namespace Microsoft.R.Debugger {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var jEvalResult = await InvokeDebugHelperAsync<JObject>($".rtvs.eval({expression.ToRStringLiteral()}, {env})");
+            var jEvalResult = await InvokeDebugHelperAsync<JObject>(Invariant($".rtvs.eval({expression.ToRStringLiteral()}, {env})"));
             return DebugEvaluationResult.Parse(stackFrame, expression, name, jEvalResult);
         }
 
@@ -288,7 +289,7 @@ namespace Microsoft.R.Debugger {
                                     }
 
                                     // Set the destination for the next "c", which we will issue on the following prompt.
-                                    await inter.RespondAsync($"browserSetDebug({n})\n");
+                                    await inter.RespondAsync(Invariant($"browserSetDebug({n})\n"));
                                     _bpHitProcState = BreakpointHitProcessingState.BrowserSetDebug;
                                     return;
                                 } else {

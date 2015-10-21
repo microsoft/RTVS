@@ -1,6 +1,4 @@
 using System;
-using System.Globalization;
-using System.Linq;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
