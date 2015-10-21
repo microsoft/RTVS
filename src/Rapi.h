@@ -181,6 +181,7 @@ extern "C" {
     extern const char *R_curErrorBuf();
     extern void R_PreserveObject(SEXP);
     extern void R_ReleaseObject(SEXP);
+    extern Rboolean R_ToplevelExec(void(*fun)(void *), void *data);
 
     extern int Rf_initialize_R(int ac, char** av);
     extern int Rf_initEmbeddedR(int argc, char** argv);
@@ -203,6 +204,8 @@ extern "C" {
     extern R_len_t Rf_length(SEXP);
     extern SEXP Rf_installChar(SEXP);
     extern SEXP Rf_findVar(SEXP, SEXP);
+    extern SEXP Rf_eval(SEXP, SEXP);
+    extern void Rf_onintr();
     __declspec(noreturn) extern void Rf_error(const char *, ...);
 
     extern void setup_Rmainloop(void);

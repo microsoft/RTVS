@@ -12,8 +12,9 @@
 namespace rhost {
     namespace log {
         namespace {
+            std::mutex log_mutex;
             FILE* logfile;
-            std::atomic<int> indent;
+            int indent;
         }
 
         void init_log() {
@@ -38,6 +39,8 @@ namespace rhost {
         }
 
         void vlogf(const char* format, va_list va) {
+            std::lock_guard<std::mutex> lock(log_mutex);
+
 #ifndef NDEBUG
             va_list va2;
             va_copy(va2, va);
@@ -72,6 +75,47 @@ namespace rhost {
             if (indent < 0) {
                 indent = 0;
             }
+        }
+
+
+        void terminate(bool unexpected, const char* format, va_list va) {
+            char message[0xFFFF];
+            vsprintf_s(message, format, va);
+
+            if (unexpected) {
+                logf("Fatal error: ");
+            }
+            logf("%s\n", message);
+
+            if (unexpected) {
+                std::string msgbox_text;
+                for (int i = 0; i < strlen(message); ++i) {
+                    char c = message[i];
+                    if (c == '\n') {
+                        msgbox_text += '\r';
+                    } 
+                    msgbox_text += c;
+                }
+                
+                assert(false);
+                MessageBoxA(HWND_DESKTOP, msgbox_text.c_str(), "Microsoft R Host Process fatal error", MB_OK | MB_ICONERROR);
+            }
+            
+            R_Suicide(message);
+        }
+
+        void terminate(const char* format, ...) {
+            va_list va;
+            va_start(va, format);
+            terminate(false, format, va);
+            va_end(format);
+        }
+
+        void fatal_error(const char* format, ...) {
+            va_list va;
+            va_start(va, format);
+            terminate(true, format, va);
+            va_end(format);
         }
     }
 }

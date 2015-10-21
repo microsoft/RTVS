@@ -7,7 +7,6 @@
     <ClCompile Include="vsgd.cpp" />
     <ClCompile Include="r_util.cpp" />
     <ClCompile Include="util.cpp" />
-    <ClCompile Include="eval.cpp" />
     <ClCompile Include="log.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,10 @@
     auto xx##NAME##xx = [&]() { __VA_ARGS__ }; \
     ::rhost::util::scope_warden<decltype(xx##NAME##xx)> NAME(xx##NAME##xx)
 
+#define SCOPE_WARDEN_RESTORE(NAME) \
+    auto NAME##_old_value = (NAME); \
+    SCOPE_WARDEN(restore_##NAME, (NAME) = NAME##_old_value;)
+
 namespace rhost {
     namespace util {
         template<typename F>
@@ -17,6 +21,13 @@ namespace rhost {
 
             void __declspec(nothrow) dismiss() {
                 _p = nullptr;
+            }
+
+            void __declspec(nothrow) run() {
+                if (_p) {
+                    (*_p)();
+                }
+                dismiss();
             }
 
             __declspec(nothrow) ~scope_warden() {
@@ -51,16 +62,28 @@ namespace rhost {
         typedef std::unique_ptr<SEXP, SEXP_delete> unique_sexp;
 
 
-        __declspec(noreturn) void fatal_error(const char* format, va_list va);
-
-        __declspec(noreturn) void fatal_error(const char* format, ...);
-
         std::string to_utf8(const char* buf, size_t len);
 
         inline std::string to_utf8(const std::string& s) {
             return to_utf8(s.data(), s.size());
         }
 
+        inline picojson::value to_utf8_json(const char* buf) {
+            return buf ? picojson::value(to_utf8(buf)) : picojson::value();
+        }
+
         std::string from_utf8(const std::string& u8s);
+
+
+        template<class Arg>
+        inline void append(picojson::array& msg, Arg&& arg) {
+            msg.push_back(picojson::value(std::forward<Arg>(arg)));
+        }
+
+        template<class Arg, class... Args>
+        inline void append(picojson::array& msg, Arg&& arg, Args&&... args) {
+            msg.push_back(picojson::value(std::forward<Arg>(arg)));
+            append(msg, std::forward<Args>(args)...);
+        }
     }
 }
