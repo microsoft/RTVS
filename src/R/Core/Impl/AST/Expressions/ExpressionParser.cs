@@ -375,7 +375,7 @@ namespace Microsoft.R.Core.AST.Expressions
             //
             // is not a function call operator over b[1].
 
-            if (_operands.Count > 1 && _operands.Count > 0)
+            if (_operators.Count > 1 || _operands.Count > 0)
             {
                 // We are not in the beginning of the expression
                 if (tokens.PreviousToken.TokenType == RTokenType.CloseBrace ||
