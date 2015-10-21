@@ -191,36 +191,6 @@ namespace Microsoft.R.Host.Client {
             return message;
         }
 
-        private async Task SendAsync(JToken token, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-
-            var json = JsonConvert.SerializeObject(token);
-            byte[] buffer = Encoding.UTF8.GetBytes(json);
-            await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
-
-            _log.Request(json, _rLoopDepth);
-        }
-
-        private JArray CreateMessage(CancellationToken ct, out string id, string name, params object[] args) {
-            id = "#" + _nextMessageId + "#";
-            _nextMessageId += 2;
-            return new JArray(id, name, args);
-        }
-
-        private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
-            string id;
-            var message = CreateMessage(ct, out id, name, args);
-            await SendAsync(message, ct);
-            return id;
-        }
-
-        private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
-            string id;
-            var message = CreateMessage(ct, out id, ":", request.Id, request.Name, args);
-            await SendAsync(message, ct);
-            return id;
-        }
-
         public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -388,17 +358,6 @@ namespace Microsoft.R.Host.Client {
             return null;
         }
 
-        private static RContext[] GetContexts(Message message) {
-            var contexts = message.GetArgument(0, JTokenType.Array)
-                .Select((token, i) => {
-                    if (token.Type != JTokenType.Integer) {
-                        throw ProtocolError($"Element #{i} of context array must be an integer:", message);
-                    }
-                    return new RContext((RContextType)(int)token);
-                });
-            return contexts.ToArray();
-        }
-
         private async Task YesNoCancel(Message request, bool allowEval, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
@@ -457,6 +416,47 @@ namespace Microsoft.R.Host.Client {
 
             input = input.Replace("\r\n", "\n");
             await RespondAsync(request, ct, input);
+        }
+
+        private async Task SendAsync(JToken token, CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
+            var json = JsonConvert.SerializeObject(token);
+            byte[] buffer = Encoding.UTF8.GetBytes(json);
+            await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
+
+            _log.Request(json, _rLoopDepth);
+        }
+
+        private static RContext[] GetContexts(Message message) {
+            var contexts = message.GetArgument(0, JTokenType.Array)
+                .Select((token, i) => {
+                    if (token.Type != JTokenType.Integer) {
+                        throw ProtocolError($"Element #{i} of context array must be an integer:", message);
+                    }
+                    return new RContext((RContextType)(int)token);
+                });
+            return contexts.ToArray();
+        }
+
+        private JArray CreateMessage(CancellationToken ct, out string id, string name, params object[] args) {
+            id = "#" + _nextMessageId + "#";
+            _nextMessageId += 2;
+            return new JArray(id, name, args);
+        }
+
+        private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
+            string id;
+            var message = CreateMessage(ct, out id, name, args);
+            await SendAsync(message, ct);
+            return id;
+        }
+
+        private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
+            string id;
+            var message = CreateMessage(ct, out id, ":", request.Id, request.Name, args);
+            await SendAsync(message, ct);
+            return id;
         }
 
         public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
