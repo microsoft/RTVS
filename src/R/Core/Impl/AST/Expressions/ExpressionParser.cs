@@ -375,8 +375,9 @@ namespace Microsoft.R.Core.AST.Expressions
             //
             // is not a function call operator over b[1].
 
-            if (!context.Tokens.IsLineBreakAfter(context.TextProvider, tokens.Position - 1))
+            if (_operands.Count > 1 && _operands.Count > 0)
             {
+                // We are not in the beginning of the expression
                 if (tokens.PreviousToken.TokenType == RTokenType.CloseBrace ||
                     tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
                     tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
