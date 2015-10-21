@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Actions.Logging;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
@@ -22,7 +23,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             var fileSystem = Substitute.For<IFileSystem>();
             var fileSystemFilter = Substitute.For<IMsBuildFileSystemFilter>();
 
-            MsBuildFileSystemWatcher watcher = new MsBuildFileSystemWatcher(ProjectDirectory, filter, delay, fileSystem, fileSystemFilter);
+            MsBuildFileSystemWatcher watcher = new MsBuildFileSystemWatcher(ProjectDirectory, filter, delay, fileSystem, fileSystemFilter, log: NullLog.Instance); 
             fileSystemFilter.Received().Seal();
 
             var fileSystemWatchers = new List<IFileSystemWatcher>();
@@ -60,7 +61,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             var fileSystem = hasFileSystem ? Substitute.For<IFileSystem>() : null;
             var fileSystemFilter = hasFileSystemFilter ? Substitute.For<IMsBuildFileSystemFilter>() : null;
 
-            Action ctor = () => new MsBuildFileSystemWatcher(projectFolder, filter, delay, fileSystem, fileSystemFilter);
+            Action ctor = () => new MsBuildFileSystemWatcher(projectFolder, filter, delay, fileSystem, fileSystemFilter, log: NullLog.Instance);
             ctor.ShouldThrow(exceptionType);
         }
 

@@ -83,7 +83,10 @@
     <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\HeaderScrollViewer.cs" />
+    <Compile Include="DataInspect\WorkspaceVariableProvider.cs" />
     <Compile Include="Debugger\RDebugSessionProvider.cs" />
+    <Compile Include="Options\R\Tools\RVersionTypeConverter.cs" />
+    <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
     <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
@@ -97,6 +100,7 @@
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
+    <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\Workspace\AttachDebuggerCommand.cs" />
     <Compile Include="Repl\Commands\ReplTypingCommandHandler.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
@@ -214,6 +218,9 @@
     </Compile>
     <Compile Include="RPackages\Commands\CheckForPackageUpdatesCommand.cs" />
     <Compile Include="RPackages\Commands\InstallPackagesCommand.cs" />
+    <Compile Include="RPackages\Mirrors\CranMirrorEntry.cs" />
+    <Compile Include="RPackages\Mirrors\CranMirrorList.cs" />
+    <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
     <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\AppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
@@ -265,6 +272,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <EmbeddedResource Include="RPackages\Mirrors\CranMirrors.csv" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -418,6 +426,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

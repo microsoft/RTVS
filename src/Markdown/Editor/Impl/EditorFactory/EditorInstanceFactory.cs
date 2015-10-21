@@ -9,6 +9,11 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.EditorFactory
 {
+    /// <summary>
+    /// Editor instance factory. Typically imported via MEF
+    /// in the host application editor factory such as in
+    /// IVsEditorFactory.CreateEditorInstance.
+    /// </summary>
     [Export(typeof(IEditorFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class EditorInstanceFactory : IEditorFactory

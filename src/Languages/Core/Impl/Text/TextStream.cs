@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Microsoft.Languages.Core.Text
 {
     /// <summary>
-    /// Implements <seealso cref="ITextProvider"/> on a string
+    /// Implements <seealso cref="ITextProvider"/> over a string
     /// </summary>
     public class TextStream : ITextProvider
     {

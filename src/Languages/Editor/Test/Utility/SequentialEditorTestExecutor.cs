@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tests.Shell;
+using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.Languages.Editor.Test.Utility
 {
@@ -28,18 +27,21 @@ namespace Microsoft.Languages.Editor.Test.Utility
         private static object _creatorLock = new object();
         private static Action _disposeAction;
 
-        public static void ExecuteTest(Action<ManualResetEventSlim> action)
+        public static void ExecuteTest(Action<ManualResetEventSlim> action, ITestCompositionCatalog catalog = null)
         {
-            ExecuteTest(action, null, null);
+            ExecuteTest(action, null, null, catalog);
         }
 
-        public static void ExecuteTest(Action<ManualResetEventSlim> action, Action initAction, Action disposeAction)
+        public static void ExecuteTest(Action<ManualResetEventSlim> action, Action initAction, Action disposeAction, ITestCompositionCatalog catalog = null)
         {
+            if (catalog == null)
+                catalog = EditorTestCompositionCatalog.Current;
+
             lock (_creatorLock)
             {
                 _disposeAction = disposeAction;
 
-                PrepareShell();
+                PrepareShell(catalog);
 
                 if (initAction != null)
                 {
@@ -51,8 +53,6 @@ namespace Microsoft.Languages.Editor.Test.Utility
                     action(evt);
                     evt.Wait();
                 }
-
-                AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
             }
         }
 
@@ -69,12 +69,18 @@ namespace Microsoft.Languages.Editor.Test.Utility
             }
         }
 
-        private static void PrepareShell()
+        private static void PrepareShell(ITestCompositionCatalog catalog)
         {
-            if (_shell == null)
+            lock (_creatorLock)
             {
-                _shell = TestEditorShell.Create(EditorTestCompositionCatalog.Current);
-                EditorShell.SetShell(_shell);
+                if (_shell == null || catalog.ExportProvider != _shell.ExportProvider)
+                {
+                    AppDomain.CurrentDomain.DomainUnload -= CurrentDomain_DomainUnload;
+                    AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
+
+                    _shell = TestEditorShell.Create(catalog);
+                    EditorShell.SetShell(_shell);
+                }
             }
         }
     }

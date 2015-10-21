@@ -12,13 +12,8 @@ namespace Microsoft.Languages.Editor.EditorFactory
     public interface IEditorInstance: IDisposable
     {
         /// <summary>
-        /// WPF control if editor is a custom designer and is not based on a text file.
-        /// </summary>
-        object WpfControl { get; }
-
-        /// <summary>
-        /// Text buffer containing document data that is to be attached to a text view. 
-        /// Can be null if document is not text based.
+        /// Text buffer containing document data that is 
+        /// to be attached to a text view. 
         /// </summary>
         ITextBuffer ViewBuffer { get; }
 
@@ -28,12 +23,14 @@ namespace Microsoft.Languages.Editor.EditorFactory
         ICommandTarget GetCommandTarget(ITextView textView);
 
         /// <summary>
-        /// Caption for the editor tab in the host application. Null if IDE should use default.
+        /// Caption for the editor tab in the host application. 
+        /// Null if IDE should use default.
         /// </summary>
         string Caption { get; }
 
         /// <summary>
-        /// Workspace item
+        /// Workspace item that represents document 
+        /// in the host application project system.
         /// </summary>
         IWorkspaceItem WorkspaceItem { get; }
     }

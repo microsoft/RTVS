@@ -3,10 +3,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
@@ -31,7 +33,7 @@ namespace Microsoft.R.Editor.Test.Signatures
             AstRoot ast = RParser.Parse(content);
 
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 10);
+            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 10);
 
             Assert.IsNotNull(parametersInfo);
             Assert.IsNotNull(parametersInfo.FunctionCall);
@@ -62,7 +64,7 @@ namespace Microsoft.R.Editor.Test.Signatures
             AstRoot ast = RParser.Parse(content);
 
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 9);
+            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 9);
 
             Assert.IsNotNull(parametersInfo);
             Assert.IsNotNull(parametersInfo.FunctionCall);
@@ -81,7 +83,7 @@ namespace Microsoft.R.Editor.Test.Signatures
         public void ParameterTest03()
         {
             string content = @"x <- foo(,,";
-            ParametersInfo parametersInfo;
+            ParameterInfo parametersInfo;
 
             AstRoot ast = RParser.Parse(content);
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
@@ -97,7 +99,7 @@ namespace Microsoft.R.Editor.Test.Signatures
 @"x <- foo(,, 
 
 if(x > 1) {";
-            ParametersInfo parametersInfo;
+            ParameterInfo parametersInfo;
 
             AstRoot ast = RParser.Parse(content);
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
@@ -119,7 +121,7 @@ while";
             AstRoot ast = RParser.Parse(content);
 
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length - 5);
+            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length - 5);
 
             Assert.IsNotNull(parametersInfo);
             Assert.IsNotNull(parametersInfo.FunctionCall);
@@ -139,7 +141,7 @@ function(a) {
             AstRoot ast = RParser.Parse(content);
 
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            ParametersInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length - 1);
+            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length - 1);
 
             Assert.IsNotNull(parametersInfo);
             Assert.IsNotNull(parametersInfo.FunctionCall);
@@ -166,45 +168,210 @@ function(a) {
             {
                 object result = FunctionIndex.GetFunctionInfo("aov", (object o) =>
                 {
-                    tree.TakeThreadOwnerShip();
-                    source.AugmentSignatureHelpSession(session, signatures, tree.AstRoot, (x) => { });
+                    ComputeCurrentParameter01_Body(completed);
+                });
 
-                    Assert.AreEqual(1, signatures.Count);
+                if (result != null && !completed.IsSet)
+                {
+                    ComputeCurrentParameter01_Body(completed);
+                }
 
-                    int index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
-                    Assert.AreEqual(0, index);
+            }, REditorTestCompositionCatalog.Current);
+        }
 
-                    textView.Caret = new TextCaretMock(textView, 5);
-                    TextBufferUtility.ApplyTextChange(textBuffer, 4, 0, 1, "a");
-                    index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
-                    Assert.AreEqual(0, index);
+        private void ComputeCurrentParameter01_Body(ManualResetEventSlim completed)
+        {
+            ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
+            TextViewMock textView = session.TextView as TextViewMock;
+            List<ISignature> signatures = new List<ISignature>();
 
-                    textView.Caret = new TextCaretMock(textView, 6);
-                    TextBufferUtility.ApplyTextChange(textBuffer, 5, 0, 1, ",");
-                    index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
-                    Assert.AreEqual(1, index);
+            EditorTree tree = new EditorTree(textBuffer);
+            tree.Build();
+            var document = new EditorDocumentMock(tree);
 
-                    textView.Caret = new TextCaretMock(textView, 7);
-                    TextBufferUtility.ApplyTextChange(textBuffer, 6, 0, 1, ",");
-                    index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
-                    Assert.AreEqual(2, index);
+            session.TrackingPoint = new TrackingPointMock(textBuffer, 4, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
 
-                    completed.Set();
-                 });
-            });
+            tree.TakeThreadOwnerShip();
+            source.AugmentSignatureHelpSession(session, signatures, tree.AstRoot, (x) => { });
+
+            Assert.AreEqual(1, signatures.Count);
+
+            int index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+            Assert.AreEqual(0, index);
+
+            textView.Caret = new TextCaretMock(textView, 5);
+            TextBufferUtility.ApplyTextChange(textBuffer, 4, 0, 1, "a");
+            index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+            Assert.AreEqual(0, index);
+
+            textView.Caret = new TextCaretMock(textView, 6);
+            TextBufferUtility.ApplyTextChange(textBuffer, 5, 0, 1, ",");
+            index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+            Assert.AreEqual(1, index);
+
+            textView.Caret = new TextCaretMock(textView, 7);
+            TextBufferUtility.ApplyTextChange(textBuffer, 6, 0, 1, ",");
+            index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+            Assert.AreEqual(2, index);
+
+            completed.Set();
         }
 
         private int GetCurrentParameterIndex(SignatureHelp sh, IParameter parameter)
         {
             for (int i = 0; i < sh.Parameters.Count; i++)
             {
-                if(sh.Parameters[i] == parameter)
+                if (sh.Parameters[i] == parameter)
                 {
                     return i;
                 }
             }
 
             return -1;
+        }
+
+        [TestMethod]
+        public void ParameterTest_ComputeCurrentParameter02()
+        {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) =>
+            {
+                object result = FunctionIndex.GetFunctionInfo("legend", (object o) =>
+                {
+                    ComputeCurrentParameter02_Body(completed);
+                });
+
+                if (result != null && !completed.IsSet)
+                {
+                    ComputeCurrentParameter02_Body(completed);
+                }
+            }, REditorTestCompositionCatalog.Current);
+        }
+
+        private void ComputeCurrentParameter02_Body(ManualResetEventSlim completed)
+        {
+            REditorSettings.PartialArgumentNameMatch = true;
+
+            ITextBuffer textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
+            TextViewMock textView = session.TextView as TextViewMock;
+            List<ISignature> signatures = new List<ISignature>();
+
+            EditorTree tree = new EditorTree(textBuffer);
+            tree.Build();
+            var document = new EditorDocumentMock(tree);
+
+            session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
+
+            tree.TakeThreadOwnerShip();
+            source.AugmentSignatureHelpSession(session, signatures, tree.AstRoot, (x) => { });
+
+            Assert.AreEqual(1, signatures.Count);
+
+            textView.Caret = new TextCaretMock(textView, 8);
+            SignatureHelp sh = signatures[0] as SignatureHelp;
+            int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+            Assert.AreEqual(11, index);
+
+            textView.Caret = new TextCaretMock(textView, 15);
+            index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 15);
+            Assert.AreEqual(6, index);
+
+            completed.Set();
+        }
+
+        [TestMethod]
+        public void ParameterTest_ComputeCurrentParameter03()
+        {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) =>
+            {
+                object result = FunctionIndex.GetFunctionInfo("legend", (object o) =>
+                {
+                    ComputeCurrentParameter03_Body(completed);
+                });
+
+                if (result != null && !completed.IsSet)
+                {
+                    ComputeCurrentParameter03_Body(completed);
+                }
+            }, REditorTestCompositionCatalog.Current);
+        }
+
+        private void ComputeCurrentParameter03_Body(ManualResetEventSlim completed)
+        {
+            REditorSettings.PartialArgumentNameMatch = false;
+
+            ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
+            TextViewMock textView = session.TextView as TextViewMock;
+            List<ISignature> signatures = new List<ISignature>();
+
+            EditorTree tree = new EditorTree(textBuffer);
+            tree.Build();
+            var document = new EditorDocumentMock(tree);
+
+            session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
+
+            tree.TakeThreadOwnerShip();
+            source.AugmentSignatureHelpSession(session, signatures, tree.AstRoot, (x) => { });
+
+            Assert.AreEqual(1, signatures.Count);
+
+            textView.Caret = new TextCaretMock(textView, 8);
+            SignatureHelp sh = signatures[0] as SignatureHelp;
+            int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+            Assert.AreEqual(0, index);
+
+            completed.Set();
+        }
+
+        [TestMethod]
+        public void ParameterTest_ComputeCurrentParameter04()
+        {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) =>
+            {
+                object result = FunctionIndex.GetFunctionInfo("legend", (object o) =>
+                {
+                    ComputeCurrentParameter04_Body(completed);
+                });
+
+                if (result != null && !completed.IsSet)
+                {
+                    ComputeCurrentParameter04_Body(completed);
+                }
+            }, REditorTestCompositionCatalog.Current);
+        }
+
+        private void ComputeCurrentParameter04_Body(ManualResetEventSlim completed)
+        {
+            REditorSettings.PartialArgumentNameMatch = true;
+
+            ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
+            TextViewMock textView = session.TextView as TextViewMock;
+            List<ISignature> signatures = new List<ISignature>();
+
+            EditorTree tree = new EditorTree(textBuffer);
+            tree.Build();
+            var document = new EditorDocumentMock(tree);
+
+            session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
+
+            tree.TakeThreadOwnerShip();
+            source.AugmentSignatureHelpSession(session, signatures, tree.AstRoot, (x) => { });
+
+            Assert.AreEqual(1, signatures.Count);
+
+            textView.Caret = new TextCaretMock(textView, 8);
+            SignatureHelp sh = signatures[0] as SignatureHelp;
+            int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+            Assert.AreEqual(9, index);
+
+            completed.Set();
         }
     }
 }

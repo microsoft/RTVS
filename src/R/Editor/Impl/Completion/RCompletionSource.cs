@@ -77,6 +77,13 @@ namespace Microsoft.R.Editor.Completion
             completionSets.Add(completionSet);
         }
 
+        /// <summary>
+        /// Calculates span in the text buffer that contains data
+        /// applicable to the current completion session. A tracking
+        /// span will be created over it and editor will grow and shrink
+        /// tracking span as user types and filter completion session
+        /// based on the data inside the tracking span.
+        /// </summary>
         private Span GetApplicableSpan(int position, ICompletionSession session)
         {
             var selectedSpans = session.TextView.Selection.SelectedSpans;

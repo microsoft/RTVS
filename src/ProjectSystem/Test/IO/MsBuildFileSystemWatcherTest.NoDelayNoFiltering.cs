@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using NSubstitute;
 using Xunit;
 using Microsoft.Common.Core.Test.IO.SubstituteFactories;
+using Microsoft.R.Actions.Logging;
 using NSubstitute.ExceptionExtensions;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
@@ -39,7 +40,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
 
                 _taskScheduler = new ControlledTaskScheduler(SynchronizationContext.Current);
 
-                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 0, _fileSystem, fileSystemFilter, _taskScheduler);
+                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 0, _fileSystem, fileSystemFilter, _taskScheduler, NullLog.Instance);
                 _fileSystemWatcher.Start();
 
                 _fileWatcher = watchers.FileWatcher;

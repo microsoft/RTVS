@@ -99,6 +99,7 @@
     <None Include="Files\Parser\frametools.R" />
     <None Include="Files\Parser\frametools.r.tree" />
     <None Include="Files\Tokenization\Expressions.r.tokens" />
+    <None Include="Files\Tokenization\Identifiers.r" />
     <None Include="Files\Tokenization\Floats.r" />
     <None Include="Files\Tokenization\Expressions.r" />
     <None Include="Files\Tokenization\Floats.r.tokens" />
@@ -106,6 +107,7 @@
     <None Include="Files\Tokenization\Functions.r.tokens" />
     <None Include="Files\Tokenization\Hex.r" />
     <None Include="Files\Tokenization\Hex.r.tokens" />
+    <None Include="Files\Tokenization\Identifiers.r.tokens" />
     <None Include="Files\Tokenization\Integers.r.tokens" />
     <None Include="Files\Tokenization\lsfit.r" />
     <None Include="Files\Tokenization\lsfit.r.tokens" />

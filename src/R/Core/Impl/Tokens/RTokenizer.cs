@@ -428,7 +428,61 @@ namespace Microsoft.R.Core.Tokens
         /// <param name="openQuote"></param>
         private void HandleString(char openQuote)
         {
-            Tokenizer.HandleString(openQuote, _cs, (start, length) => AddToken(RTokenType.String, start, length));
+            // In R quoted identifier is not not necessarily a string.
+            // Examples: 
+            //      "abc" <- 1
+            //      "odd name" <- function(...)
+            //      "odd name"("strange tag" = 5, y)
+            // thus we have to look ahead or back and find out context.
+            //
+            // We'll treat string-like construct as identifier if
+            // one of the following is true:
+            //
+            //  a) it is followed by <- or =
+            //  b) it is preceded by ->
+            //  c) it is followed by one of the '(', '[', '@', '$', '::', ':::'
+            //
+            // This is better (and easier) to do at tokenizer level
+            // since quoted construct will be colorized as identifier
+            // and not as a string.
+            Tokenizer.HandleString(openQuote, _cs, (start, length) =>
+            {
+                bool identifier = false;
+                RToken lastToken = _tokens.Count > 0 ? _tokens[_tokens.Count - 1] : null;
+
+                if (lastToken != null && lastToken.TokenType == RTokenType.Operator &&  _cs.GetSubstringAt(lastToken.Start, lastToken.Length) == "->")
+                {
+                    identifier = true;
+
+                }
+
+                if (!identifier)
+                {
+                    _cs.SkipWhitespace();
+
+                    if ((_cs.CurrentChar == '<' && _cs.NextChar == '-'))
+                    {
+                        identifier = true;
+                    }
+                    else if (_cs.CurrentChar == '=' || _cs.CurrentChar == '(' || _cs.CurrentChar == '[' || _cs.CurrentChar == '@' || _cs.CurrentChar == '$')
+                    {
+                        identifier = true;
+                    }
+                    else if (_cs.CurrentChar == ':' && _cs.NextChar == ':')
+                    {
+                        identifier = true;
+                    }
+                }
+
+                if (identifier)
+                {
+                    AddToken(RTokenType.Identifier, start, length);
+                }
+                else
+                {
+                    AddToken(RTokenType.String, start, length);
+                }
+            });
         }
 
         private bool AddIdentifier()

@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Completion.Providers
         {
             "stats",
             "graphics",
-            "grdevices",
+            "grDevices",
             "utils",
             "datasets",
             "methods",
@@ -78,6 +78,11 @@ namespace Microsoft.R.Editor.Completion.Providers
             return GetAllFilePackages(context);
         }
 
+        /// <summary>
+        /// Retrieves name of the package in 'package::' statement
+        /// so intellisense can show list of functions available
+        /// in the specific package.
+        /// </summary>
         private IEnumerable<IPackageInfo> GetSpecificPackage(RCompletionContext context)
         {
             List<IPackageInfo> packages = new List<IPackageInfo>();
@@ -129,6 +134,11 @@ namespace Microsoft.R.Editor.Completion.Providers
             return packages;
         }
 
+        /// <summary>
+        /// Retrieves list of packages declared in the file via 'library' statements
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         private IEnumerable<IPackageInfo> GetAllFilePackages(RCompletionContext context)
         {
             List<IPackageInfo> packages = new List<IPackageInfo>();
@@ -158,30 +168,5 @@ namespace Microsoft.R.Editor.Completion.Providers
 
             return packages;
         }
-
-        //private bool IsValidName(string name)
-        //{
-        //    if (name[0] == '.')
-        //    {
-        //        if(name.Length > 4 && name.Substring(0, 4).ToLowerInvariant().Equals(".tcl", StringComparison.Ordinal))
-        //        {
-        //            return REditorSettings.ShowTclFunctions;
-        //        }
-
-        //        if(name.Length > 1 && char.IsLetter(name[1]))
-        //        {
-        //            return true;
-        //        }
-
-        //        return REditorSettings.ShowInternalFunctions;
-        //    }
-
-        //    if(name.Length > 2 && name[0] == '_' &&  name[1] == '_')
-        //    {
-        //        return REditorSettings.ShowInternalFunctions;
-        //    }
-
-        //    return true;
-        //}
     }
 }

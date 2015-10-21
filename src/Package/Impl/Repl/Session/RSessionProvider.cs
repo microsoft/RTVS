@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+namespace Microsoft.VisualStudio.R.Package.Repl.Session
+{
     public class RSessionProvider : IRSessionProvider {
         private readonly ConcurrentDictionary<int, IRSession> _sessions = new ConcurrentDictionary<int, IRSession>();
 
@@ -18,14 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             if (!_sessions.TryAdd(sessionId, session)) {
                 Debug.Fail(string.Format(CultureInfo.InvariantCulture, "Session with id {0} is created already", sessionId));
                 return _sessions[sessionId];
-            } else {
-                IRSession currentSessionAfterAdd = this.Current;
+            }
 
-                if (!object.Equals(currentSession, currentSessionAfterAdd)) {
-                    if (CurrentSessionChanged != null) {
-                        CurrentSessionChanged(this, EventArgs.Empty);
-                    }
-                }
+            IRSession currentSessionAfterAdd = this.Current;
+
+            if (!Equals(currentSession, currentSessionAfterAdd)) {
+                CurrentSessionChanged?.Invoke(this, EventArgs.Empty);
             }
 
             return session;

@@ -7,15 +7,18 @@ using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Utility;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+namespace Microsoft.VisualStudio.R.Package.Repl.Session
+{
     internal sealed class RSession : IRSession, IRCallbacks {
+        private static string DefaultPrompt = "> ";
+
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
 
@@ -34,8 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
 
-        public int Id { get; private set; }
-        public string Prompt { get; private set; } = "> ";
+        public int Id { get; }
+        public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _hostRunTask != null && !_hostRunTask.IsCompleted;
 
@@ -70,9 +73,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
 
-            _hostRunTask = _host.CreateAndRun(RToolsSettings.GetRVersionPath());
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath());
             this.ScheduleEvaluation(async e => {
-                await e.SetVsGraphicsDevice();
+                //await e.SetVsGraphicsDevice();
                 await e.SetDefaultWorkingDirectory();
                 await e.PrepareDataInspect();
             });
@@ -87,18 +90,27 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
+            var requestTask = BeginInteractionAsync(false);
+            await Task.WhenAny(requestTask, Task.Delay(100)).Unwrap();
 
-            var request = await BeginInteractionAsync(false);
             if (_hostRunTask.IsCompleted) {
-                request.Dispose();
+                requestTask
+                    .ContinueWith(t => t.Result.Dispose(), TaskContinuationOptions.OnlyOnRanToCompletion)
+                    .DoNotWait();
                 return;
             }
 
-            await request.Quit();
+            if (requestTask.Status == TaskStatus.RanToCompletion) {
+                await requestTask.Result.Quit();
+            } else {
+                _host?.Dispose();
+            }
+
             await _hostRunTask;
         }
 
         Task IRCallbacks.Connected(string rVersion) {
+            Prompt = DefaultPrompt;
             _initializationTcs.SetResult(null);
             return Task.CompletedTask;
         }
@@ -107,18 +119,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
             currentRequest?.Complete();
 
-            IList<RSessionRequestSource> requestSources;
-            if (_pendingRequestSources.TryReceiveAll(out requestSources)) {
-                foreach (var requestSource in requestSources) {
-                    requestSource.TryCancel();
-                }
+            RSessionRequestSource requestSource;
+            while (_pendingRequestSources.TryReceive(out requestSource)) {
+                requestSource.TryCancel();
             }
 
-            IList<RSessionEvaluationSource> evalSources;
-            if (_pendingEvaluationSources.TryReceiveAll(out evalSources)) {
-                foreach (var evalSource in evalSources) {
-                    evalSource.TryCancel();
-                }
+            RSessionEvaluationSource evalSource;
+            while (_pendingEvaluationSources.TryReceive(out evalSource)) {
+                evalSource.TryCancel();
             }
 
             _contexts = null;
@@ -160,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 ct.ThrowIfCancellationRequested();
                 try {
                     consoleInput = await ReadNextRequest(prompt, len, ct);
-                } catch (TaskCanceledException) {
+                } catch (OperationCanceledException) {
                     // If request was canceled through means other than our token, it indicates the refusal of
                     // that requestor to respond to that particular prompt, so move on to the next requestor.
                     // If it was canceled through the token, then host itself is shutting down, and cancellation
@@ -205,7 +213,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 try {
                     var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
                     await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
-                } catch (TaskCanceledException) {
+                } catch (OperationCanceledException) {
                     return;
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.Formatting;
@@ -16,15 +17,16 @@ namespace Microsoft.R.Editor.Settings
         public const string CompletionOnFirstCharKey = "CompletionOnFirstChar";
         public const string SendToReplOnCtrlEnterKey = "SendToReplOnCtrlEnter";
         public const string SyntaxCheckInReplKey = "SyntaxCheckInRepl";
+        public const string PartialArgumentNameMatchKey = "PartialArgumentNameMatch";
 
         private static bool _initialized = false;
         private static RFormatOptions _formatOptions = new RFormatOptions();
 
-        private static IEditorSettingsStorage Storage
+        private static ISettingsStorage Storage
         {
             get
             {
-                var storage = EditorShell.GetSettings(RContentTypeDefinition.LanguageName) as IEditorSettingsStorage;
+                var storage = (ISettingsStorage)EditorShell.GetSettings(RContentTypeDefinition.LanguageName);
 
                 if (!_initialized)
                 {
@@ -36,14 +38,14 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
-        public static IWritableEditorSettingsStorage WritableStorage
+        public static IWritableSettingsStorage WritableStorage
         {
-            get { return Storage as IWritableEditorSettingsStorage; }
+            get { return Storage as IWritableSettingsStorage; }
         }
 
         private static bool IsWritable
         {
-            get { return Storage is IWritableEditorSettingsStorage; }
+            get { return Storage is IWritableSettingsStorage; }
         }
 
         public static event EventHandler<EventArgs> Changed;
@@ -221,33 +223,6 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
-        //public static bool ShowInternalFunctions
-        //{
-        //    get
-        //    {
-        //        return Storage.GetBoolean(CommonSettings.ShowInternalFunctionsKey, false);
-        //    }
-
-        //    set
-        //    {
-        //        if (IsWritable)
-        //            WritableStorage.SetBoolean(CommonSettings.ShowInternalFunctionsKey, value);
-        //    }
-        //}
-        //public static bool ShowTclFunctions
-        //{
-        //    get
-        //    {
-        //        return Storage.GetBoolean(CommonSettings.ShowTclFunctionsKey, false);
-        //    }
-
-        //    set
-        //    {
-        //        if (IsWritable)
-        //            WritableStorage.SetBoolean(CommonSettings.ShowTclFunctionsKey, value);
-        //    }
-        //}
-
         public static bool SendToReplOnCtrlEnter
         {
             get
@@ -264,11 +239,7 @@ namespace Microsoft.R.Editor.Settings
 
         public static bool SyntaxCheckInRepl
         {
-            get
-            {
-                return Storage.GetBoolean(REditorSettings.SyntaxCheckInReplKey, false);
-            }
-
+            get { return Storage.GetBoolean(REditorSettings.SyntaxCheckInReplKey, false); }
             set
             {
                 if (IsWritable)
@@ -276,6 +247,15 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
+        public static bool PartialArgumentNameMatch
+        {
+            get { return Storage.GetBoolean(REditorSettings.PartialArgumentNameMatchKey, false); }
+            set
+            {
+                if (IsWritable)
+                    WritableStorage.SetBoolean(REditorSettings.PartialArgumentNameMatchKey, value);
+            }
+        }
 
         public static RFormatOptions FormatOptions
         {

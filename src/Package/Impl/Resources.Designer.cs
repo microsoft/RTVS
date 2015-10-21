@@ -79,6 +79,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to download CRAN mirror list. The request has been canceled..
+        /// </summary>
+        internal static string CranMirrorListRequestCanceled {
+            get {
+                return ResourceManager.GetString("CranMirrorListRequestCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Control+E, Control+E.
         /// </summary>
         internal static string CtrlECtrlE {
@@ -147,6 +156,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Error_PackageMissing {
             get {
                 return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R for Windows is found. Please restart Visual Studio for changes to take effect..
+        /// </summary>
+        internal static string Error_RestartVsAfterRInstalled {
+            get {
+                return ResourceManager.GetString("Error_RestartVsAfterRInstalled", resourceCulture);
             }
         }
         
@@ -423,6 +441,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CRAN Mirror.
+        /// </summary>
+        internal static string Settings_CranMirror {
+            get {
+                return ResourceManager.GetString("Settings_CranMirror", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default CRAN mirror for package installations.
+        /// </summary>
+        internal static string Settings_CranMirror_Description {
+            get {
+                return ResourceManager.GetString("Settings_CranMirror_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show syntax errors.
         /// </summary>
         internal static string Settings_EnableSyntaxCheck {
@@ -468,11 +504,38 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to General.
+        /// </summary>
+        internal static string Settings_GeneralCategory {
+            get {
+                return ResourceManager.GetString("Settings_GeneralCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IntelliSense.
         /// </summary>
         internal static string Settings_IntellisenseCategory {
             get {
                 return ResourceManager.GetString("Settings_IntellisenseCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Match partially typed argument names.
+        /// </summary>
+        internal static string Settings_PartialArgumentNameMatch {
+            get {
+                return ResourceManager.GetString("Settings_PartialArgumentNameMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When typing argument name in a function call, signature help shows description for the argument that is the best match.
+        /// </summary>
+        internal static string Settings_PartialArgumentNameMatch_Description {
+            get {
+                return ResourceManager.GetString("Settings_PartialArgumentNameMatch_Description", resourceCulture);
             }
         }
         
@@ -500,6 +563,33 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string Settings_ReplSyntaxCheck_Description {
             get {
                 return ResourceManager.GetString("Settings_ReplSyntaxCheck_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Engine (64-bit).
+        /// </summary>
+        internal static string Settings_RVersion {
+            get {
+                return ResourceManager.GetString("Settings_RVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version of R to use (64-bit only)..
+        /// </summary>
+        internal static string Settings_RVersion_Description {
+            get {
+                return ResourceManager.GetString("Settings_RVersion_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Latest].
+        /// </summary>
+        internal static string Settings_RVersion_Latest {
+            get {
+                return ResourceManager.GetString("Settings_RVersion_Latest", resourceCulture);
             }
         }
         

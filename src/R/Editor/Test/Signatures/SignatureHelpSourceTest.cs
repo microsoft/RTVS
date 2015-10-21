@@ -6,6 +6,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Signatures;
+using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -43,7 +44,7 @@ namespace Microsoft.R.Editor.Test.Signatures
                 {
                     SignatureHelpSourceTest01_TestBody(signatures, evt);
                 }
-            });
+            }, REditorTestCompositionCatalog.Current);
         }
 
         private void SignatureHelpSourceTest01_TestBody(List<ISignature> signatures, ManualResetEventSlim completedEvent)

@@ -11,6 +11,7 @@ using Microsoft.R.Editor.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.R.Editor.Test.Signatures
 {

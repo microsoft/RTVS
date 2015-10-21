@@ -5,10 +5,13 @@ using Microsoft.R.Actions.Logging;
 
 namespace Microsoft.R.Actions.Script
 {
+    /// <summary>
+    /// Implements installation of R packages with dependencies
+    /// </summary>
     public static class InstallPackages
     {
         /// <summary>
-        /// Asynchronously install a set of R packages with dependencies
+        /// Asynchronously installs a set of R packages with dependencies
         /// </summary>
         public static RCommand Install(IEnumerable<string> packageNames, IActionLog log)
         {
@@ -40,7 +43,7 @@ namespace Microsoft.R.Actions.Script
         public static bool IsInstalled(string packageName, int msTimeout)
         {
             string expression = "installed.packages()";
-            IActionLinesLog log = new LinesLog();
+            IActionLinesLog log = new LinesLog(NullLogWriter.Instance);
 
             bool result = RCommand.ExecuteRExpression(expression, log, msTimeout);
             if (result)

@@ -10,32 +10,32 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     public sealed class SourceRScriptCommand : ViewCommand {
-        private static readonly CommandId[] _commands =  {
+        private static readonly CommandId[] Commands =  {
             new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript)
         };
 
-        private ReplWindow _replWindow;
+        private readonly ReplWindow _replWindow;
 
         public SourceRScriptCommand(ITextView textView)
-            : base(textView, _commands, false) {
+            : base(textView, Commands, false) {
             ReplWindow.EnsureReplWindow().DoNotWait();
             _replWindow = ReplWindow.Current;
         }
 
         private string GetFilePath() {
             ITextDocument document;
-            if (TextView.TextBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out document)) {
+            if (TextView.TextBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document)) {
                 return document.FilePath;
-            } else {
-                return null;
             }
+
+            return null;
         }
 
         public override CommandStatus Status(Guid group, int id) {
             return GetFilePath() != null ? CommandStatus.SupportedAndEnabled : CommandStatus.NotSupported;
         }
 
-        public unsafe override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             string filePath = GetFilePath();
             if (filePath == null) {
                 return CommandResult.NotSupported;

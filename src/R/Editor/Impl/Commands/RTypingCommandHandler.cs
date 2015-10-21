@@ -16,14 +16,32 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Commands
 {
     /// <summary>
-    /// Processes typing in the document. Implements ICommandTarget to 
-    /// receive typing as commands
+    /// Processes typing in the R editor document. 
+    /// Implements <seealso cref="ICommandTarget" /> 
+    /// to receive typing as commands
     /// </summary>
     internal class RTypingCommandHandler : TypingCommandHandler
     {
         public RTypingCommandHandler(ITextView textView)
             : base(textView)
         {
+        }
+
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
+        {
+            if (group == VSConstants.VSStd2K)
+            {
+                char typedChar = GetTypedChar(group, id, inputArg);
+                if(typedChar != '\0')
+                {
+                    // Let provisional text completion check if the new character
+                    // position in the tree inside existing string so it doesn't.
+                    // complete " inside "".
+                    SeparatorCompletion.BeforeTypeCharacter(TextView, typedChar);
+                }
+            }
+
+            return base.Invoke(group, id, inputArg, ref outputArg);
         }
 
         #region ICommand
@@ -56,6 +74,9 @@ namespace Microsoft.R.Editor.Commands
             get { return ServiceManager.GetService<RCompletionController>(TextView); }
         }
 
+        /// <summary>
+        /// Handles completion of braces in R document
+        /// </summary>
         protected virtual void HandleCompletion(char typedChar)
         {
             switch (typedChar)

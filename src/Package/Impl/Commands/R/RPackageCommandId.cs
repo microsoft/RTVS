@@ -7,6 +7,7 @@
         // General
         public const int icmdGoToFormattingOptions = 400;
         public const int icmdGoToRToolsOptions = 401;
+        public const int icmdGoToREditorOptions = 402;
 
         // REPL
         public const int icmdLoadWorkspace = 502;

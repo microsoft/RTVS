@@ -105,6 +105,7 @@
     <Compile Include="Comments\RCommenter.cs" />
     <Compile Include="Comments\UncommentCommand.cs" />
     <Compile Include="Completion\AutoCompletion\SeparatorCompletion.cs" />
+    <Compile Include="Completion\Definitions\IVariablesProvider.cs" />
     <Compile Include="Completion\Definitions\RCompletionProviderAttribute.cs" />
     <Compile Include="Completion\Definitions\IRQuickInfoProvider.cs" />
     <Compile Include="Completion\Definitions\RCompletionContext.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Completion\Providers\PackagesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\FunctionCompletionProvider.cs" />
     <Compile Include="Completion\Providers\KeywordCompletionProvider.cs" />
+    <Compile Include="Completion\Providers\WorkspaceVaraibleCompletionProvider.cs" />
     <Compile Include="Completion\RCompletionSet.cs" />
     <Compile Include="Completion\RCompletionSource.cs" />
     <Compile Include="Completion\RCompletion.cs" />

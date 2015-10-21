@@ -22,7 +22,7 @@ namespace Microsoft.R.Support.Test.Packages
         [TestMethod]
         public void BuildPackageIndexTest()
         {
-            RToolsSettings.ToolsSettings = new TestRToolsSettings();
+            RToolsSettings.Current = new TestRToolsSettings();
             EditorShell.SetShell(TestEditorShell.Create(RSupportTestCompositionCatalog.Current));
 
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
@@ -83,7 +83,7 @@ namespace Microsoft.R.Support.Test.Packages
         [TestMethod]
         public void PackageDescriptionTest()
         {
-            RToolsSettings.ToolsSettings = new TestRToolsSettings();
+            RToolsSettings.Current = new TestRToolsSettings();
             EditorShell.SetShell(TestEditorShell.Create(RSupportTestCompositionCatalog.Current));
 
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
@@ -95,7 +95,7 @@ namespace Microsoft.R.Support.Test.Packages
         [TestMethod]
         public void UserPackagesIndex_Test01()
         {
-            RToolsSettings.ToolsSettings = new TestRToolsSettings();
+            RToolsSettings.Current = new TestRToolsSettings();
 
             // make it broken and check that index doesn't throw
             UserPackagesCollection.RLibraryPath = "NonExistentFolder";

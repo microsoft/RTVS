@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.R.Support.Utility;
 
 namespace Microsoft.R.Host.Client.Test {
     [TestClass]
@@ -212,7 +213,7 @@ grid.newpage()
         private XDocument RunGraphicsTest(string code) {
             var callbacks = new Callbacks(code);
             var host = new RHost(callbacks);
-            var rhome = RToolsSettings.GetEnginePathFromRegistry();
+            var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;
             host.CreateAndRun(rhome, psi).GetAwaiter().GetResult();

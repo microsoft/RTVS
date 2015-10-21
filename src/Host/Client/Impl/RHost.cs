@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Actions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -59,7 +60,7 @@ namespace Microsoft.R.Host.Client {
             }
 
             public string GetString(int i, bool allowNull = false) {
-                var arg = allowNull ? GetArgument(i, JTokenType.String, JTokenType.Null): GetArgument(i, JTokenType.String);
+                var arg = allowNull ? GetArgument(i, JTokenType.String, JTokenType.Null) : GetArgument(i, JTokenType.String);
                 if (arg.Type == JTokenType.Null) {
                     return null;
                 }
@@ -96,14 +97,17 @@ namespace Microsoft.R.Host.Client {
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly IRCallbacks _callbacks;
+        private readonly LinesLog _log;
         private Process _process;
         private ClientWebSocket _socket;
         private byte[] _buffer = new byte[0x100000];
         private bool _isRunning, _canEval;
+        private int _rLoopDepth;
         private long _nextMessageId = 1;
 
         public RHost(IRCallbacks callbacks) {
             _callbacks = callbacks;
+            _log = new LinesLog(FileLogWriter.InTempFolder("Microsoft.R.Host.Client"));
         }
 
         public void Dispose() {
@@ -130,7 +134,10 @@ namespace Microsoft.R.Host.Client {
                 sb.Append(Encoding.UTF8.GetString(_buffer, 0, wsrr.Count));
             } while (!wsrr.EndOfMessage);
 
-            var token = JToken.Parse(sb.ToString());
+            var json = sb.ToString();
+            _log.Response(json, _rLoopDepth);
+
+            var token = JToken.Parse(json);
             if (token == null) {
                 return null;
             }
@@ -191,9 +198,7 @@ namespace Microsoft.R.Host.Client {
             byte[] buffer = Encoding.UTF8.GetBytes(json);
             await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
 
-            if (ct.IsCancellationRequested) {
-                return;
-            }
+            _log.Request(json, _rLoopDepth);
         }
 
         private JArray CreateMessage(CancellationToken ct, out string id, string name, params object[] args) {
@@ -234,6 +239,7 @@ namespace Microsoft.R.Host.Client {
 
             using (this)
             using (_process = Process.Start(psi)) {
+                _log.RHostProcessStarted(psi);
                 _process.EnableRaisingEvents = true;
                 _process.Exited += delegate { Dispose(); };
 
@@ -244,9 +250,11 @@ namespace Microsoft.R.Host.Client {
                         for (int i = 0; ; ++i) {
                             try {
                                 await _socket.ConnectAsync(uri, ct);
+                                _log.ConnectedToRHostWebSocket(uri, i);
                                 break;
                             } catch (WebSocketException) {
                                 if (i > 10) {
+                                    _log.FailedToConnectToRHost(uri);
                                     throw;
                                 }
                                 await Task.Delay(100, ct);
@@ -255,17 +263,23 @@ namespace Microsoft.R.Host.Client {
 
                         await Run(ct);
                     }
-                } catch (Exception ex) when (!(ex is OperationCanceledException)) { // TODO: replace with better logging
+                } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
+                    // Expected cancellation, do not propagate, just exit process
+                } catch (Exception ex) {
                     Trace.Fail("Exception in RHost run loop:\n" + ex);
                     throw;
                 } finally {
                     if (!_process.HasExited) {
                         try {
                             _process.WaitForExit(500);
-                            _process.Kill();
+                            if (!_process.HasExited) {
+                                _process.Kill();
+                                _process.WaitForExit();
+                            }
                         } catch (InvalidOperationException) {
                         }
                     }
+                    _log.RHostProcessExited();
                 }
             }
         }
@@ -318,52 +332,57 @@ namespace Microsoft.R.Host.Client {
         private async Task<Message> RunLoop(CancellationToken ct, bool allowEval) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            while (!ct.IsCancellationRequested) {
-                var message = await ReceiveMessageAsync(ct);
-                if (message == null) {
-                    return null;
-                } else if (message.RequestId != null) {
-                    return message;
+            try {
+                _log.EnterRLoop(_rLoopDepth++);
+                while (!ct.IsCancellationRequested) {
+                    var message = await ReceiveMessageAsync(ct);
+                    if (message == null) {
+                        return null;
+                    } else if (message.RequestId != null) {
+                        return message;
+                    }
+
+                    switch (message.Name) {
+                        case "?":
+                            await YesNoCancel(message, allowEval, ct);
+                            break;
+
+                        case ">":
+                            await ReadConsole(message, allowEval, ct);
+                            break;
+
+                        case "!":
+                        case "!!":
+                            message.ExpectArguments(1);
+                            await _callbacks.WriteConsoleEx(
+                                message.GetString(0, allowNull: true),
+                                message.Name.Length == 1 ? OutputType.Output : OutputType.Error,
+                                ct);
+                            break;
+
+                        case "![]":
+                            message.ExpectArguments(1);
+                            await _callbacks.ShowMessage(message.GetString(0, allowNull: true), ct);
+                            break;
+
+                        case "~+":
+                            await _callbacks.Busy(true, ct);
+                            break;
+                        case "~-":
+                            await _callbacks.Busy(false, ct);
+                            break;
+
+                        case "PlotXaml":
+                            await _callbacks.PlotXaml(message.GetString(0), ct);
+                            // TODO: delete temporary xaml and bitmap files
+                            break;
+
+                        default:
+                            throw ProtocolError($"Unrecognized host message name:", message);
+                    }
                 }
-
-                switch (message.Name) {
-                    case "?":
-                        await YesNoCancel(message, allowEval, ct);
-                        break;
-
-                    case ">":
-                        await ReadConsole(message, allowEval, ct);
-                        break;
-
-                    case "!":
-                    case "!!":
-                        message.ExpectArguments(1);
-                        await _callbacks.WriteConsoleEx(
-                            message.GetString(0, allowNull: true),
-                            message.Name.Length == 1 ? OutputType.Output : OutputType.Error,
-                            ct);
-                        break;
-
-                    case "![]":
-                        message.ExpectArguments(1);
-                        await _callbacks.ShowMessage(message.GetString(0, allowNull: true), ct);
-                        break;
-
-                    case "~+":
-                        await _callbacks.Busy(true, ct);
-                        break;
-                    case "~-":
-                        await _callbacks.Busy(false, ct);
-                        break;
-
-                    case "PlotXaml":
-                        await _callbacks.PlotXaml(message.GetString(0), ct);
-                        // TODO: delete temporary xaml and bitmap files
-                        break;
-
-                    default:
-                        throw ProtocolError($"Unrecognized host message name:", message);
-                }
+            } finally {
+                _log.ExitRLoop(--_rLoopDepth);
             }
 
             return null;

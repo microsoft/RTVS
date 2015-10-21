@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.R.Debugger.Engine.PortSupplier;
+using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 
 namespace Microsoft.VisualStudio.R.Packages.R
 {
@@ -59,27 +60,24 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         public static RPackage Current { get; private set; }
 
-        public RInteractiveWindowProvider InteractiveWindowProvider
-        {
-            get { return _interactiveWindowProvider.Value; }
-        }
+        public RInteractiveWindowProvider InteractiveWindowProvider => _interactiveWindowProvider.Value;
 
         protected override void Initialize()
         {
             Current = this;
 
+            CranMirrorList.Download();
+ 
             base.Initialize();
 
-            IComponentModel componentModel = GetService(typeof(SComponentModel)) as IComponentModel;
-            RToolsSettings.VerifyRIsInstalled(componentModel.DefaultExportProvider);
+            RToolsSettings.Init(AppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
-
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (_indexBuildingTask != null)
+            if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted)
             {
                 _indexBuildingTask.Wait(2000);
                 _indexBuildingTask = null;

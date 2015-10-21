@@ -2,7 +2,6 @@
 using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
@@ -23,14 +22,8 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion
             _suppressCompletion = false;
         }
 
-        public static void Complete(ITextView textView, char typedChar)
+        internal static void BeforeTypeCharacter(ITextView textView, char typedChar)
         {
-            if (_suppressCompletion)
-            {
-                _suppressCompletion = false;
-                return;
-            }
-
             if (!TextViewHelpers.IsAutoInsertAllowed(textView))
             {
                 return;
@@ -42,11 +35,20 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion
                 AstRoot ast = REditorDocument.FromTextBuffer(textView.TextBuffer).EditorTree.AstRoot;
                 int position = textView.Selection.SelectedSpans[0].Start;
 
-                TokenNode node = ast.GetNodeOfTypeFromPosition<TokenNode>(position, includeEnd: true);
+                TokenNode node = ast.GetNodeOfTypeFromPosition<TokenNode>(position);
                 if (node != null && node.Token.TokenType == RTokenType.String)
                 {
-                    return;
+                    _suppressCompletion = true;
                 }
+            }
+        }
+
+        public static void Complete(ITextView textView, char typedChar)
+        {
+            if (_suppressCompletion)
+            {
+                _suppressCompletion = false;
+                return;
             }
 
             SimpleComplete(textView, typedChar);

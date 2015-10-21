@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.Settings;
+using Microsoft.Languages.Core.Settings;
 
 namespace Microsoft.Languages.Editor.Application.Packages
 {
     [ExcludeFromCodeCoverage]
-    internal class SettingsStorage : IWritableEditorSettingsStorage
+    internal class SettingsStorage : IWritableSettingsStorage
     {
         private Dictionary<string, object> _settings = new Dictionary<string, object>();
 

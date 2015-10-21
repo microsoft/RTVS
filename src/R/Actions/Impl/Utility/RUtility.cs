@@ -5,8 +5,15 @@ using Microsoft.Win32;
 
 namespace Microsoft.R.Actions.Utility
 {
+    /// <summary>
+    /// A set of utility functions around R engine
+    /// </summary>
     public static class RUtility
     {
+        /// <summary>
+        /// Retrieves folder that contains R binaries
+        /// </summary>
+        /// <returns></returns>
         public static string GetRBinariesFolder()
         {
             string binFolder = null;
@@ -34,6 +41,10 @@ namespace Microsoft.R.Actions.Utility
             return binFolder;
         }
 
+        /// <summary>
+        /// Retreieves path to R installation folder from registry
+        /// </summary>
+        /// <returns></returns>
         public static string GetRPathFromRegistry()
         {
             string enginePath = null;

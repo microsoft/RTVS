@@ -26,7 +26,7 @@ using Microsoft.VisualStudio.Text.Projection;
 namespace Microsoft.R.Editor.Document
 {
     /// <summary>
-    /// Main editor document for R language
+    /// Main editor document for the R language
     /// </summary>
     public class REditorDocument : IREditorDocument
     {
@@ -36,9 +36,15 @@ namespace Microsoft.R.Editor.Document
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
 
+        /// <summary>
+        /// Project (workspace) the document is in
+        /// </summary>
         [Import(AllowDefault = true)]
         public IWorkspace Workspace { get; set; }
 
+        /// <summary>
+        /// Item in the workspace that represents this document
+        /// </summary>
         public IWorkspaceItem WorkspaceItem { get; private set; }
 
 #pragma warning disable 67
@@ -48,8 +54,22 @@ namespace Microsoft.R.Editor.Document
 #pragma warning restore 67
         #endregion
 
+        /// <summary>
+        /// Editor parse tree (AST + dynamic tree update task)
+        /// </summary>
         private EditorTree _editorTree;
+
+        /// <summary>
+        /// Counter of massive change requests. In massive changes
+        /// such as when entire document is formatted parser is suspended
+        /// in order to avoid multiple parse passes for every incremental
+        /// change made to the document text buffer.
+        /// </summary>
         private int _inMassiveChange;
+
+        /// <summary>
+        /// Asynchronous AST syntax checker
+        /// </summary>
         private TreeValidator _validator;
 
         #region Constructors
@@ -113,6 +133,15 @@ namespace Microsoft.R.Editor.Document
             return document;
         }
 
+        /// <summary>
+        /// Given text view locates R document in underlying text buffer graph.
+        /// In REPL window there may be multiple R text buffers but usually
+        /// only last one (the one active at the > prompt) has attached R document.
+        /// Other R buffers represent previously typed commands. They still have
+        /// colorizer attached but no active R documents.
+        /// </summary>
+        /// <param name="viewBuffer"></param>
+        /// <returns></returns>
         public static IREditorDocument FindInProjectedBuffers(ITextBuffer viewBuffer)
         {
             IREditorDocument document = null;
@@ -172,6 +201,14 @@ namespace Microsoft.R.Editor.Document
             return rBuffer;
         }
 
+        /// <summary>
+        /// Maps caret position in text view to position in the projected 
+        /// R editor text buffer. R text buffer can be projected into view
+        /// in REPL window case or in case when R is embedded in another
+        /// language file such as in SQL file.
+        /// </summary>
+        /// <param name="textView"></param>
+        /// <returns></returns>
         public static SnapshotPoint? MapCaretPositionFromView(ITextView textView)
         {
             int caretPosition = textView.Caret.Position.BufferPosition;
@@ -179,6 +216,9 @@ namespace Microsoft.R.Editor.Document
             return MapPointFromView(textView, caretPoint);
         }
 
+        /// <summary>
+        /// Maps given point from view buffer to R editor buffer
+        /// </summary>
         public static SnapshotPoint? MapPointFromView(ITextView textView, SnapshotPoint point)
         {
             ITextBuffer rBuffer;

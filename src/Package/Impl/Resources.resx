@@ -320,4 +320,34 @@
   <data name="VariableWindowCaption" xml:space="preserve">
     <value>Variable Explorer</value>
   </data>
+  <data name="Settings_PartialArgumentNameMatch" xml:space="preserve">
+    <value>Match partially typed argument names</value>
+  </data>
+  <data name="Settings_PartialArgumentNameMatch_Description" xml:space="preserve">
+    <value>When typing argument name in a function call, signature help shows description for the argument that is the best match</value>
+  </data>
+  <data name="Error_RestartVsAfterRInstalled" xml:space="preserve">
+    <value>R for Windows is found. Please restart Visual Studio for changes to take effect.</value>
+  </data>
+  <data name="CranMirrorListRequestCanceled" xml:space="preserve">
+    <value>Unable to download CRAN mirror list. The request has been canceled.</value>
+  </data>
+  <data name="Settings_GeneralCategory" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Settings_CranMirror" xml:space="preserve">
+    <value>CRAN Mirror</value>
+  </data>
+  <data name="Settings_CranMirror_Description" xml:space="preserve">
+    <value>Default CRAN mirror for package installations</value>
+  </data>
+  <data name="Settings_RVersion" xml:space="preserve">
+    <value>R Engine (64-bit)</value>
+  </data>
+  <data name="Settings_RVersion_Description" xml:space="preserve">
+    <value>Version of R to use (64-bit only).</value>
+  </data>
+  <data name="Settings_RVersion_Latest" xml:space="preserve">
+    <value>[Latest]</value>
+  </data>
 </root>

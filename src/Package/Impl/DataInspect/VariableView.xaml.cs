@@ -14,20 +14,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 {
     public partial class VariableView : UserControl
     {
-        private readonly VariableProvider _variableProvider;
-        private Variable _globalEnv;
-        private VariableEvaluationContext _globalEnvContext;
+         private Variable _globalEnv;
 
         public VariableView()
         {
             InitializeComponent();
 
-            _variableProvider = new VariableProvider();
-            _variableProvider.SessionsChanged += VariableProvider_SessionsChanged;
-            _variableProvider.VariableChanged += VariableProvider_VariableChanged;
-
-            InitializeData();
-
+            VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
+ 
             Loaded += VariableView_Loaded;
             Unloaded += VariableView_Unloaded;
             SizeChanged += VariableView_SizeChanged;
@@ -50,17 +44,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             UnregisterThumbEvents();
         }
 
-        private void VariableProvider_SessionsChanged(object sender, EventArgs e)
-        {
-            InitializeData();
-        }
-
         private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e)
         {
-            if (e.NewVariable != null
-                && e.NewVariable.Name == _globalEnvContext.VariableName)
+            VariableChanged(e.NewVariable);
+        }
+
+        private void VariableChanged(REvaluation variable)
+        { 
+            if (variable != null
+                && variable.Name == VariableProvider.Current.GlobalContext.VariableName)
             {
-                var newVariable = Variable.Create(null, e.NewVariable, _globalEnvContext,
+                var newVariable = Variable.Create(null, variable, VariableProvider.Current.GlobalContext,
                     new VariableVisualInfo() {
                         IndentStep = -1,  // indent -1, as childrent is root level.
                         NameWidth = NameColumn.ActualWidth,
@@ -81,20 +75,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
                     }
                     });
             }
-        }
-
-        public void InitializeData()
-        {
-            Task t = Task.Run(async () =>   // no await
-            {
-                _globalEnvContext = new VariableEvaluationContext()
-                {
-                    Environment = VariableEvaluationContext.GlobalEnv,
-                    VariableName = VariableEvaluationContext.GlobalEnv
-                };
-
-                await _variableProvider.SetMonitorContext(_globalEnvContext);
-            });
         }
 
         private void SetVariable(Variable variable)

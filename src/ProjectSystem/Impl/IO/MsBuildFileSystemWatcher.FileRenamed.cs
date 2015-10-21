@@ -70,7 +70,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
                     changeset.RenamedFiles[previouslyRenamedRelativePath] = newRelativePath;
                 }
             }
-        }
 
+            public override string ToString() {
+                return $"File renamed: {_oldFullPath} -> {_fullPath}";
+            }
+        }
     }
 }

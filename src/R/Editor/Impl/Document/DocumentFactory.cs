@@ -6,7 +6,9 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.R.Editor.Document
 {
     /// <summary>
-    /// Factory for R language editor document
+    /// Factory for R language editor document. Imported via MEF
+    /// in the host document creation function. In VS that is
+    /// IVsEditorFactory.CreateInstance.
     /// </summary>
     [Export(typeof(IEditorDocumentFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
