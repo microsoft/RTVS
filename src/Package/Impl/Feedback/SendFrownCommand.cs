@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Office.Interop.Outlook;
+using Microsoft.R.Support.Utility;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal sealed class SendFrownCommand : SendMailCommand {
+        private const string _rtvsGeneralDataFile = "RTVSGeneralData.log";
+        private const string _rtvsSystemEventsFile = "RTVSSystemEvents.log";
+        private const int _daysToCollect = 7;
+
         public SendFrownCommand() :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown) {
         }
@@ -40,6 +48,12 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     logFiles.Add(vsActivityLog);
                 }
 
+                string systemEventsLog = CollectSystemEvents();
+                logFiles.Add(systemEventsLog);
+
+                string generatDataLog = CollectGeneralData();
+                logFiles.Add(generatDataLog);
+
                 return ZipFiles(logFiles);
             } catch (System.Exception ex) {
                 EditorShell.Current.ShowErrorMessage(
@@ -67,10 +81,11 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             string tempPath = Path.GetTempPath();
 
             var logs = Directory.EnumerateFiles(tempPath, pattern);
-            return logs.Select((file) => {
+            return logs.Select((file) =>
+            {
                 DateTime writeTime = File.GetLastWriteTimeUtc(file);
                 TimeSpan difference = DateTime.Now.ToUniversalTime() - writeTime;
-                if (difference.TotalDays < 3) {
+                if (difference.TotalDays < _daysToCollect) {
                     return file;
                 }
 
@@ -78,26 +93,98 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             });
         }
 
-        private static async void SendMail(string attachmentFile) {
-            Application outlookApp = new Application();
-            if (outlookApp == null) {
-                EditorShell.Current.ShowErrorMessage(Resources.Error_CannotFindOutlook);
-                return;
+        private string CollectSystemEvents() {
+            string systemEventsFile = Path.Combine(Path.GetTempPath(), _rtvsSystemEventsFile);
+            using (var sw = new StreamWriter(systemEventsFile)) {
+                try {
+                    sw.WriteLine("System events:");
+
+                    var application = new EventLog("Application");
+                    var lastWeek = DateTime.Now.Subtract(TimeSpan.FromDays(7));
+                    foreach (var entry in application.Entries.Cast<EventLogEntry>()
+                        .Where(e => e.InstanceId == 1026L)  // .NET Runtime
+                        .Where(e => e.TimeGenerated >= lastWeek)
+                        .Where(e => InterestingApplicationLogEntries.IsMatch(e.Message))
+                        .OrderByDescending(e => e.TimeGenerated)
+                    ) {
+                        sw.WriteLine(string.Format("Time: {0:s}", entry.TimeGenerated));
+                        using (var reader = new StringReader(entry.Message.TrimEnd())) {
+                            for (var line = reader.ReadLine(); line != null; line = reader.ReadLine()) {
+                                sw.WriteLine(line);
+                            }
+                        }
+                        sw.WriteLine();
+                    }
+
+                } catch (System.Exception ex) {
+                    sw.WriteLine("  Failed to access event log.");
+                    sw.WriteLine(ex.ToString());
+                    sw.WriteLine();
+                }
             }
 
-            MailItem mail = await outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
+            return systemEventsFile;
+        }
 
-            mail.Subject = "RTVS feedback";
-            AddressEntry currentUser = outlookApp.Session.CurrentUser.AddressEntry;
-            if (currentUser.Type == "EX") {
-                ExchangeUser manager = currentUser.GetExchangeUser().GetExchangeUserManager();
+        private static readonly Regex InterestingApplicationLogEntries = new Regex(
+            @"^Application: (devenv\.exe|.+?Microsoft\.R\.Host\.exe)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant
+        );
 
-                mail.Recipients.Add(manager.PrimarySmtpAddress);
-                mail.Recipients.ResolveAll();
+        private string CollectGeneralData() {
+            string generalDataFile = Path.Combine(Path.GetTempPath(), _rtvsGeneralDataFile);
+            using (var sw = new StreamWriter(generalDataFile)) {
+                try {
+                    sw.WriteLine("Operating System Information");
+                    sw.WriteLine("    Version:       " + Environment.OSVersion.ToString());
+                    sw.WriteLine("    CPU Count:     " + Environment.ProcessorCount);
+                    sw.WriteLine("    64 bit:        " + Environment.Is64BitOperatingSystem);
+                    sw.WriteLine("    System Folder: " + Environment.SystemDirectory);
+                    sw.WriteLine("    Working set:   " + Environment.WorkingSet);
+                    sw.WriteLine();
 
-                mail.Attachments.Add(attachmentFile, OlAttachmentType.olByValue);
-                mail.Send();
+                    Assembly thisAssembly = Assembly.GetExecutingAssembly();
+                    sw.WriteLine("RTVS Information:");
+                    sw.WriteLine("    Assembly: " + thisAssembly.FullName);
+                    sw.WriteLine("    Codebase: " + thisAssembly.CodeBase);
+                    sw.WriteLine();
+
+                    IEnumerable<string> rEngines = RInstallation.GetInstalledEngineVersionsFromRegistry();
+                    sw.WriteLine("Installed R Engines (from registry):");
+                    foreach (string e in rEngines) {
+                        sw.WriteLine("    " + e);
+                    }
+                    sw.WriteLine();
+
+                    string latestEngine = RInstallation.GetLatestEnginePathFromRegistry();
+                    sw.WriteLine("Latest R Engine (from registry):");
+                    sw.WriteLine("    " + latestEngine);
+                    sw.WriteLine();
+
+                    string rInstallPath = RInstallation.GetRInstallPath();
+                    sw.WriteLine("R Install path:");
+                    sw.WriteLine("    " + rInstallPath);
+                    sw.WriteLine();
+
+                    sw.WriteLine("Loaded assemblies:");
+
+                    foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(assem => assem.FullName)) {
+                        var assemFileVersion = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false).OfType<AssemblyFileVersionAttribute>().FirstOrDefault();
+
+                        sw.WriteLine(string.Format(CultureInfo.InvariantCulture, "    {0}, FileVersion={1}",
+                            assembly.FullName,
+                            assemFileVersion == null ? "(null)" : assemFileVersion.Version
+                        ));
+                    }
+                }
+                catch(System.Exception ex) {
+                    sw.WriteLine("  Failed to access system data.");
+                    sw.WriteLine(ex.ToString());
+                    sw.WriteLine();
+                }
             }
+
+            return generalDataFile;
         }
     }
 }
