@@ -376,7 +376,7 @@ namespace Microsoft.R.Host.Client {
             string response;
             switch (input) {
                 case Client.YesNoCancel.No:
-                    response = "M";
+                    response = "N";
                     break;
                 case Client.YesNoCancel.Cancel:
                     response = "C";
