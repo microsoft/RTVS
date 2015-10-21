@@ -350,4 +350,10 @@
   <data name="Settings_RVersion_Latest" xml:space="preserve">
     <value>[Latest]</value>
   </data>
+  <data name="Error_CannotCollectLogs" xml:space="preserve">
+    <value>Unable to collect and package logs. Exception: {0}</value>
+  </data>
+  <data name="Error_CannotFindOutlook" xml:space="preserve">
+    <value>Unable to launch Microsoft Outlook</value>
+  </data>
 </root>

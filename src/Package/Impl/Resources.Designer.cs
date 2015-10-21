@@ -124,11 +124,29 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to collect and package logs. Exception: {0}.
+        /// </summary>
+        internal static string Error_CannotCollectLogs {
+            get {
+                return ResourceManager.GetString("Error_CannotCollectLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to delete file {0}. Exception: {1}..
         /// </summary>
         internal static string Error_CannotDeleteFile {
             get {
                 return ResourceManager.GetString("Error_CannotDeleteFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to launch Microsoft Outlook.
+        /// </summary>
+        internal static string Error_CannotFindOutlook {
+            get {
+                return ResourceManager.GetString("Error_CannotFindOutlook", resourceCulture);
             }
         }
         

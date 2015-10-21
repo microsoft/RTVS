@@ -1,13 +1,13 @@
-﻿namespace Microsoft.VisualStudio.R.Package.Commands
-{
-    public static class RPackageCommandId
-    {
+﻿namespace Microsoft.VisualStudio.R.Package.Commands {
+    public static class RPackageCommandId {
         public const int plotWindowToolBarId = 0x2000;
 
         // General
         public const int icmdGoToFormattingOptions = 400;
         public const int icmdGoToRToolsOptions = 401;
         public const int icmdGoToREditorOptions = 402;
+        public const int icmdSendSmile = 403;
+        public const int icmdSendFrown = 404;
 
         // REPL
         public const int icmdLoadWorkspace = 502;
