@@ -374,4 +374,19 @@
   <data name="LongOperationProgressMessage" xml:space="preserve">
     <value>Processing Item {0} of {1}: {2}</value>
   </data>
+  <data name="VariableExplorer_EnvironmentName" xml:space="preserve">
+    <value>No R Interactive</value>
+  </data>
+  <data name="VariableExplorer_ClassHeader" xml:space="preserve">
+    <value>Class</value>
+  </data>
+  <data name="VariableExplorer_NameHeader" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="VariableExplorer_TypeHeader" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="VariableExplorer_ValueHeader" xml:space="preserve">
+    <value>Value</value>
+  </data>
 </root>

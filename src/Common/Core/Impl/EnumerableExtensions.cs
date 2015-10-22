@@ -86,5 +86,18 @@ namespace Microsoft.Common.Core
                 }
             }
         }
+
+        public static IEnumerable<T> TraverseDepthFirst<T>(this T root, Func<T, IEnumerable<T>> selectChildren) {
+            yield return root;
+
+            var children = selectChildren(root);
+            if (children != null) {
+                foreach (T child in children) {
+                    foreach (T t in TraverseDepthFirst(child, selectChildren)) {
+                        yield return t;
+                    }
+                }
+            }
+        }
     }
 }

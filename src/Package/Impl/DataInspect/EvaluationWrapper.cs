@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -13,8 +14,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class EvaluationWrapper {
         private readonly DebugEvaluationResult _evaluation;
 
-        private readonly char[] NameTrimChars = new char[] { '$' };
-        private readonly string HiddenVariablePrefix = ".";
+        private static readonly char[] NameTrimChars = new char[] { '$' };
+        private static readonly string HiddenVariablePrefix = ".";
+        private static readonly char[] NewLineDelimiter = new char[] { '\r', '\n' };
 
         public EvaluationWrapper(DebugEvaluationResult evaluation) {
             _evaluation = evaluation;
@@ -24,25 +26,26 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (_evaluation is DebugValueEvaluationResult) {
                 var valueEvaluation = (DebugValueEvaluationResult)_evaluation;
 
-                Value = FirstLine(valueEvaluation.Value);
+                Value = FirstLine(valueEvaluation.Value);   // TODO: it takes first line only for now. Visual representation will be tuned up later e.g. R str or custom formatting
                 ValueDetail = valueEvaluation.Value;
-
-                Type = valueEvaluation.TypeName;
-                Class = string.Join(",", valueEvaluation.Classes); // TODO: espace ',' in class names
+                TypeName = valueEvaluation.TypeName;
+                Class = string.Join(",", valueEvaluation.Classes); // TODO: escape ',' in class names
             }
         }
 
-        public async Task<IList<EvaluationWrapper>> GetChildrenAsync() {
+        public async Task<IReadOnlyList<EvaluationWrapper>> GetChildrenAsync() {
             List<EvaluationWrapper> result = null;
 
             var valueEvaluation = _evaluation as DebugValueEvaluationResult;
             if (valueEvaluation == null) {
-                Debug.Assert(false, $"EvaluationWrapper has non {typeof(DebugValueEvaluationResult)} result");
+                Debug.Assert(false, $"EvaluationWrapper result type is not {typeof(DebugValueEvaluationResult)}");
                 return result;
             }
 
             if (valueEvaluation.HasChildren) {
-                var children = await valueEvaluation.GetChildrenAsync();
+                await TaskUtilities.SwitchToBackgroundThread();
+
+                var children = await valueEvaluation.GetChildrenAsync();    // TODO: consider exception propagation such as OperationCanceledException
 
                 result = new List<EvaluationWrapper>();
                 foreach (var child in children) {
@@ -59,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public string ValueDetail { get; private set; }
 
-        public string Type { get; private set; }
+        public string TypeName { get; private set; }
 
         public string Class { get; private set; }
 
@@ -67,13 +70,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get { return Name.StartsWith(HiddenVariablePrefix); }
         }
 
-        public bool IsSameEvaluation(EvaluationWrapper value) {
-            return Name == value.Name;
-        }
-
-        /// <param name="multiLine">multiline string delimited by new line (\n)</param>
         private string FirstLine(string multiLine) {
-            int firstLine = multiLine.IndexOf('\n');
+            int firstLine = multiLine.IndexOfAny(NewLineDelimiter);
             if (firstLine == -1) {
                 return multiLine;
             } else {

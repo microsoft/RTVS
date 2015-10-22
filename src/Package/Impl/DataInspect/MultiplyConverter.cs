@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -16,10 +17,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (parameter != null && parameter is string)
+            if (parameter != null)
             {
-                double coefficient = double.Parse((string)parameter);
-                return System.Convert.ToDouble(value) * coefficient;
+                if (parameter is double) {
+                    return System.Convert.ToDouble(value) * (double)parameter;
+                }
+                else if (parameter is string) {
+
+                    double coefficient;
+                    if (double.TryParse((string)parameter, out coefficient)) {
+                        return System.Convert.ToDouble(value) * coefficient;
+                    }
+                }
+                Debug.Assert(false, "MultiplyConverter parameter is not convertable to double");
             }
             return System.Convert.ToDouble(value) * Coefficient;
         }

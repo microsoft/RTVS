@@ -126,6 +126,22 @@ namespace Microsoft.Common.Core.Test
             actual.Select(i => i.Value).Should().Equal(0, 1, 5, 10, 2, 3, 4, 6, 7, 11, 8, 9);
         }
 
+        [Test]
+        public void TraverseDepthFirst() {
+            var tree = new TreeItem(0, new[]
+            {
+                new TreeItem(1, new[] { new TreeItem(2), new TreeItem(3), new TreeItem(4) }),
+                new TreeItem(5, new[] {
+                    new TreeItem(6),
+                    new TreeItem(7, new []{ new TreeItem(8), new TreeItem(9) })
+                }),
+                new TreeItem(10, new[] { new TreeItem(11) }),
+            });
+
+            var actual = tree.TraverseDepthFirst(ti => ti.Children);
+            actual.Select(i => i.Value).Should().Equal(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+        }
+
         public class TreeItem
         {
             public int Value { get; }

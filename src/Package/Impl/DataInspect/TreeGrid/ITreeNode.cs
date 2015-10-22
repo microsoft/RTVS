@@ -1,21 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect
-{
+namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Represent visual node for ObservableTreeNode
     /// </summary>
     public interface ITreeNode
     {
+        /// <summary>
+        /// Node's Content
+        /// </summary>
         object Content { get; set; }
 
-        bool IsSame(ITreeNode node);
+        /// <summary>
+        /// Evaluate if the content can be updated to new content
+        /// </summary>
+        /// <param name="node">new content</param>
+        /// <returns>true if can updated, false otherwise</returns>
+        bool CanUpdateTo(ITreeNode node);
 
-        Task<IList<ITreeNode>> GetChildrenAsync(CancellationToken cancellationToken);
+        /// <summary>
+        /// returns children nodes
+        /// </summary>
+        /// <returns>Children node collection</returns>
+        Task<IReadOnlyList<ITreeNode>> GetChildrenAsync(CancellationToken cancellationToken);
     }
 }

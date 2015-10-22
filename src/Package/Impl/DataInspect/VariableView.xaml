@@ -3,78 +3,84 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect"
              xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
-             xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:core="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              Foreground="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextBrushKey}}"
              HorizontalAlignment="Stretch">
 
     <UserControl.Resources>
-        <local:MultiplyConverter x:Key="MultiplyConverter" />
-        <local:BooleanToVisibilityConverter x:Key="HidingBoolToVisibilityConverter" ValueForTrue="Visible" ValueForFalse="Hidden" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="DataGridStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-        <Style x:Key="ExpanderToggleStyle" TargetType="{x:Type ToggleButton}">
-            <Setter Property="Focusable" Value="False"/>
-            <Setter Property="Width" Value="16"/>
-            <Setter Property="Height" Value="16"/>
-            <Setter Property="Visibility" Value="{Binding HasChildren, Converter={StaticResource HidingBoolToVisibilityConverter}}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <Border Background="Transparent" Height="16" Padding="5" Width="16">
-                            <Path x:Name="ExpandPath" Data="M0,0 L0,6 L6,0 z" Fill="White" Stroke="#FF818181">
-                                <Path.RenderTransform>
-                                    <RotateTransform Angle="135" CenterY="3" CenterX="3"/>
-                                </Path.RenderTransform>
-                            </Path>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="RenderTransform" TargetName="ExpandPath">
-                                    <Setter.Value>
-                                        <RotateTransform Angle="180" CenterY="3" CenterX="3"/>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Fill" TargetName="ExpandPath" Value="#FF595959"/>
-                                <Setter Property="Stroke" TargetName="ExpandPath" Value="#FF262626"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Stroke" TargetName="ExpandPath" Value="#FF27C7F7"/>
-                                <Setter Property="Fill" TargetName="ExpandPath" Value="#FFCCEEFB"/>
-                            </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsMouseOver" Value="True"/>
-                                    <Condition Property="IsChecked" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Stroke" TargetName="ExpandPath" Value="#FF1CC4F7"/>
-                                <Setter Property="Fill" TargetName="ExpandPath" Value="#FF82DFFB"/>
-                            </MultiTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+            <local:MultiplyConverter x:Key="MultiplyConverter" />
+            <local:BooleanToVisibilityConverter x:Key="HidingBoolToVisibilityConverter" ValueForTrue="Visible" ValueForFalse="Hidden" />
+            <core:Double x:Key="ExpanderToggleSize">16</core:Double>
 
-        <DataTemplate x:Key="NameCellTemplate">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Rectangle x:Name="Indentation" Grid.Column="0"
-                                   Width="{Binding Depth, Converter={StaticResource MultiplyConverter}, ConverterParameter=16.0}" />
-                <!-- TODO: Do not hardcode 16.0 -->
-                <ToggleButton x:Name="Expander"
+            <Style x:Key="ExpanderToggleStyle" TargetType="{x:Type ToggleButton}">
+                <Setter Property="Focusable" Value="False"/>
+                <Setter Property="Width" Value="{StaticResource ExpanderToggleSize}"/>
+                <Setter Property="Height" Value="{StaticResource ExpanderToggleSize}"/>
+                <Setter Property="Visibility" Value="{Binding HasChildren, Converter={StaticResource HidingBoolToVisibilityConverter}}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <Border Background="Transparent" Height="{TemplateBinding Height}" Padding="5" Width="{TemplateBinding Width}">
+                                <Path x:Name="ExpandPath" Data="M0,0 L0,6 L6,0 z" Stroke="{DynamicResource {x:Static vsui:TreeViewColors.GlyphBrushKey}}">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="135" CenterY="3" CenterX="3"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="RenderTransform" TargetName="ExpandPath">
+                                        <Setter.Value>
+                                            <RotateTransform Angle="180" CenterY="3" CenterX="3"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphBrushKey}}"/>
+                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphBrushKey}}"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphMouseOverBrushKey}}"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                        <Condition Property="IsChecked" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphMouseOverBrushKey}}"/>
+                                    <Setter Property="Fill" TargetName="ExpandPath" Value="{DynamicResource {x:Static vsui:TreeViewColors.GlyphMouseOverBrushKey}}"/>
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="NameCellTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Rectangle x:Name="Indentation" Grid.Column="0"
+                                   Width="{Binding Depth, Converter={StaticResource MultiplyConverter}, ConverterParameter={StaticResource ExpanderToggleSize}}" />
+                    <ToggleButton x:Name="Expander"
                               Grid.Column="1"
                               Style="{StaticResource ExpanderToggleStyle}"
                               ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock Grid.Column="2" Text="{Binding Content.Name}" />
-            </Grid>
-        </DataTemplate>
+                    <TextBlock Grid.Column="2" Text="{Binding Model.Content.Name}" />
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
@@ -83,17 +89,17 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="EnvironmentName" Text="No R Interactive" Margin="4" />
+        <TextBlock x:Name="EnvironmentName" Text="{x:Static pkg:Resources.VariableExplorer_EnvironmentName}" Margin="4" />
 
         <DataGrid x:Name="RootTreeGrid" Grid.Row="1"
                   AutoGenerateColumns="False" HorizontalAlignment="Stretch"
                   ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <DataGrid.Columns>
-                <DataGridTemplateColumn x:Name="NameColumn" Header="Name" CellTemplate="{StaticResource NameCellTemplate}" Width="100" CanUserSort="False" />
-                <DataGridTextColumn x:Name="ValueColumn" Header="Value" Binding="{Binding Content.Value}" Width="*" CanUserSort="False" />
-                <DataGridTextColumn x:Name="ClassColumn" Header="Class" Binding="{Binding Content.Class}" Width="*" CanUserSort="False" />
-                <DataGridTextColumn x:Name="TypeColumn" Header="Type" Binding="{Binding Content.Type}" Width="100" CanUserSort="False" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <DataGrid.Columns>
+                <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}" Width="100" CanUserSort="False" />
+                <DataGridTextColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" Binding="{Binding Model.Content.Value}" Width="*" CanUserSort="False" />
+                <DataGridTextColumn x:Name="ClassColumn" Header="{x:Static pkg:Resources.VariableExplorer_ClassHeader}" Binding="{Binding Model.Content.Class}" Width="*" CanUserSort="False" />
+                <DataGridTextColumn x:Name="TypeColumn" Header="{x:Static pkg:Resources.VariableExplorer_TypeHeader}" Binding="{Binding Model.Content.TypeName}" Width="100" CanUserSort="False" />
+        </DataGrid.Columns>
+    </DataGrid>
     </Grid>
 </UserControl>

@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Data;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
@@ -57,30 +58,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             private void Root_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-                switch (e.Action) {
-                    case NotifyCollectionChangedAction.Add:
-                        int insertIndex = e.NewStartingIndex;
-                        foreach (var item in e.NewItems) {
-                            var node = (ObservableTreeNode)item;
-                            node.PropertyChanged += Node_PropertyChanged;
+                ThreadHelper.Generic.Invoke(() => {
+                    switch (e.Action) {
+                        case NotifyCollectionChangedAction.Add:
+                            int insertIndex = e.NewStartingIndex;
+                            foreach (var item in e.NewItems) {
+                                var node = (ObservableTreeNode)item;
+                                node.PropertyChanged += Node_PropertyChanged;
 
-                            this.Insert(insertIndex, node);
-                            insertIndex++;
-                        }
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        int removeIndex = e.OldStartingIndex;
-                        for (int i = 0; i < e.OldItems.Count; i++) {
-                            this[removeIndex].PropertyChanged -= Node_PropertyChanged;
-                            this.RemoveAt(removeIndex);
-                        }
-                        break;
-                    case NotifyCollectionChangedAction.Reset:
-                    case NotifyCollectionChangedAction.Replace:
-                    case NotifyCollectionChangedAction.Move:
-                    default:
-                        throw new NotSupportedException();
-                }
+                                this.Insert(insertIndex, node);
+                                insertIndex++;
+                            }
+                            break;
+                        case NotifyCollectionChangedAction.Remove:
+                            int removeIndex = e.OldStartingIndex;
+                            for (int i = 0; i < e.OldItems.Count; i++) {
+                                this[removeIndex].PropertyChanged -= Node_PropertyChanged;
+                                this.RemoveAt(removeIndex);
+                            }
+                            break;
+                        case NotifyCollectionChangedAction.Reset:
+                        case NotifyCollectionChangedAction.Replace:
+                        case NotifyCollectionChangedAction.Move:
+                        default:
+                            throw new NotSupportedException();
+                    }
+                });
             }
 
             private void Node_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {

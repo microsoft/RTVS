@@ -41,15 +41,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void VariableChanged(EvaluationWrapper variable) {
-            ThreadHelper.Generic.BeginInvoke(
-                DispatcherPriority.Normal,
-                () => {
-                    if (_rootNode == null) {
-                        SetRootNode(variable);
-                    } else {
-                        _rootNode.Update(new VariableNode(variable)).DoNotWait();
-                    }
-                });
+            if (_rootNode == null) {
+                ThreadHelper.Generic.BeginInvoke(
+                    DispatcherPriority.Normal,
+                    () => SetRootNode(variable));
+            }
+            else {
+                _rootNode.Update(new VariableNode(variable)).DoNotWait();
+            }
         }
 
         private void SetRootNode(EvaluationWrapper evaluation) {

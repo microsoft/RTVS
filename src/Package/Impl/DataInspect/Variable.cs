@@ -1,19 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
-using Microsoft.VisualStudio.R.Package.Utilities;
-using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    class VariableNode : ITreeNode {
-        EvaluationWrapper _evaluation;
+    /// <summary>
+    /// Model adapter to <see cref="ObservableTreeNode"/>
+    /// </summary>
+    internal class VariableNode : ITreeNode {
+
+        #region member/ctor
+
+        private EvaluationWrapper _evaluation;
         public VariableNode(EvaluationWrapper evaluation) {
             _evaluation = evaluation;
         }
+
+        #endregion
+
+        #region ITreeNode support
 
         public object Content {
             get {
@@ -24,26 +28,30 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public async Task<IList<ITreeNode>> GetChildrenAsync(CancellationToken cancellationToken) {
+        public async Task<IReadOnlyList<ITreeNode>> GetChildrenAsync(CancellationToken cancellationToken) {
             List<ITreeNode> result = null;
             var children = await _evaluation.GetChildrenAsync();
             if (children != null) {
                 result = new List<ITreeNode>();
-                var visibleChildren = children.Where(c => !c.IsHidden);
-                foreach (var child in visibleChildren) {
-                    result.Add(new VariableNode(child));
+
+                foreach (var child in children) {
+                    if (!child.IsHidden) {
+                        result.Add(new VariableNode(child));
+                    }
                 }
             }
             return result;
         }
 
-        public bool IsSame(ITreeNode node) {
+        public bool CanUpdateTo(ITreeNode node) {
             var value = node.Content as EvaluationWrapper;
             if (value != null) {
-                return _evaluation.IsSameEvaluation(value);
+                return _evaluation.Name == value.Name;
             }
 
             return false;
         }
+
+        #endregion ITreeNode support
     }
 }

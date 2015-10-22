@@ -38,17 +38,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
 
         public object Content { get; set; }
 
-        public Task<IList<ITreeNode>> GetChildrenAsync(CancellationToken cancellationToken)
+        public Task<IReadOnlyList<ITreeNode>> GetChildrenAsync(CancellationToken cancellationToken)
         {
             return Task.Run(() => CreateChilds());
         }
 
-        public bool IsSame(ITreeNode node)
+        public bool CanUpdateTo(ITreeNode node)
         {
             return ((string)Content) == ((string)node.Content);
         }
 
-        private IList<ITreeNode> CreateChilds()
+        private IReadOnlyList<ITreeNode> CreateChilds()
         {
             var children = new List<ITreeNode>();
 

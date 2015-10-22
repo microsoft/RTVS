@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.VisualStudio.R.Package.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Advanced.
         /// </summary>
-        internal static string AdvancedEditorOptions {
+        public static string AdvancedEditorOptions {
             get {
                 return ResourceManager.GetString("AdvancedEditorOptions", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Unable to open plot file. Exception: {0}.
         /// </summary>
-        internal static string CannotOpenPlotFile {
+        public static string CannotOpenPlotFile {
             get {
                 return ResourceManager.GetString("CannotOpenPlotFile", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Collecting OS information.
         /// </summary>
-        internal static string CollectingOSInformation {
+        public static string CollectingOSInformation {
             get {
                 return ResourceManager.GetString("CollectingOSInformation", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Collecting R Tools for Visual Studio logs.
         /// </summary>
-        internal static string CollectingRTVSLogs {
+        public static string CollectingRTVSLogs {
             get {
                 return ResourceManager.GetString("CollectingRTVSLogs", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Collecting events from system log.
         /// </summary>
-        internal static string CollectingSystemEvents {
+        public static string CollectingSystemEvents {
             get {
                 return ResourceManager.GetString("CollectingSystemEvents", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Unable to download CRAN mirror list. The request has been canceled..
         /// </summary>
-        internal static string CranMirrorListRequestCanceled {
+        public static string CranMirrorListRequestCanceled {
             get {
                 return ResourceManager.GetString("CranMirrorListRequestCanceled", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Creating ZIP archive.
         /// </summary>
-        internal static string CreatingArchive {
+        public static string CreatingArchive {
             get {
                 return ResourceManager.GetString("CreatingArchive", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Control+E, Control+E.
         /// </summary>
-        internal static string CtrlECtrlE {
+        public static string CtrlECtrlE {
             get {
                 return ResourceManager.GetString("CtrlECtrlE", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Control+Enter.
         /// </summary>
-        internal static string CtrlEnter {
+        public static string CtrlEnter {
             get {
                 return ResourceManager.GetString("CtrlEnter", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Language Editor.
         /// </summary>
-        internal static string EditorName {
+        public static string EditorName {
             get {
                 return ResourceManager.GetString("EditorName", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Run plotting command in R Interactive Window, or open file.
         /// </summary>
-        internal static string EmptyPlotWindowWatermark {
+        public static string EmptyPlotWindowWatermark {
             get {
                 return ResourceManager.GetString("EmptyPlotWindowWatermark", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Unable to collect and package logs. Exception: {0}.
         /// </summary>
-        internal static string Error_CannotCollectLogs {
+        public static string Error_CannotCollectLogs {
             get {
                 return ResourceManager.GetString("Error_CannotCollectLogs", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Unable to delete file {0}. Exception: {1}..
         /// </summary>
-        internal static string Error_CannotDeleteFile {
+        public static string Error_CannotDeleteFile {
             get {
                 return ResourceManager.GetString("Error_CannotDeleteFile", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Unable to launch Microsoft Outlook. Please attach RTVSLogs.zip file from your user TEMP folder to an e-mail message and send it to rtvscore@microsoft.com.
         /// </summary>
-        internal static string Error_CannotFindOutlook {
+        public static string Error_CannotFindOutlook {
             get {
                 return ResourceManager.GetString("Error_CannotFindOutlook", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Markdown conversion failed.
         /// </summary>
-        internal static string Error_MarkdownConversionFailed {
+        public static string Error_MarkdownConversionFailed {
             get {
                 return ResourceManager.GetString("Error_MarkdownConversionFailed", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
         /// </summary>
-        internal static string Error_Microsoft_R_Host_Missing {
+        public static string Error_Microsoft_R_Host_Missing {
             get {
                 return ResourceManager.GetString("Error_Microsoft_R_Host_Missing", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to This operation requires package {0} which is not installed or has been removed. .
         /// </summary>
-        internal static string Error_PackageMissing {
+        public static string Error_PackageMissing {
             get {
                 return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R for Windows is found. Please restart Visual Studio for changes to take effect..
         /// </summary>
-        internal static string Error_RestartVsAfterRInstalled {
+        public static string Error_RestartVsAfterRInstalled {
             get {
                 return ResourceManager.GetString("Error_RestartVsAfterRInstalled", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Gathering diagnostics data....
         /// </summary>
-        internal static string GatheringDiagnosticData {
+        public static string GatheringDiagnosticData {
             get {
                 return ResourceManager.GetString("GatheringDiagnosticData", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
-        internal static string InputIsTooLong {
+        public static string InputIsTooLong {
             get {
                 return ResourceManager.GetString("InputIsTooLong", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R.
         /// </summary>
-        internal static string LanguageName {
+        public static string LanguageName {
             get {
                 return ResourceManager.GetString("LanguageName", resourceCulture);
             }
@@ -253,7 +253,7 @@ namespace Microsoft.VisualStudio.R.Package {
         ///   Looks up a localized string similar to Load workspace from {0} failed:
         ///{1}.
         /// </summary>
-        internal static string LoadWorkspaceFailedMessageFormat {
+        public static string LoadWorkspaceFailedMessageFormat {
             get {
                 return ResourceManager.GetString("LoadWorkspaceFailedMessageFormat", resourceCulture);
             }
@@ -262,7 +262,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Do you want to load the R data file &quot;{0}&quot; into the global environment?.
         /// </summary>
-        internal static string LoadWorkspaceIntoGlobalEnvironment {
+        public static string LoadWorkspaceIntoGlobalEnvironment {
             get {
                 return ResourceManager.GetString("LoadWorkspaceIntoGlobalEnvironment", resourceCulture);
             }
@@ -271,7 +271,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Load Workspace.
         /// </summary>
-        internal static string LoadWorkspaceTitle {
+        public static string LoadWorkspaceTitle {
             get {
                 return ResourceManager.GetString("LoadWorkspaceTitle", resourceCulture);
             }
@@ -280,7 +280,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Processing Item {0} of {1}: {2}.
         /// </summary>
-        internal static string LongOperationProgressMessage {
+        public static string LongOperationProgressMessage {
             get {
                 return ResourceManager.GetString("LongOperationProgressMessage", resourceCulture);
             }
@@ -289,7 +289,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
-        internal static string MicrosoftRHostStarting {
+        public static string MicrosoftRHostStarting {
             get {
                 return ResourceManager.GetString("MicrosoftRHostStarting", resourceCulture);
             }
@@ -298,7 +298,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Host process is stopped. Click Reset to start a new one..
         /// </summary>
-        internal static string MicrosoftRHostStopped {
+        public static string MicrosoftRHostStopped {
             get {
                 return ResourceManager.GetString("MicrosoftRHostStopped", resourceCulture);
             }
@@ -307,7 +307,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Stopping R Session....
         /// </summary>
-        internal static string MicrosoftRHostStopping {
+        public static string MicrosoftRHostStopping {
             get {
                 return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
             }
@@ -316,7 +316,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Off.
         /// </summary>
-        internal static string Off {
+        public static string Off {
             get {
                 return ResourceManager.GetString("Off", resourceCulture);
             }
@@ -325,7 +325,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to On.
         /// </summary>
-        internal static string On {
+        public static string On {
             get {
                 return ResourceManager.GetString("On", resourceCulture);
             }
@@ -334,7 +334,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Open R Plot File.
         /// </summary>
-        internal static string OpenPlotDialogTitle {
+        public static string OpenPlotDialogTitle {
             get {
                 return ResourceManager.GetString("OpenPlotDialogTitle", resourceCulture);
             }
@@ -343,7 +343,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Packages.
         /// </summary>
-        internal static string OutputWindowName_InstallPackages {
+        public static string OutputWindowName_InstallPackages {
             get {
                 return ResourceManager.GetString("OutputWindowName_InstallPackages", resourceCulture);
             }
@@ -352,7 +352,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Publish.
         /// </summary>
-        internal static string OutputWindowName_Publish {
+        public static string OutputWindowName_Publish {
             get {
                 return ResourceManager.GetString("OutputWindowName_Publish", resourceCulture);
             }
@@ -361,7 +361,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Plot Files (*.vsplot)|*.vsplot|All Files (*.*)|*.*.
         /// </summary>
-        internal static string PlotFileFilter {
+        public static string PlotFileFilter {
             get {
                 return ResourceManager.GetString("PlotFileFilter", resourceCulture);
             }
@@ -370,7 +370,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Plot.
         /// </summary>
-        internal static string PlotWindowCaption {
+        public static string PlotWindowCaption {
             get {
                 return ResourceManager.GetString("PlotWindowCaption", resourceCulture);
             }
@@ -379,7 +379,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Interactive.
         /// </summary>
-        internal static string ReplWindowName {
+        public static string ReplWindowName {
             get {
                 return ResourceManager.GetString("ReplWindowName", resourceCulture);
             }
@@ -388,7 +388,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|All Files (*.*)|*.*.
         /// </summary>
-        internal static string SaveAsFilterMD {
+        public static string SaveAsFilterMD {
             get {
                 return ResourceManager.GetString("SaveAsFilterMD", resourceCulture);
             }
@@ -397,7 +397,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Language Files (*.r)|*.r|All Files (*.*)|*.*.
         /// </summary>
-        internal static string SaveAsFilterR {
+        public static string SaveAsFilterR {
             get {
                 return ResourceManager.GetString("SaveAsFilterR", resourceCulture);
             }
@@ -406,7 +406,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Save R Plot File.
         /// </summary>
-        internal static string SavePlotDialogTitle {
+        public static string SavePlotDialogTitle {
             get {
                 return ResourceManager.GetString("SavePlotDialogTitle", resourceCulture);
             }
@@ -415,7 +415,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Save Workspace As.
         /// </summary>
-        internal static string SaveWorkspaceAsTitle {
+        public static string SaveWorkspaceAsTitle {
             get {
                 return ResourceManager.GetString("SaveWorkspaceAsTitle", resourceCulture);
             }
@@ -425,7 +425,7 @@ namespace Microsoft.VisualStudio.R.Package {
         ///   Looks up a localized string similar to Save workspace into {0} failed:
         ///{1}.
         /// </summary>
-        internal static string SaveWorkspaceFailedMessageFormat {
+        public static string SaveWorkspaceFailedMessageFormat {
             get {
                 return ResourceManager.GetString("SaveWorkspaceFailedMessageFormat", resourceCulture);
             }
@@ -434,7 +434,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Automatic formatting.
         /// </summary>
-        internal static string Settings_AutoFormat {
+        public static string Settings_AutoFormat {
             get {
                 return ResourceManager.GetString("Settings_AutoFormat", resourceCulture);
             }
@@ -443,7 +443,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Reformat code as you type.
         /// </summary>
-        internal static string Settings_AutoFormat_Description {
+        public static string Settings_AutoFormat_Description {
             get {
                 return ResourceManager.GetString("Settings_AutoFormat_Description", resourceCulture);
             }
@@ -452,7 +452,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Expanded braces.
         /// </summary>
-        internal static string Settings_BracesExpanded {
+        public static string Settings_BracesExpanded {
             get {
                 return ResourceManager.GetString("Settings_BracesExpanded", resourceCulture);
             }
@@ -461,7 +461,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Place open curly brace on a new line.
         /// </summary>
-        internal static string Settings_BracesExpanded_Description {
+        public static string Settings_BracesExpanded_Description {
             get {
                 return ResourceManager.GetString("Settings_BracesExpanded_Description", resourceCulture);
             }
@@ -470,7 +470,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Commit on Enter key.
         /// </summary>
-        internal static string Settings_CommitOnEnter {
+        public static string Settings_CommitOnEnter {
             get {
                 return ResourceManager.GetString("Settings_CommitOnEnter", resourceCulture);
             }
@@ -479,7 +479,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Commit intellisense selection when Enter key is pressed.
         /// </summary>
-        internal static string Settings_CommitOnEnter_Description {
+        public static string Settings_CommitOnEnter_Description {
             get {
                 return ResourceManager.GetString("Settings_CommitOnEnter_Description", resourceCulture);
             }
@@ -488,7 +488,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Commit on Space key.
         /// </summary>
-        internal static string Settings_CommitOnSpace {
+        public static string Settings_CommitOnSpace {
             get {
                 return ResourceManager.GetString("Settings_CommitOnSpace", resourceCulture);
             }
@@ -497,7 +497,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Commit intellisense selection when Space key is pressed.
         /// </summary>
-        internal static string Settings_CommitOnSpace_Description {
+        public static string Settings_CommitOnSpace_Description {
             get {
                 return ResourceManager.GetString("Settings_CommitOnSpace_Description", resourceCulture);
             }
@@ -506,7 +506,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Completion.
         /// </summary>
-        internal static string Settings_CompletionCategory {
+        public static string Settings_CompletionCategory {
             get {
                 return ResourceManager.GetString("Settings_CompletionCategory", resourceCulture);
             }
@@ -515,7 +515,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to CRAN Mirror.
         /// </summary>
-        internal static string Settings_CranMirror {
+        public static string Settings_CranMirror {
             get {
                 return ResourceManager.GetString("Settings_CranMirror", resourceCulture);
             }
@@ -524,7 +524,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Default CRAN mirror for package installations.
         /// </summary>
-        internal static string Settings_CranMirror_Description {
+        public static string Settings_CranMirror_Description {
             get {
                 return ResourceManager.GetString("Settings_CranMirror_Description", resourceCulture);
             }
@@ -533,7 +533,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Show syntax errors.
         /// </summary>
-        internal static string Settings_EnableSyntaxCheck {
+        public static string Settings_EnableSyntaxCheck {
             get {
                 return ResourceManager.GetString("Settings_EnableSyntaxCheck", resourceCulture);
             }
@@ -542,7 +542,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Enable automatic syntax checking in the code.
         /// </summary>
-        internal static string Settings_EnableSyntaxCheck_Description {
+        public static string Settings_EnableSyntaxCheck_Description {
             get {
                 return ResourceManager.GetString("Settings_EnableSyntaxCheck_Description", resourceCulture);
             }
@@ -551,7 +551,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Format on paste.
         /// </summary>
-        internal static string Settings_FormatOnPaste {
+        public static string Settings_FormatOnPaste {
             get {
                 return ResourceManager.GetString("Settings_FormatOnPaste", resourceCulture);
             }
@@ -560,7 +560,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Automatically format and indent code fragment on paste.
         /// </summary>
-        internal static string Settings_FormatOnPaste_Description {
+        public static string Settings_FormatOnPaste_Description {
             get {
                 return ResourceManager.GetString("Settings_FormatOnPaste_Description", resourceCulture);
             }
@@ -569,7 +569,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Formatting.
         /// </summary>
-        internal static string Settings_FormattingCategory {
+        public static string Settings_FormattingCategory {
             get {
                 return ResourceManager.GetString("Settings_FormattingCategory", resourceCulture);
             }
@@ -578,7 +578,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to General.
         /// </summary>
-        internal static string Settings_GeneralCategory {
+        public static string Settings_GeneralCategory {
             get {
                 return ResourceManager.GetString("Settings_GeneralCategory", resourceCulture);
             }
@@ -587,7 +587,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to IntelliSense.
         /// </summary>
-        internal static string Settings_IntellisenseCategory {
+        public static string Settings_IntellisenseCategory {
             get {
                 return ResourceManager.GetString("Settings_IntellisenseCategory", resourceCulture);
             }
@@ -596,7 +596,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Match partially typed argument names.
         /// </summary>
-        internal static string Settings_PartialArgumentNameMatch {
+        public static string Settings_PartialArgumentNameMatch {
             get {
                 return ResourceManager.GetString("Settings_PartialArgumentNameMatch", resourceCulture);
             }
@@ -605,7 +605,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to When typing argument name in a function call, signature help shows description for the argument that is the best match.
         /// </summary>
-        internal static string Settings_PartialArgumentNameMatch_Description {
+        public static string Settings_PartialArgumentNameMatch_Description {
             get {
                 return ResourceManager.GetString("Settings_PartialArgumentNameMatch_Description", resourceCulture);
             }
@@ -614,7 +614,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Interactive window.
         /// </summary>
-        internal static string Settings_ReplCategory {
+        public static string Settings_ReplCategory {
             get {
                 return ResourceManager.GetString("Settings_ReplCategory", resourceCulture);
             }
@@ -623,7 +623,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Syntax check in R Console.
         /// </summary>
-        internal static string Settings_ReplSyntaxCheck {
+        public static string Settings_ReplSyntaxCheck {
             get {
                 return ResourceManager.GetString("Settings_ReplSyntaxCheck", resourceCulture);
             }
@@ -632,7 +632,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Turns on or off live code syntax check in R Console window. Syntax check may not work correctly in multi-line statements..
         /// </summary>
-        internal static string Settings_ReplSyntaxCheck_Description {
+        public static string Settings_ReplSyntaxCheck_Description {
             get {
                 return ResourceManager.GetString("Settings_ReplSyntaxCheck_Description", resourceCulture);
             }
@@ -641,7 +641,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Engine (64-bit).
         /// </summary>
-        internal static string Settings_RVersion {
+        public static string Settings_RVersion {
             get {
                 return ResourceManager.GetString("Settings_RVersion", resourceCulture);
             }
@@ -650,7 +650,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Version of R to use (64-bit only)..
         /// </summary>
-        internal static string Settings_RVersion_Description {
+        public static string Settings_RVersion_Description {
             get {
                 return ResourceManager.GetString("Settings_RVersion_Description", resourceCulture);
             }
@@ -659,7 +659,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to [Latest].
         /// </summary>
-        internal static string Settings_RVersion_Latest {
+        public static string Settings_RVersion_Latest {
             get {
                 return ResourceManager.GetString("Settings_RVersion_Latest", resourceCulture);
             }
@@ -668,7 +668,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to &apos;Send to R Console&apos; shortcut.
         /// </summary>
-        internal static string Settings_SendToRepl {
+        public static string Settings_SendToRepl {
             get {
                 return ResourceManager.GetString("Settings_SendToRepl", resourceCulture);
             }
@@ -677,7 +677,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Override editor &apos;insert empty line above&apos; command and use Control+Enter for sending editor selection to R Console instead. Keyboard bindings can also be change in Tools &gt; Options &gt; Environment &gt; Keyboard..
         /// </summary>
-        internal static string Settings_SendToRepl_Description {
+        public static string Settings_SendToRepl_Description {
             get {
                 return ResourceManager.GetString("Settings_SendToRepl_Description", resourceCulture);
             }
@@ -686,7 +686,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Show internal functions.
         /// </summary>
-        internal static string Settings_ShowInternalFunctions {
+        public static string Settings_ShowInternalFunctions {
             get {
                 return ResourceManager.GetString("Settings_ShowInternalFunctions", resourceCulture);
             }
@@ -695,7 +695,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Show internal functions (functions beginning with dot) in the statement completion list.
         /// </summary>
-        internal static string Settings_ShowInternalFunctions_Description {
+        public static string Settings_ShowInternalFunctions_Description {
             get {
                 return ResourceManager.GetString("Settings_ShowInternalFunctions_Description", resourceCulture);
             }
@@ -704,7 +704,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Show TCL functions.
         /// </summary>
-        internal static string Settings_ShowTclFunctions {
+        public static string Settings_ShowTclFunctions {
             get {
                 return ResourceManager.GetString("Settings_ShowTclFunctions", resourceCulture);
             }
@@ -713,7 +713,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Show functions from TCL/TK package in the statement completion list.
         /// </summary>
-        internal static string Settings_ShowTclFunctions_Description {
+        public static string Settings_ShowTclFunctions_Description {
             get {
                 return ResourceManager.GetString("Settings_ShowTclFunctions_Description", resourceCulture);
             }
@@ -722,7 +722,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Space after comma.
         /// </summary>
-        internal static string Settings_SpaceAfterComma {
+        public static string Settings_SpaceAfterComma {
             get {
                 return ResourceManager.GetString("Settings_SpaceAfterComma", resourceCulture);
             }
@@ -731,7 +731,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Insert space after comma in function arguments.
         /// </summary>
-        internal static string Settings_SpaceAfterComma_Description {
+        public static string Settings_SpaceAfterComma_Description {
             get {
                 return ResourceManager.GetString("Settings_SpaceAfterComma_Description", resourceCulture);
             }
@@ -740,7 +740,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Space after keyword.
         /// </summary>
-        internal static string Settings_SpaceAfterKeyword {
+        public static string Settings_SpaceAfterKeyword {
             get {
                 return ResourceManager.GetString("Settings_SpaceAfterKeyword", resourceCulture);
             }
@@ -749,7 +749,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Insert space after keyword and before opening brace such as in case of &apos;if&apos;, &apos;while&apos;, &apos;repeat&apos;.
         /// </summary>
-        internal static string Settings_SpaceAfterKeyword_Description {
+        public static string Settings_SpaceAfterKeyword_Description {
             get {
                 return ResourceManager.GetString("Settings_SpaceAfterKeyword_Description", resourceCulture);
             }
@@ -758,7 +758,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Syntax check.
         /// </summary>
-        internal static string Settings_SyntaxCheckCategory {
+        public static string Settings_SyntaxCheckCategory {
             get {
                 return ResourceManager.GetString("Settings_SyntaxCheckCategory", resourceCulture);
             }
@@ -767,7 +767,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Intellisense list on first character.
         /// </summary>
-        internal static string Settings_TriggerOnFirstChar {
+        public static string Settings_TriggerOnFirstChar {
             get {
                 return ResourceManager.GetString("Settings_TriggerOnFirstChar", resourceCulture);
             }
@@ -776,7 +776,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Show intellisense list on first character typed. If set to off, completion list can be invoked by typing one or more characters and pressing Tab or by invoking Edit &gt; IntelliSense &gt; List Members command.
         /// </summary>
-        internal static string Settings_TriggerOnFirstChar_Description {
+        public static string Settings_TriggerOnFirstChar_Description {
             get {
                 return ResourceManager.GetString("Settings_TriggerOnFirstChar_Description", resourceCulture);
             }
@@ -785,7 +785,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Setting description.
         /// </summary>
-        internal static string Temp_SettingDescription {
+        public static string Temp_SettingDescription {
             get {
                 return ResourceManager.GetString("Temp_SettingDescription", resourceCulture);
             }
@@ -794,7 +794,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Setting.
         /// </summary>
-        internal static string Temp_SettingDisplayName {
+        public static string Temp_SettingDisplayName {
             get {
                 return ResourceManager.GetString("Temp_SettingDisplayName", resourceCulture);
             }
@@ -803,16 +803,61 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Format Document.
         /// </summary>
-        internal static string UndoActionFormatDocument {
+        public static string UndoActionFormatDocument {
             get {
                 return ResourceManager.GetString("UndoActionFormatDocument", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Class.
+        /// </summary>
+        public static string VariableExplorer_ClassHeader {
+            get {
+                return ResourceManager.GetString("VariableExplorer_ClassHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No R Interactive.
+        /// </summary>
+        public static string VariableExplorer_EnvironmentName {
+            get {
+                return ResourceManager.GetString("VariableExplorer_EnvironmentName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string VariableExplorer_NameHeader {
+            get {
+                return ResourceManager.GetString("VariableExplorer_NameHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string VariableExplorer_TypeHeader {
+            get {
+                return ResourceManager.GetString("VariableExplorer_TypeHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string VariableExplorer_ValueHeader {
+            get {
+                return ResourceManager.GetString("VariableExplorer_ValueHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Variable Explorer.
         /// </summary>
-        internal static string VariableWindowCaption {
+        public static string VariableWindowCaption {
             get {
                 return ResourceManager.GetString("VariableWindowCaption", resourceCulture);
             }
@@ -821,7 +866,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Data Files (*.rdata)|*.rdata|All Files (*.*)|*.*.
         /// </summary>
-        internal static string WorkspaceFileFilter {
+        public static string WorkspaceFileFilter {
             get {
                 return ResourceManager.GetString("WorkspaceFileFilter", resourceCulture);
             }

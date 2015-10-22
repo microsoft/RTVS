@@ -119,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         class VariableInfo : INamedItemInfo {
             public VariableInfo(EvaluationWrapper e) {
                 this.Name = e.Name;
-                if (e.Type == "closure") {
+                if (e.TypeName == "closure") {
                     ItemType = NamedItemType.Function;
                 } else {
                     ItemType = NamedItemType.Variable;

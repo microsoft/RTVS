@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         {
             var target = new ObservableTreeNode(new TestNode(1234));
             Assert.AreEqual(false, target.HasChildren, "Default HasChildren value");
-            Assert.AreEqual(1234.ToString(), target.Content);
+            Assert.AreEqual(1234.ToString(), target.Model.Content);
             Assert.AreEqual(1, target.Count);
             Assert.AreEqual(0, target.Children.Count);
         }
@@ -166,7 +166,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
             Assert.AreEqual(expected.Length, target.Count);
             for (int i = 0; i < expected.Length; i++)
             {
-                Assert.AreEqual(expected[i].ToString(), target[i].Content, string.Format("{0}th item is different", i));
+                Assert.AreEqual(expected[i].ToString(), target[i].Model.Content, string.Format("{0}th item is different", i));
             }
         }
 

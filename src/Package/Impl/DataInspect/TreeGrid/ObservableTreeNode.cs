@@ -29,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             IndexStart = indexStart;
 
             Parent = null;
-            Content = node.Content;
             Model = node;
 
             ResetCount();
@@ -69,13 +68,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool IsExpanded {
             get { return _isExpanded; }
             set {
-                foreach (var child in Children) {
-                    SetNodeVisibility(child, value);
+                if (HasChildren) {
+                    foreach (var child in ChildrenInternal) {
+                        SetNodeVisibility(child, value);
+                    }
                 }
 
                 SetProperty<bool>(ref _isExpanded, value);
 
-                if (_isExpanded) {
+                if (_isExpanded && HasChildren) {
                     foreach (var child in ChildrenInternal) // TODO: synchronize Visibility/IsExpanded change, basically Provider should be intelligent sequence and load balance update request
                     {
                         child.StartUpdatingChildren().DoNotWait();
@@ -137,13 +138,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         public int Count { get; private set; }
 
-        private object _content;
         /// <summary>
         ///  value  contained in this node
         /// </summary>
-        public object Content {
-            get { return _content; }
-            set { SetProperty<object>(ref _content, value); }
+        private ITreeNode _model;
+        public ITreeNode Model {
+            get { return _model; }
+            set { SetProperty(ref _model, value); }
         }
 
         private object _errorContent;
@@ -270,34 +271,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region private
 
-        private ITreeNode _model;
-        private ITreeNode Model {
-            get { return _model; }
-            set {
-                _model = value;
-                Content = _model == null ? null : _model.Content;
-            }
-        }
-
         private void ResetCount() {
             Count = IndexStart;
         }
 
         private List<ObservableTreeNode> Linearize(ObservableTreeNode tree) {
-            var linear = new List<ObservableTreeNode>();
-
-            Traverse(tree, (n) => linear.Add(n));
-
-            return linear;
-        }
-
-        protected void Traverse(ObservableTreeNode tree, Action<ObservableTreeNode> action) {
-            action(tree);
-            if (tree.HasChildren && tree.ChildrenInternal != null) {
-                foreach (var child in tree.ChildrenInternal) {
-                    Traverse(child, action);
-                }
-            }
+            return new List<ObservableTreeNode>(tree.TraverseDepthFirst((t) => t.HasChildren ? t.ChildrenInternal : null));
         }
 
         protected void Traverse(
@@ -379,13 +358,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return count;
         }
 
-        private void SetNodeVisibility(ObservableTreeNode node, bool expanded) {
-            Visibility childVisibility = expanded ? Visibility.Visible : Visibility.Collapsed;
+        private void SetNodeVisibility(ObservableTreeNode rootNode, bool expanded) {
+            Visibility visibility = expanded ? Visibility.Visible : Visibility.Collapsed;
 
-            Traverse(
-                node,
-                (c) => c.Visibility = childVisibility,
-                (p) => p.IsExpanded);
+            foreach (var node in rootNode.TraverseDepthFirst((n) => VisibleChildren(n))) {
+                node.Visibility = visibility;
+            }
+        }
+
+        private IEnumerable<ObservableTreeNode> VisibleChildren(ObservableTreeNode parent) {
+            return (parent.IsExpanded && parent.HasChildren) ? parent.ChildrenInternal : null;
         }
 
         private void SetHasChildren() {
@@ -404,10 +386,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             try {
                 var nodes = await Model.GetChildrenAsync(CancellationToken.None);
 
-                if (nodes != null) {
-                    UpdateChildren(nodes);
-                }
+                UpdateChildren(nodes);
             } catch (Exception e) {
+                Debug.Assert(false, e.ToString());
                 SetStatus("Errot at enumerating members", e);   // TODO: move to resource, or bypass the exception message
             }
         }
@@ -416,14 +397,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ErrorContent = new Exception(message, e);
         }
 
-        private void UpdateChildren(IList<ITreeNode> update) {
+        private void UpdateChildren(IReadOnlyList<ITreeNode> update) {
+            if (!HasChildren && (update == null || update.Count == 0)) {
+                return; // trivial case: neither new or old has no child
+            }
+
             int srcIndex = 0;
             int updateIndex = 0;
 
             while (srcIndex < ChildrenInternal.Count) {
                 int sameUpdateIndex = -1;
                 for (int u = updateIndex; u < update.Count; u++) {
-                    if (ChildrenInternal[srcIndex].Model.IsSame(update[u])) {
+                    if (ChildrenInternal[srcIndex].Model.CanUpdateTo(update[u])) {
                         sameUpdateIndex = u;
                         break;
                     }
