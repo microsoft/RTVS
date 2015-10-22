@@ -79,11 +79,47 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collecting OS information.
+        /// </summary>
+        internal static string CollectingOSInformation {
+            get {
+                return ResourceManager.GetString("CollectingOSInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collecting R Tools for Visual Studio logs.
+        /// </summary>
+        internal static string CollectingRTVSLogs {
+            get {
+                return ResourceManager.GetString("CollectingRTVSLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collecting events from system log.
+        /// </summary>
+        internal static string CollectingSystemEvents {
+            get {
+                return ResourceManager.GetString("CollectingSystemEvents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to download CRAN mirror list. The request has been canceled..
         /// </summary>
         internal static string CranMirrorListRequestCanceled {
             get {
                 return ResourceManager.GetString("CranMirrorListRequestCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating ZIP archive.
+        /// </summary>
+        internal static string CreatingArchive {
+            get {
+                return ResourceManager.GetString("CreatingArchive", resourceCulture);
             }
         }
         
@@ -187,6 +223,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gathering diagnostics data....
+        /// </summary>
+        internal static string GatheringDiagnosticData {
+            get {
+                return ResourceManager.GetString("GatheringDiagnosticData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
         internal static string InputIsTooLong {
@@ -229,6 +274,15 @@ namespace Microsoft.VisualStudio.R.Package {
         internal static string LoadWorkspaceTitle {
             get {
                 return ResourceManager.GetString("LoadWorkspaceTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Processing Item {0} of {1}: {2}.
+        /// </summary>
+        internal static string LongOperationProgressMessage {
+            get {
+                return ResourceManager.GetString("LongOperationProgressMessage", resourceCulture);
             }
         }
         

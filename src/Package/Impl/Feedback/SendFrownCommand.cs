@@ -7,17 +7,26 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Office.Interop.Outlook;
 using Microsoft.R.Support.Utility;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal sealed class SendFrownCommand : SendMailCommand {
         private const string _rtvsGeneralDataFile = "RTVSGeneralData.log";
         private const string _rtvsSystemEventsFile = "RTVSSystemEvents.log";
+        private const string _zipFile = "RTVSLogs.zip";
         private const int _daysToCollect = 7;
+
+        private static LongAction[] _actions = new LongAction[] {
+            new LongAction() {Name =  Resources.CollectingRTVSLogs, Action = CollectRTVSLogs },
+            new LongAction() {Name =  Resources.CollectingSystemEvents, Action = CollectSystemLogs },
+            new LongAction() {Name =  Resources.CollectingOSInformation, Action = CollectGeneralLogs },
+            new LongAction() {Name =  Resources.CreatingArchive, Action = CreateArchive },
+        };
+
+        private static List<string> _logFiles;
 
         public SendFrownCommand() :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown) {
@@ -28,43 +37,52 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         }
 
         protected override void Handle() {
-            string zipName = CollectAndZipLogs();
-            SendMail("RTVS Frown", zipName);
-        }
+            string zipPath = Path.Combine(Path.GetTempPath(), _zipFile);
+            _logFiles = new List<string>();
 
-        private string CollectAndZipLogs() {
             try {
-                List<string> logFiles = new List<string>();
+                File.Delete(zipPath);
+            } catch (IOException) { }
 
-                IEnumerable<string> logs = GetRecentLogFiles("Microsoft.R.Host*.log");
-                logFiles.AddRange(logs);
+            LongOperationNotification.ShowWaitingPopup(Resources.GatheringDiagnosticData, _actions);
 
-                logs = GetRecentLogFiles("Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring*.log");
-                logFiles.AddRange(logs);
-
-                string roamingFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string vsActivityLog = Path.Combine(roamingFolder, @"Microsoft\VisualStudio\14.0\ActivityLog.xml");
-                if (File.Exists(vsActivityLog)) {
-                    logFiles.Add(vsActivityLog);
-                }
-
-                string systemEventsLog = CollectSystemEvents();
-                logFiles.Add(systemEventsLog);
-
-                string generatDataLog = CollectGeneralData();
-                logFiles.Add(generatDataLog);
-
-                return ZipFiles(logFiles);
-            } catch (System.Exception ex) {
-                EditorShell.Current.ShowErrorMessage(
-                    string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotCollectLogs, ex.Message));
+            if (File.Exists(zipPath)) {
+                SendMail("RTVS Frown", zipPath);
             }
-
-            return string.Empty;
         }
 
-        private string ZipFiles(IEnumerable<string> files) {
-            string zipPath = Path.Combine(Path.GetTempPath(), "RTVSLogs.zip");
+        private static void CollectRTVSLogs() {
+            IEnumerable<string> logs;
+
+            logs = GetRecentLogFiles("Microsoft.R.Host*.log");
+            _logFiles.AddRange(logs);
+
+            logs = GetRecentLogFiles("Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring*.log");
+            _logFiles.AddRange(logs);
+
+            string roamingFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string vsActivityLog = Path.Combine(roamingFolder, @"Microsoft\VisualStudio\14.0\ActivityLog.xml");
+            if (File.Exists(vsActivityLog)) {
+                _logFiles.Add(vsActivityLog);
+            }
+        }
+
+        private static void CollectSystemLogs() {
+            string systemEventsLog = CollectSystemEvents();
+            _logFiles.Add(systemEventsLog);
+        }
+
+        private static void CollectGeneralLogs() {
+            string generalDataLog = CollectGeneralData();
+            _logFiles.Add(generalDataLog);
+        }
+
+        private static void CreateArchive() {
+            ZipFiles(_logFiles);
+        }
+
+        private static string ZipFiles(IEnumerable<string> files) {
+            string zipPath = Path.Combine(Path.GetTempPath(), _zipFile);
 
             using (FileStream fs = File.Create(zipPath)) {
                 using (ZipArchive zipArchive = new ZipArchive(fs, ZipArchiveMode.Create)) {
@@ -77,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             return zipPath;
         }
 
-        private IEnumerable<string> GetRecentLogFiles(string pattern) {
+        private static IEnumerable<string> GetRecentLogFiles(string pattern) {
             string tempPath = Path.GetTempPath();
 
             var logs = Directory.EnumerateFiles(tempPath, pattern);
@@ -93,7 +111,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             });
         }
 
-        private string CollectSystemEvents() {
+        private static string CollectSystemEvents() {
             string systemEventsFile = Path.Combine(Path.GetTempPath(), _rtvsSystemEventsFile);
             using (var sw = new StreamWriter(systemEventsFile)) {
                 try {
@@ -131,7 +149,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant
         );
 
-        private string CollectGeneralData() {
+        private static string CollectGeneralData() {
             string generalDataFile = Path.Combine(Path.GetTempPath(), _rtvsGeneralDataFile);
             using (var sw = new StreamWriter(generalDataFile)) {
                 try {
@@ -176,8 +194,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                             assemFileVersion == null ? "(null)" : assemFileVersion.Version
                         ));
                     }
-                }
-                catch(System.Exception ex) {
+                } catch (System.Exception ex) {
                     sw.WriteLine("  Failed to access system data.");
                     sw.WriteLine(ex.ToString());
                     sw.WriteLine();
