@@ -14,8 +14,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session
-{
+namespace Microsoft.VisualStudio.R.Package.Repl.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
         private static string DefaultPrompt = "> ";
 
@@ -63,6 +62,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             return source.Task;
         }
 
+        public Task CancelAllAsync() {
+            return _host.CancelAllAsync();
+        }
+
         public async Task StartHostAsync() {
             if (_hostRunTask != null && !_hostRunTask.IsCompleted) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
@@ -90,8 +93,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
+
             var requestTask = BeginInteractionAsync(false);
-            await Task.WhenAny(requestTask, Task.Delay(100)).Unwrap();
+            await Task.WhenAny(requestTask, Task.Delay(200)).Unwrap();
 
             if (_hostRunTask.IsCompleted) {
                 requestTask
@@ -101,11 +105,29 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             }
 
             if (requestTask.Status == TaskStatus.RanToCompletion) {
-                await requestTask.Result.Quit();
-            } else {
-                _host?.Dispose();
+                using (var inter = await requestTask) {
+                    // Try graceful shutdown with q() first.
+                    try {
+                        await Task.WhenAny(_hostRunTask, inter.Quit(), Task.Delay(500)).Unwrap();
+                    } catch (Exception) {
+                    }
+
+                    if (_hostRunTask.IsCompleted) {
+                        return;
+                    }
+
+                    // If that doesn't work, then try sending the disconnect packet to the host -
+                    // it will call R_Suicide, which is not graceful, but at least it's cooperative.
+                    await Task.WhenAny(_host.DisconnectAsync(), Task.Delay(500)).Unwrap();
+
+                    if (_hostRunTask.IsCompleted) {
+                        return;
+                    }
+                }
             }
 
+            // If nothing worked, then just kill the host process.
+            _host?.Dispose();
             await _hostRunTask;
         }
 
@@ -299,5 +321,5 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
                 handlers(this, args);
             }
         }
-   }
+    }
 }

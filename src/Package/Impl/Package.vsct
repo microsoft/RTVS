@@ -86,7 +86,17 @@
         </Strings>
       </Menu>
 
-      <!-- Windows flyout -->
+      <!-- Feedback flyout -->
+      <Menu guid="guidRToolsCmdSet" id="feedbackSubMenu" type="Menu" priority="0x9000">
+        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
+        <Strings>
+          <ButtonText>Feedback</ButtonText>
+          <CommandName>Feedback</CommandName>
+          <MenuText>&amp;Feedback</MenuText>
+        </Strings>
+      </Menu>
+
+    <!-- Windows flyout -->
       <Menu guid="guidRToolsCmdSet" id="windowsSubMenu" type="Menu" priority="0x1000">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
@@ -173,6 +183,10 @@
         <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
       </Group>
 
+      <Group guid="guidRToolsCmdSet" id="feedbackSubMenuGroup" priority="0x0000">
+        <Parent guid="guidRToolsCmdSet" id="feedbackSubMenu"/>
+      </Group>
+
       <!-- Plot toolbar -->
       <Group guid="guidRToolsCmdSet" id="plotToolbarFileGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
@@ -186,7 +200,7 @@
       <Group guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup" priority="0x0400">
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
       </Group>
-      
+
       <!-- InteractiveWindow -->
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
@@ -353,7 +367,7 @@
           <CommandName>Zoom In Plot</CommandName>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0200" type="Button">
         <Icon guid="ImageCatalogGuid" id="ZoomOut"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -503,6 +517,28 @@
       </Button>
       <!-- End Windows flyout -->
 
+      <!-- Feedback flyout -->
+      <Button guid="guidRToolsCmdSet" id="icmdSendSmile" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="feedbackSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="FeedbackSmile"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Send &amp;Smile...</ButtonText>
+          <CommandName>Send R Smile</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdSendFrown" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="feedbackSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="FeedbackFrown"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Send &amp;Frown...</ButtonText>
+          <CommandName>Send R Frown</CommandName>
+        </Strings>
+      </Button>
+      <!-- End Windows flyout -->
+
       <!-- Options... (last in the top level menu) -->
       <Button guid="guidRToolsCmdSet" id="icmdGoToREditorOptions" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="toolsOptionsGroup"/>
@@ -531,7 +567,7 @@
           <CommandName>RFormattingOptions</CommandName>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x0100" type="Button">
         <Icon guid="ImageCatalogGuid" id="Run"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -636,7 +672,7 @@
       <Bitmaps>
         <Bitmap guid="pdfIconGuid" href="Images\pdf.bmp" usedList="pdfIcon" />
       </Bitmaps>
-      </Bitmaps>
+    </Bitmaps>
   </Commands>
 
   <CommandPlacements>
@@ -832,6 +868,8 @@
       <IDSymbol name="icmdGoToFormattingOptions" value="400" />
       <IDSymbol name="icmdGoToRToolsOptions" value="401" />
       <IDSymbol name="icmdGoToREditorOptions" value="402" />
+      <IDSymbol name="icmdSendSmile" value="403" />
+      <IDSymbol name="icmdSendFrown" value="404" />
 
       <!-- REPL-->
       <IDSymbol name="icmdSendToRepl" value="501" />
@@ -901,6 +939,8 @@
       <IDSymbol name="publishSubMenuGroup" value="0x2350"/>
       <IDSymbol name="publishPreviewSubMenuGroup" value="0x2360"/>
       <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>
+      <IDSymbol name="feedbackSubMenu" value="0x2380"/>
+      <IDSymbol name="feedbackSubMenuGroup" value="0x2390"/>
     </GuidSymbol>
 
     <!-- R Editor Factory Guid -->
@@ -911,7 +951,7 @@
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />
     </GuidSymbol>
-    
+
     <!-- InteractiveWindow Guid -->
     <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
       <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>

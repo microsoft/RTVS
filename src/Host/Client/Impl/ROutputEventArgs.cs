@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client {
     public class ROutputEventArgs : EventArgs {

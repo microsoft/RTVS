@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright("© Microsoft Corporation. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyProduct("Visual Studio Tools for R")]
+[assembly: AssemblyProduct("R Tools for Visual Studio")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyVersion("14.0.0.1")]
 

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
@@ -12,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Actions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHost : IDisposable, IRExpressionEvaluator {
@@ -27,11 +26,20 @@ namespace Microsoft.R.Host.Client {
         private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
         private Process _process;
+        private volatile Task _runTask;
+
         private ClientWebSocket _socket;
-        private byte[] _buffer = new byte[0x100000];
-        private bool _isRunning, _canEval;
+        private readonly byte[] _buffer = new byte[0x100000];
+        private readonly SemaphoreSlim
+            _socketSendLock = new SemaphoreSlim(1, 1),      // for _socket.SendAsync
+            _socketReceiveLock = new SemaphoreSlim(1, 1);   // for _socket.ReceiveAsync and _buffer
+
+        private bool _canEval;
         private int _rLoopDepth;
         private long _nextMessageId = 1;
+
+        private TaskCompletionSource<object> _cancelAllTcs;
+        private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
         public RHost(IRCallbacks callbacks) {
             _callbacks = callbacks;
@@ -43,7 +51,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         private static Exception ProtocolError(FormattableString fs, object message = null) {
-            var s = fs.ToString(CultureInfo.InvariantCulture);
+            var s = Invariant(fs);
             if (message != null) {
                 s += "\n\n" + message;
             }
@@ -53,14 +61,20 @@ namespace Microsoft.R.Host.Client {
 
         private async Task<Message> ReceiveMessageAsync(CancellationToken ct) {
             var sb = new StringBuilder();
-            WebSocketReceiveResult wsrr;
-            do {
-                wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
-                if (wsrr.CloseStatus != null) {
-                    return null;
-                }
-                sb.Append(Encoding.UTF8.GetString(_buffer, 0, wsrr.Count));
-            } while (!wsrr.EndOfMessage);
+
+            await _socketReceiveLock.WaitAsync(ct);
+            try {
+                WebSocketReceiveResult wsrr;
+                do {
+                    wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
+                    if (wsrr.CloseStatus != null) {
+                        return null;
+                    }
+                    sb.Append(Encoding.UTF8.GetString(_buffer, 0, wsrr.Count));
+                } while (!wsrr.EndOfMessage);
+            } finally {
+                _socketReceiveLock.Release();
+            }
 
             var json = sb.ToString();
             _log.Response(json, _rLoopDepth);
@@ -73,171 +87,53 @@ namespace Microsoft.R.Host.Client {
             return new Message(token);
         }
 
-        public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
-            string rBinPath = Path.Combine(rHome, RBinPathX64);
-
-            if (!File.Exists(rhostExe)) {
-                throw new MicrosoftRHostMissingException();
-            }
-
-            psi = psi ?? new ProcessStartInfo();
-            psi.FileName = rhostExe;
-            psi.UseShellExecute = false;
-            psi.EnvironmentVariables["R_HOME"] = rHome;
-            psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
-
-            using (this)
-            using (_process = Process.Start(psi)) {
-                _log.RHostProcessStarted(psi);
-                _process.EnableRaisingEvents = true;
-                _process.Exited += delegate { Dispose(); };
-
-                try {
-                    ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-                    using (_socket = new ClientWebSocket()) {
-                        var uri = new Uri("ws://localhost:" + DefaultPort);
-                        for (int i = 0; ; ++i) {
-                            try {
-                                await _socket.ConnectAsync(uri, ct);
-                                _log.ConnectedToRHostWebSocket(uri, i);
-                                break;
-                            } catch (WebSocketException) {
-                                if (i > 10) {
-                                    _log.FailedToConnectToRHost(uri);
-                                    throw;
-                                }
-                                await Task.Delay(100, ct);
-                            }
-                        }
-
-                        await Run(ct);
-                    }
-                } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
-                    // Expected cancellation, do not propagate, just exit process
-                } catch (Exception ex) {
-                    Trace.Fail("Exception in RHost run loop:\n" + ex);
-                    throw;
-                } finally {
-                    if (!_process.HasExited) {
-                        try {
-                            _process.WaitForExit(500);
-                            if (!_process.HasExited) {
-                                _process.Kill();
-                                _process.WaitForExit();
-                            }
-                        } catch (InvalidOperationException) {
-                        }
-                    }
-                    _log.RHostProcessExited();
-                }
-            }
+        private JArray CreateMessage(CancellationToken ct, out string id, string name, params object[] args) {
+            id = "#" + _nextMessageId + "#";
+            _nextMessageId += 2;
+            return new JArray(id, name, args);
         }
 
-        public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-            using (_socket = new ClientWebSocket()) {
-                await _socket.ConnectAsync(uri, ct);
-                await Run(ct);
-            }
-        }
-
-        private async Task Run(CancellationToken ct) {
+        private async Task SendAsync(JToken token, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            if (_isRunning) {
-                throw new InvalidOperationException("This host is already running.");
-            }
+            var json = JsonConvert.SerializeObject(token);
+            byte[] buffer = Encoding.UTF8.GetBytes(json);
 
-            _isRunning = true;
+            await _socketSendLock.WaitAsync(ct);
             try {
-                try {
-                    var message = await ReceiveMessageAsync(ct);
-                    if (message.Name != "Microsoft.R.Host" || message.RequestId != null) {
-                        throw ProtocolError($"Microsoft.R.Host handshake expected:", message);
-                    }
-
-                    var protocolVersion = message.GetInt32(0, "protocol_version");
-                    if (protocolVersion != 1) {
-                        throw ProtocolError($"Unsupported RHost protocol version:", message);
-                    }
-
-                    var rVersion = message.GetString(1, "R_version");
-                    await _callbacks.Connected(rVersion);
-
-                    message = await RunLoop(ct, allowEval: true);
-                    if (message != null) {
-                        throw ProtocolError($"Unexpected host response message:", message);
-                    }
-                } finally {
-                    await _callbacks.Disconnected();
-                }
+                await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
             } finally {
-                _isRunning = false;
+                _socketSendLock.Release();
             }
+
+            _log.Request(json, _rLoopDepth);
         }
 
-        private async Task<Message> RunLoop(CancellationToken ct, bool allowEval) {
+        private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
+            string id;
+            var message = CreateMessage(ct, out id, name, args);
+            await SendAsync(message, ct);
+            return id;
+        }
+
+        private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            try {
-                _log.EnterRLoop(_rLoopDepth++);
-                while (!ct.IsCancellationRequested) {
-                    var message = await ReceiveMessageAsync(ct);
-                    if (message == null) {
-                        return null;
-                    } else if (message.RequestId != null) {
-                        return message;
+            string id;
+            var message = CreateMessage(ct, out id, ":", request.Id, request.Name, args);
+            await SendAsync(message, ct);
+            return id;
+        }
+
+        private static RContext[] GetContexts(Message message) {
+            var contexts = message.GetArgument(0, "contexts", JTokenType.Array)
+                .Select((token, i) => {
+                    if (token.Type != JTokenType.Integer) {
+                        throw ProtocolError($"Element #{i} of context array must be an integer:", message);
                     }
-
-                    switch (message.Name) {
-                        case "?":
-                            await YesNoCancel(message, allowEval, ct);
-                            break;
-
-                        case ">":
-                            await ReadConsole(message, allowEval, ct);
-                            break;
-
-                        case "!":
-                        case "!!":
-                            message.ExpectArguments(1);
-                            await _callbacks.WriteConsoleEx(
-                                message.GetString(0, "buf", allowNull: true),
-                                message.Name.Length == 1 ? OutputType.Output : OutputType.Error,
-                                ct);
-                            break;
-
-                        case "![]":
-                            message.ExpectArguments(1);
-                            await _callbacks.ShowMessage(message.GetString(0, "s", allowNull: true), ct);
-                            break;
-
-                        case "~+":
-                            await _callbacks.Busy(true, ct);
-                            break;
-                        case "~-":
-                            await _callbacks.Busy(false, ct);
-                            break;
-
-                        case "PlotXaml":
-                            await _callbacks.PlotXaml(message.GetString(0, "xaml_file_path"), ct);
-                            // TODO: delete temporary xaml and bitmap files
-                            break;
-
-                        default:
-                            throw ProtocolError($"Unrecognized host message name:", message);
-                    }
-                }
-            } finally {
-                _log.ExitRLoop(--_rLoopDepth);
-            }
-
-            return null;
+                    return new RContext((RContextType)(int)token);
+                });
+            return contexts.ToArray();
         }
 
         private async Task YesNoCancel(Message request, bool allowEval, CancellationToken ct) {
@@ -255,6 +151,8 @@ namespace Microsoft.R.Host.Client {
                 _canEval = false;
             }
 
+            ct.ThrowIfCancellationRequested();
+
             string response;
             switch (input) {
                 case Client.YesNoCancel.No:
@@ -269,8 +167,8 @@ namespace Microsoft.R.Host.Client {
                 default:
                     {
                         FormattableString error = $"YesNoCancel: callback returned an invalid value: {input}";
-                        Trace.Fail(error.ToString(CultureInfo.InvariantCulture));
-                        throw new InvalidOperationException(error.ToString(CultureInfo.InvariantCulture));
+                        Trace.Fail(Invariant(error));
+                        throw new InvalidOperationException(Invariant(error));
                     }
             }
 
@@ -296,49 +194,10 @@ namespace Microsoft.R.Host.Client {
                 _canEval = false;
             }
 
+            ct.ThrowIfCancellationRequested();
+
             input = input.Replace("\r\n", "\n");
             await RespondAsync(request, ct, input);
-        }
-
-        private async Task SendAsync(JToken token, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-
-            var json = JsonConvert.SerializeObject(token);
-            byte[] buffer = Encoding.UTF8.GetBytes(json);
-            await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
-
-            _log.Request(json, _rLoopDepth);
-        }
-
-        private static RContext[] GetContexts(Message message) {
-            var contexts = message.GetArgument(0, "contexts", JTokenType.Array)
-                .Select((token, i) => {
-                    if (token.Type != JTokenType.Integer) {
-                        throw ProtocolError($"Element #{i} of context array must be an integer:", message);
-                    }
-                    return new RContext((RContextType)(int)token);
-                });
-            return contexts.ToArray();
-        }
-
-        private JArray CreateMessage(CancellationToken ct, out string id, string name, params object[] args) {
-            id = "#" + _nextMessageId + "#";
-            _nextMessageId += 2;
-            return new JArray(id, name, args);
-        }
-
-        private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
-            string id;
-            var message = CreateMessage(ct, out id, name, args);
-            await SendAsync(message, ct);
-            return id;
-        }
-
-        private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
-            string id;
-            var message = CreateMessage(ct, out id, ":", request.Id, request.Name, args);
-            await SendAsync(message, ct);
-            return id;
         }
 
         public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
@@ -388,6 +247,240 @@ namespace Microsoft.R.Host.Client {
                 }
             } finally {
                 _canEval = true;
+            }
+        }
+
+        /// <summary>
+        /// Cancels any ongoing evaluations or interaction processing.
+        /// </summary>
+        public async Task CancelAllAsync() {
+            if (_runTask == null) {
+                throw new InvalidOperationException("Not connected to host.");
+            }
+
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var tcs = new TaskCompletionSource<object>();
+            if (Interlocked.CompareExchange(ref _cancelAllTcs, tcs, null) != null) {
+                // Cancellation is already in progress - do nothing.
+                return;
+            }
+
+            try {
+                // Cancel any pending callbacks
+                _cancelAllCts.Cancel();
+
+                try {
+                    await SendAsync("/", _cts.Token, null);
+                } catch (OperationCanceledException) {
+                    return;
+                } catch (WebSocketException) {
+                    return;
+                }
+
+                await tcs.Task;
+            } finally {
+                Volatile.Write(ref _cancelAllTcs, null);
+            }
+        }
+
+        public async Task DisconnectAsync() {
+            if (_runTask == null) {
+                throw new InvalidOperationException("Not connected to host.");
+            }
+
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            try {
+                await SendAsync(JValue.CreateNull(), _cts.Token);
+            } catch (OperationCanceledException) {
+            } catch (WebSocketException) {
+            }
+
+            await _runTask;
+        }
+
+        private async Task<Message> RunLoop(CancellationToken ct, bool allowEval) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
+            try {
+                _log.EnterRLoop(_rLoopDepth++);
+                while (!ct.IsCancellationRequested) {
+                    var message = await ReceiveMessageAsync(ct);
+                    if (message == null) {
+                        return null;
+                    } else if (message.RequestId != null) {
+                        return message;
+                    }
+
+                    try {
+                        switch (message.Name) {
+                            case "\\":
+                                {
+                                    var tcs = Volatile.Read(ref _cancelAllTcs);
+                                    if (tcs != null) {
+                                        _cancelAllCts = new CancellationTokenSource();
+                                        _cancelAllTcs.TrySetResult(true);
+                                    }
+                                }
+                                break;
+
+                            case "?":
+                                await YesNoCancel(message, allowEval, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
+                                break;
+
+                            case ">":
+                                await ReadConsole(message, allowEval, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
+                                break;
+
+                            case "!":
+                            case "!!":
+                                message.ExpectArguments(1);
+                                await _callbacks.WriteConsoleEx(
+                                    message.GetString(0, "buf", allowNull: true),
+                                    message.Name.Length == 1 ? OutputType.Output : OutputType.Error,
+                                    ct);
+                                break;
+
+                            case "![]":
+                                message.ExpectArguments(1);
+                                await _callbacks.ShowMessage(message.GetString(0, "s", allowNull: true), ct);
+                                break;
+
+                            case "~+":
+                                await _callbacks.Busy(true, ct);
+                                break;
+                            case "~-":
+                                await _callbacks.Busy(false, ct);
+                                break;
+
+                            case "PlotXaml":
+                                await _callbacks.PlotXaml(message.GetString(0, "xaml_file_path"), ct);
+                                // TODO: delete temporary xaml and bitmap files
+                                break;
+
+                            default:
+                                throw ProtocolError($"Unrecognized host message name:", message);
+                        }
+                    } catch (OperationCanceledException) when (!ct.IsCancellationRequested) {
+                        // Cancelled via _cancelAllCts - just move onto the next message.
+                    }
+                }
+            } finally {
+                _log.ExitRLoop(--_rLoopDepth);
+            }
+
+            return null;
+        }
+
+        private async Task RunWorker(CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
+            try {
+                var message = await ReceiveMessageAsync(ct);
+                if (message.Name != "Microsoft.R.Host" || message.RequestId != null) {
+                    throw ProtocolError($"Microsoft.R.Host handshake expected:", message);
+                }
+
+                var protocolVersion = message.GetInt32(0, "protocol_version");
+                if (protocolVersion != 1) {
+                    throw ProtocolError($"Unsupported RHost protocol version:", message);
+                }
+
+                var rVersion = message.GetString(1, "R_version");
+                await _callbacks.Connected(rVersion);
+
+                message = await RunLoop(ct, allowEval: true);
+                if (message != null) {
+                    throw ProtocolError($"Unexpected host response message:", message);
+                }
+            } finally {
+                await _callbacks.Disconnected();
+            }
+        }
+
+        private Task Run(CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
+            if (_runTask != null) {
+                throw new InvalidOperationException("This host is already running.");
+            }
+
+            return _runTask = RunWorker(ct);
+        }
+
+        public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
+            string rBinPath = Path.Combine(rHome, RBinPathX64);
+
+            if (!File.Exists(rhostExe)) {
+                throw new MicrosoftRHostMissingException();
+            }
+
+            psi = psi ?? new ProcessStartInfo();
+            psi.FileName = rhostExe;
+            psi.UseShellExecute = false;
+            psi.EnvironmentVariables["R_HOME"] = rHome;
+            psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
+
+            using (this)
+            using (_process = Process.Start(psi)) {
+                _log.RHostProcessStarted(psi);
+                _process.EnableRaisingEvents = true;
+                _process.Exited += delegate { Dispose(); };
+
+                try {
+                    ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
+                    using (var socket = new ClientWebSocket()) {
+                        var uri = new Uri("ws://localhost:" + DefaultPort);
+                        for (int i = 0; ; ++i) {
+                            try {
+                                await socket.ConnectAsync(uri, ct);
+                                _socket = socket;
+                                _log.ConnectedToRHostWebSocket(uri, i);
+                                break;
+                            } catch (WebSocketException) {
+                                if (i > 10) {
+                                    _log.FailedToConnectToRHost(uri);
+                                    throw;
+                                }
+                                await Task.Delay(100, ct);
+                            }
+                        }
+
+                        await Run(ct);
+                    }
+                } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
+                    // Expected cancellation, do not propagate, just exit process
+                } catch (Exception ex) {
+                    Trace.Fail("Exception in RHost run loop:\n" + ex);
+                    throw;
+                } finally {
+                    if (!_process.HasExited) {
+                        try {
+                            _process.WaitForExit(500);
+                            if (!_process.HasExited) {
+                                _process.Kill();
+                                _process.WaitForExit();
+                            }
+                        } catch (InvalidOperationException) {
+                        }
+                    }
+                    _log.RHostProcessExited();
+                }
+            }
+        }
+
+        public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
+            using (var socket = new ClientWebSocket()) {
+                await socket.ConnectAsync(uri, ct);
+                _socket = socket;
+                await Run(ct);
             }
         }
     }
