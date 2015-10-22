@@ -1,60 +1,53 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Newtonsoft.Json;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect
-{
-    internal class VariableEvaluationContext
-    {
-        public const string GlobalEnv = ".GlobalEnv";
-
-        public string Environment { get; set; }
-
-        public string VariableName { get; set; }
-
-        public string GetQueryString()
-        {
-            return string.Format(".rtvs.datainspect.eval(\"{0}\", env={1})\n", VariableName, this.Environment);
+namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    internal class VariableChangedArgs : EventArgs {
+        public EvaluationWrapper NewVariable { get; set; }
         }
-    }
 
-    internal class VariableChangedArgs : EventArgs
-    {
-        public REvaluation NewVariable { get; set; }
-    }
+    internal class VariableProvider : IDisposable {
+        #region members and ctor
 
-    internal class VariableProvider
-    {
-        public static VariableProvider Current => _instance.Value;
-        public VariableEvaluationContext GlobalContext { get; private set; }
-
-        private static Lazy<VariableProvider> _instance = new Lazy<VariableProvider>(() => new VariableProvider());
         private IRSession _rSession;
-        private VariableEvaluationContext _monitorContext;
+        private DebugSession _debugSession;
 
-        public VariableProvider()
-        {
+        public VariableProvider() {
             var sessionProvider = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
-            IdleTimeAction.Create(async () =>
-            {
-                await SetRSession(sessionProvider.Current);   // TODO: find a place to SetRSession to null, watch out memory leak
-                await InitializeData();
+            IdleTimeAction.Create(async () => {
+                await SetRSession(sessionProvider.Current);
             }, 10, typeof(VariableProvider));
         }
 
+        #endregion
+
         #region Public
+
+        private static Lazy<VariableProvider> _instance = new Lazy<VariableProvider>(() => new VariableProvider());
+        /// <summary>
+        /// Singleton
+        /// </summary>
+        public static VariableProvider Current => _instance.Value;
+
         /// <summary>
         /// R current session change triggers this SessionsChanged event
         /// </summary>
         public event EventHandler SessionsChanged;
         public event EventHandler<VariableChangedArgs> VariableChanged;
+
+        public EvaluationWrapper LastEvaluation { get; private set; }
+
         #endregion
 
         #region RSession related event handler
@@ -63,24 +56,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// IRSession.BeforeRequest handler. At each interaction request, this is called.
         /// Used to queue another request to refresh variables after the interaction request.
         /// </summary>
-        private async void RSession_BeforeRequest(object sender, RRequestEventArgs e)
-        {
+        private async void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
             await RefreshVariableCollection();
         }
 
         /// <summary>
         /// IRSessionProvider.CurrentSessionChanged handler. When current session changes, this is called
         /// </summary>
-        private async void RSessionProvider_CurrentChanged(object sender, EventArgs e)
-        {
+        private async void RSessionProvider_CurrentChanged(object sender, EventArgs e) {
             var sessionProvider = sender as IRSessionProvider;
             Debug.Assert(sessionProvider != null);
 
-            if (sessionProvider != null)
-            {
+            if (sessionProvider != null) {
                 var session = sessionProvider.Current;
-                if (!object.Equals(session, _rSession))
-                {
+                if (!object.Equals(session, _rSession)) {
                     await SetRSession(session);
                 }
             }
@@ -88,92 +77,64 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
 
         #endregion
 
-        private async Task InitializeData()
-        {
-            GlobalContext = new VariableEvaluationContext()
-            {
-                Environment = VariableEvaluationContext.GlobalEnv,
-                VariableName = VariableEvaluationContext.GlobalEnv
-            };
+        private async Task InitializeData() {
+            var debugSessionProvider = AppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
 
-            await SetMonitorContext(GlobalContext);
+            if (_debugSession != null) {
+                _debugSession.Dispose();
+                _debugSession = null;
+            }
+
+            _debugSession = await debugSessionProvider.GetDebugSessionAsync(_rSession);
+
+            await RefreshVariableCollection();
         }
 
-        private async Task SetRSession(IRSession session)
-        {
-            // unregister event handler from old session
-            if (_rSession != null)
-            {
+        private async Task SetRSession(IRSession session) {
+            // cleans up old RSession
+            if (_rSession != null) {
                 _rSession.BeforeRequest -= RSession_BeforeRequest;
             }
 
-            // register event handler to new session
+            // set new RSession
             _rSession = session;
-            if (_rSession != null)
-            {
+            if (_rSession != null) {
                 _rSession.BeforeRequest += RSession_BeforeRequest;
-                Task t = RefreshVariableCollection();   // TODO: have a no-await wrapper to handle side effects
+                await InitializeData();
             }
 
-            await InitializeData();
-
-            if (SessionsChanged != null)
-            {
+            // notify the change
+            if (SessionsChanged != null) {
                 SessionsChanged(this, EventArgs.Empty);
             }
         }
 
-        private async Task RefreshVariableCollection()
-        {
-            if (_rSession == null)
-            {
+        private async Task RefreshVariableCollection() {
+            if (_debugSession == null) {
                 return;
             }
 
-            REvaluationResult response;
-            using (var interactor = await _rSession.BeginEvaluationAsync())
-            {
-                response = await interactor.EvaluateAsync(_monitorContext.GetQueryString());
-            }
+            var stackFrames = await _debugSession.GetStackFramesAsync();
 
-            if (response.ParseStatus == RParseStatus.OK)
-            {
-                var evaluation = Deserialize<REvaluation>(response.StringResult);
-                if (evaluation != null)
-                {
-                    if (VariableChanged != null)
-                    {
+            var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
+            if (globalStackFrame != null) {
+                DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("environment()", "Global Environment");
+
+                LastEvaluation = new EvaluationWrapper(evaluation);
+
+                if (VariableChanged != null) {
                         VariableChanged(
                             this,
-                            new VariableChangedArgs() { NewVariable = evaluation });
-                    }
-                }
-            }
+                        new VariableChangedArgs() { NewVariable = LastEvaluation });
         }
-
-        public async Task SetMonitorContext(VariableEvaluationContext context) // TODO: rename to monitor
-        {
-            _monitorContext = context;
-            await RefreshVariableCollection();
-        }
-
-        private static T Deserialize<T>(string response)
-        {
-            if (response == null)
-            {
-                return default(T);
+            }
             }
 
-            try
-            {
-                return JsonConvert.DeserializeObject<T>(response);
+        public void Dispose() {
+            if (_debugSession != null) {
+                _debugSession.Dispose();
             }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.ToString());
-
-                return default(T);
-            }
+            _rSession = null;
         }
     }
 }

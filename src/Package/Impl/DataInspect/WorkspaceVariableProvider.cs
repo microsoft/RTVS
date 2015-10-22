@@ -1,27 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect
-{
+namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Provides name of variables and members declared in REPL workspace
     /// </summary>
     [Export(typeof(IVariablesProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal sealed class WorkspaceVariableProvider : IVariablesProvider
-    {
+    internal sealed class WorkspaceVariableProvider : IVariablesProvider {
         /// <summary>
         /// Collection of top-level variables
         /// </summary>
-        private Dictionary<string, REvaluation> _topLevelVariables = new Dictionary<string, REvaluation>();
+        private Dictionary<string, EvaluationWrapper> _topLevelVariables = new Dictionary<string, EvaluationWrapper>();
 
-        public WorkspaceVariableProvider()
-        {
+        public WorkspaceVariableProvider() {
             VariableProvider.Current.VariableChanged += OnVariableChanged;
         }
 
@@ -30,10 +29,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// Given variable name determines number of members
         /// </summary>
         /// <param name="variableName">Variable name or null if global scope</param>
-        public int GetMemberCount(string variableName)
-        {
-            if (string.IsNullOrEmpty(variableName))
-            {
+        public int GetMemberCount(string variableName) {
+            if (string.IsNullOrEmpty(variableName)) {
                 // Global scope
                 return _topLevelVariables.Values.Count;
             }
@@ -52,16 +49,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// in which case providers returns members of 'def' filtered to 'g' prefix.
         /// </param>
         /// <param name="maxCount">Max number of members to return</param>
-        public IReadOnlyCollection<INamedItemInfo> GetMembers(string variableName, int maxCount)
-        {
+        public IReadOnlyCollection<INamedItemInfo> GetMembers(string variableName, int maxCount) {
             // Split abc$def$g into parts. String may also be empty or end with $ or @.
             string[] parts = variableName.Split(new char[] { '$', '@' });
 
-            if (parts.Length == 0 || parts[0].Length == 0)
-            {
+            if (parts.Length == 0 || parts[0].Length == 0) {
                 // Global scope
-                return _topLevelVariables.Values.Select((m, index) =>
-                {
+                return _topLevelVariables.Values.Select((m, index) => {
                     return index < maxCount ? new VariableInfo(m) : null;
                 }).ToArray();
             }
@@ -71,35 +65,30 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
             // in abc$def$ or in abc$def$g we need to retrieve members of 'def' 
             // so the last part doesn't matter.
             int partCount = parts.Length - 1;
-            REvaluation eval;
+            EvaluationWrapper eval;
 
             // Go by parts and drill into members
-            if (_topLevelVariables.TryGetValue(parts[0], out eval))
-            {
-                for (int i = 1; i < partCount; i++)
-                {
+            if (_topLevelVariables.TryGetValue(parts[0], out eval)) {
+                for (int i = 1; i < partCount; i++) {
                     string part = parts[i];
 
-                    if (string.IsNullOrEmpty(part))
-                    {
+                    if (string.IsNullOrEmpty(part)) {
                         // Something looks like abc$$def
                         break;
                     }
 
-                    if (eval.Children != null || eval.Children.Evals != null)
-                    {
-                        eval = eval.Children.Evals.FirstOrDefault((x) => x != null && x.Name == part);
-                        if (eval == null)
-                        {
+                    var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
+                    if (children != null) {
+                        eval = children.FirstOrDefault((x) => x != null && x.Name == part);
+                        if (eval == null) {
                             break;
                         }
                     }
                 }
 
-                if (eval != null && eval.Children != null && eval.Children.Evals != null)
-                {
-                    return eval.Children.Evals.Select((m, index) =>
-                    {
+                if (eval != null) {
+                    var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
+                    return children.Select((m, index) => {
                         return index < maxCount ? new VariableInfo(m) : null;
                     }).ToArray();
                 }
@@ -109,39 +98,30 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         }
         #endregion
 
-        private void OnVariableChanged(object sender, VariableChangedArgs e)
-        {
-            UpdateList(e.NewVariable);
+        private void OnVariableChanged(object sender, VariableChangedArgs e) {
+            UpdateList(e.NewVariable).DoNotWait();
         }
 
-        private void UpdateList(REvaluation e)
-        {
-            if (e == null)
-            {
+        private async Task UpdateList(EvaluationWrapper e) {
+            if (e == null) {
                 _topLevelVariables.Clear();
                 return;
             }
 
-            if (e.Children != null && e.Children.Evals != null)
-            {
-                foreach (var x in e.Children.Evals)
-                {
-                    _topLevelVariables[x.Name] = x;
+            var children = await e.GetChildrenAsync();
+            if (children != null) {
+                foreach (var x in children) {
+                    _topLevelVariables[x.Name] = x; // TODO: BUGBUG: this doesn't address removed variables
                 }
             }
         }
 
-        class VariableInfo : INamedItemInfo
-        {
-            public VariableInfo(REvaluation e)
-            {
+        class VariableInfo : INamedItemInfo {
+            public VariableInfo(EvaluationWrapper e) {
                 this.Name = e.Name;
-                if (e.TypeName == "closure")
-                {
+                if (e.Type == "closure") {
                     ItemType = NamedItemType.Function;
-                }
-                else
-                {
+                } else {
                     ItemType = NamedItemType.Variable;
                 }
             }
