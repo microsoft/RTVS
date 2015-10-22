@@ -155,30 +155,35 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
                 return;
             }
 
-            using (var access = await _projectLockService.WriteLockAsync(_unloadCancellationToken)) {
-                await access.CheckoutAsync(_inMemoryImportFullPath);
+            try {
+                using (var access = await _projectLockService.WriteLockAsync(_unloadCancellationToken)) {
+                    await access.CheckoutAsync(_inMemoryImportFullPath);
 
-                _temporaryAddedItemGroup.RemoveAllChildren();
+                    _temporaryAddedItemGroup.RemoveAllChildren();
 
-                await RemoveFiles(changeset.RemovedFiles, access);
-                await RemoveDirectories(changeset.RemovedDirectories, access);
+                    await RemoveFiles(changeset.RemovedFiles, access);
+                    await RemoveDirectories(changeset.RemovedDirectories, access);
 
-                await RenameFiles(changeset.RenamedFiles, access);
-                await RenameDirectories(changeset.RenamedDirectories, access);
+                    await RenameFiles(changeset.RenamedFiles, access);
+                    await RenameDirectories(changeset.RenamedDirectories, access);
 
-                AddDirectories(changeset.AddedDirectories);
-                AddFiles(changeset.AddedFiles);
+                    AddDirectories(changeset.AddedDirectories);
+                    AddFiles(changeset.AddedFiles);
 
-                _log.MsBuildAfterChangesApplied(_inMemoryImport);
+                    _log.MsBuildAfterChangesApplied(_inMemoryImport);
 
-                foreach (var configuredProject in _unconfiguredProject.LoadedConfiguredProjects) {
-                    try {
-                        MsBuildProject project = await access.GetProjectAsync(configuredProject, _unloadCancellationToken);
-                        project.ReevaluateIfNecessary();
-                    } catch (Exception ex) {
-                        Debug.Fail("We were unable to mark a configuration as dirty" + ex.Message, ex.StackTrace);
+                    foreach (var configuredProject in _unconfiguredProject.LoadedConfiguredProjects) {
+                        try {
+                            MsBuildProject project =
+                                await access.GetProjectAsync(configuredProject, _unloadCancellationToken);
+                            project.ReevaluateIfNecessary();
+                        } catch (Exception ex) {
+                            Trace.Fail("Unable to mark a configuration as dirty" + ex.Message, ex.StackTrace);
+                        }
                     }
                 }
+            } catch (Exception ex) {
+                Trace.Fail("Unable to handle file system change:" + ex.Message, ex.StackTrace);
             }
 
             _log.ApplyProjectChangesFinished();
@@ -249,6 +254,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
         private void AddDirectories(IReadOnlyCollection<string> directoriesToAdd) {
             foreach (string path in directoriesToAdd) {
+                RemoveItem(_directoriesItemGroup, _directoryItems, path);
                 ProjectItemElement item = _directoriesItemGroup.AddItem("Folder", path, Enumerable.Empty<KeyValuePair<string, string>>());
                 _directoryItems.Add(path, item);
             }
@@ -258,6 +264,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
             // await InMemoryProjectSourceItemProviderExtension.CallListeners(this.SourceItemsAddingListeners, contexts, false);
 
             foreach (string path in filesToAdd) {
+                RemoveItem(_filesItemGroup, _fileItems, path);
                 ProjectItemElement item = _filesItemGroup.AddItem("Content", path, Enumerable.Empty<KeyValuePair<string, string>>());
                 _fileItems.Add(path, item);
             }
