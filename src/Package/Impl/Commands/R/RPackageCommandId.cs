@@ -1,7 +1,5 @@
-﻿namespace Microsoft.VisualStudio.R.Package.Commands
-{
-    public static class RPackageCommandId
-    {
+﻿namespace Microsoft.VisualStudio.R.Package.Commands {
+    public static class RPackageCommandId {
         public const int plotWindowToolBarId = 0x2000;
 
         // General
@@ -13,6 +11,8 @@
         public const int icmdLoadWorkspace = 502;
         public const int icmdSaveWorkspace = 503;
         public const int icmdSetWorkingDirectory = 504;
+        public const int icmdRestartR = 505;
+        public const int icmdInterruptR = 506;
         public const int icmdAttachDebugger = 507;
         public const int icmdSourceRScript = 508;
 

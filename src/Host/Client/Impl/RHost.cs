@@ -26,8 +26,14 @@ namespace Microsoft.R.Host.Client {
         private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
         private Process _process;
-        private ClientWebSocket _socket;
-        private byte[] _buffer = new byte[0x100000];
+
+        private ClientWebSocket _socket; // always use GetSocketAsync to access!
+        private readonly byte[] _buffer = new byte[0x100000];
+        private readonly SemaphoreSlim
+            _socketLock = new SemaphoreSlim(1, 1),          // for _socket
+            _socketSendLock = new SemaphoreSlim(1, 1),      // for _socket.SendAsync
+            _socketReceiveLock = new SemaphoreSlim(1, 1);   // for _socket.ReceiveAsync and _buffer
+
         private bool _isRunning, _canEval;
         private int _rLoopDepth;
         private long _nextMessageId = 1;
@@ -41,8 +47,20 @@ namespace Microsoft.R.Host.Client {
             _cts.Cancel();
         }
 
+        private async Task<ClientWebSocket> GetSocketAsync() {
+            await _socketLock.WaitAsync();
+            try {
+                if (_socket == null) {
+                    throw new InvalidOperationException("Connection has not been established, or has already been closed.");
+                }
+                return _socket;
+            } finally {
+                _socketLock.Release();
+            }
+        }
+
         private static Exception ProtocolError(FormattableString fs, object message = null) {
-            var s =  Invariant(fs);
+            var s = Invariant(fs);
             if (message != null) {
                 s += "\n\n" + message;
             }
@@ -54,11 +72,18 @@ namespace Microsoft.R.Host.Client {
             var sb = new StringBuilder();
             WebSocketReceiveResult wsrr;
             do {
-                wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
-                if (wsrr.CloseStatus != null) {
-                    return null;
+                var socket = await GetSocketAsync();
+
+                await _socketReceiveLock.WaitAsync(ct);
+                try {
+                    wsrr = await socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
+                    if (wsrr.CloseStatus != null) {
+                        return null;
+                    }
+                    sb.Append(Encoding.UTF8.GetString(_buffer, 0, wsrr.Count));
+                } finally {
+                    _socketReceiveLock.Release();
                 }
-                sb.Append(Encoding.UTF8.GetString(_buffer, 0, wsrr.Count));
             } while (!wsrr.EndOfMessage);
 
             var json = sb.ToString();
@@ -79,11 +104,18 @@ namespace Microsoft.R.Host.Client {
         }
 
         private async Task SendAsync(JToken token, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-
             var json = JsonConvert.SerializeObject(token);
             byte[] buffer = Encoding.UTF8.GetBytes(json);
-            await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
+
+            var socket = await GetSocketAsync();
+
+            await _socketSendLock.WaitAsync(ct).ConfigureAwait(false);
+            try {
+                await socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct)
+                    .ConfigureAwait(false);
+            } finally {
+                _socketSendLock.Release();
+            }
 
             _log.Request(json, _rLoopDepth);
         }
@@ -91,14 +123,14 @@ namespace Microsoft.R.Host.Client {
         private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
             string id;
             var message = CreateMessage(ct, out id, name, args);
-            await SendAsync(message, ct);
+            await SendAsync(message, ct).ConfigureAwait(false);
             return id;
         }
 
         private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
             string id;
             var message = CreateMessage(ct, out id, ":", request.Id, request.Name, args);
-            await SendAsync(message, ct);
+            await SendAsync(message, ct).ConfigureAwait(false);
             return id;
         }
 
@@ -223,6 +255,21 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
+        /// <summary>
+        /// Cancels any ongoing evaluations or interaction processing.
+        /// </summary>
+        public void CancelAll() {
+            SendAsync("/", _cts.Token, null)
+                .SilenceException<OperationCanceledException>()
+                .DoNotWait();
+        }
+
+        public void Disconnect() {
+            SendAsync(JValue.CreateNull(), _cts.Token)
+                .SilenceException<OperationCanceledException>()
+                .DoNotWait();
+        }
+
         private async Task<Message> RunLoop(CancellationToken ct, bool allowEval) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
@@ -341,11 +388,12 @@ namespace Microsoft.R.Host.Client {
 
                 try {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-                    using (_socket = new ClientWebSocket()) {
+                    using (var socket = new ClientWebSocket()) {
                         var uri = new Uri("ws://localhost:" + DefaultPort);
                         for (int i = 0; ; ++i) {
                             try {
-                                await _socket.ConnectAsync(uri, ct);
+                                await socket.ConnectAsync(uri, ct);
+                                _socket = socket;
                                 _log.ConnectedToRHostWebSocket(uri, i);
                                 break;
                             } catch (WebSocketException) {
@@ -357,7 +405,11 @@ namespace Microsoft.R.Host.Client {
                             }
                         }
 
-                        await Run(ct);
+                        try {
+                            await Run(ct);
+                        } finally {
+                            _socket = null;
+                        }
                     }
                 } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
                     // Expected cancellation, do not propagate, just exit process
@@ -384,9 +436,14 @@ namespace Microsoft.R.Host.Client {
             await TaskUtilities.SwitchToBackgroundThread();
 
             ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-            using (_socket = new ClientWebSocket()) {
-                await _socket.ConnectAsync(uri, ct);
-                await Run(ct);
+            using (var socket = new ClientWebSocket()) {
+                await socket.ConnectAsync(uri, ct);
+                _socket = socket;
+                try {
+                    await Run(ct);
+                } finally {
+                    _socket = null;
+                }
             }
         }
     }

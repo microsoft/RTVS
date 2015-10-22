@@ -113,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void AbortExecution() {
-            //TODO: Find out if we can cancel long executions in R. For now - do nothing.
+            Session.CancelAll();
         }
 
         public string GetPrompt() {
