@@ -378,6 +378,11 @@ namespace rhost {
                         assert(eval_stack.size() == 1);
                         canceling_eval = false;
                         allow_intr_in_CallBack = true;
+
+                        // Notify client that cancellation has completed. When a specific eval is being canceled,
+                        // there will be a corresponding (error) response to the original '=' message indicating
+                        // completion, but for top-level canellation we need a special message.
+                        send_message(*ws_conn, "\\");
                     }
 
                     if (!allow_callbacks) {
