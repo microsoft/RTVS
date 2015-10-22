@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
     public struct DebugBreakpointLocation : IEquatable<DebugBreakpointLocation> {
@@ -29,7 +27,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override string ToString() {
-            return $"{FileName}:{LineNumber}";
+            return Invariant($"{FileName}:{LineNumber}");
         }
     }
 
@@ -49,11 +47,11 @@ namespace Microsoft.R.Debugger {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             // Tracer expression must be in sync with DebugStackFrame._breakpointRegex
-            var location = $"{Location.FileName.ToRStringLiteral()}, {Location.LineNumber}";
-            var tracer = $"quote({{.rtvs.breakpoint({location})}})";
-            var res = await Session.EvaluateAsync($"setBreakpoint({location}, tracer={tracer})");
+            var location = Invariant($"{Location.FileName.ToRStringLiteral()}, {Location.LineNumber}");
+            var tracer = Invariant($"quote({{.rtvs.breakpoint({location})}})");
+            var res = await Session.EvaluateAsync(Invariant($"setBreakpoint({location}, tracer={tracer})"));
             if (res is DebugErrorEvaluationResult) {
-                throw new InvalidOperationException($"{res.Expression}: {res}");
+                throw new InvalidOperationException(Invariant($"{res.Expression}: {res}"));
             }
             ++UseCount;
         }
@@ -63,9 +61,9 @@ namespace Microsoft.R.Debugger {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (--UseCount == 0) {
-                var res = await Session.EvaluateAsync($"setBreakpoint({Location.FileName.ToRStringLiteral()}, {Location.LineNumber}, clear=TRUE)");
+                var res = await Session.EvaluateAsync(Invariant($"setBreakpoint({Location.FileName.ToRStringLiteral()}, {Location.LineNumber}, clear=TRUE)"));
                 if (res is DebugErrorEvaluationResult) {
-                    throw new InvalidOperationException($"{res.Expression}: {res}");
+                    throw new InvalidOperationException(Invariant($"{res.Expression}: {res}"));
                 }
             }
         }

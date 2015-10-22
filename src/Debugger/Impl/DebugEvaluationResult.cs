@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
     public abstract class DebugEvaluationResult {
@@ -40,11 +41,11 @@ namespace Microsoft.R.Debugger {
                 return new DebugValueEvaluationResult(stackFrame, expression, name, json);
             }
 
-            throw new InvalidDataException($"Could not determine kind of evaluation result: {json}");
+            throw new InvalidDataException(Invariant($"Could not determine kind of evaluation result: {json}"));
         }
 
         public Task<DebugEvaluationResult> SetValueAsync(string value) {
-            return StackFrame.EvaluateAsync($"{Expression} <- {value}");
+            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"));
         }
     }
 
@@ -57,7 +58,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override string ToString() {
-            return $"ERROR: {ErrorText}";
+            return Invariant($"ERROR: {ErrorText}");
         }
     }
 
@@ -94,11 +95,11 @@ namespace Microsoft.R.Debugger {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
-            var call = $".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame})";
+            var call = Invariant($".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame})");
             var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JObject>(call);
             Trace.Assert(
                 jChildren.Values().All(t => t is JObject),
-                $".rtvs.children(): object of objects expected.\n\n" + jChildren);
+                Invariant($".rtvs.children(): object of objects expected.\n\n") + jChildren);
 
             var children = new List<DebugEvaluationResult>();
             foreach (var kv in jChildren) {
@@ -113,7 +114,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override string ToString() {
-            return $"VALUE: {TypeName} {Value}";
+            return Invariant($"VALUE: {TypeName} {Value}");
         }
     }
 
@@ -126,7 +127,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override string ToString() {
-            return $"PROMISE: {Code}";
+            return Invariant($"PROMISE: {Code}");
         }
     }
 

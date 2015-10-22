@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
     internal enum DebugStackFrameKind {
@@ -25,7 +26,7 @@ namespace Microsoft.R.Debugger {
 
         public int Index { get; }
 
-        internal string SysFrame => $"sys.frame({Index})";
+        internal string SysFrame => Invariant($"sys.frame({Index})");
 
         public DebugStackFrame CallingFrame { get; }
 
@@ -72,7 +73,7 @@ namespace Microsoft.R.Debugger {
                 } catch (FormatException) {
                     // This should never happen with .doTrace calls that we insert, but the user can always manually
                     // insert one. Assert in Debug to detect code changes that break our inserted .doTrace.
-                    Debug.Fail($"Couldn't parse RTVS .doTrace call: {Call}");
+                    Debug.Fail(Invariant($"Couldn't parse RTVS .doTrace call: {Call}"));
                 }
             } else if (_breakpointRegex.IsMatch(Call)) {
                 FrameKind = DebugStackFrameKind.Breakpoint;

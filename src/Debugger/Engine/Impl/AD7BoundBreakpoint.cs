@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
+using static System.FormattableString;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7BoundBreakpoint : IDebugBoundBreakpoint2 {
@@ -25,7 +26,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugBoundBreakpoint2.Enable(int fEnable) {
             if (_state == enum_BP_STATE.BPS_DELETED) {
-                Debug.Fail($"Trying to enable or disable a deleted {nameof(AD7BoundBreakpoint)}");
+                Debug.Fail(Invariant($"Trying to enable or disable a deleted {nameof(AD7BoundBreakpoint)}"));
                 return VSConstants.E_FAIL;
             }
 

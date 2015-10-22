@@ -22,7 +22,23 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         protected override void SetStatus() {
-            Enabled = _rSessionProvider.Current != null;
+            Enabled = false;
+
+            if (_rSessionProvider.Current == null) {
+                return;
+            }
+
+            var debugger = AppShell.Current.GetGlobalService<IVsDebugger>(typeof(SVsShellDebugger));
+            if (debugger == null) {
+                return;
+            }
+
+            var mode = new DBGMODE[1];
+            if (debugger.GetMode(mode) < 0 || mode[0] != DBGMODE.DBGMODE_Design) {
+                return;
+            }
+
+            Enabled = true;
         }
 
 

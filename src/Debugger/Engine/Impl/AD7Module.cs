@@ -1,7 +1,5 @@
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Debugger.Interop;
 using System;
-using System.Diagnostics;
+using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7Module : IDebugModule2, IDebugModule3 {
