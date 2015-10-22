@@ -25,10 +25,18 @@ namespace Microsoft.R.Editor.Formatting
             _textBuffer = textBuffer;
         }
 
+        public virtual ITextBuffer TargetBuffer
+        {
+            get
+            {
+                return _textBuffer;
+            }
+        }
+
         #region ICommand
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
         {
-            string originalText = _textBuffer.CurrentSnapshot.GetText();
+            string originalText = TargetBuffer.CurrentSnapshot.GetText();
             string formattedText = string.Empty;
             var formatter = new RFormatter(REditorSettings.FormatOptions);
 
@@ -43,21 +51,21 @@ namespace Microsoft.R.Editor.Formatting
 
             if (!string.IsNullOrEmpty(formattedText) && !string.Equals(formattedText, originalText, StringComparison.Ordinal))
             {
-                var selectionTracker = new RSelectionTracker(TextView, _textBuffer);
+                var selectionTracker = new RSelectionTracker(TextView, TargetBuffer);
                 selectionTracker.StartTracking(automaticTracking: false);
 
                 try
                 {
-                    using (var massiveChange = new MassiveChange(TextView, _textBuffer, Resources.FormatDocument))
+                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Resources.FormatDocument))
                     {
-                        IREditorDocument document = REditorDocument.FromTextBuffer(_textBuffer);
+                        IREditorDocument document = REditorDocument.FromTextBuffer(TargetBuffer);
 
                         document.EditorTree.Invalidate();
 
                         var caretPosition = TextView.Caret.Position.BufferPosition;
                         var viewPortLeft = TextView.ViewportLeft;
 
-                        IncrementalTextChangeApplication.ApplyChange(_textBuffer, 0, _textBuffer.CurrentSnapshot.Length, formattedText,
+                        IncrementalTextChangeApplication.ApplyChange(TargetBuffer, 0, TargetBuffer.CurrentSnapshot.Length, formattedText,
                                                                      Resources.FormatDocument, selectionTracker, Int32.MaxValue);
                     }
                 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -12,6 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
+using Microsoft.VisualStudio.Text.Operations;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -117,13 +119,27 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
             if (current != null) {
                 SnapshotPoint? documentPoint = REditorDocument.MapCaretPositionFromView(textView);
-                if (!documentPoint.HasValue) {
+                if (!documentPoint.HasValue || 
+                    documentPoint.Value == documentPoint.Value.Snapshot.Length || 
+                    documentPoint.Value.Snapshot.Length == 0) {
+                    // Let the repl try and execute the code if the user presses enter at the
+                    // end of the buffer.
                     current.InteractiveWindow.Operations.Return();
                 } else {
-                    if (documentPoint.Value == documentPoint.Value.Snapshot.Length || documentPoint.Value.Snapshot.Length == 0) {
-                        current.InteractiveWindow.Operations.Return();
-                    } else {
-                        current.InteractiveWindow.Operations.ExecuteInput();
+                    // Otherwise insert a line break in the middle of an input
+                    current.InteractiveWindow.Operations.BreakLine();
+                    var document = REditorDocument.TryFromTextBuffer(current.InteractiveWindow.CurrentLanguageBuffer);
+                    if (document != null)
+                    {
+                        var tree = document.EditorTree;
+                        tree.EnsureTreeReady();
+
+                        AutoFormat.HandleAutoFormat(
+                            current.InteractiveWindow.TextView,
+                            current.InteractiveWindow.CurrentLanguageBuffer,
+                            tree.AstRoot,
+                            '\n'
+                        );
                     }
                 }
             }

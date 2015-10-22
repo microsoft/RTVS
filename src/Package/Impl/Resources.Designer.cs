@@ -314,6 +314,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Interactive Prompts.
+        /// </summary>
+        internal static string RPromptClassification {
+            get {
+                return ResourceManager.GetString("RPromptClassification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|All Files (*.*)|*.*.
         /// </summary>
         internal static string SaveAsFilterMD {

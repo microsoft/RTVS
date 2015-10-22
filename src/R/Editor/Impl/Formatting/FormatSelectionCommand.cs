@@ -4,6 +4,7 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
@@ -25,27 +26,35 @@ namespace Microsoft.R.Editor.Formatting
         #region ICommand
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
         {
-            SnapshotSpan spanToFormat = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
+            SnapshotSpan selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
+            var rSpans = TextView.BufferGraph.MapDownToFirstMatch(
+                selectionSpan,
+                SpanTrackingMode.EdgeInclusive,
+                snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)
+            );
 
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(_textBuffer);
-            AstRoot ast;
-            if (document == null)
+            foreach (var spanToFormat in rSpans)
             {
-                // For unit test purposes
-                ast = inputArg as AstRoot;
-            }
-            else
-            {
-                ast = document.EditorTree.AstRoot;
-            }
+                IREditorDocument document = REditorDocument.TryFromTextBuffer(spanToFormat.Snapshot.TextBuffer);
+                AstRoot ast;
+                if (document == null)
+                {
+                    // For unit test purposes
+                    ast = inputArg as AstRoot;
+                }
+                else
+                {
+                    ast = document.EditorTree.AstRoot;
+                }
 
-            if (ast != null)
-            {
-                RangeFormatter.FormatRange(TextView,
-                                           new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
-                                           ast, REditorSettings.FormatOptions);
+                if (ast != null)
+                {
+                    RangeFormatter.FormatRange(TextView,
+                                               spanToFormat.Snapshot.TextBuffer,
+                                               new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
+                                               ast, REditorSettings.FormatOptions);
+                }
             }
-
             return new CommandResult(CommandStatus.Supported, 0);
         }
 

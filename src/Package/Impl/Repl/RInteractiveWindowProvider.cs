@@ -49,6 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType));
 
             vsWindow.InteractiveWindow.TextView.Closed += textViewOnClosed;
+            vsWindow.InteractiveWindow.TextView.Options.SetOptionValue(InteractiveWindowOptions.SmartUpDown, true);
 
             var window = vsWindow.InteractiveWindow;
             // fire and forget:

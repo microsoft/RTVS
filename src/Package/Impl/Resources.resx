@@ -350,4 +350,7 @@
   <data name="Settings_RVersion_Latest" xml:space="preserve">
     <value>[Latest]</value>
   </data>
+  <data name="RPromptClassification" xml:space="preserve">
+    <value>R Interactive Prompts</value>
+  </data>
 </root>
