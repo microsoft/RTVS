@@ -6,6 +6,8 @@
         public const int icmdGoToFormattingOptions = 400;
         public const int icmdGoToRToolsOptions = 401;
         public const int icmdGoToREditorOptions = 402;
+        public const int icmdSendSmile = 403;
+        public const int icmdSendFrown = 404;
 
         // REPL
         public const int icmdLoadWorkspace = 502;

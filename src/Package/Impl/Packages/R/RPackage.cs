@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.R.Debugger.Engine;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
-using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
@@ -20,14 +18,12 @@ using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
+using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.R.Debugger.Engine.PortSupplier;
-using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 
-namespace Microsoft.VisualStudio.R.Packages.R
-{
+namespace Microsoft.VisualStudio.R.Packages.R {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [Guid(RGuidList.RPackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
@@ -51,8 +47,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
     [ProvideDebugPortPicker(typeof(RDebugPortPicker))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
-    internal class RPackage : BasePackage<RLanguageService>
-    {
+    internal class RPackage : BasePackage<RLanguageService> {
         public const string OptionsDialogName = "R Tools";
 
         private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
@@ -62,12 +57,11 @@ namespace Microsoft.VisualStudio.R.Packages.R
 
         public RInteractiveWindowProvider InteractiveWindowProvider => _interactiveWindowProvider.Value;
 
-        protected override void Initialize()
-        {
+        protected override void Initialize() {
             Current = this;
 
             CranMirrorList.Download();
- 
+
             base.Initialize();
 
             RToolsSettings.Init(AppShell.Current.ExportProvider);
@@ -75,10 +69,8 @@ namespace Microsoft.VisualStudio.R.Packages.R
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted)
-            {
+        protected override void Dispose(bool disposing) {
+            if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted) {
                 _indexBuildingTask.Wait(2000);
                 _indexBuildingTask = null;
             }
@@ -87,30 +79,24 @@ namespace Microsoft.VisualStudio.R.Packages.R
             base.Dispose(disposing);
         }
 
-        protected override IEnumerable<IVsEditorFactory> CreateEditorFactories()
-        {
+        protected override IEnumerable<IVsEditorFactory> CreateEditorFactories() {
             yield return new REditorFactory(this);
         }
 
-        protected override IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators()
-        {
+        protected override IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() {
             yield return new RProjectFileGenerator();
         }
 
-        protected override IEnumerable<IVsProjectFactory> CreateProjectFactories()
-        {
+        protected override IEnumerable<IVsProjectFactory> CreateProjectFactories() {
             yield break;
         }
 
-        protected override IEnumerable<MenuCommand> CreateMenuCommands()
-        {
-           return PackageCommands.GetCommands(AppShell.Current.ExportProvider);
+        protected override IEnumerable<MenuCommand> CreateMenuCommands() {
+            return PackageCommands.GetCommands(AppShell.Current.ExportProvider);
         }
 
-        protected override object GetAutomationObject(string name)
-        {
-            if (name == OptionsDialogName)
-            {
+        protected override object GetAutomationObject(string name) {
+            if (name == OptionsDialogName) {
                 DialogPage page = GetDialogPage(typeof(REditorOptionsDialog));
                 return page.AutomationObject;
             }
@@ -118,10 +104,8 @@ namespace Microsoft.VisualStudio.R.Packages.R
             return base.GetAutomationObject(name);
         }
 
-        protected override int CreateToolWindow(ref Guid toolWindowType, int id)
-        {
-            if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid)
-            {
+        protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
+            if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
                 IVsInteractiveWindow result = _interactiveWindowProvider.Value.Create(id);
                 return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;
             }

@@ -10,15 +10,13 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using IServiceProvider = System.IServiceProvider;
 
-namespace Microsoft.VisualStudio.R.Package.Shell
-{
+namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
     /// Application shell provides access to services
     /// such as composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public class AppShell : IApplicationShell
-    {
+    public class AppShell : IApplicationShell {
         private static IApplicationShell instance;
         private static int _refCount;
         private static IEditorShell _shell;
@@ -33,8 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         {
             get
             {
-                if (AppShell.instance == null)
-                {
+                if (AppShell.instance == null) {
                     AppShell.instance = new AppShell();
                 }
 
@@ -47,8 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
             }
         }
 
-        public AppShell()
-        {
+        public AppShell() {
             // Check if test assemblies are loaded into the VS process
             this.DetemineTestEnvironment();
         }
@@ -61,10 +57,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <typeparam name="T">Service interface type such as IVsUiShell</typeparam>
         /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
         /// <returns>Service instance of null if not found.</returns>
-        public T GetGlobalService<T>(Type type = null) where T : class
-        {
-            if(IsTestEnvironment)
-            {
+        public T GetGlobalService<T>(Type type = null) where T : class {
+            if (IsTestEnvironment) {
                 IServiceProvider sp = RPackage.Current;
                 return sp.GetService(type ?? typeof(T)) as T;
             }
@@ -97,8 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <typeparam name="T">Service interface type such as IVsUiShell</typeparam>
         /// <param name="sid">Service GUID</param>
         /// <returns>Service instance of null if not found.</returns>
-        public T GetGlobalService<T>(Guid sid) where T : class
-        {
+        public T GetGlobalService<T>(Guid sid) where T : class {
             object service;
             ServiceProvider.GlobalProvider.QueryService(sid, out service);
 
@@ -138,25 +131,21 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         #endregion
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing)
-        {
+        protected virtual void Dispose(bool disposing) {
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
         #endregion
 
         // Check if test assemblies are loaded into the VS process
-        private void DetemineTestEnvironment()
-        {
+        private void DetemineTestEnvironment() {
             AppDomain ad = AppDomain.CurrentDomain;
             Assembly[] loadedAssemblies = ad.GetAssemblies();
 
-            Assembly testAssembly = loadedAssemblies.FirstOrDefault((asm) =>
-            {
+            Assembly testAssembly = loadedAssemblies.FirstOrDefault((asm) => {
                 AssemblyName assemblyName = asm.GetName();
                 string name = assemblyName.Name;
                 return name.IndexOf("apex", StringComparison.OrdinalIgnoreCase) >= 0 || name.IndexOf(".mocks", StringComparison.OrdinalIgnoreCase) >= 0;
@@ -165,31 +154,24 @@ namespace Microsoft.VisualStudio.R.Package.Shell
             this.IsTestEnvironment = testAssembly != null;
         }
 
-        internal static void AddRef()
-        {
-            if (++_refCount == 1)
-            {
+        internal static void AddRef() {
+            if (++_refCount == 1) {
                 Initialize();
             }
         }
 
-        internal static void Release()
-        {
+        internal static void Release() {
             Debug.Assert(_refCount > 0);
 
-            if (--_refCount == 0)
-            {
+            if (--_refCount == 0) {
                 Close();
             }
         }
 
-        private static void Initialize()
-        {
-            if (_shell == null)
-            {
+        private static void Initialize() {
+            if (_shell == null) {
                 Debug.Assert(!_appTerminated, "R Tools: Editor shell shouldn't be created when quitting the app");
-                if (_appTerminated)
-                {
+                if (_appTerminated) {
                     throw new InvalidOperationException("R Tools: AppShell.Initialize can't be called during shutdown.");
                 }
 
@@ -197,43 +179,36 @@ namespace Microsoft.VisualStudio.R.Package.Shell
                 _shell = existingShell;
 
                 // Don't create my own host if one has already been set (like during unit tests)
-                if (_shell == null && existingShell == null)
-                {
+                if (_shell == null && existingShell == null) {
                     _shell = new VsEditorShell();
                     EditorShell.SetShell(_shell);
                 }
 
-                if (_shell != null)
-                {
+                if (_shell != null) {
                     _shell.Terminating += OnTerminateApp;
                 }
             }
         }
 
-        private static void Close()
-        {
-            if (_shell != null)
-            {
+        private static void Close() {
+            if (_shell != null) {
                 IEditorShell shell = _shell;
 
                 _shell = null;
                 EditorShell.RemoveShell(shell);
                 shell.Terminating -= OnTerminateApp;
 
-                if (shell is IDisposable)
-                {
+                if (shell is IDisposable) {
                     ((IDisposable)shell).Dispose();
                 }
             }
         }
 
-        private static void OnTerminateApp(object sender, EventArgs eventArgs)
-        {
+        private static void OnTerminateApp(object sender, EventArgs eventArgs) {
             // Wait for the public OnTerminateApp() to be called to do the cleanup
         }
 
-        public static void OnTerminateApp()
-        {
+        public static void OnTerminateApp() {
             Close();
             _appTerminated = true;
         }
