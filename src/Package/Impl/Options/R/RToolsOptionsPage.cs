@@ -5,12 +5,9 @@ using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.Options.R
-{
-    public class RToolsOptionsPage : DialogPage
-    {
-        public RToolsOptionsPage()
-        {
+namespace Microsoft.VisualStudio.R.Package.Options.R {
+    public class RToolsOptionsPage : DialogPage {
+        public RToolsOptionsPage() {
             this.SettingsRegistryPath = @"UserSettings\R_Tools";
         }
 

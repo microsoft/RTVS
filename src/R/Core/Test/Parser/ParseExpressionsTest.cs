@@ -62,5 +62,115 @@ namespace Microsoft.R.Core.Test.Parser
 ";
             ParserTest.VerifyParse(expected, @"fitted.zeros <- xzero * z$coefficients");
         }
+
+        [TestMethod]
+        public void ParseExpressionSequence01()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a <- 1*b]
+        Expression  [a <- 1*b]
+            TokenOperator  [<- [2...4)]
+                Variable  [a]
+                TokenNode  [<- [2...4)]
+                TokenOperator  [* [6...7)]
+                    NumericalValue  [1 [5...6)]
+                    TokenNode  [* [6...7)]
+                    Variable  [b]
+    ExpressionStatement  [(c+1)]
+        Expression  [(c+1)]
+            Group  [12...17)
+                TokenNode  [( [12...13)]
+                Expression  [c+1]
+                    TokenOperator  [+ [14...15)]
+                        Variable  [c]
+                        TokenNode  [+ [14...15)]
+                        NumericalValue  [1 [15...16)]
+                TokenNode  [) [16...17)]
+";
+
+            string content =
+@"a <- 1*b
+  (c+1)";
+            ParserTest.VerifyParse(expected, content);
+        }
+
+        [TestMethod]
+        public void ParseExpressionSequence02()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a <- 1*b[1]]
+        Expression  [a <- 1*b[1]]
+            TokenOperator  [<- [2...4)]
+                Variable  [a]
+                TokenNode  [<- [2...4)]
+                TokenOperator  [* [6...7)]
+                    NumericalValue  [1 [5...6)]
+                    TokenNode  [* [6...7)]
+                    Indexer  [7...11)
+                        Variable  [b]
+                        TokenNode  [[ [8...9)]
+                        ArgumentList  [9...10)
+                            ExpressionArgument  [9...10)
+                                Expression  [1]
+                                    NumericalValue  [1 [9...10)]
+                        TokenNode  [] [10...11)]
+    ExpressionStatement  [(c+1)]
+        Expression  [(c+1)]
+            Group  [15...20)
+                TokenNode  [( [15...16)]
+                Expression  [c+1]
+                    TokenOperator  [+ [17...18)]
+                        Variable  [c]
+                        TokenNode  [+ [17...18)]
+                        NumericalValue  [1 [18...19)]
+                TokenNode  [) [19...20)]
+";
+
+            string content =
+@"a <- 1*b[1]
+  (c+1)";
+            ParserTest.VerifyParse(expected, content);
+        }
+
+        [TestMethod]
+        public void ParseExpressionSequence03()
+        {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a <- 1*b[[1]]]
+        Expression  [a <- 1*b[[1]]]
+            TokenOperator  [<- [2...4)]
+                Variable  [a]
+                TokenNode  [<- [2...4)]
+                TokenOperator  [* [6...7)]
+                    NumericalValue  [1 [5...6)]
+                    TokenNode  [* [6...7)]
+                    Indexer  [7...13)
+                        Variable  [b]
+                        TokenNode  [[[ [8...10)]
+                        ArgumentList  [10...11)
+                            ExpressionArgument  [10...11)
+                                Expression  [1]
+                                    NumericalValue  [1 [10...11)]
+                        TokenNode  []] [11...13)]
+    ExpressionStatement  [(c+1)]
+        Expression  [(c+1)]
+            Group  [17...22)
+                TokenNode  [( [17...18)]
+                Expression  [c+1]
+                    TokenOperator  [+ [19...20)]
+                        Variable  [c]
+                        TokenNode  [+ [19...20)]
+                        NumericalValue  [1 [20...21)]
+                TokenNode  [) [21...22)]
+";
+
+            string content =
+@"a <- 1*b[[1]]
+  (c+1)";
+            ParserTest.VerifyParse(expected, content);
+        }
     }
 }

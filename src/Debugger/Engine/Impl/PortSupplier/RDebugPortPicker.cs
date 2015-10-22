@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace Microsoft.R.Debugger.Engine.PortSupplier {
     [ComVisible(true)]
-    [Guid("FB6A6E8D-47C2-4D0E-BB44-609887EF2327")]
+    [Guid("B8164EAC-B742-4AF3-A61E-49101E4ED117")]
     public class RDebugPortPicker : IDebugPortPicker {
         public int DisplayPortPicker(IntPtr hwndParentDialog, out string pbstrPortId) {
             pbstrPortId = null;

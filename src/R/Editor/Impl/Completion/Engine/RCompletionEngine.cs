@@ -10,6 +10,8 @@ using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 
@@ -51,7 +53,13 @@ namespace Microsoft.R.Editor.Completion.Engine
 
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position))
             {
-                // No completion in data member names yet
+                // Only complete data member names in REPL
+                IREditorDocument document = REditorDocument.FindInProjectedBuffers(context.Session.TextView.TextBuffer);
+                if (document != null && document.IsTransient)
+                {
+                    providers.Add(new WorkspaceVaraibleCompletionProvider());
+                }
+
                 return providers;
             }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -123,6 +124,27 @@ namespace Microsoft.R.Editor.Completion.Definitions
             catch (Exception) { }
         
             return false;
+        }
+
+        public static string GetVariableName(ITextView textView, ITextSnapshot snapshot)
+        {
+             SnapshotPoint? pt = REditorDocument.MapCaretPositionFromView(textView);
+            if (pt.HasValue && pt.Value > 0)
+            {
+                int i = pt.Value - 1;
+                for (; i >= 0; i--)
+                {
+                    char ch = snapshot[i];
+                    if (!RTokenizer.IsIdentifierCharacter(ch) && ch != '$' && ch != '@')
+                    {
+                        break;
+                    }
+                }
+
+                return snapshot.GetText(Span.FromBounds(i + 1, pt.Value));
+            }
+
+            return string.Empty;
         }
     }
 }

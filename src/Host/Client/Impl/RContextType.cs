@@ -1,10 +1,8 @@
 ﻿using System;
 
-namespace Microsoft.R.Host.Client
-{
+namespace Microsoft.R.Host.Client {
     [Flags]
-    public enum RContextType
-    {
+    public enum RContextType {
         TopLevel = 0x0,
         Next = 0x1,
         Break = 0x2,

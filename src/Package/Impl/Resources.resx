@@ -353,4 +353,28 @@
   <data name="RPromptClassification" xml:space="preserve">
     <value>R Interactive Prompts</value>
   </data>
+  <data name="Error_CannotCollectLogs" xml:space="preserve">
+    <value>Unable to collect and package logs. Exception: {0}</value>
+  </data>
+  <data name="Error_CannotFindOutlook" xml:space="preserve">
+    <value>Unable to launch Microsoft Outlook. Please attach RTVSLogs.zip file from your user TEMP folder to an e-mail message and send it to rtvscore@microsoft.com</value>
+  </data>
+  <data name="CollectingOSInformation" xml:space="preserve">
+    <value>Collecting OS information</value>
+  </data>
+  <data name="CollectingRTVSLogs" xml:space="preserve">
+    <value>Collecting R Tools for Visual Studio logs</value>
+  </data>
+  <data name="CollectingSystemEvents" xml:space="preserve">
+    <value>Collecting events from system log</value>
+  </data>
+  <data name="CreatingArchive" xml:space="preserve">
+    <value>Creating ZIP archive</value>
+  </data>
+  <data name="GatheringDiagnosticData" xml:space="preserve">
+    <value>Gathering diagnostics data...</value>
+  </data>
+  <data name="LongOperationProgressMessage" xml:space="preserve">
+    <value>Processing Item {0} of {1}: {2}</value>
+  </data>
 </root>

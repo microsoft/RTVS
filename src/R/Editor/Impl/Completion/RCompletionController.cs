@@ -276,8 +276,10 @@ namespace Microsoft.R.Editor.Completion
             {
                 switch (typedCharacter)
                 {
-                    //case '$':
-                    //case '@':
+                    case '$':
+                        //case '@':
+                        return true;
+
                     case ':':
                         return RCompletionContext.IsCaretInNamespace(TextView);
 
@@ -304,12 +306,12 @@ namespace Microsoft.R.Editor.Completion
         /// </summary>
         protected override bool IsRetriggerChar(ICompletionSession session, char typedCharacter)
         {
-            //switch (typedCharacter)
-            //{
-            //    case '@':
-            //    case '$':
-            //        return true;
-            //}
+            switch (typedCharacter)
+            {
+                case '@':
+                case '$':
+                    return true;
+            }
 
             return false;
         }

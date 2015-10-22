@@ -14,8 +14,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session
-{
+namespace Microsoft.VisualStudio.R.Package.Repl.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
         private static string DefaultPrompt = "> ";
 
@@ -24,8 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
         public event EventHandler<RRequestEventArgs> BeforeRequest;
         public event EventHandler<RRequestEventArgs> AfterRequest;
-        public event EventHandler<RResponseEventArgs> Response;
-        public event EventHandler<RErrorEventArgs> Error;
+        public event EventHandler<ROutputEventArgs> Output;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
 
@@ -64,6 +62,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             return source.Task;
         }
 
+        public Task CancelAllAsync() {
+            return _host.CancelAllAsync();
+        }
+
         public async Task StartHostAsync() {
             if (_hostRunTask != null && !_hostRunTask.IsCompleted) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
@@ -91,8 +93,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
+
             var requestTask = BeginInteractionAsync(false);
-            await Task.WhenAny(requestTask, Task.Delay(100)).Unwrap();
+            await Task.WhenAny(requestTask, Task.Delay(200)).Unwrap();
 
             if (_hostRunTask.IsCompleted) {
                 requestTask
@@ -102,11 +105,29 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             }
 
             if (requestTask.Status == TaskStatus.RanToCompletion) {
-                await requestTask.Result.Quit();
-            } else {
-                _host?.Dispose();
+                using (var inter = await requestTask) {
+                    // Try graceful shutdown with q() first.
+                    try {
+                        await Task.WhenAny(_hostRunTask, inter.Quit(), Task.Delay(500)).Unwrap();
+                    } catch (Exception) {
+                    }
+
+                    if (_hostRunTask.IsCompleted) {
+                        return;
+                    }
+
+                    // If that doesn't work, then try sending the disconnect packet to the host -
+                    // it will call R_Suicide, which is not graceful, but at least it's cooperative.
+                    await Task.WhenAny(_host.DisconnectAsync(), Task.Delay(500)).Unwrap();
+
+                    if (_hostRunTask.IsCompleted) {
+                        return;
+                    }
+                }
             }
 
+            // If nothing worked, then just kill the host process.
+            _host?.Dispose();
             await _hostRunTask;
         }
 
@@ -133,11 +154,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             _contexts = null;
             Prompt = string.Empty;
 
-            OnDisconnected();
+            Disconnected?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
         }
 
-        async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, string buf, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+        async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
@@ -146,7 +167,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             Prompt = prompt;
             MaxLength = len;
 
-            OnBeforeRequest(contexts, prompt, len, addToHistory);
+            var requestEventArgs = new RRequestEventArgs(contexts, prompt, len, addToHistory);
+            BeforeRequest?.Invoke(this, requestEventArgs);
 
             CancellationTokenSource evaluationCts;
             Task evaluationTask;
@@ -164,9 +186,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
 
             string consoleInput = null;
 
-            while (consoleInput == null) {
+            do {
                 ct.ThrowIfCancellationRequested();
-
                 try {
                     consoleInput = await ReadNextRequest(prompt, len, ct);
                 } catch (OperationCanceledException) {
@@ -175,13 +196,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
                     // If it was canceled through the token, then host itself is shutting down, and cancellation
                     // will be propagated on the entry to next iteration of this loop.
                 }
-            }
+            } while (consoleInput == null);
 
             // If evaluation was allowed, cancel evaluation processing but await evaluation that is in progress
             evaluationCts?.Cancel();
             await evaluationTask;
 
-            OnAfterRequest(contexts, prompt, len, addToHistory);
+            AfterRequest?.Invoke(this, requestEventArgs);
 
             return consoleInput;
         }
@@ -229,20 +250,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             }
         }
 
-        Task IRCallbacks.WriteConsoleEx(IReadOnlyList<IRContext> contexts, string buf, OutputType otype, CancellationToken ct) {
-            if (otype == OutputType.Error) {
-                OnError(contexts, buf);
+        Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
+            Output?.Invoke(this, new ROutputEventArgs(otype, buf));
 
+            if (otype == OutputType.Error) {
                 var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
                 currentRequest?.Fail(buf);
-            } else {
-                OnResponse(contexts, buf);
             }
 
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.ShowMessage(IReadOnlyList<IRContext> contexts, string message, CancellationToken ct) {
+        async Task IRCallbacks.ShowMessage(string message, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
             EditorShell.Current.ShowErrorMessage(message);
         }
@@ -257,11 +276,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             return YesNoCancel.Yes;
         }
 
-        Task IRCallbacks.Busy(IReadOnlyList<IRContext> contexts, bool which, CancellationToken ct) {
+        Task IRCallbacks.Busy(bool which, CancellationToken ct) {
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.PlotXaml(IReadOnlyList<IRContext> contexts, string xamlFilePath, CancellationToken ct) {
+        async Task IRCallbacks.PlotXaml(string xamlFilePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
             var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);  // TODO: acquire plot content provider through service
@@ -299,30 +318,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             var handlers = AfterRequest;
             if (handlers != null) {
                 var args = new RRequestEventArgs(contexts, prompt, maxLength, addToHistory);
-                handlers(this, args);
-            }
-        }
-
-        private void OnResponse(IReadOnlyList<IRContext> contexts, string message) {
-            var handlers = Response;
-            if (handlers != null) {
-                var args = new RResponseEventArgs(contexts, message);
-                handlers(this, args);
-            }
-        }
-
-        private void OnError(IReadOnlyList<IRContext> contexts, string message) {
-            var handlers = Error;
-            if (handlers != null) {
-                var args = new RErrorEventArgs(contexts, message);
-                handlers(this, args);
-            }
-        }
-
-        private void OnDisconnected() {
-            var handlers = Disconnected;
-            if (handlers != null) {
-                var args = new EventArgs();
                 handlers(this, args);
             }
         }

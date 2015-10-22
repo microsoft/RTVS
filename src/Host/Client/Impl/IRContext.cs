@@ -1,10 +1,8 @@
-﻿namespace Microsoft.R.Host.Client
-{
+﻿namespace Microsoft.R.Host.Client {
     /// <summary>
     /// Representation of <c>struct RCTXT</c> in R.
     /// </summary>
-    public interface IRContext
-    {
+    public interface IRContext {
         RContextType CallFlag { get; }
     }
 }

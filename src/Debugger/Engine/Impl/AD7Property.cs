@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
+using static System.FormattableString;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7Property : IDebugProperty3 {
@@ -46,7 +45,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
             if (valueResult != null && valueResult.HasAttributes == true) {
-                var attrResult = StackFrame.StackFrame.EvaluateAsync($"attributes({valueResult.Expression})", "attributes()").GetResultOnUIThread();
+                var attrResult = StackFrame.StackFrame.EvaluateAsync(Invariant($"attributes({valueResult.Expression})"), "attributes()").GetResultOnUIThread();
                 if (!(attrResult is DebugErrorEvaluationResult)) {
                     var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                     infos = new[] { attrInfo }.Concat(infos);

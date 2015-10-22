@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Debugger.Engine {
@@ -16,7 +13,7 @@ namespace Microsoft.R.Debugger.Engine {
         private static readonly Lazy<IVsThreadedWaitDialogFactory> _twdf = new Lazy<IVsThreadedWaitDialogFactory>(() => {
             var twdf = (IVsThreadedWaitDialogFactory)Package.GetGlobalService(typeof(SVsThreadedWaitDialogFactory));
             if (twdf == null) {
-                string err = $"{nameof(SVsThreadedWaitDialogFactory)} is not available";
+                var err = Invariant($"{nameof(SVsThreadedWaitDialogFactory)} is not available");
                 Trace.Fail(err);
                 throw new InvalidOperationException(err);
             }
@@ -26,7 +23,7 @@ namespace Microsoft.R.Debugger.Engine {
         public static void GetResultOnUIThread(this Task task, int delay = 1) {
             var syncContext = SynchronizationContext.Current;
             if (syncContext == null) {
-                string err = $"{nameof(GetResultOnUIThread)} called from a background thread";
+                var err = Invariant($"{nameof(GetResultOnUIThread)} called from a background thread");
                 Trace.Fail(err);
                 throw new InvalidOperationException(err);
             }

@@ -83,7 +83,11 @@
     <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\HeaderScrollViewer.cs" />
+    <Compile Include="DataInspect\WorkspaceVariableProvider.cs" />
     <Compile Include="Debugger\RDebugSessionProvider.cs" />
+    <Compile Include="Feedback\SendFrownCommand.cs" />
+    <Compile Include="Feedback\SendMailCommand.cs" />
+    <Compile Include="Feedback\SendSmileCommand.cs" />
     <Compile Include="Options\R\Tools\RVersionTypeConverter.cs" />
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
@@ -239,6 +243,7 @@
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />
+    <Compile Include="Utilities\LongOperationNotification.cs" />
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />
     <Compile Include="Utilities\TextBufferUtilities.cs" />
@@ -304,6 +309,12 @@
     </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Outlook">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\NugetPackages\VS.ExternalAPIs.Office.14_0.1.0.150331.1\pias\ship\Microsoft.Office.Interop.Outlook.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost">
       <Private>False</Private>
     </Reference>
@@ -431,6 +442,8 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>

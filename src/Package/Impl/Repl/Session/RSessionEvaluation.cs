@@ -24,8 +24,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _tcs.SetResult(null);
         }
 
-        public Task<REvaluationResult> EvaluateAsync(string expression, bool reentrant) {
-            return _evaluator.EvaluateAsync(expression, reentrant, _ct);
+        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind) {
+            return _evaluator.EvaluateAsync(expression, kind, _ct);
         }
     }
 }
