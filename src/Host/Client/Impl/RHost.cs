@@ -94,13 +94,14 @@ namespace Microsoft.R.Host.Client {
         }
 
         private async Task SendAsync(JToken token, CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             var json = JsonConvert.SerializeObject(token);
             byte[] buffer = Encoding.UTF8.GetBytes(json);
 
-            await _socketSendLock.WaitAsync(ct).ConfigureAwait(false);
+            await _socketSendLock.WaitAsync(ct);
             try {
-                await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct)
-                    .ConfigureAwait(false);
+                await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
             } finally {
                 _socketSendLock.Release();
             }
@@ -111,14 +112,16 @@ namespace Microsoft.R.Host.Client {
         private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
             string id;
             var message = CreateMessage(ct, out id, name, args);
-            await SendAsync(message, ct).ConfigureAwait(false);
+            await SendAsync(message, ct);
             return id;
         }
 
         private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             string id;
             var message = CreateMessage(ct, out id, ":", request.Id, request.Name, args);
-            await SendAsync(message, ct).ConfigureAwait(false);
+            await SendAsync(message, ct);
             return id;
         }
 
@@ -403,11 +406,7 @@ namespace Microsoft.R.Host.Client {
                 throw new InvalidOperationException("This host is already running.");
             }
 
-            try {
-                return _runTask = RunWorker(ct);
-            } finally {
-                _runTask = null;
-            }
+            return _runTask = RunWorker(ct);
         }
 
         public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {

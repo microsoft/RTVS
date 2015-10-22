@@ -108,8 +108,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 using (var inter = await requestTask) {
                     // Try graceful shutdown with q() first.
                     try {
-                        await Task.WhenAny(inter.Quit(), Task.Delay(500)).Unwrap();
-                        await Task.WhenAny(_hostRunTask, Task.Delay(300)).Unwrap();
+                        await Task.WhenAny(_hostRunTask, inter.Quit(), Task.Delay(500)).Unwrap();
                     } catch (Exception) {
                     }
 

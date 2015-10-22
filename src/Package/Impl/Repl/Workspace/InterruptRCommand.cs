@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         protected override void Handle() {
-            _rSessionProvider.Current.CancelAllAsync().DoNotWait();
+            _rSessionProvider.Current?.CancelAllAsync().DoNotWait();
         }
     }
 }
