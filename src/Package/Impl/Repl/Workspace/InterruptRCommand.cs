@@ -1,4 +1,5 @@
-﻿using Microsoft.R.Host.Client;
+﻿using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
@@ -16,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         protected override void Handle() {
-            _rSessionProvider.Current.CancelAll();
+            _rSessionProvider.Current.CancelAllAsync().DoNotWait();
         }
     }
 }

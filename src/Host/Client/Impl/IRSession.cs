@@ -15,7 +15,7 @@ namespace Microsoft.R.Host.Client {
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true);
         Task<IRSessionEvaluation> BeginEvaluationAsync();
-        void CancelAll();
+        Task CancelAllAsync();
         Task StartHostAsync();
         Task StopHostAsync();
     }

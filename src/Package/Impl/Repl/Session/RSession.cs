@@ -62,8 +62,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return source.Task;
         }
 
-        public void CancelAll() {
-            _host.CancelAll();
+        public Task CancelAllAsync() {
+            return _host.CancelAllAsync();
         }
 
         public async Task StartHostAsync() {
@@ -119,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
                     // If that doesn't work, then try sending the disconnect packet to the host -
                     // it will call R_Suicide, which is not graceful, but at least it's cooperative.
-                    _host.Disconnect();
+                    await Task.WhenAny(_host.DisconnectAsync(), Task.Delay(500)).Unwrap();
                     await Task.WhenAny(_hostRunTask, Task.Delay(300)).Unwrap();
 
                     if (_hostRunTask.IsCompleted) {
