@@ -27,10 +27,9 @@ namespace Microsoft.R.Host.Client {
         private readonly LinesLog _log;
         private Process _process;
 
-        private ClientWebSocket _socket; // always use GetSocketAsync to access!
+        private ClientWebSocket _socket;
         private readonly byte[] _buffer = new byte[0x100000];
         private readonly SemaphoreSlim
-            _socketLock = new SemaphoreSlim(1, 1),          // for _socket
             _socketSendLock = new SemaphoreSlim(1, 1),      // for _socket.SendAsync
             _socketReceiveLock = new SemaphoreSlim(1, 1);   // for _socket.ReceiveAsync and _buffer
 
@@ -47,18 +46,6 @@ namespace Microsoft.R.Host.Client {
             _cts.Cancel();
         }
 
-        private async Task<ClientWebSocket> GetSocketAsync() {
-            await _socketLock.WaitAsync();
-            try {
-                if (_socket == null) {
-                    throw new InvalidOperationException("Connection has not been established, or has already been closed.");
-                }
-                return _socket;
-            } finally {
-                _socketLock.Release();
-            }
-        }
-
         private static Exception ProtocolError(FormattableString fs, object message = null) {
             var s = Invariant(fs);
             if (message != null) {
@@ -72,11 +59,9 @@ namespace Microsoft.R.Host.Client {
             var sb = new StringBuilder();
             WebSocketReceiveResult wsrr;
             do {
-                var socket = await GetSocketAsync();
-
                 await _socketReceiveLock.WaitAsync(ct);
                 try {
-                    wsrr = await socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
+                    wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
                     if (wsrr.CloseStatus != null) {
                         return null;
                     }
@@ -107,11 +92,9 @@ namespace Microsoft.R.Host.Client {
             var json = JsonConvert.SerializeObject(token);
             byte[] buffer = Encoding.UTF8.GetBytes(json);
 
-            var socket = await GetSocketAsync();
-
             await _socketSendLock.WaitAsync(ct).ConfigureAwait(false);
             try {
-                await socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct)
+                await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct)
                     .ConfigureAwait(false);
             } finally {
                 _socketSendLock.Release();
@@ -405,11 +388,7 @@ namespace Microsoft.R.Host.Client {
                             }
                         }
 
-                        try {
-                            await Run(ct);
-                        } finally {
-                            _socket = null;
-                        }
+                        await Run(ct);
                     }
                 } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
                     // Expected cancellation, do not propagate, just exit process
@@ -439,11 +418,7 @@ namespace Microsoft.R.Host.Client {
             using (var socket = new ClientWebSocket()) {
                 await socket.ConnectAsync(uri, ct);
                 _socket = socket;
-                try {
-                    await Run(ct);
-                } finally {
-                    _socket = null;
-                }
+                await Run(ct);
             }
         }
     }
