@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client {
         private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
         private Process _process;
-        private Task _runTask;
+        private volatile Task _runTask;
 
         private ClientWebSocket _socket;
         private readonly byte[] _buffer = new byte[0x100000];
