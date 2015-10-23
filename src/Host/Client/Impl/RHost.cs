@@ -80,7 +80,9 @@ namespace Microsoft.R.Host.Client {
             _log.Response(json, _rLoopDepth);
 
             var token = JToken.Parse(json);
-            if (token == null) {
+
+            var value = token as JValue;
+            if (value != null && value.Value == null) {
                 return null;
             }
 
