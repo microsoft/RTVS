@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (_evaluation is DebugValueEvaluationResult) {
                 var valueEvaluation = (DebugValueEvaluationResult)_evaluation;
 
-                Value = FirstLine(valueEvaluation.Value);   // TODO: it takes first line only for now. Visual representation will be tuned up later e.g. R str or custom formatting
+                Value = valueEvaluation.Str;// FirstLine(valueEvaluation.Value);   // TODO: it takes first line only for now. Visual representation will be tuned up later e.g. R str or custom formatting
                 ValueDetail = valueEvaluation.Value;
                 TypeName = valueEvaluation.TypeName;
                 Class = string.Join(",", valueEvaluation.Classes); // TODO: escape ',' in class names
@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                var children = await valueEvaluation.GetChildrenAsync();    // TODO: consider exception propagation such as OperationCanceledException
+                var children = await valueEvaluation.GetChildrenAsync(true);    // TODO: consider exception propagation such as OperationCanceledException
 
                 result = new List<EvaluationWrapper>();
                 foreach (var child in children) {
