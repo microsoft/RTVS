@@ -6,14 +6,18 @@
       to indicate this is a private build. 65000 is also greater than lab build numbers and hence
       developer can update MSI installed from the official build by the private copy 
     -->
-    <Year>$([System.DateTime]::Now.Year.ToString())</Year>
-    <LastDigitOfYear>$(Year.Substring(3,1))</LastDigitOfYear>
-    <DayOfYear>$([System.DateTime]::Now.DayOfYear.ToString())</DayOfYear>
+    <Year>$([System.DateTime]::Now.Year)</Year>
+    <YearMinus4>$([MSBuild]::Subtract($(Year), 4))</YearMinus4>
+    <YearMinus4String>$(YearMinus4.ToString())</YearMinus4String>
+    <LastDigitOfYear>$(YearMinus4String.Substring(3,1))</LastDigitOfYear>
+    <DayOfYear>$([System.DateTime]::Now.DayOfYear.ToString())</DayOfYear>   
     <Hour>$([System.DateTime]::Now.ToString("HH"))</Hour>
     <LastDigitOfHour>$(Hour.Substring(1,1))</LastDigitOfHour>
     <Minute>$([System.DateTime]::Now.Minute.ToString())</Minute>
+
+    <MajorVersion>1.0</MajorVersion>
     <BuildNumber>$(LastDigitOfYear)$(DayOfYear)$(LastDigitOfHour).$(Minute)</BuildNumber>
-    <MajorVersion>14.0</MajorVersion>
+    
     <AssemblyVersion>$(MajorVersion).$(BuildNumber)</AssemblyVersion>
     <BuildVersion>$(MajorVersion).$(BuildNumber)</BuildVersion>
   </PropertyGroup>
