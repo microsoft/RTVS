@@ -350,4 +350,12 @@ Global
 		{BEF9464F-FF58-4693-AF12-A6FA75033A5C} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{E4528324-C399-48D2-AB38-66D951158F12} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 	EndGlobalSection
+	GlobalSection(AutomaticVersions) = postSolution
+		AssemblyInfoFilePath = GlobalAssemblyInfo.cs
+		PrimaryVersionType = AssemblyVersionAttribute
+		UpdateAssemblyVersion = True
+		UpdateAssemblyFileVersion = False
+		UpdateAssemblyInfoVersion = False
+		AssemblyVersionSettings = None.None.DateStamp.None
+	EndGlobalSection
 EndGlobal

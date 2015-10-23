@@ -23,6 +23,7 @@
     <DefineConstants>Debug;MsiVersion=$(BuildVersion)</DefineConstants>
     <Chip>x86</Chip>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
+    <SuppressPdbOutput>True</SuppressPdbOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <BaseIntermediateOutputPath>..\..\obj\</BaseIntermediateOutputPath>
