@@ -456,6 +456,8 @@ namespace Microsoft.R.Host.Client {
                     }
                 } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
                     // Expected cancellation, do not propagate, just exit process
+                } catch (WebSocketException) when (ct.IsCancellationRequested) {
+                    // Expected cancellation, do not propagate, just exit process
                 } catch (Exception ex) {
                     Trace.Fail("Exception in RHost run loop:\n" + ex);
                     throw;
