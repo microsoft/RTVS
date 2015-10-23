@@ -6,6 +6,7 @@ using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -302,9 +303,7 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             if (viewCaretPosition > snapshot.Length)
                 return null;
 
-            return _textView.BufferGraph.MapDownToBuffer(
-                    new SnapshotPoint(_textView.TextBuffer.CurrentSnapshot, viewCaretPosition), PointTrackingMode.Positive,
-                    _textBuffer, PositionAffinity.Predecessor);
+            return _textView.MapDownToBuffer(viewCaretPosition, _textBuffer);
         }
 
         private bool IsPositionInProvisionalText(int position)

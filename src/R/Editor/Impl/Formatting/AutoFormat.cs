@@ -2,6 +2,7 @@
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes.Definitions;
@@ -28,7 +29,11 @@ namespace Microsoft.R.Editor.Formatting
             }
 
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            int position = textView.Caret.Position.BufferPosition;
+            var positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
+            if (positionInBuffer == null) {
+                return;
+            }
+            int position = positionInBuffer.Value.Position;
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
             ITextRange formatRange;
 
@@ -62,7 +67,7 @@ namespace Microsoft.R.Editor.Formatting
             try
             {
                 // Now format the scope
-                changed = RangeFormatter.FormatRange(textView, formatRange, ast, REditorSettings.FormatOptions);
+                changed = RangeFormatter.FormatRange(textView, textBuffer, formatRange, ast, REditorSettings.FormatOptions);
 
                 // See if this was ENTER in {[whitespace]|[whitespace]} in which case
                 // we want to add another line break and indent the caret so 
@@ -79,7 +84,11 @@ namespace Microsoft.R.Editor.Formatting
                 // we do it AFTER formatting since it is when then indentation is known
 
                 snapshot = textBuffer.CurrentSnapshot;
-                position = textView.Caret.Position.BufferPosition;
+                positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
+                if (positionInBuffer == null) {
+                    return;
+                }
+                position = positionInBuffer.Value.Position;
                 line = snapshot.GetLineFromPosition(position);
 
                 string textBeforeCaret = snapshot.GetText(Span.FromBounds(line.Start, position));
@@ -92,7 +101,7 @@ namespace Microsoft.R.Editor.Formatting
                         int openCurlyLineNumber = snapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
                         if (line.LineNumber == openCurlyLineNumber + 1)
                         {
-                            IndentCaretInNewScope(textView, scope, REditorSettings.FormatOptions);
+                            IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
                             changed = true;
                         }
                     }
@@ -104,11 +113,14 @@ namespace Microsoft.R.Editor.Formatting
             }
         }
 
-        private static void IndentCaretInNewScope(ITextView textView, IScope scope, RFormatOptions options)
+        private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IScope scope, RFormatOptions options)
         {
-            ITextBuffer textBuffer = textView.TextBuffer;
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            int position = textView.Caret.Position.BufferPosition;
+            var positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
+            if (positionInBuffer == null) {
+                return;
+            }
+            int position = positionInBuffer.Value.Position;
             ITextSnapshotLine caretLine = snapshot.GetLineFromPosition(position);
 
             int braceIndentSize = SmartIndenter.OuterIndentSizeFromScope(textBuffer, scope, options);
@@ -123,7 +135,23 @@ namespace Microsoft.R.Editor.Formatting
             textBuffer.Replace(Span.FromBounds(caretLine.Start, caretLine.End),
                 innerIndentString + lineBreakText + braceindentString + "}");
 
-            textView.Caret.MoveTo(new VirtualSnapshotPoint(textBuffer.CurrentSnapshot, caretLine.Start.Position + innerIndentString.Length));
+            var caretPoint = textView.BufferGraph.MapUpToBuffer(
+                new SnapshotPoint(
+                    textBuffer.CurrentSnapshot,
+                    caretLine.Start.Position
+                ),
+                PointTrackingMode.Positive,
+                PositionAffinity.Successor,
+                textView.TextBuffer
+            );
+            if (caretPoint != null) {
+                textView.Caret.MoveTo(
+                    new VirtualSnapshotPoint(
+                        textView.TextBuffer.CurrentSnapshot,
+                        caretPoint.Value.Position + innerIndentString.Length
+                    )
+                );
+            }
         }
     }
 }

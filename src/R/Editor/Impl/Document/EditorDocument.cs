@@ -239,7 +239,7 @@ namespace Microsoft.R.Editor.Document
             {
                 if (textView.BufferGraph != null)
                 {
-                    documentPoint = textView.BufferGraph.MapDownToBuffer(point, PointTrackingMode.Positive, rBuffer, PositionAffinity.Predecessor);
+                    documentPoint = textView.MapDownToBuffer(point, rBuffer);
                 }
                 else
                 {

@@ -93,7 +93,8 @@
 
         <DataGrid x:Name="RootTreeGrid" Grid.Row="1"
                   AutoGenerateColumns="False" HorizontalAlignment="Stretch"
-                  ScrollViewer.VerticalScrollBarVisibility="Visible">
+                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                  IsReadOnly="True">
         <DataGrid.Columns>
                 <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}" Width="100" CanUserSort="False" />
                 <DataGridTextColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" Binding="{Binding Model.Content.Value}" Width="*" CanUserSort="False" />

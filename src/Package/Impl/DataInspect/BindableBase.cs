@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Microsoft.VisualStudio.Shell;
 
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// desired value.</returns>
         protected virtual bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
-            if (object.Equals(storage, value)) return false;
+            if (EqualityComparer<T>.Default.Equals(storage, value)) return false;
 
             storage = value;
             this.OnPropertyChanged(propertyName);

@@ -1,4 +1,6 @@
-﻿namespace Microsoft.R.Support.Settings.Definitions
+﻿using Microsoft.Common.Core.Enums;
+
+namespace Microsoft.R.Support.Settings.Definitions
 {
     public interface IRToolsSettings
     {
@@ -7,5 +9,8 @@
         string RVersion { get; set; }
 
         string CranMirror { get; set; }
+
+        YesNoAsk LoadRDataOnProjectLoad { get; set; }
+        YesNoAsk SaveRDataOnProjectUnload { get; set; }
     }
 }
