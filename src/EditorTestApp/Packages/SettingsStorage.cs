@@ -8,7 +8,7 @@ namespace Microsoft.Languages.Editor.Application.Packages
     [ExcludeFromCodeCoverage]
     internal class SettingsStorage : IWritableSettingsStorage
     {
-        private Dictionary<string, object> _settings = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _settings = new Dictionary<string, object>();
 
         #region IWebEditorSettingsStorage Members
 

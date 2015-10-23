@@ -139,6 +139,7 @@
     <Compile Include="Tasks\IdleTimeAction.cs" />
     <Compile Include="Tasks\IdleTimeAsyncTask.cs" />
     <Compile Include="Tasks\IdleTimeAsyncTaskQueue.cs" />
+    <Compile Include="Text\TextViewExtensions.cs" />
     <Compile Include="Text\IncrementalChangeApplication.cs" />
     <Compile Include="Text\ITextSnapshotProvider.cs" />
     <Compile Include="Text\ITextBufferListener.cs" />

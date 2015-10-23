@@ -286,7 +286,7 @@
     <value>Save R Plot File</value>
   </data>
   <data name="LoadWorkspaceIntoGlobalEnvironment" xml:space="preserve">
-    <value>Do you want to load the R data file "{0}" into the global environment?</value>
+    <value>Do you want to load the R data file {0} into the global environment?</value>
   </data>
   <data name="LoadWorkspaceFailedMessageFormat" xml:space="preserve">
     <value>Load workspace from {0} failed:
@@ -350,6 +350,9 @@
   <data name="Settings_RVersion_Latest" xml:space="preserve">
     <value>[Latest]</value>
   </data>
+  <data name="RPromptClassification" xml:space="preserve">
+    <value>R Interactive Prompts</value>
+  </data>
   <data name="Error_CannotCollectLogs" xml:space="preserve">
     <value>Unable to collect and package logs. Exception: {0}</value>
   </data>
@@ -388,5 +391,32 @@
   </data>
   <data name="VariableExplorer_ValueHeader" xml:space="preserve">
     <value>Value</value>
+  </data>
+  <data name="Settings_LoadRDataOnProjectLoad" xml:space="preserve">
+    <value>Load workspace when project is opened</value>
+  </data>
+  <data name="Settings_LoadRDataOnProjectLoad_Description" xml:space="preserve">
+    <value>Load workspace from .RData into global environment when project is opened</value>
+  </data>
+  <data name="Settings_SaveRDataOnProjectUnload" xml:space="preserve">
+    <value>Save workspace when project is closed</value>
+  </data>
+  <data name="Settings_SaveRDataOnProjectUnload_Description" xml:space="preserve">
+    <value>Save workspace from global environment to .RData when project is closed</value>
+  </data>
+  <data name="Ask" xml:space="preserve">
+    <value>Ask</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="SaveWorkspaceOnProjectUnload" xml:space="preserve">
+    <value>Save current workspace image to {0}?</value>
+  </data>
+  <data name="SaveWorkspaceOnProjectUnloadTitle" xml:space="preserve">
+    <value>Save Workspace</value>
   </data>
 </root>
