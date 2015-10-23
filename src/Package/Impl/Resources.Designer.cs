@@ -72,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Ask.
         /// </summary>
-        internal static string Ask {
+        public static string Ask {
             get {
                 return ResourceManager.GetString("Ask", resourceCulture);
             }
@@ -183,15 +183,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_CannotDeleteFile {
             get {
                 return ResourceManager.GetString("Error_CannotDeleteFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to launch Microsoft Outlook. Please attach RTVSLogs.zip file from your user TEMP folder to an e-mail message and send it to rtvscore@microsoft.com.
-        /// </summary>
-        public static string Error_CannotFindOutlook {
-            get {
-                return ResourceManager.GetString("Error_CannotFindOutlook", resourceCulture);
             }
         }
         
@@ -325,7 +316,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
-        internal static string No {
+        public static string No {
             get {
                 return ResourceManager.GetString("No", resourceCulture);
             }
@@ -406,7 +397,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to R Interactive Prompts.
         /// </summary>
-        internal static string RPromptClassification {
+        public static string RPromptClassification {
             get {
                 return ResourceManager.GetString("RPromptClassification", resourceCulture);
             }
@@ -461,7 +452,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Save current workspace image to {0}?.
         /// </summary>
-        internal static string SaveWorkspaceOnProjectUnload {
+        public static string SaveWorkspaceOnProjectUnload {
             get {
                 return ResourceManager.GetString("SaveWorkspaceOnProjectUnload", resourceCulture);
             }
@@ -470,7 +461,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Save Workspace.
         /// </summary>
-        internal static string SaveWorkspaceOnProjectUnloadTitle {
+        public static string SaveWorkspaceOnProjectUnloadTitle {
             get {
                 return ResourceManager.GetString("SaveWorkspaceOnProjectUnloadTitle", resourceCulture);
             }
@@ -641,7 +632,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Load workspace when project is opened.
         /// </summary>
-        internal static string Settings_LoadRDataOnProjectLoad {
+        public static string Settings_LoadRDataOnProjectLoad {
             get {
                 return ResourceManager.GetString("Settings_LoadRDataOnProjectLoad", resourceCulture);
             }
@@ -650,7 +641,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Load workspace from .RData into global environment when project is opened.
         /// </summary>
-        internal static string Settings_LoadRDataOnProjectLoad_Description {
+        public static string Settings_LoadRDataOnProjectLoad_Description {
             get {
                 return ResourceManager.GetString("Settings_LoadRDataOnProjectLoad_Description", resourceCulture);
             }
@@ -731,7 +722,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Save workspace when project is closed.
         /// </summary>
-        internal static string Settings_SaveRDataOnProjectUnload {
+        public static string Settings_SaveRDataOnProjectUnload {
             get {
                 return ResourceManager.GetString("Settings_SaveRDataOnProjectUnload", resourceCulture);
             }
@@ -740,7 +731,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Save workspace from global environment to .RData when project is closed.
         /// </summary>
-        internal static string Settings_SaveRDataOnProjectUnload_Description {
+        public static string Settings_SaveRDataOnProjectUnload_Description {
             get {
                 return ResourceManager.GetString("Settings_SaveRDataOnProjectUnload_Description", resourceCulture);
             }
@@ -956,7 +947,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Yes.
         /// </summary>
-        internal static string Yes {
+        public static string Yes {
             get {
                 return ResourceManager.GetString("Yes", resourceCulture);
             }

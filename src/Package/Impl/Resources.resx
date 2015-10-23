@@ -356,9 +356,6 @@
   <data name="Error_CannotCollectLogs" xml:space="preserve">
     <value>Unable to collect and package logs. Exception: {0}</value>
   </data>
-  <data name="Error_CannotFindOutlook" xml:space="preserve">
-    <value>Unable to launch Microsoft Outlook. Please attach RTVSLogs.zip file from your user TEMP folder to an e-mail message and send it to rtvscore@microsoft.com</value>
-  </data>
   <data name="CollectingOSInformation" xml:space="preserve">
     <value>Collecting OS information</value>
   </data>
