@@ -14,7 +14,7 @@
 
     <Package InstallerVersion="350" Compressed="yes" InstallScope="perMachine" />
 
-    <Icon Id ="ControlPanelIcon" SourceFile="vsicon.ico" />
+    <Icon Id ="ControlPanelIcon" SourceFile="RFile.ico" />
     <Property Id="ARPPRODUCTICON" Value="ControlPanelIcon" />
 
     <!-- Uninstall Current MSI -->

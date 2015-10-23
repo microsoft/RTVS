@@ -48,9 +48,9 @@
     <Content Include="ItemTemplates.wxi" />
     <Content Include="LocalizedResources.wxi" />
     <Content Include="ProjectTemplates.wxi" />
-    <Content Include="vsicon.ico" />
     <Content Include="Feature.wxi" />
     <Content Include="Definitions.wxi" />
+    <Content Include="RFile.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Core\Impl\Microsoft.Common.Core.csproj">
