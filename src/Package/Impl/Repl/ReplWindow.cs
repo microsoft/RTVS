@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -12,6 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
+using Microsoft.VisualStudio.Text.Operations;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -24,8 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private static readonly Lazy<ReplWindow> _instance = new Lazy<ReplWindow>(() => new ReplWindow());
         LinkedList<PendingSubmission> _pendingInputs = new LinkedList<PendingSubmission>();
 
-        class PendingSubmission
-        {
+        class PendingSubmission {
             public string Code;
             public bool AddNewLine;
         }
@@ -37,30 +38,24 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public static ReplWindow Current => _instance.Value;
 
-        private void ProcessQueuedInput()
-        {
+        private void ProcessQueuedInput() {
             IVsInteractiveWindow interactive = _instance.Value.GetInteractiveWindow();
-            if (interactive  != null)
-            {
+            if (interactive != null) {
                 var window = interactive.InteractiveWindow;
 
                 // Process all of our pending inputs until we get a complete statement
-                while (_pendingInputs.Count != 0)
-                {
+                while (_pendingInputs.Count != 0) {
                     var cur = _pendingInputs.First.Value;
                     _pendingInputs.RemoveFirst();
 
                     window.InsertCode(cur.Code);
                     string fullCode = window.CurrentLanguageBuffer.CurrentSnapshot.GetText();
 
-                    if (window.Evaluator.CanExecuteCode(fullCode))
-                    {
+                    if (window.Evaluator.CanExecuteCode(fullCode)) {
                         // the code is complete, execute it now
                         window.Operations.ExecuteInput();
                         break;
-                    }
-                    else if (cur.AddNewLine)
-                    {
+                    } else if (cur.AddNewLine) {
                         // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
                         // function() {
                         window.InsertCode(window.TextView.Options.GetNewLineCharacter());
@@ -81,21 +76,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         /// <param name="code">The code to be inserted</param>
         /// <param name="addNewLine">True to add a new line on non-complete inputs.</param>
-        public void EnqueueCode(string code, bool addNewLine)
-        {
+        public void EnqueueCode(string code, bool addNewLine) {
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
-            if (current != null)
-            {
-                if (current.InteractiveWindow.IsResetting)
-                {
+            if (current != null) {
+                if (current.InteractiveWindow.IsResetting) {
                     return;
                 }
 
                 // add the input to our queue...
                 _pendingInputs.AddLast(new PendingSubmission() { Code = code, AddNewLine = addNewLine });
 
-                if (!current.InteractiveWindow.IsRunning)
-                {
+                if (!current.InteractiveWindow.IsRunning) {
                     // and process the queue if we weren't currently running
                     ProcessQueuedInput();
                 }
@@ -117,13 +108,26 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
             if (current != null) {
                 SnapshotPoint? documentPoint = REditorDocument.MapCaretPositionFromView(textView);
-                if (!documentPoint.HasValue) {
+                if (!documentPoint.HasValue ||
+                    documentPoint.Value == documentPoint.Value.Snapshot.Length ||
+                    documentPoint.Value.Snapshot.Length == 0) {
+                    // Let the repl try and execute the code if the user presses enter at the
+                    // end of the buffer.
                     current.InteractiveWindow.Operations.Return();
                 } else {
-                    if (documentPoint.Value == documentPoint.Value.Snapshot.Length || documentPoint.Value.Snapshot.Length == 0) {
-                        current.InteractiveWindow.Operations.Return();
-                    } else {
-                        current.InteractiveWindow.Operations.ExecuteInput();
+                    // Otherwise insert a line break in the middle of an input
+                    current.InteractiveWindow.Operations.BreakLine();
+                    var document = REditorDocument.TryFromTextBuffer(current.InteractiveWindow.CurrentLanguageBuffer);
+                    if (document != null) {
+                        var tree = document.EditorTree;
+                        tree.EnsureTreeReady();
+
+                        AutoFormat.HandleAutoFormat(
+                            current.InteractiveWindow.TextView,
+                            current.InteractiveWindow.CurrentLanguageBuffer,
+                            tree.AstRoot,
+                            '\n'
+                        );
                     }
                 }
             }
@@ -227,13 +231,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 if (property == RGuidList.ReplInteractiveWindowProviderGuid) {
                     object docView;
                     frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView);
-                    if (_lastUsedReplWindow != null)
-                    {
+                    if (_lastUsedReplWindow != null) {
                         _lastUsedReplWindow.InteractiveWindow.ReadyForInput -= ProcessQueuedInput;
                     }
                     _lastUsedReplWindow = docView as IVsInteractiveWindow;
-                    if (_lastUsedReplWindow != null)
-                    {
+                    if (_lastUsedReplWindow != null) {
                         _lastUsedReplWindow.InteractiveWindow.ReadyForInput += ProcessQueuedInput;
                     }
                     return _lastUsedReplWindow != null;

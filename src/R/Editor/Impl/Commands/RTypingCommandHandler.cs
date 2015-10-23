@@ -7,10 +7,12 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Completion.AutoCompletion;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Tree.Definitions;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Commands
@@ -51,14 +53,20 @@ namespace Microsoft.R.Editor.Commands
             {
                 char typedChar = GetTypedChar(group, id, inputArg);
 
-                if (AutoFormat.IsAutoformatTriggerCharacter(typedChar))
-                {
+                if (AutoFormat.IsAutoformatTriggerCharacter(typedChar)) {
                     IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
-                    if (document != null && !document.IsTransient)
-                    {
+                    if (document != null) {
                         IEditorTree tree = document.EditorTree;
                         tree.EnsureTreeReady();
-                        AutoFormat.HandleAutoFormat(TextView, TextView.TextBuffer, tree.AstRoot, typedChar);
+                        var rPoint = TextView.BufferGraph.MapDownToFirstMatch(
+                            TextView.Caret.Position.BufferPosition,
+                            PointTrackingMode.Positive,
+                            snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType),
+                            PositionAffinity.Successor
+                        );
+                        if (rPoint != null) {
+                            AutoFormat.HandleAutoFormat(TextView, rPoint.Value.Snapshot.TextBuffer, tree.AstRoot, typedChar);
+                        }
                     }
                 }
 

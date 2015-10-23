@@ -40,7 +40,23 @@ namespace Microsoft.R.Editor.SmartIndent
         #region ISmartIndent;
         public int? GetDesiredIndentation(ITextSnapshotLine line)
         {
-            return GetDesiredIndentation(line, REditorSettings.IndentStyle);
+            int? res = GetDesiredIndentation(line, REditorSettings.IndentStyle);
+            if (res != null && line.Snapshot.TextBuffer != _textView.TextBuffer) {
+                var target = _textView.BufferGraph.MapUpToBuffer(
+                    line.Start,
+                    PointTrackingMode.Positive,
+                    PositionAffinity.Successor,
+                    _textView.TextBuffer
+                );
+
+                if (target != null) {
+                    // The indentation level is relative to the line in the text view when
+                    // we were created, not to the line we were provided with on this call.
+                    var diff = target.Value.Position - target.Value.GetContainingLine().Start.Position;
+                    return diff + res;
+                }
+            }
+            return res;
         }
 
         public int? GetDesiredIndentation(ITextSnapshotLine line, IndentStyle indentStyle)
@@ -90,7 +106,7 @@ namespace Microsoft.R.Editor.SmartIndent
             if (ast == null)
             {
                 IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
-                if (document == null || document.IsTransient)
+                if (document == null)
                 {
                     return 0;
                 }

@@ -20,9 +20,8 @@ namespace Microsoft.R.Editor.Formatting
 {
     internal static class RangeFormatter
     {
-        public static bool FormatRange(ITextView textView, ITextRange range, AstRoot ast, RFormatOptions options)
+        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange range, AstRoot ast, RFormatOptions options)
         {
-            ITextBuffer textBuffer = textView.TextBuffer;
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
 
             int start = range.Start;
@@ -55,7 +54,7 @@ namespace Microsoft.R.Editor.Formatting
             string formattedText = formatter.Format(trimmedSpanText);
 
             formattedText = formattedText.Trim(); // there may be inserted line breaks after {
-            formattedText = AppendIndent(textView.TextBuffer, spanToFormat.Start, ast, formattedText, options);
+            formattedText = AppendIndent(textBuffer, spanToFormat.Start, ast, formattedText, options);
 
             if (!spanText.Equals(formattedText, StringComparison.Ordinal))
             {

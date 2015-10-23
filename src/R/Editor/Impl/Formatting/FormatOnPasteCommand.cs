@@ -4,6 +4,7 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
@@ -38,18 +39,28 @@ namespace Microsoft.R.Editor.Formatting
             }
 
             string text = Clipboard.GetData(DataFormats.UnicodeText) as string;
-            if (text == null)
-            {
+            if (text == null) {
                 text = Clipboard.GetData(DataFormats.Text) as string;
             }
 
-            if (text != null)
-            {
-                int insertionPoint = TextView.Selection.StreamSelectionSpan.SnapshotSpan.Start;
-                TextView.TextBuffer.Replace(TextView.Selection.StreamSelectionSpan.SnapshotSpan, text);
+            if (text != null) {
+                var rSpans = TextView.BufferGraph.MapDownToFirstMatch(
+                    TextView.Selection.StreamSelectionSpan.SnapshotSpan,
+                    SpanTrackingMode.EdgeInclusive,
+                    snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)
+                );
+                if (rSpans.Count > 0) {
+                    var targetSpan = rSpans[rSpans.Count - 1];
 
-                IREditorDocument document = REditorDocument.FromTextBuffer(TextView.TextBuffer);
-                RangeFormatter.FormatRange(TextView, new TextRange(insertionPoint, text.Length), document.EditorTree.AstRoot, REditorSettings.FormatOptions);
+                    IREditorDocument document = REditorDocument.TryFromTextBuffer(targetSpan.Snapshot.TextBuffer);
+                    if (document != null) {
+                        int insertionPoint = targetSpan.Start;
+
+                        targetSpan.Snapshot.TextBuffer.Replace(targetSpan, text);
+
+                        RangeFormatter.FormatRange(TextView, targetSpan.Snapshot.TextBuffer, new TextRange(insertionPoint, text.Length), document.EditorTree.AstRoot, REditorSettings.FormatOptions);
+                    }
+                }
             }
 
             return CommandResult.Executed;
