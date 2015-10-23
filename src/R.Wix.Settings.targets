@@ -14,7 +14,6 @@
 
   <PropertyGroup>
     <VsVersion Condition="'$(VsVersion)' == ''">14.0</VsVersion>
-
     <VsRcVersion Condition="'$(VsRcVersion)' == ''">$(VsVersion).22823</VsRcVersion>
     
     <Manufacturer>Microsoft Corporation</Manufacturer>

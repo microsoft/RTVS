@@ -6,7 +6,13 @@
       to indicate this is a private build. 65000 is also greater than lab build numbers and hence
       developer can update MSI installed from the official build by the private copy 
     -->
-    <BuildNumber Condition=" '$(BuildNumber)' == '' ">65000.1</BuildNumber>
+    <Year>$([System.DateTime]::Now.Year.ToString())</Year>
+    <LastDigitOfYear>$(Year.Substring(3,1))</LastDigitOfYear>
+    <DayOfYear>$([System.DateTime]::Now.DayOfYear.ToString())</DayOfYear>
+    <Hour>$([System.DateTime]::Now.ToString("HH"))</Hour>
+    <LastDigitOfHour>$(Hour.Substring(1,1))</LastDigitOfHour>
+    <Minute>$([System.DateTime]::Now.Minute.ToString())</Minute>
+    <BuildNumber>$(LastDigitOfYear)$(DayOfYear)$(LastDigitOfHour).$(Minute)</BuildNumber>
     <MajorVersion>14.0</MajorVersion>
     <AssemblyVersion>$(MajorVersion).$(BuildNumber)</AssemblyVersion>
     <BuildVersion>$(MajorVersion).$(BuildNumber)</BuildVersion>
@@ -24,6 +30,10 @@
     </AssemblyVersionAttribute>
   </ItemGroup>
 
+  <Target Name="DeleteVersionInfoFile" BeforeTargets="GenerateAssemblyInfoFile">
+    <Delete Files="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs" />
+  </Target>
+
   <Target Name="GenerateAssemblyInfoFile" Inputs="$(MSBuildAllProjects)" Outputs="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs">
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
 							Language="C#"
@@ -34,6 +44,7 @@
   </Target>
 
   <PropertyGroup>
+    <CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>
     <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
   </PropertyGroup>
 </Project>

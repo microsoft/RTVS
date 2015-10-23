@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
-  <?define ProductName="R Tools for Visual Studio" ?>
+  <?define ProductNamePart1="R Tools " ?>
+  <?define ProductNamePart2=" for Visual Studio 2015" ?>
+  <?define ProductName="$(var.ProductNamePart1)$(var.ProductVersion)$(var.ProductNamePart2)" ?>
   <?define VSRegVer="14.0" ?>
 
   <!-- 
@@ -22,7 +24,7 @@
   <!--<?define LangList=CHS;CHT;CSY;DEU;ENU;ESN;FRA;ITA;JPN;KOR;PLK;PTB;RUS;TRK?>
   <?define LcidList=2052;1028;1029;1031;1033;3082;FRA;1036;1041;1042;1045;1046;1049;1055?>-->
   <?define LangList=ENU?>
-  <?define LcidList=1033?>  
+  <?define LcidList=1033?>
   <?else?>
   <?define LangList=ENU?>
   <?define LcidList=1033?>

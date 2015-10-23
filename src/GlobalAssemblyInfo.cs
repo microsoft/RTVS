@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyProduct("R Tools for Visual Studio")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyVersion("14.0.0.1")]
+//[assembly: AssemblyVersion("14.0.0.1")]
 
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
 
