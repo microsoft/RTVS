@@ -12,7 +12,7 @@
            Manufacturer="Microsoft Corporation"
            Version="$(var.MsiVersion)"
            UpgradeCode="{165B6EF9-D111-4435-8BDC-604AA21BF8C9}"
-           IconSourceFile="..\Setup\VSIcon.ico">
+           IconSourceFile="..\Setup\RFile.ico">
 
     <?include VSDetection.wxi?>
     <WixVariable Id="BundleLanguage" Value="1033"/>

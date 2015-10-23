@@ -18,19 +18,20 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <BaseIntermediateOutputPath>..\..\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\..\bin\</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\</IntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Setup\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-    <DefineConstants>Debug;MsiVersion=$(BuildVersion)</DefineConstants>
+    <DefineConstants>Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion)</DefineConstants>
     <Chip>x86</Chip>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
+    <SuppressPdbOutput>True</SuppressPdbOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <BaseIntermediateOutputPath>..\..\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\..\bin\</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\</IntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Setup\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <Chip>x86</Chip>
-    <DefineConstants>LabBuild=1;MsiVersion=$(BuildVersion)</DefineConstants>
+    <DefineConstants>LabBuild=1;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion)</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
   </PropertyGroup>
   <ItemGroup>
@@ -47,9 +48,9 @@
     <Content Include="ItemTemplates.wxi" />
     <Content Include="LocalizedResources.wxi" />
     <Content Include="ProjectTemplates.wxi" />
-    <Content Include="vsicon.ico" />
     <Content Include="Feature.wxi" />
     <Content Include="Definitions.wxi" />
+    <Content Include="RFile.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Core\Impl\Microsoft.Common.Core.csproj">

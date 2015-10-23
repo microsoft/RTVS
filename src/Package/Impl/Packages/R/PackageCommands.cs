@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SaveWorkspaceCommand(rSessionProvider, projectServiceAccessor),
                 new AttachDebuggerCommand(rSessionProvider),
                 new RestartRCommand(),
-                new InterruptRCommand(),
+                new InterruptRCommand(rSessionProvider),
 
                 new ImportDataSetTextFileCommand(),
                 new ImportDataSetUrlCommand(),
