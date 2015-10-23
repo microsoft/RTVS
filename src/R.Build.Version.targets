@@ -9,7 +9,7 @@
     <Year>$([System.DateTime]::Now.Year.ToString())</Year>
     <LastDigitOfYear>$(Year.Substring(3,1))</LastDigitOfYear>
     <DayOfYear>$([System.DateTime]::Now.DayOfYear.ToString())</DayOfYear>
-    <Hour>$([System.DateTime]::Now.Hour.ToString())</Hour>
+    <Hour>$([System.DateTime]::Now.ToString("HH"))</Hour>
     <LastDigitOfHour>$(Hour.Substring(1,1))</LastDigitOfHour>
     <Minute>$([System.DateTime]::Now.Minute.ToString())</Minute>
     <BuildNumber>$(LastDigitOfYear)$(DayOfYear)$(LastDigitOfHour).$(Minute)</BuildNumber>
