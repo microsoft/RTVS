@@ -19,9 +19,8 @@ using System.Windows.Markup;
 using System.Xaml;
 using System.Windows.Data;
 using System.Globalization;
-using Microsoft.VisualStudioTools.Wpf;
 
-namespace Microsoft.VisualStudioTools.Wpf {
+namespace Microsoft.Common.Wpf {
     [ContentProperty("Lambda")]
     public class LambdaExtension : MarkupExtension {
         public string Lambda { get; set; }

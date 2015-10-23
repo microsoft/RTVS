@@ -18,7 +18,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Microsoft.VisualStudioTools.Wpf {
+namespace Microsoft.Common.Wpf {
     public class LambdaConverter : IValueConverter, IMultiValueConverter {
         private readonly Func<object, object> lambda;
         private readonly Func<object[], object> multiLambda;
