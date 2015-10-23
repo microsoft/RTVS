@@ -7,10 +7,12 @@
       developer can update MSI installed from the official build by the private copy 
     -->
     <Year>$([System.DateTime]::Now.Year.ToString())</Year>
-    <LastTwoDigitsOfYear>$(Year.Substring(2,2))</LastTwoDigitsOfYear>
+    <LastDigitOfYear>$(Year.Substring(3,1))</LastDigitOfYear>
     <DayOfYear>$([System.DateTime]::Now.DayOfYear.ToString())</DayOfYear>
     <Hour>$([System.DateTime]::Now.Hour.ToString())</Hour>
-    <BuildNumber>$(LastTwoDigitsOfYear)$(DayOfYear).$(Hour)</BuildNumber>
+    <LastDigitOfHour>$(Hour.Substring(1,1))</LastDigitOfHour>
+    <Minute>$([System.DateTime]::Now.Minute.ToString())</Minute>
+    <BuildNumber>$(LastDigitOfYear)$(DayOfYear)$(LastDigitOfHour).$(Minute)</BuildNumber>
     <MajorVersion>14.0</MajorVersion>
     <AssemblyVersion>$(MajorVersion).$(BuildNumber)</AssemblyVersion>
     <BuildVersion>$(MajorVersion).$(BuildNumber)</BuildVersion>

@@ -3,6 +3,7 @@
   <Import Project="..\R.Build.Version.targets" />
   <Import Project="..\R.Wix.Settings.targets" />
   <PropertyGroup>
+    <DefineSolutionProperties>false</DefineSolutionProperties>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.7</ProductVersion>
