@@ -97,7 +97,7 @@
         <DataGrid.Columns>
                 <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}" Width="100" CanUserSort="False" />
                 <DataGridTextColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" Binding="{Binding Model.Content.Value}" Width="*" CanUserSort="False" />
-                <DataGridTextColumn x:Name="ClassColumn" Header="{x:Static pkg:Resources.VariableExplorer_ClassHeader}" Binding="{Binding Model.Content.Class}" Width="*" CanUserSort="False" />
+                <DataGridTextColumn x:Name="ClassColumn" Header="{x:Static pkg:Resources.VariableExplorer_ClassHeader}" Binding="{Binding Model.Content.Class}" Width="100" CanUserSort="False" />
                 <DataGridTextColumn x:Name="TypeColumn" Header="{x:Static pkg:Resources.VariableExplorer_TypeHeader}" Binding="{Binding Model.Content.TypeName}" Width="100" CanUserSort="False" />
         </DataGrid.Columns>
     </DataGrid>

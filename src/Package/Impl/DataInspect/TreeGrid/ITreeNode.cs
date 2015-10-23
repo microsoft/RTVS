@@ -21,6 +21,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         bool CanUpdateTo(ITreeNode node);
 
         /// <summary>
+        /// true if this node can have children, false otherwise
+        /// </summary>
+        bool HasChildren { get; }
+
+        /// <summary>
         /// returns children nodes
         /// </summary>
         /// <returns>Children node collection</returns>

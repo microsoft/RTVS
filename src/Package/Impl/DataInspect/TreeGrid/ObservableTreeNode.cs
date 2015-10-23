@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -30,17 +31,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             Parent = null;
             Model = node;
+            HasChildren = node.HasChildren;
+            _fixIsExpanded = false;
 
             ResetCount();
         }
 
         private int DepthAdjust;
         private int IndexStart;
+        private bool _fixIsExpanded;
         public static ObservableTreeNode CreateAsRoot(ITreeNode node, bool includeInCollection) {
             var instance = includeInCollection ? new ObservableTreeNode(node, 0, 1) : new ObservableTreeNode(node, -1, 0);
 
             if (!includeInCollection) {
                 instance.IsExpanded = true;
+                instance._fixIsExpanded = true;
             }
             instance.Visibility = Visibility.Visible;
 
@@ -68,6 +73,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool IsExpanded {
             get { return _isExpanded; }
             set {
+                if (_fixIsExpanded) return;
+
                 if (HasChildren) {
                     foreach (var child in ChildrenInternal) {
                         SetNodeVisibility(child, value);
@@ -76,10 +83,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 SetProperty<bool>(ref _isExpanded, value);
 
-                if (_isExpanded && HasChildren) {
-                    foreach (var child in ChildrenInternal) // TODO: synchronize Visibility/IsExpanded change, basically Provider should be intelligent sequence and load balance update request
-                    {
-                        child.StartUpdatingChildren().DoNotWait();
+                if (HasChildren) {
+                    if (_isExpanded) {
+                        StartUpdatingChildren(Model).DoNotWait();
                     }
                 }
             }
@@ -93,9 +99,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get { return _visibility; }
             set {
                 SetProperty<Visibility>(ref _visibility, value);
-                if (_visibility == Visibility.Visible) {
-                    StartUpdatingChildren().DoNotWait();
-                }
             }
         }
 
@@ -144,7 +147,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private ITreeNode _model;
         public ITreeNode Model {
             get { return _model; }
-            set { SetProperty(ref _model, value); }
+            set {
+                var newModel = value;
+
+                if (newModel == null) {
+                    RemoveAllChildren();
+                } else {
+                    if (!newModel.HasChildren) {
+                        RemoveAllChildren();
+                    }
+                    HasChildren = newModel.HasChildren;
+                    if (IsExpanded) {
+                        StartUpdatingChildren(newModel).SilenceException<Exception>().DoNotWait();
+                    }
+                }
+
+                SetProperty(ref _model, value);
+            }
         }
 
         private object _errorContent;
@@ -174,16 +193,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             Count += item.Count;
 
-            if (CollectionChanged != null) {
+            OnCollectionChanged(() => {
                 IList addedItems = Linearize(item);
 
-                CollectionChanged(
-                    this,
-                    new NotifyCollectionChangedEventArgs(
-                        NotifyCollectionChangedAction.Add,
-                        addedItems,
-                        addedStartingIndex));
-            }
+                return new NotifyCollectionChangedEventArgs(
+                    NotifyCollectionChangedAction.Add,
+                    addedItems,
+                    addedStartingIndex);
+            });
         }
 
         /// <summary>
@@ -214,27 +231,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Count -= toBeRemoved.Count;
             Debug.Assert(Count >= IndexStart);
 
-            if (CollectionChanged != null) {
+            OnCollectionChanged(() => {
                 IList removedItems = Linearize(toBeRemoved);
-
-                CollectionChanged(
-                    this,
-                    new NotifyCollectionChangedEventArgs(
-                        NotifyCollectionChangedAction.Remove,
-                        removedItems,
-                        removedStartingIndex));
-            }
+                return new NotifyCollectionChangedEventArgs(
+                    NotifyCollectionChangedAction.Remove,
+                    removedItems,
+                    removedStartingIndex);
+            });
         }
 
         /// <summary>
         /// clear direct children
         /// </summary>
         public void RemoveAllChildren() {
+            if (!HasChildren) {
+                return;
+            }
+
             int removedStartingIndex = AddUpChildCount(0);
             List<ObservableTreeNode> removedItems = new List<ObservableTreeNode>();
-            foreach (var child in Children) {
+            foreach (var child in ChildrenInternal) {
                 child.CollectionChanged -= Item_CollectionChanged;
-                removedItems.Add(child);
+                removedItems.AddRange(Linearize(child));
             }
 
             ChildrenInternal.Clear();
@@ -242,20 +260,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             ResetCount();
 
-            if (CollectionChanged != null) {
-                CollectionChanged(
-                    this,
-                    new NotifyCollectionChangedEventArgs(
-                        NotifyCollectionChangedAction.Remove,
-                        removedItems,
-                        removedStartingIndex));
-            }
-        }
-
-        public async Task Update(ITreeNode node) {
-            Model = node;
-
-            await StartUpdatingChildren();
+            OnCollectionChanged(() =>
+                new NotifyCollectionChangedEventArgs(
+                    NotifyCollectionChangedAction.Remove,
+                    removedItems,
+                    removedStartingIndex));
         }
 
         #endregion
@@ -266,6 +275,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// notification for adding and removing child node
         /// </summary>
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        private void OnCollectionChanged(Func<NotifyCollectionChangedEventArgs> getArgs) {
+            if (CollectionChanged != null) {
+                ThreadHelper.Generic.Invoke(() => {
+                    CollectionChanged(
+                        this,
+                        getArgs());
+                });
+            }
+        }
 
         #endregion
 
@@ -304,39 +323,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
                     Count += e.NewItems.Count;
-                    if (CollectionChanged != null) {
+                    OnCollectionChanged(() => {
                         int nodeStartIndex = AddUpChildCount(nodeIndex);
 
-                        CollectionChanged(
-                            this,
-                            new NotifyCollectionChangedEventArgs(
+                        return new NotifyCollectionChangedEventArgs(
                                 NotifyCollectionChangedAction.Add,
-                                e.NewItems, e.NewStartingIndex + nodeStartIndex));
-                    }
+                                e.NewItems, e.NewStartingIndex + nodeStartIndex);
+                    });
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     Count -= e.OldItems.Count;
-                    if (CollectionChanged != null) {
+                    OnCollectionChanged(() => {
                         int nodeStartIndex = AddUpChildCount(nodeIndex);
 
-                        CollectionChanged(
-                            this,
-                            new NotifyCollectionChangedEventArgs(
+                        return new NotifyCollectionChangedEventArgs(
                                 NotifyCollectionChangedAction.Remove,
-                                e.OldItems, e.OldStartingIndex + nodeStartIndex));
-                    }
+                                e.OldItems, e.OldStartingIndex + nodeStartIndex);
+                    });
                     break;
                 case NotifyCollectionChangedAction.Reset:
                     var deleted = Linearize(node);
                     Count -= deleted.Count;
-                    if (CollectionChanged != null) {
-                        CollectionChanged(
-                            this,
-                            new NotifyCollectionChangedEventArgs(
-                                NotifyCollectionChangedAction.Remove,
-                                deleted,
-                                nodeIndex));
-                    }
+                    OnCollectionChanged(() => 
+                        new NotifyCollectionChangedEventArgs(
+                            NotifyCollectionChangedAction.Remove,
+                            deleted,
+                            nodeIndex));
                     break;
                 case NotifyCollectionChangedAction.Replace:
                 case NotifyCollectionChangedAction.Move:
@@ -375,17 +387,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 HasChildren = true;
             } else {
                 HasChildren = false;
+                IsExpanded = false;
             }
         }
 
-        private async Task StartUpdatingChildren() {
-            if (Model == null) {
+        private async Task StartUpdatingChildren(ITreeNode model) {
+            if (model == null) {
                 return;
             }
 
             try {
-                var nodes = await Model.GetChildrenAsync(CancellationToken.None);
-
+                var nodes = await model.GetChildrenAsync(CancellationToken.None);
                 UpdateChildren(nodes);
             } catch (Exception e) {
                 Debug.Assert(false, e.ToString());
@@ -398,8 +410,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void UpdateChildren(IReadOnlyList<ITreeNode> update) {
-            if (!HasChildren && (update == null || update.Count == 0)) {
-                return; // trivial case: neither new or old has no child
+            if (update == null || update.Count == 0) {
+                RemoveAllChildren();
+                return;
             }
 
             int srcIndex = 0;
@@ -439,6 +452,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             }
         }
+
 
         #endregion
     }

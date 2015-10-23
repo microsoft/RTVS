@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Newtonsoft.Json;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class VariableChangedArgs : EventArgs {
         public EvaluationWrapper NewVariable { get; set; }
-        }
+    }
 
-    internal class VariableProvider : IDisposable {
+    internal class VariableProvider {
         #region members and ctor
 
         private IRSession _rSession;
@@ -25,8 +23,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var sessionProvider = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
-            IdleTimeAction.Create(async () => {
-                await SetRSession(sessionProvider.Current);
+            IdleTimeAction.Create(() => {
+                SetRSession(sessionProvider.Current).SilenceException<Exception>().DoNotWait();
             }, 10, typeof(VariableProvider));
         }
 
@@ -56,22 +54,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// IRSession.BeforeRequest handler. At each interaction request, this is called.
         /// Used to queue another request to refresh variables after the interaction request.
         /// </summary>
-        private async void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
-            await RefreshVariableCollection();
+        private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
+            RefreshVariableCollection().SilenceException<Exception>().DoNotWait();
         }
 
         /// <summary>
         /// IRSessionProvider.CurrentSessionChanged handler. When current session changes, this is called
         /// </summary>
-        private async void RSessionProvider_CurrentChanged(object sender, EventArgs e) {
+        private void RSessionProvider_CurrentChanged(object sender, EventArgs e) {
             var sessionProvider = sender as IRSessionProvider;
             Debug.Assert(sessionProvider != null);
 
             if (sessionProvider != null) {
-                var session = sessionProvider.Current;
-                if (!object.Equals(session, _rSession)) {
-                    await SetRSession(session);
-                }
+                SetRSession(sessionProvider.Current).SilenceException<Exception>().DoNotWait();
             }
         }
 
@@ -79,11 +74,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private async Task InitializeData() {
             var debugSessionProvider = AppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
-
-            if (_debugSession != null) {
-                _debugSession.Dispose();
-                _debugSession = null;
-            }
 
             _debugSession = await debugSessionProvider.GetDebugSessionAsync(_rSession);
 
@@ -123,18 +113,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 LastEvaluation = new EvaluationWrapper(evaluation);
 
                 if (VariableChanged != null) {
-                        VariableChanged(
-                            this,
-                        new VariableChangedArgs() { NewVariable = LastEvaluation });
-        }
+                    VariableChanged(
+                        this,
+                    new VariableChangedArgs() { NewVariable = LastEvaluation });
+                }
             }
-            }
-
-        public void Dispose() {
-            if (_debugSession != null) {
-                _debugSession.Dispose();
-            }
-            _rSession = null;
         }
     }
 }

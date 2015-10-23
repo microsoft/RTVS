@@ -4,20 +4,17 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
-{
+namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ObservableTreeNodeTest
-    {
+    public class ObservableTreeNodeTest {
         private List<ObservableTreeNode> _linearized;
         private ObservableTreeNode _rootNode;
 
         public TestContext TestContext { get; set; }
 
         [TestInitialize]
-        public void InitializeTest()
-        {
+        public void InitializeTest() {
             _linearized = new List<ObservableTreeNode>();
             _rootNode = new ObservableTreeNode(new TestNode(0));
             _rootNode.CollectionChanged += Target_CollectionChanged;
@@ -26,8 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         }
 
         [TestCleanup]
-        public void CleanupTest()
-        {
+        public void CleanupTest() {
             _rootNode.CollectionChanged -= Target_CollectionChanged;
 
             _rootNode = null;
@@ -37,8 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         #region manual Add/Removal Test
 
         [TestMethod]
-        public void ObservableTreeNodeConstructorTest()
-        {
+        public void ObservableTreeNodeConstructorTest() {
             var target = new ObservableTreeNode(new TestNode(1234));
             Assert.AreEqual(false, target.HasChildren, "Default HasChildren value");
             Assert.AreEqual(1234.ToString(), target.Model.Content);
@@ -47,8 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         }
 
         [TestMethod]
-        public void ObservableTreeNodeAddChildTest()
-        {
+        public void ObservableTreeNodeAddChildTest() {
             var target = _rootNode;
             target.InsertChildAt(0, GetTestTree());
 
@@ -57,8 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         }
 
         [TestMethod]
-        public void ObservableTreeNodeRemoveChildTest()
-        {
+        public void ObservableTreeNodeRemoveChildTest() {
             var target = _rootNode;
             target.InsertChildAt(0, GetTestTree());
 
@@ -69,8 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         }
 
         [TestMethod]
-        public void AddLeafChildTest()
-        {
+        public void AddLeafChildTest() {
             var target = _rootNode;
             target.AddChild(new ObservableTreeNode(new TestNode(10)));
             target.AddChild(new ObservableTreeNode(new TestNode(11)));
@@ -81,8 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         }
 
         [TestMethod]
-        public void AddChildTest()
-        {
+        public void AddChildTest() {
             var target = _rootNode;
             target.AddChild(new ObservableTreeNode(new TestNode(10)));
 
@@ -99,8 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         }
 
         [TestMethod]
-        public void InsertChildOrderTest()
-        {
+        public void InsertChildOrderTest() {
             var target = _rootNode;
             target.InsertChildAt(0, new ObservableTreeNode(new TestNode(12)));
             target.InsertChildAt(0, new ObservableTreeNode(new TestNode(10)));
@@ -111,8 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         }
 
         [TestMethod]
-        public void InsertAnoterTreeTest()
-        {
+        public void InsertAnoterTreeTest() {
             var target = _rootNode;
             target.InsertChildAt(0, new ObservableTreeNode(new TestNode(12)));
 
@@ -129,8 +118,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         }
 
         [TestMethod]
-        public void InsertChildTest()
-        {
+        public void InsertChildTest() {
             var target = _rootNode;
             target.InsertChildAt(0, new ObservableTreeNode(new TestNode(10)));
             target.InsertChildAt(1, new ObservableTreeNode(new TestNode(11)));
@@ -143,8 +131,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
         }
 
         [TestMethod]
-        public void RemoveLeafChildTest()
-        {
+        public void RemoveLeafChildTest() {
             var target = _rootNode;
             target.InsertChildAt(0, new ObservableTreeNode(new TestNode(10)));
             target.InsertChildAt(1, new ObservableTreeNode(new TestNode(11)));
@@ -160,24 +147,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
 
         #region test utilities
 
-        private void AssertLinearized(int[] expected, IList<ObservableTreeNode> target, ObservableTreeNode targetTree)
-        {
+        private void AssertLinearized(int[] expected, IList<ObservableTreeNode> target, ObservableTreeNode targetTree) {
             Assert.AreEqual(expected.Length, targetTree.Count);
             Assert.AreEqual(expected.Length, target.Count);
-            for (int i = 0; i < expected.Length; i++)
-            {
+            for (int i = 0; i < expected.Length; i++) {
                 Assert.AreEqual(expected[i].ToString(), target[i].Model.Content, string.Format("{0}th item is different", i));
             }
         }
 
-        private void Target_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
+        private void Target_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
                     int insertIndex = e.NewStartingIndex;
-                    foreach (var item in e.NewItems)
-                    {
+                    foreach (var item in e.NewItems) {
                         _linearized.Insert(insertIndex, (ObservableTreeNode)item);
                         insertIndex++;
                     }
@@ -196,8 +178,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect
             }
         }
 
-        private ObservableTreeNode GetTestTree()
-        {
+        private ObservableTreeNode GetTestTree() {
             var n1 = new ObservableTreeNode(new TestNode(11));
             var n11 = new ObservableTreeNode(new TestNode(111));
             var n12 = new ObservableTreeNode(new TestNode(112));

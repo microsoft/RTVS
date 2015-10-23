@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     () => SetRootNode(variable));
             }
             else {
-                _rootNode.Update(new VariableNode(variable)).DoNotWait();
+                _rootNode.Model = new VariableNode(variable);
             }
         }
 

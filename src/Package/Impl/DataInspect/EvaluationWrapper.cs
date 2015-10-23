@@ -30,10 +30,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 ValueDetail = valueEvaluation.Value;
                 TypeName = valueEvaluation.TypeName;
                 Class = string.Join(",", valueEvaluation.Classes); // TODO: escape ',' in class names
+                HasChildren = valueEvaluation.HasChildren;
             }
         }
 
-        public async Task<IReadOnlyList<EvaluationWrapper>> GetChildrenAsync() {
+        private object syncObj = new object();
+        private Task<IReadOnlyList<EvaluationWrapper>> _getChildrenTask = null;
+        public Task<IReadOnlyList<EvaluationWrapper>> GetChildrenAsync() {
+            if (_getChildrenTask == null) {
+                lock (syncObj) {
+                    if (_getChildrenTask == null) {
+                        _getChildrenTask = GetChildrenAsyncInternal();
+                    }
+                }
+            }
+
+            return _getChildrenTask;
+        }
+
+        public async Task<IReadOnlyList<EvaluationWrapper>> GetChildrenAsyncInternal() {
             List<EvaluationWrapper> result = null;
 
             var valueEvaluation = _evaluation as DebugValueEvaluationResult;
@@ -65,6 +80,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public string TypeName { get; private set; }
 
         public string Class { get; private set; }
+
+        public bool HasChildren { get; private set; }
 
         public bool IsHidden {
             get { return Name.StartsWith(HiddenVariablePrefix); }

@@ -52,6 +52,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return false;
         }
 
+        public bool HasChildren {
+            get {
+                return _evaluation.HasChildren;
+            }
+        }
+
         #endregion ITreeNode support
     }
 }
