@@ -18,6 +18,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private static readonly string HiddenVariablePrefix = ".";
         private static readonly char[] NewLineDelimiter = new char[] { '\r', '\n' };
 
+        private EvaluationWrapper() { }
+
         public EvaluationWrapper(DebugEvaluationResult evaluation) {
             _evaluation = evaluation;
 
@@ -66,6 +68,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 foreach (var child in children) {
                     result.Add(new EvaluationWrapper(child));
                 }
+
+                if (valueEvaluation.Length > result.Count) {
+                    result.Add(EvaluationWrapper.Ellipsis); // insert
+                }
             }
 
             return result;
@@ -94,6 +100,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             } else {
                 return multiLine.Substring(0, firstLine);
             }
+        }
+
+        private static Lazy<EvaluationWrapper> _ellipsis = new Lazy<EvaluationWrapper>(() => {
+            var instance = new EvaluationWrapper();
+            instance.Name = string.Empty;
+            instance.Value = "[truncated]";
+            instance.HasChildren = false;
+            return instance;
+        });
+        private static EvaluationWrapper Ellipsis {
+            get { return _ellipsis.Value; }
         }
     }
 }
