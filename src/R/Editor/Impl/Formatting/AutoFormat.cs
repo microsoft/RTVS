@@ -2,6 +2,7 @@
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes.Definitions;
@@ -28,14 +29,8 @@ namespace Microsoft.R.Editor.Formatting
             }
 
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            var positionInBuffer = textView.BufferGraph.MapDownToBuffer(
-                textView.Caret.Position.BufferPosition,
-                PointTrackingMode.Positive,
-                textBuffer,
-                PositionAffinity.Successor
-            );
-            if (positionInBuffer == null)
-            {
+            var positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
+            if (positionInBuffer == null) {
                 return;
             }
             int position = positionInBuffer.Value.Position;
@@ -89,14 +84,8 @@ namespace Microsoft.R.Editor.Formatting
                 // we do it AFTER formatting since it is when then indentation is known
 
                 snapshot = textBuffer.CurrentSnapshot;
-                positionInBuffer = textView.BufferGraph.MapDownToBuffer(
-                    textView.Caret.Position.BufferPosition,
-                    PointTrackingMode.Positive,
-                    textBuffer,
-                    PositionAffinity.Successor
-                );
-                if (positionInBuffer == null)
-                {
+                positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
+                if (positionInBuffer == null) {
                     return;
                 }
                 position = positionInBuffer.Value.Position;
@@ -127,14 +116,8 @@ namespace Microsoft.R.Editor.Formatting
         private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IScope scope, RFormatOptions options)
         {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            var positionInBuffer = textView.BufferGraph.MapDownToBuffer(
-                textView.Caret.Position.BufferPosition,
-                PointTrackingMode.Positive,
-                textBuffer,
-                PositionAffinity.Successor
-            );
-            if (positionInBuffer == null)
-            {
+            var positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
+            if (positionInBuffer == null) {
                 return;
             }
             int position = positionInBuffer.Value.Position;
@@ -161,8 +144,7 @@ namespace Microsoft.R.Editor.Formatting
                 PositionAffinity.Successor,
                 textView.TextBuffer
             );
-            if (caretPoint != null)
-            {
+            if (caretPoint != null) {
                 textView.Caret.MoveTo(
                     new VirtualSnapshotPoint(
                         textView.TextBuffer.CurrentSnapshot,

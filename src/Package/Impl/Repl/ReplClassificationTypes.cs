@@ -4,10 +4,8 @@ using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Repl
-{
-    public class ReplClassificationTypes
-    {
+namespace Microsoft.VisualStudio.R.Package.Repl {
+    public class ReplClassificationTypes {
         public const string ReplPromptClassification = "RReplPrompt";
 
         [Export]
@@ -21,10 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl
         [Order(After = Priority.Default, Before = Priority.High)]
         [UserVisible(true)]
         private sealed class ReplPromptClassificationFormat
-            : ClassificationFormatDefinition
-        {
-            private ReplPromptClassificationFormat()
-            {
+            : ClassificationFormatDefinition {
+            private ReplPromptClassificationFormat() {
                 this.DisplayName = Resources.RPromptClassification;
                 this.ForegroundColor = Colors.Blue;
                 this.BackgroundColor = Colors.LightGray;

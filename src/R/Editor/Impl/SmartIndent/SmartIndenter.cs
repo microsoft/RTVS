@@ -41,8 +41,7 @@ namespace Microsoft.R.Editor.SmartIndent
         public int? GetDesiredIndentation(ITextSnapshotLine line)
         {
             int? res = GetDesiredIndentation(line, REditorSettings.IndentStyle);
-            if (res != null && line.Snapshot.TextBuffer != _textView.TextBuffer)
-            {
+            if (res != null && line.Snapshot.TextBuffer != _textView.TextBuffer) {
                 var target = _textView.BufferGraph.MapUpToBuffer(
                     line.Start,
                     PointTrackingMode.Positive,
@@ -50,8 +49,7 @@ namespace Microsoft.R.Editor.SmartIndent
                     _textView.TextBuffer
                 );
 
-                if (target != null)
-                {
+                if (target != null) {
                     // The indentation level is relative to the line in the text view when
                     // we were created, not to the line we were provided with on this call.
                     var diff = target.Value.Position - target.Value.GetContainingLine().Start.Position;

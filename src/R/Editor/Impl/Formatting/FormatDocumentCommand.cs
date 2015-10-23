@@ -25,13 +25,7 @@ namespace Microsoft.R.Editor.Formatting
             _textBuffer = textBuffer;
         }
 
-        public virtual ITextBuffer TargetBuffer
-        {
-            get
-            {
-                return _textBuffer;
-            }
-        }
+        public virtual ITextBuffer TargetBuffer => _textBuffer;
 
         #region ICommand
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)

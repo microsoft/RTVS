@@ -39,25 +39,21 @@ namespace Microsoft.R.Editor.Formatting
             }
 
             string text = Clipboard.GetData(DataFormats.UnicodeText) as string;
-            if (text == null)
-            {
+            if (text == null) {
                 text = Clipboard.GetData(DataFormats.Text) as string;
             }
 
-            if (text != null)
-            {
+            if (text != null) {
                 var rSpans = TextView.BufferGraph.MapDownToFirstMatch(
                     TextView.Selection.StreamSelectionSpan.SnapshotSpan,
                     SpanTrackingMode.EdgeInclusive,
                     snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)
                 );
-                if (rSpans.Count > 0)
-                {
+                if (rSpans.Count > 0) {
                     var targetSpan = rSpans[rSpans.Count - 1];
 
                     IREditorDocument document = REditorDocument.TryFromTextBuffer(targetSpan.Snapshot.TextBuffer);
-                    if (document != null)
-                    {
+                    if (document != null) {
                         int insertionPoint = targetSpan.Start;
 
                         targetSpan.Snapshot.TextBuffer.Replace(targetSpan, text);

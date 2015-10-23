@@ -33,22 +33,17 @@ namespace Microsoft.R.Editor.Formatting
                 snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)
             );
 
-            foreach (var spanToFormat in rSpans)
-            {
+            foreach (var spanToFormat in rSpans) {
                 IREditorDocument document = REditorDocument.TryFromTextBuffer(spanToFormat.Snapshot.TextBuffer);
                 AstRoot ast;
-                if (document == null)
-                {
+                if (document == null) {
                     // For unit test purposes
                     ast = inputArg as AstRoot;
-                }
-                else
-                {
+                } else {
                     ast = document.EditorTree.AstRoot;
                 }
 
-                if (ast != null)
-                {
+                if (ast != null) {
                     RangeFormatter.FormatRange(TextView,
                                                spanToFormat.Snapshot.TextBuffer,
                                                new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
