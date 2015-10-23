@@ -80,7 +80,9 @@ namespace Microsoft.R.Host.Client {
             _log.Response(json, _rLoopDepth);
 
             var token = JToken.Parse(json);
-            if (token == null) {
+
+            var value = token as JValue;
+            if (value != null && value.Value == null) {
                 return null;
             }
 
@@ -453,6 +455,8 @@ namespace Microsoft.R.Host.Client {
                         await Run(ct);
                     }
                 } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
+                    // Expected cancellation, do not propagate, just exit process
+                } catch (WebSocketException) when (ct.IsCancellationRequested) {
                     // Expected cancellation, do not propagate, just exit process
                 } catch (Exception ex) {
                     Trace.Fail("Exception in RHost run loop:\n" + ex);
