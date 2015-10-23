@@ -93,6 +93,7 @@
     <Compile Include="Feedback\SendFrownCommand.cs" />
     <Compile Include="Feedback\SendMailCommand.cs" />
     <Compile Include="Feedback\SendSmileCommand.cs" />
+    <Compile Include="Options\Attributes\YesNoAskTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RVersionTypeConverter.cs" />
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Plots\IPlotContentProvider.cs" />
     <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
+    <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
