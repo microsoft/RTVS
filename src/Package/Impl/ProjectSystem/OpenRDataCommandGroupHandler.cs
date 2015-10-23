@@ -15,16 +15,6 @@ using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
-
-    [ExportCommandGroup("60481700-078B-11D1-AAF8-00A0C9055A90")]
-    [AppliesTo("RTools")]
-    [OrderPrecedence(100)]
-    internal sealed class OpenRDataVsUiHierarchyWindowCommandGroupHandler : OpenRDataCommandGroupHandler {
-        [ImportingConstructor]
-        public OpenRDataVsUiHierarchyWindowCommandGroupHandler(UnconfiguredProject unconfiguredProject, IRSessionProvider sessionProvider)
-            : base(unconfiguredProject, sessionProvider, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_DoubleClick, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_EnterKey) {}
-    }
-
     [ExportCommandGroup("5EFC7975-14BC-11CF-9B2B-00AA00573819")]
     [AppliesTo("RTools")]
     [OrderPrecedence(100)]
@@ -71,7 +61,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 return false;
             }
 
+            return await TryHandleCommandAsyncInternal(rDataNode, session);
+        }
+
+        protected virtual async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode, IRSession session) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var messageResult = EditorShell.Current.ShowYesNoMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath));
             if (!messageResult) {
                 return true;
@@ -81,7 +76,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 var result = await evaluation.LoadWorkspace(rDataNode.FilePath);
 
                 if (result.Error != null) {
-                    var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat, rDataNode.FilePath, result.Error);
+                    var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat,
+                        rDataNode.FilePath, result.Error);
                     EditorShell.Current.ShowErrorMessage(message);
                 }
             }
