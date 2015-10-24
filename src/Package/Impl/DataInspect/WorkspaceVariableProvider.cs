@@ -55,7 +55,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             if (parts.Length == 0 || parts[0].Length == 0) {
                 // Global scope
-                return _topLevelVariables.Values.Select((m, index) => {
+                return _topLevelVariables.Values.Select((m, index) =>
+                {
                     return index < maxCount ? new VariableInfo(m) : null;
                 }).ToArray();
             }
@@ -88,7 +89,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 if (eval != null) {
                     var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
-                    return children.Select((m, index) => {
+                    return children.Select((m, index) =>
+                    {
                         return index < maxCount ? new VariableInfo(m) : null;
                     }).ToArray();
                 }
@@ -131,6 +133,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             public NamedItemType ItemType { get; private set; }
 
             public string Name { get; set; }
+
+            public string ActualName {
+                get { return Name; }
+            }
         }
     }
 }

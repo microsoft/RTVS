@@ -434,7 +434,7 @@ namespace Microsoft.Languages.Editor.Completion
                 catch(Exception)
                 {
                     TextView.Properties.RemoveProperty(AutoShownCompletion);
-                    throw;
+                    //throw;
                 }
             }
 
