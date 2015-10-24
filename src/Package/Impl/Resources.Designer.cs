@@ -386,6 +386,16 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap ReplWindowIcon {
+            get {
+                object obj = ResourceManager.GetObject("ReplWindowIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Interactive.
         /// </summary>
         public static string ReplWindowName {

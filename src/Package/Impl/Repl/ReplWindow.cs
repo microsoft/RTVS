@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
@@ -172,6 +173,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             if (!ReplWindowExists()) {
                 IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fForceCreate);
                 if (frame != null) {
+                    //IntPtr bitmap = Resources.ReplWindowIcon.GetHbitmap();
+                    frame.SetProperty((int)__VSFPROPID4.VSFPROPID_TabImage, Resources.ReplWindowIcon);
                     frame.Show();
                 }
             }

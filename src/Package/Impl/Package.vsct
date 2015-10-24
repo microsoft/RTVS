@@ -464,8 +464,7 @@
 
       <!-- Windows flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdShowReplWindow" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="PYInteractiveWindow"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
+         <Icon guid="replWindowIconGuid" id="replWindowIcon"/>
         <Strings>
           <ButtonText>R Interactive</ButtonText>
           <MenuText>&amp;R Interactive</MenuText>
@@ -671,6 +670,7 @@
     <Bitmaps>
       <Bitmaps>
         <Bitmap guid="pdfIconGuid" href="Images\pdf.bmp" usedList="pdfIcon" />
+        <Bitmap guid="replWindowIconGuid" href="Images\ReplWindowIcon.png" usedList="replWindowIcon" />
       </Bitmaps>
     </Bitmaps>
   </Commands>
@@ -955,6 +955,10 @@
     <!-- InteractiveWindow Guid -->
     <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
       <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>
+    </GuidSymbol>
+
+    <GuidSymbol name="replWindowIconGuid" value="{440CC57F-1433-43FB-892E-ECE1A72201FD}">
+      <IDSymbol name="replWindowIcon" value="1" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>

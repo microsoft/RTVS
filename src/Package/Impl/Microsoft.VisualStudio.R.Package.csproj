@@ -519,6 +519,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\ReplWindowIcon.png" />
+    <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
+    <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <None Include="VSShell\ShellIcons.h" />
     <None Include="Microsoft.R.Host.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -543,7 +546,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\RScript\script.R" />
-    <None Include="Templates\ItemTemplates\RScript\rscript.ico" />
     <VSTemplate Include="Templates\ItemTemplates\RScript\rscript.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
