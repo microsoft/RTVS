@@ -15,10 +15,8 @@ using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Completion.Engine
-{
-    internal static class RCompletionEngine
-    {
+namespace Microsoft.R.Editor.Completion.Engine {
+    internal static class RCompletionEngine {
         private static IEnumerable<Lazy<IRCompletionListProvider>> _completionProviders;
 
         /// <summary>
@@ -28,72 +26,61 @@ namespace Microsoft.R.Editor.Completion.Engine
         /// <param name="position">Caret position in the document</param>
         /// <param name="autoShownCompletion">True if completion is forced (like when typing Ctrl+Space)</param>
         /// <returns>List of completion entries for a given location in the AST</returns>
-        public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion)
-        {
+        public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion) {
             List<IRCompletionListProvider> providers = new List<IRCompletionListProvider>();
+            IREditorDocument document = REditorDocument.FindInProjectedBuffers(context.Session.TextView.TextBuffer);
 
-            if (context.AstRoot.Comments.Contains(context.Position))
-            {
+            if (context.AstRoot.Comments.Contains(context.Position)) {
                 // No completion in comments
                 return providers;
             }
 
             IAstNode node = context.AstRoot.NodeFromPosition(context.Position);
-            if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String)
-            {
+            if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
                 // No completion in strings
                 return providers;
             }
 
-            if (IsInFunctionDefinitionArgumentName(context.AstRoot, context.Position))
-            {
+            if (IsInFunctionDefinitionArgumentName(context.AstRoot, context.Position)) {
                 // No completion in function definition argument names
                 return providers;
             }
 
-            if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position))
-            {
+            if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
                 // Only complete data member names in REPL
-                IREditorDocument document = REditorDocument.FindInProjectedBuffers(context.Session.TextView.TextBuffer);
-                if (document != null && document.IsTransient)
-                {
+                if (document != null && document.IsTransient) {
                     providers.Add(new WorkspaceVaraibleCompletionProvider());
                 }
 
                 return providers;
             }
 
-            if (IsPackageListCompletion(context.TextBuffer, context.Position))
-            {
+            if (IsPackageListCompletion(context.TextBuffer, context.Position)) {
                 providers.Add(new PackagesCompletionProvider());
-            }
-            else
-            {
-                foreach (var p in CompletionProviders)
-                {
+            } else {
+                foreach (var p in CompletionProviders) {
                     providers.Add(p.Value);
                 }
 
-                if (!context.IsInNameSpace())
-                {
+                if (!context.IsInNameSpace()) {
                     providers.Add(new PackagesCompletionProvider());
                 }
+            }
+
+            if (document != null && document.IsTransient) {
+                providers.Add(new WorkspaceVaraibleCompletionProvider());
             }
 
             return providers;
         }
 
-        public static void Initialize()
-        {
+        public static void Initialize() {
             FunctionIndex.Initialize();
         }
 
-        private static IEnumerable<Lazy<IRCompletionListProvider>> CompletionProviders
-        {
-            get
-            {
-                if (_completionProviders == null)
-                {
+        private static IEnumerable<Lazy<IRCompletionListProvider>> CompletionProviders {
+            get {
+                if (_completionProviders == null) {
                     _completionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany();
                 }
 
@@ -101,8 +88,7 @@ namespace Microsoft.R.Editor.Completion.Engine
             }
         }
 
-        internal static bool IsPackageListCompletion(ITextBuffer textBuffer, int position)
-        {
+        internal static bool IsPackageListCompletion(ITextBuffer textBuffer, int position) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
             string lineText = line.GetText();
@@ -117,34 +103,25 @@ namespace Microsoft.R.Editor.Completion.Engine
             IReadOnlyTextRangeCollection<RToken> c = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
             TokenStream<RToken> tokens = new TokenStream<RToken>(c, RToken.EndOfStreamToken);
 
-            while (!tokens.IsEndOfStream())
-            {
-                if (tokens.CurrentToken.Start >= linePosition)
-                {
+            while (!tokens.IsEndOfStream()) {
+                if (tokens.CurrentToken.Start >= linePosition) {
                     break;
                 }
 
                 if (tokens.CurrentToken.IsKeywordText(textProvider, "library") ||
-                    tokens.CurrentToken.IsKeywordText(textProvider, "require"))
-                {
+                    tokens.CurrentToken.IsKeywordText(textProvider, "require")) {
                     tokens.MoveToNextToken();
 
-                    if (tokens.CurrentToken.TokenType == RTokenType.OpenBrace)
-                    {
+                    if (tokens.CurrentToken.TokenType == RTokenType.OpenBrace) {
                         RToken openBrace = tokens.CurrentToken;
-                        while (!tokens.IsEndOfStream())
-                        {
-                            if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace)
-                            {
-                                if (linePosition >= openBrace.End && linePosition <= tokens.CurrentToken.Start)
-                                {
+                        while (!tokens.IsEndOfStream()) {
+                            if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace) {
+                                if (linePosition >= openBrace.End && linePosition <= tokens.CurrentToken.Start) {
                                     return true;
                                 }
 
                                 return false;
-                            }
-                            else if (tokens.NextToken.TokenType == RTokenType.EndOfStream)
-                            {
+                            } else if (tokens.NextToken.TokenType == RTokenType.EndOfStream) {
                                 return true;
                             }
 
@@ -164,47 +141,38 @@ namespace Microsoft.R.Editor.Completion.Engine
         /// to suppress general intellisense when typing function arguments 
         /// in a function/ definition such as in 'x &lt;- function(a|'
         /// </summary>
-        internal static bool IsInFunctionDefinitionArgumentName(AstRoot ast, int position)
-        {
+        internal static bool IsInFunctionDefinitionArgumentName(AstRoot ast, int position) {
             FunctionDefinition funcDef = ast.GetNodeOfTypeFromPosition<FunctionDefinition>(position);
-            if (funcDef == null || funcDef.OpenBrace == null || funcDef.Arguments == null)
-            {
+            if (funcDef == null || funcDef.OpenBrace == null || funcDef.Arguments == null) {
                 return false;
             }
 
-            if (position < funcDef.OpenBrace.End || position >= funcDef.SignatureEnd)
-            {
+            if (position < funcDef.OpenBrace.End || position >= funcDef.SignatureEnd) {
                 return false;
             }
 
             int start = funcDef.OpenBrace.End;
             int end = funcDef.SignatureEnd;
 
-            if (funcDef.Arguments.Count == 0 && position >= start && position <= end)
-            {
+            if (funcDef.Arguments.Count == 0 && position >= start && position <= end) {
                 return true;
             }
 
-            for (int i = 0; i < funcDef.Arguments.Count; i++)
-            {
+            for (int i = 0; i < funcDef.Arguments.Count; i++) {
                 CommaSeparatedItem csi = funcDef.Arguments[i];
                 NamedArgument na = csi as NamedArgument;
 
-                if (position < csi.Start)
-                {
+                if (position < csi.Start) {
                     break;
                 }
 
                 end = csi.End;
-                if (position >= start && position <= end)
-                {
-                    if (na == null)
-                    {
+                if (position >= start && position <= end) {
+                    if (na == null) {
                         return true; // Suppress intellisense
                     }
 
-                    if (position <= na.EqualsSign.Start)
-                    {
+                    if (position <= na.EqualsSign.Start) {
                         return true; // Suppress intellisense
                     }
                 }
@@ -218,21 +186,16 @@ namespace Microsoft.R.Editor.Completion.Engine
         /// to suppress general intellisense when typing data member 
         /// name such as 'mtcars$|'
         /// </summary>
-        internal static bool IsInObjectMemberName(ITextProvider textProvider, int position)
-        {
-            if (position > 0)
-            {
-                for (int i = position - 1; i >= 0; i--)
-                {
+        internal static bool IsInObjectMemberName(ITextProvider textProvider, int position) {
+            if (position > 0) {
+                for (int i = position - 1; i >= 0; i--) {
                     char ch = textProvider[i];
 
-                    if (ch == '$' || ch == '@')
-                    {
+                    if (ch == '$' || ch == '@') {
                         return true;
                     }
 
-                    if (!RTokenizer.IsIdentifierCharacter(ch))
-                    {
+                    if (!RTokenizer.IsIdentifierCharacter(ch)) {
                         break;
                     }
                 }
