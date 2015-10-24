@@ -16,11 +16,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
     internal sealed class RToolsSettingsImplementation : IRToolsSettings {
         private string _cranMirror;
 
-        public string RVersion { get; set; }
+        public string RVersion { get; set; } = Resources.Settings_RVersion_Latest;
 
-        public YesNoAsk LoadRDataOnProjectLoad { get; set; }
+        public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.Yes;
 
-        public YesNoAsk SaveRDataOnProjectUnload { get; set; }
+        public YesNoAsk SaveRDataOnProjectUnload { get; set; } = YesNoAsk.Ask;
 
         public string CranMirror {
             get { return _cranMirror; }

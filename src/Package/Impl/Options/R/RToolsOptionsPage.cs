@@ -56,6 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName("Settings_RVersion")]
         [LocDescription("Settings_RVersion_Description")]
         [TypeConverter(typeof(RVersionTypeConverter))]
+        [LocDefaultValueAttribute("Settings_RVersion_Latest")]
         public string RVersion {
             get { return RToolsSettings.Current.RVersion; }
             set { RToolsSettings.Current.RVersion = value; }
