@@ -15,7 +15,6 @@ namespace Microsoft.R.Editor.Completion.Providers
     /// library(...) statement. List of packages is  obtained from 
     /// ~\Program Files\R and from ~\Documents\R folders
     /// </summary>
-    [Export(typeof(IRCompletionListProvider))]
     public sealed class WorkspaceVaraibleCompletionProvider : IRCompletionListProvider
     {
         [Import]

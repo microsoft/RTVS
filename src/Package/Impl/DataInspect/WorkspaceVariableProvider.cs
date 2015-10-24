@@ -89,11 +89,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 if (eval != null) {
                     var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
-                    return children.Select((m, index) =>
-                    {
+                    if (children != null) {
+                        return children.Select((m, index) => {
                         return index < maxCount ? new VariableInfo(m) : null;
                     }).ToArray();
                 }
+            }
             }
 
             return new VariableInfo[0];
