@@ -388,6 +388,16 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap RDataNode {
+            get {
+                object obj = ResourceManager.GetObject("RDataNode", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap ReplWindowIcon {
             get {
                 object obj = ResourceManager.GetObject("ReplWindowIcon", resourceCulture);
@@ -401,6 +411,26 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string ReplWindowName {
             get {
                 return ResourceManager.GetString("ReplWindowName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap RFileNode {
+            get {
+                object obj = ResourceManager.GetObject("RFileNode", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap RProjectNode {
+            get {
+                object obj = ResourceManager.GetObject("RProjectNode", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

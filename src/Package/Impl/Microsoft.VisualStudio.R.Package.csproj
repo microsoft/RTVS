@@ -109,6 +109,7 @@
     <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
+    <Compile Include="ProjectSystem\ProjectTreeModifier.cs" />
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
@@ -333,6 +334,9 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Imaging, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
@@ -521,6 +525,9 @@
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
+    <Content Include="Images\RFileNode.png" />
+    <Content Include="Images\RProjectNode.png" />
+    <Content Include="Images\RDataNode.png" />
     <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <None Include="VSShell\ShellIcons.h" />
     <None Include="Microsoft.R.Host.exe">
