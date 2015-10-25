@@ -93,6 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
                         {
                             controller.CommitCompletionSession();
                             controller.DismissAllSessions();
+                            return CommandResult.Executed;
                         }
 
                         controller.DismissAllSessions();

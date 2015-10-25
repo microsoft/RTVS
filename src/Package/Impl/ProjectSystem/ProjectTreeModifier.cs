@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities.Designers;
 using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
@@ -14,25 +15,26 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
     [Export(typeof(IProjectTreeModifier))]
     [AppliesTo("RTools")]
     internal sealed class ProjectTreeModifier : IProjectTreeModifier {
+        private static IVsImageService2 _imageService;
         private static IVsImageMonikerImageList _monikerImageList;
         private static ImageList _imageList = new ImageList();
         private static ImageMoniker _projectNodeImage;
         private static ImageMoniker _rFileNodeImage;
         private static ImageMoniker _rDataFileNodeImage;
 
-        public IProjectTree ApplyModifications(IProjectTree tree, IProjectTreeProvider projectTreeProvider) {
+        public ProjectTreeModifier() {
             InitProjectImages();
 
+        }
+        public IProjectTree ApplyModifications(IProjectTree tree, IProjectTreeProvider projectTreeProvider) {
             if (tree != null) {
                 if (tree.Capabilities.Contains(ProjectTreeCapabilities.ProjectRoot)) {
                     tree = tree.SetIcon(_projectNodeImage.ToProjectSystemType());
-                }
-                else if(tree.Capabilities.Contains(ProjectTreeCapabilities.FileOnDisk)) {
+                } else if (tree.Capabilities.Contains(ProjectTreeCapabilities.FileOnDisk)) {
                     string ext = Path.GetExtension(tree.FilePath).ToLowerInvariant();
-                    if(ext == ".r") {
+                    if (ext == ".r") {
                         tree = tree.SetIcon(_rFileNodeImage.ToProjectSystemType());
-                    }
-                    else if (ext == ".rdata" || ext == ".rhistory") {
+                    } else if (ext == ".rdata" || ext == ".rhistory") {
                         tree = tree.SetIcon(_rDataFileNodeImage.ToProjectSystemType());
                     }
                 }
@@ -41,7 +43,6 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
         }
 
         private void InitProjectImages() {
-
             if (_monikerImageList == null) {
                 IVsImageService2 imageService = AppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
 
