@@ -2,11 +2,7 @@
 #include "log.h"
 #include "Rapi.h"
 
-// For failure to init logging we always want to assert, even in Release builds.
-#pragma push_macro("NDEBUG")
-#undef NDEBUG
-#include <cassert>
-#pragma pop_macro("NDEBUG")
+using namespace std::literals;
 
 
 namespace rhost {
@@ -15,6 +11,13 @@ namespace rhost {
             std::mutex log_mutex;
             FILE* logfile;
             int indent;
+
+            void log_flush_thread() {
+                for (;;) {
+                    std::this_thread::sleep_for(1s);
+                    flush_log();
+                }
+            }
         }
 
         void init_log() {
@@ -31,7 +34,13 @@ namespace rhost {
             strftime(filename + len, sizeof filename - len, "/Microsoft.R.Host_%Y%m%d_%H%M%S.log", &tm);
 
             logfile = _fsopen(filename, "wc", _SH_DENYWR);
-            if (!logfile) {
+            if (logfile) {
+                // Logging happens often, so use a large buffer to avoid hitting the disk all the time.
+                setvbuf(logfile, nullptr, _IOFBF, 0x100000);
+
+                // Start a thread that will flush the buffer periodically.
+                std::thread(log_flush_thread).detach();
+            } else {
                 std::string error = "Error creating logfile: " + std::string(filename) + "\r\n";
                 fputs(error.c_str(), stderr);
                 MessageBoxA(HWND_DESKTOP, error.c_str(), "Microsoft R Host", MB_OK | MB_ICONWARNING);
@@ -51,7 +60,12 @@ namespace rhost {
                     fputc('\t', logfile);
                 }
                 vfprintf(logfile, format, va);
+
+#ifndef NDEBUG
+                // In Debug builds, flush on every write so that log is always up-to-date.
+                // In Release builds, we rely on flush_log being called on process shutdown.
                 fflush(logfile);
+#endif
             }
 
 #ifndef NDEBUG
@@ -77,6 +91,13 @@ namespace rhost {
             }
         }
 
+        void flush_log() {
+            std::lock_guard<std::mutex> lock(log_mutex);
+            if (logfile) {
+                fflush(logfile);
+            }
+        }
+
 
         void terminate(bool unexpected, const char* format, va_list va) {
             char message[0xFFFF];
@@ -86,6 +107,7 @@ namespace rhost {
                 logf("Fatal error: ");
             }
             logf("%s\n", message);
+            flush_log();
 
             if (unexpected) {
                 std::string msgbox_text;

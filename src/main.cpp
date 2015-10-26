@@ -13,38 +13,42 @@ int main(int argc, char** argv) {
     setlocale(LC_NUMERIC, "C");
     init_log();
 
-    logf("Waiting for connection on port %u ...\n", PORT);
-    rhost::server::wait_for_client(PORT);
+    __try {
+        logf("Waiting for connection on port %u ...\n", PORT);
+        rhost::server::wait_for_client(PORT);
 
-    R_setStartTime();
-    structRstart rp = {};
-    R_DefParams(&rp);
+        R_setStartTime();
+        structRstart rp = {};
+        R_DefParams(&rp);
 
-    rp.rhome = get_R_HOME();
-    rp.home = getRUser();
-    rp.CharacterMode = RGui;
-    rp.R_Quiet = R_TRUE;
-    rp.R_Interactive = R_TRUE;
-    rp.RestoreAction = SA_RESTORE;
-    rp.SaveAction = SA_NOSAVE;
+        rp.rhome = get_R_HOME();
+        rp.home = getRUser();
+        rp.CharacterMode = RGui;
+        rp.R_Quiet = R_TRUE;
+        rp.R_Interactive = R_TRUE;
+        rp.RestoreAction = SA_RESTORE;
+        rp.SaveAction = SA_NOSAVE;
 
-    rhost::server::register_callbacks(rp);
+        rhost::server::register_callbacks(rp);
 
-    R_SetParams(&rp);
-    R_set_command_line_arguments(argc, argv);
+        R_SetParams(&rp);
+        R_set_command_line_arguments(argc, argv);
 
-    GA_initapp(0, 0);
-    readconsolecfg();
+        GA_initapp(0, 0);
+        readconsolecfg();
 
-    DllInfo *dll = R_getEmbeddingDllInfo();
-    R_init_vsgd(dll);
-    R_init_util(dll);
+        DllInfo *dll = R_getEmbeddingDllInfo();
+        R_init_vsgd(dll);
+        R_init_util(dll);
 
-    CharacterMode = LinkDLL;
-    setup_Rmainloop();
-    CharacterMode = RGui;
+        CharacterMode = LinkDLL;
+        setup_Rmainloop();
+        CharacterMode = RGui;
 
-    run_Rmainloop();
+        run_Rmainloop();
 
-    Rf_endEmbeddedR(0);
+        Rf_endEmbeddedR(0);
+    } __finally {
+        flush_log();
+    }
 }

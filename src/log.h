@@ -11,6 +11,8 @@ namespace rhost {
 
         void indent_log(int n);
 
+        void flush_log();
+
         __declspec(noreturn) void terminate(const char* format, ...);
 
         __declspec(noreturn) void fatal_error(const char* format, ...);

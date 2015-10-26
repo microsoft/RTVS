@@ -585,7 +585,7 @@ namespace rhost {
                 unblock_message_loop();
             }
 
-            void server_thread_func(unsigned port) {
+            void server_worker(unsigned port) {
                 ws_server_type server;
 
 #ifndef TRACE_WEBSOCKET
@@ -608,7 +608,7 @@ namespace rhost {
                 server.async_accept(conn, [&](auto error_code) {
                     if (error_code) {
                         conn->terminate(error_code);
-                        std::exit(1);
+                        fatal_error("Could not establish connection to client.");
                     } else {
                         conn->start();
                         // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
@@ -618,6 +618,14 @@ namespace rhost {
                 });
 
                 server.run();
+            }
+
+            void server_thread_func(unsigned port) {
+                __try {
+                    server_worker(port);
+                } __finally {
+                    flush_log();
+                }
             }
         }
 
