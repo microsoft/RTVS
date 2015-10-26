@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (_evaluation is DebugValueEvaluationResult) {
                 var valueEvaluation = (DebugValueEvaluationResult)_evaluation;
 
-                Value = valueEvaluation.Str;// FirstLine(valueEvaluation.Value);   // TODO: it takes first line only for now. Visual representation will be tuned up later e.g. R str or custom formatting
+                Value = GetValue(valueEvaluation);
                 ValueDetail = valueEvaluation.Value;
                 TypeName = valueEvaluation.TypeName;
                 Class = string.Join(",", valueEvaluation.Classes); // TODO: escape ',' in class names
@@ -111,6 +112,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         });
         private static EvaluationWrapper Ellipsis {
             get { return _ellipsis.Value; }
+        }
+
+        private static string DataFramePrefix = "'data.frame':([^:]+):";
+        private string GetValue(DebugValueEvaluationResult v) {
+            var value = v.Str;
+            if (v.Str != null) {
+                Match match = Regex.Match(value, DataFramePrefix);
+                if (match.Success) {
+                    return match.Groups[1].Value.Trim();
+                }
+            }
+            return value;
         }
     }
 }
