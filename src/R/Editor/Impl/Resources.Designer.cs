@@ -304,6 +304,15 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operand to the left expected.
+        /// </summary>
+        internal static string ParseError_LeftOperandExpected {
+            get {
+                return ResourceManager.GetString("ParseError_LeftOperandExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logical expected.
         /// </summary>
         internal static string ParseError_LogicalExpected {
@@ -349,20 +358,20 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Operand expected.
-        /// </summary>
-        internal static string ParseError_OperandExpected {
-            get {
-                return ResourceManager.GetString("ParseError_OperandExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Operator expected.
         /// </summary>
         internal static string ParseError_OperatorExpected {
             get {
                 return ResourceManager.GetString("ParseError_OperatorExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operand to the right expected.
+        /// </summary>
+        internal static string ParseError_RightOperandExpected {
+            get {
+                return ResourceManager.GetString("ParseError_RightOperandExpected", resourceCulture);
             }
         }
         

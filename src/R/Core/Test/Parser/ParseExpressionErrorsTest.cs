@@ -15,7 +15,7 @@ namespace Microsoft.R.Core.Test.Parser
             string expected =
 @"GlobalScope  [Global]
 
-OperandExpected Token [0...1)
+RightOperandExpected Token [0...1)
 ";
             ParserTest.VerifyParse(expected, "+");
         }
@@ -26,7 +26,7 @@ OperandExpected Token [0...1)
             string expected =
 @"GlobalScope  [Global]
 
-OperandExpected Token [1...2)
+RightOperandExpected Token [1...2)
 ";
             ParserTest.VerifyParse(expected, "x+");
         }
@@ -88,7 +88,7 @@ CloseBraceExpected AfterToken [3...4)
             Group  [0...1)
                 TokenNode  [( [0...1)]
 
-OperandExpected Token [2...3)
+RightOperandExpected Token [2...3)
 CloseBraceExpected AfterToken [2...3)
 ";
             ParserTest.VerifyParse(expected, "(x+");
@@ -100,7 +100,7 @@ CloseBraceExpected AfterToken [2...3)
             string expected =
 @"GlobalScope  [Global]
 
-OperandExpected Token [6...7)
+RightOperandExpected Token [6...7)
 ";
             ParserTest.VerifyParse(expected, "(a+b)+)");
         }
@@ -123,7 +123,7 @@ FunctionBodyExpected Token [12...13)
             string expected =
 @"GlobalScope  [Global]
 
-OperandExpected Token [8...9)
+RightOperandExpected Token [8...9)
 ";
             ParserTest.VerifyParse(expected, "y <- 2.5*");
         }
@@ -160,7 +160,7 @@ OperatorExpected Token [2...3)
             string expected =
 @"GlobalScope  [Global]
 
-OperandExpected Token [33...34)";
+RightOperandExpected Token [33...34)";
 
             ParserTest.VerifyParse(expected, content);
         }

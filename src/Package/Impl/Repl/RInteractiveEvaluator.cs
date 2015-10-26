@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                             error.ErrorType != ParseErrorType.CloseBraceExpected &&
                             error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
                             error.ErrorType != ParseErrorType.FunctionBodyExpected &&
-                            error.ErrorType != ParseErrorType.OperandExpected) {
+                            error.ErrorType != ParseErrorType.RightOperandExpected) {
                             return true;
                         }
                     }

@@ -29,8 +29,11 @@ namespace Microsoft.R.Editor.Validation.Errors
                 case ParseErrorType.ExpressionExpected:
                     return Resources.ParseError_ExpressionExpected;
 
-                case ParseErrorType.OperandExpected:
-                    return Resources.ParseError_OperandExpected;
+                case ParseErrorType.LeftOperandExpected:
+                    return Resources.ParseError_LeftOperandExpected;
+
+                case ParseErrorType.RightOperandExpected:
+                    return Resources.ParseError_RightOperandExpected;
 
                 case ParseErrorType.OpenCurlyBraceExpected:
                     return Resources.ParseError_OpenCurlyBraceExpected;
