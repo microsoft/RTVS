@@ -670,7 +670,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Load workspace when project is opened.
+        ///   Looks up a localized string similar to Load workspace when project opens.
         /// </summary>
         public static string Settings_LoadRDataOnProjectLoad {
             get {
@@ -760,7 +760,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save workspace when project is closed.
+        ///   Looks up a localized string similar to Save workspace when project closes.
         /// </summary>
         public static string Settings_SaveRDataOnProjectUnload {
             get {

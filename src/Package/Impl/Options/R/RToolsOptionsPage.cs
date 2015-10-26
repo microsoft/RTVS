@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName("Settings_LoadRDataOnProjectLoad")]
         [LocDescription("Settings_LoadRDataOnProjectLoad_Description")]
         [TypeConverter(typeof(YesNoAskTypeConverter))]
-        [DefaultValue(YesNoAsk.Yes)]
+        [DefaultValue(YesNoAsk.No)]
         public YesNoAsk LoadRDataOnProjectLoad {
             get { return RToolsSettings.Current.LoadRDataOnProjectLoad; }
             set { RToolsSettings.Current.LoadRDataOnProjectLoad = value; }
