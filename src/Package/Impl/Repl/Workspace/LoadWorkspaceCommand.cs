@@ -23,7 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         protected override void SetStatus() {
-            Enabled = _rSessionProvider.Current != null;
+            if (ReplWindow.Current.IsActive) {
+                Visible = true;
+                Enabled = (_rSessionProvider.Current != null);
+            } else {
+                Visible = false;
+            }
         }
 
         protected override void Handle() {
@@ -52,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
 
             if (result.Error != null) {
                 var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat, file, result.Error);
-                EditorShell.Current.ShowErrorMessage(message);    
+                EditorShell.Current.ShowErrorMessage(message);
             }
         }
     }

@@ -11,10 +11,8 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Workspace
-{
-    internal sealed class SaveWorkspaceCommand : PackageCommand
-    {
+namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
+    internal sealed class SaveWorkspaceCommand : PackageCommand {
         private readonly IRSessionProvider _rSessionProvider;
         private readonly IProjectServiceAccessor _projectServiceAccessor;
 
@@ -25,7 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace
         }
 
         protected override void SetStatus() {
-            Enabled = _rSessionProvider.Current != null;
+            if (ReplWindow.Current.IsActive) {
+                Visible = true;
+                Enabled = (_rSessionProvider.Current != null);
+            } else {
+                Visible = false;
+            }
         }
 
         protected override void Handle() {
