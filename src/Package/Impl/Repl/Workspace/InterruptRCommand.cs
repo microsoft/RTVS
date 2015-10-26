@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         private void OnBeforeRequest(object sender, RRequestEventArgs e) {
-            _enabled = (e.Contexts.Count != 1);
+            _enabled = false;
         }
 
         private void OnAfterRequest(object sender, RRequestEventArgs e) {
@@ -42,14 +42,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         protected override void SetStatus() {
             if (ReplWindow.Current.IsActive) {
                 Visible = true;
-                Enabled = (_rSessionProvider.Current != null) && (_enabled || !RToolsSettings.Current.EscInterruptsCalculation);
+                Enabled = (_rSessionProvider.Current != null) && _enabled;
             } else {
                 Visible = false;
             }
         }
 
         protected override void Handle() {
-            if (_enabled || !RToolsSettings.Current.EscInterruptsCalculation) {
+            if (_enabled) {
                 _rSessionProvider.Current?.CancelAllAsync().DoNotWait();
             }
         }

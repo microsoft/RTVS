@@ -85,14 +85,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                         ReplWindow.Current.ExecuteCurrentExpression(TextView);
                         return CommandResult.Executed;
                     } else if (id == (int)VSConstants.VSStd2KCmdID.CANCEL) {
-                        if (RToolsSettings.Current.EscInterruptsCalculation) {
-                            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                            Guid gmdSet = RGuidList.RCmdSetGuid;
-                            object o = new object();
-                            // Post interrupt command which knows if it can interrupt R or not
-                            uiShell.PostExecCommand(ref gmdSet, RPackageCommandId.icmdInterruptR, 0, ref o);
-                            // Allow VS to continue processing cancel
-                        }
+                        IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                        Guid gmdSet = RGuidList.RCmdSetGuid;
+                        object o = new object();
+                        // Post interrupt command which knows if it can interrupt R or not
+                        uiShell.PostExecCommand(ref gmdSet, RPackageCommandId.icmdInterruptR, 0, ref o);
+                        // Allow VS to continue processing cancel
                     }
                 }
             }
