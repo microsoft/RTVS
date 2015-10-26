@@ -30,7 +30,7 @@ namespace rhost {
             size_t len = strlen(filename);
             strftime(filename + len, sizeof filename - len, "/Microsoft.R.Host_%Y%m%d_%H%M%S.log", &tm);
 
-            logfile = fopen(filename, "wc");
+            logfile = _fsopen(filename, "wc", _SH_DENYWR);
             if (!logfile) {
                 std::string error = "Error creating logfile: " + std::string(filename) + "\r\n";
                 fputs(error.c_str(), stderr);

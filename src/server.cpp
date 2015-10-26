@@ -37,7 +37,16 @@ namespace rhost {
             enum { INCOMING_UNEXPECTED, INCOMING_EXPECTED, INCOMING_RECEIVED } incoming_state;
             std::mutex incoming_mutex;
 
-            std::vector<std::string> eval_stack({ "" });
+            struct eval_info {
+                const std::string id;
+                bool is_cancelable;
+
+                eval_info(const std::string& id, bool is_cancelable)
+                    : id(id), is_cancelable(is_cancelable) {
+                }
+            };
+
+            std::vector<eval_info> eval_stack({ eval_info("", true) });
             bool canceling_eval;
             std::string eval_cancel_target;
             std::mutex eval_mutex;
@@ -100,7 +109,13 @@ namespace rhost {
 
             bool query_interrupt() {
                 std::lock_guard<std::mutex> lock(eval_mutex);
-                return canceling_eval;
+                if (!canceling_eval) {
+                    return false;
+                }
+
+                // If there is a non-cancellable eval on the stack, do not allow to interrupt it or anything nested.
+                auto it = std::find_if(eval_stack.begin(), eval_stack.end(), [](auto ei) { return !ei.is_cancelable; });
+                return it == eval_stack.end();
             }
 
             extern "C" void CallBack() {
@@ -137,8 +152,8 @@ namespace rhost {
 
                 const auto& expr = msg.args[0].get<std::string>();
                 SEXP env = nullptr;
-                bool json_result = false;
-                
+                bool is_cancelable = false, json_result = false;
+
                 for (auto it = msg.name.begin() + 1; it != msg.name.end(); ++it) {
                     switch (char c = *it) {
                     case 'B':
@@ -153,6 +168,9 @@ namespace rhost {
                         break;
                     case '@':
                         allow_callbacks = true;
+                        break;
+                    case '/':
+                        is_cancelable = true;
                         break;
                     default:
                         fatal_error("'%s': unrecognized flag '%c'.", msg.name.c_str(), c);
@@ -174,7 +192,7 @@ namespace rhost {
 
                     auto before = [&] {
                         std::lock_guard<std::mutex> lock(eval_mutex);
-                        eval_stack.push_back(msg.id);
+                        eval_stack.push_back(eval_info(msg.id, is_cancelable));
                     };
 
                     bool was_after_invoked = false;
@@ -182,7 +200,7 @@ namespace rhost {
                         std::lock_guard<std::mutex> lock(eval_mutex);
 
                         assert(!eval_stack.empty());
-                        assert(eval_stack.end()[-1] == msg.id);
+                        assert(eval_stack.end()[-1].id == msg.id);
 
                         if (canceling_eval && msg.id == eval_cancel_target) {
                             // If we were unwinding the stack for cancellation purposes, and this eval was the target
@@ -204,10 +222,6 @@ namespace rhost {
                     // in this case, since we're already servicing one for this eval (or some parent eval).
                     if (!was_after_invoked) {
                         after();
-
-                        // It also means that result.error is bogus, because Rf_onintr does cause the eval to fail, but
-                        // doesn't clear the error buffer from the previous error. Set it to something appropriate.
-                        result.error = "Evaluation cancelled.";
                     }
 
                     allow_intr_in_CallBack = true;
@@ -260,7 +274,11 @@ namespace rhost {
 #ifdef TRACE_JSON
                 indent_log(+1);
 #endif
-                respond_to_message(conn, msg, parse_status, error, value);
+                if (result.is_canceled) {
+                    respond_to_message(conn, msg, picojson::value());
+                } else {
+                    respond_to_message(conn, msg, parse_status, error, value);
+                }
 #ifdef TRACE_JSON
                 indent_log(-1);
 #endif
@@ -514,7 +532,9 @@ namespace rhost {
 
                     std::lock_guard<std::mutex> lock(eval_mutex);
 
-                    for (auto id : eval_stack) {
+                    for (auto eval_info : eval_stack) {
+                        auto& id = eval_info.id;
+
                         if (canceling_eval && id == eval_cancel_target) {
                             // If we're already in the process of cancelling some eval, and that one is below the
                             // one that we're been asked to cancel in the stack, then we don't need to do anything.

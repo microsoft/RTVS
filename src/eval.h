@@ -10,6 +10,7 @@ namespace rhost {
             T value;
             bool has_error;
             std::string error;
+            bool is_canceled;
         };
 
         template <class FBefore, class FAfter>
@@ -26,19 +27,21 @@ namespace rhost {
                 results.resize(Rf_length(sexp_parsed.get()));
                 for (int i = 0; i < results.size(); ++i) {
                     auto& result = results[i];
+                    result.is_canceled = true;
 
                     struct eval_data_t {
                         SEXP expr;
                         SEXP env;
-                        unique_sexp& value;
+                        decltype(result)& result;
                         FBefore& before;
                         FAfter& after;
-                    } eval_data = { VECTOR_ELT(sexp_parsed.get(), i), env, result.value, before, after };
+                    } eval_data = { VECTOR_ELT(sexp_parsed.get(), i), env, result, before, after };
 
                     auto protected_eval = [](void* pdata) {
                         auto& eval_data = *static_cast<eval_data_t*>(pdata);
                         eval_data.before();
-                        eval_data.value.reset(Rf_eval(eval_data.expr, eval_data.env));
+                        eval_data.result.value.reset(Rf_eval(eval_data.expr, eval_data.env));
+                        eval_data.result.is_canceled = false;
                         eval_data.after();
                     };
 
@@ -48,7 +51,12 @@ namespace rhost {
                         result.has_value = true;
                     }
                     if (result.has_error) {
-                        result.error = R_curErrorBuf();
+                        if (result.is_canceled) {
+                            // R_curErrorBuf will be bogus in this case.
+                            result.error = "Evaluation canceled.";
+                        } else {
+                            result.error = R_curErrorBuf();
+                        }
                     }
                 }
             }
@@ -66,6 +74,7 @@ namespace rhost {
             if (!results.empty()) {
                 auto& last = *(results.end() - 1);
 
+                result.is_canceled = last.is_canceled;
                 result.has_error = last.has_error;
                 result.error = last.error;
 
