@@ -110,7 +110,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (globalStackFrame != null) {
                 DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("environment()", "Global Environment");
 
-                LastEvaluation = new EvaluationWrapper(evaluation);
+                LastEvaluation = new EvaluationWrapper(evaluation, false);  // root level doesn't truncate children and return every variables
 
                 if (VariableChanged != null) {
                     VariableChanged(

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
@@ -62,6 +63,13 @@ namespace Microsoft.R.Debugger {
         }
     }
 
+    [Flags]
+    public enum ValueEvaluationMode {
+        None = 0x00,
+        Truncate = 0x01,
+        Str = 0x02,
+    }
+
     public class DebugValueEvaluationResult : DebugEvaluationResult {
         public string Value { get; }
         public string RawValue { get; }
@@ -90,15 +98,14 @@ namespace Microsoft.R.Debugger {
             Str = json.Value<string>("str");
         }
 
-        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(bool trimmode = false) {
+        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(ValueEvaluationMode mode = ValueEvaluationMode.None) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
-            var call = trimmode ? Invariant($".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, trim.mode=TRUE)")
-                : Invariant($".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame})");
+            var call = Invariant($".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, query.mode={QueryModeToExpression(mode)})");
             var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JObject>(call);
             Trace.Assert(
                 jChildren.Values().All(t => t is JObject),
@@ -118,6 +125,32 @@ namespace Microsoft.R.Debugger {
 
         public override string ToString() {
             return Invariant($"VALUE: {TypeName} {Value}");
+        }
+
+        private string QueryModeToExpression(ValueEvaluationMode mode) {
+            if (mode == ValueEvaluationMode.None) {
+                return "NULL";
+            }
+
+            Array values = Enum.GetValues(typeof(ValueEvaluationMode));
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("c(");
+            bool first = true;
+            foreach (ValueEvaluationMode value in values) {
+                if ((mode & value) != 0) {
+                    if (first) {
+                        first = false;
+                    }
+                    else {
+                        sb.Append(',');
+                    }
+                    sb.AppendFormat("\"{0}\"", value.ToString());
+                }
+            }
+            sb.Append(")");
+
+            return sb.ToString();
         }
     }
 
