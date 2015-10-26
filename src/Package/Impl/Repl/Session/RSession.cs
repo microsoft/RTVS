@@ -269,6 +269,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                     await source.BeginEvaluationAsync(contexts, _host, ct);
                 }
             } catch (OperationCanceledException) {
+                // Host is being shut down, so there's no point in raising the event anymore.
+                mutated = false;
             } finally {
                 if (mutated) {
                     Mutated?.Invoke(this, EventArgs.Empty);
