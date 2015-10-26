@@ -137,6 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             Prompt = DefaultPrompt;
             _initializationTcs.SetResult(null);
             Connected?.Invoke(this, EventArgs.Empty);
+            Mutated?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
         }
 
