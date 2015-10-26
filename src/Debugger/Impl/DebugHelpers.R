@@ -126,7 +126,7 @@
   }
 }
 
-.rtvs.children <- function(obj, env, truncate.length=NULL, use.str=FALSE) {
+.rtvs.children <- function(obj, env, use.str=FALSE, truncate.length=NULL) {
   if (!missing(env)) {
     obj <- eval(parse(text = obj), env);
   }

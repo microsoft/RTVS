@@ -91,7 +91,7 @@ namespace Microsoft.R.Debugger {
             Str = json.Value<string>("str");
         }
 
-        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(bool useStr = false, int ? truncateLength = null) {
+        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(bool useStr = false, int? truncateLength = null) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (StackFrame == null) {
@@ -100,7 +100,10 @@ namespace Microsoft.R.Debugger {
 
             string parameter = Invariant($"{Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, use.str={useStr.ToString().ToUpperInvariant()}");
             if (truncateLength.HasValue) {
-                parameter += Invariant($", {truncateLength.Value}");
+                parameter += Invariant($", truncate.length={truncateLength.Value}");
+            }
+            else {
+                parameter += Invariant($", truncate.length=NULL");
             }
 
             var call = Invariant($".rtvs.children({parameter})");
