@@ -73,11 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                ValueEvaluationMode mode = ValueEvaluationMode.Str;
-                if (_truncateChildren) {
-                    mode |= ValueEvaluationMode.Truncate;
-                }
-                var children = await valueEvaluation.GetChildrenAsync(mode);    // TODO: consider exception propagation such as OperationCanceledException
+                var children = await valueEvaluation.GetChildrenAsync(true, _truncateChildren ? (int?)20 : null);    // TODO: consider exception propagation such as OperationCanceledException
 
                 result = new List<EvaluationWrapper>();
                 foreach (var child in children) {

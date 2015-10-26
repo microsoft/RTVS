@@ -6,7 +6,7 @@
   paste0(textConnectionValue(con), collapse='\n')
 }
 
-.rtvs.eval <- function(expr, env, con, query.mode=NULL) {
+.rtvs.eval <- function(expr, env, con, use.str=FALSE) {
   if (missing(con)) {
     con <- textConnection(NULL, open = "w");
     on.exit(close(con), add = TRUE);
@@ -30,8 +30,6 @@
     dput(conditionMessage(err), con);
     return();
   }
-
-  use.str = any(query.mode == "Str")
 
   if (use.str) {
     repr <- "n/a"
@@ -128,7 +126,7 @@
   }
 }
 
-.rtvs.children <- function(obj, env, query.mode=NULL) {
+.rtvs.children <- function(obj, env, truncate.length=NULL, use.str=FALSE) {
   if (!missing(env)) {
     obj <- eval(parse(text = obj), env);
   }
@@ -138,7 +136,7 @@
   
   cat('{', file = con, sep = '');
   commas <- 0;
-  truncate<-any(query.mode == "Truncate")
+  truncate<-!is.null(truncate.length)
 
   if (is.environment(obj)) {
     for (name in ls(obj, all.names = TRUE)) {
@@ -146,7 +144,7 @@
         next; 
       }
 
-      if (truncate && commas >= 20) {
+      if (truncate && commas >= truncate.length) {
         break;
       }
 
@@ -170,7 +168,7 @@
       } else if (bindingIsActive(name, obj)) {
         cat('"active_binding":true', file = con, sep = '');
       } else {
-        .rtvs.eval(substitute(`$`(obj, name), list(name = name)), environment(), con, query.mode);
+        .rtvs.eval(substitute(`$`(obj, name), list(name = name)), environment(), con, use.str);
       }
       
       cat('}', file = con, sep = '');
@@ -183,7 +181,7 @@
         next;
       }
 
-      if (truncate && commas >= 20) {
+      if (truncate && commas >= truncate.length) {
         break;
       }
 
@@ -194,7 +192,7 @@
       
       dput(paste0('@', name, collapse = ''), con);
       cat(':{', file = con, sep = '');
-     .rtvs.eval(substitute(`@`(obj, name), list(name = name)), environment(), con, query.mode);
+     .rtvs.eval(substitute(`@`(obj, name), list(name = name)), environment(), con, use.str);
       cat('}', file = con, sep = '');
     }
   }
@@ -207,7 +205,7 @@
     }
 
     for (i in 1:count) {
-      if (truncate && commas >= 20) {
+      if (truncate && commas >= truncate.length) {
         break;
       }
 
@@ -229,7 +227,7 @@
       
       dput(accessor, con);
       cat(':{', file = con, sep = '');
-      .rtvs.eval(paste0("obj", accessor, collapse = ''), environment(), con, query.mode);
+      .rtvs.eval(paste0("obj", accessor, collapse = ''), environment(), con, use.str);
       cat('}', file = con, sep = '');
     }
   }
