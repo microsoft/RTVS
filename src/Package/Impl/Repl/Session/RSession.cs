@@ -23,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         public event EventHandler<RRequestEventArgs> BeforeRequest;
         public event EventHandler<RRequestEventArgs> AfterRequest;
+        public event EventHandler<REvaluationEventArgs> AfterEvaluations;
         public event EventHandler<ROutputEventArgs> Output;
         public event EventHandler<EventArgs> Connected;
         public event EventHandler<EventArgs> Disconnected;
@@ -57,8 +58,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return requestSource.CreateRequestTask;
         }
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync() {
-            var source = new RSessionEvaluationSource();
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true) {
+            var source = new RSessionEvaluationSource(isMutating);
             _pendingEvaluationSources.Post(source);
             return source.Task;
         }
@@ -233,12 +234,35 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             var ct = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken).Token;
-            while (!ct.IsCancellationRequested) {
-                try {
-                    var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
-                    await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
-                } catch (OperationCanceledException) {
-                    return;
+            int evalCount = 0;
+            bool isMutating = false;
+
+            try {
+                while (!ct.IsCancellationRequested) {
+                    try {
+                        RSessionEvaluationSource evaluationSource;
+                        if (!_pendingEvaluationSources.TryReceive(out evaluationSource)) {
+                            if (evalCount > 0) {
+                                // We have just emptied the queue - raise the event for that batch of evals.
+                                AfterEvaluations?.Invoke(this, new REvaluationEventArgs(isMutating));
+                                evalCount = 0;
+                                isMutating = false;
+                            }
+
+                            evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
+                        }
+
+                        ++evalCount;
+                        isMutating |= evaluationSource.IsMutating;
+                        await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
+                    } catch (OperationCanceledException) {
+                        return;
+                    }
+                }
+            } finally {
+                if (evalCount > 0) {
+                    // Raise the event for the incomplete batch.
+                    AfterEvaluations?.Invoke(this, new REvaluationEventArgs(isMutating));
                 }
             }
         }
@@ -247,8 +271,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             RSessionEvaluationSource source;
-            while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
-                await source.BeginEvaluationAsync(contexts, _host, ct);
+            bool isMutating = false;
+            try {
+                while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
+                    isMutating |= source.IsMutating;
+                    await source.BeginEvaluationAsync(contexts, _host, ct);
+                }
+            } finally {
+                AfterEvaluations?.Invoke(this, new REvaluationEventArgs(isMutating));
             }
         }
 

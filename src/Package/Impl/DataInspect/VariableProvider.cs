@@ -58,6 +58,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RefreshVariableCollection().SilenceException<Exception>().DoNotWait();
         }
 
+        private void RSession_AfterEvaluations(object sender, REvaluationEventArgs e) {
+            if (e.IsMutating) {
+                RefreshVariableCollection().SilenceException<Exception>().DoNotWait();
+            }
+        }
+
         /// <summary>
         /// IRSessionProvider.CurrentSessionChanged handler. When current session changes, this is called
         /// </summary>
@@ -84,12 +90,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // cleans up old RSession
             if (_rSession != null) {
                 _rSession.BeforeRequest -= RSession_BeforeRequest;
+                _rSession.AfterEvaluations -= RSession_AfterEvaluations;
             }
 
             // set new RSession
             _rSession = session;
             if (_rSession != null) {
                 _rSession.BeforeRequest += RSession_BeforeRequest;
+                _rSession.AfterEvaluations += RSession_AfterEvaluations;
                 await InitializeData();
             }
 

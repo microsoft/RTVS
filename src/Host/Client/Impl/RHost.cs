@@ -315,7 +315,11 @@ namespace Microsoft.R.Host.Client {
             } catch (WebSocketException) {
             }
 
-            await _runTask;
+            try {
+                await _runTask;
+            } catch (OperationCanceledException) {
+                // Expected during disconnect.
+            }
         }
 
         private async Task<Message> RunLoop(CancellationToken ct, bool allowEval) {

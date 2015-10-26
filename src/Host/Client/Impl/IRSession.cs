@@ -5,6 +5,7 @@ namespace Microsoft.R.Host.Client {
     public interface IRSession : IDisposable {
         event EventHandler<RRequestEventArgs> BeforeRequest;
         event EventHandler<RRequestEventArgs> AfterRequest;
+        event EventHandler<REvaluationEventArgs> AfterEvaluations;
         event EventHandler<ROutputEventArgs> Output;
         event EventHandler<EventArgs> Connected;
         event EventHandler<EventArgs> Disconnected;
@@ -15,7 +16,7 @@ namespace Microsoft.R.Host.Client {
         bool IsHostRunning { get; }
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true);
-        Task<IRSessionEvaluation> BeginEvaluationAsync();
+        Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true);
         Task CancelAllAsync();
         Task StartHostAsync();
         Task StopHostAsync();
