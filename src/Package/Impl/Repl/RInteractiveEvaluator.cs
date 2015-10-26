@@ -57,28 +57,25 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
         }
 
-        public bool CanExecuteCode(string text)
-        {
-            var ast = RParser.Parse(text);
-            if (ast.Errors.Count > 0)
-            {
-                // if we have any errors other than an incomplete statement send the
-                // bad code to R.  Otherwise continue reading input.
-                foreach (var error in ast.Errors)
-                {
-                    if (error.ErrorType != ParseErrorType.CloseCurlyBraceExpected &&
-                        error.ErrorType != ParseErrorType.CloseBraceExpected &&
-                        error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
-                        error.ErrorType != ParseErrorType.FunctionBodyExpected &&
-                        error.ErrorType != ParseErrorType.OperandExpected)
-                    {
-                        return true;
+        public bool CanExecuteCode(string text) {
+            if (!text.StartsWith("?", StringComparison.Ordinal)) {
+                var ast = RParser.Parse(text);
+                if (ast.Errors.Count > 0) {
+                    // if we have any errors other than an incomplete statement send the
+                    // bad code to R.  Otherwise continue reading input.
+                    foreach (var error in ast.Errors) {
+                        if (error.ErrorType != ParseErrorType.CloseCurlyBraceExpected &&
+                            error.ErrorType != ParseErrorType.CloseBraceExpected &&
+                            error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
+                            error.ErrorType != ParseErrorType.FunctionBodyExpected &&
+                            error.ErrorType != ParseErrorType.OperandExpected) {
+                            return true;
+                        }
                     }
+
+                    return false;
                 }
-
-                return false;
             }
-
             return true;
         }
 
@@ -117,8 +114,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public string GetPrompt() {
-            if (CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot.LineCount > 1)
-            {
+            if (CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot.LineCount > 1) {
                 // TODO: We should support dynamically getting the prompt at runtime
                 // if the user changes it
                 return "+ ";
@@ -142,17 +138,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
         }
 
-        private async Task Write(string  message) {
+        private async Task Write(string message) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             CurrentWindow.Write(message);
         }
 
-        private async Task WriteError(string  message) {
+        private async Task WriteError(string message) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             CurrentWindow.WriteError(message);
         }
 
-        private async Task WriteLine(string  message) {
+        private async Task WriteLine(string message) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             CurrentWindow.WriteLine(message);
         }
