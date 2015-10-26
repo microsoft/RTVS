@@ -86,7 +86,7 @@ namespace Microsoft.R.Editor.Document
             ServiceManager.AddService<REditorDocument>(this, TextBuffer);
 
             _editorTree = new EditorTree(textBuffer);
-            if (!this.IsTransient || REditorSettings.SyntaxCheckInRepl)
+            if (REditorSettings.SyntaxCheckInRepl)
             {
                 _validator = new TreeValidator(this.EditorTree);
             }

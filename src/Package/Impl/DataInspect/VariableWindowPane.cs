@@ -1,16 +1,6 @@
-﻿using System;
-using System.ComponentModel.Design;
-using System.IO;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package;
-using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+﻿using Microsoft.VisualStudio.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect
-{
+namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class VariableWindowPane : ToolWindowPane
     {
         public VariableWindowPane()

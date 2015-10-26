@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks.Dataflow;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
@@ -13,7 +12,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
-using Microsoft.VisualStudio.Text.Operations;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -37,6 +35,28 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public static ReplWindow Current => _instance.Value;
+
+        public bool IsActive {
+            get {
+                IVsWindowFrame frame = ReplWindow.Current.GetToolWindow();
+                if (frame != null) {
+                    int onScreen;
+                    frame.IsOnScreen(out onScreen);
+                    return onScreen != 0;
+                }
+                return false;
+            }
+        }
+
+        public IVsWindowFrame GetToolWindow() {
+            IVsWindowFrame frame = null;
+            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
+
+            // First just find. If it exists, use it. 
+            shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fFindFirst, ref persistenceSlot, out frame);
+            return frame;
+        }
 
         private void ProcessQueuedInput() {
             IVsInteractiveWindow interactive = _instance.Value.GetInteractiveWindow();
@@ -172,6 +192,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             if (!ReplWindowExists()) {
                 IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fForceCreate);
                 if (frame != null) {
+                    //IntPtr bitmap = Resources.ReplWindowIcon.GetHbitmap();
+                    frame.SetProperty((int)__VSFPROPID4.VSFPROPID_TabImage, Resources.ReplWindowIcon);
                     frame.Show();
                 }
             }
@@ -236,6 +258,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                     }
                     _lastUsedReplWindow = docView as IVsInteractiveWindow;
                     if (_lastUsedReplWindow != null) {
+                        IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                        shell.UpdateCommandUI(1);
                         _lastUsedReplWindow.InteractiveWindow.ReadyForInput += ProcessQueuedInput;
                     }
                     return _lastUsedReplWindow != null;

@@ -43,13 +43,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 if (rootNode.Depth >= 0) {
                     AddNode(rootNode);
                 }
+                else {
+                    AddChildren(rootNode);
+                }
             }
 
             public TreeNodeCollection Owner { get; }
 
-            void AddNode(ObservableTreeNode node) {
+            private void AddNode(ObservableTreeNode node) {
                 node.PropertyChanged += Node_PropertyChanged;
                 Add(node);
+                AddChildren(node);
+            }
+
+            private void AddChildren(ObservableTreeNode node) {
                 if (node.HasChildren) {
                     foreach (var child in node.Children) {
                         AddNode(child);

@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
     [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
-    [ProvideToolWindow(typeof(PlotWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
+    //[ProvideToolWindow(typeof(PlotWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideDebugEngine(RContentTypeDefinition.LanguageName, null, typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
     [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, RGuidList.RLanguageServiceGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString)]
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
@@ -66,6 +66,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             RToolsSettings.Init(AppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
+            ProjectIconProvider.LoadProjectImages();
+
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
         }
 
@@ -76,6 +78,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             }
 
             ReplShortcutSetting.Close();
+            ProjectIconProvider.Close();
             base.Dispose(disposing);
         }
 

@@ -356,9 +356,6 @@
   <data name="Error_CannotCollectLogs" xml:space="preserve">
     <value>Unable to collect and package logs. Exception: {0}</value>
   </data>
-  <data name="Error_CannotFindOutlook" xml:space="preserve">
-    <value>Unable to launch Microsoft Outlook. Please attach RTVSLogs.zip file from your user TEMP folder to an e-mail message and send it to rtvscore@microsoft.com</value>
-  </data>
   <data name="CollectingOSInformation" xml:space="preserve">
     <value>Collecting OS information</value>
   </data>
@@ -393,13 +390,13 @@
     <value>Value</value>
   </data>
   <data name="Settings_LoadRDataOnProjectLoad" xml:space="preserve">
-    <value>Load workspace when project is opened</value>
+    <value>Load workspace when project opens</value>
   </data>
   <data name="Settings_LoadRDataOnProjectLoad_Description" xml:space="preserve">
     <value>Load workspace from .RData into global environment when project is opened</value>
   </data>
   <data name="Settings_SaveRDataOnProjectUnload" xml:space="preserve">
-    <value>Save workspace when project is closed</value>
+    <value>Save workspace when project closes</value>
   </data>
   <data name="Settings_SaveRDataOnProjectUnload_Description" xml:space="preserve">
     <value>Save workspace from global environment to .RData when project is closed</value>
@@ -418,5 +415,18 @@
   </data>
   <data name="SaveWorkspaceOnProjectUnloadTitle" xml:space="preserve">
     <value>Save Workspace</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="ReplWindowIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\RInteractiveWindow_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RDataNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>images\rdatanode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>images\rfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RProjectNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>images\rprojectnode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

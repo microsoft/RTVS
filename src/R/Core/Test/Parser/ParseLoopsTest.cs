@@ -90,7 +90,7 @@ namespace Microsoft.R.Core.Test.Parser
                             NumericalValue  [1 [23...24)]
             TokenNode  [} [25...26)]
 
-OperandExpected Token [12...13)
+RightOperandExpected Token [12...13)
 ";
             ParserTest.VerifyParse(expected, "while(a+b > ) { a <- a+1 }");
         }

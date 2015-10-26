@@ -32,7 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 Value = GetValue(valueEvaluation);
                 ValueDetail = valueEvaluation.Value;
                 TypeName = valueEvaluation.TypeName;
-                Class = string.Join(",", valueEvaluation.Classes); // TODO: escape ',' in class names
+                var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
+                Class = string.Join(", ", escaped); // TODO: escape ',' in class names
                 HasChildren = valueEvaluation.HasChildren;
             }
         }

@@ -24,6 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         public event EventHandler<RRequestEventArgs> BeforeRequest;
         public event EventHandler<RRequestEventArgs> AfterRequest;
         public event EventHandler<ROutputEventArgs> Output;
+        public event EventHandler<EventArgs> Connected;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
 
@@ -134,6 +135,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         Task IRCallbacks.Connected(string rVersion) {
             Prompt = DefaultPrompt;
             _initializationTcs.SetResult(null);
+            Connected?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
         }
 

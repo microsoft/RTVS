@@ -198,8 +198,8 @@
   <data name="ParseError_OpenSquareBracketExpected" xml:space="preserve">
     <value>[ or [[ expected</value>
   </data>
-  <data name="ParseError_OperandExpected" xml:space="preserve">
-    <value>Operand expected</value>
+  <data name="ParseError_LeftOperandExpected" xml:space="preserve">
+    <value>Operand to the left expected</value>
   </data>
   <data name="ParseError_OperatorExpected" xml:space="preserve">
     <value>Operator expected</value>
@@ -230,5 +230,8 @@
   </data>
   <data name="AutoFormat" xml:space="preserve">
     <value>Automatic formatting</value>
+  </data>
+  <data name="ParseError_RightOperandExpected" xml:space="preserve">
+    <value>Operand to the right expected</value>
   </data>
 </root>

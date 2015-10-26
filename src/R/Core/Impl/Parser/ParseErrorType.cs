@@ -44,10 +44,18 @@
         ExpressionExpected,
 
         /// <summary>
-        /// Identifier appears to be missing. For example, 
-        /// two binary operators without anything between them.
+        /// Identifier or complete expression to the right of the operator 
+        /// appears to be missing. For example, two binary operators without 
+        /// anything between them or expression like x <- y + '.
         /// </summary>
-        OperandExpected,
+        RightOperandExpected,
+
+        /// <summary>
+        /// Identifier or complete expression to the left of the operator 
+        /// appears to be missing. For example, [] without indetifier or
+        /// expression to apply the indexer to.
+        /// </summary>
+        LeftOperandExpected,
 
         /// <summary>
         /// function(a) without anything after it

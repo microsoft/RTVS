@@ -135,15 +135,7 @@ namespace Microsoft.R.Editor.Formatting
             textBuffer.Replace(Span.FromBounds(caretLine.Start, caretLine.End),
                 innerIndentString + lineBreakText + braceindentString + "}");
 
-            var caretPoint = textView.BufferGraph.MapUpToBuffer(
-                new SnapshotPoint(
-                    textBuffer.CurrentSnapshot,
-                    caretLine.Start.Position
-                ),
-                PointTrackingMode.Positive,
-                PositionAffinity.Successor,
-                textView.TextBuffer
-            );
+            var caretPoint = textView.MapUpToBuffer(caretLine.Start.Position, textBuffer);
             if (caretPoint != null) {
                 textView.Caret.MoveTo(
                     new VirtualSnapshotPoint(

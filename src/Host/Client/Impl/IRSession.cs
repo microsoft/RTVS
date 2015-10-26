@@ -6,6 +6,7 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<RRequestEventArgs> BeforeRequest;
         event EventHandler<RRequestEventArgs> AfterRequest;
         event EventHandler<ROutputEventArgs> Output;
+        event EventHandler<EventArgs> Connected;
         event EventHandler<EventArgs> Disconnected;
         event EventHandler<EventArgs> Disposed;
 
