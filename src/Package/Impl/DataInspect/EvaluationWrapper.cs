@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -19,10 +18,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private static readonly string HiddenVariablePrefix = ".";
         private static readonly char[] NewLineDelimiter = new char[] { '\r', '\n' };
 
+        private readonly bool _truncateChildren;
+
         private EvaluationWrapper() { }
 
-        public EvaluationWrapper(DebugEvaluationResult evaluation) {
+        public EvaluationWrapper(DebugEvaluationResult evaluation) : this (evaluation, true) { }
+
+        /// <summary>
+        /// Create new instance of <see cref="EvaluationWrapper"/>
+        /// </summary>
+        /// <param name="evaluation">R session's evaluation result</param>
+        /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
+        public EvaluationWrapper(DebugEvaluationResult evaluation, bool truncateChildren) {
             _evaluation = evaluation;
+            _truncateChildren = truncateChildren;
 
             Name = _evaluation.Name.TrimStart(NameTrimChars);
 
@@ -64,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                var children = await valueEvaluation.GetChildrenAsync(true);    // TODO: consider exception propagation such as OperationCanceledException
+                var children = await valueEvaluation.GetChildrenAsync(true, _truncateChildren ? (int?)20 : null);    // TODO: consider exception propagation such as OperationCanceledException
 
                 result = new List<EvaluationWrapper>();
                 foreach (var child in children) {
@@ -72,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 if (valueEvaluation.Length > result.Count) {
-                    result.Add(EvaluationWrapper.Ellipsis); // insert
+                    result.Add(EvaluationWrapper.Ellipsis); // insert dummy child to indicate truncation in UI
                 }
             }
 

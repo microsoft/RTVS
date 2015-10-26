@@ -140,7 +140,7 @@ namespace Microsoft.R.Debugger {
             ThrowIfDisposed();
 
             REvaluationResult res;
-            using (var eval = await RSession.BeginEvaluationAsync()) {
+            using (var eval = await RSession.BeginEvaluationAsync(false)) {
                 res = await eval.EvaluateAsync(expression, REvaluationKind.Json);
                 if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.JsonResult == null) {
                     Trace.Fail(Invariant($"Internal debugger evaluation {expression} failed: {res}"));

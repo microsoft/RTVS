@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
@@ -90,15 +91,22 @@ namespace Microsoft.R.Debugger {
             Str = json.Value<string>("str");
         }
 
-        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(bool trimmode = false) {
+        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(bool useStr = false, int? truncateLength = null) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
-            var call = trimmode ? Invariant($".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, trim.mode=TRUE)")
-                : Invariant($".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame})");
+            string parameter = Invariant($"{Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, use.str={useStr.ToString().ToUpperInvariant()}");
+            if (truncateLength.HasValue) {
+                parameter += Invariant($", truncate.length={truncateLength.Value}");
+            }
+            else {
+                parameter += Invariant($", truncate.length=NULL");
+            }
+
+            var call = Invariant($".rtvs.children({parameter})");
             var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JObject>(call);
             Trace.Assert(
                 jChildren.Values().All(t => t is JObject),
