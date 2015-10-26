@@ -132,6 +132,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             await _hostRunTask;
         }
 
+        public void FlushLog() {
+            _host?.FlushLog();
+        }
+
         Task IRCallbacks.Connected(string rVersion) {
             Prompt = DefaultPrompt;
             _initializationTcs.SetResult(null);

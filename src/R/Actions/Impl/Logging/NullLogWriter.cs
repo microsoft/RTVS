@@ -5,11 +5,13 @@ namespace Microsoft.R.Actions.Logging {
         public static IActionLogWriter Instance { get; } = new NullLogWriter();
 
         private NullLogWriter() {
-            
+
         }
 
         public Task WriteAsync(MessageCategory category, string message) {
             return Task.CompletedTask;
         }
+
+        public void Flush() { }
     }
 }

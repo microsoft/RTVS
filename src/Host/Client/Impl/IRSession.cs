@@ -19,5 +19,7 @@ namespace Microsoft.R.Host.Client {
         Task CancelAllAsync();
         Task StartHostAsync();
         Task StopHostAsync();
+
+        void FlushLog();
     }
 }

@@ -25,6 +25,7 @@ namespace Microsoft.R.Host.Client {
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
+        private readonly FileLogWriter _fileLogWriter;
         private Process _process;
         private volatile Task _runTask;
 
@@ -43,11 +44,16 @@ namespace Microsoft.R.Host.Client {
 
         public RHost(IRCallbacks callbacks) {
             _callbacks = callbacks;
-            _log = new LinesLog(FileLogWriter.InTempFolder("Microsoft.R.Host.Client"));
+            _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client");
+            _log = new LinesLog(_fileLogWriter);
         }
 
         public void Dispose() {
             _cts.Cancel();
+        }
+
+        public void FlushLog() {
+            _fileLogWriter.Flush();
         }
 
         private static Exception ProtocolError(FormattableString fs, object message = null) {
