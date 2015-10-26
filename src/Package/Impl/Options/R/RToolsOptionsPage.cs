@@ -61,15 +61,5 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return RToolsSettings.Current.RVersion; }
             set { RToolsSettings.Current.RVersion = value; }
         }
-
-        [LocCategory("Settings_GeneralCategory")]
-        [CustomLocDisplayName("Settings_EscInterrupt")]
-        [LocDescription("Settings_EscInterrupt_Description")]
-        [TypeConverter(typeof(OnOffTypeConverter))]
-        [DefaultValue(true)]
-        public bool EscInterruptsCalculation {
-            get { return RToolsSettings.Current.EscInterruptsCalculation; }
-            set { RToolsSettings.Current.EscInterruptsCalculation = value; }
-        }
     }
 }

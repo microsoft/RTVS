@@ -22,8 +22,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public YesNoAsk SaveRDataOnProjectUnload { get; set; } = YesNoAsk.Ask;
 
-        public bool EscInterruptsCalculation { get; set; } = true;
-
         public string CranMirror {
             get { return _cranMirror; }
             set {

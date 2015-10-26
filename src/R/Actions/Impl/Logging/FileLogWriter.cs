@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using static System.FormattableString;
@@ -13,14 +14,12 @@ namespace Microsoft.R.Actions.Logging {
         private readonly char[] _lineBreaks = { '\n' };
         private readonly string _filePath;
         private readonly ActionBlock<string> _messages;
-        private StringBuilder _sb = new StringBuilder();
+        private readonly StringBuilder _sb = new StringBuilder();
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         private async Task WriteToFile(string message) {
             try {
-                // Writing every little thing via open/write/close
-                // is expensive and slows down output to REPL quite a bit.
-                _sb.Append(message);
-                await FlushBuffer();
+                await WriteBuffer(message, flush: false);
             } catch (UnauthorizedAccessException ex) {
                 Trace.Fail(ex.ToString());
             } catch (PathTooLongException ex) {
@@ -35,19 +34,26 @@ namespace Microsoft.R.Actions.Logging {
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) {
-            FlushBuffer(force: true).Wait();
+            WriteBuffer(string.Empty, flush: true).Wait();
         }
 
         private void OnProcessExit(object sender, EventArgs e) {
-            FlushBuffer(force: true).Wait();
+            WriteBuffer(string.Empty, flush: true).Wait();
         }
 
-        private async Task FlushBuffer(bool force = false) {
-            if (_sb.Length > _maxBufferSize || force) {
-                using (var stream = File.AppendText(_filePath)) {
-                    await stream.WriteAsync(_sb.ToString());
+        private async Task WriteBuffer(string message, bool flush) {
+            await _semaphore.WaitAsync();
+            try {
+                _sb.Append(message);
+                if (_sb.Length > _maxBufferSize || flush) {
+                    using (var stream = File.AppendText(_filePath)) {
+                        await stream.WriteAsync(_sb.ToString());
+                    }
+                    _sb.Clear();
                 }
-                _sb.Clear();
+            }
+            finally {
+                _semaphore.Release();
             }
         }
 
@@ -64,7 +70,7 @@ namespace Microsoft.R.Actions.Logging {
         }
 
         public void Flush() {
-            FlushBuffer(force: true).Wait();
+            WriteBuffer(string.Empty, flush: true).Wait();
         }
 
 
