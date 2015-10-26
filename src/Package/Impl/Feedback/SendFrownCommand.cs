@@ -19,11 +19,11 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         private const string _zipFile = "RTVSLogs.zip";
         private const int _daysToCollect = 7;
 
-        private static LongAction[] _actions = new LongAction[] {
-            new LongAction() {Name =  Resources.CollectingRTVSLogs, Action = CollectRTVSLogs },
-            new LongAction() {Name =  Resources.CollectingSystemEvents, Action = CollectSystemLogs },
-            new LongAction() {Name =  Resources.CollectingOSInformation, Action = CollectGeneralLogs },
-            new LongAction() {Name =  Resources.CreatingArchive, Action = CreateArchive },
+        private static LongAction[] _actions = {
+            new LongAction() { Name = Resources.CollectingRTVSLogs, Action = CollectRTVSLogs },
+            new LongAction() { Name = Resources.CollectingSystemEvents, Action = CollectSystemLogs },
+            new LongAction() { Name = Resources.CollectingOSInformation, Action = CollectGeneralLogs },
+            new LongAction() { Name = Resources.CreatingArchive, Action = CreateArchive },
         };
 
         private static List<string> _logFiles;
@@ -84,10 +84,15 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         private static string ZipFiles(IEnumerable<string> files) {
             string zipPath = Path.Combine(Path.GetTempPath(), _zipFile);
 
-            using (FileStream fs = File.Create(zipPath)) {
-                using (ZipArchive zipArchive = new ZipArchive(fs, ZipArchiveMode.Create)) {
+            using (FileStream zipStream = File.Create(zipPath)) {
+                using (ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
                     foreach (string file in files) {
-                        zipArchive.CreateEntryFromFile(file, Path.GetFileName(file));
+                        using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                            var entry = zipArchive.CreateEntry(Path.GetFileName(file));
+                            using (var zipEntryStream = entry.Open()) {
+                                fileStream.CopyTo(zipEntryStream);
+                            }
+                        }
                     }
                 }
             }
@@ -99,8 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             string tempPath = Path.GetTempPath();
 
             var logs = Directory.EnumerateFiles(tempPath, pattern);
-            return logs.Select((file) =>
-            {
+            return logs.Select((file) => {
                 DateTime writeTime = File.GetLastWriteTimeUtc(file);
                 TimeSpan difference = DateTime.Now.ToUniversalTime() - writeTime;
                 if (difference.TotalDays < _daysToCollect) {

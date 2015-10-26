@@ -12,7 +12,8 @@ namespace Microsoft.R.Host.Client {
         Reentrant = 1 << 1,
         Json = 1 << 2,
         BaseEnv = 1 << 3,
-        EmptyEnv = 1 << 4
+        EmptyEnv = 1 << 4,
+        Cancelable = 1 << 5,
     }
 
     public interface IRExpressionEvaluator {
