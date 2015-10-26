@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         public event EventHandler<RRequestEventArgs> BeforeRequest;
         public event EventHandler<RRequestEventArgs> AfterRequest;
-        public event EventHandler<REvaluationEventArgs> AfterEvaluations;
+        public event EventHandler<EventArgs> Mutated;
         public event EventHandler<ROutputEventArgs> Output;
         public event EventHandler<EventArgs> Connected;
         public event EventHandler<EventArgs> Disconnected;
@@ -177,12 +177,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             Task evaluationTask;
 
             if (isEvaluationAllowed) {
-                await EvaluateAll(contexts, ct);
                 evaluationCts = new CancellationTokenSource();
-                evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct);
+                evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct); // will raise Mutate
             } else {
                 evaluationCts = null;
                 evaluationTask = Task.CompletedTask;
+                Mutated?.Invoke(this, EventArgs.Empty);
             }
 
             currentRequest?.Complete();
@@ -234,52 +234,47 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             var ct = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken).Token;
-            int evalCount = 0;
-            bool isMutating = false;
+            bool mutated = true; // start with true on the assumption that the preceding interaction has mutated something
+            while (!ct.IsCancellationRequested) {
+                try {
+                    if (await EvaluateAll(contexts, mutated, ct)) {
+                        // EvaluateAll has raised the event already, so reset the flag.
+                        mutated = false;
+                    } else if (mutated) {
+                        // EvaluateAll did not raise the event, but we have a pending mutate to inform about.
+                        Mutated?.Invoke(this, EventArgs.Empty);
+                    }
 
-            try {
-                while (!ct.IsCancellationRequested) {
-                    try {
-                        RSessionEvaluationSource evaluationSource;
-                        if (!_pendingEvaluationSources.TryReceive(out evaluationSource)) {
-                            if (evalCount > 0) {
-                                // We have just emptied the queue - raise the event for that batch of evals.
-                                AfterEvaluations?.Invoke(this, new REvaluationEventArgs(isMutating));
-                                evalCount = 0;
-                                isMutating = false;
-                            }
-
-                            evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
-                        }
-
-                        ++evalCount;
-                        isMutating |= evaluationSource.IsMutating;
-                        await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
-                    } catch (OperationCanceledException) {
+                    if (ct.IsCancellationRequested) {
                         return;
                     }
-                }
-            } finally {
-                if (evalCount > 0) {
-                    // Raise the event for the incomplete batch.
-                    AfterEvaluations?.Invoke(this, new REvaluationEventArgs(isMutating));
-                }
+
+                    var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
+                    mutated |= evaluationSource.IsMutating;
+                    await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
+                } catch (OperationCanceledException) {
+                    return;
+                } 
             }
         }
 
-        private async Task EvaluateAll(IReadOnlyList<IRContext> contexts, CancellationToken ct) {
+        private async Task<bool> EvaluateAll(IReadOnlyList<IRContext> contexts, bool mutated, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            RSessionEvaluationSource source;
-            bool isMutating = false;
             try {
+                RSessionEvaluationSource source;
                 while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
-                    isMutating |= source.IsMutating;
+                    mutated |= source.IsMutating;
                     await source.BeginEvaluationAsync(contexts, _host, ct);
                 }
+            } catch (OperationCanceledException) {
             } finally {
-                AfterEvaluations?.Invoke(this, new REvaluationEventArgs(isMutating));
+                if (mutated) {
+                    Mutated?.Invoke(this, EventArgs.Empty);
+                }
             }
+
+            return mutated;
         }
 
         Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
@@ -302,7 +297,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (isEvaluationAllowed) {
-                await EvaluateAll(contexts, ct);
+                await EvaluateAll(contexts, true, ct);
+            } else {
+                Mutated?.Invoke(this, EventArgs.Empty);
             }
 
             return YesNoCancel.Yes;

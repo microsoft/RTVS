@@ -5,7 +5,7 @@ namespace Microsoft.R.Host.Client {
     public interface IRSession : IDisposable {
         event EventHandler<RRequestEventArgs> BeforeRequest;
         event EventHandler<RRequestEventArgs> AfterRequest;
-        event EventHandler<REvaluationEventArgs> AfterEvaluations;
+        event EventHandler<EventArgs> Mutated;
         event EventHandler<ROutputEventArgs> Output;
         event EventHandler<EventArgs> Connected;
         event EventHandler<EventArgs> Disconnected;
