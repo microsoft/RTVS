@@ -47,6 +47,14 @@ namespace Microsoft.R.Host.Client {
                 }
             }
 
+            public void ExpectArguments(int min, int max) {
+                if (ArgumentCount < min) {
+                    throw ProtocolError($"At least {min} arguments expected:", this);
+                } else if (ArgumentCount > max) {
+                    throw ProtocolError($"At most {max} arguments expected:", this);
+                }
+            }
+
             public JToken this[int i] {
                 get {
                     return _body[_argsOffset + i];

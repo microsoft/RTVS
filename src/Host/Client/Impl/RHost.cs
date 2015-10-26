@@ -72,6 +72,9 @@ namespace Microsoft.R.Host.Client {
                     }
                     sb.Append(Encoding.UTF8.GetString(_buffer, 0, wsrr.Count));
                 } while (!wsrr.EndOfMessage);
+            } catch (WebSocketException ex) when (ct.IsCancellationRequested) {
+                // Network errors during cancellation are expected, but should not be exposed to clients.
+                throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             } finally {
                 _socketReceiveLock.Release();
             }
@@ -104,6 +107,9 @@ namespace Microsoft.R.Host.Client {
             await _socketSendLock.WaitAsync(ct);
             try {
                 await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
+            } catch (WebSocketException ex) when (ct.IsCancellationRequested) {
+                // Network errors during cancellation are expected, but should not be exposed to clients.
+                throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             } finally {
                 _socketSendLock.Release();
             }
@@ -216,6 +222,10 @@ namespace Microsoft.R.Host.Client {
                 nameBuilder.Append('@');
                 reentrant = true;
             }
+            if (kind.HasFlag(REvaluationKind.Cancelable)) {
+                nameBuilder.Append('/');
+                reentrant = true;
+            }
             if (kind.HasFlag(REvaluationKind.Json)) {
                 nameBuilder.Append('j');
                 jsonResult = true;
@@ -236,6 +246,12 @@ namespace Microsoft.R.Host.Client {
                 var response = await RunLoop(ct, reentrant);
                 if (response.RequestId != id || response.Name != name) {
                     throw ProtocolError($"Mismatched host response ['{response.Id}',':','{response.Name}',...] to evaluation request ['{id}','{name}','{expression}']");
+                }
+
+                response.ExpectArguments(1, 3);
+                var firstArg = response[0] as JValue;
+                if (firstArg != null && firstArg.Value == null) {
+                    throw new OperationCanceledException(Invariant($"Evaluation canceled: {expression}"));
                 }
 
                 response.ExpectArguments(3);
@@ -456,8 +472,9 @@ namespace Microsoft.R.Host.Client {
                     }
                 } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
                     // Expected cancellation, do not propagate, just exit process
-                } catch (WebSocketException) when (ct.IsCancellationRequested) {
-                    // Expected cancellation, do not propagate, just exit process
+                } catch (WebSocketException ex) when (ct.IsCancellationRequested) {
+                    // Network errors during cancellation are expected, but should not be exposed to clients.
+                    throw new OperationCanceledException(new OperationCanceledException().Message, ex);
                 } catch (Exception ex) {
                     Trace.Fail("Exception in RHost run loop:\n" + ex);
                     throw;
