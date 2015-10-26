@@ -237,7 +237,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             bool mutated = true; // start with true on the assumption that the preceding interaction has mutated something
             while (!ct.IsCancellationRequested) {
                 try {
-                    if (await EvaluateAll(contexts, mutated, ct)) {
+                    if (await EvaluateAll(contexts, mutated, hostCancellationToken)) {
                         // EvaluateAll has raised the event already, so reset the flag.
                         mutated = false;
                     } else if (mutated) {
