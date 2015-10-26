@@ -18,9 +18,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public string RVersion { get; set; } = Resources.Settings_RVersion_Latest;
 
-        public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.Yes;
+        public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
         public YesNoAsk SaveRDataOnProjectUnload { get; set; } = YesNoAsk.Ask;
+
+        public bool EscInterruptsCalculation { get; set; } = true;
 
         public string CranMirror {
             get { return _cranMirror; }

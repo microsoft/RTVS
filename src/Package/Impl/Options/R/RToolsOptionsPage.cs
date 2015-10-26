@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.CranMirror = value; }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
+        [LocCategory("Settings_WorkspaceCategory")]
         [CustomLocDisplayName("Settings_LoadRDataOnProjectLoad")]
         [LocDescription("Settings_LoadRDataOnProjectLoad_Description")]
         [TypeConverter(typeof(YesNoAskTypeConverter))]
@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.LoadRDataOnProjectLoad = value; }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
+        [LocCategory("Settings_WorkspaceCategory")]
         [CustomLocDisplayName("Settings_SaveRDataOnProjectUnload")]
         [LocDescription("Settings_SaveRDataOnProjectUnload_Description")]
         [TypeConverter(typeof(YesNoAskTypeConverter))]
@@ -60,6 +60,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public string RVersion {
             get { return RToolsSettings.Current.RVersion; }
             set { RToolsSettings.Current.RVersion = value; }
+        }
+
+        [LocCategory("Settings_GeneralCategory")]
+        [CustomLocDisplayName("Settings_EscInterrupt")]
+        [LocDescription("Settings_EscInterrupt_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool EscInterruptsCalculation {
+            get { return RToolsSettings.Current.EscInterruptsCalculation; }
+            set { RToolsSettings.Current.EscInterruptsCalculation = value; }
         }
     }
 }

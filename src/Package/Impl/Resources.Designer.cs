@@ -625,6 +625,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ESC interrupts calculations.
+        /// </summary>
+        public static string Settings_EscInterrupt {
+            get {
+                return ResourceManager.GetString("Settings_EscInterrupt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Escape key interrupts current calculations in R engine. Since ESC key also controls various other Visual Studio activities they may be interrupted as well..
+        /// </summary>
+        public static string Settings_EscInterrupt_Description {
+            get {
+                return ResourceManager.GetString("Settings_EscInterrupt_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Format on paste.
         /// </summary>
         public static string Settings_FormatOnPaste {
@@ -891,6 +909,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_TriggerOnFirstChar_Description {
             get {
                 return ResourceManager.GetString("Settings_TriggerOnFirstChar_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Workspace.
+        /// </summary>
+        public static string Settings_WorkspaceCategory {
+            get {
+                return ResourceManager.GetString("Settings_WorkspaceCategory", resourceCulture);
             }
         }
         
