@@ -526,9 +526,9 @@
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
-    <Content Include="Images\RFileNode.png" />
-    <Content Include="Images\RProjectNode.png" />
     <Content Include="Images\RDataNode.png" />
+    <Content Include="Images\RProjectNode.png" />
+    <Content Include="Images\RFileNode.png" />
     <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <None Include="VSShell\ShellIcons.h" />
     <None Include="Microsoft.R.Host.exe">
