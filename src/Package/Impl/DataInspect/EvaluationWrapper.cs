@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
@@ -18,6 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private static readonly string HiddenVariablePrefix = ".";
         private static readonly char[] NewLineDelimiter = new char[] { '\r', '\n' };
 
+        private EvaluationWrapper() { }
+
         public EvaluationWrapper(DebugEvaluationResult evaluation) {
             _evaluation = evaluation;
 
@@ -26,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (_evaluation is DebugValueEvaluationResult) {
                 var valueEvaluation = (DebugValueEvaluationResult)_evaluation;
 
-                Value = FirstLine(valueEvaluation.Value);   // TODO: it takes first line only for now. Visual representation will be tuned up later e.g. R str or custom formatting
+                Value = GetValue(valueEvaluation);
                 ValueDetail = valueEvaluation.Value;
                 TypeName = valueEvaluation.TypeName;
                 var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
@@ -61,11 +64,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                var children = await valueEvaluation.GetChildrenAsync();    // TODO: consider exception propagation such as OperationCanceledException
+                var children = await valueEvaluation.GetChildrenAsync(true);    // TODO: consider exception propagation such as OperationCanceledException
 
                 result = new List<EvaluationWrapper>();
                 foreach (var child in children) {
                     result.Add(new EvaluationWrapper(child));
+                }
+
+                if (valueEvaluation.Length > result.Count) {
+                    result.Add(EvaluationWrapper.Ellipsis); // insert
                 }
             }
 
@@ -95,6 +102,29 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             } else {
                 return multiLine.Substring(0, firstLine);
             }
+        }
+
+        private static Lazy<EvaluationWrapper> _ellipsis = new Lazy<EvaluationWrapper>(() => {
+            var instance = new EvaluationWrapper();
+            instance.Name = string.Empty;
+            instance.Value = "[truncated]";
+            instance.HasChildren = false;
+            return instance;
+        });
+        private static EvaluationWrapper Ellipsis {
+            get { return _ellipsis.Value; }
+        }
+
+        private static string DataFramePrefix = "'data.frame':([^:]+):";
+        private string GetValue(DebugValueEvaluationResult v) {
+            var value = v.Str;
+            if (v.Str != null) {
+                Match match = Regex.Match(value, DataFramePrefix);
+                if (match.Success) {
+                    return match.Groups[1].Value.Trim();
+                }
+            }
+            return value;
         }
     }
 }

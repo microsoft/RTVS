@@ -6,7 +6,7 @@
   paste0(textConnectionValue(con), collapse='\n')
 }
 
-.rtvs.eval <- function(expr, env, con) {
+.rtvs.eval <- function(expr, env, con, trim.mode = FALSE) {
   if (missing(con)) {
     con <- textConnection(NULL, open = "w");
     on.exit(close(con), add = TRUE);
@@ -31,18 +31,28 @@
     return();
   }
 
-  repr <- .rtvs.repr(obj);
-  cat('"value":', file = con, sep = '');
-  dput(repr, con);
+  if (trim.mode) {
+    repr <- "n/a"
+    cat('"value":', file = con, sep = '');
+    dput(repr, con);
   
-  raw_value <- tryCatch({
-    paste0(toString(obj), collapse='');
-  }, error = function(e) {
-    repr;
-  })
+    raw_value <- "n/a"
+    cat(',"raw_value":', file = con, sep = '');
+    dput(raw_value, con);
+  } else {
+    repr <- .rtvs.repr(obj);
+    cat('"value":', file = con, sep = '');
+    dput(repr, con);
   
-  cat(',"raw_value":', file = con, sep = '');
-  dput(raw_value, con);
+    raw_value <- tryCatch({
+      paste0(toString(obj), collapse='');
+    }, error = function(e) {
+      repr;
+    })
+  
+    cat(',"raw_value":', file = con, sep = '');
+    dput(raw_value, con);
+  }
   
   cat(',"type":', file = con, sep = '');
   dput(typeof(obj), con);
@@ -99,9 +109,24 @@
     
     cat(',"has_parent_env":', (if (identical(obj, emptyenv())) "false" else "true"), file = con, sep = '');
   }
+
+  if (trim.mode) {
+    cat(',"str":', file = con, sep = '');
+    str.repr = "";
+    if (length(obj) == 1) {
+      if (any(class(obj) == "factor")) {
+        if (is.na(obj)) str.repr <- "NA" else str.repr <- capture.output(str(levels(obj)[[obj]], max.level = 0, give.head = FALSE))
+      } else {
+        str.repr <- capture.output(str(obj, max.level = 0, give.head = FALSE))
+      }
+    } else {
+      str.repr <- capture.output(str(obj, max.level = 0, give.head = TRUE))
+    }
+    dput(str.repr[1], con);
+  }
 }
 
-.rtvs.children <- function(obj, env) {
+.rtvs.children <- function(obj, env, trim.mode=FALSE) {
   if (!missing(env)) {
     obj <- eval(parse(text = obj), env);
   }
@@ -117,7 +142,11 @@
       if (!is.character(name) || is.na(name) || name == "") {
         next; 
       }
-      
+
+      if (trim.mode && commas >= 20) {
+        break;
+      }
+
       if (commas != 0) {
         cat(',', file = con, sep = '');
       }
@@ -138,7 +167,7 @@
       } else if (bindingIsActive(name, obj)) {
         cat('"active_binding":true', file = con, sep = '');
       } else {
-        .rtvs.eval(substitute(`$`(obj, name), list(name = name)), environment(), con);
+        .rtvs.eval(substitute(`$`(obj, name), list(name = name)), environment(), con, trim.mode);
       }
       
       cat('}', file = con, sep = '');
@@ -150,7 +179,11 @@
       if (!is.character(name) || is.na(name)) {
         next;
       }
-      
+
+      if (trim.mode && commas >= 20) {
+        break;
+      }
+
       if (commas != 0) {
         cat(',', file = con, sep = '');
       }
@@ -158,7 +191,7 @@
       
       dput(paste0('@', name, collapse = ''), con);
       cat(':{', file = con, sep = '');
-     .rtvs.eval(substitute(`@`(obj, name), list(name = name)), environment(), con);
+     .rtvs.eval(substitute(`@`(obj, name), list(name = name)), environment(), con, trim.mode);
       cat('}', file = con, sep = '');
     }
   }
@@ -169,8 +202,12 @@
     if (!is.character(names)) {
       names <- NULL;
     }
-    
+
     for (i in 1:count) {
+      if (trim.mode && commas >= 20) {
+        break;
+      }
+
       if (commas != 0) {
         cat(',', file = con, sep = '');
       }
@@ -189,7 +226,7 @@
       
       dput(accessor, con);
       cat(':{', file = con, sep = '');
-      .rtvs.eval(paste0("obj", accessor, collapse = ''), environment(), con);
+      .rtvs.eval(paste0("obj", accessor, collapse = ''), environment(), con, trim.mode);
       cat('}', file = con, sep = '');
     }
   }

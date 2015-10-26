@@ -72,6 +72,7 @@ namespace Microsoft.R.Debugger {
         public bool HasAttributes { get; }
         public bool HasSlots { get; }
         public IReadOnlyList<string> Classes { get; }
+        public string Str { get; }
 
         public bool HasChildren => HasSlots || Length > (IsAtomic ? 1 : 0);
 
@@ -86,16 +87,18 @@ namespace Microsoft.R.Debugger {
             HasAttributes = json.Value<int>("attr_count") > 0;
             HasSlots = json.Value<int>("slot_count") > 0;
             Classes = json.Value<JArray>("class").Select(t => t.Value<string>()).ToArray();
+            Str = json.Value<string>("str");
         }
 
-        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync() {
+        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(bool trimmode = false) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
-            var call = Invariant($".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame})");
+            var call = trimmode ? Invariant($".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, trim.mode=TRUE)")
+                : Invariant($".rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame})");
             var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JObject>(call);
             Trace.Assert(
                 jChildren.Values().All(t => t is JObject),
