@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class InterruptRCommand : PackageCommand {
         private readonly IRSessionProvider _rSessionProvider;
         private IRSession _session;
-        private bool _enabled;
+        private volatile bool _enabled;
 
         public InterruptRCommand(IRSessionProvider rSessionProvider) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
@@ -32,11 +32,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         private void OnBeforeRequest(object sender, RRequestEventArgs e) {
-            _enabled = false;
+            _enabled = (e.Contexts.Count != 1);
         }
 
         private void OnAfterRequest(object sender, RRequestEventArgs e) {
-            _enabled = true;
+            _enabled = (e.Contexts.Count == 1); // top lever prompt
         }
 
         protected override void SetStatus() {
