@@ -134,7 +134,7 @@
   con <- textConnection(NULL, open = "w");
   on.exit(close(con), add = TRUE);
   
-  cat('{', file = con, sep = '');
+  cat('[', file = con, sep = '');
   commas <- 0;
   truncate<-!is.null(truncate.length)
 
@@ -152,7 +152,8 @@
         cat(',', file = con, sep = '');
       }
       commas <- commas + 1;
-      
+
+      cat('{', file = con, sep = '');
       dput(paste0('$', name, collapse=''), con);
       cat(': {', file = con, sep = '');
       
@@ -171,7 +172,7 @@
         .rtvs.eval(substitute(`$`(obj, name), list(name = name)), environment(), con, use.str);
       }
       
-      cat('}', file = con, sep = '');
+      cat('}}', file = con, sep = '');
     }
   }
   
@@ -189,11 +190,12 @@
         cat(',', file = con, sep = '');
       }
       commas <- commas + 1;
-      
+
+      cat('{', file = con, sep = '');
       dput(paste0('@', name, collapse = ''), con);
       cat(':{', file = con, sep = '');
      .rtvs.eval(substitute(`@`(obj, name), list(name = name)), environment(), con, use.str);
-      cat('}', file = con, sep = '');
+      cat('}}', file = con, sep = '');
     }
   }
   
@@ -213,7 +215,8 @@
         cat(',', file = con, sep = '');
       }
       commas <- commas + 1;
-      
+
+      cat('{', file = con, sep = '');
       accessor <- paste0('[[', as.double(i), ']]', collapse = '');
 
       name <- names[[i]];
@@ -228,11 +231,11 @@
       dput(accessor, con);
       cat(':{', file = con, sep = '');
       .rtvs.eval(paste0("obj", accessor, collapse = ''), environment(), con, use.str);
-      cat('}', file = con, sep = '');
+      cat('}}', file = con, sep = '');
     }
   }
 
-  cat('}\n', file = con, sep = '');
+  cat(']\n', file = con, sep = '');
 
   paste0(textConnectionValue(con), collapse='')
 }
