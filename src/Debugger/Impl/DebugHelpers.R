@@ -163,7 +163,7 @@
     }
   }
   
-  if (is(obj, "vector") || is.language(obj)) {
+  if (is.atomic(obj) || is.list(obj) || is.language(obj)) {
     count <- length(obj);
     names <- names(obj);
     if (!is.character(names)) {
