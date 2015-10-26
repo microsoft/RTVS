@@ -66,6 +66,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             RToolsSettings.Init(AppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
+            ProjectIconProvider.LoadProjectImages();
+
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
         }
 
@@ -76,6 +78,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             }
 
             ReplShortcutSetting.Close();
+            ProjectIconProvider.Close();
             base.Dispose(disposing);
         }
 
