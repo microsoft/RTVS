@@ -21,7 +21,9 @@ namespace Microsoft.R.Debugger {
             Name = name;
         }
 
-        internal static DebugEvaluationResult Parse(DebugStackFrame stackFrame, string expression, string name, JObject json) {
+        internal static DebugEvaluationResult Parse(DebugStackFrame stackFrame, string name, JObject json) {
+            var expression = json.Value<string>("expression");
+
             var errorText = json.Value<string>("error");
             if (errorText != null) {
                 return new DebugErrorEvaluationResult(stackFrame, expression, name, errorText);
@@ -37,8 +39,7 @@ namespace Microsoft.R.Debugger {
                 return new DebugActiveBindingEvaluationResult(stackFrame, expression, name);
             }
 
-            var value = json.Value<string>("value");
-            if (value != null) {
+            if (json["value"] != null) {
                 return new DebugValueEvaluationResult(stackFrame, expression, name, json);
             }
 
@@ -120,9 +121,8 @@ namespace Microsoft.R.Debugger {
                     Invariant($".rtvs.children(): each object is expected contain one object\n\n"));
                 foreach (var kv in childObject) {
                     var name = kv.Key;
-                    var expr = "(" + Expression + ")" + kv.Key;
                     var jEvalResult = (JObject)kv.Value;
-                    var evalResult = Parse(StackFrame, expr, name, jEvalResult);
+                    var evalResult = Parse(StackFrame, name, jEvalResult);
                     children.Add(evalResult);
                 }
             }

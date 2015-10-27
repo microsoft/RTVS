@@ -6,42 +6,49 @@
   paste0(textConnectionValue(con), collapse='\n')
 }
 
-.rtvs.eval <- function(expr, env, con, use.str=FALSE) {
+.rtvs.repr_symbol <- function(name) {
+  if (is.character(name) && !is.na(name) && nchar(name) > 0) {
+    name <- as.symbol(name);
+  }
+  .rtvs.repr(name)
+}
+
+.rtvs.eval <- function(expr, env, obj, use.str = FALSE, con) {
   if (missing(con)) {
     con <- textConnection(NULL, open = "w");
     on.exit(close(con), add = TRUE);
     cat('{', file = con, sep = '');
-    Recall(expr, env, con);
+    Recall(expr, env, obj, use.str, con);
     cat('}\n', file = con, sep = '');
     return(paste0(textConnectionValue(con), collapse=''));
   }
+
+  cat('"expression":', file = con, sep = '');
+  dput(expr, con);
 
   err <- NULL;
   tryCatch({
     if (is.character(expr)) {
       expr <- parse(text = expr);
     }
-    obj <- eval(expr, env);
+    if (missing(obj)) {
+      obj <- eval(expr, env);
+    }
   }, error = function(e) {
     err <<- e;
   });
+
   if (!is.null(err)) {
-    cat('"error": ', file = con, sep = '');
+    cat(',"error": ', file = con, sep = '');
     dput(conditionMessage(err), con);
     return();
   }
 
   if (use.str) {
-    repr <- "n/a"
-    cat('"value":', file = con, sep = '');
-    dput(repr, con);
-  
-    raw_value <- "n/a"
-    cat(',"raw_value":', file = con, sep = '');
-    dput(raw_value, con);
+    cat(',"value":null,"raw_value":null', file = con, sep = '');
   } else {
     repr <- .rtvs.repr(obj);
-    cat('"value":', file = con, sep = '');
+    cat(',"value":', file = con, sep = '');
     dput(repr, con);
   
     raw_value <- tryCatch({
@@ -112,23 +119,32 @@
 
   if (use.str) {
     cat(',"str":', file = con, sep = '');
-    str.repr = "";
+    str.repr <- "";
+    
     if (length(obj) == 1) {
       if (any(class(obj) == "factor")) {
-        if (is.na(obj)) str.repr <- "NA" else str.repr <- capture.output(str(levels(obj)[[obj]], max.level = 0, give.head = FALSE))
+        str.repr <- if (is.na(obj)) "NA" else capture.output(str(levels(obj)[[obj]], max.level = 0, give.head = FALSE))
       } else {
         str.repr <- capture.output(str(obj, max.level = 0, give.head = FALSE))
       }
     } else {
       str.repr <- capture.output(str(obj, max.level = 0, give.head = TRUE))
     }
-    dput(str.repr[1], con);
+    
+    if (length(str.repr) != 0) {
+      dput(str.repr[1], con);
+    } else {
+      cat('""', file = con, sep = '');
+    }
   }
 }
 
-.rtvs.children <- function(obj, env, use.str=FALSE, truncate.length=NULL) {
+.rtvs.children <- function(obj, env, use.str = FALSE, truncate.length = NULL) {
   if (!missing(env)) {
+    expr <- obj;
     obj <- eval(parse(text = obj), env);
+  } else {
+    expr <- 'obj';
   }
   
   con <- textConnection(NULL, open = "w");
@@ -136,7 +152,7 @@
   
   cat('[', file = con, sep = '');
   commas <- 0;
-  truncate<-!is.null(truncate.length)
+  truncate <- !is.null(truncate.length)
 
   if (is.environment(obj)) {
     for (name in ls(obj, all.names = TRUE)) {
@@ -169,36 +185,44 @@
       } else if (bindingIsActive(name, obj)) {
         cat('"active_binding":true', file = con, sep = '');
       } else {
-        .rtvs.eval(substitute(`$`(obj, name), list(name = name)), environment(), con, use.str);
+        item_expr <- paste0(expr, '$', .rtvs.repr_symbol(name), collapse = '');
+        .rtvs.eval(item_expr, environment(), get(name, envir = obj), use.str, con);
       }
       
       cat('}}', file = con, sep = '');
     }
   }
   
-  if (isS4(obj)) {
-    for (name in slotNames(class(obj))) {
-      if (!is.character(name) || is.na(name)) {
-        next;
-      }
-
-      if (truncate && commas >= truncate.length) {
-        break;
-      }
-
-      if (commas != 0) {
-        cat(',', file = con, sep = '');
-      }
-      commas <- commas + 1;
-
-      cat('{', file = con, sep = '');
-      dput(paste0('@', name, collapse = ''), con);
-      cat(':{', file = con, sep = '');
-     .rtvs.eval(substitute(`@`(obj, name), list(name = name)), environment(), con, use.str);
-      cat('}}', file = con, sep = '');
+  is_S4 <- isS4(obj);
+  for (name in slotNames(class(obj))) {
+    if (!is.character(name) || is.na(name)) {
+      next;
     }
+
+    if (truncate && commas >= truncate.length) {
+      break;
+    }
+
+    if (commas != 0) {
+      cat(',', file = con, sep = '');
+    }
+    commas <- commas + 1;
+
+    cat('{', file = con, sep = '');
+    
+    accessor <- paste0('@', .rtvs.repr_symbol(name), collapse = '');
+    if (is_S4) {
+      slot_expr <- paste0('(', expr, ')', accessor, collapse = '')
+    } else {
+      slot_expr <- paste0('methods::slot((', expr, '), ', .rtvs.repr(name), ')', collapse = '')
+    }
+    
+    dput(accessor, con);
+    cat(':{', file = con, sep = '');
+   .rtvs.eval(slot_expr, environment(), slot(obj, name), use.str, con);
+    cat('}}', file = con, sep = '');
   }
-  
+
   if (is.atomic(obj) || is.list(obj) || is.language(obj)) {
     count <- length(obj);
     names <- names(obj);
@@ -222,7 +246,7 @@
       name <- names[[i]];
       if (is.character(name) && !is.na(name) && name != '' && match(name, names) == i) {
         if (is.list(obj)) {
-          accessor <- paste0('$', .rtvs.repr(as.symbol(name)), collapse = '');
+          accessor <- paste0('$', .rtvs.repr_symbol(name), collapse = '');
         } else {
           accessor <- paste0('[[', .rtvs.repr(name), ']]', collapse = '');
         }
@@ -230,7 +254,7 @@
       
       dput(accessor, con);
       cat(':{', file = con, sep = '');
-      .rtvs.eval(paste0("obj", accessor, collapse = ''), environment(), con, use.str);
+      .rtvs.eval(paste0(expr, accessor, collapse = ''), environment(), obj[[i]], use.str, con);
       cat('}}', file = con, sep = '');
     }
   }
