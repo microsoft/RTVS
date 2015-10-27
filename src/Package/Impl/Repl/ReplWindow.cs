@@ -131,7 +131,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
             if (current != null && !current.InteractiveWindow.IsRunning) {
                 SnapshotPoint? documentPoint = REditorDocument.MapCaretPositionFromView(textView);
-                var text = current.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.GetText();
+                var curBuffer = current.InteractiveWindow.CurrentLanguageBuffer;
+                var text = curBuffer.CurrentSnapshot.GetText();
                 if (!documentPoint.HasValue ||
                     documentPoint.Value == documentPoint.Value.Snapshot.Length ||
                     documentPoint.Value.Snapshot.Length == 0 ||
@@ -144,8 +145,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                         // have slightly more permissive handling here.
                         var point = textView.BufferGraph.MapUpToBuffer(
                             new SnapshotPoint(
-                                current.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot,
-                                current.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.Length
+                                curBuffer.CurrentSnapshot,
+                                curBuffer.CurrentSnapshot.Length
                             ),
                             PointTrackingMode.Positive,
                             PositionAffinity.Successor,
@@ -158,14 +159,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 } else {
                     // Otherwise insert a line break in the middle of an input
                     current.InteractiveWindow.Operations.BreakLine();
-                    var document = REditorDocument.TryFromTextBuffer(current.InteractiveWindow.CurrentLanguageBuffer);
+                    var document = REditorDocument.TryFromTextBuffer(curBuffer);
                     if (document != null) {
                         var tree = document.EditorTree;
                         tree.EnsureTreeReady();
 
                         AutoFormat.HandleAutoFormat(
                             current.InteractiveWindow.TextView,
-                            current.InteractiveWindow.CurrentLanguageBuffer,
+                            curBuffer,
                             tree.AstRoot,
                             '\n'
                         );
