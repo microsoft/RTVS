@@ -126,7 +126,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             broker.DismissAllSessions(textView);
 
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
-            if (current != null) {
+            if (current != null && !current.InteractiveWindow.IsRunning) {
                 SnapshotPoint? documentPoint = REditorDocument.MapCaretPositionFromView(textView);
                 if (!documentPoint.HasValue ||
                     documentPoint.Value == documentPoint.Value.Snapshot.Length ||
