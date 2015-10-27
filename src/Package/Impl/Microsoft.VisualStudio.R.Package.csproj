@@ -525,6 +525,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
+    <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
     <Content Include="Images\RDataNode.png" />
     <Content Include="Images\RProjectNode.png" />
@@ -553,7 +554,6 @@
   <ItemGroup>
     <None Include="Templates\ItemTemplates\EmptyMD\markdown.md" />
     <None Include="Templates\ProjectTemplates\EmptyProject\.Rhistory" />
-    <None Include="Templates\ProjectTemplates\EmptyProject\rproject.ico" />
     <None Include="Templates\ProjectTemplates\EmptyProject\rproject.Rproj" />
     <VSTemplate Include="Templates\ProjectTemplates\EmptyProject\EmptyProject.vstemplate" />
   </ItemGroup>
