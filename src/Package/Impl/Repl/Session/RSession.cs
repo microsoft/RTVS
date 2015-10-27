@@ -23,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
         public event EventHandler<RRequestEventArgs> BeforeRequest;
         public event EventHandler<RRequestEventArgs> AfterRequest;
+        public event EventHandler<EventArgs> Mutated;
         public event EventHandler<ROutputEventArgs> Output;
         public event EventHandler<EventArgs> Connected;
         public event EventHandler<EventArgs> Disconnected;
@@ -57,8 +58,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return requestSource.CreateRequestTask;
         }
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync() {
-            var source = new RSessionEvaluationSource();
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true) {
+            var source = new RSessionEvaluationSource(isMutating);
             _pendingEvaluationSources.Post(source);
             return source.Task;
         }
@@ -132,10 +133,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             await _hostRunTask;
         }
 
+        public void FlushLog() {
+            _host?.FlushLog();
+        }
+
         Task IRCallbacks.Connected(string rVersion) {
             Prompt = DefaultPrompt;
             _initializationTcs.SetResult(null);
             Connected?.Invoke(this, EventArgs.Empty);
+            Mutated?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
         }
 
@@ -176,12 +182,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             Task evaluationTask;
 
             if (isEvaluationAllowed) {
-                await EvaluateAll(contexts, ct);
                 evaluationCts = new CancellationTokenSource();
-                evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct);
+                evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct); // will raise Mutate
             } else {
                 evaluationCts = null;
                 evaluationTask = Task.CompletedTask;
+                Mutated?.Invoke(this, EventArgs.Empty);
             }
 
             currentRequest?.Complete();
@@ -233,23 +239,49 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             var ct = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, evaluationCancellationToken).Token;
+            bool mutated = true; // start with true on the assumption that the preceding interaction has mutated something
             while (!ct.IsCancellationRequested) {
                 try {
+                    if (await EvaluateAll(contexts, mutated, hostCancellationToken)) {
+                        // EvaluateAll has raised the event already, so reset the flag.
+                        mutated = false;
+                    } else if (mutated) {
+                        // EvaluateAll did not raise the event, but we have a pending mutate to inform about.
+                        Mutated?.Invoke(this, EventArgs.Empty);
+                    }
+
+                    if (ct.IsCancellationRequested) {
+                        return;
+                    }
+
                     var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
+                    mutated |= evaluationSource.IsMutating;
                     await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
                 } catch (OperationCanceledException) {
                     return;
-                }
+                } 
             }
         }
 
-        private async Task EvaluateAll(IReadOnlyList<IRContext> contexts, CancellationToken ct) {
+        private async Task<bool> EvaluateAll(IReadOnlyList<IRContext> contexts, bool mutated, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            RSessionEvaluationSource source;
-            while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
-                await source.BeginEvaluationAsync(contexts, _host, ct);
+            try {
+                RSessionEvaluationSource source;
+                while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
+                    mutated |= source.IsMutating;
+                    await source.BeginEvaluationAsync(contexts, _host, ct);
+                }
+            } catch (OperationCanceledException) {
+                // Host is being shut down, so there's no point in raising the event anymore.
+                mutated = false;
+            } finally {
+                if (mutated) {
+                    Mutated?.Invoke(this, EventArgs.Empty);
+                }
             }
+
+            return mutated;
         }
 
         Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
@@ -272,7 +304,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (isEvaluationAllowed) {
-                await EvaluateAll(contexts, ct);
+                await EvaluateAll(contexts, true, ct);
+            } else {
+                Mutated?.Invoke(this, EventArgs.Empty);
             }
 
             return YesNoCancel.Yes;

@@ -50,11 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region RSession related event handler
 
-        /// <summary>
-        /// IRSession.BeforeRequest handler. At each interaction request, this is called.
-        /// Used to queue another request to refresh variables after the interaction request.
-        /// </summary>
-        private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
+        private void RSession_Mutated(object sender, EventArgs e) {
             RefreshVariableCollection().SilenceException<Exception>().DoNotWait();
         }
 
@@ -83,13 +79,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task SetRSession(IRSession session) {
             // cleans up old RSession
             if (_rSession != null) {
-                _rSession.BeforeRequest -= RSession_BeforeRequest;
+                _rSession.Mutated -= RSession_Mutated;
             }
 
             // set new RSession
             _rSession = session;
             if (_rSession != null) {
-                _rSession.BeforeRequest += RSession_BeforeRequest;
+                _rSession.Mutated += RSession_Mutated;
                 await InitializeData();
             }
 

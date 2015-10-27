@@ -895,6 +895,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Workspace.
+        /// </summary>
+        public static string Settings_WorkspaceCategory {
+            get {
+                return ResourceManager.GetString("Settings_WorkspaceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Setting description.
         /// </summary>
         public static string Temp_SettingDescription {

@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.CranMirror = value; }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
+        [LocCategory("Settings_WorkspaceCategory")]
         [CustomLocDisplayName("Settings_LoadRDataOnProjectLoad")]
         [LocDescription("Settings_LoadRDataOnProjectLoad_Description")]
         [TypeConverter(typeof(YesNoAskTypeConverter))]
@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.LoadRDataOnProjectLoad = value; }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
+        [LocCategory("Settings_WorkspaceCategory")]
         [CustomLocDisplayName("Settings_SaveRDataOnProjectUnload")]
         [LocDescription("Settings_SaveRDataOnProjectUnload_Description")]
         [TypeConverter(typeof(YesNoAskTypeConverter))]

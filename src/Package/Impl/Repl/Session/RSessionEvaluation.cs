@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         }
 
         public void Dispose() {
-            _tcs.SetResult(null);
+            _tcs.TrySetResult(null);
         }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind) {

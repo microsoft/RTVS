@@ -44,5 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
             return Task.CompletedTask;
         }
+
+        public void Flush() { }
     }
 }

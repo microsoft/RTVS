@@ -7,8 +7,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
     internal sealed class RSessionEvaluationSource {
         private readonly TaskCompletionSource<IRSessionEvaluation> _tcs;
 
-        public RSessionEvaluationSource() {
+        public bool IsMutating { get; }
+
+        public RSessionEvaluationSource(bool isMutating) {
             _tcs = new TaskCompletionSource<IRSessionEvaluation>();
+            IsMutating = isMutating;
         }
 
         public Task<IRSessionEvaluation> Task => _tcs.Task;

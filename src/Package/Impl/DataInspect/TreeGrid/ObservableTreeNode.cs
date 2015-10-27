@@ -400,8 +400,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var nodes = await model.GetChildrenAsync(CancellationToken.None);
                 UpdateChildren(nodes);
             } catch (Exception e) {
-                Debug.Assert(false, e.ToString());
-                SetStatus("Errot at enumerating members", e);   // TODO: move to resource, or bypass the exception message
+                if (!(e is OperationCanceledException)) {
+                    Debug.Fail(e.ToString());
+                }
+                SetStatus("Error while enumerating members", e);   // TODO: move to resource, or bypass the exception message
             }
         }
 

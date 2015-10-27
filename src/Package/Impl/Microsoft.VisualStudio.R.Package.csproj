@@ -526,9 +526,11 @@
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
-    <Content Include="Images\RFileNode.png" />
-    <Content Include="Images\RProjectNode.png" />
     <Content Include="Images\RDataNode.png" />
+    <Content Include="Images\RProjectNode.png" />
+    <Content Include="Images\RFileNode.png" />
+    <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
+    <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.png" />
     <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <None Include="VSShell\ShellIcons.h" />
     <None Include="Microsoft.R.Host.exe">
@@ -543,7 +545,6 @@
     <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
-    <None Include="Templates\ItemTemplates\EmptyMD\emptymd.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\EmptyMD\markdown.md" />
@@ -579,7 +580,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\EmptyRMD\markdown.rmd" />
-    <None Include="Templates\ItemTemplates\EmptyRMD\emptyrmd.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyRMD\emptyrmd.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>

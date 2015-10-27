@@ -420,13 +420,16 @@
   <data name="ReplWindowIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\RInteractiveWindow_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="RProjectNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>images\rprojectnode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Settings_WorkspaceCategory" xml:space="preserve">
+    <value>Workspace</value>
+  </data>
   <data name="RDataNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>images\rdatanode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="RFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>images\rfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RProjectNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>images\rprojectnode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

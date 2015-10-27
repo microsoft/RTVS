@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using System.IO;
 using System.Windows.Forms;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -26,6 +27,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         tree = tree.SetIcon(ProjectIconProvider.RFileNodeImage.ToProjectSystemType());
                     } else if (ext == ".rdata" || ext == ".rhistory") {
                         tree = tree.SetIcon(ProjectIconProvider.RDataFileNodeImage.ToProjectSystemType());
+                    }
+                    if (ext == ".md" || ext == ".rmd") {
+                        tree = tree.SetIcon(KnownMonikers.MarkdownFile.ToProjectSystemType());
                     }
                 }
             }
