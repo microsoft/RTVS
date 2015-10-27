@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Interop {
     internal sealed class MapiMail {
@@ -14,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         }
 
         public int SendMailPopup(string strSubject, string strBody) {
-            return SendMail(strSubject, strBody, MAPI_LOGON_UI | MAPI_DIALOG);
+            return SendMail(strSubject, strBody, MAPI_LOGON_UI | MAPI_DIALOG | MAPI_DIALOG_MODELESS);
         }
 
         //public int SendMailDirect(string strSubject, string strBody) {
@@ -26,6 +28,10 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
             MapiMessage message, int flg, int rsv);
 
         int SendMail(string subject, string body, int how) {
+            IntPtr vsWindow;
+            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            shell.GetDialogOwnerHwnd(out vsWindow);
+
             MapiMessage msg = new MapiMessage();
             msg.subject = subject;
             msg.noteText = body;
@@ -33,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
             msg.recips = GetRecipients(out msg.recipCount);
             msg.files = GetAttachments(out msg.fileCount);
 
-            m_lastError = MAPISendMail(new IntPtr(0), new IntPtr(0), msg, how, 0);
+            m_lastError = MAPISendMail(IntPtr.Zero, vsWindow, msg, how, 0);
 
             Cleanup(ref msg);
             return m_lastError;
@@ -131,6 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         int m_lastError = 0;
 
         const int MAPI_LOGON_UI = 0x00000001;
+        const int MAPI_DIALOG_MODELESS = 0x00000004;
         const int MAPI_DIALOG = 0x00000008;
         const int maxAttachments = 20;
 

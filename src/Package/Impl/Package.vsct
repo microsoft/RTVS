@@ -35,8 +35,8 @@
       <Menu guid="guidRToolsCmdSet" id="TopLevelMenu" priority="0x1000" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
         <Strings>
-          <ButtonText>R Tools</ButtonText>
-          <CommandName>R Tools</CommandName>
+          <ButtonText>&amp;R Tools</ButtonText>
+          <MenuText>&amp;R Tools</MenuText>
         </Strings>
       </Menu>
 
@@ -44,8 +44,7 @@
       <Menu guid="guidRToolsCmdSet" id="sessionSubMenu" type="Menu" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
-          <ButtonText>Session</ButtonText>
-          <MenuText>&amp;Session</MenuText>
+          <ButtonText>&amp;Session</ButtonText>
         </Strings>
       </Menu>
 
@@ -53,8 +52,7 @@
       <Menu guid="guidRToolsCmdSet" id="packagesSubMenu" type="Menu" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
-          <ButtonText>Packages</ButtonText>
-          <MenuText>P&amp;ackages</MenuText>
+          <ButtonText>P&amp;ackages</ButtonText>
         </Strings>
       </Menu>
 
@@ -63,8 +61,7 @@
         <!-- Switched off until metafile plots are available -->
         <!--<Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>-->
         <Strings>
-          <ButtonText>Plots</ButtonText>
-          <MenuText>&amp;Plots</MenuText>
+          <ButtonText>&amp;Plots</ButtonText>
         </Strings>
       </Menu>
 
@@ -72,8 +69,7 @@
       <Menu guid="guidRToolsCmdSet" id="dataSubMenu" type="Menu" priority="0x0400">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
-          <ButtonText>Data</ButtonText>
-          <MenuText>&amp;Data</MenuText>
+          <ButtonText>&amp;Data</ButtonText>
         </Strings>
       </Menu>
 
@@ -81,8 +77,7 @@
       <Menu guid="guidRToolsCmdSet" id="publishSubMenu" type="Menu" priority="0x0500">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
-          <ButtonText>Publish</ButtonText>
-          <MenuText>P&amp;ublish</MenuText>
+          <ButtonText>P&amp;ublish</ButtonText>
         </Strings>
       </Menu>
 
@@ -90,9 +85,7 @@
       <Menu guid="guidRToolsCmdSet" id="feedbackSubMenu" type="Menu" priority="0x9000">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
-          <ButtonText>Feedback</ButtonText>
-          <CommandName>Feedback</CommandName>
-          <MenuText>&amp;Feedback</MenuText>
+          <ButtonText>&amp;Feedback</ButtonText>
         </Strings>
       </Menu>
 
@@ -100,9 +93,7 @@
       <Menu guid="guidRToolsCmdSet" id="windowsSubMenu" type="Menu" priority="0x1000">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
-          <ButtonText>Windows</ButtonText>
-          <CommandName>Windows</CommandName>
-          <MenuText>&amp;Windows</MenuText>
+          <ButtonText>&amp;Windows</ButtonText>
         </Strings>
       </Menu>
     </Menus>
@@ -293,6 +284,7 @@
         <Parent guid="guidRToolsCmdSet" id="packagesSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="Package"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Install...</ButtonText>
           <MenuText>&amp;Install...</MenuText>
@@ -302,6 +294,7 @@
 
       <Button guid="guidRToolsCmdSet" id="icmdCheckForPackageUpdates" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="packagesSubMenuGroup"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Check for Updates...</ButtonText>
           <MenuText>Check for &amp;Updates...</MenuText>
