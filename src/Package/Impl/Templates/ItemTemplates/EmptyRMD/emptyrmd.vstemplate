@@ -3,7 +3,7 @@
   <TemplateData>
     <Name>R Markdown</Name>
     <Description>R Markdown</Description>
-    <Icon>emptyrmd.ico</Icon>
+    <Icon>RmdFile.png</Icon>
     <TemplateID>Microsoft.RTools.EmptyRMD</TemplateID>
     <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>
