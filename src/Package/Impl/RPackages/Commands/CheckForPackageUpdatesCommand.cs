@@ -4,19 +4,18 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Commands
 {
-    public sealed class CheckForPackageUpdatesCommand : MenuCommand
+    internal sealed class CheckForPackageUpdatesCommand : PackageCommand
     {
         public CheckForPackageUpdatesCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCheckForPackageUpdates))
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCheckForPackageUpdates)
         {
         }
 
-        class Handler
-        {
-            public void OnCommand()
-            {
-            }
+        protected override void SetStatus() {
+            Enabled = false;
+        }
+
+        protected override void Handle() {
         }
     }
 }

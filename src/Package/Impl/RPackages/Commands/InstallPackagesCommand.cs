@@ -4,19 +4,18 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Commands
 {
-    public sealed class InstallPackagesCommand : MenuCommand
+    internal sealed class InstallPackagesCommand : PackageCommand
     {
         public InstallPackagesCommand() :
-            base((sender, args) => new Handler().OnCommand(),
-                 new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInstallPackages))
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInstallPackages)
         {
         }
 
-        class Handler
-        {
-            public void OnCommand()
-            {
-            }
+        protected override void SetStatus() {
+            Enabled = false;
+        }
+
+        protected override void Handle() {
         }
     }
 }
