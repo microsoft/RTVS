@@ -3,7 +3,7 @@
   <TemplateData>
     <Name>Dataset R Documentation File</Name>
     <Description>Dataset R Documentation File</Description>
-    <Icon>datasetrd.ico</Icon>
+    <Icon>RdFile.png</Icon>
     <TemplateID>Microsoft.RTools.DatasetRD</TemplateID>
     <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>

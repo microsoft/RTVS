@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Data
         }
         protected override void SetStatus()
         {
-            this.Enabled = ReplWindow.ReplWindowExists();
+            this.Enabled = false; // ReplWindow.ReplWindowExists();
         }
     }
 }
