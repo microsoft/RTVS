@@ -284,6 +284,7 @@
         <Parent guid="guidRToolsCmdSet" id="packagesSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="Package"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Install...</ButtonText>
           <MenuText>&amp;Install...</MenuText>
@@ -293,6 +294,7 @@
 
       <Button guid="guidRToolsCmdSet" id="icmdCheckForPackageUpdates" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="packagesSubMenuGroup"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Check for Updates...</ButtonText>
           <MenuText>Check for &amp;Updates...</MenuText>
