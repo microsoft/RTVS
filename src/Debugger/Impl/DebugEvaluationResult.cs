@@ -107,18 +107,24 @@ namespace Microsoft.R.Debugger {
             }
 
             var call = Invariant($".rtvs.children({parameter})");
-            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JObject>(call);
+            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call);
             Trace.Assert(
-                jChildren.Values().All(t => t is JObject),
-                Invariant($".rtvs.children(): object of objects expected.\n\n") + jChildren);
+                jChildren.Children().All(t => t is JObject),
+                Invariant($".rtvs.children(): object of objects expected.\n\n{jChildren}"));
 
             var children = new List<DebugEvaluationResult>();
-            foreach (var kv in jChildren) {
-                var name = kv.Key;
-                var expr = "(" + Expression + ")" + kv.Key;
-                var jEvalResult = (JObject)kv.Value;
-                var evalResult = Parse(StackFrame, expr, name, jEvalResult);
-                children.Add(evalResult);
+            foreach (var child in jChildren) {
+                var childObject = (JObject)child;
+                Trace.Assert(
+                    childObject.Count == 1,
+                    Invariant($".rtvs.children(): each object is expected contain one object\n\n"));
+                foreach (var kv in childObject) {
+                    var name = kv.Key;
+                    var expr = "(" + Expression + ")" + kv.Key;
+                    var jEvalResult = (JObject)kv.Value;
+                    var evalResult = Parse(StackFrame, expr, name, jEvalResult);
+                    children.Add(evalResult);
+                }
             }
 
             return children.ToArray();
