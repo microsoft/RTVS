@@ -529,6 +529,10 @@
     <Content Include="Images\RDataNode.png" />
     <Content Include="Images\RProjectNode.png" />
     <Content Include="Images\RFileNode.png" />
+    <Content Include="Templates\ItemTemplates\DatasetRD\RdFile.png" />
+    <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png" />
+    <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
+    <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
     <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.png" />
     <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
@@ -561,19 +565,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\FunctionRD\function.rd" />
-    <None Include="Templates\ItemTemplates\FunctionRD\functionrd.ico" />
     <VSTemplate Include="Templates\ItemTemplates\FunctionRD\functionrd.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\DatasetRD\dataset.rd" />
-    <None Include="Templates\ItemTemplates\DatasetRD\datasetrd.ico" />
     <VSTemplate Include="Templates\ItemTemplates\DatasetRD\datasetrd.vstemplate" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\EmptyRD\document.rd" />
-    <None Include="Templates\ItemTemplates\EmptyRD\emptyrd.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyRD\emptyrd.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>

@@ -3,7 +3,7 @@
   <TemplateData>
     <Name>Function R Documentation File</Name>
     <Description>Function R Documentation File</Description>
-    <Icon>functionrd.ico</Icon>
+    <Icon>RDFile.png</Icon>
     <TemplateID>Microsoft.RTools.FunctionRD</TemplateID>
     <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>

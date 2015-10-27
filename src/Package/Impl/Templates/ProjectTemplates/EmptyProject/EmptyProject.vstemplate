@@ -14,6 +14,7 @@
   <TemplateContent>
     <Project TargetFileName="$safeprojectname$.rproj" File="rproject.rproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName=".Rhistory">.Rhistory</ProjectItem>
+      <ProjectItem TargetFileName="Project_StartPage.html" OpenInWebBrowser="true">Project_StartPage.html</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>
