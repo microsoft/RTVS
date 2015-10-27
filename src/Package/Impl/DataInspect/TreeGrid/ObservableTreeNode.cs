@@ -44,8 +44,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var instance = includeInCollection ? new ObservableTreeNode(node, 0, 1) : new ObservableTreeNode(node, -1, 0);
 
             if (!includeInCollection) {
-                instance.IsExpanded = true;
                 instance._fixIsExpanded = true;
+                instance.IsExpanded = true;
             }
             instance.Visibility = Visibility.Visible;
 
@@ -66,14 +66,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
 
-        private bool _isExpanded = false;
+        private bool? _isExpanded;
         /// <summary>
         /// Indicate this node expand to show children
         /// </summary>
         public bool IsExpanded {
-            get { return _isExpanded; }
+            get { return _isExpanded??false; }
             set {
-                if (_fixIsExpanded) return;
+                if (_isExpanded.HasValue && _fixIsExpanded) return;
 
                 if (HasChildren) {
                     foreach (var child in ChildrenInternal) {
@@ -81,10 +81,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                 }
 
-                SetProperty<bool>(ref _isExpanded, value);
+                SetProperty(ref _isExpanded, value);
 
                 if (HasChildren) {
-                    if (_isExpanded) {
+                    if (IsExpanded) {
                         StartUpdatingChildren(Model).DoNotWait();
                     }
                 }
