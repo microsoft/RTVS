@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
@@ -128,8 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             broker.DismissAllSessions(textView);
 
             IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
-            if (current != null && !current.InteractiveWindow.IsRunning)
-            {
+            if (current != null && !current.InteractiveWindow.IsRunning) {
                 SnapshotPoint? documentPoint = REditorDocument.MapCaretPositionFromView(textView);
                 var text = current.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.GetText();
                 if (!documentPoint.HasValue ||
@@ -178,14 +178,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             var tokenizer = new RTokenizer();
             IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(
                 new TextStream(text), 0, text.Length);
-            bool multiline = false;
-            foreach (var token in tokens) {
-                if (token.TokenType == Microsoft.R.Core.Tokens.RTokenType.OpenCurlyBrace) {
-                    multiline = true;
-                }
-            }
-
-            return multiline;
+            return tokens.Any(t => t.TokenType == RTokenType.OpenCurlyBrace);
         }
 
         public IVsInteractiveWindow GetInteractiveWindow() {
