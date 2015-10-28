@@ -64,8 +64,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return source.Task;
         }
 
-        public Task CancelAllAsync() {
-            return _host.CancelAllAsync();
+        public async Task CancelAllAsync() {
+            var cancelTask = _host.CancelAllAsync();
+
+            var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
+            currentRequest?.TryCancel();
+            ClearPendingRequests();
+
+            await cancelTask;
         }
 
         public async Task StartHostAsync() {
@@ -149,6 +155,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
             currentRequest?.Complete();
 
+            ClearPendingRequests();
+
+            Disconnected?.Invoke(this, EventArgs.Empty);
+            return Task.CompletedTask;
+        }
+
+        private void ClearPendingRequests() {
             RSessionRequestSource requestSource;
             while (_pendingRequestSources.TryReceive(out requestSource)) {
                 requestSource.TryCancel();
@@ -161,11 +174,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             _contexts = null;
             Prompt = string.Empty;
-
-            Disconnected?.Invoke(this, EventArgs.Empty);
-            return Task.CompletedTask;
         }
-
         async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 

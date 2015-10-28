@@ -114,6 +114,7 @@
                     <?endforeach?>
                   </Directory>
                 </Directory>
+                <Directory Id="ProfilesFolder" Name="Profiles" />
               </Directory>
             </Directory>
           </Directory>
@@ -139,6 +140,7 @@
     <?include CpsRules.wxi ?>
     <?include ItemTemplates.wxi ?>
     <?include ProjectTemplates.wxi ?>
+    <?include Profiles.wxi ?>
 
     <!--<?ifdef LabBuild?>
     <?include LocalizedResources.wxi ?>

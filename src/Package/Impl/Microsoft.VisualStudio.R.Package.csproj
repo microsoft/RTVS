@@ -536,6 +536,10 @@
     <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
     <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.png" />
+    <Content Include="R.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <None Include="VSShell\ShellIcons.h" />
     <None Include="Microsoft.R.Host.exe">
