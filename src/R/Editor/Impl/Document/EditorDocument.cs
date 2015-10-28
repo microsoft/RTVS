@@ -23,13 +23,11 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
-namespace Microsoft.R.Editor.Document
-{
+namespace Microsoft.R.Editor.Document {
     /// <summary>
     /// Main editor document for the R language
     /// </summary>
-    public class REditorDocument : IREditorDocument
-    {
+    public class REditorDocument : IREditorDocument {
         [Import]
         private ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
@@ -73,8 +71,7 @@ namespace Microsoft.R.Editor.Document
         private TreeValidator _validator;
 
         #region Constructors
-        public REditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem)
-        {
+        public REditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem) {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             this.TextBuffer = textBuffer;
@@ -86,8 +83,7 @@ namespace Microsoft.R.Editor.Document
             ServiceManager.AddService<REditorDocument>(this, TextBuffer);
 
             _editorTree = new EditorTree(textBuffer);
-            if (REditorSettings.SyntaxCheckInRepl)
-            {
+            if (REditorSettings.SyntaxCheckInRepl) {
                 _validator = new TreeValidator(this.EditorTree);
             }
 
@@ -100,8 +96,7 @@ namespace Microsoft.R.Editor.Document
         /// <summary>
         /// Retrieves document instance from text buffer
         /// </summary>
-        public static IREditorDocument FromTextBuffer(ITextBuffer textBuffer)
-        {
+        public static IREditorDocument FromTextBuffer(ITextBuffer textBuffer) {
             IREditorDocument document = TryFromTextBuffer(textBuffer);
             Debug.Assert(document != null, "No editor document available");
             return document;
@@ -110,20 +105,15 @@ namespace Microsoft.R.Editor.Document
         /// <summary>
         /// Retrieves document instance from text buffer
         /// </summary>
-        public static IREditorDocument TryFromTextBuffer(ITextBuffer textBuffer)
-        {
+        public static IREditorDocument TryFromTextBuffer(ITextBuffer textBuffer) {
             IREditorDocument document = ServiceManager.GetService<IREditorDocument>(textBuffer);
-            if (document == null)
-            {
+            if (document == null) {
                 document = FindInProjectedBuffers(textBuffer);
-                if (document == null)
-                {
+                if (document == null) {
                     TextViewData viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
-                    if (viewData != null && viewData.LastActiveView != null)
-                    {
+                    if (viewData != null && viewData.LastActiveView != null) {
                         RMainController controller = RMainController.FromTextView(viewData.LastActiveView);
-                        if (controller != null && controller.TextBuffer != null)
-                        {
+                        if (controller != null && controller.TextBuffer != null) {
                             document = ServiceManager.GetService<REditorDocument>(controller.TextBuffer);
                         }
                     }
@@ -142,26 +132,20 @@ namespace Microsoft.R.Editor.Document
         /// </summary>
         /// <param name="viewBuffer"></param>
         /// <returns></returns>
-        public static IREditorDocument FindInProjectedBuffers(ITextBuffer viewBuffer)
-        {
+        public static IREditorDocument FindInProjectedBuffers(ITextBuffer viewBuffer) {
             IREditorDocument document = null;
-            if (viewBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType))
-            {
+            if (viewBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                 return ServiceManager.GetService<REditorDocument>(viewBuffer);
             }
 
             // Try locating R buffer
             ITextBuffer rBuffer = null;
             IProjectionBuffer pb = viewBuffer as IProjectionBuffer;
-            if (pb != null)
-            {
-                rBuffer = pb.SourceBuffers.FirstOrDefault((ITextBuffer tb) =>
-                {
-                    if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType))
-                    {
+            if (pb != null) {
+                rBuffer = pb.SourceBuffers.FirstOrDefault((ITextBuffer tb) => {
+                    if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                         document = ServiceManager.GetService<REditorDocument>(tb);
-                        if (document != null)
-                        {
+                        if (document != null) {
                             return true;
                         }
                     }
@@ -180,20 +164,16 @@ namespace Microsoft.R.Editor.Document
         /// </summary>
         /// <param name="viewBuffer"></param>
         /// <returns></returns>
-        public static ITextBuffer FindRBuffer(ITextBuffer viewBuffer)
-        {
-            if (viewBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType))
-            {
+        public static ITextBuffer FindRBuffer(ITextBuffer viewBuffer) {
+            if (viewBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                 return viewBuffer;
             }
 
             // Try locating R buffer
             ITextBuffer rBuffer = null;
             IProjectionBuffer pb = viewBuffer as IProjectionBuffer;
-            if (pb != null)
-            {
-                rBuffer = pb.SourceBuffers.FirstOrDefault((ITextBuffer tb) =>
-                {
+            if (pb != null) {
+                rBuffer = pb.SourceBuffers.FirstOrDefault((ITextBuffer tb) => {
                     return tb.ContentType.IsOfType(RContentTypeDefinition.ContentType);
                 });
             }
@@ -209,40 +189,33 @@ namespace Microsoft.R.Editor.Document
         /// </summary>
         /// <param name="textView"></param>
         /// <returns></returns>
-        public static SnapshotPoint? MapCaretPositionFromView(ITextView textView)
-        {
-            int caretPosition = textView.Caret.Position.BufferPosition;
-            var caretPoint = new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, caretPosition);
-            return MapPointFromView(textView, caretPoint);
+        public static SnapshotPoint? MapCaretPositionFromView(ITextView textView) {
+            if (!textView.Caret.InVirtualSpace) {
+                SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
+                return MapPointFromView(textView, caretPosition);
+            }
+            return null;
         }
 
         /// <summary>
         /// Maps given point from view buffer to R editor buffer
         /// </summary>
-        public static SnapshotPoint? MapPointFromView(ITextView textView, SnapshotPoint point)
-        {
+        public static SnapshotPoint? MapPointFromView(ITextView textView, SnapshotPoint point) {
             ITextBuffer rBuffer;
             SnapshotPoint? documentPoint = null;
 
             IREditorDocument document = REditorDocument.FindInProjectedBuffers(textView.TextBuffer);
-            if (document != null)
-            {
+            if (document != null) {
                 rBuffer = document.TextBuffer;
-            }
-            else
-            {
+            } else {
                 // Last resort, typically in unit tests when document is not available
                 rBuffer = REditorDocument.FindRBuffer(textView.TextBuffer);
             }
 
-            if (rBuffer != null)
-            {
-                if (textView.BufferGraph != null)
-                {
+            if (rBuffer != null) {
+                if (textView.BufferGraph != null) {
                     documentPoint = textView.MapDownToBuffer(point, rBuffer);
-                }
-                else
-                {
+                } else {
                     documentPoint = point;
                 }
             }
@@ -251,20 +224,16 @@ namespace Microsoft.R.Editor.Document
         }
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing)
-        {
+        protected virtual void Dispose(bool disposing) {
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        void OnTextDocumentDisposed(object sender, TextDocumentEventArgs e)
-        {
-            if (e.TextDocument.TextBuffer == this.TextBuffer)
-            {
+        void OnTextDocumentDisposed(object sender, TextDocumentEventArgs e) {
+            if (e.TextDocument.TextBuffer == this.TextBuffer) {
                 Close();
             }
         }
@@ -274,16 +243,14 @@ namespace Microsoft.R.Editor.Document
         /// <summary>
         /// Editor parse tree (object model)
         /// </summary>
-        public IEditorTree EditorTree
-        {
+        public IEditorTree EditorTree {
             get { return _editorTree; }
         }
 
         /// <summary>
         /// Closes the document
         /// </summary>
-        public virtual void Close()
-        {
+        public virtual void Close() {
             if (IsClosed)
                 return;
 
@@ -294,16 +261,13 @@ namespace Microsoft.R.Editor.Document
             if (DocumentClosing != null)
                 DocumentClosing(this, null);
 
-            if (EditorTree != null)
-            {
+            if (EditorTree != null) {
                 _editorTree.Dispose(); // this will also remove event handlers
                 _editorTree = null;
             }
 
-            if (DocumentClosing != null)
-            {
-                foreach (EventHandler<EventArgs> eh in DocumentClosing.GetInvocationList())
-                {
+            if (DocumentClosing != null) {
+                foreach (EventHandler<EventArgs> eh in DocumentClosing.GetInvocationList()) {
                     Debug.Fail(String.Format(CultureInfo.CurrentCulture, "There are still listeners in the EditorDocument.OnDocumentClosing event list: {0}", eh.Target));
                     DocumentClosing -= eh;
                 }
@@ -323,8 +287,7 @@ namespace Microsoft.R.Editor.Document
         /// such as when document is based off projection buffer
         /// created elsewhere as in VS Interactive Window case.
         /// </summary>
-        public bool IsTransient
-        {
+        public bool IsTransient {
             get { return WorkspaceItem == null || WorkspaceItem.Path.Length == 0; }
         }
 
@@ -334,10 +297,8 @@ namespace Microsoft.R.Editor.Document
         /// HTML parser anc classifier and remove all projections. HTML tree is
         /// no longer valid after this call.
         /// </summary>
-        public void BeginMassiveChange()
-        {
-            if (_inMassiveChange == 0)
-            {
+        public void BeginMassiveChange() {
+            if (_inMassiveChange == 0) {
                 _editorTree.TreeUpdateTask.Suspend();
 
                 RClassifier colorizer = ServiceManager.GetService<RClassifier>(TextBuffer);
@@ -356,18 +317,15 @@ namespace Microsoft.R.Editor.Document
         /// resume tracking of text buffer changes and classification (colorization).
         /// </summary>
         /// <returns>True if changes were made to the text buffer since call to BeginMassiveChange</returns>
-        public bool EndMassiveChange()
-        {
+        public bool EndMassiveChange() {
             bool changed = _editorTree.TreeUpdateTask.TextBufferChangedSinceSuspend;
 
-            if (_inMassiveChange == 1)
-            {
+            if (_inMassiveChange == 1) {
                 RClassifier colorizer = ServiceManager.GetService<RClassifier>(TextBuffer);
                 if (colorizer != null)
                     colorizer.Resume();
 
-                if (changed)
-                {
+                if (changed) {
                     TextChangeEventArgs textChange = new TextChangeEventArgs(0, 0, TextBuffer.CurrentSnapshot.Length, 0,
                         new TextProvider(_editorTree.TextSnapshot, partial: true), new TextStream(string.Empty));
 
@@ -395,8 +353,7 @@ namespace Microsoft.R.Editor.Document
         /// Indicates if massive change to the document is in progress. If massive change
         /// is in progress, tree updates and colorizer are suspended.
         /// </summary>
-        public bool IsMassiveChangeInProgress
-        {
+        public bool IsMassiveChangeInProgress {
             get { return _inMassiveChange > 0; }
         }
 
