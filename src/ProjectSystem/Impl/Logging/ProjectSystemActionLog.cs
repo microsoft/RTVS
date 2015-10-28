@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
         public static IActionLog Default => Instance.Value;
 
         private ProjectSystemActionLog(IActionLogWriter logWriter) :
-            base (logWriter){
+            base(logWriter) {
         }
     }
 }
