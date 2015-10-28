@@ -1,13 +1,10 @@
 using System.IO;
 
-namespace Microsoft.Common.Core.IO
-{
-    internal sealed class FileInfoProxy : IFileInfo
-    {
+namespace Microsoft.Common.Core.IO {
+    internal sealed class FileInfoProxy : IFileInfo {
         private readonly FileInfo _fileInfo;
 
-        public FileInfoProxy(FileInfo fileInfo)
-        {
+        public FileInfoProxy(FileInfo fileInfo) {
             _fileInfo = fileInfo;
         }
 
@@ -16,13 +13,11 @@ namespace Microsoft.Common.Core.IO
         public FileAttributes Attributes => _fileInfo.Attributes;
         public IDirectoryInfo Directory => _fileInfo.Directory != null ? new DirectoryInfoProxy(_fileInfo.Directory) : null;
 
-        public StreamWriter CreateText()
-        {
+        public StreamWriter CreateText() {
             return _fileInfo.CreateText();
         }
 
-        public void Delete()
-        {
+        public void Delete() {
             _fileInfo.Delete();
         }
     }
