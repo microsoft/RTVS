@@ -53,7 +53,8 @@ namespace Microsoft.R.Editor.Classification
                     return "Punctuation";
 
                 case RTokenType.Identifier:
-                    if (t.SubType == RTokenSubType.BuiltinConstant)
+                    if (t.SubType == RTokenSubType.BuiltinConstant || 
+                        t.SubType == RTokenSubType.BuiltinFunction)
                     {
                         return PredefinedClassificationTypeNames.Keyword;
                     }
