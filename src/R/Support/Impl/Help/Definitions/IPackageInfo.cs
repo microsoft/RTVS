@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.R.Support.Help.Definitions
-{
-    public interface IPackageInfo : INamedItemInfo
-    {
+namespace Microsoft.R.Support.Help.Definitions {
+    public interface IPackageInfo : INamedItemInfo {
         /// <summary>
         /// Package install path
         /// </summary>

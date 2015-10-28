@@ -5,20 +5,16 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Support.RD.Classification
-{
+namespace Microsoft.R.Support.RD.Classification {
     [Export(typeof(IClassifierProvider))]
     [ContentType(RdContentTypeDefinition.ContentType)]
-    internal sealed class ClassifierProvider : IClassifierProvider
-    {
+    internal sealed class ClassifierProvider : IClassifierProvider {
         [Import]
         public IClassificationTypeRegistryService ClassificationRegistryService { get; set; }
 
-        public IClassifier GetClassifier(ITextBuffer textBuffer)
-        {
+        public IClassifier GetClassifier(ITextBuffer textBuffer) {
             RdClassifier classifier = ServiceManager.GetService<RdClassifier>(textBuffer);
-            if (classifier == null)
-            {
+            if (classifier == null) {
                 classifier = new RdClassifier(textBuffer, ClassificationRegistryService);
             }
 

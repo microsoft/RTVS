@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.R.Support.Help.Definitions;
 
-namespace Microsoft.R.Support.Help.Functions
-{
-    public sealed class FunctionInfo : NamedItemInfo, IFunctionInfo
-    {
+namespace Microsoft.R.Support.Help.Functions {
+    public sealed class FunctionInfo : NamedItemInfo, IFunctionInfo {
         #region IFunctionInfo
         /// <summary>
         /// Other function name variants
@@ -29,13 +27,11 @@ namespace Microsoft.R.Support.Help.Functions
         #endregion
 
         public FunctionInfo(string name, string description) :
-            base(name, description, NamedItemType.Function)
-        {
+            base(name, description, NamedItemType.Function) {
         }
 
         public FunctionInfo(string name) :
-            base(name, NamedItemType.Function)
-        {
+            base(name, NamedItemType.Function) {
         }
     }
 }

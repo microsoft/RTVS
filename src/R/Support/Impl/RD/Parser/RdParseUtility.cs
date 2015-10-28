@@ -1,12 +1,9 @@
 ﻿using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Support.RD.Tokens;
 
-namespace Microsoft.R.Support.RD.Parser
-{
-    static class RdParseUtility
-    {
-        public static bool GetKeywordArgumentBounds(TokenStream<RdToken> tokens, out int startTokenIndex, out int endTokenIndex)
-        {
+namespace Microsoft.R.Support.RD.Parser {
+    static class RdParseUtility {
+        public static bool GetKeywordArgumentBounds(TokenStream<RdToken> tokens, out int startTokenIndex, out int endTokenIndex) {
             startTokenIndex = -1;
             endTokenIndex = -1;
 
@@ -17,19 +14,15 @@ namespace Microsoft.R.Support.RD.Parser
                 new RdToken(RdTokenType.CloseSquareBracket),
                 new RdTokenTypeComparer());
 
-            for (int pos = tokens.Position; pos < tokens.Length; pos++)
-            {
+            for (int pos = tokens.Position; pos < tokens.Length; pos++) {
                 RdToken token = tokens[pos];
 
-                if (braceCounter.CountBrace(token))
-                {
-                    if (startTokenIndex < 0)
-                    {
+                if (braceCounter.CountBrace(token)) {
+                    if (startTokenIndex < 0) {
                         startTokenIndex = pos;
                     }
 
-                    if (braceCounter.Count == 0)
-                    {
+                    if (braceCounter.Count == 0) {
                         endTokenIndex = pos;
                         break;
                     }
