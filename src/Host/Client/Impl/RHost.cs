@@ -323,8 +323,16 @@ namespace Microsoft.R.Host.Client {
 
             await TaskUtilities.SwitchToBackgroundThread();
 
+            // We may get a WebSocketException from any concurrent SendAsync or ReceiveAsync when the host
+            // drops connection after we request it to do so. To ensure that those don't bubble up to the
+            // client, cancel this token to indicate that we're shutting down the host - SendAsync and
+            // ReceiveAsync will take care of wrapping any WSE into OperationCanceledException.
+            _cts.Cancel();
+
             try {
-                await SendAsync(JValue.CreateNull(), _cts.Token);
+                // Don't use _cts, since it's already cancelled. We want to try to send this message in
+                // any case, and we'll catch WebSocketException if no-one is on the other end anymore.
+                await SendAsync(JValue.CreateNull(), new CancellationToken());
             } catch (OperationCanceledException) {
             } catch (WebSocketException) {
             }
