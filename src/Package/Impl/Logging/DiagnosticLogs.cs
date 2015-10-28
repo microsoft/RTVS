@@ -43,9 +43,11 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         private static List<string> _logFiles = new List<string>();
 
         public static string Collect() {
+            string zipPath = string.Empty;
             _logFiles.Clear();
-            string zipPath = Path.Combine(Path.GetTempPath(), RtvsLogZipFile);
+
             try {
+                zipPath = Path.Combine(Path.GetTempPath(), RtvsLogZipFile);
                 var rSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var sessions = rSessionProvider.GetSessions();
                 foreach (var s in sessions) {
@@ -55,7 +57,10 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 if (File.Exists(zipPath)) {
                     File.Delete(zipPath);
                 }
-            } catch (IOException) { }
+            } catch (IOException) {
+            } catch (UnauthorizedAccessException) {
+            } catch (ArgumentException) {
+            }
 
             LongOperationNotification.ShowWaitingPopup(Resources.GatheringDiagnosticData, _actions);
             return zipPath;

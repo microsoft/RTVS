@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         protected override void Handle() {
 
             string zipPath = DiagnosticLogs.Collect();
-            if (File.Exists(zipPath)) {
+            if (!string.IsNullOrEmpty(zipPath) && File.Exists(zipPath)) {
                 if (new FileInfo(zipPath).Length > _maxAttachmentSizeMb * (1024 * 1024)) {
                     StringBuilder sb = new StringBuilder();
 

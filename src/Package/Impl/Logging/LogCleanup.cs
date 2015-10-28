@@ -48,7 +48,10 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                         File.Delete(file);
                     }
                 }
-            } catch (IOException) { }
+            } catch (IOException) {
+            } catch (UnauthorizedAccessException) {
+            } catch (ArgumentException) {
+            }
         }
     }
 }
