@@ -13,19 +13,24 @@
   .rtvs.repr(name)
 }
 
-.rtvs.eval <- function(expr, env, obj, use.str = FALSE, con) {
+.rtvs.eval <- function(expr, env, kind, obj, use.str = FALSE, con) {
   if (missing(con)) {
     con <- textConnection(NULL, open = "w");
     on.exit(close(con), add = TRUE);
     cat('{', file = con, sep = '');
-    Recall(expr, env, obj, use.str, con);
+    Recall(expr, env, kind, obj, use.str, con);
     cat('}\n', file = con, sep = '');
     return(paste0(textConnectionValue(con), collapse=''));
   }
 
   cat('"expression":', file = con, sep = '');
   dput(expr, con);
-
+  
+  if (!missing(kind)) { 
+    cat(',"kind":', file = con, sep = '');
+    dput(kind, con);
+  }
+  
   err <- NULL;
   tryCatch({
     if (is.character(expr)) {
@@ -66,7 +71,7 @@
   cat(',"type":', file = con, sep = '');
   dput(typeof(obj), con);
   
-  cat(',"class":[', file = con, sep = '');
+  cat(',"classes":[', file = con, sep = '');
   commas <- 0;
   for (cls in class(obj)) {
     if (!is.character(cls) || is.na(cls)) {
@@ -81,11 +86,7 @@
     dput(cls, con);
   }
   cat(']', file = con, sep = '');
-  
-  cat(',"is_atomic":', (if (is.atomic(obj)) "true" else "false"), file = con, sep = '');
-      
-  cat(',"is_recursive":', (if (is.recursive(obj)) "true" else "false"), file = con, sep = '');
-          
+
   cat(',"length":', file = con, sep = '');
   dput(as.double(length(obj)), con);
   
@@ -101,24 +102,49 @@
   dim <- dim(obj);
   if (is.integer(dim)) {
     cat(',"dim":[', file = con, sep = '');
-    commas2 <- 0;
+    commas <- 0;
     for (d in dim) {
-      if (commas2 != 0) {
+      if (commas != 0) {
         cat(',', file = con, sep = '');
       }
-      commas2 <- commas2 + 1;
+      commas <- commas + 1;
       dput(as.double(d), con);
     }
     cat(']', file = con, sep = '');
   }
   
+  has_parent_env <- FALSE;
   if (is.environment(obj)) {
     cat(',"env_name":', file = con, sep = '');
     dput(environmentName(obj), con);
-    
-    cat(',"has_parent_env":', (if (identical(obj, emptyenv())) "false" else "true"), file = con, sep = '');
+    has_parent_env <- !identical(obj, emptyenv());
   }
 
+  cat(',"flags":[', file = con, sep = '');
+  commas <- 0;
+  if (is.atomic(obj)) {
+    if (commas != 0) {
+      cat(',', file = con, sep = '');
+    }
+    cat('"atomic"', file = con, sep = '');
+    commas <- commas + 1;
+  }
+  if (is.recursive(obj)) {
+    if (commas != 0) {
+      cat(',', file = con, sep = '');
+    }
+    cat('"recursive"', file = con, sep = '');
+    commas <- commas + 1;
+  }
+  if (has_parent_env) {
+    if (commas != 0) {
+      cat(',', file = con, sep = '');
+    }
+    cat('"has_parent_env"', file = con, sep = '');
+    commas <- commas + 1;
+  }
+  cat(']', file = con, sep = '');
+  
   if (use.str) {
     cat(',"str":', file = con, sep = '');
     str.repr <- "";
@@ -188,7 +214,7 @@
         cat('"active_binding":true', file = con, sep = '');
       } else {
         item_expr <- paste0(expr, '$', .rtvs.repr_symbol(name), collapse = '');
-        .rtvs.eval(item_expr, environment(), get(name, envir = obj), use.str, con);
+        .rtvs.eval(item_expr, environment(), '$', get(name, envir = obj), use.str, con);
       }
       
       cat('}}', file = con, sep = '');
@@ -221,7 +247,7 @@
     
     dput(accessor, con);
     cat(':{', file = con, sep = '');
-   .rtvs.eval(slot_expr, environment(), slot(obj, name), use.str, con);
+   .rtvs.eval(slot_expr, environment(), '@', slot(obj, name), use.str, con);
     cat('}}', file = con, sep = '');
   }
 
@@ -244,9 +270,11 @@
 
       cat('{', file = con, sep = '');
       accessor <- paste0('[[', as.double(i), ']]', collapse = '');
+      kind <- '[[';
 
       name <- names[[i]];
       if (is.character(name) && !is.na(name) && name != '' && match(name, names) == i) {
+        kind <- '$';
         if (is.list(obj)) {
           accessor <- paste0('$', .rtvs.repr_symbol(name), collapse = '');
         } else {
@@ -256,7 +284,7 @@
       
       dput(accessor, con);
       cat(':{', file = con, sep = '');
-      .rtvs.eval(paste0(expr, accessor, collapse = ''), environment(), obj[[i]], use.str, con);
+      .rtvs.eval(paste0(expr, accessor, collapse = ''), environment(), kind, obj[[i]], use.str, con);
       cat('}}', file = con, sep = '');
     }
   }

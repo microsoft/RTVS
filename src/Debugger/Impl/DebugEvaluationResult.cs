@@ -64,31 +64,80 @@ namespace Microsoft.R.Debugger {
         }
     }
 
+    public enum DebugValueEvaluationResultKind {
+        UnnamedItem,
+        NamedItem,
+        Slot,
+    }
+
+    public enum DebugValueEvaluationResultFlags {
+        Atomic = 1 << 1,
+        Recursive = 1 << 2,
+        HasParentEnvironment = 1 << 3,
+    }
+
     public class DebugValueEvaluationResult : DebugEvaluationResult {
+        public DebugValueEvaluationResultKind Kind { get; }
         public string Value { get; }
         public string RawValue { get; }
         public string TypeName { get; }
-        public int Length { get; }
-        public bool IsAtomic { get; }
-        public bool IsRecursive { get; }
-        public bool HasAttributes { get; }
-        public bool HasSlots { get; }
         public IReadOnlyList<string> Classes { get; }
+        public int Length { get; }
+        public int AttributeCount { get; }
+        public int SlotCount { get; }
+        public DebugValueEvaluationResultFlags Flags { get; }
         public string Str { get; }
 
+        public bool IsAtomic => Flags.HasFlag(DebugValueEvaluationResultFlags.Atomic);
+        public bool IsRecursive => Flags.HasFlag(DebugValueEvaluationResultFlags.Recursive);
+        public bool HasAttributes => AttributeCount != 0;
+        public bool HasSlots => SlotCount != 0;
         public bool HasChildren => HasSlots || Length > (IsAtomic ? 1 : 0);
 
         internal DebugValueEvaluationResult(DebugStackFrame stackFrame, string expression, string name, JObject json)
             : base(stackFrame, expression, name) {
+
             Value = json.Value<string>("value");
             RawValue = json.Value<string>("raw_value");
             TypeName = json.Value<string>("type");
+            Classes = json.Value<JArray>("classes").Select(t => t.Value<string>()).ToArray();
             Length = json.Value<int>("length");
-            IsAtomic = json.Value<bool>("is_atomic");
-            IsRecursive = json.Value<bool>("is_recursive");
-            HasAttributes = json.Value<int>("attr_count") > 0;
-            HasSlots = json.Value<int>("slot_count") > 0;
-            Classes = json.Value<JArray>("class").Select(t => t.Value<string>()).ToArray();
+            AttributeCount = json.Value<int>("attr_count");
+            SlotCount = json.Value<int>("slot_count");
+
+            var kind = json.Value<string>("kind");
+            switch (kind) {
+                case null:
+                case "[[":
+                    Kind = DebugValueEvaluationResultKind.UnnamedItem;
+                    break;
+                case "$":
+                    Kind = DebugValueEvaluationResultKind.NamedItem;
+                    break;
+                case "@":
+                    Kind = DebugValueEvaluationResultKind.Slot;
+                    break;
+                default:
+                    throw new InvalidDataException(Invariant($"Invalid kind '{kind}' in:\n\n{json}"));
+            }
+
+            var flags = json.Value<JArray>("flags").Select(v => v.Value<string>());
+            foreach (var flag in flags) {
+                switch (flag) {
+                    case "atomic":
+                        Flags |= DebugValueEvaluationResultFlags.Atomic;
+                        break;
+                    case "recursive":
+                        Flags |= DebugValueEvaluationResultFlags.Recursive;
+                        break;
+                    case "has_parent_env":
+                        Flags |= DebugValueEvaluationResultFlags.HasParentEnvironment;
+                        break;
+                    default:
+                        throw new InvalidDataException(Invariant($"Unrecognized flag '{flag}' in:\n\n{json}"));
+                }
+            }
+
             Str = json.Value<string>("str");
         }
 
@@ -102,8 +151,7 @@ namespace Microsoft.R.Debugger {
             string parameter = Invariant($"{Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, use.str={useStr.ToString().ToUpperInvariant()}");
             if (truncateLength.HasValue) {
                 parameter += Invariant($", truncate.length={truncateLength.Value}");
-            }
-            else {
+            } else {
                 parameter += Invariant($", truncate.length=NULL");
             }
 
