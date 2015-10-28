@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Test.Utility;
+using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -43,6 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [TestMethod]
         public void ObservableTreeNodeAddChildTest() {
+            EditorShell.SetShell(TestEditorShell.Create(EditorTestCompositionCatalog.Current));
             var target = _rootNode;
             target.InsertChildAt(0, GetTestTree());
 

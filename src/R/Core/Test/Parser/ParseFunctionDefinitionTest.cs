@@ -29,12 +29,16 @@ namespace Microsoft.R.Core.Test.Parser
                     TokenNode  [) [15...16)]
                     Scope  []
                         TokenNode  [{ [17...18)]
-                        KeywordExpressionStatement  []
-                            TokenNode  [return [19...25)]
-                            TokenNode  [( [25...26)]
-                            Expression  [1]
-                                NumericalValue  [1 [26...27)]
-                            TokenNode  [) [27...28)]
+                        ExpressionStatement  [return(1)]
+                            Expression  [return(1)]
+                                FunctionCall  [19...28)
+                                    Variable  [return]
+                                    TokenNode  [( [25...26)]
+                                    ArgumentList  [26...27)
+                                        ExpressionArgument  [26...27)
+                                            Expression  [1]
+                                                NumericalValue  [1 [26...27)]
+                                    TokenNode  [) [27...28)]
                         TokenNode  [} [29...30)]
 ";
             ParserTest.VerifyParse(expected, "x <- function(a) { return(1) }");
@@ -59,12 +63,16 @@ namespace Microsoft.R.Core.Test.Parser
                                 Variable  [a]
                     TokenNode  [) [15...16)]
                     SimpleScope  [17...26)
-                        KeywordExpressionStatement  []
-                            TokenNode  [return [17...23)]
-                            TokenNode  [( [23...24)]
-                            Expression  [1]
-                                NumericalValue  [1 [24...25)]
-                            TokenNode  [) [25...26)]
+                        ExpressionStatement  [return(1)]
+                            Expression  [return(1)]
+                                FunctionCall  [17...26)
+                                    Variable  [return]
+                                    TokenNode  [( [23...24)]
+                                    ArgumentList  [24...25)
+                                        ExpressionArgument  [24...25)
+                                            Expression  [1]
+                                                NumericalValue  [1 [24...25)]
+                                    TokenNode  [) [25...26)]
 ";
             ParserTest.VerifyParse(expected, "x <- function(a) return(1)");
         }

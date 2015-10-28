@@ -368,14 +368,7 @@ namespace Microsoft.R.Core.Tokens
             }
             else if (Builtins.IsBuiltin(s))
             {
-                if (IsOpenBraceFollow(_cs, _cs.Position))
-                {
-                    AddToken(RTokenType.Keyword, RTokenSubType.BuiltinFunction, start, s.Length);
-                }
-                else
-                {
-                    AddToken(RTokenType.Identifier, start, s.Length);
-                }
+                AddToken(RTokenType.Identifier, RTokenSubType.BuiltinFunction, start, s.Length);
             }
             else if (s.StartsWith("as.", StringComparison.Ordinal) || s.StartsWith("is.", StringComparison.Ordinal))
             {

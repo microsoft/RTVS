@@ -120,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             instance.HasChildren = false;
             return instance;
         });
-        private static EvaluationWrapper Ellipsis {
+        public static EvaluationWrapper Ellipsis {
             get { return _ellipsis.Value; }
         }
 

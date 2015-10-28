@@ -19,7 +19,7 @@ namespace Microsoft.R.Core.Test.Tokens
             for (int i = 0; i < tokens.Count; i++)
             {
                 Assert.AreEqual(RTokenType.Identifier, tokens[i].TokenType);
-                Assert.AreEqual(RTokenSubType.None, tokens[i].SubType);
+                Assert.AreEqual(RTokenSubType.BuiltinFunction, tokens[i].SubType);
             }
         }
 
@@ -31,7 +31,7 @@ namespace Microsoft.R.Core.Test.Tokens
             Assert.AreEqual(12, tokens.Count);
             for (int i = 0; i < tokens.Count; i += 3)
             {
-                Assert.AreEqual(RTokenType.Keyword, tokens[i].TokenType);
+                Assert.AreEqual(RTokenType.Identifier, tokens[i].TokenType);
                 Assert.AreEqual(RTokenSubType.BuiltinFunction, tokens[i].SubType);
                 Assert.AreEqual(RTokenType.OpenBrace, tokens[i + 1].TokenType);
                 Assert.AreEqual(RTokenType.CloseBrace, tokens[i + 2].TokenType);

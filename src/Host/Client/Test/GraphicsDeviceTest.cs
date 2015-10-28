@@ -12,7 +12,7 @@ using System.Xml.Linq;
 using Microsoft.R.Support.Utility;
 
 namespace Microsoft.R.Host.Client.Test {
-    [TestClass]
+    // [TestClass]
     public class GraphicsDeviceTest {
         private const string ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
         private const string gridPrefixCode = @"
@@ -44,7 +44,7 @@ grid.newpage()
             return DefaultHeight * percentY;
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void Line() {
             var code = @"grid.segments(.01, .1, .99, .1)";
             var doc = GridTest(code);
@@ -56,7 +56,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void LineCustomLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty='4812',lwd=5,col='Blue'))";
             var doc = GridTest(code);
@@ -68,7 +68,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], "4 8 1 2");
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void LineSolidLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=1))";
             var doc = GridTest(code);
@@ -80,7 +80,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void LineDashedLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=2))";
             var doc = GridTest(code);
@@ -92,7 +92,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], "4 4");
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void Polygon() {
             var code = @"grid.polygon(x=c(0,0.5,1,0.5),y=c(0.5,1,0.5,0))";
             var doc = GridTest(code);
@@ -104,7 +104,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void Circle() {
             var code = @"grid.circle(0.5, 0.5, 0.2)";
             var doc = GridTest(code);
@@ -114,7 +114,7 @@ grid.newpage()
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.2), Y(0.5) - W(0.2));
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void Rectangle() {
             var code = @"grid.rect(0.5, 0.5, 0.3, 0.4)";
             var doc = GridTest(code);
@@ -124,7 +124,7 @@ grid.newpage()
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.15), Y(0.5) - W(0.2));
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void Path() {
             var code = @"grid.path(c(.1, .1, .9, .9, .2, .2, .8, .8), c(.1, .9, .9, .1, .2, .8, .8, .2), id=rep(1:2,each=4), rule='winding', gp=gpar(filled.contour='grey'))";
             var doc = GridTest(code);
@@ -142,7 +142,7 @@ grid.newpage()
             CheckStringAttr(shapes[0], "Data", expected);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void TextXmlEscape() {
             var code = "grid.text('hello<>&\"', 0.1, 0.3)";
             var doc = GridTest(code);

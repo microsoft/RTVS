@@ -1,6 +1,8 @@
-﻿using System;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
@@ -24,8 +26,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class ReplWindow : IVsWindowFrameEvents, IDisposable {
         private uint _windowFrameEventsCookie;
         private IVsInteractiveWindow _lastUsedReplWindow;
-        private static readonly Lazy<ReplWindow> _instance = new Lazy<ReplWindow>(() => new ReplWindow());
-        LinkedList<PendingSubmission> _pendingInputs = new LinkedList<PendingSubmission>();
+        private ConcurrentQueue<PendingSubmission> _pendingInputs = new ConcurrentQueue<PendingSubmission>();
+        private static readonly Lazy<ReplWindow> Instance = new Lazy<ReplWindow>(() => new ReplWindow());
 
         class PendingSubmission {
             public string Code;
@@ -37,11 +39,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _windowFrameEventsCookie = shell.AdviseWindowFrameEvents(this);
         }
 
-        public static ReplWindow Current => _instance.Value;
+        public static ReplWindow Current => Instance.Value;
 
         public bool IsActive {
             get {
-                IVsWindowFrame frame = ReplWindow.Current.GetToolWindow();
+                IVsWindowFrame frame = Current.GetToolWindow();
                 if (frame != null) {
                     int onScreen;
                     frame.IsOnScreen(out onScreen);
@@ -52,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public IVsWindowFrame GetToolWindow() {
-            IVsWindowFrame frame = null;
+            IVsWindowFrame frame;
             IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
 
@@ -62,27 +64,30 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private void ProcessQueuedInput() {
-            IVsInteractiveWindow interactive = _instance.Value.GetInteractiveWindow();
-            if (interactive != null) {
-                var window = interactive.InteractiveWindow;
+            IVsInteractiveWindow interactive = Instance.Value.GetInteractiveWindow();
+            if (interactive == null) {
+                return;
+            }
 
-                // Process all of our pending inputs until we get a complete statement
-                while (_pendingInputs.Count != 0) {
-                    var cur = _pendingInputs.First.Value;
-                    _pendingInputs.RemoveFirst();
+            var window = interactive.InteractiveWindow;
 
-                    window.InsertCode(cur.Code);
-                    string fullCode = window.CurrentLanguageBuffer.CurrentSnapshot.GetText();
+            // Process all of our pending inputs until we get a complete statement
+            PendingSubmission current;
+            while (_pendingInputs.TryDequeue(out current)) {
 
-                    if (window.Evaluator.CanExecuteCode(fullCode)) {
-                        // the code is complete, execute it now
-                        window.Operations.ExecuteInput();
-                        break;
-                    } else if (cur.AddNewLine) {
-                        // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
-                        // function() {
-                        window.InsertCode(window.TextView.Options.GetNewLineCharacter());
-                    }
+                window.InsertCode(current.Code);
+                string fullCode = window.CurrentLanguageBuffer.CurrentSnapshot.GetText();
+
+                if (window.Evaluator.CanExecuteCode(fullCode)) {
+                    // the code is complete, execute it now
+                    window.Operations.ExecuteInput();
+                    return;
+                }
+
+                if (current.AddNewLine) {
+                    // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
+                    // function() {
+                    window.InsertCode(window.TextView.Options.GetNewLineCharacter());
                 }
             }
         }
@@ -100,14 +105,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// <param name="code">The code to be inserted</param>
         /// <param name="addNewLine">True to add a new line on non-complete inputs.</param>
         public void EnqueueCode(string code, bool addNewLine) {
-            IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
+            IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
             if (current != null) {
                 if (current.InteractiveWindow.IsResetting) {
                     return;
                 }
 
                 // add the input to our queue...
-                _pendingInputs.AddLast(new PendingSubmission() { Code = code, AddNewLine = addNewLine });
+                _pendingInputs.Enqueue(new PendingSubmission { Code = code, AddNewLine = addNewLine });
 
                 if (!current.InteractiveWindow.IsRunning) {
                     // and process the queue if we weren't currently running
@@ -116,8 +121,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
         }
 
+        public void ClearPendingInputs() {
+            Interlocked.Exchange(ref _pendingInputs, new ConcurrentQueue<PendingSubmission>());
+        }
+
         public void ExecuteCode(string code) {
-            IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
+            IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
             if (current != null && !string.IsNullOrWhiteSpace(code)) {
                 current.InteractiveWindow.AddInput(code);
                 current.InteractiveWindow.Operations.ExecuteInput();
@@ -125,10 +134,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void ExecuteCurrentExpression(ITextView textView) {
-            ICompletionBroker broker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
+            ICompletionBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
             broker.DismissAllSessions(textView);
 
-            IVsInteractiveWindow current = _instance.Value.GetInteractiveWindow();
+            IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
             if (current != null && !current.InteractiveWindow.IsRunning) {
                 SnapshotPoint? documentPoint = REditorDocument.MapCaretPositionFromView(textView);
                 var curBuffer = current.InteractiveWindow.CurrentLanguageBuffer;
@@ -211,9 +220,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public static void Show() {
             IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
-            if (frame != null) {
-                frame.Show();
-            }
+            frame?.Show();
         }
 
         public static async Task EnsureReplWindow() {
@@ -241,12 +248,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         #region IVsWindowFrameEvents
         public void OnFrameCreated(IVsWindowFrame frame) {
+
         }
 
         public void OnFrameDestroyed(IVsWindowFrame frame) {
-            if (_lastUsedReplWindow == frame) {
-                _lastUsedReplWindow = null;
-            }
+            
         }
 
         public void OnFrameIsVisibleChanged(IVsWindowFrame frame, bool newIsVisible) {

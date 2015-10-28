@@ -16,10 +16,10 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal sealed class SendFrownCommand : SendMailCommand {
-        private const string _disclaimer = 
-"DISCLAIMER: Please be aware that the data contained in the attached logs contain "+
+        private const string _disclaimer =
+"DISCLAIMER: Please be aware that the data contained in the attached logs contain " +
 "your command history as well as all output displayed in the R Interactive Windows, " +
-"and that by sending this email you are sharing this information with the RTVS team " + 
+"and that by sending this email you are sharing this information with the RTVS team " +
 "to help us diagnose the problem you are experiencing. You can open the attached .zip " +
 "file in this email to inspect the contents if you have any concerns before sending the feedback.";
 
@@ -50,14 +50,15 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             _logFiles = new List<string>();
 
             try {
-
                 var rSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var sessions = rSessionProvider.GetSessions();
-                foreach(var s in sessions) {
-                    s.Value.FlushLog();
+                foreach (var s in sessions) {
+                    s.Value?.FlushLog();
                 }
 
-                File.Delete(zipPath);
+                if (File.Exists(zipPath)) {
+                    File.Delete(zipPath);
+                }
             } catch (IOException) { }
 
             LongOperationNotification.ShowWaitingPopup(Resources.GatheringDiagnosticData, _actions);
@@ -120,14 +121,14 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             string tempPath = Path.GetTempPath();
 
             var logs = Directory.EnumerateFiles(tempPath, pattern);
-            return logs.Select((file) => {
+            return logs.Where((file) => {
                 DateTime writeTime = File.GetLastWriteTimeUtc(file);
                 TimeSpan difference = DateTime.Now.ToUniversalTime() - writeTime;
                 if (difference.TotalDays < _daysToCollect) {
-                    return file;
+                    return true;
                 }
 
-                return null;
+                return false;
             });
         }
 

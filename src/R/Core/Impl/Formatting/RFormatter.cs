@@ -610,7 +610,6 @@ namespace Microsoft.R.Core.Formatting
                 case "if":
                 case "while":
                 case "function":
-                case "return":
                     return true;
             }
 
@@ -621,10 +620,7 @@ namespace Microsoft.R.Core.Formatting
         {
             switch (text)
             {
-                case "library":
-                case "require":
                 case "function":
-                case "typeof":
                     return true;
             }
 

@@ -2,46 +2,42 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Statements;
+using Microsoft.R.Core.AST.Variables;
+using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST
-{
-    public static class AstSearch
-    {
-        public static IAstNode FindFirstElement(this AstNode tree, Func<IAstNode, bool> filter)
-        {
+namespace Microsoft.R.Core.AST {
+    public static class AstSearch {
+        public static IAstNode FindFirstElement(this AstNode tree, Func<IAstNode, bool> filter) {
             var finder = new SingleElementFinder(filter);
             tree.Accept(finder, null);
 
             return finder.Result;
         }
 
-        public static IReadOnlyCollection<IAstNode> FindElements(this AstRoot tree, Func<IAstNode, bool> filter)
-        {
+        public static IReadOnlyCollection<IAstNode> FindElements(this AstRoot tree, Func<IAstNode, bool> filter) {
             MultipleElementFinder finder = new MultipleElementFinder(filter);
             tree.Accept(finder, null);
 
-            if (finder.Result.Count == 0)
-            {
+            if (finder.Result.Count == 0) {
                 return new IAstNode[0];
             }
 
             return new ReadOnlyCollection<IAstNode>(finder.Result);
         }
 
-        class SingleElementFinder : IAstVisitor
-        {
+        class SingleElementFinder : IAstVisitor {
             public IAstNode Result { get; private set; }
             private Func<IAstNode, bool> _match;
 
-            public SingleElementFinder(Func<IAstNode, bool> filter)
-            {
+            public SingleElementFinder(Func<IAstNode, bool> filter) {
                 _match = filter;
             }
 
-            public bool Visit(IAstNode element, object parameter)
-            {
+            public bool Visit(IAstNode element, object parameter) {
                 if (!_match(element))
                     return true;
 
@@ -50,19 +46,16 @@ namespace Microsoft.R.Core.AST
             }
         }
 
-        class MultipleElementFinder : IAstVisitor
-        {
+        class MultipleElementFinder : IAstVisitor {
             public List<IAstNode> Result { get; private set; }
             private Func<IAstNode, bool> _match;
 
-            public MultipleElementFinder(Func<IAstNode, bool> filter)
-            {
+            public MultipleElementFinder(Func<IAstNode, bool> filter) {
                 _match = filter;
                 Result = new List<IAstNode>();
             }
 
-            public bool Visit(IAstNode element, object parameter)
-            {
+            public bool Visit(IAstNode element, object parameter) {
                 if (_match(element))
                     Result.Add(element);
 
@@ -73,8 +66,7 @@ namespace Microsoft.R.Core.AST
         /// <summary>
         /// Locates deepest node of a particular type 
         /// </summary>
-        public static T GetNodeOfTypeFromPosition<T>(this AstRoot ast, int position, bool includeEnd = false) where T : class
-        {
+        public static T GetNodeOfTypeFromPosition<T>(this AstRoot ast, int position, bool includeEnd = false) where T : class {
             return GetSpecificNodeFromPosition(ast, position, (IAstNode n) => { return n is T; }, includeEnd) as T;
         }
 
@@ -82,28 +74,23 @@ namespace Microsoft.R.Core.AST
         /// Locates deepest node that matches partucular criteria 
         /// and contains given position in the text buffer
         /// </summary>
-        public static IAstNode GetSpecificNodeFromPosition(this AstRoot ast, int position, Func<IAstNode, bool> match, bool includeEnd = false)
-        {
+        public static IAstNode GetSpecificNodeFromPosition(this AstRoot ast, int position, Func<IAstNode, bool> match, bool includeEnd = false) {
             IAstNode deepestNode = null;
             FindSpecificNode(ast, position, match, ref deepestNode, includeEnd);
 
             return deepestNode;
         }
 
-        private static void FindSpecificNode(IAstNode node, int position, Func<IAstNode, bool> match, ref IAstNode deepestNode, bool includeEnd = false)
-        {
-            if (position == node.Start || (!node.Contains(position) && !(includeEnd && node.End == position)))
-            {
+        private static void FindSpecificNode(IAstNode node, int position, Func<IAstNode, bool> match, ref IAstNode deepestNode, bool includeEnd = false) {
+            if (position == node.Start || (!node.Contains(position) && !(includeEnd && node.End == position))) {
                 return; // not this element
             }
 
-            if (match(node))
-            {
+            if (match(node)) {
                 deepestNode = node;
             }
 
-            for (int i = 0; i < node.Children.Count && node.Children[i].Start <= position; i++)
-            {
+            for (int i = 0; i < node.Children.Count && node.Children[i].Start <= position; i++) {
                 FindSpecificNode(node.Children[i], position, match, ref deepestNode, includeEnd);
             }
         }
@@ -113,8 +100,7 @@ namespace Microsoft.R.Core.AST
         /// Consists of packages in the base library and packages
         /// added via 'library' statements.
         /// </summary>
-        public static IEnumerable<string> GetFilePackageNames(this AstRoot ast)
-        {
+        public static IEnumerable<string> GetFilePackageNames(this AstRoot ast) {
             // TODO: results can be cached until AST actually changes
             AstLibrarySearch search = new AstLibrarySearch();
             ast.Accept(search, null);
@@ -122,24 +108,34 @@ namespace Microsoft.R.Core.AST
             return search.PackageNames;
         }
 
-        private class AstLibrarySearch : IAstVisitor
-        {
+        private class AstLibrarySearch : IAstVisitor {
             public List<string> PackageNames { get; private set; } = new List<string>();
 
-            public bool Visit(IAstNode node, object parameter)
-            {
-                KeywordIdentifierStatement kis = node as KeywordIdentifierStatement;
-                if (kis != null)
-                {
-                    if ((kis.Keyword.Token.IsKeywordText(node.Root.TextProvider, "library") ||
-                        kis.Keyword.Token.IsKeywordText(node.Root.TextProvider, "require")) && 
-                        kis.Identifier != null)
-                    {
-                        string packageName = node.Root.TextProvider.GetText(kis.Identifier.Token);
-                        this.PackageNames.Add(packageName);
+            public bool Visit(IAstNode node, object parameter) {
+                FunctionCall fc = node as FunctionCall;
+                if (fc != null && fc.Arguments != null && fc.Arguments.Count > 0) {
+
+                    // Function name is a Variable and is a child of () operator
+                    Variable functionNameVariable = fc.Children.Count > 0 ? fc.Children[0] as Variable : null;
+                    if (functionNameVariable != null) {
+
+                        if (functionNameVariable.Name == "library" || functionNameVariable.Name == "require") {
+                            // Now get the argument list. first argument, if any, is the package name.
+                            ExpressionArgument arg = fc.Arguments[0] as ExpressionArgument;
+                            if (arg != null && arg.ArgumentValue.Children.Count == 1) {
+
+                                // Technically we need to evaluate the expression and calculate 
+                                // the actual package name in case it is constructed or returned 
+                                // from another function. However, for now we limit search to 
+                                // single value arguments like library(abind).
+                                Variable packageNameVariable = arg.ArgumentValue.Children[0] as Variable;
+                                if (packageNameVariable != null) {
+                                    this.PackageNames.Add(packageNameVariable.Name);
+                                }
+                            }
+                        }
                     }
                 }
-
                 return true;
             }
         }

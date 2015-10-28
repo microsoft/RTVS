@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         }
 
         protected override void Handle() {
-            SendMail(string.Empty, "RTVS Smile", null);
+            SendMail(":-)", "RTVS Smile", null);
         }
     }
 }

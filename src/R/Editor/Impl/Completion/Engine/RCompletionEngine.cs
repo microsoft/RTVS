@@ -108,31 +108,29 @@ namespace Microsoft.R.Editor.Completion.Engine {
                     break;
                 }
 
-                if (tokens.CurrentToken.IsKeywordText(textProvider, "library") ||
-                    tokens.CurrentToken.IsKeywordText(textProvider, "require")) {
-                    tokens.MoveToNextToken();
+                if (tokens.CurrentToken.TokenType == RTokenType.Identifier) {
+                    string identifier = textProvider.GetText(tokens.CurrentToken);
+                    if (identifier == "library" || identifier == "require") {
+                        tokens.MoveToNextToken();
 
-                    if (tokens.CurrentToken.TokenType == RTokenType.OpenBrace) {
-                        RToken openBrace = tokens.CurrentToken;
-                        while (!tokens.IsEndOfStream()) {
-                            if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace) {
-                                if (linePosition >= openBrace.End && linePosition <= tokens.CurrentToken.Start) {
+                        if (tokens.CurrentToken.TokenType == RTokenType.OpenBrace) {
+                            RToken openBrace = tokens.CurrentToken;
+                            while (!tokens.IsEndOfStream()) {
+                                if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace) {
+                                    if (linePosition >= openBrace.End && linePosition <= tokens.CurrentToken.Start) {
+                                        return true;
+                                    }
+                                    return false;
+                                } else if (tokens.NextToken.TokenType == RTokenType.EndOfStream) {
                                     return true;
                                 }
-
-                                return false;
-                            } else if (tokens.NextToken.TokenType == RTokenType.EndOfStream) {
-                                return true;
+                                tokens.MoveToNextToken();
                             }
-
-                            tokens.MoveToNextToken();
                         }
                     }
                 }
-
                 tokens.MoveToNextToken();
             }
-
             return false;
         }
 

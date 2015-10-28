@@ -10,7 +10,9 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         protected static void SendMail(string body, string subject, string attachmentFile) {
             MapiMail mail = new MapiMail();
             mail.AddRecipientTo("rtvscore@microsoft.com");
-            mail.AddAttachment(attachmentFile);
+            if (attachmentFile != null) {
+                mail.AddAttachment(attachmentFile);
+            }
             mail.SendMailPopup(subject, body);
         }
     }

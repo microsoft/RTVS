@@ -123,6 +123,7 @@
     <Compile Include="Utility\MarkdownTestFilesSetup.cs" />
     <Compile Include="Utility\MarkdownTestCompositionCatalog.cs" />
     <Compile Include="Utility\TextViewTest.cs" />
+    <Compile Include="Utility\TokenizeFiles.cs" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

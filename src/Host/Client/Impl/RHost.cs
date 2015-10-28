@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         public void FlushLog() {
-            _fileLogWriter.Flush();
+            _fileLogWriter?.Flush();
         }
 
         private static Exception ProtocolError(FormattableString fs, object message = null) {
@@ -148,6 +148,14 @@ namespace Microsoft.R.Host.Client {
                     return new RContext((RContextType)(int)token);
                 });
             return contexts.ToArray();
+        }
+
+        private void CancelAll() {
+            var tcs = Volatile.Read(ref _cancelAllTcs);
+            if (tcs != null) {
+                Volatile.Write(ref _cancelAllCts, new CancellationTokenSource());
+                tcs.TrySetResult(true);
+            }
         }
 
         private async Task YesNoCancel(Message request, bool allowEval, CancellationToken ct) {
@@ -344,13 +352,7 @@ namespace Microsoft.R.Host.Client {
                     try {
                         switch (message.Name) {
                             case "\\":
-                                {
-                                    var tcs = Volatile.Read(ref _cancelAllTcs);
-                                    if (tcs != null) {
-                                        _cancelAllCts = new CancellationTokenSource();
-                                        _cancelAllTcs.TrySetResult(true);
-                                    }
-                                }
+                                CancelAll();
                                 break;
 
                             case "?":

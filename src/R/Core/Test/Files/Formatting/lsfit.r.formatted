@@ -93,5 +93,5 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 				rank = z$rank, pivot = z$pivot, tol = z$tol)
 	oldClass(rqr) <- "qr"
 	output <- c(output, list(intercept = intercept, qr = rqr))
-	return (output)
+	return(output)
 }
