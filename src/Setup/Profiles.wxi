@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <DirectoryRef Id="ProfilesFolder">
+    <Component Id="Profiles" Guid="{3D707F22-4516-400A-BCFD-E8DF6E599566}">
+      <File Source="$(var.BinDir)\R.vssettings" />
+    </Component>
+  </DirectoryRef>
+</Include>
