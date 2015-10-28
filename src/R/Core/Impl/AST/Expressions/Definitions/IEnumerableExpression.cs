@@ -1,14 +1,12 @@
 ﻿using Microsoft.R.Core.AST.Definitions;
 
-namespace Microsoft.R.Core.AST.Expressions.Definitions
-{
+namespace Microsoft.R.Core.AST.Expressions.Definitions {
     /// <summary>
     /// Represents expression that is used in enumerations
     /// such as in 'for(x in exp) { }'. Enumerable expressions
     /// do not allow braces and cannot be nested.
     /// </summary>
-    public interface IEnumerableExpression: IAstNode
-    {
+    public interface IEnumerableExpression : IAstNode {
         /// <summary>
         /// Name of variable in 'for(variable_name in ...)'
         /// </summary>

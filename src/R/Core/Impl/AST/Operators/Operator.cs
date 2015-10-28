@@ -3,11 +3,9 @@ using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators.Definitions;
 
-namespace Microsoft.R.Core.AST.Operators
-{
+namespace Microsoft.R.Core.AST.Operators {
     [DebuggerDisplay("[{OperatorType} [{Start}...{End})]")]
-    public abstract class Operator : RValueNode<RObject>, IOperator
-    {
+    public abstract class Operator : RValueNode<RObject>, IOperator {
         #region IOperator
         public IRValueNode LeftOperand { get; set; }
 
@@ -22,10 +20,8 @@ namespace Microsoft.R.Core.AST.Operators
         public virtual Association Association { get; internal set; }
         #endregion
 
-        public static bool IsPossibleUnary(OperatorType operatorType)
-        {
-            switch (operatorType)
-            {
+        public static bool IsPossibleUnary(OperatorType operatorType) {
+            switch (operatorType) {
                 case OperatorType.Tilde:
                 case OperatorType.Not:
                 case OperatorType.Add:

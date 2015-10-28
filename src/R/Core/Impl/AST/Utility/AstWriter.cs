@@ -6,35 +6,29 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
 
-namespace Microsoft.R.Core.Utility
-{
+namespace Microsoft.R.Core.Utility {
     [ExcludeFromCodeCoverage]
-    public sealed class AstWriter
-    {
+    public sealed class AstWriter {
         private int _indent = 0;
         private StringBuilder _sb;
         private AstRoot _ast;
 
-        public string WriteTree(AstRoot ast)
-        {
+        public string WriteTree(AstRoot ast) {
             _sb = new StringBuilder();
             _indent = 0;
             _ast = ast;
 
-            foreach (IAstNode node in ast.Children)
-            {
+            foreach (IAstNode node in ast.Children) {
                 WriteNode(node);
             }
 
-            if(_ast.Errors.Count > 0)
-            {
+            if (_ast.Errors.Count > 0) {
                 _sb.AppendLine();
 
-                foreach(var error in _ast.Errors)
-                {
-                    _sb.AppendFormat(CultureInfo.InvariantCulture, 
-                        "{0} {1} [{2}...{3})\r\n", 
-                        error.ErrorType.ToString(), error.Location.ToString(), 
+                foreach (var error in _ast.Errors) {
+                    _sb.AppendFormat(CultureInfo.InvariantCulture,
+                        "{0} {1} [{2}...{3})\r\n",
+                        error.ErrorType.ToString(), error.Location.ToString(),
                         error.Start, error.End);
                 }
             }
@@ -47,8 +41,7 @@ namespace Microsoft.R.Core.Utility
             return text;
         }
 
-        private void WriteNode(IAstNode node)
-        {
+        private void WriteNode(IAstNode node) {
             Indent();
 
             string type = node.GetType().ToString();
@@ -62,34 +55,27 @@ namespace Microsoft.R.Core.Utility
             innerType = innerType.Replace("\r", "\\r");
 
             int ms = innerType.IndexOf("Microsoft", StringComparison.Ordinal);
-            if (ms >= 0)
-            {
+            if (ms >= 0) {
                 innerType = innerType.Substring(type.LastIndexOf('.') + 1);
             }
 
-            if (innerType != name)
-            {
+            if (innerType != name) {
                 _sb.Append("  [");
                 _sb.Append(innerType);
                 _sb.AppendLine("]");
-            }
-            else
-            {
+            } else {
                 _sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "  [{0}...{1})", node.Start, node.End));
             }
 
             _indent++;
 
-            foreach (IAstNode child in node.Children)
-            {
+            foreach (IAstNode child in node.Children) {
                 WriteNode(child);
             }
 
-            if(node is CommaSeparatedList)
-            {
+            if (node is CommaSeparatedList) {
                 var csl = node as CommaSeparatedList;
-                if(csl.Count > 0 && csl[csl.Count-1] is StubArgument)
-                {
+                if (csl.Count > 0 && csl[csl.Count - 1] is StubArgument) {
                     WriteNode(csl[csl.Count - 1]);
                 }
             }
@@ -97,8 +83,7 @@ namespace Microsoft.R.Core.Utility
             _indent--;
         }
 
-        private void Indent()
-        {
+        private void Indent() {
             _sb.Append(' ', _indent * 4);
         }
     }

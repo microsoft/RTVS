@@ -1,17 +1,13 @@
 ﻿using System;
 
-namespace Microsoft.R.Core.Tokens
-{
-    public static class Constants
-    {
-        public static bool IsConstant(string candidate)
-        {
+namespace Microsoft.R.Core.Tokens {
+    public static class Constants {
+        public static bool IsConstant(string candidate) {
             // R is case sensitive language
-             return Array.BinarySearch<string>(_constants, candidate) >= 0;
+            return Array.BinarySearch<string>(_constants, candidate) >= 0;
         }
 
-        public static string[] ConstantsList
-        {
+        public static string[] ConstantsList {
             get { return _constants; }
         }
 

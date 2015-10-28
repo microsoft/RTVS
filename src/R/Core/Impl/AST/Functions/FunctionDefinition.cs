@@ -8,15 +8,13 @@ using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Functions
-{
+namespace Microsoft.R.Core.AST.Functions {
     /// <summary>
     /// Represents code that defines a function such as
     /// 'function(a, b) { }'
     /// </summary>
     [DebuggerDisplay("Function Definition [{Start}...{End})")]
-    public class FunctionDefinition : RValueNode<RFunction>, IFunctionDefinition
-    {
+    public class FunctionDefinition : RValueNode<RFunction>, IFunctionDefinition {
         #region IKeyword
         public TokenNode Keyword { get; private set; }
 
@@ -54,16 +52,11 @@ namespace Microsoft.R.Core.AST.Functions
         /// nearest recovery point which may be an identifier
         /// or a keyword (except inline 'if').
         /// </summary>
-        public int SignatureEnd
-        {
-            get
-            {
-                if (CloseBrace != null)
-                {
+        public int SignatureEnd {
+            get {
+                if (CloseBrace != null) {
                     return CloseBrace.End;
-                }
-                else if (Arguments.Count > 0)
-                {
+                } else if (Arguments.Count > 0) {
                     return Arguments.End;
                 }
 
@@ -72,41 +65,31 @@ namespace Microsoft.R.Core.AST.Functions
         }
         #endregion
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             TokenStream<RToken> tokens = context.Tokens;
 
             Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.Keyword);
             this.Keyword = RParser.ParseKeyword(context, this);
             this.Text = context.TextProvider.GetText(this.Keyword);
 
-            if (tokens.CurrentToken.TokenType == RTokenType.OpenBrace)
-            {
+            if (tokens.CurrentToken.TokenType == RTokenType.OpenBrace) {
                 this.OpenBrace = RParser.ParseToken(context, this);
 
                 this.Arguments = new ArgumentList(RTokenType.CloseBrace);
                 this.Arguments.Parse(context, this);
 
-                if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace)
-                {
+                if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace) {
                     this.CloseBrace = RParser.ParseToken(context, this);
                     this.Scope = RParser.ParseScope(context, this, allowsSimpleScope: true, terminatingKeyword: null);
-                    if (this.Scope != null)
-                    {
+                    if (this.Scope != null) {
                         return base.Parse(context, parent);
-                    }
-                    else
-                    {
+                    } else {
                         context.AddError(new ParseError(ParseErrorType.FunctionBodyExpected, ErrorLocation.Token, tokens.PreviousToken));
                     }
-                }
-                else
-                {
+                } else {
                     context.AddError(new ParseError(ParseErrorType.CloseBraceExpected, ErrorLocation.Token, tokens.CurrentToken));
                 }
-            }
-            else
-            {
+            } else {
                 context.AddError(new ParseError(ParseErrorType.OpenBraceExpected, ErrorLocation.Token, tokens.CurrentToken));
             }
 

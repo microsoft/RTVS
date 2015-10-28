@@ -9,15 +9,13 @@ using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Scopes
-{
+namespace Microsoft.R.Core.AST.Scopes {
     /// <summary>
     /// Represents { } block. Scope may be standalone or be part
     /// of conditional or loop statement.
     /// </summary>
     [DebuggerDisplay("Scope, Children: {Children.Count} [{Start}...{End})")]
-    public class Scope : AstNode, IScope
-    {
+    public class Scope : AstNode, IScope {
         private Dictionary<string, int> variables = new Dictionary<string, int>();
         private Dictionary<string, int> functions = new Dictionary<string, int>();
         private TextRangeCollection<IStatement> statements = new TextRangeCollection<IStatement>();
@@ -30,8 +28,7 @@ namespace Microsoft.R.Core.AST.Scopes
 
         public TokenNode OpenCurlyBrace { get; private set; }
 
-        public IReadOnlyTextRangeCollection<IStatement> Statements
-        {
+        public IReadOnlyTextRangeCollection<IStatement> Statements {
             get { return this.statements; }
         }
 
@@ -41,8 +38,7 @@ namespace Microsoft.R.Core.AST.Scopes
         /// Collection of variables declared inside the scope.
         /// Does not include variables declared in outer scope.
         /// </summary>
-        public IReadOnlyDictionary<string, int> Variables
-        {
+        public IReadOnlyDictionary<string, int> Variables {
             get { return this.variables; }
         }
 
@@ -50,47 +46,37 @@ namespace Microsoft.R.Core.AST.Scopes
         /// Collection of function declared inside the scope.
         /// Does not include function declared in outer scope.
         /// </summary>
-        public IReadOnlyDictionary<string, int> Functions
-        {
+        public IReadOnlyDictionary<string, int> Functions {
             get { return this.functions; }
         }
         #endregion
 
         public Scope() :
-            this("_Anonymous_")
-        {
+            this("_Anonymous_") {
         }
 
-        public Scope(string name)
-        {
+        public Scope(string name) {
             this.Name = name;
         }
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             TokenStream<RToken> tokens = context.Tokens;
             RToken currentToken = tokens.CurrentToken;
 
             context.Scopes.Push(this);
 
-            if (!(this is GlobalScope) && currentToken.TokenType == RTokenType.OpenCurlyBrace)
-            {
+            if (!(this is GlobalScope) && currentToken.TokenType == RTokenType.OpenCurlyBrace) {
                 this.OpenCurlyBrace = RParser.ParseToken(context, this);
             }
 
-            while (!tokens.IsEndOfStream())
-            {
+            while (!tokens.IsEndOfStream()) {
                 currentToken = context.Tokens.CurrentToken;
 
-                switch (currentToken.TokenType)
-                {
+                switch (currentToken.TokenType) {
                     case RTokenType.CloseCurlyBrace:
-                        if (this.OpenCurlyBrace != null)
-                        {
+                        if (this.OpenCurlyBrace != null) {
                             this.CloseCurlyBrace = RParser.ParseToken(context, this);
-                        }
-                        else
-                        {
+                        } else {
                             context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, currentToken));
                             context.Tokens.MoveToNextToken();
                         }
@@ -103,49 +89,38 @@ namespace Microsoft.R.Core.AST.Scopes
 
                     default:
                         IStatement statement = Statement.Create(context, this, null);
-                        if (statement != null)
-                        {
-                            if (statement.Parse(context, this))
-                            {
+                        if (statement != null) {
+                            if (statement.Parse(context, this)) {
                                 this.statements.Add(statement);
-                            }
-                            else
-                            {
+                            } else {
                                 statement = null;
                             }
                         }
 
-                        if (statement == null)
-                        {
-                            if (!context.TextProvider.IsNewLineBeforePosition(context.Tokens.CurrentToken.Start))
-                            {
+                        if (statement == null) {
+                            if (!context.TextProvider.IsNewLineBeforePosition(context.Tokens.CurrentToken.Start)) {
                                 // try recovering at the next line or past nearest 
                                 // semicolon or closing curly brace
                                 tokens.MoveToNextLine(context.TextProvider,
-                                    (TokenStream<RToken> ts) =>
-                                    {
+                                    (TokenStream<RToken> ts) => {
                                         return ts.CurrentToken.TokenType == RTokenType.Semicolon ||
                                                ts.NextToken.TokenType == RTokenType.CloseCurlyBrace;
                                     });
-                            }
-                            else
-                            {
+                            } else {
                                 tokens.MoveToNextToken();
                             }
                         }
                         break;
                 }
 
-                if (this.CloseCurlyBrace != null)
-                {
+                if (this.CloseCurlyBrace != null) {
                     break;
                 }
             }
 
             context.Scopes.Pop();
 
-            if (this.OpenCurlyBrace != null && this.CloseCurlyBrace == null)
-            {
+            if (this.OpenCurlyBrace != null && this.CloseCurlyBrace == null) {
                 context.AddError(new MissingItemParseError(ParseErrorType.CloseCurlyBraceExpected, context.Tokens.PreviousToken));
             }
 
@@ -154,8 +129,7 @@ namespace Microsoft.R.Core.AST.Scopes
             return base.Parse(context, parent);
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return this.Name != null ? this.Name : string.Empty;
         }
     }

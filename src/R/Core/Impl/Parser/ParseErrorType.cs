@@ -1,10 +1,8 @@
-﻿namespace Microsoft.R.Core.Parser
-{
+﻿namespace Microsoft.R.Core.Parser {
     /// <summary>
     /// Type of parsing error
     /// </summary>
-    public enum ParseErrorType
-    {
+    public enum ParseErrorType {
         /// <summary>
         /// No errors
         /// </summary>

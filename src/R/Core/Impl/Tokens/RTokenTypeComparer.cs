@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.R.Core.Tokens
-{
-    public class RTokenTypeComparer : IComparer<RToken>
-    {
-        public int Compare(RToken one, RToken another)
-        {
+namespace Microsoft.R.Core.Tokens {
+    public class RTokenTypeComparer : IComparer<RToken> {
+        public int Compare(RToken one, RToken another) {
             if (one == null && another == null)
                 return 0;
 

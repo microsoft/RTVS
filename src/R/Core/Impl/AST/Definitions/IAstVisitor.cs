@@ -1,12 +1,10 @@
-﻿namespace Microsoft.R.Core.AST.Definitions
-{
+﻿namespace Microsoft.R.Core.AST.Definitions {
     /// <summary>
     /// Implemented by code that needs to traverse AST 
     /// using standard visitor design pattern.
     /// https://en.wikipedia.org/wiki/Visitor_pattern
     /// </summary>
-    public interface IAstVisitor
-    {
+    public interface IAstVisitor {
         /// <summary>
         /// Called by the tree traversal code.
         /// </summary>

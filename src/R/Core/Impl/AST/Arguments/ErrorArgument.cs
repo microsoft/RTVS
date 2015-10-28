@@ -5,8 +5,7 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Arguments
-{
+namespace Microsoft.R.Core.AST.Arguments {
     /// <summary>
     /// Represents argument that has errors and 
     /// count not be completely parsed but argument parser
@@ -14,22 +13,18 @@ namespace Microsoft.R.Core.AST.Arguments
     /// where first argument is an invalid expression.
     /// </summary>
     [DebuggerDisplay("Error Argument [{Start}...{End})")]
-    public sealed class ErrorArgument : CommaSeparatedItem
-    {
+    public sealed class ErrorArgument : CommaSeparatedItem {
         /// <summary>
         /// Tokens between previous and the next comma (if any)
         /// </summary>
         public IReadOnlyTextRangeCollection<RToken> Tokens { get; private set; }
 
-        public ErrorArgument(IEnumerable<RToken> tokens)
-        {
+        public ErrorArgument(IEnumerable<RToken> tokens) {
             Tokens = new TextRangeCollection<RToken>(tokens);
         }
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
-            foreach(RToken t in Tokens)
-            {
+        public override bool Parse(ParseContext context, IAstNode parent) {
+            foreach (RToken t in Tokens) {
                 TokenNode n = new TokenNode(t);
                 n.Parent = this;
             }

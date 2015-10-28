@@ -8,8 +8,7 @@ using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Operators
-{
+namespace Microsoft.R.Core.AST.Operators {
     /// <summary>
     /// Function call operator. Applies to a variable
     /// if it is a direct call like name() or to result
@@ -17,8 +16,7 @@ namespace Microsoft.R.Core.AST.Operators
     /// or function call as in x[1](a, b) or func(a)(b)(c).
     /// </summary>
     [DebuggerDisplay("FunctionCall, Args:{Arguments.Count} [{Start}...{End})")]
-    public class FunctionCall : Operator, IFunction
-    {
+    public class FunctionCall : Operator, IFunction {
         /// <summary>
         /// 'virtual end' of the function call if closing
         /// brace is missing. The virtual end includes range
@@ -49,12 +47,9 @@ namespace Microsoft.R.Core.AST.Operators
         /// nearest recovery point which may be an identifier
         /// or a keyword (except inline 'if').
         /// </summary>
-        public int SignatureEnd
-        {
-            get
-            {
-                if (CloseBrace != null)
-                {
+        public int SignatureEnd {
+            get {
+                if (CloseBrace != null) {
                     return CloseBrace.End;
                 }
 
@@ -65,56 +60,45 @@ namespace Microsoft.R.Core.AST.Operators
         #endregion
 
         #region IOperator
-        public override OperatorType OperatorType
-        {
+        public override OperatorType OperatorType {
             get { return OperatorType.FunctionCall; }
         }
 
-        public override int Precedence
-        {
+        public override int Precedence {
             get { return OperatorPrecedence.GetPrecedence(OperatorType.FunctionCall); }
         }
 
-        public override bool IsUnary
-        {
+        public override bool IsUnary {
             get { return true; }
         }
 
-        public override Association Association
-        {
+        public override Association Association {
             get { return Association.Right; }
         }
         #endregion
 
         #region ITextRange
-        public override int End
-        {
+        public override int End {
             get { return SignatureEnd; }
         }
         #endregion
 
-        public int GetParameterIndex(int position)
-        {
-            if (position > End || position < OpenBrace.End)
-            {
+        public int GetParameterIndex(int position) {
+            if (position > End || position < OpenBrace.End) {
                 return -1;
             }
 
-            if (Arguments.Count == 0)
-            {
+            if (Arguments.Count == 0) {
                 return 0;
             }
 
-            for (int i = 0; i < Arguments.Count; i++)
-            {
+            for (int i = 0; i < Arguments.Count; i++) {
                 IAstNode arg = Arguments[i];
-                if (arg is ErrorArgument)
-                {
+                if (arg is ErrorArgument) {
                     continue;
                 }
 
-                if (position < arg.End || (arg is MissingArgument && arg.Start == arg.End && arg.Start == 0))
-                {
+                if (position < arg.End || (arg is MissingArgument && arg.Start == arg.End && arg.Start == 0)) {
                     return i;
                 }
             }
@@ -122,23 +106,17 @@ namespace Microsoft.R.Core.AST.Operators
             return Arguments.Count - 1;
         }
 
-        public string GetParameterName(int index)
-        {
-            if(index < 0 || index > Arguments.Count-1)
-            {
+        public string GetParameterName(int index) {
+            if (index < 0 || index > Arguments.Count - 1) {
                 return string.Empty;
             }
 
             CommaSeparatedItem arg = Arguments[index];
-            if(arg is NamedArgument)
-            {
+            if (arg is NamedArgument) {
                 return ((NamedArgument)arg).Name;
-            }
-            else if(arg is ExpressionArgument)
-            {
+            } else if (arg is ExpressionArgument) {
                 IExpression exp = ((ExpressionArgument)arg).ArgumentValue;
-                if(exp.Children.Count == 1 && exp.Children[0] is Variable)
-                {
+                if (exp.Children.Count == 1 && exp.Children[0] is Variable) {
                     return ((Variable)exp.Children[0]).Name;
                 }
             }
@@ -146,8 +124,7 @@ namespace Microsoft.R.Core.AST.Operators
             return string.Empty;
         }
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             TokenStream<RToken> tokens = context.Tokens;
 
             Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.OpenBrace);
@@ -155,32 +132,26 @@ namespace Microsoft.R.Core.AST.Operators
 
             this.Arguments = new ArgumentList(RTokenType.CloseBrace);
             bool argumentsParsed = this.Arguments.Parse(context, this);
-            if (argumentsParsed)
-            {
-                if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace)
-                {
+            if (argumentsParsed) {
+                if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace) {
                     this.CloseBrace = RParser.ParseToken(context, this);
                 }
             }
 
-            if (!argumentsParsed || this.CloseBrace == null)
-            {
+            if (!argumentsParsed || this.CloseBrace == null) {
                 CalculateVirtualEnd(context);
             }
 
-            if (this.CloseBrace == null)
-            {
+            if (this.CloseBrace == null) {
                 context.AddError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
             }
 
             return base.Parse(context, parent);
         }
 
-        private void CalculateVirtualEnd(ParseContext context)
-        {
+        private void CalculateVirtualEnd(ParseContext context) {
             int position = this.Arguments.Count > 0 ? this.Arguments.End : this.OpenBrace.End;
-            if (!context.Tokens.IsEndOfStream())
-            {
+            if (!context.Tokens.IsEndOfStream()) {
                 TokenStream<RToken> tokens = context.Tokens;
 
                 // Walk through tokens allowing numbers, identifiers and operators
@@ -189,20 +160,17 @@ namespace Microsoft.R.Core.AST.Operators
                 int i = tokens.Position;
                 _virtualEnd = 0;
 
-                for (; i < tokens.Length; i++)
-                {
+                for (; i < tokens.Length; i++) {
                     RToken token = tokens[i];
 
-                    if (token.TokenType == RTokenType.Keyword || RParser.IsListTerminator(context, RTokenType.OpenBrace, token))
-                    {
+                    if (token.TokenType == RTokenType.Keyword || RParser.IsListTerminator(context, RTokenType.OpenBrace, token)) {
                         _virtualEnd = token.Start;
                         break;
                     }
                 }
             }
 
-            if (_virtualEnd == 0)
-            {
+            if (_virtualEnd == 0) {
                 _virtualEnd = context.TextProvider.Length;
             }
         }

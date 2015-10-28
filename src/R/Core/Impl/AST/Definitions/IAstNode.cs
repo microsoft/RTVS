@@ -2,8 +2,7 @@
 using Microsoft.Languages.Core.Utility;
 using Microsoft.R.Core.Parser.Definitions;
 
-namespace Microsoft.R.Core.AST.Definitions
-{
+namespace Microsoft.R.Core.AST.Definitions {
     /// <summary>
     /// Implemented by all AST nodes, Nodes that can have child nodes 
     /// such as expressions, loops, assignments and other statements
@@ -14,8 +13,7 @@ namespace Microsoft.R.Core.AST.Definitions
     /// Leaf nodes always have zero children and do not permit addition
     /// of child nodes.
     /// </summary>
-    public interface IAstNode : ICompositeTextRange, IAstVisitorPattern, IPropertyOwner, IParseItem
-    {
+    public interface IAstNode : ICompositeTextRange, IAstVisitorPattern, IPropertyOwner, IParseItem {
         /// <summary>
         /// AST root node
         /// </summary>
@@ -43,7 +41,7 @@ namespace Microsoft.R.Core.AST.Definitions
         /// </summary>
         void RemoveChildren(int start, int count);
 
-            /// <summary>
+        /// <summary>
         /// Finds deepest node that contains given position
         /// </summary>
         /// <param name="position">Position</param>

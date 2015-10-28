@@ -4,11 +4,9 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Operators
-{
+namespace Microsoft.R.Core.AST.Operators {
     [DebuggerDisplay("[{OperatorType} Precedence={Precedence} Unary={IsUnary}]")]
-    public sealed class TokenOperator : Operator
-    {
+    public sealed class TokenOperator : Operator {
         private OperatorType _operatorType;
         private int _precedence;
         private bool _isUnary;
@@ -16,33 +14,27 @@ namespace Microsoft.R.Core.AST.Operators
         public TokenNode OperatorToken { get; private set; }
 
         #region IOperator
-        public override OperatorType OperatorType
-        {
+        public override OperatorType OperatorType {
             get { return _operatorType; }
         }
 
-        public override int Precedence
-        {
+        public override int Precedence {
             get { return _precedence; }
         }
-        public override bool IsUnary
-        {
+        public override bool IsUnary {
             get { return _isUnary; }
         }
         #endregion
 
-        public TokenOperator(bool unary)
-        {
+        public TokenOperator(bool unary) {
             _isUnary = unary;
         }
-        public TokenOperator(OperatorType operatorType, bool unary):
-            this(unary)
-        {
+        public TokenOperator(OperatorType operatorType, bool unary) :
+            this(unary) {
             _operatorType = operatorType;
         }
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             Debug.Assert(context.Tokens.CurrentToken.TokenType == RTokenType.Operator);
 
             _operatorType = TokenOperator.GetOperatorType(context);
@@ -53,8 +45,7 @@ namespace Microsoft.R.Core.AST.Operators
             bool isUnary;
             _precedence = this.GetCurrentOperatorPrecedence(context, this.OperatorType, out isUnary);
 
-            if (!_isUnary)
-            {
+            if (!_isUnary) {
                 _isUnary = isUnary;
             }
 
@@ -62,31 +53,26 @@ namespace Microsoft.R.Core.AST.Operators
             return base.Parse(context, parent);
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return this.OperatorToken.ToString();
         }
 
-        private bool IsUnaryOperator(ParseContext context, OperatorType operatorType)
-        {
+        private bool IsUnaryOperator(ParseContext context, OperatorType operatorType) {
             bool possibleUnary = Operator.IsPossibleUnary(operatorType);
 
             // We need to lock back two tokens since operator
             // parsing already consumed its token.
             TokenStream<RToken> tokens = context.Tokens;
-            if (tokens.LookAhead(-2).TokenType == RTokenType.Operator)
-            {
+            if (tokens.LookAhead(-2).TokenType == RTokenType.Operator) {
                 return true;
             }
 
             return false;
         }
-        private int GetCurrentOperatorPrecedence(ParseContext context, OperatorType operatorType, out bool isUnary)
-        {
+        private int GetCurrentOperatorPrecedence(ParseContext context, OperatorType operatorType, out bool isUnary) {
             isUnary = false;
 
-            if (this.IsUnaryOperator(context, operatorType))
-            {
+            if (this.IsUnaryOperator(context, operatorType)) {
                 operatorType = OperatorType.Unary;
                 isUnary = true;
             }
@@ -94,13 +80,11 @@ namespace Microsoft.R.Core.AST.Operators
             return OperatorPrecedence.GetPrecedence(operatorType);
         }
 
-        private static OperatorType GetOperatorType(ParseContext context)
-        {
+        private static OperatorType GetOperatorType(ParseContext context) {
             RToken token = context.Tokens.CurrentToken;
 
             string text = context.TextProvider.GetText(token);
-            switch (text)
-            {
+            switch (text) {
                 case "+":
                     return OperatorType.Add;
 
@@ -194,10 +178,8 @@ namespace Microsoft.R.Core.AST.Operators
                     return OperatorType.Equals;
 
                 default:
-                    if (text.Length > 2 && text[0] == '%' && text[text.Length - 1] == '%')
-                    {
-                        for (int i = 1; i < text.Length - 1; i++)
-                        {
+                    if (text.Length > 2 && text[0] == '%' && text[text.Length - 1] == '%') {
+                        for (int i = 1; i < text.Length - 1; i++) {
                             if (!char.IsLetter(text[i]))
                                 return OperatorType.Unknown;
                         }

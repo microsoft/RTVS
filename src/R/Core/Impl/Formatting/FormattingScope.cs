@@ -4,13 +4,11 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.Formatting
-{
+namespace Microsoft.R.Core.Formatting {
     /// <summary>
     /// Settings for formatting of { } scope.
     /// </summary>
-    internal sealed class FormattingScope
-    {
+    internal sealed class FormattingScope {
         private IndentState _previousState;
         private IndentBuilder _indentBuilder;
 
@@ -18,21 +16,17 @@ namespace Microsoft.R.Core.Formatting
 
         public int SuppressLineBreakCount { get; set; }
 
-        public FormattingScope(IndentBuilder indentBuilder)
-        {
+        public FormattingScope(IndentBuilder indentBuilder) {
             _indentBuilder = indentBuilder;
         }
 
-        public void Close()
-        {
-            if (_previousState != null)
-            {
+        public void Close() {
+            if (_previousState != null) {
                 _indentBuilder.RestoreIndentState(_previousState);
             }
         }
 
-        public bool Open(ITextProvider textProvider, TokenStream<RToken> tokens, RFormatOptions options)
-        {
+        public bool Open(ITextProvider textProvider, TokenStream<RToken> tokens, RFormatOptions options) {
             Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace);
 
             // When formatting scope in function arguments, use user indent
@@ -65,8 +59,7 @@ namespace Microsoft.R.Core.Formatting
             //    }
             //}
 
-            if (options.BracesOnNewLine)
-            {
+            if (options.BracesOnNewLine) {
                 // If open curly is on its own line (there is only whitespace
                 // between line break and the curly, find out current indent
                 // and if it is deeper than the default one, use it,
@@ -78,32 +71,26 @@ namespace Microsoft.R.Core.Formatting
             return false;
         }
 
-        private void CompareAndSetIndent(ITextProvider textProvider, TokenStream<RToken> tokens, int position, RFormatOptions options)
-        {
+        private void CompareAndSetIndent(ITextProvider textProvider, TokenStream<RToken> tokens, int position, RFormatOptions options) {
             // If curly is on its own line (there is only whitespace between line break 
             // and the curly, find out its current indent and if it is deeper than 
             // the default one, use it, otherwise continue with default.
 
             string userIndentString = GetUserIndentString(textProvider, position, options);
             int defaultIndentSize = _indentBuilder.IndentLevelString.Length;
-            if (userIndentString.Length > defaultIndentSize)
-            {
+            if (userIndentString.Length > defaultIndentSize) {
                 _previousState = _indentBuilder.ResetBaseIndent(userIndentString);
             }
         }
 
-        private string GetUserIndentString(ITextProvider textProvider, int position, RFormatOptions options)
-        {
-            for (int i = position - 1; i >= 0; i--)
-            {
+        private string GetUserIndentString(ITextProvider textProvider, int position, RFormatOptions options) {
+            for (int i = position - 1; i >= 0; i--) {
                 char ch = textProvider[i];
-                if (!char.IsWhiteSpace(ch))
-                {
+                if (!char.IsWhiteSpace(ch)) {
                     break;
                 }
 
-                if (ch == '\n' || ch == '\r')
-                {
+                if (ch == '\n' || ch == '\r') {
                     string userIndentString = textProvider.GetText(TextRange.FromBounds(i + 1, position));
                     int indentSize = IndentBuilder.TextIndentInSpaces(userIndentString, options.TabSize);
                     return IndentBuilder.GetIndentString(indentSize, options.IndentType, options.IndentSize);
@@ -113,8 +100,7 @@ namespace Microsoft.R.Core.Formatting
             return string.Empty;
         }
 
-        private bool IsLineBreakInRange(ITextProvider textProvider, int start, int end)
-        {
+        private bool IsLineBreakInRange(ITextProvider textProvider, int start, int end) {
             return textProvider.IndexOf('\n', TextRange.FromBounds(start, end)) >= 0;
         }
     }

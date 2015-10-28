@@ -1,13 +1,11 @@
 ﻿using System;
 
-namespace Microsoft.R.Core.AST.Definitions
-{
+namespace Microsoft.R.Core.AST.Definitions {
     /// <summary>
     /// Implements standard visitor pattern on the AST.
     /// https://en.wikipedia.org/wiki/Visitor_pattern
     /// </summary>
-    public interface IAstVisitorPattern
-    {
+    public interface IAstVisitorPattern {
         /// <summary>
         /// Traverses the entire tree invoking provided visitor interface.
         /// Returns true if the entire tree was traversed. Visitor can cancel 
