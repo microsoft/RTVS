@@ -2,45 +2,37 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Controller.Command
-{
+namespace Microsoft.Languages.Editor.Controller.Command {
     [ExcludeFromCodeCoverage]
-    public class ViewCommand : Command, IDisposable
-    {
+    public class ViewCommand : Command, IDisposable {
         public ITextView TextView { get; set; }
 
         public ViewCommand(ITextView textView, Guid group, int id, bool needCheckout)
-            : base(group, id, needCheckout)
-        {
+            : base(group, id, needCheckout) {
             TextView = textView;
         }
 
         public ViewCommand(ITextView textView, int id, bool needCheckout)
-            : base(Guid.Empty, id, needCheckout)
-        {
+            : base(Guid.Empty, id, needCheckout) {
             TextView = textView;
         }
 
         public ViewCommand(ITextView textView, CommandId id, bool needCheckout)
-            : base(id, needCheckout)
-        {
+            : base(id, needCheckout) {
             TextView = textView;
         }
 
         public ViewCommand(ITextView textView, CommandId[] ids, bool needCheckout)
-            : base(ids, needCheckout)
-        {
+            : base(ids, needCheckout) {
             TextView = textView;
         }
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing)
-        {
+        protected virtual void Dispose(bool disposing) {
             TextView = null;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }

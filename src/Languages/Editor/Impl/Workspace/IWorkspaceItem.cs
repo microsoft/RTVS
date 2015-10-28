@@ -1,12 +1,10 @@
 ﻿using System;
 
-namespace Microsoft.Languages.Editor.Workspace
-{
+namespace Microsoft.Languages.Editor.Workspace {
     /// <summary>
     /// Abstraction of an item in a project/solution
     /// </summary>
-    public interface IWorkspaceItem : IDisposable
-    {
+    public interface IWorkspaceItem : IDisposable {
         /// <summary>
         /// Item moniker. For a disk-based document the same as PhysicalPath.
         /// May be something else for workspace items that are not disk items.

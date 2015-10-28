@@ -1,8 +1,6 @@
 ﻿
-namespace Microsoft.Languages.Editor.Workspace
-{
-    public interface IFile
-    {
+namespace Microsoft.Languages.Editor.Workspace {
+    public interface IFile {
         /// <summary>
         /// File name
         /// </summary>

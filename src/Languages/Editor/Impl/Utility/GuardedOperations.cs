@@ -2,20 +2,14 @@
 using System.Diagnostics;
 using System.Windows.Threading;
 
-namespace Microsoft.Languages.Editor.Utility
-{
-    public static class GuardedOperations
-    {
-        public static void DispatchInvoke(Action toInvoke, DispatcherPriority priority)
-        {
-            Action guardedAction = 
+namespace Microsoft.Languages.Editor.Utility {
+    public static class GuardedOperations {
+        public static void DispatchInvoke(Action toInvoke, DispatcherPriority priority) {
+            Action guardedAction =
                 () => {
-                    try
-                    {
+                    try {
                         toInvoke();
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         Debug.Assert(false, "Guarded invoke caught exception", e.Message);
                     }
                 };

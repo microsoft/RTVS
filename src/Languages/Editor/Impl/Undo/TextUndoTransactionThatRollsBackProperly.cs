@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.Text.Operations;
 
-namespace Microsoft.Languages.Editor.Undo
-{
+namespace Microsoft.Languages.Editor.Undo {
     /// <summary>
     /// An implementation of <see cref="ITextUndoTransaction" /> that wraps another
     /// <see cref="ITextUndoTransaction" />. Some undo implementations (notably the VS implementation)
@@ -13,131 +12,103 @@ namespace Microsoft.Languages.Editor.Undo
     /// on this forwards the cancellation to the inner transaction, and if it failed to roll back we
     /// do it ourselves.
     /// </summary>
-    public sealed class TextUndoTransactionThatRollsBackProperly : ITextUndoTransaction
-    {
+    public sealed class TextUndoTransactionThatRollsBackProperly : ITextUndoTransaction {
         private readonly ITextUndoTransaction _innerTransaction;
         private readonly RollbackDetectingUndoPrimitive _undoPrimitive;
 
         private bool _transactionOpen = true;
 
-        public TextUndoTransactionThatRollsBackProperly(ITextUndoTransaction innerTransaction)
-        {
+        public TextUndoTransactionThatRollsBackProperly(ITextUndoTransaction innerTransaction) {
             _innerTransaction = innerTransaction;
             _undoPrimitive = new RollbackDetectingUndoPrimitive();
         }
 
-        public bool CanRedo
-        {
-            get
-            {
+        public bool CanRedo {
+            get {
                 return _innerTransaction.CanRedo;
             }
         }
 
-        public bool CanUndo
-        {
-            get
-            {
+        public bool CanUndo {
+            get {
                 return _innerTransaction.CanUndo;
             }
         }
 
-        public string Description
-        {
-            get
-            {
+        public string Description {
+            get {
                 return _innerTransaction.Description;
             }
 
-            set
-            {
+            set {
                 _innerTransaction.Description = value;
             }
         }
 
-        public ITextUndoHistory History
-        {
-            get
-            {
+        public ITextUndoHistory History {
+            get {
                 return _innerTransaction.History;
             }
         }
 
-        public IMergeTextUndoTransactionPolicy MergePolicy
-        {
-            get
-            {
+        public IMergeTextUndoTransactionPolicy MergePolicy {
+            get {
                 return _innerTransaction.MergePolicy;
             }
 
-            set
-            {
+            set {
                 _innerTransaction.MergePolicy = value;
             }
         }
 
-        public ITextUndoTransaction Parent
-        {
-            get
-            {
+        public ITextUndoTransaction Parent {
+            get {
                 return _innerTransaction.Parent;
             }
         }
 
-        public UndoTransactionState State
-        {
-            get
-            {
+        public UndoTransactionState State {
+            get {
                 return _innerTransaction.State;
             }
         }
 
-        public IList<ITextUndoPrimitive> UndoPrimitives
-        {
-            get
-            {
+        public IList<ITextUndoPrimitive> UndoPrimitives {
+            get {
                 return _innerTransaction.UndoPrimitives;
             }
         }
 
-        public void AddUndo(ITextUndoPrimitive undo)
-        {
+        public void AddUndo(ITextUndoPrimitive undo) {
             _innerTransaction.AddUndo(undo);
         }
 
-        public void Cancel()
-        {
+        public void Cancel() {
             bool transactionWasOpen = _transactionOpen;
             _transactionOpen = false;
 
             // First, add an undo primitive so we can detect whether or not undo gets called
-            if (transactionWasOpen)
-            {
+            if (transactionWasOpen) {
                 _innerTransaction.AddUndo(_undoPrimitive);
             }
 
             _innerTransaction.Cancel();
 
-            if (transactionWasOpen && !_undoPrimitive.UndoCalled)
-            {
+            if (transactionWasOpen && !_undoPrimitive.UndoCalled) {
                 // Undo each of the primitives in reverse order to clean up. This is slimy.
-                foreach (var primitive in _innerTransaction.UndoPrimitives.Reverse())
-                {
+                foreach (var primitive in _innerTransaction.UndoPrimitives.Reverse()) {
                     primitive.Undo();
                 }
             }
         }
 
-        public void Complete()
-        {
+        public void Complete() {
             _transactionOpen = false;
             _innerTransaction.Complete();
         }
 
-        public void Dispose()
-        {
-            if (_transactionOpen)
-            {
+        public void Dispose() {
+            if (_transactionOpen) {
                 // Call our cancel method first to ensure we handle it properly
                 Cancel();
             }
@@ -145,54 +116,43 @@ namespace Microsoft.Languages.Editor.Undo
             _innerTransaction.Dispose();
         }
 
-        public void Do()
-        {
+        public void Do() {
             _innerTransaction.Do();
         }
 
-        public void Undo()
-        {
+        public void Undo() {
             _innerTransaction.Undo();
         }
 
-        private class RollbackDetectingUndoPrimitive : ITextUndoPrimitive
-        {
+        private class RollbackDetectingUndoPrimitive : ITextUndoPrimitive {
             internal bool UndoCalled = false;
 
-            public bool CanRedo
-            {
-                get
-                {
+            public bool CanRedo {
+                get {
                     return true;
                 }
             }
 
-            public bool CanUndo
-            {
-                get
-                {
+            public bool CanUndo {
+                get {
                     return true;
                 }
             }
 
             public ITextUndoTransaction Parent { get; set; }
 
-            public bool CanMerge(ITextUndoPrimitive older)
-            {
+            public bool CanMerge(ITextUndoPrimitive older) {
                 return false;
             }
 
-            public void Do()
-            {
+            public void Do() {
             }
 
-            public ITextUndoPrimitive Merge(ITextUndoPrimitive older)
-            {
+            public ITextUndoPrimitive Merge(ITextUndoPrimitive older) {
                 throw new NotSupportedException();
             }
 
-            public void Undo()
-            {
+            public void Undo() {
                 UndoCalled = true;
             }
         }

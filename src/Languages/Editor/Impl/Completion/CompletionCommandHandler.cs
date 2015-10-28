@@ -3,35 +3,27 @@ using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Completion
-{
-    public abstract class CompletionCommandHandler : ViewCommand
-    {
-        private static CommandId[] _commandIds = new CommandId[]
-            {
-                new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.SHOWMEMBERLIST),
-                new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMPLETEWORD),
-                new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.PARAMINFO),
-                new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.QUICKINFO),
-            };
+namespace Microsoft.Languages.Editor.Completion {
+    public abstract class CompletionCommandHandler : ViewCommand {
+        private static CommandId[] _commandIds = {
+            new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.SHOWMEMBERLIST),
+            new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMPLETEWORD),
+            new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.PARAMINFO),
+            new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.QUICKINFO),
+        };
 
         protected CompletionCommandHandler(ITextView textView) :
-            base(textView, _commandIds, false)
-        {
-        }
+            base(textView, _commandIds, false) {}
 
         public abstract CompletionController CompletionController { get; }
 
         #region ICommand
-        public override CommandStatus Status(Guid group, int id)
-        {
+        public override CommandStatus Status(Guid group, int id) {
             // CompletionController will be null in weird scenarios, such as "Open With <non-html editor>" or diff view
-            if (CompletionController != null && group == VSConstants.VSStd2K)
-            {
+            if (CompletionController != null && group == VSConstants.VSStd2K) {
                 VSConstants.VSStd2KCmdID vsCmdID = (VSConstants.VSStd2KCmdID)id;
 
-                switch (vsCmdID)
-                {
+                switch (vsCmdID) {
                     case VSConstants.VSStd2KCmdID.SHOWMEMBERLIST:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
                     case VSConstants.VSStd2KCmdID.PARAMINFO:
@@ -43,15 +35,12 @@ namespace Microsoft.Languages.Editor.Completion
             return CommandStatus.NotSupported;
         }
 
-        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             // CompletionController will be null in weird scenarios, such as "Open With <non-html editor>" or diff view
-            if (CompletionController != null && group == VSConstants.VSStd2K)
-            {
+            if (CompletionController != null && group == VSConstants.VSStd2K) {
                 VSConstants.VSStd2KCmdID vsCmdID = (VSConstants.VSStd2KCmdID)id;
 
-                switch (vsCmdID)
-                {
+                switch (vsCmdID) {
                     case VSConstants.VSStd2KCmdID.SHOWMEMBERLIST:
                         bool filterList = (inputArg is bool) && (bool)inputArg;
                         CompletionController.OnShowMemberList(filterList);

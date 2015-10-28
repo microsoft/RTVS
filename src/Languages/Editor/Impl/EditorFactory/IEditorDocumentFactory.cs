@@ -1,11 +1,9 @@
 ﻿
-namespace Microsoft.Languages.Editor.EditorFactory
-{
+namespace Microsoft.Languages.Editor.EditorFactory {
     /// <summary>
     /// Document factory 
     /// </summary>
-    public interface IEditorDocumentFactory
-    {
+    public interface IEditorDocumentFactory {
         /// <summary>
         /// Creates instance if editor document
         /// </summary>

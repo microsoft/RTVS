@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Microsoft.Languages.Editor
-{
+namespace Microsoft.Languages.Editor {
     [SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     [DebuggerDisplay("Status={Status}, Result={Result}")]
-    public struct CommandResult
-    {
+    public struct CommandResult {
         public CommandStatus Status { get; set; }
         public int Result { get; set; }
         private const CommandStatus _successStatus = CommandStatus.Supported;
@@ -21,8 +19,7 @@ namespace Microsoft.Languages.Editor
         /// <param name="status"></param>
         /// <param name="result"></param>
         public CommandResult(CommandStatus status, int result)
-            : this()
-        {
+            : this() {
             Status = status;
             Result = result;
         }
@@ -38,10 +35,8 @@ namespace Microsoft.Languages.Editor
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        public bool WasExecuted
-        {
-            get
-            {
+        public bool WasExecuted {
+            get {
                 return ((Status & _successStatus) == _successStatus);
             }
         }
