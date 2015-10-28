@@ -150,6 +150,14 @@ namespace Microsoft.R.Host.Client {
             return contexts.ToArray();
         }
 
+        private void CancelAll() {
+            var tcs = Volatile.Read(ref _cancelAllTcs);
+            if (tcs != null) {
+                Volatile.Write(ref _cancelAllCts, new CancellationTokenSource());
+                tcs.TrySetResult(true);
+            }
+        }
+
         private async Task YesNoCancel(Message request, bool allowEval, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
@@ -344,13 +352,7 @@ namespace Microsoft.R.Host.Client {
                     try {
                         switch (message.Name) {
                             case "\\":
-                                {
-                                    var tcs = Volatile.Read(ref _cancelAllTcs);
-                                    if (tcs != null) {
-                                        _cancelAllCts = new CancellationTokenSource();
-                                        _cancelAllTcs.TrySetResult(true);
-                                    }
-                                }
+                                CancelAll();
                                 break;
 
                             case "?":

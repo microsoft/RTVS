@@ -34,7 +34,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 var session = SessionProvider.Create(instanceId);
                 evaluator = new RInteractiveEvaluator(session);
 
+                EventHandler<EventArgs> clearPendingInputsHandler = (sender, args) => ReplWindow.Current.ClearPendingInputs();
+                session.Disconnected += clearPendingInputsHandler;
+
                 textViewOnClosed = (_, __) => {
+                    session.Disconnected -= clearPendingInputsHandler;
                     evaluator.Dispose();
                     session.Dispose();
                 };

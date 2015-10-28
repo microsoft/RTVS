@@ -49,8 +49,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         protected override void Handle() {
-            if (_enabled) {
-                _rSessionProvider.Current?.CancelAllAsync().DoNotWait();
+            var rSession = _rSessionProvider.Current;
+            if (rSession != null && _enabled) {
+                ReplWindow.Current.ClearPendingInputs();
+                rSession.CancelAllAsync().DoNotWait();
             }
         }
     }
