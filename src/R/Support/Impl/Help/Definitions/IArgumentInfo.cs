@@ -1,7 +1,5 @@
-﻿namespace Microsoft.R.Support.Help.Definitions
-{
-    public interface IArgumentInfo: INamedItemInfo
-    {
+﻿namespace Microsoft.R.Support.Help.Definitions {
+    public interface IArgumentInfo : INamedItemInfo {
         /// <summary>
         /// Default argument value
         /// </summary>

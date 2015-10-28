@@ -1,9 +1,7 @@
 ﻿using Microsoft.R.Support.Help.Definitions;
 
-namespace Microsoft.R.Support.Help.Functions
-{
-    public sealed class ArgumentInfo: NamedItemInfo, IArgumentInfo
-    {
+namespace Microsoft.R.Support.Help.Functions {
+    public sealed class ArgumentInfo : NamedItemInfo, IArgumentInfo {
         /// <summary>
         /// Default argument value
         /// </summary>
@@ -20,13 +18,11 @@ namespace Microsoft.R.Support.Help.Functions
         public bool IsEllipsis { get; internal set; }
 
         public ArgumentInfo(string name) :
-            base(name, NamedItemType.Parameter)
-        {
+            base(name, NamedItemType.Parameter) {
         }
 
-        public ArgumentInfo(string name, string description):
-            base(name, description, NamedItemType.Parameter)
-        {
+        public ArgumentInfo(string name, string description) :
+            base(name, description, NamedItemType.Parameter) {
         }
     }
 }
