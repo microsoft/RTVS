@@ -3,38 +3,39 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.R.Core.Formatting;
+using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
+namespace Microsoft.R.Markdown.Editor.Test.Utility
 {
     [ExcludeFromCodeCoverage]
-    public class FormatFilesFiles
+    public static class TokenizeFiles
     {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void FormatFile(TestContext context, string name)
-        {
-            FormatFile(context, name, new RFormatOptions());
-        }
-
-        public static void FormatFile(TestContext context, string name, RFormatOptions options)
+        public static void TokenizeFile<Token, TokenType, Tokenizer>(TestContext context, string name, string language) 
+            where Tokenizer: ITokenizer<Token>, new()
+            where Token: IToken<TokenType>
         {
             try
             {
                 string testFile = TestFiles.GetTestFilePath(context, name);
-                string baselineFile = testFile + ".formatted";
+                string baselineFile = testFile + ".tokens";
 
                 string text = TestFiles.LoadFile(context, testFile);
-                RFormatter formatter = new RFormatter(options);
+                ITextProvider textProvider = new TextStream(text);
+                var tokenizer = new Tokenizer();
 
-                string actual = formatter.Format(text);
+                var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
+                string actual = DebugWriter.WriteTokens<Token, TokenType>(tokens);
+
                 if (_regenerateBaselineFiles)
                 {
                     // Update this to your actual enlistment if you need to update baseline
-                    string enlistmentPath = @"C:\RTVS\src\R\Core\Test\Files\Formatting";
-                    baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".formatted";
+                    string enlistmentPath = @"C:\RTVS\src\Markdown\Editor\Test\Files\Tokenization";
+                    baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
 
                     TestFiles.UpdateBaseline(baselineFile, actual);
                 }

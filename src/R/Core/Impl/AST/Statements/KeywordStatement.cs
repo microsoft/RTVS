@@ -70,22 +70,8 @@ namespace Microsoft.R.Core.AST.Statements
                     statement = new KeywordStatement();
                     break;
 
-                case "typeof":
-                case "return":
-                    statement = new KeywordExpressionStatement();
-                    break;
-
-                case "library":
-                case "require":
-                    statement = new LibraryStatement();
-                    break;
-
                 case "function":
                     statement = new FunctionStatement();
-                    break;
-
-                case "switch":
-                    statement = new KeywordFunctionStatement();
                     break;
 
                 default:

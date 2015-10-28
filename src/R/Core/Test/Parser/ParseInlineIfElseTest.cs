@@ -125,12 +125,16 @@ namespace Microsoft.R.Core.Test.Parser
                                 TokenNode  [) [31...32)]
                                 Scope  []
                                     TokenNode  [{ [33...34)]
-                                    KeywordExpressionStatement  []
-                                        TokenNode  [return [35...41)]
-                                        TokenNode  [( [41...42)]
-                                        Expression  [x]
-                                            Variable  [x]
-                                        TokenNode  [) [43...44)]
+                                    ExpressionStatement  [return(x)]
+                                        Expression  [return(x)]
+                                            FunctionCall  [35...44)
+                                                Variable  [return]
+                                                TokenNode  [( [41...42)]
+                                                ArgumentList  [42...43)
+                                                    ExpressionArgument  [42...43)
+                                                        Expression  [x]
+                                                            Variable  [x]
+                                                TokenNode  [) [43...44)]
                                     TokenNode  [} [45...46)]
                             TokenNode  [} [46...47)]
 ";

@@ -60,11 +60,16 @@ namespace Microsoft.R.Core.Test.Parser
         {
             string expected =
 @"GlobalScope  [Global]
-    LibraryStatement  []
-        TokenNode  [library [0...7)]
-        TokenNode  [( [7...8)]
-        TokenNode  [abind [8...13)]
-        TokenNode  [) [13...14)]
+    ExpressionStatement  [library(abind)]
+        Expression  [library(abind)]
+            FunctionCall  [0...14)
+                Variable  [library]
+                TokenNode  [( [7...8)]
+                ArgumentList  [8...13)
+                    ExpressionArgument  [8...13)
+                        Expression  [abind]
+                            Variable  [abind]
+                TokenNode  [) [13...14)]
 ";
             ParserTest.VerifyParse(expected, "library(abind)");
         }
@@ -74,11 +79,16 @@ namespace Microsoft.R.Core.Test.Parser
         {
             string expected =
 @"GlobalScope  [Global]
-    LibraryStatement  []
-        TokenNode  [library [0...7)]
-        TokenNode  [( [7...8)]
-        TokenNode  ['abind' [8...15)]
-        TokenNode  [) [15...16)]
+    ExpressionStatement  [library('abind')]
+        Expression  [library('abind')]
+            FunctionCall  [0...16)
+                Variable  [library]
+                TokenNode  [( [7...8)]
+                ArgumentList  [8...15)
+                    ExpressionArgument  [8...15)
+                        Expression  ['abind']
+                            StringValue  ['abind' [8...15)]
+                TokenNode  [) [15...16)]
 ";
             ParserTest.VerifyParse(expected, "library('abind')");
         }
@@ -88,8 +98,12 @@ namespace Microsoft.R.Core.Test.Parser
         {
             string expected =
 @"GlobalScope  [Global]
-
-IndentifierExpected Token [8...9)
+    ExpressionStatement  [library()]
+        Expression  [library()]
+            FunctionCall  [0...9)
+                Variable  [library]
+                TokenNode  [( [7...8)]
+                TokenNode  [) [8...9)]
 ";
             ParserTest.VerifyParse(expected, "library()");
         }
@@ -99,10 +113,12 @@ IndentifierExpected Token [8...9)
         {
             string expected =
 @"GlobalScope  [Global]
-    KeywordExpressionStatement  []
-        TokenNode  [return [0...6)]
-        TokenNode  [( [6...7)]
-        TokenNode  [) [7...8)]
+    ExpressionStatement  [return()]
+        Expression  [return()]
+            FunctionCall  [0...8)
+                Variable  [return]
+                TokenNode  [( [6...7)]
+                TokenNode  [) [7...8)]
 ";
             ParserTest.VerifyParse(expected, "return()");
         }
@@ -112,12 +128,16 @@ IndentifierExpected Token [8...9)
         {
             string expected =
 @"GlobalScope  [Global]
-    KeywordExpressionStatement  []
-        TokenNode  [typeof [0...6)]
-        TokenNode  [( [6...7)]
-        Expression  [1]
-            NumericalValue  [1 [7...8)]
-        TokenNode  [) [8...9)]
+    ExpressionStatement  [typeof(1)]
+        Expression  [typeof(1)]
+            FunctionCall  [0...9)
+                Variable  [typeof]
+                TokenNode  [( [6...7)]
+                ArgumentList  [7...8)
+                    ExpressionArgument  [7...8)
+                        Expression  [1]
+                            NumericalValue  [1 [7...8)]
+                TokenNode  [) [8...9)]
 ";
             ParserTest.VerifyParse(expected, "typeof(1)");
         }
@@ -127,18 +147,20 @@ IndentifierExpected Token [8...9)
         {
             string expected =
 @"GlobalScope  [Global]
-    KeywordFunctionStatement  [0...11)
-        TokenNode  [switch [0...6)]
-        TokenNode  [( [6...7)]
-        ArgumentList  [7...10)
-            ExpressionArgument  [7...9)
-                Expression  [1]
-                    NumericalValue  [1 [7...8)]
-                TokenNode  [, [8...9)]
-            ExpressionArgument  [9...10)
-                Expression  [2]
-                    NumericalValue  [2 [9...10)]
-        TokenNode  [) [10...11)]
+    ExpressionStatement  [switch(1,2)]
+        Expression  [switch(1,2)]
+            FunctionCall  [0...11)
+                Variable  [switch]
+                TokenNode  [( [6...7)]
+                ArgumentList  [7...10)
+                    ExpressionArgument  [7...9)
+                        Expression  [1]
+                            NumericalValue  [1 [7...8)]
+                        TokenNode  [, [8...9)]
+                    ExpressionArgument  [9...10)
+                        Expression  [2]
+                            NumericalValue  [2 [9...10)]
+                TokenNode  [) [10...11)]
 ";
             ParserTest.VerifyParse(expected, "switch(1,2)");
         }

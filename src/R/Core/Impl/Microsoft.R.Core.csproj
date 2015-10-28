@@ -99,7 +99,6 @@
     <Compile Include="AST\Statements\Functions\FunctionStatement.cs" />
     <Compile Include="AST\Statements\KeywordExpression.cs" />
     <Compile Include="AST\Statements\KeywordFunctionStatement.cs" />
-    <Compile Include="AST\Statements\LibraryStatement.cs" />
     <Compile Include="AST\Statements\KeywordIdentifierStatement.cs" />
     <Compile Include="AST\Utility\AstWriter.cs" />
     <Compile Include="AST\Values\MissingValue.cs" />
