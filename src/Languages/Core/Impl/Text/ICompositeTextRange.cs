@@ -1,12 +1,10 @@
-﻿namespace Microsoft.Languages.Core.Text
-{
+﻿namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Represents a set of text ranges. It may or may not be actual collection
     /// internally, but it supports shifting its content according to the supplied start
     /// position and an offset.
     /// </summary>
-    public interface ICompositeTextRange : ITextRange
-    {
+    public interface ICompositeTextRange : ITextRange {
         /// <summary>
         /// Shifts items in collection starting from given position by the specified offset.
         /// </summary>

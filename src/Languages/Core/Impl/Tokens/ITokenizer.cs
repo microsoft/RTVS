@@ -1,13 +1,11 @@
 ﻿
 using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.Languages.Core.Tokens
-{
+namespace Microsoft.Languages.Core.Tokens {
     /// <summary>
     /// Generic tokenizer
     /// </summary>
-    public interface ITokenizer<T> where T: ITextRange
-    {
+    public interface ITokenizer<T> where T : ITextRange {
         /// <summary>
         /// Tokenize text in a string
         /// </summary>

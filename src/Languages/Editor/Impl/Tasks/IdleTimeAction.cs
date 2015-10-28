@@ -61,7 +61,7 @@ namespace Microsoft.Languages.Editor.Tasks
 
         void OnIdle(object sender, EventArgs e)
         {
-            if (TimeUtility.MillisecondsSinceUTC(_idleConnectTime) > _delay)
+            if (TimeUtility.MillisecondsSinceUtc(_idleConnectTime) > _delay)
             {
                 DisconnectFromIdle();
                 _action();

@@ -204,7 +204,7 @@ namespace Microsoft.Languages.Editor.Tasks
             // happen during idle, so this gets called anyway
             if (!IsDisposed && !_taskRunning)
             {
-                if (_delay == 0 || TimeUtility.MillisecondsSinceUTC(_idleConnectTime) > _delay)
+                if (_delay == 0 || TimeUtility.MillisecondsSinceUtc(_idleConnectTime) > _delay)
                 {
                     _taskRunning = true;
                     _taskDoneEvent = new ManualResetEvent(false);

@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Microsoft.Languages.Core.Text
-{
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Implements <seealso cref="ITextProvider"/> over a string
     /// </summary>
-    public class TextStream : ITextProvider
-    {
+    public class TextStream : ITextProvider {
         string _text;
 
         // Array access (i.e. converting string to an array)
         // is faster, but takes more memory.
 
         [DebuggerStepThrough]
-        public TextStream(string text)
-        {
+        public TextStream(string text) {
             _text = text;
         }
 
         [DebuggerStepThrough]
-        public override string ToString()
-        {
+        public override string ToString() {
             return _text;
         }
 
@@ -30,18 +26,15 @@ namespace Microsoft.Languages.Core.Text
         /// <summary>
         /// Text length
         /// </summary>
-        public int Length
-        {
+        public int Length {
             get { return _text.Length; }
         }
 
         /// <summary>
         /// Retrieves character at a given position
         /// </summary>
-        public char this[int position]
-        {
-            get
-            {
+        public char this[int position] {
+            get {
                 if (position < 0 || position >= _text.Length)
                     return '\0';
 
@@ -52,8 +45,7 @@ namespace Microsoft.Languages.Core.Text
         /// <summary>
         /// Retrieves a substring given start position and length
         /// </summary>
-        public string GetText(int position, int length)
-        {
+        public string GetText(int position, int length) {
             if (length == 0)
                 return String.Empty;
 
@@ -65,8 +57,7 @@ namespace Microsoft.Languages.Core.Text
         /// Retrieves substring given text range
         /// </summary>
         [DebuggerStepThrough]
-        public string GetText(ITextRange range)
-        {
+        public string GetText(ITextRange range) {
             return GetText(range.Start, range.Length);
         }
 
@@ -77,8 +68,7 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="startPosition">Starting position</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
         [DebuggerStepThrough]
-        public int IndexOf(char ch, int startPosition)
-        {
+        public int IndexOf(char ch, int startPosition) {
             return _text.IndexOf(ch, startPosition);
         }
 
@@ -89,8 +79,7 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="range">Range to search in</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
         [DebuggerStepThrough]
-        public int IndexOf(char ch, ITextRange range)
-        {
+        public int IndexOf(char ch, ITextRange range) {
             return _text.IndexOf(ch, range.Start, range.Length);
         }
 
@@ -101,8 +90,7 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="startPosition">Starting position</param>
         /// <param name="ignoreCase">True if search should be case-insensitive</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
-        public int IndexOf(string stringToFind, int startPosition, bool ignoreCase)
-        {
+        public int IndexOf(string stringToFind, int startPosition, bool ignoreCase) {
             return _text.IndexOf(stringToFind, startPosition, ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture);
         }
 
@@ -114,8 +102,7 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="range">Range to search in</param>
         /// <param name="ignoreCase">True if search should be case-insensitive</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
-        public int IndexOf(string stringToFind, ITextRange range, bool ignoreCase)
-        {
+        public int IndexOf(string stringToFind, ITextRange range, bool ignoreCase) {
             if (range.Start + stringToFind.Length > _text.Length)
                 return -1;
 
@@ -127,15 +114,13 @@ namespace Microsoft.Languages.Core.Text
             return _text.IndexOf(stringToFind, range.Start, range.Length, comparison);
         }
 
-        public bool CompareTo(int position, int length, string compareTo, bool ignoreCase)
-        {
+        public bool CompareTo(int position, int length, string compareTo, bool ignoreCase) {
             var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
             return String.Compare(_text, position, compareTo, 0, length, comparison) == 0;
         }
 
-        public ITextProvider Clone()
-        {
+        public ITextProvider Clone() {
             return new TextStream(_text);
         }
 
@@ -150,8 +135,7 @@ namespace Microsoft.Languages.Core.Text
 
         #region Dispose
         [DebuggerStepThrough]
-        public void Dispose()
-        {
+        public void Dispose() {
             _text = null;
         }
         #endregion
