@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
 		public bool IsFileAllowed(string relativePath, FileAttributes attributes)
 		{
 			return !attributes.HasFlag(FileAttributes.Hidden)
-				&& !HasExtension(relativePath, ".user", ".rxproj");
+				&& !HasExtension(relativePath, ".user", ".rxproj", ".sln");
 		}
 
 		public bool IsDirectoryAllowed(string relativePath, FileAttributes attributes)

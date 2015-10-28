@@ -432,4 +432,22 @@
   <data name="RFileNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>images\rfilenode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="AttachmentTooLarge1" xml:space="preserve">
+    <value>Archive with log files exceeds {0} MB. Sending large file as an attachment may not be possible.</value>
+  </data>
+  <data name="Error_CannotSendFeedback1" xml:space="preserve">
+    <value>Error sending e-mail: {0} ({1}).</value>
+  </data>
+  <data name="AttachmentTooLarge2" xml:space="preserve">
+    <value>You can either proceed and try creating e-mail anyway or try and upload log files to a share and then send the link in e-mail to rtvscore@microsoft.com.</value>
+  </data>
+  <data name="AttachmentTooLarge3" xml:space="preserve">
+    <value>{0} file that can be found in {1}</value>
+  </data>
+  <data name="AttachmentTooLarge4" xml:space="preserve">
+    <value>Proceed with creating an e-mail?</value>
+  </data>
+  <data name="Error_CannotSendFeedback2" xml:space="preserve">
+    <value>Please compose and send e-mail manually to rtvscore@microsoft.com. If possible, attach {0} file that can be found in {1}.</value>
+  </data>
 </root>

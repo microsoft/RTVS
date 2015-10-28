@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package.DataInspect;
+using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
 using Microsoft.VisualStudio.R.Package.Packages;
@@ -67,6 +68,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             RToolsSettings.Init(AppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
+            LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
         }
@@ -77,6 +79,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 _indexBuildingTask = null;
             }
 
+            LogCleanup.Cancel();
             ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
             base.Dispose(disposing);

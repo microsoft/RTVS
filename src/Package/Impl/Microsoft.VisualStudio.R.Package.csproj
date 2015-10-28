@@ -94,6 +94,8 @@
     <Compile Include="Feedback\SendMailCommand.cs" />
     <Compile Include="Feedback\SendSmileCommand.cs" />
     <Compile Include="Interop\MailUtility.cs" />
+    <Compile Include="Logging\LogCleanup.cs" />
+    <Compile Include="Logging\DiagnosticLogs.cs" />
     <Compile Include="Options\Attributes\LocDefaultValueAttribute.cs" />
     <Compile Include="Options\Attributes\YesNoAskTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RVersionTypeConverter.cs" />

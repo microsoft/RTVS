@@ -79,6 +79,42 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Archive with log files exceeds {0} MB. Sending large file as an attachment may not be possible..
+        /// </summary>
+        public static string AttachmentTooLarge1 {
+            get {
+                return ResourceManager.GetString("AttachmentTooLarge1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can either proceed and try creating e-mail anyway or try and upload log files to a share and then send the link in e-mail to rtvscore@microsoft.com..
+        /// </summary>
+        public static string AttachmentTooLarge2 {
+            get {
+                return ResourceManager.GetString("AttachmentTooLarge2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} file that can be found in {1}.
+        /// </summary>
+        public static string AttachmentTooLarge3 {
+            get {
+                return ResourceManager.GetString("AttachmentTooLarge3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Proceed with creating an e-mail?.
+        /// </summary>
+        public static string AttachmentTooLarge4 {
+            get {
+                return ResourceManager.GetString("AttachmentTooLarge4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to open plot file. Exception: {0}.
         /// </summary>
         public static string CannotOpenPlotFile {
@@ -183,6 +219,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_CannotDeleteFile {
             get {
                 return ResourceManager.GetString("Error_CannotDeleteFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error sending e-mail: {0} ({1})..
+        /// </summary>
+        public static string Error_CannotSendFeedback1 {
+            get {
+                return ResourceManager.GetString("Error_CannotSendFeedback1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please compose and send e-mail manually to rtvscore@microsoft.com. If possible, attach {0} file that can be found in {1}..
+        /// </summary>
+        public static string Error_CannotSendFeedback2 {
+            get {
+                return ResourceManager.GetString("Error_CannotSendFeedback2", resourceCulture);
             }
         }
         
