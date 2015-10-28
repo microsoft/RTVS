@@ -2,13 +2,11 @@
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Actions.Logging
-{
+namespace Microsoft.R.Actions.Logging {
     /// <summary>
     /// Log that writes data into a string.
     /// </summary>
-    public class StringLog : IActionLog
-    {
+    public class StringLog : IActionLog {
         private readonly IActionLogWriter _logWriter;
         private readonly StringBuilder _sb = new StringBuilder();
 
@@ -16,20 +14,17 @@ namespace Microsoft.R.Actions.Logging
             _logWriter = logWriter ?? NullLogWriter.Instance;
         }
 
-        public Task WriteAsync(MessageCategory category, string message)
-        {
+        public Task WriteAsync(MessageCategory category, string message) {
             _sb.Append(message);
             return _logWriter.WriteAsync(category, message);
         }
 
-        public Task WriteFormatAsync(MessageCategory category, string format, params object[] arguments)
-        {
+        public Task WriteFormatAsync(MessageCategory category, string format, params object[] arguments) {
             string message = string.Format(CultureInfo.InvariantCulture, format, arguments);
             return WriteAsync(category, message);
         }
 
-        public Task WriteLineAsync(MessageCategory category, string message)
-        {
+        public Task WriteLineAsync(MessageCategory category, string message) {
             return WriteAsync(category, message + "\r\n");
         }
 
