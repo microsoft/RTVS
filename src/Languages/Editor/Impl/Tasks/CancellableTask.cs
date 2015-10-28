@@ -3,8 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Languages.Editor.Tasks
-{
+namespace Microsoft.Languages.Editor.Tasks {
     // NOTE: task does not provide any facilities to wait for its completion.
     // The reason is that in WPF app one can't wait for an object on a main
     // thread since if object is also set on a main thread the app will hang.
@@ -15,8 +14,7 @@ namespace Microsoft.Languages.Editor.Tasks
     // thread and not in a main thread callback. Also, consider pulling data
     // from background thread directly rather than making Dispatcher.Invoke call
     // that will try transitioning data to the main thread.
-    public abstract class CancellableTask : IDisposable
-    {
+    public abstract class CancellableTask : IDisposable {
         private Task _task = null;
         private ManualResetEventSlim _taskCompleted = new ManualResetEventSlim(true);
         private long _canceled = 0;
@@ -32,8 +30,7 @@ namespace Microsoft.Languages.Editor.Tasks
         /// Thus one may receive an event that task completed from a task that got 
         /// canceled or managed to complete, but caller since spawned another task.
         /// </summary>
-        protected long TaskId
-        {
+        protected long TaskId {
             get { return Interlocked.Read(ref _taskId); }
         }
 
@@ -42,8 +39,7 @@ namespace Microsoft.Languages.Editor.Tasks
         /// </summary>
         /// <param name="runAction">Action to invoke on a background thread.</param>
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        protected void RunSynchronously(Action<Func<bool>> runAction)
-        {
+        protected void RunSynchronously(Action<Func<bool>> runAction) {
             Run(runAction, false);
         }
 
@@ -53,8 +49,7 @@ namespace Microsoft.Languages.Editor.Tasks
         /// <param name="runAction">Action to invoke on a background thread.</param>
         /// <param name="async">True if processing should happen asynchronously, false otherwise.</param>
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        protected virtual void Run(Action<Func<bool>> runAction, bool async)
-        {
+        protected virtual void Run(Action<Func<bool>> runAction, bool async) {
             // New task, increment id;
             Interlocked.Increment(ref _taskId);
 
@@ -70,24 +65,17 @@ namespace Microsoft.Languages.Editor.Tasks
 
             SignalTaskBegins();
 
-            _task = new Task((taskId) =>
-            {
-                try
-                {
+            _task = new Task((taskId) => {
+                try {
                     Func<bool> isCancelledCallback = () => { return IsCancellationRequested() || (TaskId != (long)taskId); };
                     runAction(isCancelledCallback);
-                }
-                catch (Exception) { }
-                finally { }
+                } catch (Exception) { } finally { }
             }, TaskId);
 
-            if (!async)
-            {
+            if (!async) {
                 _task.RunSynchronously();
                 DisposeTask();
-            }
-            else
-            {
+            } else {
                 _task.Start();
             }
         }
@@ -99,12 +87,10 @@ namespace Microsoft.Languages.Editor.Tasks
         /// technique depending how task body actually signals completion. Default implementation
         /// 
         /// </summary>
-        public virtual void WaitForCompletion(int milliseconds)
-        {
+        public virtual void WaitForCompletion(int milliseconds) {
             // TPL has 8 (eight!) task states so we must be careful to wait
             // only when task is actually running or is about to be ran.
-            if (_task != null && _taskCompleted != null && IsTaskRunning())
-            {
+            if (_task != null && _taskCompleted != null && IsTaskRunning()) {
                 _taskCompleted.Wait(milliseconds);
             }
 
@@ -114,8 +100,7 @@ namespace Microsoft.Languages.Editor.Tasks
         /// <summary>
         /// Checks if main thread requested task cancellation
         /// </summary>
-        public bool IsCancellationRequested()
-        {
+        public bool IsCancellationRequested() {
             return Interlocked.Read(ref _canceled) > 0;
         }
 
@@ -124,10 +109,8 @@ namespace Microsoft.Languages.Editor.Tasks
         /// Cancellation is cooperative and task may continue running until it reaches
         /// point where it checks for cancellation and then eventually terminate.
         /// </summary>
-        public virtual void Cancel()
-        {
-            if (_task != null && _taskCompleted != null)
-            {
+        public virtual void Cancel() {
+            if (_task != null && _taskCompleted != null) {
                 Interlocked.Exchange(ref _canceled, 1);
                 Interlocked.Increment(ref _taskId);
 
@@ -135,19 +118,15 @@ namespace Microsoft.Languages.Editor.Tasks
             }
         }
 
-        private void SignalTaskBegins()
-        {
-            if (_taskCompleted != null)
-            {
+        private void SignalTaskBegins() {
+            if (_taskCompleted != null) {
                 Interlocked.Exchange(ref _canceled, 0);
                 _taskCompleted.Reset();
             }
         }
 
-        protected void SignalTaskComplete(long taskId)
-        {
-            if (TaskId == taskId && _taskCompleted != null)
-            {
+        protected void SignalTaskComplete(long taskId) {
+            if (TaskId == taskId && _taskCompleted != null) {
                 _taskCompleted.Set();
                 Interlocked.Exchange(ref _canceled, 0);
             }
@@ -158,39 +137,32 @@ namespace Microsoft.Languages.Editor.Tasks
         /// mean task completed successfully. It could as well be canceled.
         /// </summary>
         /// <returns></returns>
-        public bool IsTaskCompleted()
-        {
+        public bool IsTaskCompleted() {
             return _taskCompleted != null ? _taskCompleted.IsSet : true;
         }
 
-        public bool IsTaskRunning()
-        {
+        public bool IsTaskRunning() {
             return !IsTaskCompleted();
         }
 
         #region Dispose
-        protected void DisposeTask()
-        {
+        protected void DisposeTask() {
             _task = null;
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_task")]
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
+        protected virtual void Dispose(bool disposing) {
+            if (disposing) {
                 Cancel();
 
-                if (_taskCompleted != null)
-                {
+                if (_taskCompleted != null) {
                     _taskCompleted.Dispose();
                     _taskCompleted = null;
                 }
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }

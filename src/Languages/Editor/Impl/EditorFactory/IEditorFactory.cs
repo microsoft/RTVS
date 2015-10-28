@@ -1,14 +1,12 @@
 ﻿using Microsoft.Languages.Editor.Workspace;
 
-namespace Microsoft.Languages.Editor.EditorFactory
-{
+namespace Microsoft.Languages.Editor.EditorFactory {
     /// <summary>
     /// Editor instance factory. Typically imported via MEF
     /// in the host application editor factory such as in
     /// IVsEditorFactory.CreateEditorInstance.
     /// </summary>
-    public interface IEditorFactory
-    {
+    public interface IEditorFactory {
         /// <summary>
         /// Creates an instance of an editor
         /// </summary>

@@ -2,11 +2,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.Languages.Editor.Controller.Constants
-{
+namespace Microsoft.Languages.Editor.Controller.Constants {
     [ExcludeFromCodeCoverage]
-    public sealed class VSConstants
-    {
+    public sealed class VSConstants {
         private VSConstants() { }
 
         // VS Command ID's
@@ -18,8 +16,7 @@ namespace Microsoft.Languages.Editor.Controller.Constants
         public static readonly Guid VsDebugCommandGroup = new Guid("C9DD4A59-47FB-11D2-83E7-00C04F9902C1");
 
         [Guid("5EFC7975-14BC-11CF-9B2B-00AA00573819")]
-        public enum VSStd97CmdID
-        {
+        public enum VSStd97CmdID {
             /// <include file='doc\VSConstants.uex' path='docs/doc[@for="VSStd97CmdID.AlignBottom"]/*' />
             AlignBottom = 1,
             /// <include file='doc\VSConstants.uex' path='docs/doc[@for="VSStd97CmdID.AlignHorizontalCenters"]/*' />
@@ -2183,8 +2180,7 @@ namespace Microsoft.Languages.Editor.Controller.Constants
         /// Set of the standard, shared editor commands in StandardCommandSet2k.
         /// </summary>
         [Guid("1496A755-94DE-11D0-8C3F-00C04FC2AAE2")]
-        public enum VSStd2KCmdID
-        {
+        public enum VSStd2KCmdID {
             /// <include file='doc\VSConstants.uex' path='docs/doc[@for="VSStd2KCmdID.TYPECHAR"]/*' />
             TYPECHAR = 1,
             /// <include file='doc\VSConstants.uex' path='docs/doc[@for="VSStd2KCmdID.BACKSPACE"]/*' />
@@ -4380,15 +4376,13 @@ namespace Microsoft.Languages.Editor.Controller.Constants
             CommandWindowHistoryDown = 0x310D,
         }
 
-        internal enum DebugCommands
-        {
+        internal enum DebugCommands {
             None = 0,
             InsertTracepoint = 0x00000041,
         }
 
         [ExcludeFromCodeCoverage]
-        public sealed class ErrorHandler
-        {
+        public sealed class ErrorHandler {
             private ErrorHandler() { }
 
             // Helper Methods
@@ -4399,8 +4393,7 @@ namespace Microsoft.Languages.Editor.Controller.Constants
             /// </summary>
             /// <param name="hr">The HRESULT to test.</param>
             /// <returns>true if hr represents a success, false otherwise.</returns>
-            public static bool Succeeded(int hr)
-            {
+            public static bool Succeeded(int hr) {
                 return (hr >= 0);
             }
 
@@ -4410,8 +4403,7 @@ namespace Microsoft.Languages.Editor.Controller.Constants
             /// </summary>
             /// <param name="hr">The HRESULT to test.</param>
             /// <returns>true if hr represents an error, false otherwise.</returns>
-            public static bool Failed(int hr)
-            {
+            public static bool Failed(int hr) {
                 return (hr < 0);
             }
 
@@ -4421,8 +4413,7 @@ namespace Microsoft.Languages.Editor.Controller.Constants
             /// of failure.
             /// </summary>
             /// <param name="hr">The HRESULT to test.</param>
-            public static int ThrowOnFailure(int hr)
-            {
+            public static int ThrowOnFailure(int hr) {
                 return ThrowOnFailure(hr, null);
             }
 
@@ -4433,12 +4424,9 @@ namespace Microsoft.Languages.Editor.Controller.Constants
             /// </summary>
             /// <param name="hr">The HRESULT to test.</param>
             /// <param name="expectedHRFailure">Array of well-known and expected failures.</param>
-            public static int ThrowOnFailure(int hr, params int[] expectedHRFailure)
-            {
-                if (Failed(hr))
-                {
-                    if ((null == expectedHRFailure) || (Array.IndexOf(expectedHRFailure, hr) < 0))
-                    {
+            public static int ThrowOnFailure(int hr, params int[] expectedHRFailure) {
+                if (Failed(hr)) {
+                    if ((null == expectedHRFailure) || (Array.IndexOf(expectedHRFailure, hr) < 0)) {
                         Marshal.ThrowExceptionForHR(hr);
                     }
                 }
@@ -4451,13 +4439,11 @@ namespace Microsoft.Languages.Editor.Controller.Constants
         public const int E_FAIL = unchecked((int)0x80004005);
         public const int E_NOTIMPL = unchecked((int)0x80004001);
 
-        public static bool Succeeded(int hr)
-        {
+        public static bool Succeeded(int hr) {
             return (hr >= 0);
         }
 
-        public static bool Failed(int hr)
-        {
+        public static bool Failed(int hr) {
             return (hr < 0);
         }
     }

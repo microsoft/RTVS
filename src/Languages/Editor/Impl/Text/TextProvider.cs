@@ -3,14 +3,12 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.Text;
 using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.Languages.Editor.Text
-{
+namespace Microsoft.Languages.Editor.Text {
     /// <summary>
     /// Text provider that implements ITextProvider over Visual Studio 
     /// core editor's ITextBuffer or ITextSnapshot 
     /// </summary>
-    public class TextProvider : ITextProvider, ITextSnapshotProvider
-    {
+    public class TextProvider : ITextProvider, ITextSnapshotProvider {
         private const int DefaultBlockLength = 16384;
         private const int DefaultPreBlockLength = 128;
 
@@ -21,43 +19,31 @@ namespace Microsoft.Languages.Editor.Text
         private int _partialBlockLength;
 
         public TextProvider(ITextSnapshot snapshot)
-            : this(snapshot, 0)
-        {
+            : this(snapshot, 0) {
         }
 
         public TextProvider(ITextSnapshot snapshot, bool partial)
-            : this(snapshot, partial ? DefaultBlockLength : 0)
-        {
+            : this(snapshot, partial ? DefaultBlockLength : 0) {
         }
 
-        public TextProvider(ITextSnapshot snapshot, int partialBlockLength)
-        {
+        public TextProvider(ITextSnapshot snapshot, int partialBlockLength) {
             _snapshot = snapshot;
             Length = _snapshot.Length;
             _partial = partialBlockLength > 0;
             _partialBlockLength = partialBlockLength;
         }
 
-        private void UpdateCachedBlock(int position, int length)
-        {
-            if (!_partial)
-            {
-                if (_cachedBlock == null)
-                {
+        private void UpdateCachedBlock(int position, int length) {
+            if (!_partial) {
+                if (_cachedBlock == null) {
                     _cachedBlock = _snapshot.GetText(0, _snapshot.Length);
                 }
-            }
-            else
-            {
-                if (_cachedBlock == null || position < _basePosition || (_basePosition + _cachedBlock.Length < position + length))
-                {
-                    if (position < DefaultPreBlockLength)
-                    {
+            } else {
+                if (_cachedBlock == null || position < _basePosition || (_basePosition + _cachedBlock.Length < position + length)) {
+                    if (position < DefaultPreBlockLength) {
                         length += position;
                         position = 0;
-                    }
-                    else
-                    {
+                    } else {
                         length += DefaultPreBlockLength;
                         position -= DefaultPreBlockLength;
                     }
@@ -73,10 +59,8 @@ namespace Microsoft.Languages.Editor.Text
 
         public int Length { get; private set; }
 
-        public char this[int position]
-        {
-            get
-            {
+        public char this[int position] {
+            get {
                 if (position < 0 || position >= Length)
                     return '\0';
 
@@ -85,25 +69,20 @@ namespace Microsoft.Languages.Editor.Text
             }
         }
 
-        public string GetText(int position, int length)
-        {
+        public string GetText(int position, int length) {
             UpdateCachedBlock(position, length);
             int start = position - _basePosition;
             Debug.Assert((start >= 0) && (start + length <= _cachedBlock.Length));
             return _cachedBlock.Substring(start, length);
         }
 
-        public string GetText(ITextRange range)
-        {
+        public string GetText(ITextRange range) {
             return GetText(range.Start, range.Length);
         }
 
-        public int IndexOf(char ch, int startPosition)
-        {
-            for(int i = startPosition; i < Length; i++)
-            {
-                if(this[i] == ch)
-                {
+        public int IndexOf(char ch, int startPosition) {
+            for (int i = startPosition; i < Length; i++) {
+                if (this[i] == ch) {
                     return i;
                 }
             }
@@ -111,13 +90,10 @@ namespace Microsoft.Languages.Editor.Text
             return -1;
         }
 
-        public int IndexOf(char ch, ITextRange range)
-        {
+        public int IndexOf(char ch, ITextRange range) {
             int limit = Math.Min(Length, range.End);
-            for (int i = range.Start; i < limit; i++)
-            {
-                if (this[i] == ch)
-                {
+            for (int i = range.Start; i < limit; i++) {
+                if (this[i] == ch) {
                     return i;
                 }
             }
@@ -125,43 +101,36 @@ namespace Microsoft.Languages.Editor.Text
             return -1;
         }
 
-        public int IndexOf(string text, int startPosition, bool ignoreCase)
-        {
+        public int IndexOf(string text, int startPosition, bool ignoreCase) {
             return IndexOf(text, TextRange.FromBounds(startPosition, this.Length), ignoreCase);
         }
 
-        public int IndexOf(string text, ITextRange range, bool ignoreCase)
-        {
+        public int IndexOf(string text, ITextRange range, bool ignoreCase) {
             if (String.IsNullOrEmpty(text))
                 return range.Start;
 
             int end = range.End - text.Length;
-            for (int i = range.Start; i <= end; i++)
-            {
+            for (int i = range.Start; i <= end; i++) {
                 bool found = true;
                 int k = i;
                 int j;
 
-                for (j = 0; j < text.Length; j++, k++)
-                {
+                for (j = 0; j < text.Length; j++, k++) {
                     char ch1 = text[j];
                     char ch2 = this[k];
 
-                    if (ignoreCase)
-                    {
+                    if (ignoreCase) {
                         ch1 = Char.ToLowerInvariant(ch1);
                         ch2 = Char.ToLowerInvariant(ch2);
                     }
 
-                    if (ch1 != ch2)
-                    {
+                    if (ch1 != ch2) {
                         found = false;
                         break;
                     }
                 }
 
-                if (found && j == text.Length)
-                {
+                if (found && j == text.Length) {
                     return i;
                 }
             }
@@ -169,8 +138,7 @@ namespace Microsoft.Languages.Editor.Text
             return -1;
         }
 
-        public bool CompareTo(int position, int length, string text, bool ignoreCase)
-        {
+        public bool CompareTo(int position, int length, string text, bool ignoreCase) {
             if (text.Length != length)
                 return false;
 
@@ -181,13 +149,11 @@ namespace Microsoft.Languages.Editor.Text
                                   ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) == 0;
         }
 
-        public ITextProvider Clone()
-        {
+        public ITextProvider Clone() {
             return new TextProvider(_snapshot, _partial);
         }
 
-        public int Version
-        {
+        public int Version {
             get { return _snapshot.Version.VersionNumber; }
         }
 
@@ -196,8 +162,7 @@ namespace Microsoft.Languages.Editor.Text
 
         #region ITextSnapshotProvider
 
-        public ITextSnapshot Snapshot
-        {
+        public ITextSnapshot Snapshot {
             get { return _snapshot; }
         }
 

@@ -1,10 +1,8 @@
 ﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Text
-{
-    public interface ITextViewListener
-    {
+namespace Microsoft.Languages.Editor.Text {
+    public interface ITextViewListener {
         /// <summary>
         /// Called when a text buffer gets attached to its first view
         /// </summary>
