@@ -6,7 +6,9 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Shell;
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -278,11 +280,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void OnCollectionChanged(Func<NotifyCollectionChangedEventArgs> getArgs) {
             if (CollectionChanged != null) {
-                ThreadHelper.Generic.Invoke(() => {
+                EditorShell.Current.DispatchOnUIThread(() => {
                     CollectionChanged(
                         this,
                         getArgs());
-                });
+                }, DispatcherPriority.Normal);
             }
         }
 
