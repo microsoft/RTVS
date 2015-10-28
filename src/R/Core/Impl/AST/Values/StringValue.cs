@@ -4,15 +4,12 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Values
-{
+namespace Microsoft.R.Core.AST.Values {
     /// <summary>
     /// Represents string constant
     /// </summary>
-    public sealed class StringValue : RValueTokenNode<RString>
-    {
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+    public sealed class StringValue : RValueTokenNode<RString> {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
             string text = context.TextProvider.GetText(currentToken);
 

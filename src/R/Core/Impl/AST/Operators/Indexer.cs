@@ -6,8 +6,7 @@ using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Variables
-{
+namespace Microsoft.R.Core.AST.Variables {
     /// <summary>
     /// Indexer operator. Applies to a variable if it is 
     /// a direct call like name[1] or to a result
@@ -15,36 +14,30 @@ namespace Microsoft.R.Core.AST.Variables
     /// or function call as in x(a)[1] or x[1][a].
     /// </summary>
     [DebuggerDisplay("Indexer, Args:{Arguments.Count} [{Start}...{End})")]
-    public sealed class Indexer : Operator
-    {
+    public sealed class Indexer : Operator {
         public TokenNode LeftBrackets { get; private set; }
         public ArgumentList Arguments { get; private set; }
         public TokenNode RightBrackets { get; private set; }
 
         #region IOperator
-        public override bool IsUnary
-        {
+        public override bool IsUnary {
             get { return true; }
         }
 
-        public override OperatorType OperatorType
-        {
+        public override OperatorType OperatorType {
             get { return OperatorType.Index; }
         }
 
-        public override int Precedence
-        {
+        public override int Precedence {
             get { return OperatorPrecedence.GetPrecedence(OperatorType.Index); }
         }
 
-        public override Association Association
-        {
+        public override Association Association {
             get { return Association.Right; }
         }
         #endregion
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             TokenStream<RToken> tokens = context.Tokens;
 
             Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.OpenSquareBracket ||
@@ -57,13 +50,10 @@ namespace Microsoft.R.Core.AST.Variables
             this.Arguments = new ArgumentList(terminatingTokenType);
             this.Arguments.Parse(context, this);
 
-            if (tokens.CurrentToken.TokenType == terminatingTokenType)
-            {
+            if (tokens.CurrentToken.TokenType == terminatingTokenType) {
                 this.RightBrackets = RParser.ParseToken(context, this);
                 return base.Parse(context, parent);
-            }
-            else
-            {
+            } else {
                 context.AddError(new MissingItemParseError(ParseErrorType.CloseSquareBracketExpected, tokens.PreviousToken));
             }
 

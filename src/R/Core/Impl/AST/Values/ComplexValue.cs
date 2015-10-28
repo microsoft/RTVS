@@ -7,15 +7,12 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Values
-{
+namespace Microsoft.R.Core.AST.Values {
     /// <summary>
     /// Represents complex number
     /// </summary>
-    public sealed class ComplexValue : RValueTokenNode<RComplex>
-    {
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+    public sealed class ComplexValue : RValueTokenNode<RComplex> {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
             string text = context.TextProvider.GetText(currentToken);
             double realPart = 0;
@@ -33,32 +30,25 @@ namespace Microsoft.R.Core.AST.Values
 
             // Drop trailing i and retokenize as two numbers
             RTokenizer tokenizer = new RTokenizer(separateComments: false);
-            IReadOnlyTextRangeCollection<RToken> tokens= tokenizer.Tokenize(text.Substring(0, text.Length - 1));
+            IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(text.Substring(0, text.Length - 1));
 
-            if(tokens.Count == 1)
-            {
+            if (tokens.Count == 1) {
                 // Only imaginary part is present
                 Debug.Assert(tokens[0].TokenType == RTokenType.Number);
-                if(!Double.TryParse(text.Substring(tokens[0].Start, tokens[0].Length), out imaginaryPart))
-                {
+                if (!Double.TryParse(text.Substring(tokens[0].Start, tokens[0].Length), out imaginaryPart)) {
                     return false;
                 }
-            }
-            else if(tokens.Count == 3)
-            {
+            } else if (tokens.Count == 3) {
                 // Real and imaginary parts present
                 Debug.Assert(tokens[0].TokenType == RTokenType.Number);
                 Debug.Assert(tokens[1].TokenType == RTokenType.Operator);
                 Debug.Assert(tokens[2].TokenType == RTokenType.Number);
 
                 if (!Double.TryParse(text.Substring(tokens[0].Start, tokens[0].Length), out realPart)
-                    || !Double.TryParse(text.Substring(tokens[2].Start, tokens[2].Length), out imaginaryPart))
-                {
+                    || !Double.TryParse(text.Substring(tokens[2].Start, tokens[2].Length), out imaginaryPart)) {
                     return false;
                 }
-            }
-            else
-            {
+            } else {
                 context.AddError(new MissingItemParseError(ParseErrorType.NumberExpected, context.Tokens.PreviousToken));
                 return false;
             }

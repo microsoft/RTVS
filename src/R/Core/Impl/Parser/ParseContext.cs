@@ -9,11 +9,9 @@ using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Parser.Definitions;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.Parser
-{
+namespace Microsoft.R.Core.Parser {
     [DebuggerDisplay("{Tokens.Position} = {Tokens.CurrentToken.TokenType} : Errors = {Errors.Count}")]
-    public sealed class ParseContext
-    {
+    public sealed class ParseContext {
         private List<IParseError> _errors = new List<IParseError>();
 
         public AstRoot AstRoot { get; private set; }
@@ -48,8 +46,7 @@ namespace Microsoft.R.Core.Parser
         /// <summary>
         /// Collection of parsing errors encountered so far
         /// </summary>
-        public IReadOnlyCollection<IParseError> Errors
-        {
+        public IReadOnlyCollection<IParseError> Errors {
             get { return _errors; }
         }
 
@@ -58,8 +55,7 @@ namespace Microsoft.R.Core.Parser
         /// </summary>
         public IReadOnlyCollection<RToken> Comments { get; private set; }
 
-        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments)
-        {
+        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments) {
             this.AstRoot = new AstRoot(textProvider);
             this.TextProvider = textProvider;
             this.Tokens = tokens;
@@ -67,23 +63,19 @@ namespace Microsoft.R.Core.Parser
             this.Scopes = new Stack<IScope>();
             this.Expressions = new Stack<Expression>();
             this.Comments = comments;
-       }
+        }
 
-        public void AddError(ParseError error)
-        {
+        public void AddError(ParseError error) {
             bool found = false;
 
-            foreach(IParseError e in _errors)
-            {
-                if(e.Start == error.Start && e.Length == error.Length && e.ErrorType == error.ErrorType)
-                {
+            foreach (IParseError e in _errors) {
+                if (e.Start == error.Start && e.Length == error.Length && e.ErrorType == error.ErrorType) {
                     found = true;
                     break;
                 }
             }
 
-            if(!found)
-            {
+            if (!found) {
                 _errors.Add(error);
             }
         }

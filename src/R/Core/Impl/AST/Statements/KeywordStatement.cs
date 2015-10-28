@@ -6,23 +6,18 @@ using Microsoft.R.Core.AST.Statements.Loops;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Statements
-{
+namespace Microsoft.R.Core.AST.Statements {
     [DebuggerDisplay("[KeywordStatement: {Text}]")]
-    public class KeywordStatement : Statement, IKeyword, IStatement
-    {
+    public class KeywordStatement : Statement, IKeyword, IStatement {
         #region IKeyword
         public TokenNode Keyword { get; private set; }
 
         public string Text { get; private set; }
         #endregion
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
-            if (ParseKeyword(context, this))
-            {
-                if (ParseSemicolon(context, this))
-                {
+        public override bool Parse(ParseContext context, IAstNode parent) {
+            if (ParseKeyword(context, this)) {
+                if (ParseSemicolon(context, this)) {
                     return base.Parse(context, parent);
                 }
             }
@@ -30,8 +25,7 @@ namespace Microsoft.R.Core.AST.Statements
             return false;
         }
 
-        protected bool ParseKeyword(ParseContext context, IAstNode parent)
-        {
+        protected bool ParseKeyword(ParseContext context, IAstNode parent) {
             this.Keyword = RParser.ParseKeyword(context, this);
             this.Text = context.TextProvider.GetText(this.Keyword);
 
@@ -41,14 +35,12 @@ namespace Microsoft.R.Core.AST.Statements
         /// <summary>
         /// Abstract factory
         /// </summary>
-        public static IStatement CreateStatement(ParseContext context, IAstNode parent)
-        {
+        public static IStatement CreateStatement(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
             string keyword = context.TextProvider.GetText(currentToken);
             IStatement statement = null;
 
-            switch (keyword)
-            {
+            switch (keyword) {
                 case "if":
                     statement = new If();
                     break;

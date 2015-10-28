@@ -1,5 +1,4 @@
-﻿namespace Microsoft.R.Core.AST.DataTypes
-{
+﻿namespace Microsoft.R.Core.AST.DataTypes {
     /// <summary>
     /// R 'mode' which is a data type. For example, string
     /// is a one-element vector of 'character' mode. Number
@@ -7,8 +6,7 @@
     /// Note that this enumeration does not list all possible
     /// runtime type, only those used by IDE and evluation engine.
     /// </summary>
-    public enum RMode
-    {
+    public enum RMode {
         Null,
 
         /// <summary>
@@ -19,7 +17,7 @@
         /// <summary>
         /// Integer or double
         /// </summary>
-        Numeric, 
+        Numeric,
 
         /// <summary>
         /// Boolean

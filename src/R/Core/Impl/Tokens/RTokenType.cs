@@ -1,8 +1,6 @@
 ﻿
-namespace Microsoft.R.Core.Tokens
-{ 
-    public enum RTokenType
-    {
+namespace Microsoft.R.Core.Tokens {
+    public enum RTokenType {
         /// <summary>
         /// Unrecognized token
         /// </summary>
@@ -57,7 +55,7 @@ namespace Microsoft.R.Core.Tokens
 
         // NaN constant
         NaN,
-        
+
         /// <summary>
         /// Language operator like +, -, *, %%, ...
         /// </summary>
@@ -71,7 +69,7 @@ namespace Microsoft.R.Core.Tokens
         CloseDoubleSquareBracket,
         OpenBrace,
         CloseBrace,
-        Comma, 
+        Comma,
         Semicolon,
 
         /// <summary>

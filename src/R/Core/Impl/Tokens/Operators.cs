@@ -1,16 +1,13 @@
 ﻿using System;
 using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.R.Core.Tokens
-{
-    public static class Operators
-    {
+namespace Microsoft.R.Core.Tokens {
+    public static class Operators {
         /// <summary>
         /// Given candidate returns length of operator
         /// or zero if character sequence is not an operator.
         /// </summary>
-        public static int OperatorLength(CharacterStream cs)
-        {
+        public static int OperatorLength(CharacterStream cs) {
             //
             // http://stat.ethz.ch/R-manual/R-patched/library/base/html/Syntax.html
             //
@@ -19,13 +16,11 @@ namespace Microsoft.R.Core.Tokens
             return GetNCharOperatorLength(cs);
         }
 
-        private static int GetNCharOperatorLength(CharacterStream cs)
-        {
+        private static int GetNCharOperatorLength(CharacterStream cs) {
             // R allows user-defined infix operators. These have the form of 
             // a string of characters delimited by the ‘%’ character. The string 
             // can contain any printable character except ‘%’. 
-            if (cs.CurrentChar == '%' && !char.IsWhiteSpace(cs.NextChar))
-            {
+            if (cs.CurrentChar == '%' && !char.IsWhiteSpace(cs.NextChar)) {
                 // In case of broken or partially typed operators
                 // make sure we terminate at whitespace or end of the line
                 // so in 'x <- y % z' '% z' is not an operator.
@@ -34,10 +29,8 @@ namespace Microsoft.R.Core.Tokens
 
                 cs.MoveToNextChar();
 
-                while (!cs.IsEndOfStream() && !cs.IsWhiteSpace())
-                {
-                    if (cs.CurrentChar == '%')
-                    {
+                while (!cs.IsEndOfStream() && !cs.IsWhiteSpace()) {
+                    if (cs.CurrentChar == '%') {
                         cs.MoveToNextChar();
 
                         length = cs.Position - start;
@@ -46,8 +39,7 @@ namespace Microsoft.R.Core.Tokens
                         return length;
                     }
 
-                    if(cs.IsAtNewLine())
-                    {
+                    if (cs.IsAtNewLine()) {
                         // x <- y %abcd
                         cs.Position = start;
                         return 1;
@@ -60,16 +52,12 @@ namespace Microsoft.R.Core.Tokens
             return Get3CharOrShorterOperatorLength(cs);
         }
 
-        private static int Get3CharOrShorterOperatorLength(CharacterStream cs)
-        {
-            if (cs.DistanceFromEnd >= 3)
-            {
+        private static int Get3CharOrShorterOperatorLength(CharacterStream cs) {
+            if (cs.DistanceFromEnd >= 3) {
                 string threeLetterCandidate = cs.GetSubstringAt(cs.Position, 3);
-                if (threeLetterCandidate.Length == 3)
-                {
+                if (threeLetterCandidate.Length == 3) {
                     int index = Array.BinarySearch<string>(_threeChars, threeLetterCandidate);
-                    if (index >= 0)
-                    {
+                    if (index >= 0) {
                         return 3;
                     }
                 }
@@ -78,17 +66,13 @@ namespace Microsoft.R.Core.Tokens
             return Get2CharOrShorterOperatorLength(cs);
         }
 
-        internal static int Get2CharOrShorterOperatorLength(CharacterStream cs)
-        {
-            if (cs.DistanceFromEnd >= 2)
-            {
+        internal static int Get2CharOrShorterOperatorLength(CharacterStream cs) {
+            if (cs.DistanceFromEnd >= 2) {
                 string twoLetterCandidate = cs.GetSubstringAt(cs.Position, 2);
 
-                if (twoLetterCandidate.Length == 2)
-                {
+                if (twoLetterCandidate.Length == 2) {
                     int index = Array.BinarySearch<string>(_twoChars, twoLetterCandidate);
-                    if(index >= 0)
-                    {
+                    if (index >= 0) {
                         return 2;
                     }
                 }
@@ -97,10 +81,8 @@ namespace Microsoft.R.Core.Tokens
             return GetSingleCharOperatorLength(cs.CurrentChar);
         }
 
-        private static int GetSingleCharOperatorLength(char candidate)
-        {
-            switch (candidate)
-            {
+        private static int GetSingleCharOperatorLength(char candidate) {
+            switch (candidate) {
                 case '~': // as in formulae
                 case '^': // exponentiation (right to left)
                 case '+':

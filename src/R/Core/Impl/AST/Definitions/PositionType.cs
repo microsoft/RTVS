@@ -1,11 +1,9 @@
 ﻿
-namespace Microsoft.R.Core.AST.Definitions
-{
+namespace Microsoft.R.Core.AST.Definitions {
     /// <summary>
     /// Describes type of text position within AST
     /// </summary>
-    public enum PositionType
-    {
+    public enum PositionType {
         /// <summary>
         /// Undefined position
         /// </summary>

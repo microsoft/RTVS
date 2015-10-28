@@ -5,8 +5,7 @@ using Microsoft.Languages.Core.Utility;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 
-namespace Microsoft.R.Core.AST
-{
+namespace Microsoft.R.Core.AST {
     /// <summary>
     /// Base class of AST nodes that can have child nodes such as expressions, 
     /// loops, assignments and other statements. Complex nodes acts as composite 
@@ -15,8 +14,7 @@ namespace Microsoft.R.Core.AST
     /// It is a property owner and allows attaching arbitrary properties.
     /// </summary>
     [DebuggerDisplay("[Children = {Children.Count}  {Start}...{End}, Length = {Length}]")]
-    public abstract class AstNode : IAstNode
-    {
+    public abstract class AstNode : IAstNode {
         private Lazy<PropertyDictionary> _properties = new Lazy<PropertyDictionary>(() => new PropertyDictionary());
         private IAstNode _parent;
         protected TextRangeCollection<IAstNode> _children = new TextRangeCollection<IAstNode>();
@@ -25,45 +23,35 @@ namespace Microsoft.R.Core.AST
         /// <summary>
         /// AST root node
         /// </summary>
-        public virtual AstRoot Root
-        {
+        public virtual AstRoot Root {
             get { return Parent != null ? Parent.Root : null; }
         }
 
         /// <summary>
         /// This node's parent
         /// </summary>
-        public IAstNode Parent
-        {
+        public IAstNode Parent {
             get { return _parent; }
-            set
-            {
-                if (_parent != null && _parent != value && value != null)
-                {
+            set {
+                if (_parent != null && _parent != value && value != null) {
                     throw new InvalidOperationException("Node already has parent");
                 }
 
                 _parent = value;
-                if (_parent != null)
-                {
+                if (_parent != null) {
                     _parent.AppendChild(this);
                 }
             }
         }
 
-        public virtual IReadOnlyTextRangeCollection<IAstNode> Children
-        {
+        public virtual IReadOnlyTextRangeCollection<IAstNode> Children {
             get { return _children; }
         }
 
-        public void AppendChild(IAstNode child)
-        {
-            if (child.Parent == null)
-            {
+        public void AppendChild(IAstNode child) {
+            if (child.Parent == null) {
                 child.Parent = this;
-            }
-            else if (child.Parent == this)
-            {
+            } else if (child.Parent == this) {
 #if DEBUG
                 //foreach (var c in _children)
                 //{
@@ -71,15 +59,12 @@ namespace Microsoft.R.Core.AST
                 //}
 #endif
                 _children.AddSorted(child);
-            }
-            else
-            {
+            } else {
                 throw new InvalidOperationException("Node already has parent");
             }
         }
 
-        public void RemoveChildren(int start, int count)
-        {
+        public void RemoveChildren(int start, int count) {
             if (count == 0)
                 return;
 
@@ -89,12 +74,9 @@ namespace Microsoft.R.Core.AST
             if (count < 0 || count > Children.Count || start + count > Children.Count)
                 throw new ArgumentOutOfRangeException("count");
 
-            if (Children.Count == count)
-            {
+            if (Children.Count == count) {
                 _children = new TextRangeCollection<IAstNode>();
-            }
-            else
-            {
+            } else {
                 var newChildren = new IAstNode[Children.Count - count];
 
                 int j = 0;
@@ -118,15 +100,12 @@ namespace Microsoft.R.Core.AST
         /// </summary>
         /// <param name="position">Position</param>
         /// <returns>Node or null if not found</returns>
-        public virtual IAstNode NodeFromPosition(int position)
-        {
-            if (!this.Contains(position))
-            {
+        public virtual IAstNode NodeFromPosition(int position) {
+            if (!this.Contains(position)) {
                 return null; // not this element
             }
 
-            for (int i = 0; i < this.Children.Count; i++)
-            {
+            for (int i = 0; i < this.Children.Count; i++) {
                 var child = Children[i];
 
                 if (child.Start > position)
@@ -142,23 +121,19 @@ namespace Microsoft.R.Core.AST
         /// <summary>
         /// Finds deepest node that fully encloses given range
         /// </summary>
-        public virtual IAstNode NodeFromRange(ITextRange range)
-        {
+        public virtual IAstNode NodeFromRange(ITextRange range) {
             IAstNode node = null;
 
-            if (TextRange.Contains(this, range))
-            {
+            if (TextRange.Contains(this, range)) {
                 node = this;
 
-                for (int i = 0; i < this.Children.Count; i++)
-                {
+                for (int i = 0; i < this.Children.Count; i++) {
                     var child = Children[i];
 
                     if (range.End < child.Start)
                         break;
 
-                    if (child.Contains(range.Start) && child.Contains(range.End))
-                    {
+                    if (child.Contains(range.Start) && child.Contains(range.End)) {
                         node = (child.Children.Count > 0)
                             ? child.NodeFromRange(range)
                             : child;
@@ -178,24 +153,20 @@ namespace Microsoft.R.Core.AST
         /// <param name="position">Position in the document text</param>
         /// <param name="node">Node that contains position</param>
         /// <returns>Position type</returns>
-        public virtual PositionType GetPositionNode(int position, out IAstNode node)
-        {
+        public virtual PositionType GetPositionNode(int position, out IAstNode node) {
             node = null;
 
-            if (!this.Contains(position))
-            {
+            if (!this.Contains(position)) {
                 return PositionType.Undefined;
             }
 
-            for (int i = 0; i < this.Children.Count; i++)
-            {
+            for (int i = 0; i < this.Children.Count; i++) {
                 var child = Children[i];
 
                 if (position < child.Start)
                     break;
 
-                if (child.Contains(position))
-                {
+                if (child.Contains(position)) {
                     return child.GetPositionNode(position, out node);
                 }
             }
@@ -217,8 +188,7 @@ namespace Microsoft.R.Core.AST
         public IAstNode GetElementsEnclosingRange(
                                 int start, int length,
                                 out IAstNode startNode, out PositionType startPositionType,
-                                out IAstNode endNode, out PositionType endPositionType)
-        {
+                                out IAstNode endNode, out PositionType endPositionType) {
             int end = start + length;
 
             startPositionType = PositionType.Undefined;
@@ -241,61 +211,50 @@ namespace Microsoft.R.Core.AST
         #endregion
 
         #region IPropertyOwner
-        public PropertyDictionary Properties
-        {
+        public PropertyDictionary Properties {
             get { return _properties.Value; }
         }
         #endregion
 
         #region IParseItem
-        public virtual bool Parse(ParseContext context, IAstNode parent = null)
-        {
+        public virtual bool Parse(ParseContext context, IAstNode parent = null) {
             Parent = parent;
             return true;
         }
         #endregion
 
         #region ITextRange
-        public virtual int Start
-        {
+        public virtual int Start {
             get { return Children.Count > 0 ? Children[0].Start : 0; }
         }
 
-        public virtual int End
-        {
+        public virtual int End {
             get { return Children.Count > 0 ? Children[Children.Count - 1].End : 0; }
         }
 
-        public int Length
-        {
+        public int Length {
             get { return End - Start; }
         }
 
-        public virtual bool Contains(int position)
-        {
+        public virtual bool Contains(int position) {
             return TextRange.Contains(this, position);
         }
 
-        public virtual void Shift(int offset)
-        {
+        public virtual void Shift(int offset) {
             Children.Shift(offset);
         }
         #endregion
 
         #region ICompositeTextRange
-        public virtual void ShiftStartingFrom(int position, int offset)
-        {
+        public virtual void ShiftStartingFrom(int position, int offset) {
             Children.ShiftStartingFrom(position, offset);
         }
         #endregion
 
         #region IAstVisitorPattern
-        public virtual bool Accept(IAstVisitor visitor, object parameter)
-        {
-            if (visitor != null && visitor.Visit(this, parameter))
-            {
-                for (int i = 0; i < Children.Count; i++)
-                {
+        public virtual bool Accept(IAstVisitor visitor, object parameter) {
+            if (visitor != null && visitor.Visit(this, parameter)) {
+                for (int i = 0; i < Children.Count; i++) {
                     var child = Children[i] as IAstNode;
 
                     if (child != null && !child.Accept(visitor, parameter))
@@ -308,12 +267,9 @@ namespace Microsoft.R.Core.AST
             return false;
         }
 
-        public virtual bool Accept(Func<IAstNode, object, bool> visitor, object parameter)
-        {
-            if (visitor != null && visitor(this, parameter))
-            {
-                foreach (IAstNode child in Children)
-                {
+        public virtual bool Accept(Func<IAstNode, object, bool> visitor, object parameter) {
+            if (visitor != null && visitor(this, parameter)) {
+                foreach (IAstNode child in Children) {
                     if (!child.Accept(visitor, parameter))
                         return false;
                 }
