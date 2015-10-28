@@ -26,18 +26,18 @@ namespace Microsoft.Common.Core {
             }
 
             public struct Awaiter : ICriticalNotifyCompletion {
-                private static readonly WaitCallback waitCallback = (state) => ((Action)state)();
+                private static readonly WaitCallback WaitCallback = state => ((Action)state)();
 
                 public bool IsCompleted => IsOnBackgroundThread();
 
                 public void OnCompleted(Action continuation) {
                     Trace.Assert(continuation != null);
-                    ThreadPool.QueueUserWorkItem(waitCallback, continuation);
+                    ThreadPool.QueueUserWorkItem(WaitCallback, continuation);
                 }
 
                 public void UnsafeOnCompleted(Action continuation) {
                     Trace.Assert(continuation != null);
-                    ThreadPool.UnsafeQueueUserWorkItem(waitCallback, continuation);
+                    ThreadPool.UnsafeQueueUserWorkItem(WaitCallback, continuation);
                 }
 
                 public void GetResult() {

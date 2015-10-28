@@ -1,10 +1,8 @@
 using System;
 using System.IO;
 
-namespace Microsoft.Common.Core.IO
-{
-    public interface IFileSystemWatcher : IDisposable
-    {
+namespace Microsoft.Common.Core.IO {
+    public interface IFileSystemWatcher : IDisposable {
         bool EnableRaisingEvents { get; set; }
         bool IncludeSubdirectories { get; set; }
         int InternalBufferSize { get; set; }
