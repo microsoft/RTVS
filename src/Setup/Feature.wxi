@@ -18,6 +18,8 @@
     <?ifdef Debug?>
     <ComponentRef Id="ProductAssembliesDebugData" />
     <?endif?>
+    
+    <ComponentRef Id="Profiles" />
 
   </Feature>
 </Include>
