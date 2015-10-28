@@ -525,10 +525,17 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
+    <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
     <Content Include="Images\RDataNode.png" />
     <Content Include="Images\RProjectNode.png" />
     <Content Include="Images\RFileNode.png" />
+    <Content Include="Templates\ItemTemplates\DatasetRD\RdFile.png" />
+    <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png" />
+    <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
+    <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
+    <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
+    <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.png" />
     <Content Include="R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -547,12 +554,10 @@
     <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
-    <None Include="Templates\ItemTemplates\EmptyMD\emptymd.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\EmptyMD\markdown.md" />
     <None Include="Templates\ProjectTemplates\EmptyProject\.Rhistory" />
-    <None Include="Templates\ProjectTemplates\EmptyProject\rproject.ico" />
     <None Include="Templates\ProjectTemplates\EmptyProject\rproject.Rproj" />
     <VSTemplate Include="Templates\ProjectTemplates\EmptyProject\EmptyProject.vstemplate" />
   </ItemGroup>
@@ -564,26 +569,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\FunctionRD\function.rd" />
-    <None Include="Templates\ItemTemplates\FunctionRD\functionrd.ico" />
     <VSTemplate Include="Templates\ItemTemplates\FunctionRD\functionrd.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\DatasetRD\dataset.rd" />
-    <None Include="Templates\ItemTemplates\DatasetRD\datasetrd.ico" />
     <VSTemplate Include="Templates\ItemTemplates\DatasetRD\datasetrd.vstemplate" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\EmptyRD\document.rd" />
-    <None Include="Templates\ItemTemplates\EmptyRD\emptyrd.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyRD\emptyrd.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ItemTemplates\EmptyRMD\markdown.rmd" />
-    <None Include="Templates\ItemTemplates\EmptyRMD\emptyrmd.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyRMD\emptyrmd.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>

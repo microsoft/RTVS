@@ -7,11 +7,13 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         public SendMailCommand(Guid group, int id) :
             base(group, id) { }
 
-        protected static void SendMail(string subject, string attachmentFile) {
+        protected static void SendMail(string body, string subject, string attachmentFile) {
             MapiMail mail = new MapiMail();
             mail.AddRecipientTo("rtvscore@microsoft.com");
-            mail.AddAttachment(attachmentFile);
-            mail.SendMailPopup(subject, string.Empty);
+            if (attachmentFile != null) {
+                mail.AddAttachment(attachmentFile);
+            }
+            mail.SendMailPopup(subject, body);
         }
     }
 }

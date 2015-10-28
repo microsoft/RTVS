@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         public void FlushLog() {
-            _fileLogWriter.Flush();
+            _fileLogWriter?.Flush();
         }
 
         private static Exception ProtocolError(FormattableString fs, object message = null) {

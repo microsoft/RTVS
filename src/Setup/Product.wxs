@@ -29,7 +29,7 @@
       <RegistrySearch Id="VSRootSearch" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS" Name="ProductDir" Type="raw" />
     </Property>
 
-    <!-- MDD detection key that is used by the secondary installer -->
+    <!-- RTVS detection key that is used by the secondary installer -->
     <Feature Id="RToolsDetection">
       <Component Id="RToolsDetectionKey" Directory="TARGETDIR">
         <RegistryValue Root="HKLM" Key="Software\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS\RTVS" Name="Installed" Type="integer" Value="1" />

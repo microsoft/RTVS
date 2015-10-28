@@ -11,22 +11,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             InitializeComponent();
 
             VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
-            if (VariableProvider.Current.LastEvaluation != null) {
+            if (VariableProvider.Current.LastEvaluation == null) {
+                SetRootNode(EvaluationWrapper.Ellipsis);
+            } else {
                 SetRootNode(VariableProvider.Current.LastEvaluation);
+                EnvironmentName.Text = VariableProvider.Current.LastEvaluation.Name;
             }
-
-            Loaded += VariableView_Loaded;
-            Unloaded += VariableView_Unloaded;
-            SizeChanged += VariableView_SizeChanged;
-        }
-
-        private void VariableView_SizeChanged(object sender, SizeChangedEventArgs e) {
-        }
-
-        private void VariableView_Loaded(object sender, RoutedEventArgs e) {
-        }
-
-        private void VariableView_Unloaded(object sender, RoutedEventArgs e) {
         }
 
         private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
@@ -34,22 +24,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void VariableChanged(EvaluationWrapper variable) {
-            if (_rootNode == null) {
-                ThreadHelper.Generic.BeginInvoke(
-                    DispatcherPriority.Normal,
-                    () => SetRootNode(variable));
-            }
-            else {
-                _rootNode.Model = new VariableNode(variable);
-            }
+            ThreadHelper.Generic.BeginInvoke(
+                DispatcherPriority.Normal,
+                () => {
+                    EnvironmentName.Text = variable.Name;
+                    _rootNode.Model = new VariableNode(variable);
+                });
         }
 
         private void SetRootNode(EvaluationWrapper evaluation) {
             _rootNode = ObservableTreeNode.CreateAsRoot(new VariableNode(evaluation), false);
             var items = new TreeNodeCollection(_rootNode);
             RootTreeGrid.ItemsSource = items.View;
-
-            EnvironmentName.Text = evaluation.Name;
         }
     }
 }
