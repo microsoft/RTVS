@@ -9,13 +9,11 @@ using Microsoft.Languages.Editor.Workspace;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Markdown.Editor.Document
-{
+namespace Microsoft.Markdown.Editor.Document {
     /// <summary>
     /// Main editor document for Markdown language
     /// </summary>
-    public class MdEditorDocument : IEditorDocument
-    {
+    public class MdEditorDocument : IEditorDocument {
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
 
@@ -30,14 +28,11 @@ namespace Microsoft.Markdown.Editor.Document
         public event EventHandler<EventArgs> DocumentClosing;
 #pragma warning restore 67
 
-        public virtual void Close()
-        {
-        }
+        public virtual void Close() { }
         #endregion
 
         #region Constructors
-        public MdEditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem)
-        {
+        public MdEditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem) {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             this.TextBuffer = textBuffer;
@@ -50,8 +45,7 @@ namespace Microsoft.Markdown.Editor.Document
         /// <summary>
         /// Retrieves document instance from text buffer
         /// </summary>
-        public static IEditorDocument FromTextBuffer(ITextBuffer textBuffer)
-        {
+        public static IEditorDocument FromTextBuffer(ITextBuffer textBuffer) {
             IEditorDocument document = TryFromTextBuffer(textBuffer);
             Debug.Assert(document != null, "No editor document available");
             return document;
@@ -60,17 +54,13 @@ namespace Microsoft.Markdown.Editor.Document
         /// <summary>
         /// Retrieves document instance from text buffer
         /// </summary>
-        public static IEditorDocument TryFromTextBuffer(ITextBuffer textBuffer)
-        {
+        public static IEditorDocument TryFromTextBuffer(ITextBuffer textBuffer) {
             IEditorDocument document = ServiceManager.GetService<IEditorDocument>(textBuffer);
-            if (document == null)
-            {
+            if (document == null) {
                 TextViewData viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
-                if (viewData != null && viewData.LastActiveView != null)
-                {
+                if (viewData != null && viewData.LastActiveView != null) {
                     MdMainController controller = MdMainController.FromTextView(viewData.LastActiveView);
-                    if (controller != null && controller.TextBuffer != null)
-                    {
+                    if (controller != null && controller.TextBuffer != null) {
                         document = ServiceManager.GetService<MdEditorDocument>(controller.TextBuffer);
                     }
                 }
@@ -80,12 +70,9 @@ namespace Microsoft.Markdown.Editor.Document
         }
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing)
-        {
-        }
+        protected virtual void Dispose(bool disposing) { }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }

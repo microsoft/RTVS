@@ -4,11 +4,9 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Markdown.Editor.Classification
-{
+namespace Microsoft.Markdown.Editor.Classification {
     [ExcludeFromCodeCoverage]
-    internal sealed class MarkdownClassificationDefinitions
-    {
+    internal sealed class MarkdownClassificationDefinitions {
         // https://help.github.com/articles/markdown-basics/
 
         /// <summary>
@@ -23,10 +21,8 @@ namespace Microsoft.Markdown.Editor.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Heading")]
         [Name("Markdown Heading")]
-        internal sealed class MdHeadingClassificationFormat : ClassificationFormatDefinition
-        {
-            public MdHeadingClassificationFormat()
-            {
+        internal sealed class MdHeadingClassificationFormat : ClassificationFormatDefinition {
+            public MdHeadingClassificationFormat() {
                 ForegroundColor = Colors.Blue;
                 this.DisplayName = Resources.ColorName_MD_Heading;
             }
@@ -43,10 +39,8 @@ namespace Microsoft.Markdown.Editor.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Blockquote")]
         [Name("Markdown Blockquote")]
-        internal sealed class MdBlockquoteClassificationFormat : ClassificationFormatDefinition
-        {
-            public MdBlockquoteClassificationFormat()
-            {
+        internal sealed class MdBlockquoteClassificationFormat : ClassificationFormatDefinition {
+            public MdBlockquoteClassificationFormat() {
                 ForegroundColor = Colors.DarkGreen;
                 this.DisplayName = Resources.ColorName_MD_Blockquote;
             }
@@ -63,10 +57,8 @@ namespace Microsoft.Markdown.Editor.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Bold Text")]
         [Name("Markdown Bold Text")]
-        internal sealed class MdBoldClassificationFormat : ClassificationFormatDefinition
-        {
-            public MdBoldClassificationFormat()
-            {
+        internal sealed class MdBoldClassificationFormat : ClassificationFormatDefinition {
+            public MdBoldClassificationFormat() {
                 ForegroundColor = Colors.Magenta;
                 this.IsBold = true;
                 this.DisplayName = Resources.ColorName_MD_Bold;
@@ -84,10 +76,8 @@ namespace Microsoft.Markdown.Editor.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Italic Text")]
         [Name("Markdown Italic Text")]
-        internal sealed class MdItalicClassificationFormat : ClassificationFormatDefinition
-        {
-            public MdItalicClassificationFormat()
-            {
+        internal sealed class MdItalicClassificationFormat : ClassificationFormatDefinition {
+            public MdItalicClassificationFormat() {
                 ForegroundColor = Colors.Magenta;
                 this.IsItalic = true;
                 this.DisplayName = Resources.ColorName_MD_Italic;
@@ -102,10 +92,8 @@ namespace Microsoft.Markdown.Editor.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Bold Italic Text")]
         [Name("Markdown Bold Italic Text")]
-        internal sealed class MdBoldItalicClassificationFormat : ClassificationFormatDefinition
-        {
-            public MdBoldItalicClassificationFormat()
-            {
+        internal sealed class MdBoldItalicClassificationFormat : ClassificationFormatDefinition {
+            public MdBoldItalicClassificationFormat() {
                 ForegroundColor = Colors.Magenta;
                 this.IsItalic = true;
                 this.IsBold = true;
@@ -126,10 +114,8 @@ namespace Microsoft.Markdown.Editor.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown List Item")]
         [Name("Markdown List Item")]
-        internal sealed class MdListItemClassificationFormat : ClassificationFormatDefinition
-        {
-            public MdListItemClassificationFormat()
-            {
+        internal sealed class MdListItemClassificationFormat : ClassificationFormatDefinition {
+            public MdListItemClassificationFormat() {
                 ForegroundColor = Colors.YellowGreen;
                 this.DisplayName = Resources.ColorName_MD_ListItem;
             }
@@ -146,10 +132,8 @@ namespace Microsoft.Markdown.Editor.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Monospace")]
         [Name("Markdown Monospace")]
-        internal sealed class MdMonospaceClassificationFormat : ClassificationFormatDefinition
-        {
-            public MdMonospaceClassificationFormat()
-            {
+        internal sealed class MdMonospaceClassificationFormat : ClassificationFormatDefinition {
+            public MdMonospaceClassificationFormat() {
                 ForegroundColor = Color.FromArgb(0xFF, 0x60, 0x60, 0x60);
                 this.DisplayName = Resources.ColorName_MD_Monospace;
             }
@@ -166,10 +150,8 @@ namespace Microsoft.Markdown.Editor.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Code")]
         [Name("Markdown Code")]
-        internal sealed class MdCodeClassificationFormat : ClassificationFormatDefinition
-        {
-            public MdCodeClassificationFormat()
-            {
+        internal sealed class MdCodeClassificationFormat : ClassificationFormatDefinition {
+            public MdCodeClassificationFormat() {
                 ForegroundColor = Colors.DarkGray;
                 this.DisplayName = Resources.ColorName_MD_Code;
             }
@@ -186,10 +168,8 @@ namespace Microsoft.Markdown.Editor.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Alt Text")]
         [Name("Markdown Alt Text")]
-        internal sealed class MdAltTextClassificationFormat : ClassificationFormatDefinition
-        {
-            public MdAltTextClassificationFormat()
-            {
+        internal sealed class MdAltTextClassificationFormat : ClassificationFormatDefinition {
+            public MdAltTextClassificationFormat() {
                 ForegroundColor = Colors.DarkMagenta;
                 this.DisplayName = Resources.ColorName_MD_AltText;
             }

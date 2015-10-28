@@ -1,7 +1,5 @@
-﻿namespace Microsoft.Markdown.Editor.Classification
-{
-    public static class MarkdownClassificationTypes
-    {
+﻿namespace Microsoft.Markdown.Editor.Classification {
+    public static class MarkdownClassificationTypes {
         public const string AltText = "Markdown Alt Text";
         public const string Monospace = "Markdown Monospace";
         public const string ListItem = "Markdown List Item";
