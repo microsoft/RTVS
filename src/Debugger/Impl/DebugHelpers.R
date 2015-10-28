@@ -33,6 +33,8 @@
     }
     if (missing(obj)) {
       obj <- eval(expr, env);
+    } else {
+      force(obj);
     }
   }, error = function(e) {
     err <<- e;
@@ -156,7 +158,7 @@
 
   if (is.environment(obj)) {
     for (name in ls(obj, all.names = TRUE)) {
-      if (!is.character(name) || is.na(name) || name == "") {
+      if (!is.character(name) || is.na(name) || name == "" || eval(bquote(missing(.(as.symbol(name)))), obj)) {
         next; 
       }
 
