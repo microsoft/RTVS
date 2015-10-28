@@ -18,27 +18,22 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Commands.R
-{
+namespace Microsoft.VisualStudio.R.Package.Commands.R {
     [Export(typeof(IWpfTextViewConnectionListener))]
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Name("Visual Studio R Editor Text View Connection Listener")]
     [Order(Before = "Default")]
-    internal sealed class VsRTextViewConnectionListener : RTextViewConnectionListener
-    {
-        protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer)
-        {
+    internal sealed class VsRTextViewConnectionListener : RTextViewConnectionListener {
+        protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
             // Only attach controllers if the document is editable
-            if (textView.Roles.Contains(PredefinedTextViewRoles.Editable))
-            {
+            if (textView.Roles.Contains(PredefinedTextViewRoles.Editable)) {
                 // Check if another buffer already attached a command controller to the view.
                 // Don't allow two to be attached, or commands could be run twice.
                 // This currently can only happen with inline diff views.
                 RMainController mainController = RMainController.FromTextView(textView);
-                if (textBuffer == mainController.TextBuffer)
-                {
+                if (textBuffer == mainController.TextBuffer) {
                     // Connect main controller to VS text view filter chain. The chain looks like
                     // VS IDE -> HTML main controller -> Core editor
                     // However, IDE wants IOleCommandTarget and core editor, although managed,
@@ -49,8 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R
                     IVsEditorAdaptersFactoryService adapterService = EditorShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
                     IVsTextView viewAdapter = adapterService.GetViewAdapter(textView);
 
-                    if (viewAdapter != null)
-                    {
+                    if (viewAdapter != null) {
                         // Create OLE shim that wraps main controller ICommandTarget and represents
                         // it as IOleCommandTarget that is accepted by VS IDE.
                         CommandTargetToOleShim oleController = new CommandTargetToOleShim(textView, mainController);
@@ -71,8 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R
             base.OnTextViewGotAggregateFocus(textView, textBuffer);
         }
 
-        protected override void OnTextBufferCreated(ITextBuffer textBuffer)
-        {
+        protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
             // Make sure the globals stay initialized for as long as an HTML text buffer exists
             AppShell.AddRef();
 
@@ -81,17 +74,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R
             base.OnTextBufferCreated(textBuffer);
         }
 
-        protected override void OnTextBufferDisposing(ITextBuffer textBuffer)
-        {
+        protected override void OnTextBufferDisposing(ITextBuffer textBuffer) {
             base.OnTextBufferDisposing(textBuffer);
 
             AppShell.Release();
         }
 
-        private void InitEditorInstance(ITextBuffer textBuffer)
-        {
-            if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null)
-            {
+        private void InitEditorInstance(ITextBuffer textBuffer) {
+            if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
                 ITextDocument textDocument;
 
                 textBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument);

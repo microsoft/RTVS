@@ -26,7 +26,6 @@ namespace Microsoft.VisualStudio.R.Packages {
             engineKey.SetValue("0", _engineGuid);
         }
 
-        public override void Unregister(RegistrationContext context) {
-        }
+        public override void Unregister(RegistrationContext context) { }
     }
 }

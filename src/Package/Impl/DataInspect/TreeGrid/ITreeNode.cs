@@ -6,8 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Represent visual node for ObservableTreeNode
     /// </summary>
-    public interface ITreeNode
-    {
+    public interface ITreeNode {
         /// <summary>
         /// Node's Content
         /// </summary>

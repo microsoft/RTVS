@@ -5,8 +5,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     class ReplFormatDocumentCommand : FormatDocumentCommand {
-        public ReplFormatDocumentCommand(ITextView view, ITextBuffer buffer) : base(view, buffer) {
-        }
+        public ReplFormatDocumentCommand(ITextView view, ITextBuffer buffer) : base(view, buffer) { }
 
         public override ITextBuffer TargetBuffer {
             get {

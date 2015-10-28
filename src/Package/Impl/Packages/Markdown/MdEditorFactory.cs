@@ -3,15 +3,11 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Packages.Markdown
-{
+namespace Microsoft.VisualStudio.R.Packages.Markdown {
     [Guid(MdGuidList.MdEditorFactoryGuidString)]
-    internal sealed class MdEditorFactory : BaseEditorFactory
-    {
+    internal sealed class MdEditorFactory : BaseEditorFactory {
         public MdEditorFactory(Microsoft.VisualStudio.Shell.Package package) :
-            base(package, MdGuidList.MdEditorFactoryGuid, MdGuidList.MdLanguageServiceGuid)
-        {
-        }
+            base(package, MdGuidList.MdEditorFactoryGuid, MdGuidList.MdLanguageServiceGuid) { }
 
         public override int CreateEditorInstance(
             uint createEditorFlags,
@@ -24,8 +20,7 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown
             out IntPtr docData,
             out string editorCaption,
             out Guid commandUIGuid,
-            out int createDocumentWindowFlags)
-        {
+            out int createDocumentWindowFlags) {
             return base.CreateEditorInstance(
                 createEditorFlags,
                 documentMoniker,

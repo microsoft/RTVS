@@ -2,31 +2,23 @@
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Workspace
-{
+namespace Microsoft.VisualStudio.R.Package.Workspace {
     /// <summary>
     /// Workspace item implementation based on VS project system.
     /// Provides host-agnostic implementation of the workspace
     /// functions for the editor layer.
     /// </summary>
-    internal sealed class VsWorkspaceItem :
-        IVsWorkspaceItem,
-        IVsRunningDocTableEvents,
-        IVsRunningDocTableEvents2,
-        IDisposable
-    {
+    internal sealed class VsWorkspaceItem : IVsWorkspaceItem, IVsRunningDocTableEvents2 {
         private IVsRunningDocumentTable _rdt;
         private uint _rdtCookie;
         private IVsHierarchy _hierarchy;
         private VSConstants.VSITEMID _itemId;
 
         public VsWorkspaceItem(string name, string filePath) :
-            this(name, filePath, null, VSConstants.VSITEMID.Nil)
-        {
+            this(name, filePath, null, VSConstants.VSITEMID.Nil) {
         }
 
-        public VsWorkspaceItem(string name, string filePath, IVsHierarchy hierarchy, VSConstants.VSITEMID itemId)
-        {
+        public VsWorkspaceItem(string name, string filePath, IVsHierarchy hierarchy, VSConstants.VSITEMID itemId) {
             Moniker = name;
             Path = filePath;
             _hierarchy = hierarchy;
@@ -36,10 +28,8 @@ namespace Microsoft.VisualStudio.R.Package.Workspace
             _rdt.AdviseRunningDocTableEvents(this, out _rdtCookie);
         }
 
-        private void EnsureInitialized()
-        {
-            if (_hierarchy == null)
-            {
+        private void EnsureInitialized() {
+            if (_hierarchy == null) {
                 VsFileInfo fileInfo = VsFileInfo.FromPath(Path);
 
                 // During a rename, it's possible this object is constructed before the document's new name is fully registered.
@@ -49,10 +39,8 @@ namespace Microsoft.VisualStudio.R.Package.Workspace
         }
 
         #region IDisposable
-        public void Dispose()
-        {
-            if (_rdtCookie != 0 && _rdt != null)
-            {
+        public void Dispose() {
+            if (_rdtCookie != 0 && _rdt != null) {
                 _rdt.UnadviseRunningDocTableEvents(_rdtCookie);
 
                 _rdtCookie = 0;
@@ -86,10 +74,8 @@ namespace Microsoft.VisualStudio.R.Package.Workspace
         /// <summary>
         /// Returns Visual Studio hierarchy this item belongs to
         /// </summary>
-        public IVsHierarchy Hierarchy
-        {
-            get
-            {
+        public IVsHierarchy Hierarchy {
+            get {
                 EnsureInitialized();
 
                 return _hierarchy;
@@ -99,10 +85,8 @@ namespace Microsoft.VisualStudio.R.Package.Workspace
         /// <summary>
         /// Visual Studio item id in the hierarchy
         /// </summary>
-        public VSConstants.VSITEMID ItemId
-        {
-            get
-            {
+        public VSConstants.VSITEMID ItemId {
+            get {
                 EnsureInitialized();
 
                 return _itemId;
@@ -111,62 +95,51 @@ namespace Microsoft.VisualStudio.R.Package.Workspace
         #endregion
 
         #region IVsRunningDocTableEvents
-        public int OnAfterAttributeChange(uint docCookie, uint grfAttribs)
-        {
+        public int OnAfterAttributeChange(uint docCookie, uint grfAttribs) {
             return VSConstants.S_OK;
         }
 
-        public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
-        {
+        public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame) {
             return VSConstants.S_OK;
         }
 
-        public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
-        {
+        public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining) {
             return VSConstants.S_OK;
         }
 
-        public int OnAfterSave(uint docCookie)
-        {
+        public int OnAfterSave(uint docCookie) {
             return VSConstants.S_OK;
         }
 
-        public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
-        {
+        public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame) {
             return VSConstants.S_OK;
         }
 
-        public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
-        {
+        public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining) {
             return VSConstants.S_OK;
         }
         #endregion
 
         #region IVsRunningDocTableEvents2
-        public int OnAfterAttributeChangeEx(uint docCookie, uint attributes, IVsHierarchy pHierOld, uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew)
-        {
+        public int OnAfterAttributeChangeEx(uint docCookie, uint attributes, IVsHierarchy pHierOld, uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew) {
             bool changed = false;
 
             VsFileInfo fileInfo = VsFileInfo.FromPath(Path);
             uint rdtCookie = fileInfo.RunningDocumentItemCookie;
 
-            if (docCookie == rdtCookie)
-            {
-                if ((attributes & (uint)__VSRDTATTRIB.RDTA_MkDocument) != 0)
-                {
+            if (docCookie == rdtCookie) {
+                if ((attributes & (uint)__VSRDTATTRIB.RDTA_MkDocument) != 0) {
                     Path = pszMkDocumentNew;
                     Moniker = Path;
                     changed = true;
                 }
 
-                if ((attributes & (uint)__VSRDTATTRIB.RDTA_ItemID) != 0)
-                {
+                if ((attributes & (uint)__VSRDTATTRIB.RDTA_ItemID) != 0) {
                     _itemId = (VSConstants.VSITEMID)itemidNew;
                     changed = true;
                 }
 
-                if ((attributes & (uint)__VSRDTATTRIB.RDTA_Hierarchy) != 0)
-                {
+                if ((attributes & (uint)__VSRDTATTRIB.RDTA_Hierarchy) != 0) {
                     _hierarchy = pHierNew;
                     changed = true;
                 }

@@ -1,39 +1,30 @@
 ﻿using Microsoft.Languages.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Interop
-{
-    public static class OleCommand
-    {
+namespace Microsoft.VisualStudio.R.Package.Interop {
+    public static class OleCommand {
         /// <summary>
         /// Converts CommandStatus to OLE command status
         /// </summary>
         /// <param name="commandStatus">Command status</param>
         /// <param name="commands">OLE command flags array</param>
         /// <returns>OLE command status</returns>
-        public static int MakeOleCommandStatus(CommandStatus commandStatus, OLECMD[] commands)
-        {
-            if (commandStatus == CommandStatus.NotSupported)
-            {
+        public static int MakeOleCommandStatus(CommandStatus commandStatus, OLECMD[] commands) {
+            if (commandStatus == CommandStatus.NotSupported) {
                 commands[0].cmdf = 0;
                 return (int)Constants.OLECMDERR_E_NOTSUPPORTED;
             }
 
-            if ((commandStatus & CommandStatus.Invisible) == CommandStatus.Invisible)
-            {
+            if ((commandStatus & CommandStatus.Invisible) == CommandStatus.Invisible) {
                 commands[0].cmdf |= (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
-            }
-            else if ((commandStatus & CommandStatus.Supported) == CommandStatus.Supported)
-            {
+            } else if ((commandStatus & CommandStatus.Supported) == CommandStatus.Supported) {
                 commands[0].cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-                if ((commandStatus & CommandStatus.Enabled) == CommandStatus.Enabled)
-                {
+                if ((commandStatus & CommandStatus.Enabled) == CommandStatus.Enabled) {
                     commands[0].cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
                 }
 
-                if ((commandStatus & CommandStatus.Latched) == CommandStatus.Latched)
-                {
+                if ((commandStatus & CommandStatus.Latched) == CommandStatus.Latched) {
                     commands[0].cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
                 }
             }
@@ -46,10 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Interop
         /// </summary>
         /// <param name="commandResult">Command result</param>
         /// <returns>OLE return code</returns>
-        public static int MakeOleResult(CommandResult commandResult)
-        {
-            if ((commandResult.Status & CommandStatus.Supported) != 0)
-            {
+        public static int MakeOleResult(CommandResult commandResult) {
+            if ((commandResult.Status & CommandStatus.Supported) != 0) {
                 return commandResult.Result;
             }
 
@@ -62,13 +51,11 @@ namespace Microsoft.VisualStudio.R.Package.Interop
         /// <param name="oleResult">OLE result</param>
         /// <param name="oleCommandFlags">OLE command state flags</param>
         /// <returns>Command status</returns>
-        public static CommandStatus MakeCommandStatus(int oleResult, uint oleCommandFlags)
-        {
+        public static CommandStatus MakeCommandStatus(int oleResult, uint oleCommandFlags) {
             CommandStatus cs = CommandStatus.NotSupported;
             OLECMDF oleFlags = (OLECMDF)oleCommandFlags;
 
-            if (oleResult != (int)Constants.OLECMDERR_E_NOTSUPPORTED)
-            {
+            if (oleResult != (int)Constants.OLECMDERR_E_NOTSUPPORTED) {
                 if ((oleFlags & OLECMDF.OLECMDF_SUPPORTED) == OLECMDF.OLECMDF_SUPPORTED)
                     cs |= CommandStatus.Supported;
 
@@ -85,8 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop
             return cs;
         }
 
-        public static CommandResult MakeCommandResult(int oleResult)
-        {
+        public static CommandResult MakeCommandResult(int oleResult) {
             if (oleResult == (int)Constants.OLECMDERR_E_NOTSUPPORTED)
                 return new CommandResult(CommandStatus.NotSupported, 0);
 

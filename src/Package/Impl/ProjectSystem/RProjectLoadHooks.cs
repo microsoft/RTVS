@@ -15,8 +15,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 
-namespace Microsoft.VisualStudio.R.Package.ProjectSystem
-{
+namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo("RTools")]
     internal sealed class RProjectLoadHooks {
         private const string DefaultRDataName = ".RData";
@@ -32,8 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
         private readonly UnconfiguredProject _unconfiguredProject;
 
         [ImportingConstructor]
-        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRSessionProvider sessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem)
-        {
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRSessionProvider sessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem) {
             _unconfiguredProject = unconfiguredProject;
             _sessionProvider = sessionProvider;
             _toolsSettings = toolsSettings;
@@ -47,8 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
 
         [AppliesTo("RTools")]
         [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
-        public async Task InitializeProjectFromDiskAsync()
-        {
+        public async Task InitializeProjectFromDiskAsync() {
             await Project.CreateInMemoryImport();
             _fileWatcher.Start();
 
@@ -69,8 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
             }
         }
 
-        private async Task ProjectUnloading(object sender, EventArgs args)
-        {
+        private async Task ProjectUnloading(object sender, EventArgs args) {
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             var currentSession = _sessionProvider.Current;
             if (currentSession != null) {
@@ -92,10 +88,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem
                     return true;
                 case YesNoAsk.Ask:
                     return true;
-                    //TODO: Find out when it is safe to show message box during project loading
-                    //return EditorShell.Current.ShowYesNoMessage(
-                    //    string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rdataPath),
-                    //    Resources.LoadWorkspaceTitle);
+                //TODO: Find out when it is safe to show message box during project loading
+                //return EditorShell.Current.ShowYesNoMessage(
+                //    string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rdataPath),
+                //    Resources.LoadWorkspaceTitle);
                 case YesNoAsk.No:
                 default:
                     return false;

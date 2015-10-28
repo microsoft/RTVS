@@ -42,8 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 if (rootNode.Depth >= 0) {
                     AddNode(rootNode);
-                }
-                else {
+                } else {
                     AddChildren(rootNode);
                 }
             }

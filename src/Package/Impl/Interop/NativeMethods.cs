@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.VisualStudio.R.Package.Interop
-{
-    internal static class NativeMethods
-    {
+namespace Microsoft.VisualStudio.R.Package.Interop {
+    internal static class NativeMethods {
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern uint RegisterClipboardFormat(string lpszFormat);
 

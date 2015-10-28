@@ -17,20 +17,16 @@ using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Publishing.Commands
-{
-    internal abstract class PreviewCommand : ViewCommand
-    {
+namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
+    internal abstract class PreviewCommand : ViewCommand {
         private RCommand _lastCommand;
         private string _outputFilePath;
         private Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler> _flavorHandlers = new Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler>();
 
         public PreviewCommand(ITextView textView, int id)
-            : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false)
-        {
+            : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = EditorShell.Current.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
-            foreach (var h in handlers)
-            {
+            foreach (var h in handlers) {
                 _flavorHandlers[h.Value.Flavor] = h.Value;
             }
         }
@@ -39,42 +35,34 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands
 
         protected abstract PublishFormat Format { get; }
 
-        public override CommandStatus Status(Guid group, int id)
-        {
-            if (!IsFormatSupported())
-            {
+        public override CommandStatus Status(Guid group, int id) {
+            if (!IsFormatSupported()) {
                 return CommandStatus.Supported | CommandStatus.Invisible;
             }
 
-            if (_lastCommand == null || _lastCommand.Task.IsCompleted)
-            {
+            if (_lastCommand == null || _lastCommand.Task.IsCompleted) {
                 return CommandStatus.SupportedAndEnabled;
             }
 
             return CommandStatus.Supported;
         }
 
-        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
-            if (!TaskAvailable())
-            {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            if (!TaskAvailable()) {
                 return CommandResult.Disabled;
             }
 
             IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
 
-            if (!InstallPackages.IsInstalled(flavorHandler.RequiredPackageName, 5000))
-            {
+            if (!InstallPackages.IsInstalled(flavorHandler.RequiredPackageName, 5000)) {
                 EditorShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
                 return CommandResult.Disabled;
             }
 
             // Save the file
             ITextDocument textDocument;
-            if (TextView.TextBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument))
-            {
-                if (textDocument.IsDirty)
-                {
+            if (TextView.TextBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument)) {
+                if (textDocument.IsDirty) {
                     textDocument.Save();
                 }
             }
@@ -83,12 +71,9 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands
             string inputFilePath = document.WorkspaceItem.Path;
             _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
 
-            try
-            {
+            try {
                 File.Delete(_outputFilePath);
-            }
-            catch (IOException ex)
-            {
+            } catch (IOException ex) {
                 PublishLog.Current.WriteFormatAsync(MessageCategory.Error, Resources.Error_CannotDeleteFile, _outputFilePath, ex.Message);
                 return CommandResult.Executed;
             }
@@ -104,30 +89,22 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands
             return CommandResult.Executed;
         }
 
-        private void LaunchViewer(Task task)
-        {
-            if (!string.IsNullOrEmpty(_outputFilePath))
-            {
-                if (File.Exists(_outputFilePath))
-                {
+        private void LaunchViewer(Task task) {
+            if (!string.IsNullOrEmpty(_outputFilePath)) {
+                if (File.Exists(_outputFilePath)) {
                     Process.Start(_outputFilePath);
-                }
-                else
-                {
+                } else {
                     PublishLog.Current.WriteLineAsync(MessageCategory.Error, Resources.Error_MarkdownConversionFailed);
                 }
             }
         }
 
-        private bool TaskAvailable()
-        {
-            if (_lastCommand == null)
-            {
+        private bool TaskAvailable() {
+            if (_lastCommand == null) {
                 return true;
             }
 
-            switch (_lastCommand.Task.Status)
-            {
+            switch (_lastCommand.Task.Status) {
                 case TaskStatus.Canceled:
                 case TaskStatus.Faulted:
                 case TaskStatus.RanToCompletion:
@@ -137,13 +114,11 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands
             return false;
         }
 
-        private IMarkdownFlavorPublishHandler GetFlavorHandler(ITextBuffer textBuffer)
-        {
+        private IMarkdownFlavorPublishHandler GetFlavorHandler(ITextBuffer textBuffer) {
             MarkdownFlavor flavor = MdFlavor.FromTextBuffer(textBuffer);
             IMarkdownFlavorPublishHandler value = null;
 
-            if (_flavorHandlers.TryGetValue(flavor, out value))
-            {
+            if (_flavorHandlers.TryGetValue(flavor, out value)) {
                 return value;
             }
 
@@ -151,13 +126,10 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands
             return new MdPublishHandler();
         }
 
-        private bool IsFormatSupported()
-        {
+        private bool IsFormatSupported() {
             IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
-            if (flavorHandler != null)
-            {
-                if (flavorHandler.FormatSupported(Format))
-                {
+            if (flavorHandler != null) {
+                if (flavorHandler.FormatSupported(Format)) {
                     return true;
                 }
             }
