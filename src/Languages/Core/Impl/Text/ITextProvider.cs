@@ -1,14 +1,12 @@
 ﻿using System;
 
-namespace Microsoft.Languages.Core.Text
-{
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Text provider. Parser calls this interface to retrieve text.
     /// Can be implemented on a string <seealso cref="TextStream"/> or
     /// over Visual Studio ITextBuffer (see Microsoft.R.Editor implementation)
     /// </summary>
-    public interface ITextProvider
-    {
+    public interface ITextProvider {
         /// <summary>Text length</summary>
         int Length { get; }
 

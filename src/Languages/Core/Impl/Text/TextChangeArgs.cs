@@ -2,16 +2,14 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Microsoft.Languages.Core.Text
-{
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Text change event arguments. This class abstracts text change information 
     /// allowing code that handles text changes to use <seealso cref="ITextProvider"/>
     /// rather than Visual Studio ITextBuffer or some other editor specific types.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class TextChangeEventArgs : EventArgs
-    {
+    public class TextChangeEventArgs : EventArgs {
         /// <summary>
         /// Start position of the change
         /// </summary>
@@ -44,13 +42,11 @@ namespace Microsoft.Languages.Core.Text
         public ITextProvider NewText { get; private set; }
 
         public TextChangeEventArgs(int start, int oldStart, int oldLength, int newLength)
-            : this(start, oldStart, oldLength, newLength, null, null)
-        {
+            : this(start, oldStart, oldLength, newLength, null, null) {
         }
 
         [DebuggerStepThrough]
-        public TextChangeEventArgs(int start, int oldStart, int oldLength, int newLength, ITextProvider oldText, ITextProvider newText)
-        {
+        public TextChangeEventArgs(int start, int oldStart, int oldLength, int newLength, ITextProvider oldText, ITextProvider newText) {
             Start = start;
             OldStart = oldStart;
             OldLength = oldLength;
