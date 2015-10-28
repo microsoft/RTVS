@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private EvaluationWrapper() { }
 
-        public EvaluationWrapper(DebugEvaluationResult evaluation) : this (evaluation, true) { }
+        public EvaluationWrapper(DebugEvaluationResult evaluation) : this(evaluation, true) { }
 
         /// <summary>
         /// Create new instance of <see cref="EvaluationWrapper"/>

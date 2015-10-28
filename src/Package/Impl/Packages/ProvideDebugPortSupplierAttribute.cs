@@ -32,7 +32,6 @@ namespace Microsoft.VisualStudio.R.Packages {
             clsidGuidKey.SetValue("ThreadingModel", "Free");
         }
 
-        public override void Unregister(RegistrationContext context) {
-        }
+        public override void Unregister(RegistrationContext context) { }
     }
 }

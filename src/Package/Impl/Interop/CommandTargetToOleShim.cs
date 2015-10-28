@@ -7,43 +7,36 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Interop
-{
+namespace Microsoft.VisualStudio.R.Package.Interop {
     /// <summary>
     /// Implements OLE command target over ICommandTarget allowing managed components
     /// to participate in OLE/COM environment like Visual Studio.
     /// While a command is executing, the current variant arguments are cached.
     /// </summary>
-    public sealed class CommandTargetToOleShim : IOleCommandTarget, ICommandTarget
-    {
+    public sealed class CommandTargetToOleShim : IOleCommandTarget, ICommandTarget {
         private ICommandTarget _commandTarget;
         private CommandTargetToOleShimVariantStacks _variantStacks;
 
-        public CommandTargetToOleShim(ITextView textView, ICommandTarget commandTarget)
-        {
+        public CommandTargetToOleShim(ITextView textView, ICommandTarget commandTarget) {
             _commandTarget = commandTarget;
-            if (textView != null)
-            {
+            if (textView != null) {
                 _variantStacks = CommandTargetToOleShimVariantStacks.EnsureConnected(textView);
             }
         }
 
         #region IOleCommandTarget
 
-        public int QueryStatus(ref Guid guidCommandGroup, uint commandCount, OLECMD[] commandArray, IntPtr commandText)
-        {
+        public int QueryStatus(ref Guid guidCommandGroup, uint commandCount, OLECMD[] commandArray, IntPtr commandText) {
             CommandStatus status = _commandTarget.Status(guidCommandGroup, (int)commandArray[0].cmdID);
             return OleCommand.MakeOleCommandStatus(status, commandArray);
         }
 
-        public int Exec(ref Guid guidCommandGroup, uint commandID, uint commandExecOpt, IntPtr variantIn, IntPtr variantOut)
-        {
+        public int Exec(ref Guid guidCommandGroup, uint commandID, uint commandExecOpt, IntPtr variantIn, IntPtr variantOut) {
             // Cache the variants, they'll be needed if the command chain
             // goes back into another IOleCommandTarget (see CommandTargetToOleShim)
             CommandResult result;
 
-            try
-            {
+            try {
                 if (_variantStacks != null)
                     _variantStacks.Push(variantIn, variantOut, false);
 
@@ -52,13 +45,10 @@ namespace Microsoft.VisualStudio.R.Package.Interop
 
                 result = _commandTarget.Invoke(guidCommandGroup, (int)commandID, inputArg, ref outputArg);
 
-                if (outputArg != null && variantOut != IntPtr.Zero)
-                {
+                if (outputArg != null && variantOut != IntPtr.Zero) {
                     Marshal.GetNativeVariantForObject(outputArg, variantOut);
                 }
-            }
-            catch (Exception)
-            {
+            } catch (Exception) {
                 // Some ICommandTarget object is throwing an exception, which will propagate out as a failed hr, which
                 //   isn't particularly easy to track down. Put a bit of exception information in the activity log.
                 //ActivityLog.LogInformation("R Tools", exc.ToString());
@@ -66,9 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop
                 //string logPath = ActivityLog.LogFilePath; // This actually flushes the activity log buffer
 
                 throw;
-            }
-            finally
-            {
+            } finally {
                 if (_variantStacks != null)
                     _variantStacks.Pop();
             }
@@ -78,12 +66,10 @@ namespace Microsoft.VisualStudio.R.Package.Interop
 
         #endregion
 
-        private object TranslateInputArg(ref Guid guidCommandGroup, uint commandID, IntPtr variantIn)
-        {
+        private object TranslateInputArg(ref Guid guidCommandGroup, uint commandID, IntPtr variantIn) {
             object inputArg = null;
 
-            if (variantIn != IntPtr.Zero)
-            {
+            if (variantIn != IntPtr.Zero) {
                 if ((commandID == (int)VSConstants.VSStd2KCmdID.SHOWCONTEXTMENU) && (guidCommandGroup == VSConstants.VSStd2K))
                     inputArg = GetShortPositionFromInputArg(variantIn);
                 else
@@ -94,8 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop
         }
 
         // Blatantly copied from core editor's handling of VSStd2KCmdID.SHOWCONTEXTMENU
-        POINTS[] GetShortPositionFromInputArg(IntPtr location)
-        {
+        POINTS[] GetShortPositionFromInputArg(IntPtr location) {
             POINTS[] position = null;
 
             //the coordiantes are passed as variants containing short values. The y coordinate is an offset sizeof(variant)
@@ -106,8 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop
             short? yCoordinate = yCoordinateVariant as short?;
             Debug.Assert(xCoordinate.HasValue, "Couldn't parse the provided x coordinate for show context command");
             Debug.Assert(yCoordinate.HasValue, "Couldn't parse the provided y coordinate for show context command");
-            if (xCoordinate.HasValue && yCoordinate.HasValue)
-            {
+            if (xCoordinate.HasValue && yCoordinate.HasValue) {
                 position = new POINTS[1];
                 position[0].x = xCoordinate.Value;
                 position[0].y = yCoordinate.Value;
@@ -118,28 +102,22 @@ namespace Microsoft.VisualStudio.R.Package.Interop
 
         #region ICommandTarget
 
-        public CommandStatus Status(Guid group, int id)
-        {
+        public CommandStatus Status(Guid group, int id) {
             return _commandTarget.Status(group, id);
         }
 
-        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             return Invoke(_commandTarget, group, id, inputArg, ref outputArg);
         }
 
-        public CommandResult Invoke(ICommandTarget commandTarget, Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public CommandResult Invoke(ICommandTarget commandTarget, Guid group, int id, object inputArg, ref object outputArg) {
             CommandResult result;
-            try
-            {
+            try {
                 if (_variantStacks != null)
                     _variantStacks.Push(IntPtr.Zero, IntPtr.Zero, true);
 
                 result = commandTarget.Invoke(group, id, inputArg, ref outputArg);
-            }
-            finally
-            {
+            } finally {
                 if (_variantStacks != null)
                     _variantStacks.Pop();
             }
@@ -147,8 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop
             return result;
         }
 
-        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
             _commandTarget.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
         }
 

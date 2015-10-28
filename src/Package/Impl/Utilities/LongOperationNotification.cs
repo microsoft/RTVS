@@ -22,8 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             msgPump.TotalSteps = actions.Count;
 
             CancellationTokenSource cts = new CancellationTokenSource();
-            Task task = Task.Run(() =>
-            {
+            Task task = Task.Run(() => {
                 for (int i = 0; i < actions.Count; i++) {
                     cts.Token.ThrowIfCancellationRequested();
                     msgPump.CurrentStep = i + 1;

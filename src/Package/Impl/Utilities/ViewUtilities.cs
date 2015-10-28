@@ -12,15 +12,11 @@ using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.Utilities
-{
-    public static class ViewUtilities
-    {
+namespace Microsoft.VisualStudio.R.Package.Utilities {
+    public static class ViewUtilities {
         private static IVsEditorAdaptersFactoryService _adaptersFactoryService;
-        private static IVsEditorAdaptersFactoryService AdaptersFactoryService
-        {
-            get
-            {
+        private static IVsEditorAdaptersFactoryService AdaptersFactoryService {
+            get {
                 if (_adaptersFactoryService == null)
                     _adaptersFactoryService = EditorShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
 
@@ -28,11 +24,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
             }
         }
 
-        public static IVsWindowFrame GetActiveFrame()
-        {
+        public static IVsWindowFrame GetActiveFrame() {
             var monitorSelection = ServiceProvider.GlobalProvider.GetService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
-            if (monitorSelection != null)
-            {
+            if (monitorSelection != null) {
                 object value;
                 monitorSelection.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out value);
 
@@ -42,8 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
             return null;
         }
 
-        public static int ViewColumnFromString(IContentType contentType, string str)
-        {
+        public static int ViewColumnFromString(IContentType contentType, string str) {
             if (String.IsNullOrEmpty(str))
                 return 0;
 
@@ -53,17 +46,14 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
             return TextHelper.ConvertTabsToSpaces(str, tabSize).Length;
         }
 
-        public static ITextView ActiveTextView
-        {
-            get
-            {
+        public static ITextView ActiveTextView {
+            get {
                 IVsTextView vsTextView = null;
                 ITextView activeTextView = null;
 
                 IVsTextManager2 textManager = AppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
 
-                if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)_VIEWFRAMETYPE.vftCodeWindow, out vsTextView)))
-                {
+                if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)_VIEWFRAMETYPE.vftCodeWindow, out vsTextView))) {
                     activeTextView = AdaptersFactoryService.GetWpfTextView(vsTextView);
                 }
 
@@ -71,15 +61,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
             }
         }
 
-        public static T GetService<T>(this ITextView textView, Type type = null) where T : class
-        {
+        public static T GetService<T>(this ITextView textView, Type type = null) where T : class {
             IVsTextView vsTextView = AdaptersFactoryService.GetViewAdapter(textView);
 
             return vsTextView != null ? vsTextView.GetService<T>(type) : null;
         }
 
-        public static T GetService<T>(this IVsTextView vsTextView, Type type = null) where T : class
-        {
+        public static T GetService<T>(this IVsTextView vsTextView, Type type = null) where T : class {
             var ows = vsTextView as IObjectWithSite;
 
             if (type == null)
@@ -97,15 +85,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
             return sp.GetService(type) as T;
         }
 
-        public static T QueryInterface<T>(this ITextView textView) where T : class
-        {
+        public static T QueryInterface<T>(this ITextView textView) where T : class {
             var vsTextView = AdaptersFactoryService.GetViewAdapter(textView);
 
             return vsTextView as T;
         }
 
-        public static bool GetIUnknownProperty(this IVsWindowFrame windowFrame, __VSFPROPID propid, out object result)
-        {
+        public static bool GetIUnknownProperty(this IVsWindowFrame windowFrame, __VSFPROPID propid, out object result) {
             result = null;
 
             if (windowFrame != null)

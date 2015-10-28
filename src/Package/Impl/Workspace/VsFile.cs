@@ -2,15 +2,12 @@
 using System.IO;
 using Microsoft.Languages.Editor.Workspace;
 
-namespace Microsoft.VisualStudio.R.Package.Workspace
-{
+namespace Microsoft.VisualStudio.R.Package.Workspace {
     /// <summary>
     /// Visual Studio implementation of the file abstraction
     /// </summary>
-    internal class VsFile : IFile
-    {
-        public VsFile(string absolutePath)
-        {
+    internal class VsFile : IFile {
+        public VsFile(string absolutePath) {
             if (absolutePath == null)
                 throw new ArgumentNullException("absolutePath");
 

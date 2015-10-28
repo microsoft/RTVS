@@ -1,10 +1,8 @@
 ﻿using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Languages.Editor.Workspace;
 
-namespace Microsoft.VisualStudio.R.Package.Workspace
-{
-    public interface IVsWorkspaceItem : IWorkspaceItem
-    {
+namespace Microsoft.VisualStudio.R.Package.Workspace {
+    public interface IVsWorkspaceItem : IWorkspaceItem {
         /// <summary>
         /// Returns Visual Studio hierarchy this item belongs to
         /// </summary>

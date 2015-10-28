@@ -7,11 +7,9 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 
-namespace Microsoft.VisualStudio.R.Package.Packages
-{
+namespace Microsoft.VisualStudio.R.Package.Packages {
     public abstract class BasePackage<TLanguageService> : VisualStudio.Shell.Package
-        where TLanguageService : class, new()
-    {
+        where TLanguageService : class, new() {
         private Dictionary<IVsProjectGenerator, uint> _projectFileGenerators;
         protected abstract IEnumerable<IVsEditorFactory> CreateEditorFactories();
         protected virtual IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() { return new IVsProjectGenerator[0]; }
@@ -22,8 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that relies on services provided by VisualStudio.
         /// </summary>
-        protected override void Initialize()
-        {
+        protected override void Initialize() {
             base.Initialize();
 
             AppShell.AddRef();
@@ -31,33 +28,27 @@ namespace Microsoft.VisualStudio.R.Package.Packages
             IServiceContainer container = this;
             container.AddService(typeof(TLanguageService), new TLanguageService(), true);
 
-            foreach (var projectFactory in CreateProjectFactories())
-            {
+            foreach (var projectFactory in CreateProjectFactories()) {
                 RegisterProjectFactory(projectFactory);
             }
 
-            foreach (var projectFileGenerator in CreateProjectFileGenerators())
-            {
+            foreach (var projectFileGenerator in CreateProjectFileGenerators()) {
                 RegisterProjectFileGenerator(projectFileGenerator);
             }
 
-            foreach (var editorFactory in CreateEditorFactories())
-            {
+            foreach (var editorFactory in CreateEditorFactories()) {
                 RegisterEditorFactory(editorFactory);
             }
 
             var menuCommandService = (IMenuCommandService)GetService(typeof(IMenuCommandService));
-            foreach (var commmand in CreateMenuCommands())
-            {
+            foreach (var commmand in CreateMenuCommands()) {
                 menuCommandService.AddCommand(commmand);
             }
         }
 
-        private void RegisterProjectFileGenerator(IVsProjectGenerator projectFileGenerator)
-        {
+        private void RegisterProjectFileGenerator(IVsProjectGenerator projectFileGenerator) {
             var registerProjectGenerators = GetService(typeof(SVsRegisterProjectTypes)) as IVsRegisterProjectGenerators;
-            if (registerProjectGenerators == null)
-            {
+            if (registerProjectGenerators == null) {
                 throw new InvalidOperationException(typeof(SVsRegisterProjectTypes).FullName);
             }
 
@@ -65,23 +56,19 @@ namespace Microsoft.VisualStudio.R.Package.Packages
             Guid riid = projectFileGenerator.GetType().GUID;
             registerProjectGenerators.RegisterProjectGenerator(ref riid, projectFileGenerator, out cookie);
 
-            if (_projectFileGenerators == null)
-            {
+            if (_projectFileGenerators == null) {
                 _projectFileGenerators = new Dictionary<IVsProjectGenerator, uint>();
             }
 
             _projectFileGenerators[projectFileGenerator] = cookie;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (!disposing)
-            {
+        protected override void Dispose(bool disposing) {
+            if (!disposing) {
                 return;
             }
 
-            if (_projectFileGenerators != null)
-            {
+            if (_projectFileGenerators != null) {
                 var projectFileGenerators = _projectFileGenerators;
                 _projectFileGenerators = null;
                 UnregisterProjectFileGenerators(projectFileGenerators);
@@ -96,28 +83,19 @@ namespace Microsoft.VisualStudio.R.Package.Packages
             AppShell.Release();
         }
 
-        private void UnregisterProjectFileGenerators(Dictionary<IVsProjectGenerator, uint> projectFileGenerators)
-        {
-            try
-            {
+        private void UnregisterProjectFileGenerators(Dictionary<IVsProjectGenerator, uint> projectFileGenerators) {
+            try {
                 IVsRegisterProjectGenerators registerProjectGenerators = GetService(typeof(SVsRegisterProjectTypes)) as IVsRegisterProjectGenerators;
-                if (registerProjectGenerators != null)
-                {
-                    foreach (var projectFileGenerator in projectFileGenerators)
-                    {
-                        try
-                        {
+                if (registerProjectGenerators != null) {
+                    foreach (var projectFileGenerator in projectFileGenerators) {
+                        try {
                             registerProjectGenerators.UnregisterProjectGenerator(projectFileGenerator.Value);
-                        }
-                        finally
-                        {
+                        } finally {
                             (projectFileGenerator.Key as IDisposable)?.Dispose();
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 Debug.Fail(Invariant($"Failed to dispose project file generator for package {GetType().FullName}\n{e.Message}"));
             }
         }

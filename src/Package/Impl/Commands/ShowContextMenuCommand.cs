@@ -7,10 +7,8 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Commands
-{
-    internal class ShowContextMenuCommand : ViewCommand
-    {
+namespace Microsoft.VisualStudio.R.Package.Commands {
+    internal class ShowContextMenuCommand : ViewCommand {
         private Guid _cmdSetGuid;
         private Guid _packageGuid;
         private int _menuId;
@@ -18,22 +16,19 @@ namespace Microsoft.VisualStudio.R.Package.Commands
         private bool _triedGetMenuService;
 
         public ShowContextMenuCommand(ITextView textView, Guid packageGuid, Guid cmdSetGuid, int menuId)
-            : base(textView, new CommandId(VSConstants.VSStd2K, (int) VSConstants.VSStd2KCmdID.SHOWCONTEXTMENU), false)
-        {
+            : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.SHOWCONTEXTMENU), false) {
+
             _cmdSetGuid = cmdSetGuid;
             _packageGuid = packageGuid;
             _menuId = menuId;
         }
 
-        public override CommandStatus Status(Guid group, int id)
-        {
+        public override CommandStatus Status(Guid group, int id) {
             return MenuCommandService != null ? CommandStatus.SupportedAndEnabled : CommandStatus.NotSupported;
         }
 
-        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
-            if (MenuCommandService != null)
-            {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            if (MenuCommandService != null) {
                 POINTS[] position = (POINTS[])inputArg;
                 CommandID menuCommand = new CommandID(_cmdSetGuid, (int)_menuId);
                 MenuCommandService.ShowContextMenu(menuCommand, position[0].x, position[0].y);
@@ -45,19 +40,15 @@ namespace Microsoft.VisualStudio.R.Package.Commands
         }
 
         // IMenuCommandService is null in weird scenarios, such as Open With <non-html editor>, or diff view
-        private IMenuCommandService MenuCommandService
-        {
-            get
-            {
-                if (_menuService == null && !_triedGetMenuService)
-                {
+        private IMenuCommandService MenuCommandService {
+            get {
+                if (_menuService == null && !_triedGetMenuService) {
                     _triedGetMenuService = true;
 
                     IVsShell shell = AppShell.Current.GetGlobalService<IVsShell>();
                     IVsPackage package;
                     shell.LoadPackage(ref _packageGuid, out package);
-                    if (package != null)
-                    {
+                    if (package != null) {
                         var services = package as IServiceProvider;
                         _menuService = services.GetService(typeof(IMenuCommandService)) as IMenuCommandService;
                     }

@@ -5,13 +5,11 @@ using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.TaskList
-{
+namespace Microsoft.VisualStudio.R.Package.TaskList {
     /// <summary>
     /// Provider of items for VS error list
     /// </summary>
-    public sealed class VsTaskListProvider : ErrorListProvider
-    {
+    public sealed class VsTaskListProvider : ErrorListProvider {
         private static Guid _taskListProviderGuid = new Guid("FE76E4B5-D946-4508-B0BA-B59CA995AAC0");
 
         private Dictionary<IEditorTaskListItem, VsTaskItem> _itemMap = new Dictionary<IEditorTaskListItem, VsTaskItem>();
@@ -19,8 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList
         private bool _dirty;
 
         public VsTaskListProvider(IEditorTaskListItemSource source)
-            : base(AppShell.Current.GlobalServiceProvider)
-        {
+            : base(AppShell.Current.GlobalServiceProvider) {
             // Registration of the provider in VS is done by the base class.
 
             _source = source;
@@ -37,11 +34,9 @@ namespace Microsoft.VisualStudio.R.Package.TaskList
             ProviderGuid = _taskListProviderGuid;
         }
 
-        private void OnTasksAdded(object sender, TasksListItemsChangedEventArgs e)
-        {
+        private void OnTasksAdded(object sender, TasksListItemsChangedEventArgs e) {
             SuspendRefresh();
-            foreach (var task in e.Tasks)
-            {
+            foreach (var task in e.Tasks) {
                 var vsTask = new VsTaskItem(task, _source);
                 _itemMap[task] = vsTask;
 
@@ -52,14 +47,11 @@ namespace Microsoft.VisualStudio.R.Package.TaskList
             ResumeRefresh();
         }
 
-        private void OnTasksRemoved(object sender, TasksListItemsChangedEventArgs e)
-        {
+        private void OnTasksRemoved(object sender, TasksListItemsChangedEventArgs e) {
             SuspendRefresh();
-            foreach (var task in e.Tasks)
-            {
+            foreach (var task in e.Tasks) {
                 VsTaskItem vsTask;
-                if (_itemMap.TryGetValue(task, out vsTask))
-                {
+                if (_itemMap.TryGetValue(task, out vsTask)) {
                     this.Tasks.Remove(vsTask);
                     _itemMap.Remove(task);
                 }
@@ -69,37 +61,30 @@ namespace Microsoft.VisualStudio.R.Package.TaskList
             ResumeRefresh();
         }
 
-        private void OnTasksCleared(object sender, EventArgs e)
-        {
+        private void OnTasksCleared(object sender, EventArgs e) {
             Clear();
         }
 
-        private void OnTasksUpdated(object sender, EventArgs e)
-        {
+        private void OnTasksUpdated(object sender, EventArgs e) {
             _dirty = true;
         }
 
-        private void OnBeginUpdatingTasks(object sender, EventArgs e)
-        {
+        private void OnBeginUpdatingTasks(object sender, EventArgs e) {
             SuspendRefresh();
         }
 
-        private void OnEndUpdatingTasks(object sender, EventArgs e)
-        {
+        private void OnEndUpdatingTasks(object sender, EventArgs e) {
             ResumeRefresh();
         }
 
-        private void Clear()
-        {
+        private void Clear() {
             Tasks.Clear();
             _itemMap.Clear();
             _dirty = true;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (_source != null)
-            {
+        protected override void Dispose(bool disposing) {
+            if (_source != null) {
                 EditorShell.OnIdle -= OnIdle;
 
                 _source.TasksAdded -= OnTasksAdded;
@@ -115,21 +100,17 @@ namespace Microsoft.VisualStudio.R.Package.TaskList
             base.Dispose(disposing);
         }
 
-        private void OnIdle(object sender, EventArgs eventArgs)
-        {
+        private void OnIdle(object sender, EventArgs eventArgs) {
             FlushTasks();
         }
 
-        internal void FlushTasks()
-        {
-            if (_dirty)
-            {
+        internal void FlushTasks() {
+            if (_dirty) {
                 _dirty = false;
 
                 SuspendRefresh();
 
-                foreach (VsTaskItem vsTaskItem in this.Tasks)
-                {
+                foreach (VsTaskItem vsTaskItem in this.Tasks) {
                     vsTaskItem.Update();
                 }
 

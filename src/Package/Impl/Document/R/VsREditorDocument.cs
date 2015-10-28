@@ -7,16 +7,14 @@ using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Document.R
-{
-    internal class VsREditorDocument : REditorDocument
-    {
+namespace Microsoft.VisualStudio.R.Package.Document.R {
+    internal class VsREditorDocument : REditorDocument {
         private IEditorInstance _editorInstance;
         private VsWorkspaceItem _workspaceItem;
 
-        public VsREditorDocument(IEditorInstance editorInstance)
-            : base(editorInstance.ViewBuffer, editorInstance.WorkspaceItem)
-        {
+        public VsREditorDocument(IEditorInstance editorInstance) 
+            : base(editorInstance.ViewBuffer, editorInstance.WorkspaceItem) {
+
             _editorInstance = editorInstance;
             _workspaceItem = editorInstance.WorkspaceItem as VsWorkspaceItem;
 
@@ -24,14 +22,12 @@ namespace Microsoft.VisualStudio.R.Package.Document.R
             ServiceManager.AddService<VsREditorDocument>(this, TextBuffer);
         }
 
-        public override void Close()
-        {
+        public override void Close() {
             ServiceManager.RemoveService<VsREditorDocument>(TextBuffer);
 
             base.Close();
 
-            if (_editorInstance != null)
-            {
+            if (_editorInstance != null) {
                 _editorInstance.Dispose();
                 _editorInstance = null;
             }
@@ -42,31 +38,25 @@ namespace Microsoft.VisualStudio.R.Package.Document.R
 
         public ServiceProvider ServiceProvider { get; private set; }
 
-        public string FileName
-        {
+        public string FileName {
             get { return _workspaceItem.Path; }
         }
 
         /// <summary>
         /// Detemines if a given file is currently an active document in the IDE
         /// </summary>
-        public bool IsActive
-        {
-            get
-            {
+        public bool IsActive {
+            get {
                 var windowFrame = ViewUtilities.GetActiveFrame();
-                if (windowFrame != null)
-                {
+                if (windowFrame != null) {
                     object itemidObject;
                     windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out itemidObject);
 
-                    if ((itemidObject is int) && (int)itemidObject == (int)this.ItemId)
-                    {
+                    if ((itemidObject is int) && (int)itemidObject == (int)this.ItemId) {
                         object unkHierarchy;
                         windowFrame.GetIUnknownProperty(__VSFPROPID.VSFPROPID_Hierarchy, out unkHierarchy);
 
-                        if ((unkHierarchy is IVsHierarchy) && unkHierarchy.Equals(Hierarchy))
-                        {
+                        if ((unkHierarchy is IVsHierarchy) && unkHierarchy.Equals(Hierarchy)) {
                             return true;
                         }
                     }
@@ -76,8 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Document.R
             }
         }
 
-        public string[] FileNames
-        {
+        public string[] FileNames {
             get { return new string[] { _workspaceItem.Path }; }
         }
     }

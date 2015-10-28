@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Microsoft.VisualStudio.R.Package.Utilities
-{
-    public static class CollectionUtilities
-    {
+namespace Microsoft.VisualStudio.R.Package.Utilities {
+    public static class CollectionUtilities {
         /// <summary>
         /// Update an element with update content
         /// </summary>
@@ -25,28 +23,22 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
             this IList<T> source,
             IList<T> update,
             Func<T, T, bool> Comparer,
-            ElementUpdater<T> ElementUpdater) where T : class
-        {
+            ElementUpdater<T> ElementUpdater) where T : class {
             int srcIndex = 0;
             int updateIndex = 0;
 
-            while (srcIndex < source.Count)
-            {
+            while (srcIndex < source.Count) {
                 int sameElementInUpdate = -1;
-                for (int u = updateIndex; u < update.Count; u++)
-                {
-                    if (Comparer(source[srcIndex], update[u]))
-                    {
+                for (int u = updateIndex; u < update.Count; u++) {
+                    if (Comparer(source[srcIndex], update[u])) {
                         sameElementInUpdate = u;
                         break;
                     }
                 }
 
-                if (sameElementInUpdate != -1)
-                {
+                if (sameElementInUpdate != -1) {
                     int insertIndex = srcIndex;
-                    for (int i = updateIndex; i < sameElementInUpdate; i++)
-                    {
+                    for (int i = updateIndex; i < sameElementInUpdate; i++) {
                         source.Insert(insertIndex++, update[i]);
                         srcIndex++;
                     }
@@ -55,20 +47,16 @@ namespace Microsoft.VisualStudio.R.Package.Utilities
                     srcIndex++;
 
                     updateIndex = sameElementInUpdate + 1;
-                }
-                else
-                {
+                } else {
                     source.RemoveAt(srcIndex);
                 }
             }
 
-            if (updateIndex < update.Count)
-            {
+            if (updateIndex < update.Count) {
                 Debug.Assert(srcIndex == source.Count);
 
                 int insertIndex = srcIndex;
-                for (int i = updateIndex; i < update.Count; i++)
-                {
+                for (int i = updateIndex; i < update.Count; i++) {
                     source.Insert(insertIndex++, update[i]);
                 }
             }
