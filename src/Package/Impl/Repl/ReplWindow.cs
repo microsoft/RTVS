@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
@@ -14,6 +16,8 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.R.Core.Tokens;
+using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     /// <summary>
@@ -136,29 +140,55 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
             if (current != null && !current.InteractiveWindow.IsRunning) {
                 SnapshotPoint? documentPoint = REditorDocument.MapCaretPositionFromView(textView);
+                var curBuffer = current.InteractiveWindow.CurrentLanguageBuffer;
+                var text = curBuffer.CurrentSnapshot.GetText();
                 if (!documentPoint.HasValue ||
                     documentPoint.Value == documentPoint.Value.Snapshot.Length ||
-                    documentPoint.Value.Snapshot.Length == 0) {
+                    documentPoint.Value.Snapshot.Length == 0 ||
+                    !IsMultiLineCandidate(text)) {
                     // Let the repl try and execute the code if the user presses enter at the
                     // end of the buffer.
+                    if (current.InteractiveWindow.Evaluator.CanExecuteCode(text)) {
+                        // If we know we can execute the code move the caret to the end of the
+                        // current input, otherwise the interactive window won't execute it.  We
+                        // have slightly more permissive handling here.
+                        var point = textView.BufferGraph.MapUpToBuffer(
+                            new SnapshotPoint(
+                                curBuffer.CurrentSnapshot,
+                                curBuffer.CurrentSnapshot.Length
+                            ),
+                            PointTrackingMode.Positive,
+                            PositionAffinity.Successor,
+                            textView.TextBuffer
+                        );
+                        textView.Caret.MoveTo(point.Value);
+                    }
+
                     current.InteractiveWindow.Operations.Return();
                 } else {
                     // Otherwise insert a line break in the middle of an input
                     current.InteractiveWindow.Operations.BreakLine();
-                    var document = REditorDocument.TryFromTextBuffer(current.InteractiveWindow.CurrentLanguageBuffer);
+                    var document = REditorDocument.TryFromTextBuffer(curBuffer);
                     if (document != null) {
                         var tree = document.EditorTree;
                         tree.EnsureTreeReady();
 
                         AutoFormat.HandleAutoFormat(
                             current.InteractiveWindow.TextView,
-                            current.InteractiveWindow.CurrentLanguageBuffer,
+                            curBuffer,
                             tree.AstRoot,
                             '\n'
                         );
                     }
                 }
             }
+        }
+
+        private static bool IsMultiLineCandidate(string text) {
+            var tokenizer = new RTokenizer();
+            IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(
+                new TextStream(text), 0, text.Length);
+            return tokens.Any(t => t.TokenType == RTokenType.OpenCurlyBrace);
         }
 
         public IVsInteractiveWindow GetInteractiveWindow() {
