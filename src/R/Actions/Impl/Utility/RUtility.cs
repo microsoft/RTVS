@@ -3,36 +3,29 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.Win32;
 
-namespace Microsoft.R.Actions.Utility
-{
+namespace Microsoft.R.Actions.Utility {
     /// <summary>
     /// A set of utility functions around R engine
     /// </summary>
-    public static class RUtility
-    {
+    public static class RUtility {
         /// <summary>
         /// Retrieves folder that contains R binaries
         /// </summary>
         /// <returns></returns>
-        public static string GetRBinariesFolder()
-        {
+        public static string GetRBinariesFolder() {
             string binFolder = null;
 
             string installPath = GetRPathFromRegistry();
 
-            if (!string.IsNullOrEmpty(installPath))
-            {
-                if (Environment.Is64BitOperatingSystem)
-                {
+            if (!string.IsNullOrEmpty(installPath)) {
+                if (Environment.Is64BitOperatingSystem) {
                     // Try x64 R engine
                     binFolder = Path.Combine(installPath, @"bin\x64");
                 }
 
-                if (!Directory.Exists(binFolder))
-                {
+                if (!Directory.Exists(binFolder)) {
                     binFolder = Path.Combine(installPath, @"bin\i386");
-                    if (!Directory.Exists(binFolder))
-                    {
+                    if (!Directory.Exists(binFolder)) {
                         binFolder = null;
                     }
                 }
@@ -45,76 +38,56 @@ namespace Microsoft.R.Actions.Utility
         /// Retreieves path to R installation folder from registry
         /// </summary>
         /// <returns></returns>
-        public static string GetRPathFromRegistry()
-        {
+        public static string GetRPathFromRegistry() {
             string enginePath = null;
 
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
-            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default))
-            {
+            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)) {
                 RegistryKey rKey = null;
 
-                try
-                {
+                try {
                     rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R");
-                    if (rKey == null)
-                    {
+                    if (rKey == null) {
                         // Possibly 64-bit machine with only 32-bit R installed
                         rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R");
                     }
 
-                    if (rKey != null)
-                    {
+                    if (rKey != null) {
                         enginePath = rKey.GetValue("InstallPath") as string;
                     }
 
-                    if (string.IsNullOrEmpty(enginePath))
-                    {
+                    if (string.IsNullOrEmpty(enginePath)) {
                         Version highest = null;
                         string highestVersionSubkeyName = null;
 
                         string[] subkeyNames = rKey.GetSubKeyNames();
-                        foreach (string name in subkeyNames)
-                        {
-                            try
-                            {
+                        foreach (string name in subkeyNames) {
+                            try {
                                 Version v = new Version(name);
-                                if (highest != null)
-                                {
-                                    if (v > highest)
-                                    {
+                                if (highest != null) {
+                                    if (v > highest) {
                                         highest = v;
                                         highestVersionSubkeyName = name;
                                     }
-                                }
-                                else
-                                {
+                                } else {
                                     highest = v;
                                     highestVersionSubkeyName = name;
                                 }
-                            }
-                            catch (Exception) { }
+                            } catch (Exception) { }
                         }
 
-                        if (!string.IsNullOrEmpty(highestVersionSubkeyName))
-                        {
+                        if (!string.IsNullOrEmpty(highestVersionSubkeyName)) {
                             RegistryKey subKey = rKey.OpenSubKey(highestVersionSubkeyName);
-                            if (rKey != null)
-                            {
+                            if (rKey != null) {
                                 enginePath = subKey.GetValue("InstallPath") as string;
                             }
                         }
                     }
-                }
-                catch (Exception)
-                {
+                } catch (Exception) {
                     return null;
-                }
-                finally
-                {
-                    if (rKey != null)
-                    {
+                } finally {
+                    if (rKey != null) {
                         rKey.Dispose();
                     }
                 }
