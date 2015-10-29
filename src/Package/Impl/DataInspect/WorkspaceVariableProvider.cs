@@ -51,53 +51,54 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </param>
         /// <param name="maxCount">Max number of members to return</param>
         public IReadOnlyCollection<INamedItemInfo> GetMembers(string variableName, int maxCount) {
-            // Split abc$def$g into parts. String may also be empty or end with $ or @.
-            string[] parts = variableName.Split(new char[] { '$', '@' });
+            try {
+                // Split abc$def$g into parts. String may also be empty or end with $ or @.
+                string[] parts = variableName.Split(new char[] { '$', '@' });
 
-            if (parts.Length == 0 || parts[0].Length == 0) {
-                // Global scope
-                return _topLevelVariables.Values.Select((m, index) =>
-                {
-                    return index < maxCount ? new VariableInfo(m) : null;
-                }).ToArray();
-            }
-
-            // Last member name may be empty or partially typed
-            string lastMemberName = parts[parts.Length - 1];
-            // in abc$def$ or in abc$def$g we need to retrieve members of 'def' 
-            // so the last part doesn't matter.
-            int partCount = parts.Length - 1;
-            EvaluationWrapper eval;
-
-            // Go by parts and drill into members
-            if (_topLevelVariables.TryGetValue(parts[0], out eval)) {
-                for (int i = 1; i < partCount; i++) {
-                    string part = parts[i];
-
-                    if (string.IsNullOrEmpty(part)) {
-                        // Something looks like abc$$def
-                        break;
-                    }
-
-                    var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
-                    if (children != null) {
-                        eval = children.FirstOrDefault((x) => x != null && x.Name == part);
-                        if (eval == null) {
-                            break;
-                        }
-                    }
-                }
-
-                if (eval != null) {
-                    var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
-                    if (children != null) {
-                        return children.Select((m, index) => {
+                if (parts.Length == 0 || parts[0].Length == 0) {
+                    // Global scope
+                    return _topLevelVariables.Values.Select((m, index) => {
                         return index < maxCount ? new VariableInfo(m) : null;
                     }).ToArray();
                 }
-            }
-            }
 
+                // Last member name may be empty or partially typed
+                string lastMemberName = parts[parts.Length - 1];
+                // in abc$def$ or in abc$def$g we need to retrieve members of 'def' 
+                // so the last part doesn't matter.
+                int partCount = parts.Length - 1;
+                EvaluationWrapper eval;
+
+                // Go by parts and drill into members
+                if (_topLevelVariables.TryGetValue(parts[0], out eval)) {
+                    for (int i = 1; i < partCount; i++) {
+                        string part = parts[i];
+
+                        if (string.IsNullOrEmpty(part)) {
+                            // Something looks like abc$$def
+                            break;
+                        }
+
+                        var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
+                        if (children != null) {
+                            eval = children.FirstOrDefault((x) => x != null && x.Name == part);
+                            if (eval == null) {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (eval != null) {
+                        var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
+                        if (children != null) {
+                            return children.Select((m, index) => {
+                                return index < maxCount ? new VariableInfo(m) : null;
+                            }).ToArray();
+                        }
+                    }
+                }
+            } catch (OperationCanceledException) {
+            }
             return new VariableInfo[0];
         }
         #endregion
