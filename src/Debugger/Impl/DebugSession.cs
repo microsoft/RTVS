@@ -168,7 +168,7 @@ namespace Microsoft.R.Debugger {
             await TaskUtilities.SwitchToBackgroundThread();
             await InitializeAsync();
 
-            var jEvalResult = await InvokeDebugHelperAsync<JObject>(Invariant($".rtvs.eval({expression.ToRStringLiteral()}, {env})"));
+            var jEvalResult = await InvokeDebugHelperAsync<JObject>(Invariant($".rtvs.toJSON(.rtvs.eval({expression.ToRStringLiteral()}, {env}))"));
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
         }
 

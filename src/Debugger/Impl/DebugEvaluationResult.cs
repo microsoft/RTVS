@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,90 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
+    public enum DebugEvaluationResultFields : ulong {
+        None,
+
+        [Description("expression")]
+        Expression = 1 << 1,
+
+        [Description("kind")]
+        Kind = 1 << 2,
+
+        [Description("repr")]
+        Repr = 1 << 3,
+
+        [Description("repr.dput")]
+        ReprDPut = 1 << 4,
+
+        [Description("repr.toString")]
+        ReprToString = 1 << 5,
+
+        [Description("repr.str")]
+        ReprStr = 1 << 6,
+
+        ReprAll = Repr | ReprDPut | ReprStr | ReprToString,
+
+        [Description("type")]
+        Type = 1 << 7,
+
+        [Description("classes")]
+        Classes = 1 << 8,
+
+        [Description("length")]
+        Length = 1 << 9,
+
+        [Description("slot_count")]
+        SlotCount = 1 << 10,
+
+        [Description("attr_count")]
+        AttrCount = 1 << 11,
+
+        [Description("name_count")]
+        NameCount = 1 << 12,
+
+        [Description("dim")]
+        Dim = 1 << 13,
+
+        [Description("env_name")]
+        EnvName = 1 << 14,
+
+        [Description("flags")]
+        Flags = 1 << 15,
+
+        All = ulong.MaxValue,
+    }
+
+    internal static class DebugEvaluationResultFieldsExtensions {
+        private static readonly KeyValuePair<DebugEvaluationResultFields, string>[] _mapping =
+            (from DebugEvaluationResultFields field in Enum.GetValues(typeof(DebugEvaluationResultFields))
+             let member = typeof(DebugEvaluationResultFields).GetField(field.ToString())
+             let attr = (DescriptionAttribute)Attribute.GetCustomAttribute(member, typeof(DescriptionAttribute))
+             where attr != null
+             select new KeyValuePair<DebugEvaluationResultFields, string>(field, "'" + attr.Description + "'")
+            ).ToArray();
+
+        public static string ToRVector(this DebugEvaluationResultFields fields) {
+            if (fields == DebugEvaluationResultFields.All) {
+                return null;
+            }
+
+            var sb = new StringBuilder("c(");
+
+            int n = 0;
+            foreach (var kv in _mapping) {
+                if (fields.HasFlag(kv.Key)) {
+                    if (n++ != 0) {
+                        sb.Append(", ");
+                    }
+                    sb.Append(kv.Value);
+                }
+            }
+
+            sb.Append(")");
+            return sb.ToString();
+        }
+    }
+
     public abstract class DebugEvaluationResult {
         public DebugStackFrame StackFrame { get; }
         public string Expression { get; }
@@ -39,11 +124,7 @@ namespace Microsoft.R.Debugger {
                 return new DebugActiveBindingEvaluationResult(stackFrame, expression, name);
             }
 
-            if (json["value"] != null) {
-                return new DebugValueEvaluationResult(stackFrame, expression, name, json);
-            }
-
-            throw new InvalidDataException(Invariant($"Could not determine kind of evaluation result: {json}"));
+            return new DebugValueEvaluationResult(stackFrame, expression, name, json);
         }
 
         public Task<DebugEvaluationResult> SetValueAsync(string value) {
@@ -71,39 +152,63 @@ namespace Microsoft.R.Debugger {
     }
 
     public enum DebugValueEvaluationResultFlags {
+        None,
         Atomic = 1 << 1,
         Recursive = 1 << 2,
         HasParentEnvironment = 1 << 3,
     }
 
+    public struct DebugValueEvaluationResultRepresentation {
+        public readonly string DPut;
+        public readonly new string ToString;
+        public readonly string Str;
+
+        public DebugValueEvaluationResultRepresentation(JObject repr) {
+            DPut = repr.Value<string>("dput");
+            ToString = repr.Value<string>("toString");
+            Str = repr.Value<string>("str");
+        }
+    }
+
     public class DebugValueEvaluationResult : DebugEvaluationResult {
         public DebugValueEvaluationResultKind Kind { get; }
-        public string Value { get; }
-        public string RawValue { get; }
+        public DebugValueEvaluationResultRepresentation Representation { get; }
         public string TypeName { get; }
         public IReadOnlyList<string> Classes { get; }
-        public int Length { get; }
-        public int AttributeCount { get; }
-        public int SlotCount { get; }
+        public int? Length { get; }
+        public int? AttributeCount { get; }
+        public int? SlotCount { get; }
+        public int? NameCount { get; }
         public DebugValueEvaluationResultFlags Flags { get; }
-        public string Str { get; }
 
         public bool IsAtomic => Flags.HasFlag(DebugValueEvaluationResultFlags.Atomic);
         public bool IsRecursive => Flags.HasFlag(DebugValueEvaluationResultFlags.Recursive);
         public bool HasAttributes => AttributeCount != 0;
         public bool HasSlots => SlotCount != 0;
-        public bool HasChildren => HasSlots || Length > (IsAtomic ? 1 : 0);
+        public bool HasChildren => HasSlots || Length > (IsAtomic || TypeName == "closure" ? 1 : 0);
 
         internal DebugValueEvaluationResult(DebugStackFrame stackFrame, string expression, string name, JObject json)
             : base(stackFrame, expression, name) {
 
-            Value = json.Value<string>("value");
-            RawValue = json.Value<string>("raw_value");
+            var repr = json["repr"];
+            if (repr != null) {
+                var reprObj = repr as JObject;
+                if (reprObj == null) {
+                    throw new InvalidDataException(Invariant($"'repr' must be an object in:\n\n{json}"));
+                }
+                Representation = new DebugValueEvaluationResultRepresentation(reprObj);
+            }
+
             TypeName = json.Value<string>("type");
-            Classes = json.Value<JArray>("classes").Select(t => t.Value<string>()).ToArray();
-            Length = json.Value<int>("length");
-            AttributeCount = json.Value<int>("attr_count");
-            SlotCount = json.Value<int>("slot_count");
+            Length = json.Value<int?>("length");
+            AttributeCount = json.Value<int?>("attr_count");
+            SlotCount = json.Value<int?>("slot_count");
+            NameCount = json.Value<int?>("name_count");
+
+            var classes = json.Value<JArray>("classes");
+            if (classes != null) {
+                Classes = classes.Select(t => t.Value<string>()).ToArray();
+            }
 
             var kind = json.Value<string>("kind");
             switch (kind) {
@@ -137,25 +242,19 @@ namespace Microsoft.R.Debugger {
                         throw new InvalidDataException(Invariant($"Unrecognized flag '{flag}' in:\n\n{json}"));
                 }
             }
-
-            Str = json.Value<string>("str");
         }
 
-        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(bool useStr = false, int? truncateLength = null) {
+        public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
+            int? maxLength = null
+        ) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
-            string parameter = Invariant($"{Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, use.str={useStr.ToString().ToUpperInvariant()}");
-            if (truncateLength.HasValue) {
-                parameter += Invariant($", truncate.length={truncateLength.Value}");
-            } else {
-                parameter += Invariant($", truncate.length=NULL");
-            }
-
-            var call = Invariant($".rtvs.children({parameter})");
+            var call = Invariant($".rtvs.toJSON(.rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, {fields.ToRVector()}, {maxLength}))");
             var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),
@@ -175,11 +274,11 @@ namespace Microsoft.R.Debugger {
                 }
             }
 
-            return children.ToArray();
+            return children;
         }
 
         public override string ToString() {
-            return Invariant($"VALUE: {TypeName} {Value}");
+            return Invariant($"VALUE: {TypeName} {Representation.DPut}");
         }
     }
 
