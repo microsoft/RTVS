@@ -62,6 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
             bool success = false;
             Thread t = null;
             try {
+                _completed.Reset();
                 t = new Thread(ThreadProc, 8192);
                 t.Start(p);
                 success = _completed.Wait(5000);
