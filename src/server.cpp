@@ -326,8 +326,12 @@ namespace rhost {
                             // using longjmp, which will skip destructors for all our local variables. Instead, make
                             // CallBack a no-op until event processing is done, and then do a manual cancellation check.
                             allow_intr_in_CallBack = false;
-                            R_WaitEvent();
-                            R_ProcessEvents();
+                            R_ToplevelExec([] {
+                                // Errors can happen during event processing (from GUI windows such as graphs), and
+                                // we don't want them to bubble up here, so run these in a fresh execution context.
+                                R_WaitEvent();
+                                R_ProcessEvents();
+                            }, nullptr);
                             allow_intr_in_CallBack = true;
 
                             terminate_if_closed();
