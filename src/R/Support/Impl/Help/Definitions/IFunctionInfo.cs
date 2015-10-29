@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Microsoft.R.Support.Help.Definitions
-{
-    public interface IFunctionInfo: INamedItemInfo
-    {
+namespace Microsoft.R.Support.Help.Definitions {
+    public interface IFunctionInfo : INamedItemInfo {
         /// <summary>
         /// Other function name variants
         /// </summary>

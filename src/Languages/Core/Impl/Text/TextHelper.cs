@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.Languages.Core.Text
-{
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// A helper class exposing various helper functions that 
     /// are used in formatting, smart indent and elsewhere else.
     /// </summary>
-    public static class TextHelper
-    {
+    public static class TextHelper {
         public static char[] EndOfLineChars = { '\r', '\n' };
 
         /// <summary>
@@ -18,11 +16,10 @@ namespace Microsoft.Languages.Core.Text
         /// </summary>
         /// <param name="textProvider">Text provider</param>
         /// <param name="position">Position to check</param>
-        public static bool IsNewLineAfterPosition(ITextProvider textProvider, int position)
-        {
+        public static bool IsNewLineAfterPosition(ITextProvider textProvider, int position) {
+
             // Walk backwards from the artifact position
-            for (int i = position; i < textProvider.Length; i++)
-            {
+            for (int i = position; i < textProvider.Length; i++) {
                 char ch = textProvider[i];
 
                 if (ch == '\n' || ch == '\r')
@@ -42,15 +39,12 @@ namespace Microsoft.Languages.Core.Text
         /// <param name="textProvider">Text provider</param>
         /// <param name="position">Start position (inclusive)</param>
         /// <param name="position">End position (non-inclusive)</param>
-        public static bool IsWhitespaceOnlyBetweenPositions(ITextProvider textProvider, int start, int end)
-        {
+        public static bool IsWhitespaceOnlyBetweenPositions(ITextProvider textProvider, int start, int end) {
             end = Math.Min(textProvider.Length, end);
-            for (int i = start; i < end; i++)
-            {
+            for (int i = start; i < end; i++) {
                 char ch = textProvider[i];
 
-                if (!Char.IsWhiteSpace(ch))
-                {
+                if (!Char.IsWhiteSpace(ch)) {
                     return false;
                 }
             }
@@ -61,21 +55,17 @@ namespace Microsoft.Languages.Core.Text
         /// <summary>
         /// Splits string into lines based on line breaks
         /// </summary>
-        public static IList<string> SplitTextIntoLines(string text)
-        {
+        public static IList<string> SplitTextIntoLines(string text) {
             var lines = new List<string>();
             int lineStart = 0;
 
-            for (int i = 0; i < text.Length; i++)
-            {
+            for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
-                if (ch == '\r' || ch == '\n')
-                {
+                if (ch == '\r' || ch == '\n') {
                     lines.Add(text.Substring(lineStart, i - lineStart));
 
                     // Skip '\n' but only in "\r\n" sequence. 
-                    if (ch == '\r' && i + 1 < text.Length && text[i + 1] == '\n')
-                    {
+                    if (ch == '\r' && i + 1 < text.Length && text[i + 1] == '\n') {
                         i++;
                     }
 
@@ -88,28 +78,21 @@ namespace Microsoft.Languages.Core.Text
             return lines;
         }
 
-        public static string ConvertTabsToSpaces(string text, int tabSize)
-        {
+        public static string ConvertTabsToSpaces(string text, int tabSize) {
             var sb = new StringBuilder(text.Length);
             int charsSoFar = 0;
 
-            for (int i = 0; i < text.Length; i++)
-            {
+            for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
 
-                if (ch == '\t')
-                {
+                if (ch == '\t') {
                     var spaces = tabSize - (charsSoFar % tabSize);
                     sb.Append(' ', spaces);
                     charsSoFar = 0;
-                }
-                else if (ch == '\r' || ch == '\n')
-                {
+                } else if (ch == '\r' || ch == '\n') {
                     charsSoFar = 0;
                     sb.Append(ch);
-                }
-                else
-                {
+                } else {
                     charsSoFar++;
                     charsSoFar = charsSoFar % tabSize;
                     sb.Append(ch);
@@ -119,26 +102,19 @@ namespace Microsoft.Languages.Core.Text
             return sb.ToString();
         }
 
-        public static int MeasureLeadingWhitespace(string text, int tabSize)
-        {
+        public static int MeasureLeadingWhitespace(string text, int tabSize) {
             int spacesSoFar = 0;
             int size = 0;
-            for (int i = 0; i < text.Length; i++)
-            {
+            for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
 
-                if (ch == '\t')
-                {
+                if (ch == '\t') {
                     var spaces = tabSize - (spacesSoFar % tabSize);
                     size += spaces;
                     spacesSoFar = 0;
-                }
-                else if (!Char.IsWhiteSpace(ch) || ch == '\r' || ch == '\n')
-                {
+                } else if (!Char.IsWhiteSpace(ch) || ch == '\r' || ch == '\n') {
                     break;
-                }
-                else
-                {
+                } else {
                     spacesSoFar++;
                     spacesSoFar = spacesSoFar % tabSize;
                     size++;
@@ -148,8 +124,7 @@ namespace Microsoft.Languages.Core.Text
             return size;
         }
 
-        public static string RemoveIndent(string text, int tabSize)
-        {
+        public static string RemoveIndent(string text, int tabSize) {
             // Normalize to spaces
             text = ConvertTabsToSpaces(text, tabSize);
 
@@ -161,16 +136,13 @@ namespace Microsoft.Languages.Core.Text
 
             var leadingWSLengthInChars = new int[lines.Count];
 
-            for (int i = 0; i < lines.Count; i++)
-            {
+            for (int i = 0; i < lines.Count; i++) {
                 var line = lines[i];
 
                 leadingWSLengthInChars[i] = 0;
 
-                if (line.Length > 0 && !String.IsNullOrWhiteSpace(line))
-                {
-                    for (int j = 0; j < line.Length; j++)
-                    {
+                if (line.Length > 0 && !String.IsNullOrWhiteSpace(line)) {
+                    for (int j = 0; j < line.Length; j++) {
                         char ch = line[j];
 
                         if (!Char.IsWhiteSpace(ch))
@@ -178,16 +150,13 @@ namespace Microsoft.Languages.Core.Text
 
                         leadingWSLengthInChars[i]++;
                     }
-                }
-                else
-                {
+                } else {
                     leadingWSLengthInChars[i] = Int32.MaxValue;
                 }
             }
 
             int minWsInChars = Int32.MaxValue;
-            for (int i = 0; i < lines.Count; i++)
-            {
+            for (int i = 0; i < lines.Count; i++) {
                 minWsInChars = Math.Min(minWsInChars, leadingWSLengthInChars[i]);
             }
 
@@ -199,17 +168,14 @@ namespace Microsoft.Languages.Core.Text
 
             var sb = new StringBuilder();
 
-            for (int i = 0; i < lines.Count; i++)
-            {
+            for (int i = 0; i < lines.Count; i++) {
                 var line = lines[i];
 
-                if (!String.IsNullOrEmpty(line) && leadingWSLengthInChars[i] != Int32.MaxValue)
-                {
+                if (!String.IsNullOrEmpty(line) && leadingWSLengthInChars[i] != Int32.MaxValue) {
                     sb.Append(lines[i].Substring(minWsInChars));
                 }
 
-                if (i < lines.Count - 1)
-                {
+                if (i < lines.Count - 1) {
                     sb.Append("\r\n");
                 }
             }
@@ -217,10 +183,8 @@ namespace Microsoft.Languages.Core.Text
             return sb.ToString();
         }
 
-        public static bool LeadingWhitespaceContainsLineBreak(string text)
-        {
-            for (int i = 0; i < text.Length; i++)
-            {
+        public static bool LeadingWhitespaceContainsLineBreak(string text) {
+            for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
 
                 if (ch == '\r' || ch == '\n')
@@ -233,10 +197,8 @@ namespace Microsoft.Languages.Core.Text
             return false;
         }
 
-        public static bool TrailingWhitespaceContainsLineBreak(string text)
-        {
-            for (int i = text.Length - 1; i >= 0; i--)
-            {
+        public static bool TrailingWhitespaceContainsLineBreak(string text) {
+            for (int i = text.Length - 1; i >= 0; i--) {
                 char ch = text[i];
 
                 if (ch == '\r' || ch == '\n')
@@ -249,35 +211,29 @@ namespace Microsoft.Languages.Core.Text
             return false;
         }
 
-        public static string GetCurrentLineText(this ITextProvider textProvider, int position)
-        {
+        public static string GetCurrentLineText(this ITextProvider textProvider, int position) {
             int start = 0;
             int end = 0;
 
-            for (int i = position; i >= 0; i--)
-            {
+            for (int i = position; i >= 0; i--) {
                 char ch = textProvider[i];
 
-                if (ch == '\r' || ch == '\n')
-                {
+                if (ch == '\r' || ch == '\n') {
                     start = i + 1;
                     break;
                 }
             }
 
-            for (int i = position; i < textProvider.Length; i++)
-            {
+            for (int i = position; i < textProvider.Length; i++) {
                 char ch = textProvider[i];
 
-                if (ch == '\r' || ch == '\n')
-                {
+                if (ch == '\r' || ch == '\n') {
                     end = i;
                     break;
                 }
             }
 
-            if(start > end)
-            {
+            if (start > end) {
                 start = end;
             }
 

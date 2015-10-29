@@ -1,10 +1,8 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Support.RD.ContentTypes
-{
-    public sealed class RdContentTypeDefinition
-    {
+namespace Microsoft.R.Support.RD.ContentTypes {
+    public sealed class RdContentTypeDefinition {
         public const string LanguageName = "RDoc";
         public const string ContentType = "RDoc";
         public const string FileExtension = ".rd";

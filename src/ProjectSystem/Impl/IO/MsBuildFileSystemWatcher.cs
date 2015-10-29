@@ -11,10 +11,8 @@ using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
-{
-    public sealed partial class MsBuildFileSystemWatcher : IDisposable
-    {
+namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
+    public sealed partial class MsBuildFileSystemWatcher : IDisposable {
         private readonly string _directory;
         private readonly string _filter;
         private readonly ConcurrentQueue<IFileSystemChange> _queue;
@@ -31,8 +29,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
 
         public IReceivableSourceBlock<Changeset> SourceBlock { get; }
 
-        public MsBuildFileSystemWatcher(string directory, string filter, int delayMilliseconds, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, TaskScheduler taskScheduler = null, IActionLog log = null) 
-        {
+        public MsBuildFileSystemWatcher(string directory, string filter, int delayMilliseconds, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, TaskScheduler taskScheduler = null, IActionLog log = null) {
             Requires.NotNullOrWhiteSpace(directory, nameof(directory));
             Requires.NotNullOrWhiteSpace(filter, nameof(filter));
             Requires.Range(delayMilliseconds >= 0, nameof(delayMilliseconds));
@@ -53,8 +50,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             _fileSystemFilter.Seal();
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             _fileWatcher?.Dispose();
             _directoryWatcher?.Dispose();
             _attributesWatcher?.Dispose();
@@ -84,16 +80,13 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             _log.WatcherStarted();
         }
 
-        private void Enqueue(IFileSystemChange change)
-        {
+        private void Enqueue(IFileSystemChange change) {
             _queue.Enqueue(change);
             StartConsumer();
         }
 
-        private void StartConsumer()
-        {
-            if (Interlocked.Exchange(ref _consumerIsWorking, 1) == 0)
-            {
+        private void StartConsumer() {
+            if (Interlocked.Exchange(ref _consumerIsWorking, 1) == 0) {
                 Task.Factory
                     .StartNew(async () => await ConsumeWaitPublish(), CancellationToken.None, Task.Factory.CreationOptions, _taskScheduler)
                     .Unwrap();
@@ -101,8 +94,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             }
         }
 
-        private async Task ConsumeWaitPublish()
-        {
+        private async Task ConsumeWaitPublish() {
             _log.WatcherConsumeChangesStarted();
 
             try {
@@ -125,8 +117,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             }
         }
 
-        private void Consume(Changeset changeset)
-        {
+        private void Consume(Changeset changeset) {
             IFileSystemChange change;
             while (_queue.TryDequeue(out change)) {
                 try {
@@ -140,8 +131,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             }
         }
 
-        private IFileSystemWatcher CreateFileSystemWatcher(NotifyFilters notifyFilter)
-        {
+        private IFileSystemWatcher CreateFileSystemWatcher(NotifyFilters notifyFilter) {
             var watcher = _fileSystem.CreateFileSystemWatcher(_directory, _filter);
             watcher.EnableRaisingEvents = true;
             watcher.IncludeSubdirectories = true;
@@ -150,10 +140,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             return watcher;
         }
 
-        private static bool IsFileAllowed(string rootDirectory, string fullPath, IFileSystem fileSystem, IMsBuildFileSystemFilter filter, out string relativePath)
-        {
-            if (!fullPath.StartsWith(rootDirectory, StringComparison.OrdinalIgnoreCase))
-            {
+        private static bool IsFileAllowed(string rootDirectory, string fullPath, IFileSystem fileSystem, IMsBuildFileSystemFilter filter, out string relativePath) {
+            if (!fullPath.StartsWith(rootDirectory, StringComparison.OrdinalIgnoreCase)) {
                 relativePath = null;
                 return false;
             }
@@ -162,8 +150,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             return fileSystem.FileExists(fullPath) && filter.IsFileAllowed(relativePath, fileSystem.GetFileAttributes(fullPath));
         }
 
-        private interface IFileSystemChange
-        {
+        private interface IFileSystemChange {
             void Apply(Changeset changeset);
         }
 
@@ -172,8 +159,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             Trace.Fail($"Error in {watcherName}:\n{errorEventArgs.GetException()}");
         }
 
-        public class Changeset
-        {
+        public class Changeset {
             public HashSet<string> AddedFiles { get; } = new HashSet<string>(StringComparer.Ordinal);
             public HashSet<string> AddedDirectories { get; } = new HashSet<string>(StringComparer.Ordinal);
             public HashSet<string> RemovedFiles { get; } = new HashSet<string>(StringComparer.Ordinal);
@@ -181,8 +167,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO
             public Dictionary<string, string> RenamedFiles { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
             public Dictionary<string, string> RenamedDirectories { get; } = new Dictionary<string, string>(StringComparer.Ordinal);
 
-            public bool IsEmpty()
-            {
+            public bool IsEmpty() {
                 return AddedFiles.Count == 0
                     && AddedDirectories.Count == 0
                     && RemovedFiles.Count == 0

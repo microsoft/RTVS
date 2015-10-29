@@ -3,26 +3,20 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
-namespace Microsoft.Languages.Editor.Diagnostics
-{
+namespace Microsoft.Languages.Editor.Diagnostics {
     [ExcludeFromCodeCoverage]
-    public class IntegerSwitch : Switch
-    {
+    public class IntegerSwitch : Switch {
         private int _value;
 
         public IntegerSwitch(string name, string description, int value)
-            : base(name, description, value.ToString(CultureInfo.CurrentCulture))
-        {
+            : base(name, description, value.ToString(CultureInfo.CurrentCulture)) {
             _value = value;
         }
 
-        public int SwitchValue
-        {
-            get
-            {
+        public int SwitchValue {
+            get {
                 int value;
-                if (Int32.TryParse(this.Value, out value))
-                {
+                if (Int32.TryParse(this.Value, out value)) {
                     _value = value;
                 }
 

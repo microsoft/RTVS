@@ -3,14 +3,12 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.R.Support.Utility;
 
-namespace Microsoft.R.Support.Engine
-{
+namespace Microsoft.R.Support.Engine {
     /// <summary>
     /// An object that represents pending response from the R engine
     /// that is running in a separate process
     /// </summary>
-    public class EngineResponse : AsyncData<object>, IDisposable
-    {
+    public class EngineResponse : AsyncData<object>, IDisposable {
         /// <summary>
         /// R engine process
         /// </summary>
@@ -47,34 +45,27 @@ namespace Microsoft.R.Support.Engine
         public DateTime CreationTime { get; private set; } = DateTime.Now;
 
         public EngineResponse(Process process, Action<object> dataReadyCallBack, Func<string, object, object> dataConverter, object p = null) :
-            this(process, dataReadyCallBack)
-        {
+            this(process, dataReadyCallBack) {
             _dataConverter = dataConverter;
             _parameter = p;
         }
 
         public EngineResponse(Process process, Action<object> dataReadyCallBack) :
-            base(dataReadyCallBack)
-        {
+            base(dataReadyCallBack) {
             _process = process;
             _process.OutputDataReceived += Process_OutputDataReceived;
             _process.ErrorDataReceived += Process_ErrorDataReceived;
         }
 
         public EngineResponse(object data) :
-            base(data)
-        {
+            base(data) {
         }
 
-        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            lock (_objectLock)
-            {
+        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e) {
+            lock (_objectLock) {
                 // We want to collect full output, not just one line
-                if (e != null && e.Data != null)
-                {
-                    if (_lastOutputReceived == null)
-                    {
+                if (e != null && e.Data != null) {
+                    if (_lastOutputReceived == null) {
                         _lastOutputReceived = DateTime.Now;
                         //Task.Run(() => HeartbeatThread());
                     }
@@ -84,8 +75,7 @@ namespace Microsoft.R.Support.Engine
             }
         }
 
-        private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
+        private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e) {
             Disconnect();
         }
 
@@ -107,17 +97,13 @@ namespace Microsoft.R.Support.Engine
         //    }
         //}
 
-        private void Disconnect()
-        {
+        private void Disconnect() {
             DisconnectFromEvents();
 
             object data;
-            if (_dataConverter != null)
-            {
+            if (_dataConverter != null) {
                 data = _dataConverter(_sb.ToString(), _parameter);
-            }
-            else
-            {
+            } else {
                 data = _sb.ToString();
             }
 
@@ -127,10 +113,8 @@ namespace Microsoft.R.Support.Engine
             Debug.WriteLine("R engine response time: {0} ms", (DateTime.Now - CreationTime).TotalMilliseconds);
         }
 
-        private void DisconnectFromEvents()
-        {
-            if (_process != null)
-            {
+        private void DisconnectFromEvents() {
+            if (_process != null) {
                 // Usually called when request is canceled when user
                 // moves mouse away from the function and VS quick info
                 // tooltip session now is requesting information on 
@@ -141,10 +125,8 @@ namespace Microsoft.R.Support.Engine
             }
         }
 
-        public void Dispose()
-        {
-            lock (_objectLock)
-            {
+        public void Dispose() {
+            lock (_objectLock) {
                 DisconnectFromEvents();
             }
         }

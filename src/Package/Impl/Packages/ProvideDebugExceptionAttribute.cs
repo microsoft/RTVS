@@ -84,7 +84,6 @@ namespace Microsoft.VisualStudio.R.Packages {
             }
         }
 
-        public override void Unregister(RegistrationAttribute.RegistrationContext context) {
-        }
+        public override void Unregister(RegistrationAttribute.RegistrationContext context) { }
     }
 }

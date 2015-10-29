@@ -4,15 +4,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Languages.Editor.TaskList.Definitions
-{
+namespace Microsoft.Languages.Editor.TaskList.Definitions {
     [ExcludeFromCodeCoverage]
-    public class TasksListItemsChangedEventArgs : EventArgs
-    {
+    public class TasksListItemsChangedEventArgs : EventArgs {
         public ReadOnlyCollection<IEditorTaskListItem> Tasks { get; private set; }
 
-        public TasksListItemsChangedEventArgs(IList<IEditorTaskListItem> tasks)
-        {
+        public TasksListItemsChangedEventArgs(IList<IEditorTaskListItem> tasks) {
             Tasks = new ReadOnlyCollection<IEditorTaskListItem>(tasks);
         }
     }
@@ -20,8 +17,7 @@ namespace Microsoft.Languages.Editor.TaskList.Definitions
     /// <summary>
     /// Implemented by a language validation engine. 
     /// </summary>
-    public interface IEditorTaskListItemSource
-    {
+    public interface IEditorTaskListItemSource {
         /// <summary>
         /// Fires when source has new tasks pending addition to the list
         /// </summary>

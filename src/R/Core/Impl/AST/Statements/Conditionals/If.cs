@@ -7,15 +7,13 @@ using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Statements.Conditionals
-{
+namespace Microsoft.R.Core.AST.Statements.Conditionals {
     /// <summary>
     /// Branching ('if') statement
     /// http://cran.r-project.org/doc/manuals/r-release/R-lang.html#if
     /// </summary>
     [DebuggerDisplay("[If Statement]")]
-    public class If : KeywordExpressionScopeStatement
-    {
+    public class If : KeywordExpressionScopeStatement {
         private const string _terminatingKeyword = "else";
 
         // In R any expression is permitted like in C/C++. It is not limited to conditional
@@ -30,8 +28,7 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
         // a numeric vector an error is signalled.
 
         public If() :
-            base(_terminatingKeyword)
-        {
+            base(_terminatingKeyword) {
         }
 
         public KeywordScopeStatement Else { get; private set; }
@@ -42,12 +39,10 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
         /// </summary>
         public bool LineBreakSensitive { get; private set; }
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             // First parse base which should pick up keyword, braces, inner
             // expression and either full or simple (single statement) scope
-            if (!base.Parse(context, parent))
-            {
+            if (!base.Parse(context, parent)) {
                 return false;
             }
 
@@ -55,8 +50,7 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
             // at the next statement. In the latter case we are done.
             TokenStream<RToken> tokens = context.Tokens;
 
-            if (tokens.CurrentToken.IsKeywordText(context.TextProvider, "else"))
-            {
+            if (tokens.CurrentToken.IsKeywordText(context.TextProvider, "else")) {
                 // Language spec says:
                 // <quote>
                 //      When the if statement is not in a block the else, if present, 
@@ -77,13 +71,11 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
                 bool isSimpleScope = this.Scope.OpenCurlyBrace == null;
                 bool allowLineBreak = AllowLineBreakBeforeElse(context);
 
-                if (isSimpleScope && !allowLineBreak)
-                {
+                if (isSimpleScope && !allowLineBreak) {
                     LineBreakSensitive = true;
 
                     // Verify that there is no line break before the 'else'
-                    if (context.Tokens.IsLineBreakAfter(context.TextProvider, tokens.Position - 1))
-                    {
+                    if (context.Tokens.IsLineBreakAfter(context.TextProvider, tokens.Position - 1)) {
                         context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
                         return true;
                     }
@@ -97,10 +89,8 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
             return true;
         }
 
-        private bool AllowLineBreakBeforeElse(ParseContext context)
-        {
-            if (context.Scopes.Count > 1)
-            {
+        private bool AllowLineBreakBeforeElse(ParseContext context) {
+            if (context.Scopes.Count > 1) {
                 return true;
             }
 
@@ -116,8 +106,7 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
             //         that is inside expression statement and has no braces.
             //
 
-            if(!(this is InlineIf))
-            {
+            if (!(this is InlineIf)) {
                 // 'if' statement
                 return false;
             }
@@ -126,8 +115,7 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals
             // is in a Group i.e. enclosed in ( ).
             Debug.Assert(context.Expressions.Count > 0);
             Expression expression = context.Expressions.Count > 0 ? context.Expressions.Peek() : null;
-            if(expression != null && expression.IsInGroup)
-            {
+            if (expression != null && expression.IsInGroup) {
                 return true;
             }
 

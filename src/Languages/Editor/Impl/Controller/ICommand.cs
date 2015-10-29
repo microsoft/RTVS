@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.Languages.Editor.Controller.Command;
 
-namespace Microsoft.Languages.Editor.Controller
-{
+namespace Microsoft.Languages.Editor.Controller {
     /// <summary>
     /// An object that represents a command
     /// </summary>
-    public interface ICommand : ICommandTarget
-    {
+    public interface ICommand : ICommandTarget {
         /// <summary>
         /// True if command requires file to be checked out from Source Code Control before execution
         /// </summary>

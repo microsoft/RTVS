@@ -130,7 +130,7 @@ namespace Microsoft.R.Editor.Validation
         private void OnIdle(object sender, EventArgs e)
         {
             // Throttle validator idle a bit
-            if (TimeUtility.MillisecondsSinceUTC(_idleRequestTime) > _validationDelay)
+            if (TimeUtility.MillisecondsSinceUtc(_idleRequestTime) > _validationDelay)
             {
                 UnadviseFromIdle();
                 StartValidation();

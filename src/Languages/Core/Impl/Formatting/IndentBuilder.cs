@@ -4,10 +4,8 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.Languages.Core.Formatting
-{
-    public sealed class IndentBuilder
-    {
+namespace Microsoft.Languages.Core.Formatting {
+    public sealed class IndentBuilder {
         /// <summary>
         /// Whitespace string that represents a single level indentation
         /// </summary>
@@ -35,8 +33,7 @@ namespace Microsoft.Languages.Core.Formatting
 
         private List<string> _indentStrings;
 
-        public IndentBuilder(IndentType indentType, int indentSize, int tabSize, string baseIndent)
-        {
+        public IndentBuilder(IndentType indentType, int indentSize, int tabSize, string baseIndent) {
             IndentType = indentType;
             IndentSize = indentSize;
             TabSize = tabSize;
@@ -47,12 +44,10 @@ namespace Microsoft.Languages.Core.Formatting
         }
 
         public IndentBuilder(IndentType indentType, int indentSize, int tabSize)
-            : this(indentType, indentSize, tabSize, String.Empty)
-        {
+            : this(indentType, indentSize, tabSize, String.Empty) {
         }
 
-        public IndentState ResetBaseIndent(string baseIndent)
-        {
+        public IndentState ResetBaseIndent(string baseIndent) {
             IndentState indentState = new IndentState(IndentLevel, _indentStrings);
 
             IndentLevel = 0;
@@ -63,32 +58,27 @@ namespace Microsoft.Languages.Core.Formatting
             return indentState;
         }
 
-        public void RestoreIndentState(IndentState indentState)
-        {
+        public void RestoreIndentState(IndentState indentState) {
             IndentLevel = indentState.IndentLevel;
             _indentStrings = indentState.IndentStrings;
         }
 
-        public void NewIndentLevel()
-        {
+        public void NewIndentLevel() {
             IndentLevel++;
         }
 
-        public void CloseIndentLevel()
-        {
+        public void CloseIndentLevel() {
             // Debug.Assert(_indentLevel > 0);
 
             if (IndentLevel > 0)
                 IndentLevel--;
         }
 
-        public void SetIndentLevel(int indentLevel)
-        {
+        public void SetIndentLevel(int indentLevel) {
             IndentLevel = indentLevel;
         }
 
-        public void SetIndentLevelForSize(int indentSize)
-        {
+        public void SetIndentLevelForSize(int indentSize) {
             string baseIndentString = _indentStrings[0];
 
             int baseIndentSize = TextIndentInSpaces(baseIndentString, TabSize);
@@ -97,8 +87,7 @@ namespace Microsoft.Languages.Core.Formatting
             IndentLevel = Math.Max(newIndentLevel, 0);
         }
 
-        public string GetIndentString(int size)
-        {
+        public string GetIndentString(int size) {
             return GetIndentString(size, IndentType, TabSize);
         }
 
@@ -110,29 +99,22 @@ namespace Microsoft.Languages.Core.Formatting
         /// <param name="indentType">Type of indent</param>
         /// <param name="tabSize">Tab size</param>
         /// <returns></returns>
-        public static string GetIndentString(int size, IndentType indentType, int tabSize)
-        {
+        public static string GetIndentString(int size, IndentType indentType, int tabSize) {
             StringBuilder sb = new StringBuilder();
             size = Math.Max(size, 0);
 
-            if (indentType == IndentType.Spaces)
-            {
+            if (indentType == IndentType.Spaces) {
                 sb.Append(' ', size);
-            }
-            else
-            {
-                if (tabSize > 0)
-                {
+            } else {
+                if (tabSize > 0) {
                     int tabs = size / tabSize;
                     int spaces = size % tabSize;
 
-                    if (tabs > 0)
-                    {
+                    if (tabs > 0) {
                         sb.Append('\t', tabs);
                     }
 
-                    if (spaces > 0)
-                    {
+                    if (spaces > 0) {
                         sb.Append(' ', spaces);
                     }
                 }
@@ -141,8 +123,7 @@ namespace Microsoft.Languages.Core.Formatting
             return sb.ToString();
         }
 
-        public int IndentLevelSize
-        {
+        public int IndentLevelSize {
             get { return IndentLevel * IndentSize; }
         }
 
@@ -150,20 +131,16 @@ namespace Microsoft.Languages.Core.Formatting
         /// Provides current indentation string
         /// </summary>
         /// <returns>String for the indent</returns>
-        public string IndentLevelString
-        {
-            get
-            {
+        public string IndentLevelString {
+            get {
                 if (IndentLevel == 0)
                     return _indentStrings[0];
 
-                if (IndentLevel >= _indentStrings.Count)
-                {
+                if (IndentLevel >= _indentStrings.Count) {
                     StringBuilder sb = new StringBuilder();
                     sb.Append(_indentStrings[_indentStrings.Count - 1]);
 
-                    for (int i = _indentStrings.Count; i <= IndentLevel; i++)
-                    {
+                    for (int i = _indentStrings.Count; i <= IndentLevel; i++) {
                         sb.Append(SingleIndentString);
                         _indentStrings.Add(sb.ToString());
                     }
@@ -231,23 +208,19 @@ namespace Microsoft.Languages.Core.Formatting
         /// <param name="spacesSoFar"></param>
         /// <param name="tabSize"></param>
         /// <returns></returns>
-        public static int GetWhiteSpaceCharLength(char character, int spacesSoFar, int tabSize)
-        {
+        public static int GetWhiteSpaceCharLength(char character, int spacesSoFar, int tabSize) {
             Debug.Assert(spacesSoFar >= 0, "number of spaces must be bigger than zero");
 
-            if (character == '\t')
-            {
+            if (character == '\t') {
                 return tabSize - spacesSoFar % tabSize;
             }
 
-            if (character == '\r' || character == '\n')
-            {
+            if (character == '\r' || character == '\n') {
                 Debug.Fail("We don't expect any new lines here");
                 return 1;
             }
 
-            if (Char.IsWhiteSpace(character))
-            {
+            if (Char.IsWhiteSpace(character)) {
                 return 1;
             }
 
@@ -257,13 +230,11 @@ namespace Microsoft.Languages.Core.Formatting
         /// <summary>
         /// Calculates length of text in spaces, converting tabs to spaces using specified tab size.
         /// </summary>
-        public static int TextLengthInSpaces(string text, int tabSize)
-        {
+        public static int TextLengthInSpaces(string text, int tabSize) {
             int length = 0;
             int spaces = 0;
 
-            for (int i = 0; i < text.Length; i++)
-            {
+            for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
 
                 if (ch == '\r' || ch == '\n')
@@ -286,13 +257,11 @@ namespace Microsoft.Languages.Core.Formatting
         /// <param name="text"></param>
         /// <param name="tabSize"></param>
         /// <returns></returns>
-        public static int TextIndentInSpaces(string text, int tabSize)
-        {
+        public static int TextIndentInSpaces(string text, int tabSize) {
             int spaces = 0;
             int indent = 0;
 
-            for (int i = 0; i < text.Length; i++)
-            {
+            for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
 
                 if (!Char.IsWhiteSpace(ch))

@@ -3,18 +3,14 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
 using Microsoft.R.Core.Parser;
 
-namespace Microsoft.R.Core.AST.Arguments
-{
+namespace Microsoft.R.Core.AST.Arguments {
     [DebuggerDisplay("Expression Argument [{Start}...{End})")]
-    public class ExpressionArgument : CommaSeparatedItem
-    {
+    public class ExpressionArgument : CommaSeparatedItem {
         public Expression ArgumentValue { get; private set; }
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             this.ArgumentValue = new Expression(inGroup: true);
-            if (this.ArgumentValue.Parse(context, this))
-            {
+            if (this.ArgumentValue.Parse(context, this)) {
                 return base.Parse(context, parent);
             }
 

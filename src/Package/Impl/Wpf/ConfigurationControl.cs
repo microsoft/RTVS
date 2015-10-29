@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudioTools.Wpf {
             get { return (string)GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
         }
-        
+
         public IList<string> Values {
             get { return (IList<string>)GetValue(ValuesProperty); }
             set { SetValue(ValuesProperty, value); }

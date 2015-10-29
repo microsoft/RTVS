@@ -1,13 +1,11 @@
 ﻿
 using System.Collections.Generic;
 
-namespace Microsoft.Languages.Core.Text
-{
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Represents collection of ITextRange items
     /// </summary>
-    public interface IReadOnlyTextRangeCollection<T> : ICompositeTextRange, IReadOnlyCollection<T>
-    {
+    public interface IReadOnlyTextRangeCollection<T> : ICompositeTextRange, IReadOnlyCollection<T> {
         /// <summary>
         /// Retrieves Nth item in the collection
         /// </summary>

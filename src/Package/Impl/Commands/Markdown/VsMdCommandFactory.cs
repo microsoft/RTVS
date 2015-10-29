@@ -9,14 +9,11 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Commands.MD
-{
+namespace Microsoft.VisualStudio.R.Package.Commands.MD {
     [Export(typeof(ICommandFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
-    internal class VsMdCommandFactory : ICommandFactory
-    {
-        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer)
-        {
+    internal class VsMdCommandFactory : ICommandFactory {
+        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var commands = new List<ICommand>();
 
             commands.Add(new PreviewHtmlCommand(textView));

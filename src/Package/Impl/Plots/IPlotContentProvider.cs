@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Windows;
 
-namespace Microsoft.VisualStudio.R.Package.Plots
-{
+namespace Microsoft.VisualStudio.R.Package.Plots {
     /// <summary>
     /// Plot content provider to load and consume plot content
     /// </summary>
-    internal interface IPlotContentProvider: IDisposable
-    {
+    internal interface IPlotContentProvider : IDisposable {
         /// <summary>
         /// Event raised when UIElement is loaded, content presenter listens to this event
         /// </summary>
@@ -37,8 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
     /// <summary>
     /// provide data ralated to PlotChanged event
     /// </summary>
-    internal class PlotChangedEventArgs : EventArgs
-    {
+    internal class PlotChangedEventArgs : EventArgs {
         /// <summary>
         /// new plot UIElement
         /// </summary>

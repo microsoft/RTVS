@@ -8,52 +8,43 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 
-namespace Microsoft.Languages.Editor.Outline
-{
-    public class OutlineController : ICommandTarget
-    {
+namespace Microsoft.Languages.Editor.Outline {
+    public class OutlineController : ICommandTarget {
         [Import]
         private IOutliningManagerService _outliningManagerService = null;
 
         private ITextView _textView;
 
-        public OutlineController(ITextView textView)
-        {
+        public OutlineController(ITextView textView) {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
             _textView = textView;
-        } 
+        }
 
-        private IOutliningManager OutliningManager
-        {
+        private IOutliningManager OutliningManager {
             get { return _outliningManagerService.GetOutliningManager(_textView); }
         }
 
-        private void ExpandAll()
-        {
+        private void ExpandAll() {
             ITextSnapshot snapshot = _textView.TextBuffer.CurrentSnapshot;
             SnapshotSpan snapshotSpan = new SnapshotSpan(snapshot, 0, snapshot.Length);
             OutliningManager.ExpandAll(snapshotSpan, (collapsible => true));
         }
 
-        private void CollapseAll()
-        {
+        private void CollapseAll() {
             ITextSnapshot snapshot = _textView.TextBuffer.CurrentSnapshot;
             SnapshotSpan snapshotSpan = new SnapshotSpan(snapshot, 0, snapshot.Length);
             OutliningManager.CollapseAll(snapshotSpan, (collapsible => true));
         }
 
-        private void StopOutlining()
-        {
+        private void StopOutlining() {
             OutliningManager.Enabled = false;
         }
 
-        private void StartOutlining()
-        {
+        private void StartOutlining() {
             OutliningManager.Enabled = true;
         }
 
-        private void ToggleAll()
-        {
+        private void ToggleAll() {
             if (AnyExpandableOutliningRegions)
                 ExpandAll();
             else
@@ -61,8 +52,7 @@ namespace Microsoft.Languages.Editor.Outline
 
         }
 
-        private void ToggleCurrent()
-        {
+        private void ToggleCurrent() {
             var caretPosition = _textView.Caret.Position.BufferPosition;
             var snapshot = _textView.TextBuffer.CurrentSnapshot;
             var span = new SnapshotSpan(snapshot, new Span(caretPosition, 0));
@@ -75,13 +65,11 @@ namespace Microsoft.Languages.Editor.Outline
             int regionStart = 0;
             int regionEnd = snapshot.Length;
 
-            foreach (ICollapsible c in regions)
-            {
+            foreach (ICollapsible c in regions) {
                 int start = c.Extent.GetStartPoint(snapshot);
                 int end = c.Extent.GetEndPoint(snapshot);
 
-                if (start >= regionStart && end < regionEnd)
-                {
+                if (start >= regionStart && end < regionEnd) {
                     regionStart = start;
                     regionEnd = end;
 
@@ -89,8 +77,7 @@ namespace Microsoft.Languages.Editor.Outline
                 }
             }
 
-            if (region != null)
-            {
+            if (region != null) {
                 if (region.IsCollapsed)
                     OutliningManager.Expand(region as ICollapsed);
                 else
@@ -98,13 +85,10 @@ namespace Microsoft.Languages.Editor.Outline
             }
         }
 
-        private bool AnyExpandableOutliningRegions
-        {
-            get
-            {
+        private bool AnyExpandableOutliningRegions {
+            get {
                 // Return whether there are any collapsed regions
-                if (OutliningManager.Enabled)
-                {
+                if (OutliningManager.Enabled) {
                     ITextSnapshot snapshot = _textView.TextBuffer.CurrentSnapshot;
                     SnapshotSpan snapshotSpan = new SnapshotSpan(snapshot, 0, snapshot.Length);
                     return OutliningManager.GetCollapsedRegions(snapshotSpan).Any();
@@ -115,12 +99,9 @@ namespace Microsoft.Languages.Editor.Outline
 
 
         #region ICommandTarget
-        public CommandStatus Status(Guid group, int id)
-        {
-            if (group == VSConstants.VSStd2K)
-            {
-                switch ((VSConstants.VSStd2KCmdID)id)
-                {
+        public CommandStatus Status(Guid group, int id) {
+            if (group == VSConstants.VSStd2K) {
+                switch ((VSConstants.VSStd2KCmdID)id) {
                     case VSConstants.VSStd2KCmdID.OUTLN_START_AUTOHIDING:
                         return OutliningManager.Enabled ? CommandStatus.Supported : CommandStatus.SupportedAndEnabled;
 
@@ -139,12 +120,9 @@ namespace Microsoft.Languages.Editor.Outline
             return CommandStatus.NotSupported;
         }
 
-        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
-            if (group == VSConstants.VSStd2K)
-            {
-                switch ((VSConstants.VSStd2KCmdID)id)
-                {
+        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            if (group == VSConstants.VSStd2K) {
+                switch ((VSConstants.VSStd2KCmdID)id) {
                     case VSConstants.VSStd2KCmdID.OUTLN_START_AUTOHIDING:
                         StartOutlining();
                         break;
@@ -171,8 +149,7 @@ namespace Microsoft.Languages.Editor.Outline
             return CommandResult.NotSupported;
         }
 
-        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
         }
         #endregion
     }

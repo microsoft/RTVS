@@ -7,16 +7,13 @@ using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.RD.Tokens;
 
-namespace Microsoft.R.Support.RD.Parser
-{
-    static class RdArgumentDescription
-    {
+namespace Microsoft.R.Support.RD.Parser {
+    static class RdArgumentDescription {
         /// <summary>
         /// Extracts argument names and descriptions from
         /// the RD '\arguments{...} construct
         /// </summary>
-        public static IReadOnlyDictionary<string, string> ExtractArgumentDecriptions(RdParseContext context)
-        {
+        public static IReadOnlyDictionary<string, string> ExtractArgumentDecriptions(RdParseContext context) {
             // \arguments{
             //   \item{formula}{
             //       A linear model formula specifying the log - linear model.
@@ -41,14 +38,12 @@ namespace Microsoft.R.Support.RD.Parser
 
             // '\arguments{' is expected
             Debug.Assert(tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace);
-            if (tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace)
-            {
+            if (tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace) {
                 // Move past '\arguments'
                 tokens.MoveToNextToken();
 
                 int startTokenIndex, endTokenIndex;
-                if (RdParseUtility.GetKeywordArgumentBounds(tokens, out startTokenIndex, out endTokenIndex))
-                {
+                if (RdParseUtility.GetKeywordArgumentBounds(tokens, out startTokenIndex, out endTokenIndex)) {
                     // Now that we know bounds of \arguments{...} go through 
                     // inner '\item' elements and fetch description and all
                     // argument names the description applies to.
@@ -58,23 +53,18 @@ namespace Microsoft.R.Support.RD.Parser
                     //    \item{start, param, eps, iter, print}{Arguments 
                     //    passed to \code{\link{ loglin} }.}
                     //
-                    while (!tokens.IsEndOfStream() && tokens.Position < endTokenIndex)
-                    {
+                    while (!tokens.IsEndOfStream() && tokens.Position < endTokenIndex) {
                         RdToken token = tokens.CurrentToken;
 
-                        if (context.IsAtKeyword(@"\item"))
-                        {
+                        if (context.IsAtKeyword(@"\item")) {
                             IEnumerable<IArgumentInfo> args = ParseArgumentItem(context);
                             if (args == null)
                                 break;
 
-                            foreach (var a in args)
-                            {
+                            foreach (var a in args) {
                                 argumentDescriptions[a.Name] = a.Description;
                             }
-                        }
-                        else
-                        {
+                        } else {
                             tokens.MoveToNextToken();
                         }
                     }
@@ -86,8 +76,7 @@ namespace Microsoft.R.Support.RD.Parser
             return argumentDescriptions;
         }
 
-        private static IEnumerable<IArgumentInfo> ParseArgumentItem(RdParseContext context)
-        {
+        private static IEnumerable<IArgumentInfo> ParseArgumentItem(RdParseContext context) {
             List<IArgumentInfo> arguments = null;
 
             TokenStream<RdToken> tokens = context.Tokens;
@@ -96,11 +85,9 @@ namespace Microsoft.R.Support.RD.Parser
             // Past '\item'. Inside { } we can find any number of '\dots' which are keywords.
             Debug.Assert(tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace);
 
-            if (tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace)
-            {
+            if (tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace) {
                 int startTokenIndex, endTokenIndex;
-                if (RdParseUtility.GetKeywordArgumentBounds(tokens, out startTokenIndex, out endTokenIndex))
-                {
+                if (RdParseUtility.GetKeywordArgumentBounds(tokens, out startTokenIndex, out endTokenIndex)) {
                     TextRange range = TextRange.FromBounds(tokens[startTokenIndex].End, tokens[endTokenIndex].Start);
                     string argumentsText = context.TextProvider.GetText(range);
 
@@ -111,15 +98,12 @@ namespace Microsoft.R.Support.RD.Parser
                     tokens.Position = endTokenIndex + 1;
                     Debug.Assert(tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace);
 
-                    if (tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace)
-                    {
+                    if (tokens.CurrentToken.TokenType == RdTokenType.OpenCurlyBrace) {
                         string description = RdText.GetText(context);
 
-                        foreach (string n in argumentNames)
-                        {
+                        foreach (string n in argumentNames) {
                             string name = n.Trim();
-                            if (name == @"\dots")
-                            {
+                            if (name == @"\dots") {
                                 name = "...";
                             }
 

@@ -6,8 +6,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session
-{
+namespace Microsoft.VisualStudio.R.Package.Repl.Session {
     public class RSessionProvider : IRSessionProvider {
         private readonly ConcurrentDictionary<int, IRSession> _sessions = new ConcurrentDictionary<int, IRSession>();
 

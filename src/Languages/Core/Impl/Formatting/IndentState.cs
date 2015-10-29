@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.Languages.Core.Formatting
-{
+namespace Microsoft.Languages.Core.Formatting {
     /// <summary>
     /// Used to capture or restore IndentBuilder state when a non-standard indent
     /// increase/decrease is desired.
     /// </summary>
-    public sealed class IndentState
-    {
-        public IndentState(int indentLevel, List<string> indentStrings)
-        {
+    public sealed class IndentState {
+        public IndentState(int indentLevel, List<string> indentStrings) {
             IndentLevel = indentLevel;
             IndentStrings = indentStrings;
         }

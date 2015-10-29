@@ -3,8 +3,7 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Arguments
-{
+namespace Microsoft.R.Core.AST.Arguments {
     /// <summary>
     /// Arguments of a function or to indexer.
     /// Does not include outer braces. Each argument is
@@ -12,20 +11,16 @@ namespace Microsoft.R.Core.AST.Arguments
     /// Examples are 'a, b[3], c+2' or '1,,3,...'
     /// </summary>
     [DebuggerDisplay("Arguments: {Count} [{Start}...{End})")]
-    public sealed class ArgumentList : CommaSeparatedList
-    {
+    public sealed class ArgumentList : CommaSeparatedList {
         public ArgumentList(RTokenType terminatingTokenType) :
-            base(terminatingTokenType)
-        {
+            base(terminatingTokenType) {
         }
 
-        protected override CommaSeparatedItem CreateItem(IAstNode parent, ParseContext context)
-        {
+        protected override CommaSeparatedItem CreateItem(IAstNode parent, ParseContext context) {
             RToken currentToken = context.Tokens.CurrentToken;
             RToken nextToken = context.Tokens.NextToken;
 
-            switch (currentToken.TokenType)
-            {
+            switch (currentToken.TokenType) {
                 case RTokenType.Ellipsis:
                     return new EllipsisArgument();
 
@@ -40,8 +35,7 @@ namespace Microsoft.R.Core.AST.Arguments
                 case RTokenType.Null:
                 case RTokenType.Number:
                 case RTokenType.Infinity:
-                    if (nextToken.TokenType == RTokenType.Operator && context.TextProvider.GetText(nextToken) == "=")
-                    {
+                    if (nextToken.TokenType == RTokenType.Operator && context.TextProvider.GetText(nextToken) == "=") {
                         return new NamedArgument();
                     }
                     break;

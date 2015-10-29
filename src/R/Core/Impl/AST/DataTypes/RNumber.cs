@@ -1,75 +1,58 @@
 ﻿using System.Diagnostics;
 
-namespace Microsoft.R.Core.AST.DataTypes
-{
+namespace Microsoft.R.Core.AST.DataTypes {
     /// <summary>
     /// Represents R numerical value. Numbers are scalars
     /// which are one element vectors of 'numeric' mode.
     /// </summary>
     [DebuggerDisplay("[{Value}]")]
-    public class RNumber: RScalar<double>
-    {
-        public override RMode Mode
-        {
-            get { return RMode.Numeric;  }
+    public class RNumber : RScalar<double> {
+        public override RMode Mode {
+            get { return RMode.Numeric; }
         }
 
-        public RNumber(double value): 
-            base(value)
-        {
+        public RNumber(double value) :
+            base(value) {
         }
 
-        public static implicit operator RNumber(double x)
-        {
+        public static implicit operator RNumber(double x) {
             return new RNumber(x);
         }
 
-        public static explicit operator double (RNumber x)
-        {
+        public static explicit operator double (RNumber x) {
             return x.Value;
         }
 
-        public static bool operator ==(RNumber x, RNumber y)
-        {
+        public static bool operator ==(RNumber x, RNumber y) {
             return x.Value == y.Value;
         }
 
-        public static bool operator !=(RNumber x, RNumber y)
-        {
+        public static bool operator !=(RNumber x, RNumber y) {
             return x.Value != y.Value;
         }
-        public static RNumber operator +(RNumber x, RNumber y)
-        {
+        public static RNumber operator +(RNumber x, RNumber y) {
             return new RNumber(x.Value + y.Value);
         }
-        public static RNumber operator -(RNumber x, RNumber y)
-        {
+        public static RNumber operator -(RNumber x, RNumber y) {
             return new RNumber(x.Value - y.Value);
         }
 
-        public static RNumber operator *(RNumber x, RNumber y)
-        {
+        public static RNumber operator *(RNumber x, RNumber y) {
             return new RNumber(x.Value * y.Value);
         }
 
-        public static RNumber operator /(RNumber x, RNumber y)
-        {
+        public static RNumber operator /(RNumber x, RNumber y) {
             return new RNumber(x.Value / y.Value);
         }
 
-        public override bool Equals(object obj)
-        {
-            try
-            {
+        public override bool Equals(object obj) {
+            try {
                 return this.Value == ((RNumber)obj).Value;
-            }
-            catch
-            {
+            } catch {
                 return false;
             }
         }
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return this.Value.GetHashCode();
         }
     }

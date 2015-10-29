@@ -3,15 +3,11 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Packages.R
-{
+namespace Microsoft.VisualStudio.R.Packages.R {
     [Guid(RGuidList.REditorFactoryGuidString)]
-    internal sealed class REditorFactory : BaseEditorFactory
-    {
+    internal sealed class REditorFactory : BaseEditorFactory {
         public REditorFactory(Microsoft.VisualStudio.Shell.Package package) :
-            base(package, RGuidList.REditorFactoryGuid, RGuidList.RLanguageServiceGuid)
-        {
-        }
+            base(package, RGuidList.REditorFactoryGuid, RGuidList.RLanguageServiceGuid) { }
 
         public override int CreateEditorInstance(
             uint createEditorFlags,
@@ -24,8 +20,7 @@ namespace Microsoft.VisualStudio.R.Packages.R
             out IntPtr docData,
             out string editorCaption,
             out Guid commandUIGuid,
-            out int createDocumentWindowFlags)
-        {
+            out int createDocumentWindowFlags) {
             return base.CreateEditorInstance(
                 createEditorFlags,
                 documentMoniker,

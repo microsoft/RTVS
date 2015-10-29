@@ -5,25 +5,20 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Variables
-{
+namespace Microsoft.R.Core.AST.Variables {
     /// <summary>
     /// Represents R variable.
     /// </summary>
     [DebuggerDisplay("[{Name} : {Start}...{End}), Length = {Length}")]
-    public sealed class Variable : TokenNode, IRValueNode
-    {
-        public string Name
-        {
-            get
-            {
+    public sealed class Variable : TokenNode, IRValueNode {
+        public string Name {
+            get {
                 return this.Root != null ? this.Root.TextProvider.GetText(this) : "<not_ready>";
             }
         }
 
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
             Debug.Assert(currentToken.TokenType == RTokenType.Identifier);
 
@@ -35,13 +30,11 @@ namespace Microsoft.R.Core.AST.Variables
             return true;
         }
 
-        public RObject GetValue()
-        {
+        public RObject GetValue() {
             throw new NotImplementedException();
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return this.Name;
         }
     }

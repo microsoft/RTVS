@@ -5,12 +5,9 @@ using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Commands
-{
-    internal sealed class ReplCommandFactory: ICommandFactory
-    {
-        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer)
-        {
+namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
+    internal sealed class ReplCommandFactory : ICommandFactory {
+        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             List<ICommand> commands = new List<ICommand>();
 
             commands.Add(new HistoryNavigationCommand(textView));

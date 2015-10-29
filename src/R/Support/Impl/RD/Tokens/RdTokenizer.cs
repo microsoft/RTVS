@@ -3,22 +3,19 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Support.RD.Tokens
-{
+namespace Microsoft.R.Support.RD.Tokens {
     /// <summary>
     /// Main R tokenizer. Used for colirization and parsing. 
     /// Coloring of variables, function names and parameters
     /// is provided later by AST. Tokenizer only provides candidates.
     /// https://developer.r-project.org/parseRd.pdf
     /// </summary>
-    internal class RdTokenizer : BaseTokenizer<RdToken>
-    {
+    internal class RdTokenizer : BaseTokenizer<RdToken> {
         private bool _tokenizeRContent;
         private BlockContentType _currentContentType = BlockContentType.Latex;
 
-        public RdTokenizer(): 
-            this(tokenizeRContent: true)
-        {
+        public RdTokenizer() :
+            this(tokenizeRContent: true) {
         }
 
         /// <summary>
@@ -32,13 +29,11 @@ namespace Microsoft.R.Support.RD.Tokens
         /// processing of RD data for the function signature help
         /// and quick info tooltips plain text is preferred.
         /// </param>
-        public RdTokenizer(bool tokenizeRContent = true)
-        {
+        public RdTokenizer(bool tokenizeRContent = true) {
             _tokenizeRContent = tokenizeRContent;
         }
 
-        public override IReadOnlyTextRangeCollection<RdToken> Tokenize(ITextProvider textProvider, int start, int length, bool excludePartialTokens)
-        {
+        public override IReadOnlyTextRangeCollection<RdToken> Tokenize(ITextProvider textProvider, int start, int length, bool excludePartialTokens) {
             _currentContentType = BlockContentType.Latex;
             return base.Tokenize(textProvider, start, length, excludePartialTokens);
         }
@@ -48,8 +43,7 @@ namespace Microsoft.R.Support.RD.Tokens
         /// to the list, if any. Returns if it is at the end of the 
         /// character stream. It is up to base class to terminate tokenization.
         /// </summary>
-        public override void AddNextToken()
-        {
+        public override void AddNextToken() {
             SkipWhitespace();
 
             if (_cs.IsEndOfStream())
@@ -58,29 +52,23 @@ namespace Microsoft.R.Support.RD.Tokens
             HandleLatexContent(block: false);
         }
 
-        private void HandleLatexContent(bool block)
-        {
+        private void HandleLatexContent(bool block) {
             BraceCounter<char> braceCounter = block ? new BraceCounter<char>('{', '}', '[', ']') : null;
 
-            while (!_cs.IsEndOfStream())
-            {
+            while (!_cs.IsEndOfStream()) {
                 bool handled = false;
 
                 // Regular content is Latex-like
-                switch (_cs.CurrentChar)
-                {
+                switch (_cs.CurrentChar) {
                     case '%':
                         handled = HandleComment();
                         break;
 
                     case '\\':
-                        if (IsEscape())
-                        {
+                        if (IsEscape()) {
                             _cs.Advance(2);
                             handled = true;
-                        }
-                        else
-                        {
+                        } else {
                             handled = HandleKeyword();
                         }
                         break;
@@ -90,8 +78,7 @@ namespace Microsoft.R.Support.RD.Tokens
                         break;
 
                     default:
-                        if (braceCounter != null && braceCounter.CountBrace(_cs.CurrentChar))
-                        {
+                        if (braceCounter != null && braceCounter.CountBrace(_cs.CurrentChar)) {
                             handled = AddBraceToken();
 
                             if (braceCounter.Count == 0)
@@ -100,34 +87,28 @@ namespace Microsoft.R.Support.RD.Tokens
                         break;
                 }
 
-                if (!handled)
-                {
+                if (!handled) {
                     _cs.MoveToNextChar();
                 }
             }
         }
 
-        private bool HandleKeyword()
-        {
+        private bool HandleKeyword() {
             int start = _cs.Position;
 
-            if (MoveToKeywordEnd())
-            {
+            if (MoveToKeywordEnd()) {
                 AddToken(RdTokenType.Keyword, start, _cs.Position - start);
                 SkipWhitespace();
 
-                if (_cs.CurrentChar == '{' || _cs.CurrentChar == '[')
-                {
+                if (_cs.CurrentChar == '{' || _cs.CurrentChar == '[') {
                     string keyword = _cs.Text.GetText(TextRange.FromBounds(start, _cs.Position)).Trim();
                     BlockContentType contentType = RdBlockContentType.GetBlockContentType(keyword);
 
-                    if (!_tokenizeRContent && contentType == BlockContentType.R)
-                    {
+                    if (!_tokenizeRContent && contentType == BlockContentType.R) {
                         contentType = BlockContentType.Latex;
                     }
 
-                    if(_currentContentType != contentType)
-                    {
+                    if (_currentContentType != contentType) {
                         _currentContentType = contentType;
 
                         Debug.Assert(_tokens[_tokens.Count - 1].TokenType == RdTokenType.Keyword);
@@ -135,8 +116,7 @@ namespace Microsoft.R.Support.RD.Tokens
                     }
 
                     // Handle argument sequence like \latex[0]{foo} or \item{}{}
-                    while (_cs.CurrentChar == '{' || _cs.CurrentChar == '[')
-                    {
+                    while (_cs.CurrentChar == '{' || _cs.CurrentChar == '[') {
                         HandleKeywordArguments(contentType);
                     }
                 }
@@ -147,15 +127,13 @@ namespace Microsoft.R.Support.RD.Tokens
             return false;
         }
 
-        private bool MoveToKeywordEnd()
-        {
+        private bool MoveToKeywordEnd() {
             int start = _cs.Position;
 
             _cs.MoveToNextChar();
             SkipKeyword();
 
-            if (_cs.Position - start > 1)
-            {
+            if (_cs.Position - start > 1) {
                 return true;
             }
 
@@ -163,13 +141,11 @@ namespace Microsoft.R.Support.RD.Tokens
             return false;
         }
 
-        private void HandleKeywordArguments(BlockContentType contentType)
-        {
+        private void HandleKeywordArguments(BlockContentType contentType) {
             // Content type table can be found in 
             // https://developer.r-project.org/parseRd.pdf
 
-            switch (contentType)
-            {
+            switch (contentType) {
                 case BlockContentType.R:
                     HandleRContent(GetMatchingBrace(_cs.CurrentChar));
                     break;
@@ -198,16 +174,13 @@ namespace Microsoft.R.Support.RD.Tokens
         /// requesting help in Rd format.
         /// </summary>
         /// <param name="closeBrace"></param>
-        private void HandleRContent(char closeBrace)
-        {
+        private void HandleRContent(char closeBrace) {
             BraceCounter<char> braceCounter = new BraceCounter<char>('{', '}', '[', ']');
             int start = _cs.Position;
 
-            while (!_cs.IsEndOfStream())
-            {
+            while (!_cs.IsEndOfStream()) {
                 bool handled = false;
-                switch (_cs.CurrentChar)
-                {
+                switch (_cs.CurrentChar) {
                     case '\"':
                     case '\'':
                         handled = HandleString(_cs.CurrentChar);
@@ -215,27 +188,20 @@ namespace Microsoft.R.Support.RD.Tokens
 
                     case '\\':
                         handled = IsEscape();
-                        if (handled)
-                        {
+                        if (handled) {
                             _cs.Advance(2);
-                        }
-                        else
-                        {
+                        } else {
                             handled = HandleKeyword();
                         }
                         break;
 
                     case '#':
                         handled = HandlePragma();
-                        if (!handled)
-                        {
-                            if (_cs.NextChar == '#')
-                            {
+                        if (!handled) {
+                            if (_cs.NextChar == '#') {
                                 // ## is always comment in R-like content
                                 handled = HandleComment();
-                            }
-                            else
-                            {
+                            } else {
                                 // With a sinle # it may or may not be comment.
                                 // For example, there are statements like \code{#}.
                                 // Heuristic is to treat text that contains {} or \
@@ -246,8 +212,7 @@ namespace Microsoft.R.Support.RD.Tokens
                                 string commentText = _cs.Text.GetText(TextRange.FromBounds(commentStart, _cs.Position));
                                 _cs.Position = commentStart;
 
-                                if (commentText.IndexOfAny(new char[] { '{', '\\', '}' }) < 0)
-                                {
+                                if (commentText.IndexOfAny(new char[] { '{', '\\', '}' }) < 0) {
                                     handled = HandleComment();
                                 }
                             }
@@ -255,34 +220,28 @@ namespace Microsoft.R.Support.RD.Tokens
                         break;
 
                     default:
-                        if (braceCounter.CountBrace(_cs.CurrentChar))
-                        {
+                        if (braceCounter.CountBrace(_cs.CurrentChar)) {
                             handled = AddBraceToken();
 
                             if (braceCounter.Count == 0)
                                 return;
-                        }
-                        else
-                        {
+                        } else {
                             // Check if sequence is a candidate for a number.
                             // The check is not perfect but numbers in R-like content
                             // are typically very simple as R blocks are usually
                             // code examples and do not contain exotic sequences.
 
-                            if (!char.IsLetter(_cs.PrevChar) && (_cs.IsDecimal() || _cs.CurrentChar == '-' || _cs.CurrentChar == '.'))
-                            {
+                            if (!char.IsLetter(_cs.PrevChar) && (_cs.IsDecimal() || _cs.CurrentChar == '-' || _cs.CurrentChar == '.')) {
                                 int sequenceStart = _cs.Position;
                                 _cs.SkipToWhitespace();
 
-                                if (_cs.Position > sequenceStart)
-                                {
+                                if (_cs.Position > sequenceStart) {
                                     RTokenizer rt = new RTokenizer();
 
                                     string candidate = _cs.Text.GetText(TextRange.FromBounds(sequenceStart, _cs.Position));
                                     var rTokens = rt.Tokenize(candidate);
 
-                                    if (rTokens.Count > 0 && rTokens[0].TokenType == RTokenType.Number)
-                                    {
+                                    if (rTokens.Count > 0 && rTokens[0].TokenType == RTokenType.Number) {
                                         AddToken(RdTokenType.Number, sequenceStart + rTokens[0].Start, rTokens[0].Length);
 
                                         _cs.Position = sequenceStart + rTokens[0].End;
@@ -296,8 +255,7 @@ namespace Microsoft.R.Support.RD.Tokens
                         break;
                 }
 
-                if (!handled)
-                {
+                if (!handled) {
                     _cs.MoveToNextChar();
                 }
             }
@@ -327,24 +285,18 @@ namespace Microsoft.R.Support.RD.Tokens
         /// and % comments are recognized, and backslashes that could be interpreted 
         /// as escapes must themselves be escaped. 
         /// </summary>
-        private void HandleVerbatimContent(char closeBrace)
-        {
+        private void HandleVerbatimContent(char closeBrace) {
             BraceCounter<char> braceCounter = new BraceCounter<char>('{', '}', '[', ']');
 
-            while (!_cs.IsEndOfStream())
-            {
+            while (!_cs.IsEndOfStream()) {
                 bool handled = false;
 
-                switch (_cs.CurrentChar)
-                {
+                switch (_cs.CurrentChar) {
                     case '\\':
                         handled = IsEscape();
-                        if (handled)
-                        {
+                        if (handled) {
                             _cs.Advance(2);
-                        }
-                        else
-                        {
+                        } else {
                             handled = HandleKeyword();
                         }
                         break;
@@ -352,29 +304,24 @@ namespace Microsoft.R.Support.RD.Tokens
                     case '%':
                         // In 'verbatim' text we handke % as comment
                         // when it is in the beginning of the file
-                        if (_cs.Position == 0 || _cs.PrevChar == '\r' || _cs.PrevChar == '\n')
-                        {
+                        if (_cs.Position == 0 || _cs.PrevChar == '\r' || _cs.PrevChar == '\n') {
                             handled = HandleComment();
                         }
                         break;
 
                     default:
-                        if (braceCounter.CountBrace(_cs.CurrentChar))
-                        {
+                        if (braceCounter.CountBrace(_cs.CurrentChar)) {
                             handled = AddBraceToken();
 
                             if (braceCounter.Count == 0)
                                 return;
-                        }
-                        else if (_cs.CurrentChar == '#' && HandlePragma())
-                        {
+                        } else if (_cs.CurrentChar == '#' && HandlePragma()) {
                             continue;
                         }
                         break;
                 }
 
-                if (!handled)
-                {
+                if (!handled) {
                     _cs.MoveToNextChar();
                 }
             }
@@ -384,19 +331,15 @@ namespace Microsoft.R.Support.RD.Tokens
         /// Handles RD conditional pragmas (C-like).
         /// </summary>
         /// <returns></returns>
-        private bool HandlePragma()
-        {
-            if (_cs.Position == 0 || _cs.PrevChar == '\r' || _cs.PrevChar == '\n')
-            {
+        private bool HandlePragma() {
+            if (_cs.Position == 0 || _cs.PrevChar == '\r' || _cs.PrevChar == '\n') {
                 int start = _cs.Position;
                 SkipUnknown();
 
                 int length = _cs.Position - start;
-                if (length > 1)
-                {
+                if (length > 1) {
                     string pragma = _cs.Text.GetText(TextRange.FromBounds(start, _cs.Position)).Trim();
-                    if (pragma == "#ifdef" || pragma == "#ifndef" || pragma == "#endif")
-                    {
+                    if (pragma == "#ifdef" || pragma == "#ifndef" || pragma == "#endif") {
                         AddToken(RdTokenType.Pragma, start, length);
                         return true;
                     }
@@ -408,8 +351,7 @@ namespace Microsoft.R.Support.RD.Tokens
             return false;
         }
 
-        private char GetMatchingBrace(char brace)
-        {
+        private char GetMatchingBrace(char brace) {
             if (brace == '{')
                 return '}';
 
@@ -419,12 +361,10 @@ namespace Microsoft.R.Support.RD.Tokens
             return char.MinValue;
         }
 
-        private bool AddBraceToken()
-        {
+        private bool AddBraceToken() {
             RdTokenType tokenType = RdTokenType.Unknown;
 
-            switch (_cs.CurrentChar)
-            {
+            switch (_cs.CurrentChar) {
                 case '{':
                     tokenType = RdTokenType.OpenCurlyBrace;
                     break;
@@ -442,8 +382,7 @@ namespace Microsoft.R.Support.RD.Tokens
                     break;
             }
 
-            if (tokenType != RdTokenType.Unknown)
-            {
+            if (tokenType != RdTokenType.Unknown) {
                 AddToken(tokenType, _cs.Position, 1);
                 _cs.MoveToNextChar();
                 return true;
@@ -453,8 +392,7 @@ namespace Microsoft.R.Support.RD.Tokens
             return false;
         }
 
-        private bool IsEscape()
-        {
+        private bool IsEscape() {
             return _cs.NextChar == '%' || _cs.NextChar == '\\' || _cs.NextChar == '{' || _cs.NextChar == '}' || _cs.NextChar == 'R';
         }
 
@@ -462,8 +400,7 @@ namespace Microsoft.R.Support.RD.Tokens
         /// Handle RD comment. Comment starts with %
         /// and goes to the end of the line.
         /// </summary>
-        private bool HandleComment()
-        {
+        private bool HandleComment() {
             Tokenizer.HandleEolComment(_cs, (start, length) => AddToken(RdTokenType.Comment, start, length));
             return true;
         }
@@ -472,20 +409,17 @@ namespace Microsoft.R.Support.RD.Tokens
         /// Adds a token that represent a string
         /// </summary>
         /// <param name="openQuote"></param>
-        private bool HandleString(char openQuote)
-        {
+        private bool HandleString(char openQuote) {
             Tokenizer.HandleString(openQuote, _cs, (start, length) => AddToken(RdTokenType.String, start, length));
             return true;
         }
 
-        private void AddToken(RdTokenType type, int start, int length)
-        {
+        private void AddToken(RdTokenType type, int start, int length) {
             var token = new RdToken(type, new TextRange(start, length));
             _tokens.Add(token);
         }
 
-        internal void SkipKeyword()
-        {
+        internal void SkipKeyword() {
             Tokenizer.SkipIdentifier(
                 _cs,
                 (CharacterStream cs) => { return _cs.IsAnsiLetter(); },
@@ -496,10 +430,8 @@ namespace Microsoft.R.Support.RD.Tokens
         /// Skips content until the nearest whitespace
         /// or a RD comment that starts with %.
         /// </summary>
-        internal void SkipUnknown()
-        {
-            while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace())
-            {
+        internal void SkipUnknown() {
+            while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace()) {
                 if (_cs.CurrentChar == '%')
                     break;
 
@@ -507,8 +439,7 @@ namespace Microsoft.R.Support.RD.Tokens
             }
         }
 
-        private bool IsIdentifierCharacter()
-        {
+        private bool IsIdentifierCharacter() {
             return (_cs.IsAnsiLetter() || _cs.IsDecimal());
         }
     }

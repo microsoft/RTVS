@@ -8,14 +8,11 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Commands.R
-{
+namespace Microsoft.VisualStudio.R.Package.Commands.R {
     [Export(typeof(ICommandFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal class VsRCommandFactory : ICommandFactory
-    {
-        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer)
-        {
+    internal class VsRCommandFactory : ICommandFactory {
+        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var commands = new List<ICommand>();
 
             commands.Add(new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int)RContextMenuId.R));

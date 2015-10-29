@@ -4,11 +4,11 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 
-namespace Microsoft.VisualStudio.R.Package.ProjectSystem
-{
+namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
+
     [AppliesTo("RTools")]
-    internal sealed class Export
-    {
+    internal sealed class Export {
+
         [Export(typeof(IFileSystem))]
         private IFileSystem FileSystem { get; } = new FileSystem();
 

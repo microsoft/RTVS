@@ -14,10 +14,8 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.R.Package.Workspace;
 using Microsoft.VisualStudio.R.Package.Document;
 
-namespace Microsoft.VisualStudio.R.Package.Editors
-{
-    public sealed class TextBufferInitializationTracker : IVsTextBufferDataEvents
-    {
+namespace Microsoft.VisualStudio.R.Package.Editors {
+    public sealed class TextBufferInitializationTracker : IVsTextBufferDataEvents {
         private IVsTextLines _textLines;
         private uint cookie = 0;
         private IConnectionPoint cp = null;
@@ -34,8 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors
             VSConstants.VSITEMID itemid,
             IVsTextLines textLines,
             Guid languageServiceId,
-            List<TextBufferInitializationTracker> trackers)
-        {
+            List<TextBufferInitializationTracker> trackers) {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             _documentName = documentName;
@@ -55,12 +52,10 @@ namespace Microsoft.VisualStudio.R.Package.Editors
         #endregion
 
         #region IVsTextBufferDataEvents
-        public void OnFileChanged(uint grfChange, uint dwFileAttrs)
-        {
+        public void OnFileChanged(uint grfChange, uint dwFileAttrs) {
         }
 
-        public int OnLoadCompleted(int fReload)
-        {
+        public int OnLoadCompleted(int fReload) {
             var adapterService = EditorShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
 
             // Set language service ID as early as possible, since it may change content type of the buffer,
@@ -71,8 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors
             ITextBuffer diskBuffer = adapterService.GetDocumentBuffer(_textLines);
             Debug.Assert(diskBuffer != null);
 
-            try
-            {
+            try {
                 var importComposer = new ContentTypeImportComposer<IEditorFactory>(EditorShell.Current.CompositionService);
                 var factory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
 
@@ -81,15 +75,12 @@ namespace Microsoft.VisualStudio.R.Package.Editors
 
                 IEditorInstance editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);
 
-                if (factory != null && editorInstance == null)
-                {
+                if (factory != null && editorInstance == null) {
                     VsWorkspaceItem workspaceItem = new VsWorkspaceItem(_documentName, _documentName, _hierarchy, _itemid);
                     editorInstance = factory.CreateEditorInstance(workspaceItem, diskBuffer, documentFactory);
                     adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer);
                 }
-            }
-            finally
-            {
+            } finally {
                 cp.Unadvise(cookie);
                 cookie = 0;
 

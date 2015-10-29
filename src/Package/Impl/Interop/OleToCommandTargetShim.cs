@@ -6,23 +6,19 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Interop
-{
-    public sealed class OleToCommandTargetShim : ICommandTarget
-    {
+namespace Microsoft.VisualStudio.R.Package.Interop {
+    public sealed class OleToCommandTargetShim : ICommandTarget {
         public IOleCommandTarget OleTarget { get; set; }
         private CommandTargetToOleShimVariantStacks _variantStacks;
 
-        public OleToCommandTargetShim(ITextView textView, IOleCommandTarget oleTarget)
-        {
+        public OleToCommandTargetShim(ITextView textView, IOleCommandTarget oleTarget) {
             OleTarget = oleTarget;
             _variantStacks = CommandTargetToOleShimVariantStacks.EnsureConnected(textView);
         }
 
         #region ICommandTarget Members
 
-        public CommandStatus Status(Guid group, int id)
-        {
+        public CommandStatus Status(Guid group, int id) {
             OLECMD[] oleCmd = new OLECMD[1];
 
             oleCmd[0].cmdID = (uint)id;
@@ -33,8 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop
             return OleCommand.MakeCommandStatus(oleStatus, oleCmd[0].cmdf);
         }
 
-        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             IntPtr variantIn = IntPtr.Zero;
             IntPtr variantOut = IntPtr.Zero;
             bool allocateVariants = false;
@@ -48,17 +43,14 @@ namespace Microsoft.VisualStudio.R.Package.Interop
             else
                 Debug.Fail("Not expecting to use OleToCommandTargetShim without a prior CommandTargetToOleShim");
 
-            if (allocateVariants)
-            {
+            if (allocateVariants) {
                 // I have to allocate my own variants
-                if (inputArg != null)
-                {
+                if (inputArg != null) {
                     variantIn = Marshal.AllocCoTaskMem(16);
                     Marshal.GetNativeVariantForObject(inputArg, variantIn);
                 }
 
-                if (outputArg != null)
-                {
+                if (outputArg != null) {
                     variantOut = Marshal.AllocCoTaskMem(16);
                     Marshal.GetNativeVariantForObject(outputArg, variantOut);
                 }
@@ -66,27 +58,20 @@ namespace Microsoft.VisualStudio.R.Package.Interop
 
             int oleResult = 0;
 
-            try
-            {
+            try {
                 oleResult = OleTarget.Exec(ref group, (uint)id, 0, variantIn, variantOut);
 
-                if (oleResult >= 0 && (variantOut != IntPtr.Zero))
-                {
+                if (oleResult >= 0 && (variantOut != IntPtr.Zero)) {
                     outputArg = Marshal.GetObjectForNativeVariant(variantOut);
                 }
-            }
-            finally
-            {
-                if (allocateVariants)
-                {
-                    if (variantIn != IntPtr.Zero)
-                    {
+            } finally {
+                if (allocateVariants) {
+                    if (variantIn != IntPtr.Zero) {
                         NativeMethods.VariantClear(variantIn);
                         Marshal.FreeCoTaskMem(variantIn);
                     }
 
-                    if (variantOut != IntPtr.Zero)
-                    {
+                    if (variantOut != IntPtr.Zero) {
                         NativeMethods.VariantClear(variantOut);
                         Marshal.FreeCoTaskMem(variantOut);
                     }
@@ -96,8 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop
             return OleCommand.MakeCommandResult(oleResult);
         }
 
-        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
         }
 
         #endregion

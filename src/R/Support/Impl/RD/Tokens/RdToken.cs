@@ -3,37 +3,30 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
-namespace Microsoft.R.Support.RD.Tokens
-{
+namespace Microsoft.R.Support.RD.Tokens {
     [DebuggerDisplay("[{TokenType} : {Start}...{End}), Length = {Length}")]
-    public class RdToken : Token<RdTokenType>, IComparable<RdToken>
-    {
+    public class RdToken : Token<RdTokenType>, IComparable<RdToken> {
         public static RdToken EndOfStreamToken = new RdToken(RdTokenType.EndOfStream);
 
         public RdToken(RdTokenType tokenType)
-            : this(tokenType, TextRange.EmptyRange)
-        {
+            : this(tokenType, TextRange.EmptyRange) {
         }
 
         public RdToken(RdTokenType tokenType, ITextRange range)
-            : base(tokenType, range)
-        {
+            : base(tokenType, range) {
         }
 
         public bool ContentTypeChange { get; set; }
 
-        public bool IsKeywordText(ITextProvider textProvider, string keywordText)
-        {
-            if (this.TokenType == RdTokenType.Keyword)
-            {
+        public bool IsKeywordText(ITextProvider textProvider, string keywordText) {
+            if (this.TokenType == RdTokenType.Keyword) {
                 return textProvider.CompareTo(this.Start, this.Length, keywordText, ignoreCase: false);
             }
 
             return false;
         }
 
-        public int CompareTo(RdToken other)
-        {
+        public int CompareTo(RdToken other) {
             if (other == null)
                 return -1;
 

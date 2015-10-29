@@ -1,18 +1,14 @@
 ﻿using System;
 
-namespace Microsoft.R.Support.RD.Tokens
-{
-    internal enum BlockContentType
-    {
+namespace Microsoft.R.Support.RD.Tokens {
+    internal enum BlockContentType {
         Latex,
         R,
         Verbatim
     };
 
-    internal static class RdBlockContentType
-    {
-        internal static string[] _rKeywords = new string[]
-        {
+    internal static class RdBlockContentType {
+        internal static string[] _rKeywords = {
             @"\code",
             @"\dontshow",
             @"\donttest",
@@ -22,8 +18,7 @@ namespace Microsoft.R.Support.RD.Tokens
             @"\usage",
         };
 
-        internal static string[] _verbatimKeywords = new string[]
-         {
+        internal static string[] _verbatimKeywords = {
             @"\alias",
             @"\deqn",
             @"\dontrun",
@@ -46,17 +41,14 @@ namespace Microsoft.R.Support.RD.Tokens
             @"\verb",
          };
 
-        public static BlockContentType GetBlockContentType(string keyword)
-        {
+        public static BlockContentType GetBlockContentType(string keyword) {
             int index = Array.BinarySearch(_rKeywords, keyword);
-            if (index >= 0)
-            {
+            if (index >= 0) {
                 return BlockContentType.R;
             }
 
             index = Array.BinarySearch(_verbatimKeywords, keyword);
-            if (index >= 0)
-            {
+            if (index >= 0) {
                 return BlockContentType.Verbatim;
             }
 

@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.R.Support.Help.Definitions
-{
-    public interface ISignatureInfo
-    {
+namespace Microsoft.R.Support.Help.Definitions {
+    public interface ISignatureInfo {
         /// <summary>
         /// Function arguments
         /// </summary>

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.R.Support.Help.Definitions;
 
-namespace Microsoft.R.Support.Help.Functions
-{
-    public sealed class SignatureInfo : ISignatureInfo
-    {
+namespace Microsoft.R.Support.Help.Functions {
+    public sealed class SignatureInfo : ISignatureInfo {
         public const int MaxSignatureLength = 160;
 
         #region ISignatureInfo
@@ -21,8 +19,7 @@ namespace Microsoft.R.Support.Help.Functions
         /// locus points (locations withing the string) for each function
         /// parameter.
         /// </summary>
-        public string GetSignatureString(string functionName, List<int> locusPoints = null)
-        {
+        public string GetSignatureString(string functionName, List<int> locusPoints = null) {
             var sb = new StringBuilder(functionName);
             int lineCount = 0;
 
@@ -31,27 +28,23 @@ namespace Microsoft.R.Support.Help.Functions
             if (locusPoints != null)
                 locusPoints.Add(sb.Length);
 
-            for (int i = 0; i < Arguments.Count; i++)
-            {
+            for (int i = 0; i < Arguments.Count; i++) {
                 IArgumentInfo arg = Arguments[i];
                 sb.Append(arg.Name);
 
-                if (!string.IsNullOrEmpty(arg.DefaultValue))
-                {
+                if (!string.IsNullOrEmpty(arg.DefaultValue)) {
                     sb.Append(" = ");
                     sb.Append(arg.DefaultValue);
                 }
 
-                if (i < Arguments.Count - 1)
-                {
+                if (i < Arguments.Count - 1) {
                     sb.Append(", ");
                 }
 
                 if (locusPoints != null)
                     locusPoints.Add(sb.Length);
 
-                if (sb.Length > (lineCount + 1) * MaxSignatureLength && i != Arguments.Count - 1)
-                {
+                if (sb.Length > (lineCount + 1) * MaxSignatureLength && i != Arguments.Count - 1) {
                     sb.Append("\r\n");
                     lineCount++;
                 }
@@ -71,8 +64,7 @@ namespace Microsoft.R.Support.Help.Functions
         /// if exact match is not found
         /// </param>
         /// <returns>Argument index or -1 if argumen is not named or was not found</returns>
-        public int GetArgumentIndex(string argumentName, bool partialMatch)
-        {
+        public int GetArgumentIndex(string argumentName, bool partialMatch) {
             // A function f <- function(foo, bar) is said to have formal parameters "foo" and "bar", 
             // and the call f(foo=3, ba=13) is said to have (actual) arguments "foo" and "ba".
             // R first matches all arguments that have exactly the same name as a formal parameter. 
@@ -83,23 +75,19 @@ namespace Microsoft.R.Support.Help.Functions
             // their full names. Then the unnamed arguments are matched in positional order to 
             // the remaining formal arguments.
 
-            if(string.IsNullOrEmpty(argumentName))
-            {
+            if (string.IsNullOrEmpty(argumentName)) {
                 return -1;
             }
 
             // full name match first
-            for (int i = 0; i < Arguments.Count; i++)
-            {
+            for (int i = 0; i < Arguments.Count; i++) {
                 IArgumentInfo argInfo = Arguments[i];
-                if(argInfo.Name.Equals(argumentName, StringComparison.Ordinal))
-                {
+                if (argInfo.Name.Equals(argumentName, StringComparison.Ordinal)) {
                     return i;
                 }
             }
 
-            if(!partialMatch)
-            {
+            if (!partialMatch) {
                 return -1;
             }
 
@@ -108,26 +96,20 @@ namespace Microsoft.R.Support.Help.Functions
             int index = -1;
             bool unique = true;
 
-            for (int i = 0; i < Arguments.Count; i++)
-            {
+            for (int i = 0; i < Arguments.Count; i++) {
                 IArgumentInfo argInfo = Arguments[i];
-                if (argInfo.Name.StartsWith(argumentName, StringComparison.Ordinal))
-                {
+                if (argInfo.Name.StartsWith(argumentName, StringComparison.Ordinal)) {
                     int lengthDifference = argInfo.Name.Length - argumentName.Length;
-                    if (lengthDifference < minLengthDifference)
-                    {
+                    if (lengthDifference < minLengthDifference) {
                         minLengthDifference = lengthDifference;
                         index = i;
                         unique = true;
-                    }
-                    else if(index >= 0)
-                    {
+                    } else if (index >= 0) {
                         unique = false;
                     }
                 }
 
-                if(argInfo.IsEllipsis)
-                {
+                if (argInfo.IsEllipsis) {
                     break;
                 }
             }

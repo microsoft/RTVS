@@ -2,11 +2,9 @@
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Workspace;
 
-namespace Microsoft.VisualStudio.R.Package.Workspace
-{
+namespace Microsoft.VisualStudio.R.Package.Workspace {
     [Export(typeof(IWorkspace))]
-    internal class VsWorkspace : IWorkspace
-    {
+    internal class VsWorkspace : IWorkspace {
         #region IWorkspace Members
 #pragma warning disable 67
         /// <summary>

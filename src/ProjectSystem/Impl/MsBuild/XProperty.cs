@@ -1,20 +1,12 @@
 using System.Xml.Linq;
 using static Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.MsBuild.XProjHelpers;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.MsBuild
-{
-    public class XProperty : XElement
-    {
-        public XProperty(string name) : base(MsBuildNamespace + name)
-        {
-        }
+namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.MsBuild {
+    public class XProperty : XElement {
+        public XProperty(string name) : base(MsBuildNamespace + name) { }
 
-        public XProperty(string name, string value) : base(MsBuildNamespace + name, new XText(value))
-        {
-        }
+        public XProperty(string name, string value) : base(MsBuildNamespace + name, new XText(value)) { }
 
-        public XProperty(string name, string condition, string value) : base(MsBuildNamespace + name, Attr("Condition", condition), new XText(value))
-        {
-        }
+        public XProperty(string name, string condition, string value) : base(MsBuildNamespace + name, Attr("Condition", condition), new XText(value)) { }
     }
 }

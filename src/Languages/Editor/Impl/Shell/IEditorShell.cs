@@ -8,14 +8,12 @@ using Microsoft.Languages.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Shell
-{
+namespace Microsoft.Languages.Editor.Shell {
     /// <summary>
     /// Host for Web editing component. This interface provides 
     /// application-specific services and settings.
     /// </summary>
-    public interface IEditorShell
-    {
+    public interface IEditorShell {
         /// <summary>
         /// Application composition service
         /// </summary>

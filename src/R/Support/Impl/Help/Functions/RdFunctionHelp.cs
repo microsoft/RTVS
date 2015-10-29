@@ -4,27 +4,20 @@ using Microsoft.R.Support.Engine;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Parser;
 
-namespace Microsoft.R.Support.Help.Functions
-{
-    internal sealed class RdFunctionHelp : IDisposable
-    {
+namespace Microsoft.R.Support.Help.Functions {
+    internal sealed class RdFunctionHelp : IDisposable {
         private EngineSession _session;
         private string _currentFunctionName;
         private EngineResponse _pendingResponse;
 
-        public RdFunctionHelp()
-        {
+        public RdFunctionHelp() {
             _session = new EngineSession(Rd2FunctionInfoConverter);
         }
 
-        public void GetFunctionRdHelp(string functionName, string packageName, Action<object> dataReadyCallback)
-        {
-            try
-            {
-                if (_pendingResponse != null)
-                {
-                    if (_currentFunctionName == functionName)
-                    {
+        public void GetFunctionRdHelp(string functionName, string packageName, Action<object> dataReadyCallback) {
+            try {
+                if (_pendingResponse != null) {
+                    if (_currentFunctionName == functionName) {
                         return;
                     }
 
@@ -33,12 +26,9 @@ namespace Microsoft.R.Support.Help.Functions
                 }
 
                 string command = "x <- help(\"" + functionName;
-                if (string.IsNullOrEmpty(packageName))
-                {
+                if (string.IsNullOrEmpty(packageName)) {
                     command += "\");";
-                }
-                else
-                {
+                } else {
                     command += "\", \"" + packageName + "\");";
                 }
 
@@ -46,11 +36,8 @@ namespace Microsoft.R.Support.Help.Functions
 
                 _pendingResponse = _session.SendCommand(command, functionName, dataReadyCallback);
                 _currentFunctionName = functionName;
-            }
-            catch (Exception)
-            {
-                if (_pendingResponse != null)
-                {
+            } catch (Exception) {
+                if (_pendingResponse != null) {
                     _pendingResponse.Dispose();
                     _pendingResponse = null;
                     _currentFunctionName = null;
@@ -58,32 +45,23 @@ namespace Microsoft.R.Support.Help.Functions
             }
         }
 
-        public void Dispose()
-        {
-            if (_session != null)
-            {
+        public void Dispose() {
+            if (_session != null) {
                 _session.Dispose();
                 _session = null;
             }
         }
 
-        private object Rd2FunctionInfoConverter(string rdData, object parameter)
-        {
+        private object Rd2FunctionInfoConverter(string rdData, object parameter) {
             string functionName = parameter as string;
             IFunctionInfo info = null;
 
-            try
-            {
+            try {
                 info = RdParser.GetFunctionInfo(functionName, rdData);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Debug.WriteLine("Exception in parsing R engine RD response: {0}", ex.Message);
-            }
-            finally
-            {
-                if (_pendingResponse != null)
-                {
+            } finally {
+                if (_pendingResponse != null) {
                     _pendingResponse.Dispose();
                     _pendingResponse = null;
                     _currentFunctionName = null;
