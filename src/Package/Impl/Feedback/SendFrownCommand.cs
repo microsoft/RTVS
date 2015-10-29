@@ -15,7 +15,8 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
 "your command history as well as all output displayed in the R Interactive Windows, " +
 "and that by sending this email you are sharing this information with the RTVS team " +
 "to help us diagnose the problem you are experiencing. You can open the attached .zip " +
-"file in this email to inspect the contents if you have any concerns before sending the feedback.";
+"file in this email to inspect the contents if you have any concerns before sending the feedback.\r\n\r\n" +
+"Please briefly describe what you were doing that led to the issue if applicable.";
 
         private const int _maxAttachmentSizeMb = 5;
 
@@ -44,15 +45,10 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     sb.Append(Environment.NewLine);
 
                     sb.AppendFormat(Resources.AttachmentTooLarge3, DiagnosticLogs.RtvsLogZipFile, Path.GetTempPath());
-                    sb.Append(Environment.NewLine);
-                    sb.Append(Environment.NewLine);
 
-                    sb.Append(Resources.AttachmentTooLarge4);
-
-                    if (!EditorShell.Current.ShowYesNoMessage(sb.ToString())) {
-                        Process.Start(Path.GetTempPath());
-                        return;
-                    }
+                    EditorShell.Current.ShowErrorMessage(sb.ToString());
+                    Process.Start(Path.GetTempPath());
+                    zipPath = null;
                 }
 
                 SendMail(_disclaimer, "RTVS Frown", zipPath);

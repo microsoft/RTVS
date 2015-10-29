@@ -439,13 +439,10 @@
     <value>Error sending e-mail: {0} ({1}).</value>
   </data>
   <data name="AttachmentTooLarge2" xml:space="preserve">
-    <value>You can either proceed and try creating e-mail anyway or try and upload log files to a share and then send the link in e-mail to rtvscore@microsoft.com.</value>
+    <value>Please place archived files on a file share and add link to the e-mail. When you click OK, Visual Studio will open TEMP folder in the Windows Explorer.</value>
   </data>
   <data name="AttachmentTooLarge3" xml:space="preserve">
-    <value>{0} file that can be found in {1}</value>
-  </data>
-  <data name="AttachmentTooLarge4" xml:space="preserve">
-    <value>Proceed with creating an e-mail?</value>
+    <value>Archived logs are in {0} file that can be found in {1}</value>
   </data>
   <data name="Error_CannotSendFeedback2" xml:space="preserve">
     <value>Please compose and send e-mail manually to rtvscore@microsoft.com. If possible, attach {0} file that can be found in {1}.</value>
