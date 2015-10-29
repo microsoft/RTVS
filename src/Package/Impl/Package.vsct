@@ -790,9 +790,9 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500">
+    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
-    </CommandPlacement>
+    </CommandPlacement>-->
 
   </CommandPlacements>
 
