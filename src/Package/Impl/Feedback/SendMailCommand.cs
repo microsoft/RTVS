@@ -17,14 +17,17 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             } catch (System.Exception) { }
 
             if (outlookApp == null) {
-                string b =
+                if (attachmentFile != null) {
+                    body =
 @"Please attach RTVSLogs.zip file that can be found in your user TEMP folder 
 and briefly describe what you were doing that led to the issue if applicable. 
 Please be aware that the data contained in the attached logs contain 
 your command history as well as all output displayed in the R Interactive Window";
+                }
+
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.UseShellExecute = true;
-                psi.FileName = string.Format(CultureInfo.InvariantCulture, "mailto://rtvscore@microsoft.com?subject={0}&body={1}", subject, b);
+                psi.FileName = string.Format(CultureInfo.InvariantCulture, "mailto://rtvscore@microsoft.com?subject={0}&body={1}", subject, body);
                 Process.Start(psi);
 
                 if (attachmentFile != null) {
