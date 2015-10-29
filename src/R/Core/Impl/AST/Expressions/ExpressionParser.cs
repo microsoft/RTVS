@@ -263,12 +263,11 @@ namespace Microsoft.R.Core.AST.Expressions {
             ITextRange range = null;
             if (operatorNode is Indexer) {
                 range = ((Indexer)operatorNode).LeftBrackets;
-            }
-            else if (operatorNode is FunctionCall) {
+            } else if (operatorNode is FunctionCall) {
                 range = ((FunctionCall)operatorNode).OpenBrace;
             }
 
-            if(range == null) {
+            if (range == null) {
                 range = context.Tokens.FirstOrDefault((x) => x.Start >= operatorNode.End);
             }
 

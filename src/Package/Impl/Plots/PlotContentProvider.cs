@@ -5,10 +5,8 @@ using System.Windows.Controls;
 using System.Xaml;
 using Microsoft.Languages.Editor.Tasks;
 
-namespace Microsoft.VisualStudio.R.Package.Plots
-{
-    internal sealed class PlotContentProvider : IPlotContentProvider
-    {
+namespace Microsoft.VisualStudio.R.Package.Plots {
+    internal sealed class PlotContentProvider : IPlotContentProvider {
         private string _lastLoadFile;
         private string _lastIdleLoadFile;
 
@@ -16,8 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
         public event EventHandler<PlotChangedEventArgs> PlotChanged;
 
-        public void LoadFileOnIdle(string fileName)
-        {
+        public void LoadFileOnIdle(string fileName) {
             IdleTimeAction.Cancel(typeof(PlotContentProvider));
             DeleteTempFile(_lastIdleLoadFile);
 
@@ -25,16 +22,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             _lastIdleLoadFile = fileName;
         }
 
-        public void LoadFile(string fileName)
-        {
+        public void LoadFile(string fileName) {
             UIElement element = null;
-            try
-            {
+            try {
                 element = (UIElement)XamlServices.Load(fileName);
                 _lastLoadFile = fileName;
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 element = CreateErrorContent(
                     new FormatException(string.Format("Couldn't load XAML file from {0}", fileName), e));
             }
@@ -42,10 +35,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             OnPlotChanged(element);
         }
 
-        public void SaveFile(string fileName)
-        {
-            if (_lastLoadFile != null)
-            {
+        public void SaveFile(string fileName) {
+            if (_lastLoadFile != null) {
                 File.Copy(_lastLoadFile, fileName, overwrite: true);
                 DeleteTempFile(_lastLoadFile);
                 _lastLoadFile = null;
@@ -54,39 +45,29 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
         #endregion IPlotContentProvider implementation
 
-        private static UIElement CreateErrorContent(Exception e)
-        {
-            return new TextBlock()
-            {
+        private static UIElement CreateErrorContent(Exception e) {
+            return new TextBlock() {
                 Text = e.ToString()    // TODO: change to user-friendly error XAML. TextBlock with exception is for dev
             };
         }
 
-        private void OnPlotChanged(UIElement element)
-        {
-            if (PlotChanged != null)
-            {
+        private void OnPlotChanged(UIElement element) {
+            if (PlotChanged != null) {
                 PlotChanged(this, new PlotChangedEventArgs() { NewPlotElement = element });
             }
         }
 
-        private static void DeleteTempFile(string fileName)
-        {
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                try
-                {
-                    if (File.Exists(fileName))
-                    {
+        private static void DeleteTempFile(string fileName) {
+            if (!string.IsNullOrEmpty(fileName)) {
+                try {
+                    if (File.Exists(fileName)) {
                         File.Delete(fileName);
                     }
-                }
-                catch (IOException) { }
+                } catch (IOException) { }
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             IdleTimeAction.Cancel(typeof(PlotContentProvider));
             DeleteTempFile(_lastLoadFile);
         }

@@ -1,11 +1,9 @@
 ﻿
-namespace Microsoft.Languages.Core.Text
-{
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Represents an item that has a range in a text document
     /// </summary>
-    public interface ITextRange
-    {
+    public interface ITextRange {
         /// <summary>
         /// Range start.
         /// </summary>
@@ -37,8 +35,7 @@ namespace Microsoft.Languages.Core.Text
     /// <summary>
     /// Represents an item that has a range in a text document
     /// </summary>
-    public interface IExpandableTextRange : ITextRange
-    {
+    public interface IExpandableTextRange : ITextRange {
         /// <summary>
         /// Changes range boundaries by the given offsets
         /// </summary>

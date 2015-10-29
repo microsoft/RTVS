@@ -3,35 +3,27 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Comments
-{
+namespace Microsoft.R.Core.AST.Comments {
     /// <summary>
     /// A collection of R comments. 
     /// </summary>
     [DebuggerDisplay("Count={Count}")]
-    public class CommentsCollection: DisjointTextRangeCollection<RToken>
-    {
+    public class CommentsCollection : DisjointTextRangeCollection<RToken> {
 
         #region Construction
-        public CommentsCollection():
-            base()
-        {
-        }
+        public CommentsCollection() { }
 
         public CommentsCollection(IEnumerable<RToken> ranges) :
-            base(ranges)
-        {
+            base(ranges) {
         }
         #endregion
 
         #region ITextRange
-        public override bool Contains(int position)
-        {
+        public override bool Contains(int position) {
             if (this.Count == 0 || position == this.Start)
                 return false;
 
-            foreach (ITextRange range in this)
-            {
+            foreach (ITextRange range in this) {
                 if (range.Contains(position) || range.End == position)
                     return true;
             }
@@ -40,8 +32,7 @@ namespace Microsoft.R.Core.AST.Comments
         }
         #endregion
 
-        public override int GetItemContaining(int position)
-        {
+        public override int GetItemContaining(int position) {
             // Comments contain end position
             IReadOnlyList<int> items = GetItemsContainingInclusiveEnd(position);
             Debug.Assert(items.Count <= 1);

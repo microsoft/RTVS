@@ -11,10 +11,8 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Completion.TypeThrough
-{
-    public class TypeThroughController : IIntellisenseController
-    {
+namespace Microsoft.Languages.Editor.Completion.TypeThrough {
+    public class TypeThroughController : IIntellisenseController {
         private ITextBuffer _textBuffer;
         private ITextView _textView;
 
@@ -25,8 +23,7 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
         private int _bufferVersionWaterline;
         private bool _connected;
 
-        public TypeThroughController(ITextView textView, IList<ITextBuffer> subjectBuffers)
-        {
+        public TypeThroughController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
             _textBuffer = subjectBuffers[0];
             _textView = textView;
 
@@ -43,9 +40,8 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
         }
 
         // Test usage only
-        internal IEnumerable<ProvisionalText> ProvisionalTexts
-        {
-            get { return _provisionalTexts;  }
+        internal IEnumerable<ProvisionalText> ProvisionalTexts {
+            get { return _provisionalTexts; }
         }
 
         /// <summary>
@@ -53,32 +49,27 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
         /// in split view, or if the same text buffer is opened more than ones.
         /// </summary>
         /// <returns>True is this is the currently active type-through controller, false otherwise.</returns>
-        private bool IsActiveController
-        {
-            get
-            {
+        private bool IsActiveController {
+            get {
                 return _textView.HasAggregateFocus;
             }
         }
 
-        public static TypeThroughController FromView(ITextView textView)
-        {
+        public static TypeThroughController FromView(ITextView textView) {
             return ServiceManager.GetService<TypeThroughController>(textView);
         }
 
         /// <summary>
         /// Can a typethrough character get inserted after the given position and character?
         /// </summary>
-        protected virtual bool CanCompleteAfter(ITextBuffer textBuffer, int prevPosition, char typedCharacter)
-        {
+        protected virtual bool CanCompleteAfter(ITextBuffer textBuffer, int prevPosition, char typedCharacter) {
             return true;
         }
 
         /// <summary>
         /// Can a typethrough character get inserted before the given position and character?
         /// </summary>
-        protected virtual bool CanCompleteBefore(ITextBuffer textBuffer, int nextPosition, char typedCharacter)
-        {
+        protected virtual bool CanCompleteBefore(ITextBuffer textBuffer, int nextPosition, char typedCharacter) {
             return StaticCanCompleteBefore(
                 _textView,
                 textBuffer,
@@ -87,8 +78,7 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
                 GetInnerProvisionalText());
         }
 
-        protected virtual bool IsAllowedLeadingStringChar(char c)
-        {
+        protected virtual bool IsAllowedLeadingStringChar(char c) {
             return !char.IsWhiteSpace(c);
         }
 
@@ -97,14 +87,11 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             ITextBuffer textBuffer,
             int nextPosition,
             char typedCharacter,
-            ProvisionalText innerProvisional)
-        {
-            if (innerProvisional != null && innerProvisional.TrackingSpan != null)
-            {
+            ProvisionalText innerProvisional) {
+            if (innerProvisional != null && innerProvisional.TrackingSpan != null) {
                 int? endPos = innerProvisional.CurrentSpan.End - 1;
 
-                if (endPos.HasValue && endPos.Value == nextPosition)
-                {
+                if (endPos.HasValue && endPos.Value == nextPosition) {
                     // Always allow new provisional text right before the end of existing provisional text
                     return true;
                 }
@@ -113,25 +100,19 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             char nextCharacter = snapshot[nextPosition];
 
-            if ((typedCharacter == '\'') || (typedCharacter == '\"'))
-            {
+            if ((typedCharacter == '\'') || (typedCharacter == '\"')) {
                 // For a quote, don't add an extra quote if they aren't "unbalanced" on the current line.
                 ITextSnapshotLine currentLine = snapshot.GetLineFromPosition(nextPosition);
                 string lineText = currentLine.GetText();
 
                 int matchingCharacterCount = lineText.Count(c => c == typedCharacter);
-                if (matchingCharacterCount % 2 == 0)
-                {
+                if (matchingCharacterCount % 2 == 0) {
                     return false;
                 }
-            }
-            else if (typedCharacter == '{')
-            {
+            } else if (typedCharacter == '{') {
                 // For "{", always enable typethrough
                 return true;
-            }
-            else if (char.IsLetterOrDigit(nextCharacter) || nextCharacter == typedCharacter)
-            {
+            } else if (char.IsLetterOrDigit(nextCharacter) || nextCharacter == typedCharacter) {
                 // Dev12 bug 735062 - Don't enable typethrough before certain characters
                 return false;
             }
@@ -139,16 +120,14 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             return true;
         }
 
-        private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
-        {
+        private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e) {
             if (!IsActiveController || _processing)
                 return;
 
             _typedChar = '\0';
 
             if (e.Changes.Count == 1 && e.AfterVersion.ReiteratedVersionNumber > _bufferVersionWaterline &&
-                e.Changes[0].OldLength == 0 && e.Changes[0].NewLength >= 1)
-            {
+                e.Changes[0].OldLength == 0 && e.Changes[0].NewLength >= 1) {
                 var change = e.Changes[0];
 
                 _bufferVersionWaterline = e.AfterVersion.ReiteratedVersionNumber;
@@ -159,12 +138,10 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
                 // actually be in this buffer.
 
                 var snapshot = _textBuffer.CurrentSnapshot;
-                if (change.NewSpan.End <= snapshot.Length)
-                {
+                if (change.NewSpan.End <= snapshot.Length) {
                     char typedChar = ProvisionalText.GetOneTypedCharacter(_textBuffer.CurrentSnapshot, change.NewSpan);
 
-                    if (typedChar != '\0')
-                    {
+                    if (typedChar != '\0') {
                         // Allow completion of different characters inside spans, but not when
                         // character and its completion pair is the same. For example, we do
                         // want to complete () in foo(bar|) when user types ( after bar. However,
@@ -174,16 +151,14 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
                         var completionChar = GetCompletionCharacter(typedChar);
                         var caretPosition = GetCaretPositionInBuffer();
 
-                        if (caretPosition.HasValue)
-                        {
+                        if (caretPosition.HasValue) {
                             bool compatible = true;
 
                             var innerText = GetInnerProvisionalText();
                             if (innerText != null)
                                 compatible = IsCompatibleCharacter(innerText.ProvisionalChar, typedChar);
 
-                            if (!IsPositionInProvisionalText(caretPosition.Value) || typedChar != completionChar || compatible)
-                            {
+                            if (!IsPositionInProvisionalText(caretPosition.Value) || typedChar != completionChar || compatible) {
                                 _typedChar = typedChar;
                                 _caretPosition = caretPosition.Value;
                             }
@@ -193,10 +168,8 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             }
         }
 
-        protected virtual char GetCompletionCharacter(char typedCharacter)
-        {
-            switch (typedCharacter)
-            {
+        protected virtual char GetCompletionCharacter(char typedCharacter) {
+            switch (typedCharacter) {
                 case '\"':
                 case '\'':
                     return typedCharacter;
@@ -214,16 +187,14 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             return '\0';
         }
 
-        protected virtual bool IsCompatibleCharacter(char primaryCharacter, char candidateCharacter)
-        {
+        protected virtual bool IsCompatibleCharacter(char primaryCharacter, char candidateCharacter) {
             if (primaryCharacter == '\"' || primaryCharacter == '\'')
                 return false; // no completion in strings
 
             return true;
         }
 
-        private void OnPostTypeChar(char typedCharacter)
-        {
+        private void OnPostTypeChar(char typedCharacter) {
             // When language autoformats, like JS, caret may be in a very different
             // place by now. Check if store caret position still makes sense and
             // if not, reacquire it. In contained language scenario
@@ -231,40 +202,32 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             // typing at the end of onclick="return foo(".
 
             var settings = EditorShell.GetSettings(_textBuffer.ContentType.TypeName);
-            if (settings != null && settings.GetBoolean(CommonSettings.InsertMatchingBracesKey, true))
-            {
+            if (settings != null && settings.GetBoolean(CommonSettings.InsertMatchingBracesKey, true)) {
                 char completionCharacter = GetCompletionCharacter(typedCharacter);
-                if (completionCharacter != '\0')
-                {
+                if (completionCharacter != '\0') {
                     SnapshotPoint viewCaretPosition = _textView.Caret.Position.BufferPosition;
                     _processing = true;
 
                     SnapshotPoint? bufferCaretPosition = GetCaretPositionInBuffer();
-                    if (bufferCaretPosition.HasValue)
-                    {
+                    if (bufferCaretPosition.HasValue) {
                         _caretPosition = bufferCaretPosition.Value;
-                    }
-                    else if (viewCaretPosition.Position == _textView.TextBuffer.CurrentSnapshot.Length)
-                    {
+                    } else if (viewCaretPosition.Position == _textView.TextBuffer.CurrentSnapshot.Length) {
                         _caretPosition = _textBuffer.CurrentSnapshot.Length;
                     }
 
                     bool canComplete = TextViewHelpers.IsAutoInsertAllowed(_textView);
 
                     // Check the character before the caret
-                    if (canComplete && _caretPosition > 0)
-                    {
+                    if (canComplete && _caretPosition > 0) {
                         canComplete = CanCompleteAfter(_textBuffer, _caretPosition - 1, typedCharacter);
                     }
 
                     // Check the character after the caret
-                    if (canComplete && _caretPosition < _textBuffer.CurrentSnapshot.Length)
-                    {
+                    if (canComplete && _caretPosition < _textBuffer.CurrentSnapshot.Length) {
                         canComplete = CanCompleteBefore(_textBuffer, _caretPosition, typedCharacter);
                     }
 
-                    if (canComplete)
-                    {
+                    if (canComplete) {
                         ProvisionalText.IgnoreChange = true;
                         _textView.TextBuffer.Replace(new Span(viewCaretPosition, 0), completionCharacter.ToString());
                         ProvisionalText.IgnoreChange = false;
@@ -282,21 +245,18 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
         /// <summary>
         /// The span needs to end after the closing character (like a close brace)
         /// </summary>
-        public void CreateProvisionalText(Span span)
-        {
+        public void CreateProvisionalText(Span span) {
             ProvisionalText provisionalText = NewProvisionalText(_textView, span);
             provisionalText.Closing += new System.EventHandler<System.EventArgs>(OnCloseProvisionalText);
 
             _provisionalTexts.Add(provisionalText);
         }
 
-        protected virtual ProvisionalText NewProvisionalText(ITextView textView, Span span)
-        {
+        protected virtual ProvisionalText NewProvisionalText(ITextView textView, Span span) {
             return new ProvisionalText(textView, span);
         }
 
-        private SnapshotPoint? GetCaretPositionInBuffer()
-        {
+        private SnapshotPoint? GetCaretPositionInBuffer() {
             var viewCaretPosition = _textView.Caret.Position.BufferPosition.Position;
             var snapshot = _textView.TextBuffer.CurrentSnapshot;
 
@@ -306,10 +266,8 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             return _textView.MapDownToBuffer(viewCaretPosition, _textBuffer);
         }
 
-        private bool IsPositionInProvisionalText(int position)
-        {
-            foreach (var pt in _provisionalTexts)
-            {
+        private bool IsPositionInProvisionalText(int position) {
+            foreach (var pt in _provisionalTexts) {
                 if (pt.IsPositionInSpan(position))
                     return true;
             }
@@ -317,15 +275,12 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             return false;
         }
 
-        private ProvisionalText GetInnerProvisionalText()
-        {
+        private ProvisionalText GetInnerProvisionalText() {
             int minLength = Int32.MaxValue;
             ProvisionalText innerText = null;
 
-            foreach (var pt in _provisionalTexts)
-            {
-                if (pt.CurrentSpan.Length < minLength)
-                {
+            foreach (var pt in _provisionalTexts) {
+                if (pt.CurrentSpan.Length < minLength) {
                     minLength = pt.CurrentSpan.Length;
                     innerText = pt;
                 }
@@ -334,17 +289,14 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             return innerText;
         }
 
-        private void OnCloseProvisionalText(object sender, EventArgs e)
-        {
+        private void OnCloseProvisionalText(object sender, EventArgs e) {
             _provisionalTexts.Remove(sender as ProvisionalText);
         }
 
         #region IIntellisenseController Members
 
-        public void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
-        {
-            if (_textBuffer == subjectBuffer)
-            {
+        public void ConnectSubjectBuffer(ITextBuffer subjectBuffer) {
+            if (_textBuffer == subjectBuffer) {
                 _connected = true;
                 _textBuffer.Changed += TextBuffer_Changed;
 
@@ -352,22 +304,18 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough
             }
         }
 
-        public void Detach(ITextView textView)
-        {
+        public void Detach(ITextView textView) {
         }
 
-        public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer)
-        {
-            if ((_textBuffer == subjectBuffer) && _connected)
-            {
+        public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) {
+            if ((_textBuffer == subjectBuffer) && _connected) {
                 TypeThroughController existingController = ServiceManager.GetService<TypeThroughController>(_textView);
 
                 _connected = false;
                 _textBuffer.Changed -= TextBuffer_Changed;
 
                 Debug.Assert(existingController == this);
-                if (existingController == this)
-                {
+                if (existingController == this) {
                     ServiceManager.RemoveService<TypeThroughController>(_textView);
                 }
             }

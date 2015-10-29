@@ -2,13 +2,11 @@
 using Microsoft.VisualStudio.Text;
 using Microsoft.Languages.Editor.Workspace;
 
-namespace Microsoft.Languages.Editor.EditorFactory
-{
+namespace Microsoft.Languages.Editor.EditorFactory {
     /// <summary>
     /// Common interface implemented by editor documents
     /// </summary>
-    public interface IEditorDocument : IDisposable
-    {
+    public interface IEditorDocument : IDisposable {
         /// <summary>
         /// Closes the document
         /// </summary>
@@ -17,7 +15,7 @@ namespace Microsoft.Languages.Editor.EditorFactory
         /// <summary>
         /// Fires when document is closing.
         /// </summary>
-        event EventHandler<EventArgs> DocumentClosing; 
+        event EventHandler<EventArgs> DocumentClosing;
 
         /// <summary>
         /// Fires when document is activated in the host IDE and its view is getting focus.

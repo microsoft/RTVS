@@ -1,10 +1,8 @@
-﻿namespace Microsoft.R.Support.Help.Definitions
-{
+﻿namespace Microsoft.R.Support.Help.Definitions {
     /// <summary>
     /// Type of the item (function, constant)
     /// </summary>
-    public enum NamedItemType
-    {
+    public enum NamedItemType {
         None,
         Package,
         Function,

@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.R.Support.Help.Definitions
-{
+namespace Microsoft.R.Support.Help.Definitions {
     /// <summary>
     /// Describes collection or R packages. 
     /// Typically implementation is exported via MEF
     /// since there multiple collections exist.
     /// </summary>
-    public interface IPackageCollection
-    {
+    public interface IPackageCollection {
         /// <summary>
         /// Path to base R packages. 
         /// Typically ~/Program Files/R/[version]/library

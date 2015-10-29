@@ -4,15 +4,12 @@ using System.Collections.ObjectModel;
 using System.IO;
 using Microsoft.Languages.Editor.Workspace;
 
-namespace Microsoft.VisualStudio.R.Package.Workspace
-{
+namespace Microsoft.VisualStudio.R.Package.Workspace {
     /// <summary>
     /// Visual Studio implementation of the folder abstraction
     /// </summary>
-    internal class VsFolder : IFolder
-    {
-        public VsFolder(string folder)
-        {
+    internal class VsFolder : IFolder {
+        public VsFolder(string folder) {
             if (folder == null)
                 throw new ArgumentNullException("folder");
 
@@ -22,10 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.Workspace
         #region IWebFolder
         public string Name { get; private set; }
 
-        public IFolder Parent
-        {
-            get
-            {
+        public IFolder Parent {
+            get {
                 string parent = Path.GetDirectoryName(Name);
                 if (String.IsNullOrEmpty(parent))
                     return null;
@@ -34,17 +29,13 @@ namespace Microsoft.VisualStudio.R.Package.Workspace
             }
         }
 
-        public ReadOnlyCollection<IFolder> Folders
-        {
-            get
-            {
+        public ReadOnlyCollection<IFolder> Folders {
+            get {
                 var list = new List<IFolder>();
 
-                if (Directory.Exists(Name))
-                {
+                if (Directory.Exists(Name)) {
                     var folders = Directory.GetDirectories(Name);
-                    foreach (var folder in folders)
-                    {
+                    foreach (var folder in folders) {
                         list.Add(new VsFolder(folder));
                     }
                 }
@@ -53,17 +44,13 @@ namespace Microsoft.VisualStudio.R.Package.Workspace
             }
         }
 
-        public ReadOnlyCollection<IFile> Files
-        {
-            get
-            {
+        public ReadOnlyCollection<IFile> Files {
+            get {
                 var list = new List<IFile>();
 
-                if (Directory.Exists(Name))
-                {
+                if (Directory.Exists(Name)) {
                     var files = Directory.GetFiles(Name);
-                    foreach (var file in files)
-                    {
+                    foreach (var file in files) {
                         list.Add(new VsFile(file));
                     }
                 }

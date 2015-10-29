@@ -1,33 +1,26 @@
 ﻿using System;
 using System.Text;
 
-namespace Microsoft.Languages.Editor.Utility
-{
-    public static class StringUtility
-    {
+namespace Microsoft.Languages.Editor.Utility {
+    public static class StringUtility {
         /// <summary>
         /// Wraps long string so each line is no longer
         /// that the specified number of characters 
         /// </summary>
         /// <returns></returns>
-        public static string Wrap(this string s, int limit)
-        {
+        public static string Wrap(this string s, int limit) {
             limit = Math.Max(80, limit);
 
             StringBuilder sb = new StringBuilder();
             int count = 0;
 
-            for (int i = 0; i < s.Length; i++)
-            {
+            for (int i = 0; i < s.Length; i++) {
                 char ch = s[i];
 
-                if (char.IsWhiteSpace(ch) && count >= limit)
-                {
+                if (char.IsWhiteSpace(ch) && count >= limit) {
                     sb.Append("\r\n");
                     count = 0;
-                }
-                else
-                {
+                } else {
                     sb.Append(ch);
                     count++;
                 }

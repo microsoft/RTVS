@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Microsoft.Languages.Core.Text
-{
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// A collection of text ranges that are not next to another. 
     /// Ranges must not overlap. Can be sorted by range start positions. 
@@ -13,29 +12,22 @@ namespace Microsoft.Languages.Core.Text
     /// </summary>
     /// <typeparam name="T">A class or an interface that derives from <seealso cref="ITextRange"/></typeparam>
     [DebuggerDisplay("Count={Count}")]
-    public class DisjointTextRangeCollection<T> : TextRangeCollection<T> where T : ITextRange
-    {
+    public class DisjointTextRangeCollection<T> : TextRangeCollection<T> where T : ITextRange {
 
         #region Construction
-        public DisjointTextRangeCollection():
-            base()
-        {
+        public DisjointTextRangeCollection() {
         }
 
-        public DisjointTextRangeCollection(IEnumerable<T> ranges) :
-            base(ranges)
-        {
+        public DisjointTextRangeCollection(IEnumerable<T> ranges) : base(ranges) {
         }
         #endregion
 
         #region ITextRange
-        public override bool Contains(int position)
-        {
+        public override bool Contains(int position) {
             if (this.Count == 0)
                 return false;
 
-            foreach (ITextRange range in this)
-            {
+            foreach (ITextRange range in this) {
                 if (range.Contains(position))
                     return true;
             }
@@ -44,13 +36,11 @@ namespace Microsoft.Languages.Core.Text
         }
         #endregion
 
-        public bool Contains(int position, bool inclusiveEnd)
-        {
+        public bool Contains(int position, bool inclusiveEnd) {
             if (this.Count == 0)
                 return false;
 
-            foreach (ITextRange range in this)
-            {
+            foreach (ITextRange range in this) {
                 if (range.Contains(position) || (inclusiveEnd && range.End == position))
                     return true;
             }

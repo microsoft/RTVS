@@ -1,14 +1,12 @@
 ﻿using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Selection
-{
+namespace Microsoft.Languages.Editor.Selection {
     /// <summary>
     /// Implemented if particular editor wants to preserve selection and caret position during autoformatting. 
     /// Typically implemented via mapping caret position to one of known elements in the editor parse tree 
     /// or using token stream.
     /// </summary>
-    public interface ISelectionTracker
-    {
+    public interface ISelectionTracker {
         /// <summary>
         /// Editor text view
         /// </summary>

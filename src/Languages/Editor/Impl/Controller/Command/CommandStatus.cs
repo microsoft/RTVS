@@ -1,10 +1,8 @@
 ﻿using System;
 
-namespace Microsoft.Languages.Editor
-{
+namespace Microsoft.Languages.Editor {
     [Flags]
-    public enum CommandStatus : int
-    {
+    public enum CommandStatus : int {
         NotSupported = 0,
         Supported = 1,
         Enabled = 2,

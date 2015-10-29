@@ -3,10 +3,9 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Utility;
 using Microsoft.VisualStudio.InteractiveWindow;
 
-namespace Microsoft.VisualStudio.R.Package.Repl
-{
+namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class NullInteractiveEvaluator : IInteractiveEvaluator {
-        public void Dispose() {}
+        public void Dispose() { }
 
         public Task<ExecutionResult> InitializeAsync() => ExecutionResult.Failed;
 
@@ -24,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
 
         public string FormatClipboard() => null;
 
-        public void AbortExecution() {}
+        public void AbortExecution() { }
 
         public string GetPrompt() => string.Empty;
 

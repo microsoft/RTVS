@@ -12,17 +12,14 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.Plots
-{
+namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
-    internal class PlotWindowPane : ToolWindowPane
-    {
+    internal class PlotWindowPane : ToolWindowPane {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
 
         private SavePlotCommand _saveCommand;
 
-        public PlotWindowPane()
-        {
+        public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
 
             // set content with presenter
@@ -39,8 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots
 
         public IPlotContentProvider PlotContentProvider { get; private set; }
 
-        private IEnumerable<ICommand> GetCommands()
-        {
+        private IEnumerable<ICommand> GetCommands() {
             List<ICommand> commands = new List<ICommand>();
 
             commands.Add(new OpenPlotCommand(this));
@@ -58,40 +54,29 @@ namespace Microsoft.VisualStudio.R.Package.Plots
             return commands;
         }
 
-        private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e)
-        {
-            if (e.NewPlotElement == null)
-            {
+        private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e) {
+            if (e.NewPlotElement == null) {
                 _saveCommand.Disable();
-            }
-            else
-            {
+            } else {
                 _saveCommand.Enable();
             }
         }
 
-        public void OpenPlot()
-        {
+        public void OpenPlot() {
             string filePath = GetLoadFilePath();
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                try
-                {
+            if (!string.IsNullOrEmpty(filePath)) {
+                try {
                     PlotContentProvider.LoadFile(filePath);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     EditorShell.Current.ShowErrorMessage(
                         string.Format(CultureInfo.InvariantCulture, Resources.CannotOpenPlotFile, ex.Message));
                 }
             }
         }
 
-        public void SavePlot()
-        {
+        public void SavePlot() {
             string destinationFilePath = GetSaveFilePath();
-            if (!string.IsNullOrEmpty(destinationFilePath))
-            {
+            if (!string.IsNullOrEmpty(destinationFilePath)) {
                 PlotContentProvider.SaveFile(destinationFilePath);
             }
         }
@@ -104,16 +89,13 @@ namespace Microsoft.VisualStudio.R.Package.Plots
                 Resources.OpenPlotDialogTitle);
         }
 
-        private string GetSaveFilePath()
-        {
-            return EditorShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotFileFilter, null,Resources.SavePlotDialogTitle);
+        private string GetSaveFilePath() {
+            return EditorShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotFileFilter, null, Resources.SavePlotDialogTitle);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (PlotContentProvider != null)
-            {
-                PlotContentProvider.PlotChanged -= ContentProvider_PlotChanged; 
+        protected override void Dispose(bool disposing) {
+            if (PlotContentProvider != null) {
+                PlotContentProvider.PlotChanged -= ContentProvider_PlotChanged;
                 PlotContentProvider.Dispose();
                 PlotContentProvider = null;
             }

@@ -1,7 +1,5 @@
-﻿namespace Microsoft.R.Core.AST.Operators
-{
-    public enum OperatorType
-    {
+﻿namespace Microsoft.R.Core.AST.Operators {
+    public enum OperatorType {
         Unknown,
         Add,
         Subtract,

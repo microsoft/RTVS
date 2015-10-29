@@ -1,11 +1,9 @@
 ﻿
-namespace Microsoft.R.Core.Parser
-{
+namespace Microsoft.R.Core.Parser {
     /// <summary>
     /// Describes severity of the validation error
     /// </summary>
-    public enum ErrorSeverity
-    {
+    public enum ErrorSeverity {
         /// <summary>
         /// Informational message, a suggestion
         /// </summary>

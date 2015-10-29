@@ -1,12 +1,10 @@
 ﻿using System;
 
-namespace Microsoft.Languages.Editor.Controller
-{
+namespace Microsoft.Languages.Editor.Controller {
     /// <summary>
     /// Command target: an object that can provide command status as well as execute commands
     /// </summary>
-    public interface ICommandTarget
-    {
+    public interface ICommandTarget {
         /// <summary>
         /// Determines current command status
         /// </summary>

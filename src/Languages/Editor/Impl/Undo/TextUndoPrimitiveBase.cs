@@ -2,34 +2,27 @@
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;
 
-namespace Microsoft.Languages.Editor.Undo
-{
-    public class TextUndoPrimitiveBase : ITextUndoPrimitive
-    {
+namespace Microsoft.Languages.Editor.Undo {
+    public class TextUndoPrimitiveBase : ITextUndoPrimitive {
         protected ITextBuffer TextBuffer { get; private set; }
 
-        public TextUndoPrimitiveBase(ITextBuffer textBuffer)
-        {
+        public TextUndoPrimitiveBase(ITextBuffer textBuffer) {
             TextBuffer = textBuffer;
         }
 
-        public bool CanMerge(ITextUndoPrimitive older)
-        {
+        public bool CanMerge(ITextUndoPrimitive older) {
             return false;
         }
 
-        public bool CanRedo
-        {
+        public bool CanRedo {
             get { return true; }
         }
 
-        public bool CanUndo
-        {
+        public bool CanUndo {
             get { return true; }
         }
 
-        public ITextUndoPrimitive Merge(ITextUndoPrimitive older)
-        {
+        public ITextUndoPrimitive Merge(ITextUndoPrimitive older) {
             throw new NotImplementedException();
         }
 

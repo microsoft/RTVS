@@ -1,8 +1,6 @@
 ﻿
-namespace Microsoft.R.Core.Tokens
-{ 
-    public enum RTokenSubType
-    {
+namespace Microsoft.R.Core.Tokens {
+    public enum RTokenSubType {
         /// <summary>
         /// No subtype
         /// </summary>

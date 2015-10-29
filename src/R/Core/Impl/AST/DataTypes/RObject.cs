@@ -1,22 +1,16 @@
 ﻿using Microsoft.R.Core.AST.DataTypes.Definitions;
 
-namespace Microsoft.R.Core.AST.DataTypes
-{
+namespace Microsoft.R.Core.AST.DataTypes {
     /// <summary>
     /// Base class for all R objects
     /// </summary>
-    public abstract class RObject
-    {
-        public bool IsScalar
-        {
-            get
-            {
+    public abstract class RObject {
+        public bool IsScalar {
+            get {
                 IRVector vector = this as IRVector;
 
-                if (vector != null && vector.Length == 1)
-                {
-                    switch (vector.Mode)
-                    {
+                if (vector != null && vector.Length == 1) {
+                    switch (vector.Mode) {
                         case RMode.Character:
                         case RMode.Complex:
                         case RMode.Numeric:
@@ -29,37 +23,29 @@ namespace Microsoft.R.Core.AST.DataTypes
             }
         }
 
-        public bool IsNumber
-        {
-            get
-            {
+        public bool IsNumber {
+            get {
                 IRVector vector = this as IRVector;
                 return vector != null && vector.Length == 1 && (vector.Mode == RMode.Numeric || vector.Mode == RMode.Complex);
             }
         }
 
-        public bool IsString
-        {
-            get
-            {
+        public bool IsString {
+            get {
                 IRVector vector = this as IRVector;
                 return vector != null && vector.Length == 1 && vector.Mode == RMode.Character;
             }
         }
 
-        public bool IsBoolean
-        {
-            get
-            {
+        public bool IsBoolean {
+            get {
                 IRVector vector = this as IRVector;
                 return vector != null && vector.Length == 1 && vector.Mode == RMode.Logical;
             }
         }
 
-        public bool IsFunction
-        {
-            get
-            {
+        public bool IsFunction {
+            get {
                 IRVector vector = this as IRVector;
                 return vector != null && vector.Length == 1 && vector.Mode == RMode.Function;
             }

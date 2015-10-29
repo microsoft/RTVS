@@ -1,14 +1,12 @@
 ﻿using System;
 
-namespace Microsoft.Languages.Core.Settings
-{
+namespace Microsoft.Languages.Core.Settings {
     /// <summary>
     /// Settings storage. Exported via MEF for a particular content type.
     /// Editor uses exported object to retrieve its settings such as indentation
     /// style, tab size, formatting options and so on.
     /// </summary>
-    public interface ISettingsStorage
-    {
+    public interface ISettingsStorage {
         event EventHandler<EventArgs> SettingsChanged;
 
         void LoadFromStorage();
@@ -23,8 +21,7 @@ namespace Microsoft.Languages.Core.Settings
     /// Editor uses exported object to store settings such as indentation style, 
     /// tab size, formatting options and so on.
     /// </summary>
-    public interface IWritableSettingsStorage : ISettingsStorage
-    {
+    public interface IWritableSettingsStorage : ISettingsStorage {
         void ResetSettings();
 
         void SetString(string name, string value);

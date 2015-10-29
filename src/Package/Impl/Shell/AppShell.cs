@@ -27,18 +27,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// such as composition container, export provider, global VS IDE
         /// services and so on.
         /// </summary>
-        public static IApplicationShell Current
-        {
-            get
-            {
+        public static IApplicationShell Current {
+            get {
                 if (AppShell.instance == null) {
                     AppShell.instance = new AppShell();
                 }
 
                 return AppShell.instance;
             }
-            internal set
-            {
+
+            internal set {
                 // Only used in component tests
                 AppShell.instance = value;
             }
@@ -70,8 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Visual Studio global service provider.
         /// The service provider should not be called from async methods.
         /// </summary>
-        public IServiceProvider GlobalServiceProvider
-        {
+        public IServiceProvider GlobalServiceProvider {
             get { return ServiceProvider.GlobalProvider; }
         }
 
@@ -79,8 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Visual Studio OLE service provider.
         /// The service provider should not be called from async methods.
         /// </summary>
-        public Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider
-        {
+        public Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider {
             get { return GetGlobalService<Microsoft.VisualStudio.OLE.Interop.IServiceProvider>(); }
         }
 
@@ -101,24 +97,21 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Returns VS component model (MEF container)
         /// </summary>
-        public IComponentModel ComponentModel
-        {
+        public IComponentModel ComponentModel {
             get { return GetGlobalService<IComponentModel>(typeof(SComponentModel)); }
         }
 
         /// <summary>
         /// Visual Studio MEF composition service.
         /// </summary>
-        public ICompositionService CompositionService
-        {
+        public ICompositionService CompositionService {
             get { return ComponentModel.DefaultCompositionService; }
         }
 
         /// <summary>
         /// Visual Studio MEF export provider.
         /// </summary>
-        public ExportProvider ExportProvider
-        {
+        public ExportProvider ExportProvider {
             get { return ComponentModel.DefaultExportProvider; }
         }
 

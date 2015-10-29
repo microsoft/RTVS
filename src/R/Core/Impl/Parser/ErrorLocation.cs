@@ -1,11 +1,9 @@
-﻿namespace Microsoft.R.Core.Parser
-{
+﻿namespace Microsoft.R.Core.Parser {
     /// <summary>
     /// Location of the parsing error.
     /// Gives hint to IDE what to squiggle.
     /// </summary>
-    public enum ErrorLocation
-    {
+    public enum ErrorLocation {
         /// <summary>
         /// Whitespace or token before the provided 
         /// text range. Relatively rare case.

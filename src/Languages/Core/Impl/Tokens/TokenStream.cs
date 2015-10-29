@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.Languages.Core.Tokens
-{
+namespace Microsoft.Languages.Core.Tokens {
     /// <summary>
     /// Generic token stream. Allows fetching tokens safely,
     /// returns special end of stream tokens even before start 
@@ -13,18 +12,15 @@ namespace Microsoft.Languages.Core.Tokens
     /// from out of bound operations.
     /// </summary>
     /// <typeparam name="T">Type of token. Tokens must implement ITextRange.</typeparam>
-    public sealed class TokenStream<T> : IEnumerable<T> where T : ITextRange
-    {
+    public sealed class TokenStream<T> : IEnumerable<T> where T : ITextRange {
         private IReadOnlyTextRangeCollection<T> _tokens;
         private int _index;
         private T _endOfStreamToken;
         private T _currentToken;
         private bool _isEndOfStream;
 
-        public TokenStream(IReadOnlyTextRangeCollection<T> tokens, T endOfStreamToken)
-        {
-            if (tokens == null)
-            {
+        public TokenStream(IReadOnlyTextRangeCollection<T> tokens, T endOfStreamToken) {
+            if (tokens == null) {
                 throw new ArgumentNullException("tokens");
             }
 
@@ -38,8 +34,7 @@ namespace Microsoft.Languages.Core.Tokens
         /// <summary>
         /// Number of tokens in the stream
         /// </summary>
-        public int Length
-        {
+        public int Length {
             get { return _tokens.Count; }
         }
 
@@ -50,24 +45,18 @@ namespace Microsoft.Languages.Core.Tokens
         /// 'end of stream' token while passing negative position sets
         /// position to -1.
         /// </summary>
-        public int Position
-        {
+        public int Position {
             get { return _index; }
-            set
-            {
+            set {
                 _index = value;
                 CheckBounds();
             }
         }
 
-        private void CheckBounds()
-        {
-            if (_index < 0)
-            {
+        private void CheckBounds() {
+            if (_index < 0) {
                 _index = 0;
-            }
-            else if (_index >= _tokens.Count)
-            {
+            } else if (_index >= _tokens.Count) {
                 _index = _tokens.Count;
             }
 
@@ -80,24 +69,21 @@ namespace Microsoft.Languages.Core.Tokens
         /// if current position is at the end of the stream
         /// or before the beginning of the stream.
         /// </summary>
-        public T CurrentToken
-        {
+        public T CurrentToken {
             get { return _currentToken; }
         }
 
         /// <summary>
         /// Next available token or end of stream token if none.
         /// </summary>
-        public T NextToken
-        {
+        public T NextToken {
             get { return LookAhead(1); }
         }
 
         /// <summary>
         /// Previous token or end of stream token if no previous token exists.
         /// </summary>
-        public T PreviousToken
-        {
+        public T PreviousToken {
             get { return LookAhead(-1); }
         }
 
@@ -107,8 +93,7 @@ namespace Microsoft.Languages.Core.Tokens
         /// </summary>
         /// <param name="count">Nunber of tokens to look ahead</param>
         /// <returns></returns>
-        public T LookAhead(int count)
-        {
+        public T LookAhead(int count) {
             return GetTokenAt(_index + count);
         }
 
@@ -118,21 +103,18 @@ namespace Microsoft.Languages.Core.Tokens
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public T GetTokenAt(int position)
-        {
+        public T GetTokenAt(int position) {
             if (position >= 0 && position < _tokens.Count)
                 return _tokens[position];
 
             return _endOfStreamToken;
         }
 
-        public T this[int index]
-        {
+        public T this[int index] {
             get { return GetTokenAt(index); }
         }
 
-        public bool IsEndOfStream()
-        {
+        public bool IsEndOfStream() {
             return _isEndOfStream;
         }
 
@@ -144,10 +126,8 @@ namespace Microsoft.Languages.Core.Tokens
         /// <returns>Token that is current after advance 
         /// or end of stream token if position becomes
         /// beyond the end of the stream</returns>
-        public T MoveToNextToken()
-        {
-            if (_index < _tokens.Count - 1)
-            {
+        public T MoveToNextToken() {
+            if (_index < _tokens.Count - 1) {
                 _index++;
                 _currentToken = _tokens[_index];
                 return _currentToken;
@@ -167,8 +147,7 @@ namespace Microsoft.Languages.Core.Tokens
         /// <returns>Token that is current after the advance 
         /// or end of stream token if position becomes
         /// beyond the end of the stream</returns>
-        public T Advance(int count)
-        {
+        public T Advance(int count) {
             _index += count;
             CheckBounds();
 
@@ -183,23 +162,19 @@ namespace Microsoft.Languages.Core.Tokens
         /// Advances to the end of the stream if current line is 
         /// the last line in the file.
         /// </summary>
-        public void MoveToNextLine(ITextProvider textProvider, Func<TokenStream<T>, bool> stopFunction = null)
-        {
-            while (!IsEndOfStream())
-            {
+        public void MoveToNextLine(ITextProvider textProvider, Func<TokenStream<T>, bool> stopFunction = null) {
+            while (!IsEndOfStream()) {
                 int currentTokenEnd = CurrentToken.End;
                 int nextTokenStart = NextToken.Start;
 
                 MoveToNextToken();
 
-                if (stopFunction != null && stopFunction(this))
-                {
+                if (stopFunction != null && stopFunction(this)) {
                     return;
                 }
 
                 if (Position < _tokens.Count - 1 &&
-                    textProvider.IndexOf("\n", TextRange.FromBounds(currentTokenEnd, nextTokenStart), false) >= 0)
-                {
+                    textProvider.IndexOf("\n", TextRange.FromBounds(currentTokenEnd, nextTokenStart), false) >= 0) {
                     break;
                 }
             }
@@ -209,15 +184,12 @@ namespace Microsoft.Languages.Core.Tokens
         /// Determines if there is a line break between current
         /// and the next token.
         /// </summary>
-        public bool IsLineBreakAfter(ITextProvider textProvider, int tokenIndex)
-        {
-            if (tokenIndex >= _tokens.Count)
-            {
+        public bool IsLineBreakAfter(ITextProvider textProvider, int tokenIndex) {
+            if (tokenIndex >= _tokens.Count) {
                 return false;
             }
 
-            if (tokenIndex < 0)
-            {
+            if (tokenIndex < 0) {
                 tokenIndex = 0;
             }
 
@@ -226,18 +198,14 @@ namespace Microsoft.Languages.Core.Tokens
             int currentTokenEnd = currentToken.End;
             int nextTokenStart;
 
-            if (tokenIndex < _tokens.Count - 1)
-            {
+            if (tokenIndex < _tokens.Count - 1) {
                 T nextToken = _tokens[tokenIndex + 1];
                 nextTokenStart = nextToken.Start;
-            }
-            else
-            {
+            } else {
                 nextTokenStart = textProvider.Length;
             }
 
-            if (textProvider.IndexOf('\n', TextRange.FromBounds(currentTokenEnd, nextTokenStart)) >= 0)
-            {
+            if (textProvider.IndexOf('\n', TextRange.FromBounds(currentTokenEnd, nextTokenStart)) >= 0) {
                 return true;
             }
 
@@ -245,13 +213,11 @@ namespace Microsoft.Languages.Core.Tokens
         }
 
         #region IEnumerable
-        public IEnumerator<T> GetEnumerator()
-        {
+        public IEnumerator<T> GetEnumerator() {
             return _tokens.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
+        IEnumerator IEnumerable.GetEnumerator() {
             return _tokens.GetEnumerator();
         }
         #endregion

@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Microsoft.Languages.Editor.Controller.Command
-{
+namespace Microsoft.Languages.Editor.Controller.Command {
     /// <summary>
     /// Command identifier
     /// </summary>
     [SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     [ExcludeFromCodeCoverage]
-    public struct CommandId
-    {
+    public struct CommandId {
         public CommandId(Guid group, int id)
-            : this()
-        {
+            : this() {
             Group = group;
             Id = id;
         }
 
         public CommandId(int id)
-            : this(Guid.Empty, id)
-        {
+            : this(Guid.Empty, id) {
         }
 
         /// <summary>

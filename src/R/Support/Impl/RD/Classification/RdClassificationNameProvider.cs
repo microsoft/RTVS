@@ -2,14 +2,10 @@
 using Microsoft.R.Support.RD.Tokens;
 using Microsoft.VisualStudio.Language.StandardClassification;
 
-namespace Microsoft.R.Support.RD.Classification
-{
-    internal sealed class RdClassificationNameProvider: IClassificationNameProvider<RdToken>
-    {
-        public string GetClassificationName(RdToken t)
-        {
-            switch (t.TokenType)
-            {
+namespace Microsoft.R.Support.RD.Classification {
+    internal sealed class RdClassificationNameProvider : IClassificationNameProvider<RdToken> {
+        public string GetClassificationName(RdToken t) {
+            switch (t.TokenType) {
                 case RdTokenType.Comment:
                     return PredefinedClassificationTypeNames.Comment;
                 case RdTokenType.Keyword:

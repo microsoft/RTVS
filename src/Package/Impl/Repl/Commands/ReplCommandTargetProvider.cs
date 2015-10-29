@@ -17,17 +17,15 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Repl
-{
+namespace Microsoft.VisualStudio.R.Package.Repl {
+
     [Export(typeof(IVsInteractiveWindowOleCommandTargetProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal sealed class ReplCommandTargetProvider : IVsInteractiveWindowOleCommandTargetProvider
-    {
-        public IOleCommandTarget GetCommandTarget(IWpfTextView textView, IOleCommandTarget nextTarget)
-        {
+    internal sealed class ReplCommandTargetProvider : IVsInteractiveWindowOleCommandTargetProvider {
+
+        public IOleCommandTarget GetCommandTarget(IWpfTextView textView, IOleCommandTarget nextTarget) {
             IOleCommandTarget target = ServiceManager.GetService<IOleCommandTarget>(textView);
-            if (target == null)
-            {
+            if (target == null) {
                 ReplCommandController controller = ReplCommandController.Attach(textView, textView.TextBuffer);
 
                 // Wrap controller into OLE command target
@@ -45,8 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl
                 // create R editor document over it.
                 textView.BufferGraph.GraphBuffersChanged += OnGraphBuffersChanged;
                 IProjectionBuffer pb = textView.TextBuffer as IProjectionBuffer;
-                if(pb != null)
-                {
+                if (pb != null) {
                     pb.SourceBuffersChanged += OnSourceBuffersChanged;
                 }
 
@@ -56,82 +53,64 @@ namespace Microsoft.VisualStudio.R.Package.Repl
             return target;
         }
 
-        private void TextView_Closed(object sender, EventArgs e)
-        {
+        private void TextView_Closed(object sender, EventArgs e) {
             IWpfTextView textView = sender as IWpfTextView;
-            if(textView != null)
-            {
-                if(textView.BufferGraph != null)
-                {
+            if (textView != null) {
+                if (textView.BufferGraph != null) {
                     textView.BufferGraph.GraphBuffersChanged -= OnGraphBuffersChanged;
                 }
 
                 IProjectionBuffer pb = textView.TextBuffer as IProjectionBuffer;
-                if (pb != null)
-                {
+                if (pb != null) {
                     pb.SourceBuffersChanged -= OnSourceBuffersChanged;
                 }
 
                 textView.Closed -= TextView_Closed;
                 ReplCommandController controller = ReplCommandController.FromTextView(textView);
-                if(controller != null)
-                {
+                if (controller != null) {
                     controller.Dispose();
                 }
             }
         }
 
-        private void OnSourceBuffersChanged(object sender, ProjectionSourceBuffersChangedEventArgs e)
-        {
+        private void OnSourceBuffersChanged(object sender, ProjectionSourceBuffersChangedEventArgs e) {
             HandleAddRemoveBuffers(e.AddedBuffers, e.RemovedBuffers);
         }
 
-        private void OnGraphBuffersChanged(object sender, GraphBuffersChangedEventArgs e)
-        {
+        private void OnGraphBuffersChanged(object sender, GraphBuffersChangedEventArgs e) {
             HandleAddRemoveBuffers(e.AddedBuffers, e.RemovedBuffers);
         }
 
-        private void HandleAddRemoveBuffers(ReadOnlyCollection<ITextBuffer> addedBuffers, ReadOnlyCollection<ITextBuffer> removedBuffers)
-        { 
-            foreach(ITextBuffer tb in addedBuffers)
-            {
-                if(tb.ContentType.IsOfType(RContentTypeDefinition.ContentType))
-                {
+        private void HandleAddRemoveBuffers(ReadOnlyCollection<ITextBuffer> addedBuffers, ReadOnlyCollection<ITextBuffer> removedBuffers) {
+            foreach (ITextBuffer tb in addedBuffers) {
+                if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                     IREditorDocument doc = REditorDocument.TryFromTextBuffer(tb);
-                    if (doc == null)
-                    {
+                    if (doc == null) {
                         var editorDocument = new REditorDocument(tb, new ReplWorkspaceItem());
                     }
                 }
             }
 
-            foreach (ITextBuffer tb in removedBuffers)
-            {
-                if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType))
-                {
+            foreach (ITextBuffer tb in removedBuffers) {
+                if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                     IREditorDocument doc = REditorDocument.TryFromTextBuffer(tb);
-                    if (doc != null)
-                    {
+                    if (doc != null) {
                         doc.Close();
                     }
                 }
             }
         }
 
-        sealed class ReplWorkspaceItem : IWorkspaceItem
-        {
-            public string Moniker
-            {
+        sealed class ReplWorkspaceItem : IWorkspaceItem {
+            public string Moniker {
                 get { return "Interactive Window"; }
             }
 
-            public string Path
-            {
+            public string Path {
                 get { return string.Empty; }
             }
 
-            public void Dispose()
-            {
+            public void Dispose() {
             }
         }
     }

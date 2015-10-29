@@ -1,18 +1,15 @@
 ﻿using System.Diagnostics;
 using Microsoft.R.Core.AST.DataTypes.Definitions;
 
-namespace Microsoft.R.Core.AST.DataTypes
-{
+namespace Microsoft.R.Core.AST.DataTypes {
     /// <summary>
     /// Represents scalar (numerical or string) value. 
     /// Scalars are one-element vectors.
     /// </summary>
     [DebuggerDisplay("[{Value}]")]
-    public abstract class RScalar<T>: RObject, IRVector, IRScalar<T>
-    {
+    public abstract class RScalar<T> : RObject, IRVector, IRScalar<T> {
         #region IRVector
-        public int Length
-        {
+        public int Length {
             get { return 1; }
         }
 
@@ -23,13 +20,11 @@ namespace Microsoft.R.Core.AST.DataTypes
         public T Value { get; set; }
         #endregion
 
-        public RScalar(T value)
-        {
+        public RScalar(T value) {
             this.Value = value;
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return this.Value.ToString();
         }
     }

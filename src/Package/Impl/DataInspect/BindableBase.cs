@@ -3,8 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Microsoft.VisualStudio.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect
-{
+namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Implementation of <see cref="INotifyPropertyChanged"/> to simplify models.
     /// </summary>
@@ -27,8 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// support CallerMemberName.</param>
         /// <returns>True if the value was changed, false if the existing value matched the
         /// desired value.</returns>
-        protected virtual bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
-        {
+        protected virtual bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null) {
             if (EqualityComparer<T>.Default.Equals(storage, value)) return false;
 
             storage = value;
@@ -43,11 +41,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect
         /// <param name="propertyName">Name of the property used to notify listeners. This
         /// value is optional and can be provided automatically when invoked from compilers
         /// that support <see cref="CallerMemberNameAttribute"/>.</param>
-        protected void OnPropertyChanged(string propertyName)
-        {
+        protected void OnPropertyChanged(string propertyName) {
             var eventHandler = this.PropertyChanged;
-            if (eventHandler != null)
-            {
+            if (eventHandler != null) {
                 ThreadHelper.Generic.Invoke(() => {
                     eventHandler(this, new PropertyChangedEventArgs(propertyName));
                 });

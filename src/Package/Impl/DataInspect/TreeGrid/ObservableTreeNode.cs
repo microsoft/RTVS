@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// Indicate this node expand to show children
         /// </summary>
         public bool IsExpanded {
-            get { return _isExpanded??false; }
+            get { return _isExpanded ?? false; }
             set {
                 if (_isExpanded.HasValue && _fixIsExpanded) return;
 
@@ -346,7 +346,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 case NotifyCollectionChangedAction.Reset:
                     var deleted = Linearize(node);
                     Count -= deleted.Count;
-                    OnCollectionChanged(() => 
+                    OnCollectionChanged(() =>
                         new NotifyCollectionChangedEventArgs(
                             NotifyCollectionChangedAction.Remove,
                             deleted,

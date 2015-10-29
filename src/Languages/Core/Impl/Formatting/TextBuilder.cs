@@ -3,10 +3,8 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.Languages.Core.Formatting
-{
-    public sealed class TextBuilder
-    {
+namespace Microsoft.Languages.Core.Formatting {
+    public sealed class TextBuilder {
         private StringBuilder _formattedText = new StringBuilder();
         private IndentBuilder _indentBuilder;
 
@@ -14,70 +12,56 @@ namespace Microsoft.Languages.Core.Formatting
         private int _currentIndent;
         private int _currentLine;
 
-        public TextBuilder(IndentBuilder indentBuilder)
-        {
+        public TextBuilder(IndentBuilder indentBuilder) {
             _indentBuilder = indentBuilder;
         }
 
-        public string Text
-        { get { return _formattedText.ToString(); } }
+        public string Text { get { return _formattedText.ToString(); } }
 
-        public int CurrentLineLength
-        { get { return _currentLineLength; } }
+        public int CurrentLineLength { get { return _currentLineLength; } }
 
-        public int CurrentIndent
-        { get { return _currentIndent; } }
+        public int CurrentIndent { get { return _currentIndent; } }
 
-        public IndentBuilder IndentBuilder
-        { get { return _indentBuilder; } }
+        public IndentBuilder IndentBuilder { get { return _indentBuilder; } }
 
-        public bool IsAtNewLine
-        { get { return _currentLineLength == 0; } }
+        public bool IsAtNewLine { get { return _currentLineLength == 0; } }
 
-        public int CopyFollowingLineBreaks(ITextProvider textProvider, int position)
-        {
+        public int CopyFollowingLineBreaks(ITextProvider textProvider, int position) {
             int lineBreakCount = Whitespace.LineBreaksAfterPosition(textProvider, position);
             int recentlyAddedCount = RecentlyAddedLineBreakCount();
             int breaks = lineBreakCount - recentlyAddedCount;
 
-            for (int i = 0; i < breaks; i++)
-            {
+            for (int i = 0; i < breaks; i++) {
                 HardLineBreak();
             }
 
             return breaks;
         }
 
-        public int CopyPrecedingLineBreaks(ITextProvider textProvider, int position)
-        {
+        public int CopyPrecedingLineBreaks(ITextProvider textProvider, int position) {
             int lineBreakCount = Whitespace.LineBreaksBeforePosition(textProvider, position);
             int recentlyAddedCount = RecentlyAddedLineBreakCount();
             int breaks = lineBreakCount - recentlyAddedCount;
 
-            for (int i = 0; i < breaks; i++)
-            {
+            for (int i = 0; i < breaks; i++) {
                 HardLineBreak();
             }
 
             return breaks;
         }
 
-        public void HardLineBreak()
-        {
+        public void HardLineBreak() {
             AppendNewLine(true, true);
         }
 
-        public void SoftLineBreak()
-        {
+        public void SoftLineBreak() {
             AppendNewLine(true, false);
         }
 
-        private int RecentlyAddedLineBreakCount()
-        {
+        private int RecentlyAddedLineBreakCount() {
             int count = 0;
 
-            for (int i = _formattedText.Length - 1; i >= 0; i--)
-            {
+            for (int i = _formattedText.Length - 1; i >= 0; i--) {
                 char ch = _formattedText[i];
 
                 if (!Char.IsWhiteSpace(ch))
@@ -90,14 +74,12 @@ namespace Microsoft.Languages.Core.Formatting
             return count;
         }
 
-        private void AppendNewLine(bool collapseWhitespace = true, bool forceAdd = false)
-        {
+        private void AppendNewLine(bool collapseWhitespace = true, bool forceAdd = false) {
             if (collapseWhitespace)
                 TrimTrailingSpaces();
 
             // Do not insert new line if it is there already
-            if (!IsAtNewLine || forceAdd)
-            {
+            if (!IsAtNewLine || forceAdd) {
                 AppendText('\r');
                 AppendText('\n');
                 _currentLine++;
@@ -108,11 +90,9 @@ namespace Microsoft.Languages.Core.Formatting
 
         // Trim trailing spaces at the end of the existing text in the builder
         // does not affect indentation
-        private void TrimTrailingSpaces()
-        {
+        private void TrimTrailingSpaces() {
             int i;
-            for (i = _formattedText.Length - 1; i >= 0; i--)
-            {
+            for (i = _formattedText.Length - 1; i >= 0; i--) {
                 char ch = _formattedText[i];
 
                 if (ch != ' ' && ch != '\t' && ch != 0x200B)
@@ -129,37 +109,31 @@ namespace Microsoft.Languages.Core.Formatting
         /// Does nothing if line already contains text (current line length is greater than 0).
         /// </summary>
         /// <returns>True of indentation text was inserted</returns>
-        public bool SoftIndent()
-        {
-            if (Char.IsWhiteSpace(LastCharacter))
-            {
+        public bool SoftIndent() {
+            if (Char.IsWhiteSpace(LastCharacter)) {
                 bool allWhitespace = true;
 
                 int i;
-                for (i = _formattedText.Length - 1; i >= 0; i--)
-                {
+                for (i = _formattedText.Length - 1; i >= 0; i--) {
                     char ch = _formattedText[i];
 
                     if (ch == '\r' || ch == '\n')
                         break;
 
-                    if (!Char.IsWhiteSpace(ch))
-                    {
+                    if (!Char.IsWhiteSpace(ch)) {
                         allWhitespace = false;
                         break;
                     }
                 }
 
-                if (allWhitespace)
-                {
+                if (allWhitespace) {
                     _formattedText.Remove(i + 1, _formattedText.Length - i - 1);
                     _currentLineLength = 0;
                     _currentIndent = 0;
                 }
             }
 
-            if (IsAtNewLine)
-            {
+            if (IsAtNewLine) {
                 AppendText(_indentBuilder.IndentLevelString);
                 _currentIndent = _indentBuilder.IndentLevelSize;
                 return true;
@@ -168,8 +142,7 @@ namespace Microsoft.Languages.Core.Formatting
             return false;
         }
 
-        public void AppendTextWithWrap(string text, int wrapLength)
-        {
+        public void AppendTextWithWrap(string text, int wrapLength) {
             if (text.Length == 0)
                 return;
 
@@ -178,14 +151,11 @@ namespace Microsoft.Languages.Core.Formatting
             // Split text into words at whitespace
             var words = text.Split(new char[] { ' ', '\t', '\r', '\n' });
 
-            for (int i = 0; i < words.Length; i++)
-            {
+            for (int i = 0; i < words.Length; i++) {
                 var word = words[i];
 
-                if (word.Length > 0)
-                {
-                    if (CurrentLineLength + word.Length > wrapLength)
-                    {
+                if (word.Length > 0) {
+                    if (CurrentLineLength + word.Length > wrapLength) {
                         AppendNewLine();
                         SoftIndent();
                     }
@@ -194,31 +164,25 @@ namespace Microsoft.Languages.Core.Formatting
 
                     if (i < words.Length - 1)
                         AppendSpace();
-                }
-                else if (!Char.IsWhiteSpace(LastCharacter))
-                {
+                } else if (!Char.IsWhiteSpace(LastCharacter)) {
                     AppendSpace();
                 }
             }
         }
 
 
-        public void NewIndentLevel()
-        {
+        public void NewIndentLevel() {
             _indentBuilder.NewIndentLevel();
         }
 
-        public void CloseIndentLevel()
-        {
+        public void CloseIndentLevel() {
             _indentBuilder.CloseIndentLevel();
         }
 
-        public void AppendText(string text)
-        {
+        public void AppendText(string text) {
             Debug.Assert(text.IndexOfAny(new char[] { '\r', '\n' }) < 0, "AppendText only accepts texts without line breaks. Use AppendPreformattedText instead");
 
-            if (_currentLineLength == 0 && !string.IsNullOrWhiteSpace(text))
-            {
+            if (_currentLineLength == 0 && !string.IsNullOrWhiteSpace(text)) {
                 SoftIndent();
             }
 
@@ -226,27 +190,20 @@ namespace Microsoft.Languages.Core.Formatting
             _currentLineLength += text.Length;
         }
 
-        public void AppendPreformattedText(string text)
-        {
-            for (int i = 0; i < text.Length; i++)
-            {
+        public void AppendPreformattedText(string text) {
+            for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
-                if (ch == '\r' || ch == '\n')
-                {
+                if (ch == '\r' || ch == '\n') {
                     AppendNewLine();
                     i++;
-                }
-                else
-                {
+                } else {
                     AppendText(ch);
                 }
             }
         }
 
-        public void AppendText(char ch)
-        {
-            if (_currentLineLength == 0 && !char.IsWhiteSpace(ch))
-            {
+        public void AppendText(char ch) {
+            if (_currentLineLength == 0 && !char.IsWhiteSpace(ch)) {
                 SoftIndent();
             }
 
@@ -254,29 +211,23 @@ namespace Microsoft.Languages.Core.Formatting
             _currentLineLength++;
         }
 
-        public void AppendSpace()
-        {
-            if (_currentLineLength > 0 && !char.IsWhiteSpace(LastCharacter))
-            {
+        public void AppendSpace() {
+            if (_currentLineLength > 0 && !char.IsWhiteSpace(LastCharacter)) {
                 AppendText(' ');
             }
         }
 
-        public void Remove(int start, int length)
-        {
+        public void Remove(int start, int length) {
             _formattedText.Remove(start, length);
         }
 
-        public char LastCharacter
-        {
-            get
-            {
+        public char LastCharacter {
+            get {
                 return _formattedText.Length > 0 ? _formattedText[_formattedText.Length - 1] : '\0';
             }
         }
 
-        public int Length
-        {
+        public int Length {
             get { return _formattedText.Length; }
         }
     }

@@ -1,11 +1,9 @@
 ﻿
-namespace Microsoft.Languages.Editor.TaskList.Definitions
-{
+namespace Microsoft.Languages.Editor.TaskList.Definitions {
     /// <summary>
     /// Represents an item in a task list
     /// </summary>
-    public interface IEditorTaskListItem
-    {
+    public interface IEditorTaskListItem {
         /// <summary>
         /// Task item description
         /// </summary>

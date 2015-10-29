@@ -1,14 +1,12 @@
 ﻿using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Languages.Editor.Text
-{
+namespace Microsoft.Languages.Editor.Text {
     /// <summary>
     /// Export this interface on an object that wants to receive
     /// events when document text buffer is getting created
     /// and disposed and when view is created for the text buffer.
     /// </summary>
-    public interface ITextBufferListener
-    {
+    public interface ITextBufferListener {
         /// <summary>
         /// Called when a text buffer gets attached to its first view
         /// </summary>

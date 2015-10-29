@@ -5,11 +5,9 @@ using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 
-namespace Microsoft.R.Core.AST.Statements
-{
+namespace Microsoft.R.Core.AST.Statements {
     [DebuggerDisplay("[KeywordExpression: {Text}]")]
-    public class KeywordExpression : AstNode, IKeywordExpression
-    {
+    public class KeywordExpression : AstNode, IKeywordExpression {
         #region IKeywordExpression
         public TokenNode OpenBrace { get; private set; }
         public IExpression Expression { get; private set; }
@@ -21,24 +19,20 @@ namespace Microsoft.R.Core.AST.Statements
         public string Text { get; private set; }
         #endregion
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
-            if (ParseKeyword(context, parent))
-            {
+        public override bool Parse(ParseContext context, IAstNode parent) {
+            if (ParseKeyword(context, parent)) {
+
                 this.OpenBrace = RParser.ParseOpenBraceSequence(context, this);
-                if (this.OpenBrace != null)
-                {
+                if (this.OpenBrace != null) {
                     this.Expression = new Expression(inGroup: true);
                     this.Expression.Parse(context, this);
 
                     // Even if expression is broken but we are at 
                     // the closing brace we want to recover and continue.
 
-                    if (context.Tokens.CurrentToken.TokenType == Tokens.RTokenType.CloseBrace)
-                    {
+                    if (context.Tokens.CurrentToken.TokenType == Tokens.RTokenType.CloseBrace) {
                         this.CloseBrace = RParser.ParseCloseBraceSequence(context, this);
-                        if (this.CloseBrace != null)
-                        {
+                        if (this.CloseBrace != null) {
                             this.Parent = parent;
                             return true;
                         }
@@ -49,8 +43,7 @@ namespace Microsoft.R.Core.AST.Statements
             return false;
         }
 
-        protected bool ParseKeyword(ParseContext context, IAstNode parent)
-        {
+        protected bool ParseKeyword(ParseContext context, IAstNode parent) {
             this.Keyword = RParser.ParseKeyword(context, this);
             this.Text = context.TextProvider.GetText(this.Keyword);
 
