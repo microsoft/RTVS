@@ -174,7 +174,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
             _recipients.Clear();
             _attachments.Clear();
-            _result = 0;
+            _result = (int)MapiErrorCode.MAPI_SUCCESS;
         }
 
         enum HowTo { MAPI_ORIG = 0, MAPI_TO, MAPI_CC, MAPI_BCC };
