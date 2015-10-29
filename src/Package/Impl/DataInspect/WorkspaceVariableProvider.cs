@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
@@ -102,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #endregion
 
         private void OnVariableChanged(object sender, VariableChangedArgs e) {
-            UpdateList(e.NewVariable).DoNotWait();
+            UpdateList(e.NewVariable).SilenceException<OperationCanceledException>().DoNotWait();
         }
 
         private async Task UpdateList(EvaluationWrapper e) {

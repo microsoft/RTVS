@@ -341,6 +341,8 @@ namespace Microsoft.R.Host.Client {
                 await _runTask;
             } catch (OperationCanceledException) {
                 // Expected during disconnect.
+            } catch (WebSocketException) {
+                // Possible and valid during disconnect.
             }
         }
 
