@@ -50,7 +50,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             var vsWindow = VsInteractiveWindowFactory.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType));
             vsWindow.InteractiveWindow.TextView.Closed += textViewOnClosed;
-            vsWindow.InteractiveWindow.TextView.Options.SetOptionValue(InteractiveWindowOptions.SmartUpDown, true);
 
             var window = vsWindow.InteractiveWindow;
             window.InitializeAsync().DoNotWait();

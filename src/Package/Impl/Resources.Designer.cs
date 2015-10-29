@@ -88,7 +88,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You can either proceed and try creating e-mail anyway or try and upload log files to a share and then send the link in e-mail to rtvscore@microsoft.com..
+        ///   Looks up a localized string similar to Please place archived files on a file share and add link to the e-mail. When you click OK, Visual Studio will open TEMP folder in the Windows Explorer..
         /// </summary>
         public static string AttachmentTooLarge2 {
             get {
@@ -97,20 +97,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} file that can be found in {1}.
+        ///   Looks up a localized string similar to Archived logs are in {0} file that can be found in {1}.
         /// </summary>
         public static string AttachmentTooLarge3 {
             get {
                 return ResourceManager.GetString("AttachmentTooLarge3", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Proceed with creating an e-mail?.
-        /// </summary>
-        public static string AttachmentTooLarge4 {
-            get {
-                return ResourceManager.GetString("AttachmentTooLarge4", resourceCulture);
             }
         }
         
