@@ -13,6 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands
         {
             List<ICommand> commands = new List<ICommand>();
 
+            commands.Add(new HistoryNavigationCommand(textView));
             commands.Add(new ReplFormatDocumentCommand(textView, textBuffer));
             commands.Add(new FormatSelectionCommand(textView, textBuffer));
             commands.Add(new FormatOnPasteCommand(textView, textBuffer));
