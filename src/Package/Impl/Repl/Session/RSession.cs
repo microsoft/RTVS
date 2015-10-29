@@ -152,12 +152,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         }
 
         Task IRCallbacks.Disconnected() {
+            Disconnected?.Invoke(this, EventArgs.Empty);
+
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
             currentRequest?.Complete();
 
             ClearPendingRequests();
 
-            Disconnected?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
         }
 
