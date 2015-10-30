@@ -113,7 +113,7 @@
     <Compile Include="Plots\RPlotWindowContainer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Plots\RPlotWindowHook.cs" />
+    <Compile Include="Plots\RPlotWindowHost.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\ProjectIconProvider.cs" />

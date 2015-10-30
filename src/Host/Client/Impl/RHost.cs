@@ -449,7 +449,7 @@ namespace Microsoft.R.Host.Client {
             return _runTask = RunWorker(ct);
         }
 
-        public async Task CreateAndRun(string rHome, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
+        public async Task CreateAndRun(string rHome, IntPtr plotWindowContainerHandle, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
@@ -464,6 +464,7 @@ namespace Microsoft.R.Host.Client {
             psi.UseShellExecute = false;
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
+            psi.Arguments = plotWindowContainerHandle.ToInt64().ToString();
 
             using (this)
             using (_process = Process.Start(psi)) {

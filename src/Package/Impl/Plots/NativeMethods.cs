@@ -4,6 +4,8 @@ using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal static class NativeMethods {
+        public const int WM_USER = 0x0400;
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
