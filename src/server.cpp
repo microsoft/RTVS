@@ -73,7 +73,11 @@ namespace rhost {
 #endif
 
                 if (!is_connection_closed) {
-                    return conn.send(json, websocketpp::frame::opcode::text);
+                    auto err = conn.send(json, websocketpp::frame::opcode::text);
+                    if (err) {
+                        fatal_error("Send failed: [%d] %s", err.value(), err.message().c_str());
+                    }
+                    return err;
                 } else {
                     return std::error_code();
                 }
@@ -150,7 +154,7 @@ namespace rhost {
                 SCOPE_WARDEN_RESTORE(allow_callbacks);
                 allow_callbacks = false;
 
-                const auto& expr = msg.args[0].get<std::string>();
+                const auto& expr = from_utf8(msg.args[0].get<std::string>());
                 SEXP env = nullptr;
                 bool is_cancelable = false, json_result = false;
 
@@ -251,18 +255,18 @@ namespace rhost {
 
                 picojson::value error, value;
                 if (result.has_error) {
-                    error = picojson::value(result.error);
+                    error = picojson::value(to_utf8(result.error));
                 }
                 if (result.has_value) {
                     if (json_result) {
-                        auto err = picojson::parse(value, result.value);
+                        auto err = picojson::parse(value, to_utf8(result.value));
                         if (!err.empty()) {
                             fatal_error(
                                 "'%s': evaluation result couldn't be parsed as JSON: %s\n\n%s",
                                 msg.name.c_str(), err.c_str(), result.value.c_str());
                         }
                     } else {
-                        value = picojson::value(result.value);
+                        value = picojson::value(to_utf8(result.value));
                     }
                 }
 
