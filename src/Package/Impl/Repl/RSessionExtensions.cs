@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// <param name="session">R Session</param>
         /// <param name="function">Function to scheduel</param>
         public static void ScheduleEvaluation(this IRSession session, Func<IRSessionEvaluation, Task> function) {
-            session.GetScheduleEvaluationTask(function).SilenceException<OperationCanceledException>().DoNotWait();
+            session.GetScheduleEvaluationTask(function).DoNotWait();
         }
 
         private static async Task GetScheduleEvaluationTask(this IRSession session, Func<IRSessionEvaluation, Task> function) {

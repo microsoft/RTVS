@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 if (HasChildren) {
                     if (IsExpanded) {
-                        StartUpdatingChildren(Model).SilenceException<OperationCanceledException>().DoNotWait();
+                        StartUpdatingChildren(Model).DoNotWait();
                     }
                 }
             }
