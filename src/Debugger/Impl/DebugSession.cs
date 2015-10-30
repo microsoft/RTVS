@@ -195,7 +195,7 @@ namespace Microsoft.R.Debugger {
                 await ExecuteBrowserCommandAsync(commands[i]);
             }
 
-            ExecuteBrowserCommandAsync(commands.Last()).DoNotWait();
+            ExecuteBrowserCommandAsync(commands.Last()).SilenceException<OperationCanceledException>().DoNotWait();
             await _stepTcs.Task;
         }
 
