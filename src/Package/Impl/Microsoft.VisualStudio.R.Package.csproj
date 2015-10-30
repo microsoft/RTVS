@@ -108,7 +108,12 @@
     <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
     <Compile Include="Plots\Commands\PrintPlotCommand.cs" />
     <Compile Include="Plots\IPlotContentProvider.cs" />
+    <Compile Include="Plots\NativeMethods.cs" />
     <Compile Include="Plots\PlotContentProvider.cs" />
+    <Compile Include="Plots\RPlotWindowContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Plots\RPlotWindowHook.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\ProjectIconProvider.cs" />
