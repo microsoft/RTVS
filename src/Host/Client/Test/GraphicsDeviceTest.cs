@@ -216,7 +216,7 @@ grid.newpage()
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;
-            host.CreateAndRun(rhome, psi).GetAwaiter().GetResult();
+            host.CreateAndRun(rhome, IntPtr.Zero, psi).GetAwaiter().GetResult();
             // Right now we may receive more than one xaml file, so just use the last one
             // Later, we'll want to check that we got the expected count
             Assert.IsTrue(callbacks.XamlFilePaths.Count > 0);

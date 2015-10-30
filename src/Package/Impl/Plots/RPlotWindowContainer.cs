@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -9,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     /// Parent of x64 RPlot window
     /// </summary>
     class RPlotWindowContainer : UserControl, IVsWindowPane {
- 
+        #region IVsWindowPane
         public int ClosePane() {
             return VSConstants.S_OK;
         }
@@ -54,11 +55,36 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public int TranslateAccelerator(OLE.Interop.MSG[] lpmsg) {
             return VSConstants.E_NOTIMPL;
         }
+        #endregion
+
+        private IntPtr _rPlotWindowHandle = IntPtr.Zero;
+        public IntPtr RPlotWindowHandle {
+            get {
+                if(_rPlotWindowHandle == IntPtr.Zero) {
+                    NativeMethods.EnumChildWindows(this.Handle, EnumChildWindowsProc, IntPtr.Zero);
+                    _rPlotWindowHandle = _rStaticPlotHandle;
+                }
+
+                return _rPlotWindowHandle;
+            }
+        }
+
+        private static IntPtr _rStaticPlotHandle = IntPtr.Zero;
+        private static bool EnumChildWindowsProc(IntPtr hWnd, IntPtr lParam) {
+            StringBuilder sb = new StringBuilder(512);
+            NativeMethods.GetClassName(hWnd, sb, 512);
+            if(sb.ToString() == "GraphApp") {
+                _rStaticPlotHandle = hWnd;
+                return false;
+            }
+            return true;
+        }
 
         protected override void OnClientSizeChanged(EventArgs e) {
-
-            IntPtr rPlotWindow = RPlotWindowHook.RPlotWindowHandle;
-            NativeMethods.MoveWindow(rPlotWindow, 0, 0, this.Width, this.Height, bRepaint: true);
+            IntPtr rPlotWindow = RPlotWindowHandle;
+            if (rPlotWindow != IntPtr.Zero) {
+                NativeMethods.MoveWindow(rPlotWindow, 0, 0, this.Width, this.Height, bRepaint: true);
+            }
 
             base.OnClientSizeChanged(e);
         }

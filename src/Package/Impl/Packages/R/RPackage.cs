@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             RToolsSettings.Init(AppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
-            RPlotWindowHook.SetHook();
+            RPlotWindowHost.Init();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
@@ -80,7 +80,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 _indexBuildingTask = null;
             }
 
-            RPlotWindowHook.RemoveHook();
             LogCleanup.Cancel();
             ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
