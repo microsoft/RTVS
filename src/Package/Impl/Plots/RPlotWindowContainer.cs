@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -12,9 +10,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     /// </summary>
     class RPlotWindowContainer : UserControl, IVsWindowPane {
  
-        private IntPtr _rPlotWindowHandle = IntPtr.Zero;
-        private Control _rPlotWindowControl;
-
         public int ClosePane() {
             return VSConstants.S_OK;
         }
@@ -61,32 +56,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         protected override void OnClientSizeChanged(EventArgs e) {
-            FindRPlotWindow();
 
-            if (_rPlotWindowControl != null) {
-                _rPlotWindowControl.Width = this.Width;
-                _rPlotWindowControl.Height = this.Height;
-            }
+            IntPtr rPlotWindow = RPlotWindowHook.RPlotWindowHandle;
+            NativeMethods.MoveWindow(rPlotWindow, 0, 0, this.Width, this.Height, bRepaint: true);
 
             base.OnClientSizeChanged(e);
-        }
-
-        private void FindRPlotWindow() {
-            if (_rPlotWindowControl == null) {
-                NativeMethods.EnumChildWindows(this.Handle, EnumChildWindowsProc, IntPtr.Zero);
-            }
-            _rPlotWindowControl = _rPlotWindowHandle != IntPtr.Zero ? Control.FromHandle(_rPlotWindowHandle) : null;
-        }
-
-        private bool EnumChildWindowsProc(IntPtr hWnd, IntPtr lParam) {
-            StringBuilder sb = new StringBuilder(512);
-            NativeMethods.GetClassName(hWnd, sb, 512);
-            if (sb.ToString() == "GraphApp") {
-                _rPlotWindowHandle = hWnd;
-                return false;
-            }
-
-            return true;
         }
     }
 }
