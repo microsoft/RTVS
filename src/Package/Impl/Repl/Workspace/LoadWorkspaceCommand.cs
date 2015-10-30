@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 return;
             }
 
-            LoadWorkspace(session, file).DoNotWait();
+            LoadWorkspace(session, file).SilenceException<OperationCanceledException>().DoNotWait();
         }
 
         private async Task LoadWorkspace(IRSession session, string file) {
