@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
-using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
@@ -23,15 +26,19 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             Caption = Resources.PlotWindowCaption;
 
             // set content with presenter
-            PlotContentProvider = new PlotContentProvider();
-            PlotContentProvider.PlotChanged += ContentProvider_PlotChanged;
-            Content = new XamlPresenter(PlotContentProvider);
+            //PlotContentProvider = new PlotContentProvider();
+            //PlotContentProvider.PlotChanged += ContentProvider_PlotChanged;
+            //Content = new XamlPresenter(PlotContentProvider);
 
             // initialize toolbar
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
             Controller c = new Controller();
             c.AddCommandSet(GetCommands());
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
+        }
+
+        public override object GetIVsWindowPane() {
+            return new RPlotWindowContainer();
         }
 
         public IPlotContentProvider PlotContentProvider { get; private set; }
