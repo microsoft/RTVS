@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 return;
             }
 
-            SaveWorkspace(session, file).DoNotWait();
+            SaveWorkspace(session, file).SilenceException<OperationCanceledException>().DoNotWait();
         }
 
         private async Task SaveWorkspace(IRSession session, string file) {
