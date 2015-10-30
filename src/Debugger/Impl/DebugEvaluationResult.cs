@@ -118,6 +118,7 @@ namespace Microsoft.R.Debugger {
         Slot,
     }
 
+    [Flags]
     public enum DebugValueEvaluationResultFlags {
         None,
         Atomic = 1 << 1,
