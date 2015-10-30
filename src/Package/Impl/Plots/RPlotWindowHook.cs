@@ -10,6 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private static IntPtr _nextHook = IntPtr.Zero;
         private static IntPtr _hwndPlotWindow = IntPtr.Zero;
         private static bool _processing;
+        private static NativeMethods.HookProc _hookProc = new NativeMethods.HookProc(RPlotHookProc);
 
         private static IntPtr RPlotHookProc(int code, IntPtr wParam, IntPtr lParam) {
             if (code == 5) {
@@ -18,13 +19,14 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                     StringBuilder sb = new StringBuilder(512);
                     NativeMethods.GetClassName(wParam, sb, 512);
                     if (sb.ToString() == "GraphApp")
-                        if (PlotWindowContainerHandle != NativeMethods.GetParent(wParam)) {
+                        if (RPlotWindowContainerHandle != NativeMethods.GetParent(wParam)) {
+                            RPlotWindowHandle = wParam;
                             NativeMethods.RECT rc = new NativeMethods.RECT();
                             NativeMethods.SetWindowLong(wParam, (int)NativeMethods.WindowLongFlags.GWL_STYLE, 0x40000000 /*WS_CHILD*/);
                             NativeMethods.SetWindowLong(wParam, (int)NativeMethods.WindowLongFlags.GWL_EXSTYLE, 0);
                             NativeMethods.SetMenu(wParam, IntPtr.Zero);
-                            NativeMethods.SetParent(wParam, PlotWindowContainerHandle);
-                            NativeMethods.GetClientRect(PlotWindowContainerHandle, out rc);
+                            NativeMethods.SetParent(wParam, RPlotWindowContainerHandle);
+                            NativeMethods.GetClientRect(RPlotWindowContainerHandle, out rc);
                             NativeMethods.SetWindowPos(wParam, IntPtr.Zero, 0, 0, rc.Right, rc.Bottom, NativeMethods.SetWindowPosFlags.ShowWindow | NativeMethods.SetWindowPosFlags.FrameChanged);
                         }
                 }
@@ -35,7 +37,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public static void SetHook() {
-            _nextHook = NativeMethods.SetWindowsHookEx(NativeMethods.HookType.WH_CBT, RPlotHookProc, IntPtr.Zero, 0);
+            _nextHook = NativeMethods.SetWindowsHookEx(NativeMethods.HookType.WH_CBT, _hookProc, IntPtr.Zero, NativeMethods.GetCurrentThreadId());
+            if(_nextHook == IntPtr.Zero) {
+                uint error = NativeMethods.GetLastError();
+            }
         }
 
         public static void RemoveHook() {
@@ -45,7 +50,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        private static IntPtr PlotWindowContainerHandle {
+        public static IntPtr RPlotWindowHandle { get; private set; }
+
+        private static IntPtr RPlotWindowContainerHandle {
             get {
                 if (_hwndPlotWindow == IntPtr.Zero) {
                     ToolWindowUtilities.ShowWindowPane<PlotWindowPane>(0, true);
