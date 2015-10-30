@@ -138,7 +138,7 @@ namespace Microsoft.R.Debugger.Engine {
                 using (var inter = await t.ConfigureAwait(false)) {
                     await inter.RespondAsync("browser()\n").ConfigureAwait(false);
                 }
-            }).SilenceException<OperationCanceledException>().DoNotWait();
+            }).DoNotWait();
 
             return VSConstants.S_OK;
         }
@@ -252,7 +252,7 @@ namespace Microsoft.R.Debugger.Engine {
                 // debugger that user has explicitly entered something at the Browse prompt. 
                 if (_sentContinue != true) {
                     _sentContinue = true;
-                    DebugSession.ExecuteBrowserCommandAsync("c").SilenceException<OperationCanceledException>().DoNotWait();
+                    DebugSession.ExecuteBrowserCommandAsync("c").DoNotWait();
                 }
             }
 

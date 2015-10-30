@@ -110,7 +110,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void AbortExecution() {
-            Session.CancelAllAsync().SilenceException<OperationCanceledException>().DoNotWait();
+            Session.CancelAllAsync().DoNotWait();
         }
 
         public string GetPrompt() {
