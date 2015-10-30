@@ -11,87 +11,54 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
+    [Flags]
     public enum DebugEvaluationResultFields : ulong {
         None,
-
-        [Description("expression")]
         Expression = 1 << 1,
-
-        [Description("kind")]
         Kind = 1 << 2,
-
-        [Description("repr")]
         Repr = 1 << 3,
-
-        [Description("repr.dput")]
         ReprDPut = 1 << 4,
-
-        [Description("repr.toString")]
         ReprToString = 1 << 5,
-
-        [Description("repr.str")]
         ReprStr = 1 << 6,
-
         ReprAll = Repr | ReprDPut | ReprStr | ReprToString,
-
-        [Description("type")]
-        Type = 1 << 7,
-
-        [Description("classes")]
+        TypeName = 1 << 7,
         Classes = 1 << 8,
-
-        [Description("length")]
         Length = 1 << 9,
-
-        [Description("slot_count")]
         SlotCount = 1 << 10,
-
-        [Description("attr_count")]
         AttrCount = 1 << 11,
-
-        [Description("name_count")]
         NameCount = 1 << 12,
-
-        [Description("dim")]
         Dim = 1 << 13,
-
-        [Description("env_name")]
         EnvName = 1 << 14,
-
-        [Description("flags")]
         Flags = 1 << 15,
-
         All = ulong.MaxValue,
     }
 
     internal static class DebugEvaluationResultFieldsExtensions {
-        private static readonly KeyValuePair<DebugEvaluationResultFields, string>[] _mapping =
-            (from DebugEvaluationResultFields field in Enum.GetValues(typeof(DebugEvaluationResultFields))
-             let member = typeof(DebugEvaluationResultFields).GetField(field.ToString())
-             let attr = (DescriptionAttribute)Attribute.GetCustomAttribute(member, typeof(DescriptionAttribute))
-             where attr != null
-             select new KeyValuePair<DebugEvaluationResultFields, string>(field, "'" + attr.Description + "'")
-            ).ToArray();
+        private static readonly Dictionary<DebugEvaluationResultFields, string> _mapping = new Dictionary<DebugEvaluationResultFields, string> {
+            [DebugEvaluationResultFields.Expression] = "expression",
+            [DebugEvaluationResultFields.Kind] = "kind",
+            [DebugEvaluationResultFields.Repr] = "repr",
+            [DebugEvaluationResultFields.ReprDPut] = "repr.dput",
+            [DebugEvaluationResultFields.ReprToString] = "repr.toString",
+            [DebugEvaluationResultFields.ReprStr] = "repr.str",
+            [DebugEvaluationResultFields.TypeName] = "type",
+            [DebugEvaluationResultFields.Classes] = "classes",
+            [DebugEvaluationResultFields.Length] = "length",
+            [DebugEvaluationResultFields.SlotCount] = "slot_count",
+            [DebugEvaluationResultFields.AttrCount] = "attr_count",
+            [DebugEvaluationResultFields.NameCount] = "name_count",
+            [DebugEvaluationResultFields.Dim] = "dim",
+            [DebugEvaluationResultFields.EnvName] = "env_name",
+            [DebugEvaluationResultFields.Flags] = "flags",
+        };
 
         public static string ToRVector(this DebugEvaluationResultFields fields) {
             if (fields == DebugEvaluationResultFields.All) {
                 return null;
             }
 
-            var sb = new StringBuilder("c(");
-
-            int n = 0;
-            foreach (var kv in _mapping) {
-                if (fields.HasFlag(kv.Key)) {
-                    if (n++ != 0) {
-                        sb.Append(", ");
-                    }
-                    sb.Append(kv.Value);
-                }
-            }
-
-            sb.Append(")");
-            return sb.ToString();
+            var fieldNames = _mapping.Where(kv => fields.HasFlag(kv.Key)).Select(kv => "'" + kv.Value + "'");
+            return Invariant($"c({string.Join(", ", fieldNames)})");
         }
     }
 

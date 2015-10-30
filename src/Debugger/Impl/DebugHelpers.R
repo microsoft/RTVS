@@ -74,13 +74,12 @@
     cat('\n', file = con, sep = '');
     return(paste0(textConnectionValue(con), collapse=''));
   }
-  
-  if (is.null(data)) {
-    cat('null', file = con, sep = '');
-  } else if (is.atomic(data)) {
+
+  to_literal_or_array <- function() {
     if (length(data) == 0) {
       cat('null', file = con, sep = '');
     } else if (length(data) == 1 && !is.na(data)) {
+      # Atomic vector of length 1 is a boolean, number, or string literal.
       if (is.logical(data)) {
         cat((if (data) 'true' else 'false'), file = con, sep = '');
       } else if (is.integer(data)) {
@@ -89,48 +88,71 @@
         dput(data, con);
       }
     } else {
+      # If it's 0 or more than 1 element, treat it as an array.
       .rtvs.toJSON(as.list(data), con);
     }
-  } else if (is.list(data) || is.environment(data)) {
+  }
+
+  to_object <- function() {
+    if (any(is.na(names)) || any(names == '')) {
+      stop("list must either have all elements named or all elements unnamed to be convertible to JSON");
+    }
+    
+    cat('{', file = con, sep = '');
     commas <- 0;
-    names <- names(data);
-    if (!is.environment(data) && (is.null(names) || all(is.na(names)) || all(names == ''))) {
-      cat('[', file = con, sep = '');
-      for (x in data) {
-        if (is.atomic(x) && is.na(x)) {
-          next;
-        }
-        
-        if (commas > 0) {
-          cat(', ', file = con, sep = '');
-        }
-        
-        commas <- commas + 1;
-        .rtvs.toJSON(x, con);
-      }
-      cat(']', file = con, sep = '');
-    } else {
-      if (any(is.na(names)) || any(names == '')) {
-        stop("list must either have all elements named or all elements unnamed to be convertible to JSON");
+    
+    for (name in names) {
+      x <- data[[name]];
+      if (length(x) == 1 && is.atomic(x) && is.na(x)) {
+        next;
       }
       
-      cat('{', file = con, sep = '');
-      for (name in names) {
-        x <- data[[name]];
-        if (length(x) == 1 && is.atomic(x) && is.na(x)) {
-          next;
-        }
-        
-        if (commas > 0) {
-          cat(', ', file = con, sep = '');
-        }
-        commas <- commas + 1;
-        
-        dput(name, con);
-        cat(': ', file = con, sep = '');
-        .rtvs.toJSON(x, con);
+      if (commas > 0) {
+        cat(', ', file = con, sep = '');
       }
-      cat('}', file = con, sep = '');
+      commas <- commas + 1;
+      
+      dput(name, con);
+      cat(': ', file = con, sep = '');
+      .rtvs.toJSON(x, con);
+    }
+    
+    cat('}', file = con, sep = '');
+  }
+  
+  to_array <- function() {
+    cat('[', file = con, sep = '');
+    commas <- 0;
+    
+    for (x in data) {
+      if (is.atomic(x) && is.na(x)) {
+        next;
+      }
+      
+      if (commas > 0) {
+        cat(', ', file = con, sep = '');
+      }
+      
+      commas <- commas + 1;
+      .rtvs.toJSON(x, con);
+    }
+    
+    cat(']', file = con, sep = '');
+  }
+
+  if (is.null(data)) {
+    cat('null', file = con, sep = '');
+  } else if (is.atomic(data)) {
+    to_literal_or_array();
+  } else if (is.list(data) || is.environment(data)) {
+    names <- names(data);
+    # If it's an environment, it's an object.
+    # If it's a list, then it's an object if all elements have names, and an array if
+    # none of the elements have names (anything in between is considered invalid input).
+    if (!is.environment(data) && (is.null(names) || all(is.na(names)) || all(names == ''))) {
+      to_array();
+    } else {
+      to_object();
     }
   }
 }
@@ -261,24 +283,33 @@
   } else {
     expr <- 'obj';
   }
+  
+  if (missing(count)) {
+    count <- NULL;
+  }
 
-  children <- vector("list", if (missing(count)) 1000 else count);
+  # Preallocate to avoid growing the list on every new child.
+  children <- vector("list", if (is.null(count)) 1000 else count);
   last_child <- 0;
 
-  if (is.environment(obj)) {
+  process_env <- function(fields) {
     names <- ls(obj, all.names = TRUE);
     
-    if (!missing(count)) {
+    if (!is.null(count)) {
       names <- head(names, count);
-      count <- count - length(names);
+      count <<- count - length(names);
     }
     
     for (name in names) {
       name <- .rtvs.toString(name);
+
+      # If a binding has an empty name, or it wasn't a string, it cannot be accessed, so ignore it.
+      # If it's a missing parameter, it doesn't have a value - also ignore it.
       if (name == '' || eval(bquote(missing(.(as.symbol(name)))), obj)) {
         next;
       }
 
+      # Check if it's a promise, and retrieve the promise expression if it is.
       code <- tryCatch({
         .Call(".rtvs.Call.unevaluated_promise", name, obj)
       }, error = function(e) {
@@ -286,51 +317,68 @@
       });
 
       if (!is.null(code)) {
+        # It's a promise - we don't want to force it as it could affect the debugged code.
         value <- list(promise = .rtvs.dput(code));
       } else if (bindingIsActive(name, obj)) {
+        # It's an active binding - we don't want to read it to avoid inadvertently changing program state.
         value <- list(active_binding = TRUE);
       } else {
+        # It's just a regular binding, so get the actual value.
         item_expr <- paste0(expr, '$', .rtvs.dput_symbol(name), collapse = '');
         value <- .rtvs.eval(item_expr, environment(), '$', fields, get(name, envir = obj));
       }
       
       child <- list(value);
       names(child) <- name;
-      last_child <- last_child + 1;
-      children[[last_child]] <- child;
+      last_child <<- last_child + 1;
+      children[[last_child]] <<- child;
     }
   }
-
-  is_S4 <- isS4(obj);
-  names <- .rtvs.NA_if_error(slotNames(class(obj)));
-
-  if (!missing(count)) {
-    names <- head(names, count);
-    count <- count - length(names);
+  
+  if (is.environment(obj)) {
+    process_env(fields);
   }
 
-  for (name in names) {
-    name <- .rtvs.toString(name);
-    if (name == '') {
-      next;
+  process_slots <- function(fields) {
+    is_S4 <- isS4(obj);
+    names <- .rtvs.NA_if_error(slotNames(class(obj)));
+  
+    if (!is.null(count)) {
+      names <- head(names, count);
+      count <<- count - length(names);
     }
-    
-    accessor <- paste0('@', .rtvs.dput_symbol(name), collapse = '');
-    if (is_S4) {
-      slot_expr <- paste0('(', expr, ')', accessor, collapse = '')
-    } else {
-      slot_expr <- paste0('methods::slot((', expr, '), ', .rtvs.dput(name), ')', collapse = '')
+  
+    for (name in names) {
+      name <- .rtvs.toString(name);
+      
+      # If the name is not a string or blank, it cannot be accessed, so ignore it.
+      if (name == '') {
+        next;
+      }
+      
+      # For S4 objects, slots can be accessed with '@'. For other objects, we have to
+      # use slot(). Still, always use '@' as accessor name to show to the user.
+      accessor <- paste0('@', .rtvs.dput_symbol(name), collapse = '');
+      if (is_S4) {
+        slot_expr <- paste0('(', expr, ')', accessor, collapse = '')
+      } else {
+        slot_expr <- paste0('methods::slot((', expr, '), ', .rtvs.dput(name), ')', collapse = '')
+      }
+      
+      value <- .rtvs.eval(slot_expr, environment(), '@', fields, slot(obj, name));
+      
+      child <- list(value);
+      names(child) <- accessor;
+      last_child <<- last_child + 1;
+      children[[last_child]] <<- child;
     }
-    
-    value <- .rtvs.eval(slot_expr, environment(), '@', fields, slot(obj, name));
-    
-    child <- list(value);
-    names(child) <- accessor;
-    last_child <- last_child + 1;
-    children[[last_child]] <- child;
   }
+  
+  # Not just S4 objects have slots, so run this on everything - slotNames() will always
+  # do the right thing.
+  process_slots(fields);
 
-  if (is.atomic(obj) || is.list(obj) || is.language(obj)) {
+  process_items <- function(fields) {  
     n <- length(obj);
 
     names <- names(obj);
@@ -338,19 +386,30 @@
       names <- NULL;
     }
 
+    # For list and language, we always want to show their children, even if there's only one.
+    # For vectors, we don't want to show the child if that's the only item in the vector, to
+    # avoid presenting an infinitely recursive model (a vector of size 1 has the only child,
+    # which is another vector of size 1 etc). However, we do want to show the only child if
+    # it is named, so that the name is exposed.
     if (n != 1 || !is.atomic(obj) || !(is.null(names[[1]]) || is.na(names[[1]]) || names[[1]] == '')) {
-      if (!missing(count)) {
+      if (!is.null(count)) {
         n <- max(n, count);
-        count <- count - n;
+        count <<- count - n;
       }
   
       for (i in 1:n) {
+        # Start with the assumption that this is an unnamed item, accessed by position.
         accessor <- paste0('[[', as.double(i), ']]', collapse = '');
         kind <- '[[';
   
+        # If it has a name, it is a named item - but only if that name is unique, or
+        # if this item corresponds to the first mention of that name - i.e. if we have
+        # c(1,2,3), and names() is c('x','y','x'), then c[[1]] is named 'x', but c[[3]]
+        # is effectively unnamed, because there's no way to address it by name.
         name <- .rtvs.toString(names[[i]]);
         if (name != '' && match(name, names) == i) {
           kind <- '$';
+          # Named items can be accessed with '$' in lists, but other types require brackets.
           if (is.list(obj)) {
             accessor <- paste0('$', .rtvs.dput_symbol(name), collapse = '');
           } else {
@@ -362,12 +421,19 @@
         
         child <- list(value);
         names(child) <- accessor;
-        last_child <- last_child + 1;
-        children[[last_child]] <- child;
+        last_child <<- last_child + 1;
+        children[[last_child]] <<- child;
       }
     }
   }
-
+  
+  # If it is an atomic vector, a list or a language object, it might have children,
+  # some of which are possibly named.
+  if (is.atomic(obj) || is.list(obj) || is.language(obj)) {
+    process_items(fields);
+  }
+    
+  # Trim the preallocated vector to the actual number of children placed in it.
   if (last_child == 0) list() else children[1:last_child]
 }
 
