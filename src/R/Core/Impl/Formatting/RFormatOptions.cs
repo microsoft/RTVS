@@ -1,14 +1,12 @@
 ﻿using Microsoft.Languages.Core.Formatting;
 
-namespace Microsoft.R.Core.Formatting
-{
+namespace Microsoft.R.Core.Formatting {
     /// <summary>
     /// R formatting options. Typical styles can be found at
     /// http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml
     /// http://adv-r.had.co.nz/Style.html
     /// </summary>
-    public class RFormatOptions
-    {
+    public class RFormatOptions {
         public bool BracesOnNewLine { get; set; } = false;
 
         public int IndentSize { get; set; } = 2;

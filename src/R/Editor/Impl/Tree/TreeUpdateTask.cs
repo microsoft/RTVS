@@ -398,7 +398,7 @@ namespace Microsoft.R.Editor.Tree
             if (TextBuffer == null || TextBuffer.EditInProgress)
                 return;
 
-            if (_lastChangeTime != DateTime.MinValue && TimeUtility.MillisecondsSinceUTC(_lastChangeTime) > _parserDelay)
+            if (_lastChangeTime != DateTime.MinValue && TimeUtility.MillisecondsSinceUtc(_lastChangeTime) > _parserDelay)
             {
                 // Kick background parsing when idle slot comes so parser does not hit on every keystroke
                 ProcessPendingTextBufferChanges(async: true);

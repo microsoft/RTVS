@@ -1,25 +1,17 @@
-﻿namespace Microsoft.Markdown.Editor.Tokens
-{
+﻿namespace Microsoft.Markdown.Editor.Tokens {
     /// <summary>
     /// Main regular markdown tokenizer. R Markdown has 
     /// a separate tokenizer.
     /// https://help.github.com/articles/markdown-basics/
     /// </summary>
-    internal class RmdTokenizer : MdTokenizer
-    {
-        public RmdTokenizer()
-        {
-        }
+    internal class RmdTokenizer : MdTokenizer {
 
-        protected override void HandleCharacter()
-        {
-            while (!_cs.IsEndOfStream())
-            {
+        protected override void HandleCharacter() {
+            while (!_cs.IsEndOfStream()) {
                 bool handled = false;
 
                 // Regular content is Latex-like
-                switch (_cs.CurrentChar)
-                {
+                switch (_cs.CurrentChar) {
                     case '#':
                         handled = HandleHeading();
                         break;
@@ -29,8 +21,7 @@
                         break;
 
                     case '_':
-                        if (!char.IsWhiteSpace(_cs.NextChar))
-                        {
+                        if (!char.IsWhiteSpace(_cs.NextChar)) {
                             handled = HandleItalic('_', MarkdownTokenType.Italic);
                         }
                         break;
@@ -44,19 +35,15 @@
                         break;
 
                     case '-':
-                        if (_cs.NextChar == ' ')
-                        {
+                        if (_cs.NextChar == ' ') {
                             handled = HandleListItem();
-                        }
-                        else if (_cs.NextChar == '-' && _cs.LookAhead(2) == '-')
-                        {
+                        } else if (_cs.NextChar == '-' && _cs.LookAhead(2) == '-') {
                             handled = HandleHeading();
                         }
                         break;
 
                     case '=':
-                        if (_cs.NextChar == '=' && _cs.LookAhead(2) == '=')
-                        {
+                        if (_cs.NextChar == '=' && _cs.LookAhead(2) == '=') {
                             handled = HandleHeading();
                         }
                         break;
@@ -66,16 +53,14 @@
                         break;
 
                     default:
-                        if (_cs.IsDecimal())
-                        {
+                        if (_cs.IsDecimal()) {
                             handled = HandleNumberedListItem();
                         }
                         break;
 
                 }
 
-                if (!handled)
-                {
+                if (!handled) {
                     _cs.MoveToNextChar();
                 }
             }

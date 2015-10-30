@@ -7,8 +7,7 @@ using Microsoft.Markdown.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Markdown.Editor.EditorFactory
-{
+namespace Microsoft.Markdown.Editor.EditorFactory {
     /// <summary>
     /// Editor instance factory. Typically imported via MEF
     /// in the host application editor factory such as in
@@ -16,10 +15,8 @@ namespace Microsoft.Markdown.Editor.EditorFactory
     /// </summary>
     [Export(typeof(IEditorFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
-    internal class EditorInstanceFactory : IEditorFactory
-    {
-        public IEditorInstance CreateEditorInstance(IWorkspaceItem workspaceItem, object textBuffer, IEditorDocumentFactory documentFactory)
-        {
+    internal class EditorInstanceFactory : IEditorFactory {
+        public IEditorInstance CreateEditorInstance(IWorkspaceItem workspaceItem, object textBuffer, IEditorDocumentFactory documentFactory) {
             if (textBuffer == null)
                 throw new ArgumentNullException("textBuffer");
 

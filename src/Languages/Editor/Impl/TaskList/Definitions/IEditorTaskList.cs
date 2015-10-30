@@ -1,12 +1,10 @@
 ﻿using System;
 
-namespace Microsoft.Languages.Editor.TaskList.Definitions
-{
+namespace Microsoft.Languages.Editor.TaskList.Definitions {
     /// <summary>
     /// Primary interface to the editor host application task list
     /// </summary>
-    public interface IEditorTaskList
-    {
+    public interface IEditorTaskList {
         /// <summary>
         /// Registers task source with the task list. Typically each document
         /// instance provides a single task source.

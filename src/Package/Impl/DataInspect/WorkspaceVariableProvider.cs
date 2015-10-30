@@ -104,7 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #endregion
 
         private void OnVariableChanged(object sender, VariableChangedArgs e) {
-            UpdateList(e.NewVariable).SilenceException<OperationCanceledException>().DoNotWait();
+            UpdateList(e.NewVariable).DoNotWait();
         }
 
         private async Task UpdateList(EvaluationWrapper e) {

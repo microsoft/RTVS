@@ -3,25 +3,20 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
-namespace Microsoft.Markdown.Editor.Tokens
-{
+namespace Microsoft.Markdown.Editor.Tokens {
     [DebuggerDisplay("[{TokenType} : {Start}...{End}), Length = {Length}")]
-    public class MarkdownToken : Token<MarkdownTokenType>, IComparable<MarkdownToken>
-    {
+    public class MarkdownToken : Token<MarkdownTokenType>, IComparable<MarkdownToken> {
         public static MarkdownToken EndOfStreamToken = new MarkdownToken(MarkdownTokenType.EndOfStream);
 
         public MarkdownToken(MarkdownTokenType tokenType)
-            : this(tokenType, TextRange.EmptyRange)
-        {
+            : this(tokenType, TextRange.EmptyRange) {
         }
 
         public MarkdownToken(MarkdownTokenType tokenType, ITextRange range)
-            : base(tokenType, range)
-        {
+            : base(tokenType, range) {
         }
 
-        public int CompareTo(MarkdownToken other)
-        {
+        public int CompareTo(MarkdownToken other) {
             if (other == null)
                 return -1;
 

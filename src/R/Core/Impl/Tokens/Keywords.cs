@@ -1,22 +1,17 @@
 ﻿using System;
 
-namespace Microsoft.R.Core.Tokens
-{
-    public static class Keywords
-    {
-        public static string[] KeywordList
-        {
+namespace Microsoft.R.Core.Tokens {
+    public static class Keywords {
+        public static string[] KeywordList {
             get { return _keywords; }
         }
 
-        public static bool IsKeyword(string candidate)
-        {
+        public static bool IsKeyword(string candidate) {
             // R is case sensitive language
-            return Array.BinarySearch<string>(_keywords, candidate) >= 0;
+            return Array.BinarySearch(_keywords, candidate) >= 0;
         }
 
-        internal static string[] _keywords = new string[]
-        {
+        internal static string[] _keywords = {
             "break",
             "else",
             "for",

@@ -2,26 +2,40 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Interop {
     internal sealed class MapiMail {
+        private static readonly ManualResetEventSlim _completed = new ManualResetEventSlim();
+        private static volatile int _result;
+
+        private List<MapiRecipDesc> _recipients = new List<MapiRecipDesc>();
+        private List<string> _attachments = new List<string>();
+
+        const int MAPI_LOGON_UI = 0x00000001;
+        const int MAPI_DIALOG_MODELESS = 0x00000004;
+        const int MAPI_DIALOG = 0x00000008;
+        const int maxAttachments = 20;
+
         public bool AddRecipientTo(string email) {
             return AddRecipient(email, HowTo.MAPI_TO);
         }
 
         public void AddAttachment(string strAttachmentFileName) {
-            m_attachments.Add(strAttachmentFileName);
+            _attachments.Add(strAttachmentFileName);
         }
 
         public int SendMailPopup(string strSubject, string strBody) {
             return SendMail(strSubject, strBody, MAPI_LOGON_UI | MAPI_DIALOG | MAPI_DIALOG_MODELESS);
         }
 
-        //public int SendMailDirect(string strSubject, string strBody) {
-        //    return SendMail(strSubject, strBody, MAPI_LOGON_UI);
-        //}
+        class ThreadParam {
+            public MapiMessage Message { get; set; }
+            public IntPtr VsWindow { get; set; }
+            public int MapiFlags { get; set; }
+        }
 
         [DllImport("MAPI32.DLL")]
         static extern int MAPISendMail(IntPtr sess, IntPtr hwnd,
@@ -39,10 +53,42 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
             msg.recips = GetRecipients(out msg.recipCount);
             msg.files = GetAttachments(out msg.fileCount);
 
-            m_lastError = MAPISendMail(IntPtr.Zero, vsWindow, msg, how, 0);
+            ThreadParam p = new ThreadParam() {
+                Message = msg,
+                VsWindow = vsWindow,
+                MapiFlags = how
+            };
+
+            bool success = false;
+            Thread t = null;
+            try {
+                _completed.Reset();
+                t = new Thread(ThreadProc, 8192);
+                t.Start(p);
+                success = _completed.Wait(5000);
+            } catch (Exception) { }
+
+            if (!success) {
+                if (t != null) {
+                    t.Abort();
+                }
+            }
 
             Cleanup(ref msg);
-            return m_lastError;
+            return _result;
+        }
+
+        private static void ThreadProc(object o) {
+            try {
+                ThreadParam p = o as ThreadParam;
+                _result = MAPISendMail(IntPtr.Zero, p.VsWindow, p.Message, p.MapiFlags, 0);
+            } catch (ThreadAbortException) {
+                _result = (int)MapiErrorCode.MAPI_TIMEOUT;
+            } catch (Exception) {
+                _result = (int)MapiErrorCode.MAPI_E_FAILURE;
+            } finally {
+                _completed.Set();
+            }
         }
 
         bool AddRecipient(string email, HowTo howTo) {
@@ -50,53 +96,53 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
             recipient.recipClass = (int)howTo;
             recipient.name = email;
-            m_recipients.Add(recipient);
+            _recipients.Add(recipient);
 
             return true;
         }
 
         IntPtr GetRecipients(out int recipCount) {
             recipCount = 0;
-            if (m_recipients.Count == 0)
+            if (_recipients.Count == 0)
                 return IntPtr.Zero;
 
             int size = Marshal.SizeOf(typeof(MapiRecipDesc));
-            IntPtr intPtr = Marshal.AllocHGlobal(m_recipients.Count * size);
+            IntPtr intPtr = Marshal.AllocHGlobal(_recipients.Count * size);
 
             int ptr = (int)intPtr;
-            foreach (MapiRecipDesc mapiDesc in m_recipients) {
+            foreach (MapiRecipDesc mapiDesc in _recipients) {
                 Marshal.StructureToPtr(mapiDesc, (IntPtr)ptr, false);
                 ptr += size;
             }
 
-            recipCount = m_recipients.Count;
+            recipCount = _recipients.Count;
             return intPtr;
         }
 
         IntPtr GetAttachments(out int fileCount) {
             fileCount = 0;
-            if (m_attachments == null)
+            if (_attachments == null)
                 return IntPtr.Zero;
 
-            if ((m_attachments.Count <= 0) || (m_attachments.Count >
+            if ((_attachments.Count <= 0) || (_attachments.Count >
                 maxAttachments))
                 return IntPtr.Zero;
 
             int size = Marshal.SizeOf(typeof(MapiFileDesc));
-            IntPtr intPtr = Marshal.AllocHGlobal(m_attachments.Count * size);
+            IntPtr intPtr = Marshal.AllocHGlobal(_attachments.Count * size);
 
             MapiFileDesc mapiFileDesc = new MapiFileDesc();
             mapiFileDesc.position = -1;
             int ptr = (int)intPtr;
 
-            foreach (string strAttachment in m_attachments) {
+            foreach (string strAttachment in _attachments) {
                 mapiFileDesc.name = Path.GetFileName(strAttachment);
                 mapiFileDesc.path = strAttachment;
                 Marshal.StructureToPtr(mapiFileDesc, (IntPtr)ptr, false);
                 ptr += size;
             }
 
-            fileCount = m_attachments.Count;
+            fileCount = _attachments.Count;
             return intPtr;
         }
 
@@ -126,20 +172,10 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
                 Marshal.FreeHGlobal(msg.files);
             }
 
-            m_recipients.Clear();
-            m_attachments.Clear();
-            m_lastError = 0;
+            _recipients.Clear();
+            _attachments.Clear();
+            _result = (int)MapiErrorCode.MAPI_SUCCESS;
         }
-
-        List<MapiRecipDesc> m_recipients = new
-            List<MapiRecipDesc>();
-        List<string> m_attachments = new List<string>();
-        int m_lastError = 0;
-
-        const int MAPI_LOGON_UI = 0x00000001;
-        const int MAPI_DIALOG_MODELESS = 0x00000004;
-        const int MAPI_DIALOG = 0x00000008;
-        const int maxAttachments = 20;
 
         enum HowTo { MAPI_ORIG = 0, MAPI_TO, MAPI_CC, MAPI_BCC };
     }
@@ -252,6 +288,11 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         /// </summary>
         MAPI_E_USER_ABORT = 1,
 
-        MAPI_SUCCESS = 0
+        MAPI_SUCCESS = 0,
+
+        /// <summary>
+        /// Custom error, thread timed out trying to launch mail client
+        /// </summary>
+        MAPI_TIMEOUT = 1000
     }
 }

@@ -20,10 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
 
         private const int _maxAttachmentSizeMb = 5;
 
-
-        public SendFrownCommand() :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown) {
-        }
+        public SendFrownCommand() : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown) { }
 
         protected override void SetStatus() {
             Enabled = true;

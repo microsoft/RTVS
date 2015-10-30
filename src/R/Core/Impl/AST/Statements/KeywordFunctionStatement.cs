@@ -5,11 +5,9 @@ using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Statements
-{
+namespace Microsoft.R.Core.AST.Statements {
     [DebuggerDisplay("[Function: {Keyword}]")]
-    public sealed class KeywordFunctionStatement : FunctionCall, IKeywordFunction, IStatement
-    {
+    public sealed class KeywordFunctionStatement : FunctionCall, IKeywordFunction, IStatement {
         #region IKeyword
         public TokenNode Keyword { get; private set; }
         public string Text { get; private set; }
@@ -19,8 +17,7 @@ namespace Microsoft.R.Core.AST.Statements
         public TokenNode Semicolon { get; private set; }
         #endregion
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             Debug.Assert(context.Tokens.CurrentToken.TokenType == RTokenType.Keyword);
 
             this.Keyword = RParser.ParseKeyword(context, this);
@@ -28,8 +25,7 @@ namespace Microsoft.R.Core.AST.Statements
 
             bool result = base.Parse(context, parent);
 
-            if(context.Tokens.CurrentToken.TokenType == RTokenType.Semicolon)
-            {
+            if (context.Tokens.CurrentToken.TokenType == RTokenType.Semicolon) {
                 this.Semicolon = RParser.ParseToken(context, this);
             }
 

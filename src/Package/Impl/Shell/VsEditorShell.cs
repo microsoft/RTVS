@@ -20,19 +20,16 @@ using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Shell
-{
-    public sealed class VsEditorShell : IEditorShell, IDisposable, IIdleTimeService
-    {
+namespace Microsoft.VisualStudio.R.Package.Shell {
+    public sealed class VsEditorShell : IEditorShell, IDisposable, IIdleTimeService {
         private IdleTimeSource _idleTimeSource;
         private Thread _creatorThread;
 
-        public VsEditorShell()
-        {
+        public VsEditorShell() {
             _creatorThread = Thread.CurrentThread;
 
             var componentModel = AppShell.Current.GetGlobalService<IComponentModel>(typeof(SComponentModel));
-            
+
             CompositionService = componentModel.DefaultCompositionService;
             ExportProvider = componentModel.DefaultExportProvider;
 
@@ -43,20 +40,17 @@ namespace Microsoft.VisualStudio.R.Package.Shell
             EditorShell.UIThread = MainThread;
         }
 
-        void OnIdle(object sender, EventArgs args)
-        {
+        void OnIdle(object sender, EventArgs args) {
             DoIdle();
         }
 
-        private void OnTerminateApp(object sender, EventArgs args)
-        {
+        private void OnTerminateApp(object sender, EventArgs args) {
             Dispose();
         }
 
         #region IIdleTimeService
 
-        public void DoIdle()
-        {
+        public void DoIdle() {
             if (Idle != null)
                 Idle(this, EventArgs.Empty);
         }
@@ -67,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <summary>
         /// Application composition service
         /// </summary>
-        public ICompositionService CompositionService  { get; private set; }
+        public ICompositionService CompositionService { get; private set; }
 
         /// <summary>
         /// Application export provider
@@ -81,8 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// </summary>
         /// <param name="commandTarget">Command target</param>
         /// <returns>Web components compatible command target</returns>
-        public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget)
-        {
+        public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
             var managedCommandTarget = commandTarget as ICommandTarget;
             if (managedCommandTarget != null)
                 return managedCommandTarget;
@@ -96,8 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
 
         }
 
-        public object TranslateToHostCommandTarget(ITextView textView, object commandTarget)
-        {
+        public object TranslateToHostCommandTarget(ITextView textView, object commandTarget) {
             var oleToCommandTargetShim = commandTarget as OleToCommandTargetShim;
             if (oleToCommandTargetShim != null)
                 return oleToCommandTargetShim.OleTarget;
@@ -124,19 +116,15 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// non blocking
         /// </summary>
         /// <param name="action">Action to execute</param>
-        public void DispatchOnUIThread(Action action, DispatcherPriority priority)
-        {
-            if (MainThread != null)
-            {
+        public void DispatchOnUIThread(Action action, DispatcherPriority priority) {
+            if (MainThread != null) {
                 var dispatcher = Dispatcher.FromThread(MainThread);
 
                 Debug.Assert(dispatcher != null);
 
                 if (dispatcher != null && !dispatcher.HasShutdownStarted)
                     dispatcher.BeginInvoke(action, priority);
-            }
-            else
-            {
+            } else {
                 Debug.Assert(false);
                 ThreadHelper.Generic.BeginInvoke(priority, () => action());
             }
@@ -158,8 +146,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <param name="textView">Text view</param>
         /// <param name="textBuffer">Text buffer</param>
         /// <returns>Undo action instance</returns>
-        public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer)
-        {
+        public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
             return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: true);
         }
 
@@ -167,32 +154,29 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// Provides access to the application main thread, so users can know if the task they are trying
         /// to execute is executing from the right thread.
         /// </summary>
-        public Thread MainThread
-        {
+        public Thread MainThread {
             get { return _creatorThread; }
         }
 
         /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
-        public void ShowErrorMessage(string message, string title = null)
-        {
+        public void ShowErrorMessage(string message, string title = null) {
             var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
-            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0, 
+            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
         /// <summary>
         /// Displays question in a host-specific UI
         /// </summary>
-        public bool ShowYesNoMessage(string message, string title = null)
-        {
+        public bool ShowYesNoMessage(string message, string title = null) {
             var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
-            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0, 
+            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0,
                 OLEMSGBUTTON.OLEMSGBUTTON_YESNO, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
 
             switch (result) {
@@ -283,23 +267,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <summary>
         /// Displays help on the specified topic
         /// </summary>
-        public bool ShowHelp(string topicName)
-        {
+        public bool ShowHelp(string topicName) {
             return true;
         }
 
         /// <summary>
         /// Returns host locale ID
         /// </summary>
-        public int LocaleId
-        {
-            get
-            {
+        public int LocaleId {
+            get {
                 IUIHostLocale hostLocale = AppShell.Current.GetGlobalService<IUIHostLocale>();
                 uint lcid;
 
-                if (hostLocale != null && hostLocale.GetUILocale(out lcid) == VSConstants.S_OK)
-                {
+                if (hostLocale != null && hostLocale.GetUILocale(out lcid) == VSConstants.S_OK) {
                     return (int)lcid;
                 }
 
@@ -310,10 +290,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <summary>
         /// Returns path to application-specific user folder, such as VisualStudio\11.0
         /// </summary>
-        public string UserFolder
-        {
-            get
-            {
+        public string UserFolder {
+            get {
                 var settingsManager = new ShellSettingsManager(AppShell.Current.GlobalServiceProvider);
                 return settingsManager.GetApplicationDataFolder(ApplicationDataFolder.RoamingSettings);
             }
@@ -322,37 +300,31 @@ namespace Microsoft.VisualStudio.R.Package.Shell
         /// <summary>
         /// Host service provider (can be null).
         /// </summary>
-        public System.IServiceProvider ServiceProvider
-        {
+        public System.IServiceProvider ServiceProvider {
             get { return AppShell.Current.GlobalServiceProvider; }
         }
 
-        public bool IsUnitTestEnvironment
-        {
+        public bool IsUnitTestEnvironment {
             get { return false; }
         }
 
-        public bool IsUITestEnvironment
-        {
+        public bool IsUITestEnvironment {
             // TODO: test for UI-drive VS tests
             get { return false; }
         }
         #endregion
 
         #region IDisposable
-        public void Dispose()
-        {
+        public void Dispose() {
             // This function could be called twice (if globals are released after OnTerminateApp is called),
             // but only trigger Terminating once
-            if (_idleTimeSource != null)
-            {
+            if (_idleTimeSource != null) {
                 _idleTimeSource.OnIdle -= OnIdle;
                 _idleTimeSource.OnTerminateApp -= OnTerminateApp;
                 _idleTimeSource.Dispose();
                 _idleTimeSource = null;
 
-                if (Terminating != null)
-                {
+                if (Terminating != null) {
                     Terminating(this, EventArgs.Empty);
                 }
 

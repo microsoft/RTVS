@@ -4,13 +4,11 @@ using Microsoft.Languages.Editor.Workspace;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.EditorFactory
-{
+namespace Microsoft.Languages.Editor.EditorFactory {
     /// <summary>
     /// An active editor instance
     /// </summary>
-    public interface IEditorInstance: IDisposable
-    {
+    public interface IEditorInstance : IDisposable {
         /// <summary>
         /// Text buffer containing document data that is 
         /// to be attached to a text view. 

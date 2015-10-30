@@ -1,9 +1,7 @@
-﻿namespace Microsoft.Markdown.Editor.Tokens
-{
+﻿namespace Microsoft.Markdown.Editor.Tokens {
     // https://guides.github.com/features/mastering-markdown/
 
-    public enum MarkdownTokenType
-    {
+    public enum MarkdownTokenType {
         /// <summary>
         /// Unrecognized token
         /// </summary>

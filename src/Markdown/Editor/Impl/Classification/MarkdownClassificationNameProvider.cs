@@ -1,14 +1,10 @@
 ﻿using Microsoft.Languages.Core.Classification;
 using Microsoft.Markdown.Editor.Tokens;
 
-namespace Microsoft.Markdown.Editor.Classification
-{
-    internal sealed class MarkdownClassificationNameProvider: IClassificationNameProvider<MarkdownToken>
-    {
-        public string GetClassificationName(MarkdownToken t)
-        {
-            switch (t.TokenType)
-            {
+namespace Microsoft.Markdown.Editor.Classification {
+    internal sealed class MarkdownClassificationNameProvider : IClassificationNameProvider<MarkdownToken> {
+        public string GetClassificationName(MarkdownToken t) {
+            switch (t.TokenType) {
                 case MarkdownTokenType.AltText:
                     return MarkdownClassificationTypes.AltText;
 

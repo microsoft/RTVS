@@ -1,13 +1,11 @@
 ﻿
 using System.Collections.Generic;
 
-namespace Microsoft.Languages.Core.Text
-{
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Represents collection of ITextRange items
     /// </summary>
-    public interface ITextRangeCollection<T> : IReadOnlyTextRangeCollection<T> where T : ITextRange
-    {
+    public interface ITextRangeCollection<T> : IReadOnlyTextRangeCollection<T> where T : ITextRange {
         /// <summary>
         /// Removes all items from collection
         /// </summary>

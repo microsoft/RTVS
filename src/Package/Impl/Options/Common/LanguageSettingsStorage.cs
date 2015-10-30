@@ -8,8 +8,7 @@ using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Options.Common
-{
+namespace Microsoft.VisualStudio.R.Package.Options.Common {
     /// <summary>
     /// Base class of VS settings. Provides implementation of <see cref="IWritableEditorSettingsStorage"/> for 
     /// application-agnostic editor code. This class also provides tracking of tab/indent settings via VS
@@ -18,8 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
     public abstract class LanguageSettingsStorage
         : IVsTextManagerEvents4
         , IWritableSettingsStorage
-        , IDisposable
-    {
+        , IDisposable {
+
         public event EventHandler<EventArgs> SettingsChanged;
 
         private LANGPREFERENCES3? _langPrefs;
@@ -31,8 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
         private bool _inBatchChange;
         private bool _changedDuringBatch;
 
-        protected LanguageSettingsStorage(Guid languageServiceId)
-        {
+        protected LanguageSettingsStorage(Guid languageServiceId) {
             _languageServiceId = languageServiceId;
             _booleanSettings = new Dictionary<string, bool>();
             _integerSettings = new Dictionary<string, int>();
@@ -41,13 +39,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             HookTextManagerEvents();
         }
 
-        private void HookTextManagerEvents()
-        {
+        private void HookTextManagerEvents() {
             IVsTextManager4 textManager = AppShell.Current.GetGlobalService<IVsTextManager4>(typeof(SVsTextManager));
             Debug.Assert(textManager != null);
 
-            if (textManager != null)
-            {
+            if (textManager != null) {
                 // Hook into the "preferences changed" event so that I can update _langPrefs as needed
                 _textManagerEventsCookie = new ConnectionPointCookie(textManager, this, typeof(IVsTextManagerEvents4));
             }
@@ -56,30 +52,24 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
         /// <summary>
         /// VS language preferences: tab size, indent size, spaces or tabs.
         /// </summary>
-        protected LANGPREFERENCES3 LangPrefs
-        {
-            get
-            {
-                if (!_langPrefs.HasValue)
-                {
+        protected LANGPREFERENCES3 LangPrefs {
+            get {
+                if (!_langPrefs.HasValue) {
                     IVsTextManager4 textManager = AppShell.Current.GetGlobalService<IVsTextManager4>(typeof(SVsTextManager));
                     Debug.Assert(textManager != null);
 
-                    if (textManager != null)
-                    {
+                    if (textManager != null) {
                         // Get the language preferences, like "is intellisense turned on?"
                         LANGPREFERENCES3[] langPrefs = new LANGPREFERENCES3[1];
                         langPrefs[0].guidLang = _languageServiceId;
 
                         int hr = textManager.GetUserPreferences4(null, langPrefs, null);
-                        if (hr == VSConstants.S_OK)
-                        {
+                        if (hr == VSConstants.S_OK) {
                             _langPrefs = langPrefs[0];
                         }
                     }
 
-                    if (!_langPrefs.HasValue)
-                    {
+                    if (!_langPrefs.HasValue) {
                         Debug.Fail("Invalid language service when fetching lang prefs: " + _languageServiceId.ToString());
                         LANGPREFERENCES3 langPrefs = new LANGPREFERENCES3();
                         langPrefs.guidLang = _languageServiceId;
@@ -91,13 +81,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             }
         }
 
-        private void SetLangPrefs(LANGPREFERENCES3 newPreferences)
-        {
+        private void SetLangPrefs(LANGPREFERENCES3 newPreferences) {
             IVsTextManager4 textManager = AppShell.Current.GetGlobalService<IVsTextManager4>(typeof(SVsTextManager));
             Debug.Assert(textManager != null);
 
-            if (textManager != null)
-            {
+            if (textManager != null) {
                 // Set the language preferences, like "is intellisense turned on?"
                 LANGPREFERENCES3[] langPrefs = { newPreferences };
 
@@ -108,10 +96,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
         public int OnUserPreferencesChanged4(
             VIEWPREFERENCES3[] viewPrefs,
             LANGPREFERENCES3[] langPrefs,
-            FONTCOLORPREFERENCES2[] colorPrefs)
-        {
-            if (langPrefs != null && langPrefs[0].guidLang == _languageServiceId)
-            {
+            FONTCOLORPREFERENCES2[] colorPrefs) {
+            if (langPrefs != null && langPrefs[0].guidLang == _languageServiceId) {
                 _langPrefs = langPrefs[0];
                 FireSettingsChanged();
             }
@@ -119,16 +105,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             return VSConstants.S_OK;
         }
 
-        public void OnRegisterMarkerType(int markerType)
-        {
+        public void OnRegisterMarkerType(int markerType) {
         }
 
-        public void OnRegisterView(IVsTextView view)
-        {
+        public void OnRegisterView(IVsTextView view) {
         }
 
-        public void OnUnregisterView(IVsTextView view)
-        {
+        public void OnUnregisterView(IVsTextView view) {
         }
 
         public abstract void LoadFromStorage();
@@ -136,8 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
         /// <summary>
         /// Called when VS resets default settings through "Tools|Import/Export Settings"
         /// </summary>
-        public void ResetSettings()
-        {
+        public void ResetSettings() {
             // LangPrefs will be reset by VS, this code doesn't need to do it
 
             _booleanSettings.Clear();
@@ -147,8 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             FireSettingsChanged();
         }
 
-        public virtual string GetString(string name, string defaultValue)
-        {
+        public virtual string GetString(string name, string defaultValue) {
             string value;
             if (_stringSettings.TryGetValue(name, out value))
                 return value;
@@ -156,10 +137,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             return defaultValue;
         }
 
-        public virtual int GetInteger(string name, int defaultValue)
-        {
-            switch (name)
-            {
+        public virtual int GetInteger(string name, int defaultValue) {
+            switch (name) {
                 case CommonSettings.IndentStyleKey:
                     return (int)LangPrefs.IndentStyle;
 
@@ -167,8 +146,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
                     return (int)LangPrefs.uIndentSize;
 
                 case CommonSettings.FormatterIndentTypeKey:
-                    if (LangPrefs.fInsertTabs != 0 && LangPrefs.uTabSize != 0 && LangPrefs.uIndentSize % LangPrefs.uTabSize == 0)
-                    {
+                    if (LangPrefs.fInsertTabs != 0 && LangPrefs.uTabSize != 0 && LangPrefs.uIndentSize % LangPrefs.uTabSize == 0) {
                         return (int)IndentType.Tabs;
                     }
                     return (int)IndentType.Spaces;
@@ -184,10 +162,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             return defaultValue;
         }
 
-        public virtual bool GetBoolean(string name, bool defaultValue)
-        {
-            switch (name)
-            {
+        public virtual bool GetBoolean(string name, bool defaultValue) {
+            switch (name) {
                 case CommonSettings.InsertMatchingBracesKey:
                     return LangPrefs.fBraceCompletion != 0;
 
@@ -205,59 +181,50 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             return defaultValue;
         }
 
-        public void SetString(string name, string value)
-        {
+        public void SetString(string name, string value) {
             // Not allowed to save null strings
             value = value ?? string.Empty;
 
-            if (!_stringSettings.ContainsKey(name) || !value.Equals(_stringSettings[name], StringComparison.Ordinal))
-            {
+            if (!_stringSettings.ContainsKey(name) || !value.Equals(_stringSettings[name], StringComparison.Ordinal)) {
                 _stringSettings[name] = value;
                 FireSettingsChanged();
             }
         }
 
-        public void SetInteger(string name, int value)
-        {
+        public void SetInteger(string name, int value) {
             LANGPREFERENCES3 langPrefs = LangPrefs;
 
-            switch (name)
-            {
+            switch (name) {
                 case CommonSettings.IndentStyleKey:
-                    if (langPrefs.IndentStyle != (vsIndentStyle)value)
-                    {
+                    if (langPrefs.IndentStyle != (vsIndentStyle)value) {
                         langPrefs.IndentStyle = (vsIndentStyle)value;
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
                 case CommonSettings.FormatterIndentSizeKey:
-                    if (langPrefs.uIndentSize != (uint)value)
-                    {
+                    if (langPrefs.uIndentSize != (uint)value) {
                         langPrefs.uIndentSize = (uint)value;
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
                 case CommonSettings.FormatterIndentTypeKey:
-                    if (langPrefs.fInsertTabs != (uint)value)
-                    {
+                    if (langPrefs.fInsertTabs != (uint)value) {
                         langPrefs.fInsertTabs = (uint)value;
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
                 case CommonSettings.FormatterTabSizeKey:
-                    if (langPrefs.uTabSize != (uint)value)
-                    {
+                    if (langPrefs.uTabSize != (uint)value) {
                         langPrefs.uTabSize = (uint)value;
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
                 default:
-                    if (!_integerSettings.ContainsKey(name) || value != _integerSettings[name])
-                    {
+                    if (!_integerSettings.ContainsKey(name) || value != _integerSettings[name]) {
                         _integerSettings[name] = value;
 
                         // The SetLangPrefs call indirectly calls FireSettingsChanged, so this is the only code path that
@@ -268,39 +235,33 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             }
         }
 
-        public void SetBoolean(string name, bool value)
-        {
+        public void SetBoolean(string name, bool value) {
             LANGPREFERENCES3 langPrefs = LangPrefs;
 
-            switch (name)
-            {
+            switch (name) {
                 case CommonSettings.InsertMatchingBracesKey:
-                    if (langPrefs.fBraceCompletion != (uint)(value ? 1 : 0))
-                    {
+                    if (langPrefs.fBraceCompletion != (uint)(value ? 1 : 0)) {
                         langPrefs.fBraceCompletion = (uint)(value ? 1 : 0);
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
                 case CommonSettings.CompletionEnabledKey:
-                    if (langPrefs.fAutoListMembers != (uint)(value ? 1 : 0))
-                    {
+                    if (langPrefs.fAutoListMembers != (uint)(value ? 1 : 0)) {
                         langPrefs.fAutoListMembers = (uint)(value ? 1 : 0);
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
                 case CommonSettings.SignatureHelpEnabledKey:
-                    if (langPrefs.fAutoListParams != (uint)(value ? 1 : 0))
-                    {
+                    if (langPrefs.fAutoListParams != (uint)(value ? 1 : 0)) {
                         langPrefs.fAutoListParams = (uint)(value ? 1 : 0);
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
                 default:
-                    if (!_booleanSettings.ContainsKey(name) || value != _booleanSettings[name])
-                    {
+                    if (!_booleanSettings.ContainsKey(name) || value != _booleanSettings[name]) {
                         _booleanSettings[name] = value;
 
                         // The SetLangPrefs call indirectly calls FireSettingsChanged, so this is the only code path that
@@ -311,14 +272,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             }
         }
 
-        public void BeginBatchChange()
-        {
+        public void BeginBatchChange() {
             _inBatchChange = true;
             _changedDuringBatch = false;
         }
 
-        public void EndBatchChange()
-        {
+        public void EndBatchChange() {
             _inBatchChange = false;
 
             if (_changedDuringBatch)
@@ -327,33 +286,25 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common
             _changedDuringBatch = false;
         }
 
-        private void FireSettingsChanged()
-        {
-            if (_inBatchChange)
-            {
+        private void FireSettingsChanged() {
+            if (_inBatchChange) {
                 _changedDuringBatch = true;
-            }
-            else if (SettingsChanged != null)
-            {
+            } else if (SettingsChanged != null) {
                 SettingsChanged(this, EventArgs.Empty);
             }
         }
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_textManagerEventsCookie != null)
-                {
+        protected virtual void Dispose(bool disposing) {
+            if (disposing) {
+                if (_textManagerEventsCookie != null) {
                     _textManagerEventsCookie.Dispose();
                     _textManagerEventsCookie = null;
                 }
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }

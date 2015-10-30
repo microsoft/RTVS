@@ -1,9 +1,7 @@
 ﻿using System;
 
-namespace Microsoft.VisualStudio.R.Packages.R
-{
-    public static class RGuidList
-    {
+namespace Microsoft.VisualStudio.R.Packages.R {
+    public static class RGuidList {
         public const string RPackageGuidString = "6D7C5336-C0CA-4857-A7E7-2E964EA836BF";
         public const string REditorFactoryGuidString = "EE606CC0-077A-4FDE-91C3-24EC012C8389";
         public const string RLanguageServiceGuidString = "29C0D8E0-C01C-412B-BEE8-7A7A253A31E6";

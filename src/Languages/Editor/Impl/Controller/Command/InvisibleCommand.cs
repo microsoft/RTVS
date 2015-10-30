@@ -2,18 +2,14 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Controller.Command
-{
+namespace Microsoft.Languages.Editor.Controller.Command {
     [ExcludeFromCodeCoverage]
-    public class InvisibleCommand : ViewCommand, ICommand
-    {
+    public class InvisibleCommand : ViewCommand, ICommand {
         public InvisibleCommand(ITextView textView, Guid group, int id)
-            : base(textView, group, id, false)
-        {
+            : base(textView, group, id, false) {
         }
 
-        CommandStatus ICommandTarget.Status(Guid group, int id)
-        {
+        CommandStatus ICommandTarget.Status(Guid group, int id) {
             return CommandStatus.Invisible | CommandStatus.Supported;
         }
     }

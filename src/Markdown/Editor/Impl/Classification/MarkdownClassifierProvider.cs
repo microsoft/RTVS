@@ -9,10 +9,8 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Markdown.Editor.Classification
-{
-    internal abstract class MarkdownClassifierProvider<T> : IClassifierProvider where T : class
-    {
+namespace Microsoft.Markdown.Editor.Classification {
+    internal abstract class MarkdownClassifierProvider<T> : IClassifierProvider where T : class {
         [Import]
         protected IClassificationTypeRegistryService ClassificationRegistryService { get; set; }
 
@@ -22,16 +20,13 @@ namespace Microsoft.Markdown.Editor.Classification
         [ImportMany]
         protected IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> ClassificationNameProviders { get; set; }
 
-        public MarkdownClassifierProvider()
-        {
+        protected MarkdownClassifierProvider() {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
         }
 
-        public IClassifier GetClassifier(ITextBuffer textBuffer)
-        {
+        public IClassifier GetClassifier(ITextBuffer textBuffer) {
             IClassifier classifier = ServiceManager.GetService<T>(textBuffer) as IClassifier;
-            if (classifier == null)
-            {
+            if (classifier == null) {
                 classifier = CreateClassifier(textBuffer, ClassificationRegistryService, ContentTypeRegistryService, ClassificationNameProviders);
             }
 
@@ -42,7 +37,5 @@ namespace Microsoft.Markdown.Editor.Classification
                                                IClassificationTypeRegistryService crs,
                                                IContentTypeRegistryService ctrs,
                                                IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> ClassificationNameProviders);
-
-
     }
 }

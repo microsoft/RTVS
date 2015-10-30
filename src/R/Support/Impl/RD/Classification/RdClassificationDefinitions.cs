@@ -4,11 +4,9 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Support.RD.Classification
-{
+namespace Microsoft.R.Support.RD.Classification {
     [ExcludeFromCodeCoverage]
-    internal sealed class RdClassificationDefinitions
-    {
+    internal sealed class RdClassificationDefinitions {
         [Export]
         [Name("RD Braces")]
         internal ClassificationTypeDefinition RdBracesClassificationType { get; set; }
@@ -17,10 +15,8 @@ namespace Microsoft.R.Support.RD.Classification
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "RD Braces")]
         [Name("RD Braces")]
-        internal sealed class RdBracesClassificationFormat : ClassificationFormatDefinition
-        {
-            public RdBracesClassificationFormat()
-            {
+        internal sealed class RdBracesClassificationFormat : ClassificationFormatDefinition {
+            public RdBracesClassificationFormat() {
                 ForegroundColor = Colors.Gray;
                 this.DisplayName = Resources.ColorName_RD_CurlyBraces;
             }

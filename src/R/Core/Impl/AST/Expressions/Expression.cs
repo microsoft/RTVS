@@ -4,8 +4,7 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.Parser;
 
-namespace Microsoft.R.Core.AST.Expressions
-{
+namespace Microsoft.R.Core.AST.Expressions {
     /// <summary>
     /// Represents mathematical or conditional expression, 
     /// assignment, function or operator definition optionally
@@ -13,8 +12,7 @@ namespace Microsoft.R.Core.AST.Expressions
     /// nested extressions in its content.
     /// </summary>
     [DebuggerDisplay("Expression [{Start}...{End})")]
-    public sealed partial class Expression : RValueNode<RObject>, IExpression
-    {
+    public sealed partial class Expression : RValueNode<RObject>, IExpression {
         private string _terminatingKeyword;
 
         #region IExpression
@@ -28,30 +26,24 @@ namespace Microsoft.R.Core.AST.Expressions
         /// that would normally terminate the expression.
         /// </summary>
         /// <param name="inGroup"></param>
-        public Expression(bool inGroup)
-        {
+        public Expression(bool inGroup) {
             IsInGroup = inGroup;
         }
 
-        public Expression(string terminatingKeyword)
-        {
+        public Expression(string terminatingKeyword) {
             _terminatingKeyword = terminatingKeyword;
         }
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
-            if (ParseExpression(context) && this.Children.Count > 0)
-            {
+        public override bool Parse(ParseContext context, IAstNode parent) {
+            if (ParseExpression(context) && this.Children.Count > 0) {
                 return base.Parse(context, parent);
             }
 
             return false;
         }
 
-        public override RObject GetValue()
-        {
-            if (Content != null)
-            {
+        public override RObject GetValue() {
+            if (Content != null) {
                 return Content.GetValue();
             }
 
@@ -60,13 +52,10 @@ namespace Microsoft.R.Core.AST.Expressions
 
         public bool IsInGroup { get; private set; }
 
-        public override string ToString()
-        {
-            if (this.Root != null)
-            {
+        public override string ToString() {
+            if (this.Root != null) {
                 string text = this.Root.TextProvider.GetText(this);
-                if (!string.IsNullOrWhiteSpace(text))
-                {
+                if (!string.IsNullOrWhiteSpace(text)) {
                     return text;
                 }
             }

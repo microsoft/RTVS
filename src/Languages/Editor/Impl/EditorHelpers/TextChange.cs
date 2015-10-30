@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Microsoft.Languages.Editor.EditorHelpers
-{
+namespace Microsoft.Languages.Editor.EditorHelpers {
     // Utility functions for calculating incremental text changes
-    public class TextChange
-    {
-        public TextChange(int position, int length, string newText)
-        {
+    public class TextChange {
+        public TextChange(int position, int length, string newText) {
             Position = position;
             Length = length;
             NewText = newText ?? string.Empty;
@@ -18,13 +15,11 @@ namespace Microsoft.Languages.Editor.EditorHelpers
         public int Length { get; set; }
         public string NewText { get; set; }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return base.GetHashCode();
         }
 
-        public override bool Equals(object obj)
-        {
+        public override bool Equals(object obj) {
             if (obj == null)
                 return false;
 
@@ -35,8 +30,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers
 
             if ((other.Length == Length) &&
                 (other.Position == Position) &&
-                (other.NewText == NewText))
-            {
+                (other.NewText == NewText)) {
                 return true;
             }
 
@@ -44,10 +38,8 @@ namespace Microsoft.Languages.Editor.EditorHelpers
         }
     }
 
-    public static class TextChanges
-    {
-        public static IList<TextChange> BuildChangeList(string oldText, string newText, int maxMilliseconds)
-        {
+    public static class TextChanges {
+        public static IList<TextChange> BuildChangeList(string oldText, string newText, int maxMilliseconds) {
             List<TextChange> changes = new List<TextChange>();
             var sw = new Stopwatch();
             sw.Start();
@@ -56,8 +48,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             int oldIndex = 0;
             int newIndex = 0;
 
-            while (true)
-            {
+            while (true) {
                 bool thereIsMore = NextChunk(oldText, ref oldIndex, newText, ref newIndex, changes);
                 if (!thereIsMore)
                     break;
@@ -66,8 +57,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers
                 if (!thereIsMore)
                     break;
 
-                if (sw.ElapsedMilliseconds > maxMilliseconds)
-                {
+                if (sw.ElapsedMilliseconds > maxMilliseconds) {
                     return null; // time's up
                 }
             }
@@ -75,24 +65,21 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             return changes;
         }
 
-        static bool NextChunk(string oldText, ref int oldIndex, string newText, ref int newIndex, List<TextChange> changes)
-        {
+        static bool NextChunk(string oldText, ref int oldIndex, string newText, ref int newIndex, List<TextChange> changes) {
             int oldLength = oldText.Length;
             int newLength = newText.Length;
 
             if (oldIndex >= oldLength && newIndex >= newLength)
                 return false;
 
-            if (oldIndex >= oldLength && newIndex < newLength)
-            {
+            if (oldIndex >= oldLength && newIndex < newLength) {
                 // new text is longer, this is the last chunk
                 var tc = new TextChange(oldLength, 0, newText.Substring(newIndex));
                 AddChange(tc, changes);
                 return false;
             }
 
-            if (newIndex >= newLength && oldIndex < oldLength)
-            {
+            if (newIndex >= newLength && oldIndex < oldLength) {
                 // old text is longer, this is the last chunk
                 var tc = new TextChange(oldIndex, oldLength - oldIndex, string.Empty);
                 AddChange(tc, changes);
@@ -110,8 +97,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             while (newIndex < newLength && char.IsWhiteSpace(newText[newIndex]))
                 newIndex++;
 
-            if (oldIndex > oldChunkStart || newIndex > newChunkStart)
-            {
+            if (oldIndex > oldChunkStart || newIndex > newChunkStart) {
                 // some ws collected
                 AddChange(oldText, oldChunkStart, oldIndex - oldChunkStart, newText, newChunkStart, newIndex - newChunkStart, changes);
                 return true;
@@ -121,8 +107,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             bool newStartsWithDelimiter = false;
 
             // collect non-whitespace in the old text - next time both indices will be at whitespace or a delimiter
-            while (oldIndex < oldLength)
-            {
+            while (oldIndex < oldLength) {
                 char oldChar = oldText[oldIndex];
                 if (char.IsWhiteSpace(oldChar))
                     break;
@@ -130,8 +115,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers
                 oldIndex++;
             }
 
-            while (newIndex < newLength)
-            {
+            while (newIndex < newLength) {
                 char newChar = newText[newIndex];
                 if (char.IsWhiteSpace(newChar))
                     break;
@@ -140,8 +124,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             }
 
             // If both start with a delimiter, then move them past it
-            if (oldStartsWithDelimiter && newStartsWithDelimiter)
-            {
+            if (oldStartsWithDelimiter && newStartsWithDelimiter) {
                 oldIndex += 1;
                 newIndex += 1;
             }
@@ -157,20 +140,17 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             string newText,
             int newChunkStart,
             int newChunkLength,
-            List<TextChange> changes)
-        {
+            List<TextChange> changes) {
             int maxCharsToTrim = Math.Min(oldChunkLength, newChunkLength);
             int i;
 
             // trim off matching characters from the start
-            for (i = 0; i < maxCharsToTrim; i++)
-            {
+            for (i = 0; i < maxCharsToTrim; i++) {
                 if (oldText[oldChunkStart + i] != newText[newChunkStart + i])
                     break;
             }
 
-            if (i > 0)
-            {
+            if (i > 0) {
                 oldChunkStart += i;
                 newChunkStart += i;
                 oldChunkLength -= i;
@@ -181,29 +161,24 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             // trim off matching characters from the end
             int oldChunkLastIndex = oldChunkStart + oldChunkLength - 1;
             int newChunkLastIndex = newChunkStart + newChunkLength - 1;
-            for (i = 0; i < maxCharsToTrim; i++)
-            {
+            for (i = 0; i < maxCharsToTrim; i++) {
                 if (oldText[oldChunkLastIndex - i] != newText[newChunkLastIndex - i])
                     break;
             }
 
-            if (i > 0)
-            {
+            if (i > 0) {
                 oldChunkLength -= i;
                 newChunkLength -= i;
             }
 
-            if (oldChunkLength != 0 || newChunkLength != 0)
-            {
-                if (newChunkLength > 0)
-                {
+            if (oldChunkLength != 0 || newChunkLength != 0) {
+                if (newChunkLength > 0) {
                     // Dev12 933254: Don't allow a \r\n at the end to get broken apart
                     //  At some point we may want to handle more of the \r\n splitting cases,
                     //  but this is the only one that we know comes up (due to us converting
                     //  a \n to a \r\n
                     newChunkLastIndex = newChunkStart + newChunkLength - 1;
-                    if ((newText[newChunkLastIndex] == '\r') && (newChunkLastIndex + 1 < newText.Length) && (newText[newChunkLastIndex + 1] == '\n'))
-                    {
+                    if ((newText[newChunkLastIndex] == '\r') && (newChunkLastIndex + 1 < newText.Length) && (newText[newChunkLastIndex + 1] == '\n')) {
                         newChunkLength += 1;
                         oldChunkLength += 1;
                     }
@@ -216,22 +191,18 @@ namespace Microsoft.Languages.Editor.EditorHelpers
             }
         }
 
-        static void AddChange(TextChange tc, List<TextChange> changes)
-        {
-            if (changes.Count > 0)
-            {
+        static void AddChange(TextChange tc, List<TextChange> changes) {
+            if (changes.Count > 0) {
                 TextChange lastChange = changes[changes.Count - 1];
 
                 // Check if new change can be merged with the last one
-                if (tc.Position == lastChange.Position + lastChange.Length)
-                {
+                if (tc.Position == lastChange.Position + lastChange.Length) {
                     if (lastChange.NewText.Length == 0 && tc.NewText.Length == 0) // both delete
                     {
                         lastChange.Length += tc.Length;
                         return;
-                    }
-                    else if (lastChange.NewText.Length > 0 && tc.NewText.Length > 0) // both insert or replace
-                    {
+                    } else if (lastChange.NewText.Length > 0 && tc.NewText.Length > 0) // both insert or replace
+                      {
                         lastChange.Length += tc.Length;
                         lastChange.NewText += tc.NewText;
                         return;

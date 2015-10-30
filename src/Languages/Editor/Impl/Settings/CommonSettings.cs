@@ -1,10 +1,8 @@
 ﻿using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Settings;
 
-namespace Microsoft.Languages.Editor.Settings
-{
-    public static class CommonSettings
-    {
+namespace Microsoft.Languages.Editor.Settings {
+    public static class CommonSettings {
         public const string AutoFormatKey = "AutoFormat";
         public const string CompletionEnabledKey = "CompletionEnabled";
         public const string FormatterIndentSizeKey = "FormatterIndentSize";
@@ -17,43 +15,35 @@ namespace Microsoft.Languages.Editor.Settings
         public const string ShowInternalFunctionsKey = "ShowInternalFunctions";
         public const string ShowTclFunctionsKey = "ShowTclFunctions";
 
-        public static bool GetAutoFormat(ISettingsStorage storage)
-        {
+        public static bool GetAutoFormat(ISettingsStorage storage) {
             return storage.GetBoolean(AutoFormatKey, true);
         }
 
-        public static bool GetCompletionEnabled(ISettingsStorage storage)
-        {
+        public static bool GetCompletionEnabled(ISettingsStorage storage) {
             return storage.GetBoolean(CompletionEnabledKey, true);
         }
 
-        public static int GetFormatterIndentSize(ISettingsStorage storage)
-        {
+        public static int GetFormatterIndentSize(ISettingsStorage storage) {
             return storage.GetInteger(FormatterIndentSizeKey, 4);
         }
 
-        public static IndentType GetFormatterIndentType(ISettingsStorage storage)
-        {
+        public static IndentType GetFormatterIndentType(ISettingsStorage storage) {
             return (IndentType)storage.GetInteger(FormatterIndentTypeKey, (int)IndentType.Spaces);
         }
 
-        public static int GetFormatterTabSize(ISettingsStorage storage)
-        {
+        public static int GetFormatterTabSize(ISettingsStorage storage) {
             return storage.GetInteger(FormatterTabSizeKey, 4);
         }
 
-        public static IndentStyle GetIndentStyle(ISettingsStorage storage)
-        {
+        public static IndentStyle GetIndentStyle(ISettingsStorage storage) {
             return (IndentStyle)storage.GetInteger(IndentStyleKey, (int)IndentStyle.Smart);
         }
 
-        public static bool GetSignatureHelpEnabled(ISettingsStorage storage)
-        {
+        public static bool GetSignatureHelpEnabled(ISettingsStorage storage) {
             return storage.GetBoolean(SignatureHelpEnabledKey, true);
         }
 
-        public static bool GetValidationEnabled(ISettingsStorage storage)
-        {
+        public static bool GetValidationEnabled(ISettingsStorage storage) {
             return storage.GetBoolean(ValidationEnabledKey, true);
         }
     }

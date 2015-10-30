@@ -1,10 +1,8 @@
 ﻿
-namespace Microsoft.R.Support.RD.Tokens
-{
+namespace Microsoft.R.Support.RD.Tokens {
     // https://developer.r-project.org/parseRd.pdf
 
-    public enum RdTokenType
-    {
+    public enum RdTokenType {
         /// <summary>
         /// Unrecognized token
         /// </summary>

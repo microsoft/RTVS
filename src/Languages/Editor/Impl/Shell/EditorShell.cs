@@ -9,13 +9,11 @@ using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Languages.Editor.Shell
-{
+namespace Microsoft.Languages.Editor.Shell {
     /// <summary>
     /// A static class that provides common services to all Web Editing components
     /// </summary>
-    public static class EditorShell
-    {
+    public static class EditorShell {
         // Cached properties that can be accessed after the IEditorShell goes away
         public static string HostUserFolder { get; private set; }
         public static int HostLocaleId { get; private set; }
@@ -32,21 +30,16 @@ namespace Microsoft.Languages.Editor.Shell
         /// <summary>
         /// Fires when application goes idle
         /// </summary>
-        public static event EventHandler<EventArgs> OnIdle
-        {
-            add
-            {
+        public static event EventHandler<EventArgs> OnIdle {
+            add {
                 _onIdleHandlers.Add(value);
             }
 
-            remove
-            {
+            remove {
                 int foundIndex = _onIdleHandlers.IndexOf(value);
-                if (foundIndex >= 0)
-                {
+                if (foundIndex >= 0) {
                     _onIdleHandlers.RemoveAt(foundIndex);
-                    if (_currentIdleHandlerIndex > foundIndex)
-                    {
+                    if (_currentIdleHandlerIndex > foundIndex) {
                         _currentIdleHandlerIndex--;
                     }
                 }
@@ -61,25 +54,21 @@ namespace Microsoft.Languages.Editor.Shell
         /// <summary>
         /// Web editor host application
         /// </summary>
-        public static IEditorShell Current
-        {
+        public static IEditorShell Current {
             get { return _shell; }
         }
 
-        public static bool HasShell
-        {
+        public static bool HasShell {
             get { return _shell != null; }
         }
 
         public static Thread UIThread { get; set; }
 
-        public static bool IsUIThread
-        {
+        public static bool IsUIThread {
             get { return UIThread == Thread.CurrentThread; }
         }
 
-        public static void DispatchOnUIThread(Action action)
-        {
+        public static void DispatchOnUIThread(Action action) {
             DispatchOnUIThread(action, DispatcherPriority.Normal);
         }
 
@@ -91,35 +80,27 @@ namespace Microsoft.Languages.Editor.Shell
         /// </summary>
         /// <param name="action">Delegate to execute</param>
         /// <param name="arguments">Arguments to pass to the delegate</param>
-        public static void DispatchOnUIThread(Action action, DispatcherPriority priority)
-        {
-            if (UIThread != null)
-            {
+        public static void DispatchOnUIThread(Action action, DispatcherPriority priority) {
+            if (UIThread != null) {
                 var dispatcher = Dispatcher.FromThread(UIThread);
 
                 Debug.Assert(dispatcher != null);
 
                 if (dispatcher != null && !dispatcher.HasShutdownStarted)
                     dispatcher.BeginInvoke(action, priority);
-            }
-            else if (HasShell) // Can be null in unit tests
-            {
+            } else if (HasShell) // Can be null in unit tests
+              {
                 Current.DispatchOnUIThread(action, priority);
-            }
-            else
-            {
+            } else {
                 action();
             }
         }
 
-        public static ISettingsStorage GetSettings(string contentTypeName)
-        {
+        public static ISettingsStorage GetSettings(string contentTypeName) {
             ISettingsStorage settingsStorage = null;
 
-            lock (_lock)
-            {
-                if (_settingStorageMap.TryGetValue(contentTypeName, out settingsStorage))
-                {
+            lock (_lock) {
+                if (_settingStorageMap.TryGetValue(contentTypeName, out settingsStorage)) {
                     return settingsStorage;
                 }
             }
@@ -133,20 +114,17 @@ namespace Microsoft.Languages.Editor.Shell
 
             settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(contentType);
 
-            if (settingsStorage == null)
-            {
+            if (settingsStorage == null) {
                 settingsStorage = ComponentLocatorForOrderedContentType<ISettingsStorage>.FindFirstOrderedComponent(contentType);
             }
 
-            if (settingsStorage == null)
-            {
+            if (settingsStorage == null) {
                 var storages = ComponentLocatorForContentType<IWritableSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
                 if (storages.Count() > 0)
                     settingsStorage = storages.First().Value;
             }
 
-            if (settingsStorage == null)
-            {
+            if (settingsStorage == null) {
                 var readonlyStorages = ComponentLocatorForContentType<ISettingsStorage, IComponentContentTypes>.ImportMany(contentType);
                 if (readonlyStorages.Count() > 0)
                     settingsStorage = readonlyStorages.First().Value;
@@ -155,15 +133,11 @@ namespace Microsoft.Languages.Editor.Shell
             Debug.Assert(settingsStorage != null, String.Format(CultureInfo.CurrentCulture,
                 "Cannot find settings storage export for content type '{0}'", contentTypeName));
 
-            lock (_lock)
-            {
-                if (_settingStorageMap.ContainsKey(contentTypeName))
-                {
+            lock (_lock) {
+                if (_settingStorageMap.ContainsKey(contentTypeName)) {
                     // some other thread came along and loaded settings already
                     settingsStorage = _settingStorageMap[contentTypeName];
-                }
-                else
-                {
+                } else {
                     _settingStorageMap[contentTypeName] = settingsStorage;
                     settingsStorage.LoadFromStorage();
                 }
@@ -172,22 +146,17 @@ namespace Microsoft.Languages.Editor.Shell
             return settingsStorage;
         }
 
-        public static void SetShell(IEditorShell shell)
-        {
-            lock (_lock)
-            {
-                if (shell == null)
-                {
+        public static void SetShell(IEditorShell shell) {
+            lock (_lock) {
+                if (shell == null) {
                     throw new ArgumentNullException("shell");
                 }
 
-                if(_shell != null && _shell != shell)
-                {
+                if (_shell != null && _shell != shell) {
                     RemoveShell(_shell);
                 }
 
-                if (_shell == null)
-                {
+                if (_shell == null) {
                     _shell = shell;
 
                     _shell.Idle += host_OnIdle;
@@ -198,13 +167,10 @@ namespace Microsoft.Languages.Editor.Shell
             }
         }
 
-        public static void RemoveShell(IEditorShell shell)
-        {
-            lock (_lock)
-            {
+        public static void RemoveShell(IEditorShell shell) {
+            lock (_lock) {
                 Debug.Assert(_shell != null && _shell == shell, "Trying to remove wrong editor shell");
-                if (_shell == shell)
-                {
+                if (_shell == shell) {
                     DisposeSettings();
 
                     _shell.Idle -= host_OnIdle;
@@ -214,8 +180,7 @@ namespace Microsoft.Languages.Editor.Shell
             }
         }
 
-        private static void CacheHostProperties()
-        {
+        private static void CacheHostProperties() {
             // Dev12 bug 786618 - Cache some host properties so that they can be accessed from background
             // threads even after the host has been cleaned up.
 
@@ -223,53 +188,40 @@ namespace Microsoft.Languages.Editor.Shell
             HostLocaleId = Current.LocaleId;
         }
 
-        private static void DisposeSettings()
-        {
+        private static void DisposeSettings() {
             List<ISettingsStorage> settings = new List<ISettingsStorage>();
-            lock (_lock)
-            {
+            lock (_lock) {
                 settings.AddRange(_settingStorageMap.Values);
                 _settingStorageMap.Clear();
             }
 
-            foreach (ISettingsStorage setting in settings)
-            {
-                if (setting is IDisposable)
-                {
+            foreach (ISettingsStorage setting in settings) {
+                if (setting is IDisposable) {
                     ((IDisposable)setting).Dispose();
                 }
             }
         }
 
-        static void host_OnIdle(object sender, EventArgs eventArgs)
-        {
+        static void host_OnIdle(object sender, EventArgs eventArgs) {
             DoIdle(sender, eventArgs);
         }
 
-        internal static void DoIdle(object sender, EventArgs eventArgs)
-        {
-            if (_onIdleHandlers.Count > 0)
-            {
+        internal static void DoIdle(object sender, EventArgs eventArgs) {
+            if (_onIdleHandlers.Count > 0) {
                 Stopwatch sw = Stopwatch.StartNew();
                 int initialIndex = _currentIdleHandlerIndex;
-                while (sw.ElapsedMilliseconds < 200)
-                {
-                    try
-                    {
+                while (sw.ElapsedMilliseconds < 200) {
+                    try {
                         _onIdleHandlers[_currentIdleHandlerIndex++](sender, eventArgs);
-                    }
-                    catch
-                    {
+                    } catch {
                         // silently eat any exceptions thrown by idle handlers
                     }
 
-                    if (_currentIdleHandlerIndex >= _onIdleHandlers.Count)
-                    {
+                    if (_currentIdleHandlerIndex >= _onIdleHandlers.Count) {
                         _currentIdleHandlerIndex = 0;
                     }
 
-                    if (_currentIdleHandlerIndex == initialIndex)
-                    {
+                    if (_currentIdleHandlerIndex == initialIndex) {
                         // We've cycled through all idle handlers
                         break;
                     }
@@ -278,10 +230,8 @@ namespace Microsoft.Languages.Editor.Shell
             }
         }
 
-        static void host_OnTerminate(object sender, EventArgs eventArgs)
-        {
-            if (OnTerminate != null)
-            {
+        static void host_OnTerminate(object sender, EventArgs eventArgs) {
+            if (OnTerminate != null) {
                 OnTerminate(sender, eventArgs);
             }
         }

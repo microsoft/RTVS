@@ -7,17 +7,13 @@ using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.AST.Arguments
-{
+namespace Microsoft.R.Core.AST.Arguments {
     [DebuggerDisplay("Named Argument [{Start}...{End})")]
-    public class NamedArgument : CommaSeparatedItem
-    {
-        public ITextRange NameRange
-        {
+    public class NamedArgument : CommaSeparatedItem {
+        public ITextRange NameRange {
             get { return this.Identifier; }
         }
-        public string Name
-        {
+        public string Name {
             get { return this.Root.TextProvider.GetText(this.NameRange); }
         }
 
@@ -27,23 +23,18 @@ namespace Microsoft.R.Core.AST.Arguments
 
         public IExpression DefaultValue { get; private set; }
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             TokenStream<RToken> tokens = context.Tokens;
 
             this.Identifier = RParser.ParseToken(context, this);
             this.EqualsSign = RParser.ParseToken(context, this);
 
-            if (context.Tokens.CurrentToken.TokenType != RTokenType.Comma && context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace)
-            {
+            if (context.Tokens.CurrentToken.TokenType != RTokenType.Comma && context.Tokens.CurrentToken.TokenType != RTokenType.CloseBrace) {
                 Expression exp = new Expression(inGroup: true);
-                if (exp.Parse(context, this))
-                {
+                if (exp.Parse(context, this)) {
                     this.DefaultValue = exp;
                 }
-            }
-            else
-            {
+            } else {
                 this.DefaultValue = new NullExpression();
             }
 

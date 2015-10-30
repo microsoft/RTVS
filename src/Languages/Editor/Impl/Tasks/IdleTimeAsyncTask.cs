@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Shell;
 
-namespace Microsoft.Languages.Editor.Tasks
-{
+namespace Microsoft.Languages.Editor.Tasks {
     /// <summary>
     /// Asynchronous task that start on next idle slot
     /// </summary>
-    public sealed class IdleTimeAsyncTask : IDisposable
-    {
+    public sealed class IdleTimeAsyncTask : IDisposable {
         private Func<object> _taskAction;
         private Action<object> _callbackAction;
         private Action<object> _cancelAction;
@@ -25,9 +23,7 @@ namespace Microsoft.Languages.Editor.Tasks
 
         public object Tag { get; private set; }
 
-        public IdleTimeAsyncTask()
-        {
-        }
+        public IdleTimeAsyncTask() { }
 
         /// <summary>
         /// Asynchronous idle time task constructor
@@ -36,12 +32,11 @@ namespace Microsoft.Languages.Editor.Tasks
         /// <param name="callbackAction">Callback to invoke when task completes</param>
         /// <param name="cancelAction">Callback to invoke if task is canceled</param>
         public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction)
-            : this()
-        {
+            : this() {
             Debug.Assert(taskAction != null);
 
             if (taskAction == null)
-                throw new ArgumentNullException("taskAction");
+                throw new ArgumentNullException(nameof(taskAction));
 
             _taskAction = taskAction;
             _callbackAction = callbackAction;
@@ -54,8 +49,7 @@ namespace Microsoft.Languages.Editor.Tasks
         /// <param name="taskAction">Task to perform in a background thread</param>
         /// <param name="callbackAction">Callback to invoke when task completes</param>
         public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction)
-            : this(taskAction, callbackAction, null)
-        {
+            : this(taskAction, callbackAction, null) {
         }
 
         /// <summary>
@@ -63,23 +57,20 @@ namespace Microsoft.Languages.Editor.Tasks
         /// </summary>
         /// <param name="taskAction">Task to perform in a background thread</param>
         public IdleTimeAsyncTask(Func<object> taskAction)
-            : this(taskAction, null, null)
-        {
+            : this(taskAction, null, null) {
         }
 
         /// <summary>
         /// Run task on next idle slot
         /// </summary>
-        public void DoTaskOnIdle()
-        {
+        public void DoTaskOnIdle() {
             DoTaskOnIdle(0);
         }
 
         /// <summary>
         /// Run task on next idle slot after certain amount of milliseconds
         /// </summary>
-        public void DoTaskOnIdle(int msDelay)
-        {
+        public void DoTaskOnIdle(int msDelay) {
             AssertIsMainThread();
             Debug.Assert(!IsDisposed);
 
@@ -97,8 +88,7 @@ namespace Microsoft.Languages.Editor.Tasks
         /// <param name="taskAction">Task to perform in a background thread</param>
         /// <param name="callbackAction">Callback to invoke when task completes</param>
         /// <param name="cancelAction">Callback to invoke if task is canceled</param>
-        public void DoTaskOnIdle(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, object tag = null)
-        {
+        public void DoTaskOnIdle(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, object tag = null) {
             AssertIsMainThread();
 
             if (TaskRunning)
@@ -116,26 +106,20 @@ namespace Microsoft.Languages.Editor.Tasks
             DoTaskOnIdle();
         }
 
-        public bool TaskRunning
-        {
+        public bool TaskRunning {
             get { return _connectedToIdle || _taskRunning; }
         }
 
-        private void DoTaskInternal()
-        {
+        private void DoTaskInternal() {
             Debug.Assert(_taskDoneEvent != null);
             Action finalAction;
 
-            if (!IsDisposed)
-            {
+            if (!IsDisposed) {
                 object result = null;
 
-                try
-                {
+                try {
                     result = _taskAction();
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     Debug.Fail(String.Format(CultureInfo.CurrentCulture,
                         "Background task exception: {0}.\nInner exception: {1}\nInner exception callstack: {2}",
                         ex.Message,
@@ -143,14 +127,10 @@ namespace Microsoft.Languages.Editor.Tasks
                         ex.InnerException != null ? ex.InnerException.StackTrace : "(none)"));
 
                     result = ex;
-                }
-                finally
-                {
+                } finally {
                     finalAction = () => UIThreadCompletedCallback(result);
                 }
-            }
-            else
-            {
+            } else {
                 finalAction = () => UIThreadCanceledCallback(null);
             }
 
@@ -159,21 +139,16 @@ namespace Microsoft.Languages.Editor.Tasks
             EditorShell.DispatchOnUIThread(finalAction);
         }
 
-        private void UIThreadCompletedCallback(object result)
-        {
+        private void UIThreadCompletedCallback(object result) {
             AssertIsMainThread();
 
-            try
-            {
-                if (_callbackAction != null)
-                {
+            try {
+                if (_callbackAction != null) {
                     _callbackAction(result);
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Debug.Fail(String.Format(CultureInfo.CurrentCulture,
-                    "Background task UI thread callback exception {0}. Inner exception: {1}", 
+                    "Background task UI thread callback exception {0}. Inner exception: {1}",
                     ex.Message, ex.InnerException != null ? ex.InnerException.Message : "(none)"));
             }
 
@@ -182,12 +157,10 @@ namespace Microsoft.Languages.Editor.Tasks
             _taskDoneEvent = null;
         }
 
-        private void UIThreadCanceledCallback(object result)
-        {
+        private void UIThreadCanceledCallback(object result) {
             AssertIsMainThread();
 
-            if (_cancelAction != null)
-            {
+            if (_cancelAction != null) {
                 _cancelAction(result);
             }
 
@@ -196,16 +169,13 @@ namespace Microsoft.Languages.Editor.Tasks
             _taskDoneEvent = null;
         }
 
-        private void OnIdle(object sender, EventArgs e)
-        {
+        private void OnIdle(object sender, EventArgs e) {
             AssertIsMainThread();
 
             // Even though disposing will disconnect from idle, that could
             // happen during idle, so this gets called anyway
-            if (!IsDisposed && !_taskRunning)
-            {
-                if (_delay == 0 || TimeUtility.MillisecondsSinceUTC(_idleConnectTime) > _delay)
-                {
+            if (!IsDisposed && !_taskRunning) {
+                if (_delay == 0 || TimeUtility.MillisecondsSinceUtc(_idleConnectTime) > _delay) {
                     _taskRunning = true;
                     _taskDoneEvent = new ManualResetEvent(false);
 
@@ -215,25 +185,21 @@ namespace Microsoft.Languages.Editor.Tasks
             }
         }
 
-        private void OnTerminate(object sender, EventArgs e)
-        {
+        private void OnTerminate(object sender, EventArgs e) {
             AssertIsMainThread();
 
             // Don't let the app teminate while the background thread is doing work
-            if (_taskDoneEvent != null)
-            {
+            if (_taskDoneEvent != null) {
                 _taskDoneEvent.WaitOne();
             }
 
             Dispose();
         }
 
-        private void ConnectToIdle()
-        {
+        private void ConnectToIdle() {
             AssertIsMainThread();
 
-            if (!_connectedToIdle && !IsDisposed)
-            {
+            if (!_connectedToIdle && !IsDisposed) {
                 _connectedToIdle = true;
                 _idleConnectTime = DateTime.UtcNow;
 
@@ -242,12 +208,10 @@ namespace Microsoft.Languages.Editor.Tasks
             }
         }
 
-        private void DisconnectFromIdle()
-        {
+        private void DisconnectFromIdle() {
             AssertIsMainThread();
 
-            if (_connectedToIdle)
-            {
+            if (_connectedToIdle) {
                 _connectedToIdle = false;
 
                 EditorShell.OnIdle -= OnIdle;
@@ -256,21 +220,18 @@ namespace Microsoft.Languages.Editor.Tasks
         }
 
         [Conditional("DEBUG")]
-        private void AssertIsMainThread()
-        {
+        private void AssertIsMainThread() {
             Debug.Assert(EditorShell.IsUIThread);
         }
 
-        private bool IsDisposed
-        {
+        private bool IsDisposed {
             get { return Interlocked.Read(ref _disposed) != 0; }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
             MessageId = "_taskDoneEvent",
             Justification = "The task event is always disposed after the task runs")]
-        public void Dispose()
-        {
+        public void Dispose() {
             AssertIsMainThread();
 
             Interlocked.Exchange(ref _disposed, 1);

@@ -288,7 +288,7 @@ namespace Microsoft.R.Debugger {
                         await ProcessBrowsePromptWorker(inter);
                     }
                 }
-            }).SilenceException<OperationCanceledException>().DoNotWait();
+            }).DoNotWait();
         }
 
         private async Task ProcessBrowsePromptWorker(IRSessionInteraction inter) {
@@ -370,7 +370,7 @@ namespace Microsoft.R.Debugger {
                 _initializeTask = null;
             }
 
-            InitializeAsync().SilenceException<OperationCanceledException>().DoNotWait();
+            InitializeAsync().DoNotWait();
         }
 
         private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {

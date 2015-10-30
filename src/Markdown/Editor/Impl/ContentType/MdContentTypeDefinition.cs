@@ -1,10 +1,8 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Markdown.Editor.ContentTypes
-{
-    public sealed class MdContentTypeDefinition
-    {
+namespace Microsoft.Markdown.Editor.ContentTypes {
+    public sealed class MdContentTypeDefinition {
         public const string LanguageName = "Markdown";
         public const string ContentType = "Markdown";
         public const string FileExtension1 = ".md";

@@ -10,11 +10,9 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Parser.Definitions;
 using Microsoft.R.Core.Utility;
 
-namespace Microsoft.R.Core.AST
-{
+namespace Microsoft.R.Core.AST {
     [DebuggerDisplay("AstRoot, Comments: {Comments.Count}, Errors: {Errors.Count}")]
-    public sealed class AstRoot : AstNode
-    {
+    public sealed class AstRoot : AstNode {
         private TextRangeCollection<IParseError> _errors = new TextRangeCollection<IParseError>();
 
         public ITextProvider TextProvider { get; internal set; }
@@ -26,20 +24,17 @@ namespace Microsoft.R.Core.AST
         public TextRangeCollection<IParseError> Errors { get; internal set; }
 
         public AstRoot(ITextProvider textProvider) :
-            this(textProvider, new CodeEvaluator())
-        {
+            this(textProvider, new CodeEvaluator()) {
         }
 
-        public AstRoot(ITextProvider textProvider, ICodeEvaluator codeEvaluator)
-        {
+        public AstRoot(ITextProvider textProvider, ICodeEvaluator codeEvaluator) {
             TextProvider = textProvider;
             Comments = new CommentsCollection();
             CodeEvaluator = codeEvaluator;
         }
 
         #region IAstNode
-        public override AstRoot Root
-        {
+        public override AstRoot Root {
             get { return this; }
         }
 
@@ -47,8 +42,7 @@ namespace Microsoft.R.Core.AST
         /// Finds deepest element node that contains given position
         /// </summary>
         /// <param name="position">Position</param>
-        public override IAstNode NodeFromPosition(int position)
-        {
+        public override IAstNode NodeFromPosition(int position) {
             IAstNode node = base.NodeFromPosition(position);
             return node ?? this;
         }
@@ -56,24 +50,20 @@ namespace Microsoft.R.Core.AST
         #endregion
 
         #region ITextRange
-        public override int Start
-        {
+        public override int Start {
             get { return 0; }
         }
 
-        public override int End
-        {
+        public override int End {
             get { return TextProvider.Length; }
         }
 
-        public override bool Contains(int position)
-        {
+        public override bool Contains(int position) {
             return position >= Start && position <= End;
         }
         #endregion
 
-        public override bool Parse(ParseContext context, IAstNode parent)
-        {
+        public override bool Parse(ParseContext context, IAstNode parent) {
             // Remove comments from the token stream
             this.Comments = new CommentsCollection(context.Comments);
 
@@ -86,10 +76,8 @@ namespace Microsoft.R.Core.AST
         /// Updates positions of all elements and attributes in the tree
         /// reflecting multiple changes made to the source text buffer.
         /// </summary>
-        public void ReflectTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges)
-        {
-            foreach (TextChangeEventArgs curChange in textChanges)
-            {
+        public void ReflectTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges) {
+            foreach (TextChangeEventArgs curChange in textChanges) {
                 ReflectTextChange(curChange.Start, curChange.OldLength, curChange.NewLength);
             }
         }
@@ -101,8 +89,7 @@ namespace Microsoft.R.Core.AST
         /// <param name="start">Start position of the change</param>
         /// <param name="oldLength">Length of changed fragment before the change</param>
         /// <param name="newLength">Length of changed fragment after the change</param>
-        public void ReflectTextChange(int start, int oldLength, int newLength)
-        {
+        public void ReflectTextChange(int start, int oldLength, int newLength) {
             // Note that shifting tree elements also shifts artifacts in 
             // element attributes. We need to track these changes in order
             // to avoid double shifts in artifacts.
@@ -113,8 +100,7 @@ namespace Microsoft.R.Core.AST
             Comments.ReflectTextChange(start, oldLength, newLength);
         }
 
-        public string WriteTree()
-        {
+        public string WriteTree() {
             AstWriter writer = new AstWriter();
             return writer.WriteTree(this);
         }

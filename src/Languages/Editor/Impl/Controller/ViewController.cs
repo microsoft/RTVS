@@ -6,10 +6,8 @@ using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 
-namespace Microsoft.Languages.Editor.Controller
-{
-    abstract public class ViewController : Controller
-    {
+namespace Microsoft.Languages.Editor.Controller {
+    public abstract class ViewController : Controller {
         /// <summary>
         /// Text view associated with the view controller
         /// </summary>
@@ -18,8 +16,7 @@ namespace Microsoft.Languages.Editor.Controller
         private List<ICommandTarget> _controllers;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        protected ViewController(ITextView textView, ITextBuffer textBuffer)
-        {
+        protected ViewController(ITextView textView, ITextBuffer textBuffer) {
             TextView = textView;
             TextBuffer = textBuffer;
             _controllers = new List<ICommandTarget>();
@@ -30,29 +27,23 @@ namespace Microsoft.Languages.Editor.Controller
             TextViewListenerEvents.TextViewDisconnected += OnTextViewDisconnected;
         }
 
-        private void OnTextViewDisconnected(object sender, TextViewListenerEventArgs e)
-        {
-            if ((e.TextView == TextView) && (e.TextBuffer == TextBuffer))
-            {
+        private void OnTextViewDisconnected(object sender, TextViewListenerEventArgs e) {
+            if ((e.TextView == TextView) && (e.TextBuffer == TextBuffer)) {
                 Dispose();
             }
         }
 
-        protected override void Dispose(bool disposing)
-        {
+        protected override void Dispose(bool disposing) {
             base.Dispose(disposing);
 
-            foreach (ICommandTarget controller in _controllers)
-            {
+            foreach (ICommandTarget controller in _controllers) {
                 IDisposable disposable = controller as IDisposable;
-                if (disposable != null)
-                {
+                if (disposable != null) {
                     disposable.Dispose();
                 }
             }
 
-            if (TextView != null)
-            {
+            if (TextView != null) {
                 TextViewListenerEvents.TextViewDisconnected -= OnTextViewDisconnected;
             }
 
@@ -62,43 +53,34 @@ namespace Microsoft.Languages.Editor.Controller
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public virtual void BuildCommandSet()
-        {
+        public virtual void BuildCommandSet() {
             // It is allowed here not to have host. The reason is that we allow using controller classes
             // without host as long as derived controller is adding commands manually. Without host there is
             // no composition service and hence we are unable to import command factories.
-            if (EditorShell.Current.CompositionService != null)
-            {
+            if (EditorShell.Current.CompositionService != null) {
                 var importComposer = new ContentTypeImportComposer<ICommandFactory>(EditorShell.Current.CompositionService);
                 var commandFactories = importComposer.GetAll(TextBuffer.ContentType.TypeName);
 
-                foreach (var factory in commandFactories)
-                {
+                foreach (var factory in commandFactories) {
                     var commands = factory.GetCommands(TextView, TextBuffer);
                     AddCommandSet(commands);
                 }
             }
         }
 
-        private void BuildControllerSet()
-        {
+        private void BuildControllerSet() {
             var controllerFactories = ComponentLocatorForOrderedContentType<IControllerFactory>.ImportMany(TextBuffer.ContentType);
-            if (controllerFactories != null)
-            {
-                foreach (var factory in controllerFactories)
-                {
+            if (controllerFactories != null) {
+                foreach (var factory in controllerFactories) {
                     _controllers.AddRange(factory.Value.GetControllers(TextView, TextBuffer));
                 }
             }
         }
 
-        public override CommandStatus Status(Guid group, int id)
-        {
-            foreach (var controller in _controllers)
-            {
+        public override CommandStatus Status(Guid group, int id) {
+            foreach (var controller in _controllers) {
                 var status = controller.Status(group, id);
-                if (status != CommandStatus.NotSupported)
-                {
+                if (status != CommandStatus.NotSupported) {
                     return status;
                 }
             }
@@ -106,16 +88,12 @@ namespace Microsoft.Languages.Editor.Controller
             return base.Status(group, id);
         }
 
-        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
-            foreach (var controller in _controllers)
-            {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            foreach (var controller in _controllers) {
                 var status = controller.Status(group, id);
-                if ((status & CommandStatus.SupportedAndEnabled) == CommandStatus.SupportedAndEnabled)
-                {
+                if ((status & CommandStatus.SupportedAndEnabled) == CommandStatus.SupportedAndEnabled) {
                     var result = controller.Invoke(group, id, inputArg, ref outputArg);
-                    if (result.Status == CommandResult.Executed.Status && result.Result == CommandResult.Executed.Result)
-                    {
+                    if (result.Status == CommandResult.Executed.Status && result.Result == CommandResult.Executed.Result) {
                         return result;
                     }
                 }

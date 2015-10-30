@@ -1,11 +1,9 @@
-﻿namespace Microsoft.R.Core.AST.Operators
-{
-    public static class OperatorPrecedence
-    {
-        public static int GetPrecedence(OperatorType operatorType)
-        {
-            switch (operatorType)
-            {
+﻿namespace Microsoft.R.Core.AST.Operators {
+
+    public static class OperatorPrecedence {
+
+        public static int GetPrecedence(OperatorType operatorType) {
+            switch (operatorType) {
                 case OperatorType.Sentinel:
                     return 0;
 

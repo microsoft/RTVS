@@ -1,9 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace Microsoft.Languages.Editor.Workspace
-{
-    public interface IFolder
-    {
+namespace Microsoft.Languages.Editor.Workspace {
+    public interface IFolder {
         /// <summary>
         /// Folder name
         /// </summary>

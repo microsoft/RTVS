@@ -6,16 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.R.Support.Engine;
 using Microsoft.R.Support.Help.Definitions;
 
-namespace Microsoft.R.Support.Help.Functions
-{
+namespace Microsoft.R.Support.Help.Functions {
     /// <summary>
     /// Provides information on functions in packages for intellisense.
     /// Since loading list of functions requires parsing of HTML index
     /// files in packages help, it caches information and persists
     /// cache to disk.
     /// </summary>
-    public static partial class FunctionIndex
-    {
+    public static partial class FunctionIndex {
         /// <summary>
         /// Maps package name to a list of functions in the package.
         /// Used to extract function names and descriptions when
@@ -47,18 +45,14 @@ namespace Microsoft.R.Support.Help.Functions
         /// Initialized function index and starts R engine session
         /// that is used to get RD documentation on functions.
         /// </summary>
-        public static void Initialize()
-        {
-            if (_rdFunctionHelp == null)
-            {
+        public static void Initialize() {
+            if (_rdFunctionHelp == null) {
                 _rdFunctionHelp = new RdFunctionHelp();
             }
         }
 
-        public static void Terminate()
-        {
-            if (_rdFunctionHelp != null)
-            {
+        public static void Terminate() {
+            if (_rdFunctionHelp != null) {
                 _rdFunctionHelp.Dispose();
                 _rdFunctionHelp = null;
             }
@@ -67,13 +61,10 @@ namespace Microsoft.R.Support.Help.Functions
         /// <summary>
         /// Given function name provides name of the containing package
         /// </summary>
-        public static string GetFunctionPackage(string functionName)
-        {
-            if (_functionToPackageMap != null)
-            {
+        public static string GetFunctionPackage(string functionName) {
+            if (_functionToPackageMap != null) {
                 string packageName;
-                if (_functionToPackageMap.TryGetValue(functionName, out packageName))
-                {
+                if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
                     return packageName;
                 }
             }
@@ -84,13 +75,10 @@ namespace Microsoft.R.Support.Help.Functions
         /// <summary>
         /// Retrieves list of functions in a given package
         /// </summary>
-        public static IReadOnlyCollection<INamedItemInfo> GetPackageFunctions(string packageName)
-        {
-            if (_packageToFunctionsMap != null)
-            {
+        public static IReadOnlyCollection<INamedItemInfo> GetPackageFunctions(string packageName) {
+            if (_packageToFunctionsMap != null) {
                 BlockingCollection<INamedItemInfo> packageFunctions;
-                if (_packageToFunctionsMap.TryGetValue(packageName, out packageFunctions))
-                {
+                if (_packageToFunctionsMap.TryGetValue(packageName, out packageFunctions)) {
                     return packageFunctions;
                 }
             }
@@ -102,24 +90,16 @@ namespace Microsoft.R.Support.Help.Functions
         /// Retrieves function information by name
         /// </summary>
         public static IFunctionInfo GetFunctionInfo(string functionName,
-                                  Action<object> infoReadyCallback = null, object parameter = null)
-        {
-            if (_functionToInfoMap != null)
-            {
+                                  Action<object> infoReadyCallback = null, object parameter = null) {
+            if (_functionToInfoMap != null) {
                 IFunctionInfo functionInfo;
-                if (_functionToInfoMap.TryGetValue(functionName, out functionInfo))
-                {
+                if (_functionToInfoMap.TryGetValue(functionName, out functionInfo)) {
                     return functionInfo;
-                }
-                else
-                {
+                } else {
                     string packageName;
-                    if (_functionToPackageMap.TryGetValue(functionName, out packageName))
-                    {
+                    if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
                         GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter);
-                    }
-                    else
-                    {
+                    } else {
                         //Debug.Assert(false, "Function without package: " + functionName);
                     }
                 }
@@ -129,39 +109,29 @@ namespace Microsoft.R.Support.Help.Functions
         }
 
         private static void GetFunctionInfoFromEngineAsync(string functionName, string packageName,
-                                         Action<object> infoReadyCallback = null, object parameter = null)
-        {
+                                         Action<object> infoReadyCallback = null, object parameter = null) {
             _rdFunctionHelp.GetFunctionRdHelp(
                 functionName,
                 packageName,
-                (object o) =>
-                {
-                    if (o != null)
-                    {
+                (object o) => {
+                    if (o != null) {
                         OnFunctionInfoReady(o);
 
-                        if (infoReadyCallback != null)
-                        {
+                        if (infoReadyCallback != null) {
                             infoReadyCallback(parameter);
                         }
                     }
                 });
         }
 
-        private static void OnFunctionInfoReady(object obj)
-        {
+        private static void OnFunctionInfoReady(object obj) {
             IFunctionInfo functionInfo = obj as IFunctionInfo;
-            if (functionInfo != null)
-            {
-                if (functionInfo.Aliases != null)
-                {
-                    foreach (string alias in functionInfo.Aliases)
-                    {
+            if (functionInfo != null) {
+                if (functionInfo.Aliases != null) {
+                    foreach (string alias in functionInfo.Aliases) {
                         _functionToInfoMap[alias] = functionInfo;
                     }
-                }
-                else if (!string.IsNullOrEmpty(functionInfo.Name))
-                {
+                } else if (!string.IsNullOrEmpty(functionInfo.Name)) {
                     _functionToInfoMap[functionInfo.Name] = functionInfo;
                 }
             }

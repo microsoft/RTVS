@@ -1,15 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Microsoft.VisualStudio.R.Package.Options.Attributes
-{
+namespace Microsoft.VisualStudio.R.Package.Options.Attributes {
     /// <summary>
     /// Defines localizable description attribute. Description is a help string
     /// that is displayed in the editor Tools | Options page.
     /// </summary>
     [AttributeUsage(AttributeTargets.All)]
-    internal sealed class LocDescriptionAttribute : DescriptionAttribute
-    {
+    internal sealed class LocDescriptionAttribute : DescriptionAttribute {
         private bool _replaced;
 
         #region Constructors
@@ -18,21 +16,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.Attributes
         /// </summary>
         /// <param name="description">Attribute description.</param>
         public LocDescriptionAttribute(string description)
-            : base(description)
-        {
-        }
+            : base(description) { }
         #endregion
 
         #region Overriden Implementation
         /// <summary>
         /// Gets attribute description.
         /// </summary>
-        public override string Description
-        {
-            get
-            {
-                if (!_replaced)
-                {
+        public override string Description {
+            get {
+                if (!_replaced) {
                     _replaced = true;
                     DescriptionValue = Resources.ResourceManager.GetString(base.Description);
                 }

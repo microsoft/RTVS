@@ -1,8 +1,7 @@
 ﻿using System;
 using Microsoft.Languages.Editor.Shell;
 
-namespace Microsoft.R.Support.Utility
-{
+namespace Microsoft.R.Support.Utility {
     /// <summary>
     /// Implements pattern similar to EAP (event async pattern).
     /// direct use of EAP classes such as AsyncCompletedEventHandler
@@ -11,8 +10,7 @@ namespace Microsoft.R.Support.Utility
     /// we need to know completion context with the completion session
     /// and which specific completion object to populated with the data.
     /// </summary>
-    public abstract class AsyncData<T>
-    {
+    public abstract class AsyncData<T> {
         private T _data;
 
         /// <summary>
@@ -23,8 +21,7 @@ namespace Microsoft.R.Support.Utility
         /// <summary>
         /// Data that becomes available asynchronously
         /// </summary>
-        public T Data
-        {
+        public T Data {
             get { return _data; }
         }
 
@@ -34,10 +31,8 @@ namespace Microsoft.R.Support.Utility
         /// fires data ready event.
         /// </summary>
         /// <param name="data"></param>
-        protected virtual void SetData(T data)
-        {
-            EditorShell.DispatchOnUIThread(() =>
-            {
+        protected virtual void SetData(T data) {
+            EditorShell.DispatchOnUIThread(() => {
                 _data = data;
                 _dataReadyCallBack(_data);
             });
@@ -47,12 +42,9 @@ namespace Microsoft.R.Support.Utility
         /// Notifies derived class from UI thread
         /// that the data is ready.
         /// </summary>
-        protected virtual void OnDataReady(T data)
-        {
-        }
+        protected virtual void OnDataReady(T data) { }
 
-        public AsyncData(Action<T> dataReadyCallBack)
-        {
+        public AsyncData(Action<T> dataReadyCallBack) {
             _dataReadyCallBack = dataReadyCallBack;
         }
 
@@ -60,8 +52,7 @@ namespace Microsoft.R.Support.Utility
         /// Creates async object in the immediate ready state.
         /// </summary>
         /// <param name="data"></param>
-        public AsyncData(T data)
-        {
+        public AsyncData(T data) {
             SetData(data);
         }
     }

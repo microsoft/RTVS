@@ -1,10 +1,8 @@
-﻿namespace Microsoft.R.Core.AST.DataTypes.Definitions
-{
+﻿namespace Microsoft.R.Core.AST.DataTypes.Definitions {
     /// <summary>
     /// Represents 2D array.
     /// </summary>
-    public interface IR2DArray
-    {
+    public interface IR2DArray {
         /// <summary>
         /// Number of rows
         /// </summary>

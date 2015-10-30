@@ -8,14 +8,11 @@ using Microsoft.Markdown.Editor.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Markdown.Editor.EditorFactory
-{
-    internal class EditorInstance : IEditorInstance
-    {
+namespace Microsoft.Markdown.Editor.EditorFactory {
+    internal class EditorInstance : IEditorInstance {
         IEditorDocument _document;
 
-        public EditorInstance(IWorkspaceItem workspaceItem, ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory)
-        {
+        public EditorInstance(IWorkspaceItem workspaceItem, ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) {
             if (workspaceItem == null)
                 throw new ArgumentNullException("workspaceItem");
 
@@ -49,8 +46,7 @@ namespace Microsoft.Markdown.Editor.EditorFactory
         /// <summary>
         /// Retrieves editor instance command target for a particular view
         /// </summary>
-        public ICommandTarget GetCommandTarget(ITextView textView)
-        {
+        public ICommandTarget GetCommandTarget(ITextView textView) {
             return MdMainController.FromTextView(textView);
         }
 
@@ -58,33 +54,28 @@ namespace Microsoft.Markdown.Editor.EditorFactory
         /// Caption for the editor tab in the host application. 
         /// Null if IDE should use default.
         /// </summary>
-        public string Caption
-        {
+        public string Caption {
             get { return Path.GetFileName(WorkspaceItem.Path); }
         }
 
         #endregion
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_document != null)
-            {
+        protected virtual void Dispose(bool disposing) {
+            if (_document != null) {
                 ServiceManager.RemoveService<IEditorInstance>(ViewBuffer);
 
                 _document.Dispose();
                 _document = null;
             }
 
-            if (WorkspaceItem != null)
-            {
+            if (WorkspaceItem != null) {
                 WorkspaceItem.Dispose();
                 WorkspaceItem = null;
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }

@@ -1,28 +1,21 @@
 ﻿using System.Diagnostics;
 using Microsoft.R.Core.AST.Definitions;
 
-namespace Microsoft.R.Core.AST.Scopes
-{
+namespace Microsoft.R.Core.AST.Scopes {
     [DebuggerDisplay("Global Scope, Children: {Children.Count} [{Start}...{End})")]
-    public sealed class GlobalScope : Scope
-    {
+    public sealed class GlobalScope : Scope {
         public GlobalScope() :
-            base("Global")
-        {
+            base("Global") {
         }
 
         #region ITextRange
-        public override int Start
-        {
+        public override int Start {
             get { return 0; }
         }
 
-        public override int End
-        {
-            get
-            {
-                if (Root != null && Root.TextProvider != null)
-                {
+        public override int End {
+            get {
+                if (Root != null && Root.TextProvider != null) {
                     return Root.TextProvider.Length;
                 }
 
@@ -30,8 +23,7 @@ namespace Microsoft.R.Core.AST.Scopes
             }
         }
 
-        public override bool Contains(int position)
-        {
+        public override bool Contains(int position) {
             return position >= Start && position <= End;
         }
         #endregion

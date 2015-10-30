@@ -1,16 +1,14 @@
 ﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Controller
-{
+namespace Microsoft.Languages.Editor.Controller {
     /// <summary>
     /// Exported via MEF for a particular content type by code that is interested in tracking view creation.
     /// Interface is called for every view of this content type is created and received aggregate focus.
     /// Useful for initialization of components that depend on the view, such as tag navigator, selection
     /// container, F1 help context tracker and so on.
     /// </summary>
-    public interface ITextViewCreationListener
-    {
+    public interface ITextViewCreationListener {
         void OnTextViewCreated(ITextView textView, ITextBuffer textBuffer);
     }
 }

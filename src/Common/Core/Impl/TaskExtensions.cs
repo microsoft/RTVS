@@ -7,8 +7,11 @@ namespace Microsoft.Common.Core {
         /// Suppresses warnings about unawaited tasks and ensures that unhandled
         /// errors will cause the process to terminate.
         /// </summary>
+        /// <remarks>
+        /// <see cref="OperationCanceledException"/> is always ignored.
+        /// </remarks>
         public static async void DoNotWait(this Task task) {
-            await task;
+            await task.SilenceException<OperationCanceledException>();
         }
 
         /// <summary>
