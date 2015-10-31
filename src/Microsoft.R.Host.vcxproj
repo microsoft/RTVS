@@ -171,6 +171,7 @@
     <ClCompile Include="crtutils.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RPlotHost.cpp" />
     <ClCompile Include="r_util.cpp" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="util.cpp" />
@@ -182,12 +183,14 @@
     <ClInclude Include="log.h" />
     <ClInclude Include="Rapi.h" />
     <ClInclude Include="Rgraphicsapi.h" />
+    <ClInclude Include="RPlotHost.h" />
     <ClInclude Include="r_util.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="vsgd.h" />
     <ClInclude Include="xamlbuilder.h" />
+    <ClInclude Include="\\mikhaila1\f$\RHost\src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

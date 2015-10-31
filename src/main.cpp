@@ -14,6 +14,8 @@ int main(int argc, char** argv) {
     init_log();
 
     __try {
+        HWND handle = (HWND)_atoi64(argv[1]);
+        RPlotHost::Init(handle);
         logf("Waiting for connection on port %u ...\n", PORT);
         rhost::server::wait_for_client(PORT);
 
@@ -48,7 +50,9 @@ int main(int argc, char** argv) {
         run_Rmainloop();
 
         Rf_endEmbeddedR(0);
-    } __finally {
+    }
+    __finally {
         flush_log();
+        RPlotHost::Terminate();
     }
 }

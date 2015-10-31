@@ -8,6 +8,7 @@
     <ClCompile Include="r_util.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="log.cpp" />
+    <ClCompile Include="RPlotHost.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -21,6 +22,8 @@
     <ClInclude Include="r_util.h" />
     <ClInclude Include="eval.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="\\mikhaila1\f$\RHost\src\stdafx.h" />
+    <ClInclude Include="RPlotHost.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
