@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var valueEvaluation = (DebugValueEvaluationResult)_evaluation;
 
                 Value = GetValue(valueEvaluation);
-                ValueDetail = valueEvaluation.Value;
+                ValueDetail = valueEvaluation.Representation.DPut;
                 TypeName = valueEvaluation.TypeName;
                 var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
                 Class = string.Join(", ", escaped); // TODO: escape ',' in class names
@@ -73,7 +73,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                var children = await valueEvaluation.GetChildrenAsync(true, _truncateChildren ? (int?)20 : null);    // TODO: consider exception propagation such as OperationCanceledException
+                var fields = (DebugEvaluationResultFields.All & ~DebugEvaluationResultFields.ReprAll) |
+                    DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
+                var children = await valueEvaluation.GetChildrenAsync(fields, _truncateChildren ? (int?)20 : null);    // TODO: consider exception propagation such as OperationCanceledException
 
                 result = new List<EvaluationWrapper>();
                 foreach (var child in children) {
@@ -126,8 +128,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private static string DataFramePrefix = "'data.frame':([^:]+):";
         private string GetValue(DebugValueEvaluationResult v) {
-            var value = v.Str;
-            if (v.Str != null) {
+            var value = v.Representation.Str;
+            if (value != null) {
                 Match match = Regex.Match(value, DataFramePrefix);
                 if (match.Success) {
                     return match.Groups[1].Value.Trim();

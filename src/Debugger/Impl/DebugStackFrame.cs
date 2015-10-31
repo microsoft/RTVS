@@ -53,7 +53,7 @@ namespace Microsoft.R.Debugger {
             FileName = jFrame.Value<string>("filename");
             LineNumber = jFrame.Value<int?>("line_number");
             Call = jFrame.Value<string>("call");
-            IsGlobal = jFrame.Value<bool>("is_global");
+            IsGlobal = jFrame.Value<bool?>("is_global") ?? false;
 
             var match = _doTraceRegex.Match(Call);
             if (match.Success) {

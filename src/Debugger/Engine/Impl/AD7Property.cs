@@ -31,7 +31,7 @@ namespace Microsoft.R.Debugger.Engine {
             IsFrameEnvironment = isFrameEnvironment;
 
             _children = Lazy.Create(() =>
-                (EvaluationResult as DebugValueEvaluationResult).GetChildrenAsync()?.GetResultOnUIThread()
+                (EvaluationResult as DebugValueEvaluationResult)?.GetChildrenAsync()?.GetResultOnUIThread()
                 ?? new DebugEvaluationResult[0]);
         }
 
@@ -163,11 +163,11 @@ namespace Microsoft.R.Debugger.Engine {
             pLen = 0;
 
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
-            if (valueResult == null || valueResult.RawValue == null) {
+            if (valueResult == null || valueResult.Representation.ToString == null) {
                 return VSConstants.E_FAIL;
             }
 
-            pLen = (uint)valueResult.RawValue.Length;
+            pLen = (uint)valueResult.Representation.ToString.Length;
             return VSConstants.S_OK;
         }
 
@@ -175,12 +175,12 @@ namespace Microsoft.R.Debugger.Engine {
             pceltFetched = 0;
 
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
-            if (valueResult == null || valueResult.RawValue == null) {
+            if (valueResult == null || valueResult.Representation.ToString == null) {
                 return VSConstants.E_FAIL;
             }
 
             for (int i = 0; i < buflen; ++i) {
-                rgString[i] = valueResult.RawValue[i];
+                rgString[i] = valueResult.Representation.ToString[i];
             }
             return VSConstants.S_OK;
         }
@@ -249,7 +249,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE)) {
                 if (valueResult != null) {
                     // TODO: handle radix
-                    dpi.bstrValue = valueResult.Value;
+                    dpi.bstrValue = valueResult.Representation.DPut;
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
                 } else if (promiseResult != null) {
                     dpi.bstrValue = promiseResult.Code;
@@ -276,7 +276,7 @@ namespace Microsoft.R.Debugger.Engine {
                     switch (valueResult.TypeName) {
                         case "logical":
                             dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN;
-                            if (valueResult.Value == "TRUE") {
+                            if (valueResult.Representation.DPut == "TRUE") {
                                 dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN_TRUE;
                             }
                             break;
