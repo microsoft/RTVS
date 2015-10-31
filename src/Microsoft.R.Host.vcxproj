@@ -190,7 +190,6 @@
     <ClInclude Include="util.h" />
     <ClInclude Include="vsgd.h" />
     <ClInclude Include="xamlbuilder.h" />
-    <ClInclude Include="\\mikhaila1\f$\RHost\src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -201,6 +200,7 @@
     <Import Project="packages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets" Condition="Exists('packages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets')" />
     <Import Project="packages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets" Condition="Exists('packages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets')" />
     <Import Project="packages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets" Condition="Exists('packages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets')" />
+    <Import Project="packages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets" Condition="Exists('packages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -210,5 +210,6 @@
     <Error Condition="!Exists('packages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets'))" />
     <Error Condition="!Exists('packages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets'))" />
     <Error Condition="!Exists('packages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets'))" />
+    <Error Condition="!Exists('packages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets'))" />
   </Target>
 </Project>

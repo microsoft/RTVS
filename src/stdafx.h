@@ -15,6 +15,11 @@
 #include <utility>
 
 #include "boost/algorithm/string.hpp"
+#include "boost/program_options/cmdline.hpp"
+#include "boost/program_options/options_description.hpp"
+#include "boost/program_options/value_semantic.hpp"
+#include "boost/program_options/variables_map.hpp"
+#include "boost/program_options/parsers.hpp"
 
 #include "picojson.h"
 
@@ -25,3 +30,4 @@
 #pragma warning(pop)
 
 #include "windows.h"
+#include "RPlotHost.h"

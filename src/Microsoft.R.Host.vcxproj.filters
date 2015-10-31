@@ -22,7 +22,6 @@
     <ClInclude Include="r_util.h" />
     <ClInclude Include="eval.h" />
     <ClInclude Include="log.h" />
-    <ClInclude Include="\\mikhaila1\f$\RHost\src\stdafx.h" />
     <ClInclude Include="RPlotHost.h" />
   </ItemGroup>
   <ItemGroup>

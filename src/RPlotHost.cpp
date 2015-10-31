@@ -20,7 +20,7 @@ RPlotHost::~RPlotHost() {
 }
 
 void RPlotHost::Init(HWND handle) {
-    if (!m_pInstance) {
+    if (!m_pInstance && handle != NULL) {
         m_pInstance = new RPlotHost(handle);
     }
 }
