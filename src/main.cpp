@@ -4,6 +4,7 @@
 #include "Rapi.h"
 #include "vsgd.h"
 #include "r_util.h"
+#include "RPlotHost.h"
 
 using namespace rhost::log;
 namespace po = boost::program_options;
@@ -13,12 +14,14 @@ const char* plot_window_option_name = "plot_window";
 
 void parse_arguments(int argc, char** argv, po::variables_map* vm);
 void run_R(int argc, char** argv, HWND plot_window_container_handle);
+void cleanup_rplot_hook();
 
 po::variables_map vm;
 
 int main(int argc, char** argv) {
     setlocale(LC_NUMERIC, "C");
     init_log();
+    atexit(cleanup_rplot_hook);
 
     HWND plot_window_container_handle = NULL;
 
@@ -33,7 +36,7 @@ int main(int argc, char** argv) {
 void run_R(int argc, char** argv, HWND plot_window_container_handle) {
     __try {
 
-        RPlotHost::Init(plot_window_container_handle);
+        rplots::RPlotHost::Init(plot_window_container_handle);
 
         logf("Waiting for connection on port %u ...\n", PORT);
         rhost::server::wait_for_client(PORT);
@@ -71,7 +74,6 @@ void run_R(int argc, char** argv, HWND plot_window_container_handle) {
         Rf_endEmbeddedR(0);
     } __finally {
         flush_log();
-        RPlotHost::Terminate();
     }
 }
 
@@ -86,4 +88,8 @@ void parse_arguments(int argc, char** argv, po::variables_map* pvm) {
         std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
         std::cerr << desc << std::endl;
     }
+}
+
+void cleanup_rplot_hook() {
+    rplots::RPlotHost::Terminate();
 }

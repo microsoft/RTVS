@@ -30,4 +30,3 @@
 #pragma warning(pop)
 
 #include "windows.h"
-#include "RPlotHost.h"
