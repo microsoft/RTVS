@@ -141,6 +141,7 @@
     <?include ItemTemplates.wxi ?>
     <?include ProjectTemplates.wxi ?>
     <?include Profiles.wxi ?>
+    <?include RtvsPackage.wxi ?>
 
     <!--<?ifdef LabBuild?>
     <?include LocalizedResources.wxi ?>

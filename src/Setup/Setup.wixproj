@@ -44,6 +44,7 @@
     <Compile Include="Product.wxs" />
     <Content Include="35MSSharedLib1024.snk" />
     <Content Include="Assemblies.wxi" />
+    <Content Include="RtvsPackage.wxi" />
     <Content Include="Profiles.wxi" />
     <Content Include="CpsRules.wxi" />
     <Content Include="ItemTemplates.wxi" />
