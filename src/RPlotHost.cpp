@@ -47,6 +47,7 @@ LRESULT CALLBACK RPlotHost::CBTProc(
                     ::SetWindowLong(hwnd, GWL_STYLE, WS_CHILD);
                     ::SetWindowLong(hwnd, GWL_EXSTYLE, 0);
                     ::SetMenu(hwnd, NULL);
+                    ::SetWindowText(hwnd, NULL);
 
                     ::SetParent(hwnd, m_hwndPlotWindow);
                     ::GetClientRect(m_hwndPlotWindow, &rc);
