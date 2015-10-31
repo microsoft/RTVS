@@ -120,7 +120,7 @@ namespace Microsoft.R.Support.Utility {
 
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
-            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)) {
+            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 RegistryKey rKey = null;
 
                 try {
@@ -130,11 +130,6 @@ namespace Microsoft.R.Support.Utility {
                         // This is not supported as we require 64-bit R.
                         // rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R");
                     }
-
-                    if (rKey == null) {
-                        rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R64");
-                    }
-
                     if (rKey != null) {
                         return rKey.GetSubKeyNames();
                     }
@@ -150,7 +145,7 @@ namespace Microsoft.R.Support.Utility {
 
         private static string GetRVersionInstallPathFromRegistry(string version) {
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
-            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)) {
+            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version)) {
                     if (rKey != null) {
                         return rKey.GetValue("InstallPath") as string;
