@@ -222,18 +222,18 @@ namespace Microsoft.R.Debugger {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
-            var call = Invariant($".rtvs.toJSON(.rtvs.children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, {fields.ToRVector()}, {maxLength}))");
+            var call = Invariant($"rtvs:::toJSON(rtvs:::describe_children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, {fields.ToRVector()}, {maxLength}))");
             var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),
-                Invariant($".rtvs.children(): object of objects expected.\n\n{jChildren}"));
+                Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
 
             var children = new List<DebugEvaluationResult>();
             foreach (var child in jChildren) {
                 var childObject = (JObject)child;
                 Trace.Assert(
                     childObject.Count == 1,
-                    Invariant($".rtvs.children(): each object is expected contain one object\n\n"));
+                    Invariant($"rtvs:::describe_children(): each object is expected contain one object\n\n"));
                 foreach (var kv in childObject) {
                     var name = kv.Key;
                     var jEvalResult = (JObject)kv.Value;
