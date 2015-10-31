@@ -4,6 +4,8 @@ using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal static class NativeMethods {
+        public const int WM_USER = 0x0400;
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
@@ -11,6 +13,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EnumChildWindows(IntPtr hwndParent, EnumWindowsProc lpEnumFunc, IntPtr lParam);
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
@@ -22,6 +27,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("kernel32.dll")]
+        public static extern uint GetCurrentThreadId();
+
+        [DllImport("kernel32.dll")]
+        public static extern uint GetLastError();
 
         public enum HookType : int {
             WH_JOURNALRECORD = 0,

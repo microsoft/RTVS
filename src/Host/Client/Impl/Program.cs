@@ -11,7 +11,7 @@ namespace Microsoft.R.Host.Client {
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
             var host = new RHost(new Program());
-            host.CreateAndRun(args[0]).GetAwaiter().GetResult();
+            host.CreateAndRun(args[0], IntPtr.Zero).GetAwaiter().GetResult();
             _evaluator = host;
         }
 

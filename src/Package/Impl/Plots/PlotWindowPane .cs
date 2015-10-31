@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
@@ -21,6 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
 
         private SavePlotCommand _saveCommand;
+        private Lazy<RPlotWindowContainer> _plotWindowContainer =new Lazy<RPlotWindowContainer>(() => new RPlotWindowContainer());
 
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
@@ -38,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public override object GetIVsWindowPane() {
-            return new RPlotWindowContainer();
+            return _plotWindowContainer.Value;
         }
 
         public IPlotContentProvider PlotContentProvider { get; private set; }
