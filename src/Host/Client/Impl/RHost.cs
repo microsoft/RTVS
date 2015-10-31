@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
@@ -464,7 +465,7 @@ namespace Microsoft.R.Host.Client {
             psi.UseShellExecute = false;
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
-            psi.Arguments = plotWindowContainerHandle.ToInt64().ToString();
+            psi.Arguments = string.Format(CultureInfo.InvariantCulture, "--plot_window {0}", plotWindowContainerHandle.ToInt64().ToString());
 
             using (this)
             using (_process = Process.Start(psi)) {
