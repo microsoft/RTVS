@@ -69,24 +69,20 @@ void run_R(int argc, char** argv, HWND plot_window_container_handle) {
         run_Rmainloop();
 
         Rf_endEmbeddedR(0);
-    }
-    __finally {
+    } __finally {
         flush_log();
         RPlotHost::Terminate();
     }
 }
 
-void parse_arguments(int argc, char** argv, po::variables_map* pvm)
-{
+void parse_arguments(int argc, char** argv, po::variables_map* pvm) {
     po::options_description desc;
     try {
         desc.add_options()
             ("plot_window", po::value<INT64>()->default_value(0), "R Plot window container handle (resides in VS tool window)");
 
         po::store(po::parse_command_line(argc, argv, desc), *pvm); // can throw 
-    }
-    catch (po::error& e)
-    {
+    } catch (po::error& e) {
         std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
         std::cerr << desc << std::endl;
     }
