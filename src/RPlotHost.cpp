@@ -57,6 +57,7 @@ LRESULT CALLBACK RPlotHost::CBTProc(
                     }
 
                     ::SetWindowPos(hwnd, HWND_TOP, 0, 0, rc.right, rc.bottom, SWP_SHOWWINDOW | SWP_FRAMECHANGED);
+                    ::PostMessage(m_hwndPlotWindow, WM_ACTIVATE_PLOT, 0, 0);
                 }
             }
             m_fProcessing = false;
