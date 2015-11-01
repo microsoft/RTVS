@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -11,10 +13,17 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     /// Parent of x64 RPlot window
     /// </summary>
     class RPlotWindowContainer : UserControl, IVsWindowPane {
-        private const int WM_ACTIVATE_PLOT = NativeMethods.WM_USER + 100;
+
+        static Thread t;
+        static uint color1 = (uint)Color.FromArgb(255, 1, 1, 1).ToArgb();
+        static IntPtr _hdc = IntPtr.Zero;
 
         #region IVsWindowPane
         public int ClosePane() {
+            if (_rPlotWindowHandle != IntPtr.Zero) {
+                //NativeMethods.PostMessage(_rPlotWindowHandle, NativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                //_rPlotWindowHandle = IntPtr.Zero;
+            }
             return VSConstants.S_OK;
         }
 
@@ -92,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         protected override void WndProc(ref Message m) {
-            if (m.Msg == WM_ACTIVATE_PLOT) {
+            if (m.Msg == NativeMethods.WM_ACTIVATE_PLOT) {
                 ToolWindowUtilities.ShowWindowPane<PlotWindowPane>(0, focus: false);
             }
             base.WndProc(ref m);
