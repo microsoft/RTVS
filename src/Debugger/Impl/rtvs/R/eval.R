@@ -67,7 +67,7 @@ describe_object <- function(obj, res, fields) {
   
   if (field('dim')) {
     dim <- NA_if_error(dim(obj));
-    if (is.integer(dim) && !is.na(dim)) {
+    if (is.integer(dim) && !anyNA(dim)) {
       res$dim <- dim;
     }
   }
@@ -260,7 +260,7 @@ describe_children <- function(obj, env, fields, count) {
     # it is named, so that the name is exposed.
     if (n != 1 || !is.atomic(obj) || !(is.null(names[[1]]) || is.na(names[[1]]) || names[[1]] == '')) {
       if (!is.null(count)) {
-        n <- max(n, count);
+        n <- min(n, count);
         count <<- count - n;
       }
   
@@ -274,7 +274,8 @@ describe_children <- function(obj, env, fields, count) {
         # c(1,2,3), and names() is c('x','y','x'), then c[[1]] is named 'x', but c[[3]]
         # is effectively unnamed, because there's no way to address it by name.
         name <- force_toString(names[[i]]);
-        if (name != '' && match(name, names) == i) {
+        cat(match(name, names));
+        if (name != '' && match(name, names, -1) == i) {
           kind <- '$';
           # Named items can be accessed with '$' in lists, but other types require brackets.
           if (is.list(obj)) {
