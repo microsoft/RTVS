@@ -147,7 +147,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private void DestroyChildPlot() {
             if (_rPlotWindowHandle != IntPtr.Zero) {
                 NativeMethods.PostMessage(_rPlotWindowHandle, NativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-                NativeMethods.DestroyWindow(_rPlotWindowHandle);
                 _rPlotWindowHandle = IntPtr.Zero;
             }
         }
