@@ -92,13 +92,16 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         protected override void OnClientSizeChanged(EventArgs e) {
-            SizeChildPlot(RPlotWindowHandle);
+            SizeChildPlot();
             base.OnClientSizeChanged(e);
         }
 
         protected override void WndProc(ref Message m) {
             if (m.Msg == NativeMethods.WM_ACTIVATE_PLOT) {
-                ForceSizeChildPlot();
+                if (!_sized) {
+                    _sized = true;
+                    SizeChildPlot();
+                }
                 _lastActivationMessageTime = DateTime.Now;
                 if (!_connectedToIdle) {
                     _connectedToIdle = true;
@@ -106,7 +109,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 }
             } else if (m.Msg == NativeMethods.WM_CLOSE) {
                 DestroyChildPlot();
-            } 
+            }
             base.WndProc(ref m);
         }
 
@@ -121,26 +124,17 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 frame.IsOnScreen(out onScreen);
                 if (onScreen == 0) {
                     ToolWindowUtilities.ShowWindowPane<PlotWindowPane>(0, focus: false);
-                    SizeChildPlot(IntPtr.Zero);
+                    SizeChildPlot();
                 }
             }
         }
 
-        private void SizeChildPlot(IntPtr handle) {
-            handle = handle == IntPtr.Zero ? RPlotWindowHandle : handle;
+        private void SizeChildPlot() {
+            IntPtr handle = RPlotWindowHandle;
             if (handle != IntPtr.Zero) {
+                NativeMethods.MoveWindow(handle, 0, 0, this.Width - 1, this.Height - 1, bRepaint: true);
                 NativeMethods.MoveWindow(handle, 0, 0, this.Width, this.Height, bRepaint: true);
-            }
-        }
-
-        private void ForceSizeChildPlot() {
-            if (!_sized) {
-                IntPtr handle = RPlotWindowHandle;
-                if (handle != IntPtr.Zero) {
-                    NativeMethods.MoveWindow(handle, 0, 0, this.Width - 1, this.Height - 1, bRepaint: true);
-                    NativeMethods.MoveWindow(handle, 0, 0, this.Width, this.Height, bRepaint: true);
-                    _sized = true;
-                }
+                _sized = true;
             }
         }
 
