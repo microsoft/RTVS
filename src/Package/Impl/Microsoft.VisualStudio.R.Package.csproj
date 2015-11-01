@@ -140,7 +140,7 @@
     <Compile Include="Commands\ShowContextMenuCommand.cs" />
     <Compile Include="Commands\R\VsRCommandFactory.cs" />
     <Compile Include="Commands\R\VsRTextViewConnectionListener.cs" />
-    <Compile Include="Plots\PlotWindowPane .cs" />
+    <Compile Include="Plots\PlotWindowPane.cs" />
     <Compile Include="DataInspect\Variable.cs" />
     <Compile Include="DataInspect\VariableProvider.cs" />
     <Compile Include="DataInspect\VariableView.xaml.cs">

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.Languages.Editor.Controller;
@@ -10,14 +11,16 @@ using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
-    internal class PlotWindowPane : ToolWindowPane {
+    internal class PlotWindowPane : ToolWindowPane, IVsWindowFrameNotify3 {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
+        private static readonly uint color1 = (uint)Color.FromArgb(1, 1, 1, 1).ToArgb();
 
         private SavePlotCommand _saveCommand;
-        private Lazy<RPlotWindowContainer> _plotWindowContainer =new Lazy<RPlotWindowContainer>(() => new RPlotWindowContainer());
+        private Lazy<RPlotWindowContainer> _plotWindowContainer = new Lazy<RPlotWindowContainer>(() => new RPlotWindowContainer());
 
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
@@ -32,6 +35,13 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             Controller c = new Controller();
             c.AddCommandSet(GetCommands());
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
+        }
+
+        public override void OnToolWindowCreated() {
+            base.OnToolWindowCreated();
+
+            IVsWindowFrame frame = this.Frame as IVsWindowFrame;
+            frame.SetProperty((int)__VSFPROPID.VSFPROPID_ViewHelper, this);
         }
 
         public override object GetIVsWindowPane() {
@@ -106,5 +116,31 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
             base.Dispose(disposing);
         }
+
+        #region IVsWindowFrameNotify3
+        public int OnShow(int fShow) {
+            return VSConstants.S_OK;
+        }
+
+        public int OnMove(int x, int y, int w, int h) {
+            return VSConstants.S_OK;
+        }
+
+        public int OnSize(int x, int y, int w, int h) {
+            return VSConstants.S_OK;
+        }
+
+        public int OnDockableChange(int fDockable, int x, int y, int w, int h) {
+            return VSConstants.S_OK;
+        }
+
+        public int OnClose(ref uint pgrfSaveOptions) {
+            IVsWindowPane pane = GetIVsWindowPane() as IVsWindowPane;
+            if (pane != null) {
+                pane.ClosePane();
+            }
+            return VSConstants.S_OK;
+        }
+        #endregion
     }
 }
