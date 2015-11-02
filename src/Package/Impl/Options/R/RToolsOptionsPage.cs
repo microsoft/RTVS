@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
@@ -106,7 +107,14 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             try {
                 string rDirectory = Path.Combine(path, @"bin\x64");
                 string rDllPath = Path.Combine(rDirectory, "R.dll");
-                if(!Directory.Exists(rDirectory) || !File.Exists(rDllPath)) {
+                if(File.Exists(rDllPath)) {
+                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(rDllPath);
+                    int minor, revision;
+                    RVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
+                    if (fvi.FileMajorPart != 3 || minor != 2) {
+                        message = string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion, fvi.FileMajorPart, minor, revision);
+                    }
+                } else {
                     message = string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, rDirectory);
                 }
             }
@@ -124,6 +132,24 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Given R minor file version like 10 converts it to R engine minor version.
+        /// For example, file may have version 3.10 which means R 3.1.0. In turn,
+        /// file version 2.125 means R engine version is 2.12.5.
+        /// </summary>
+        /// <param name="minorVersion"></param>
+        /// <param name="minor"></param>
+        /// <param name="revision"></param>
+        private void RVersionPartsFromFileMinorVersion(int minorVersion, out int minor, out int revision) {
+            revision = minorVersion % 10;
+            if (minorVersion < 100) {
+                minor = minorVersion / 10;
+            }
+            else {
+                minor = minorVersion / 100;
+            }
         }
     }
 }

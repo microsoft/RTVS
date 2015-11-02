@@ -295,6 +295,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are 3.2.*..
+        /// </summary>
+        public static string Error_UnsupportedRVersion {
+            get {
+                return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gathering diagnostics data....
         /// </summary>
         public static string GatheringDiagnosticData {

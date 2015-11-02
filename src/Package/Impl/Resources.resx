@@ -450,4 +450,7 @@
   <data name="RPathChangedRestartVS" xml:space="preserve">
     <value>You must restart Visual Studio after changing path to the R installation.</value>
   </data>
+  <data name="Error_UnsupportedRVersion" xml:space="preserve">
+    <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are 3.2.*.</value>
+  </data>
 </root>
