@@ -135,7 +135,7 @@ namespace rhost {
 
                 if (query_interrupt()) {
                     allow_intr_in_CallBack = false;
-                    Rf_onintr();
+                    interrupt_eval();
                     // Note that allow_intr_in_CallBack is not reset to false here. This is because Rf_onintr
                     // does not return (it unwinds via longjmp), and therefore any code here wouldn't run.
                     // Instead, we reset the flag where the control will end up after unwinding - either
@@ -374,7 +374,7 @@ namespace rhost {
                     // Prevent CallBack from doing anything if it's called from within Rf_onintr again.
                     allow_intr_in_CallBack = false;
 
-                    Rf_onintr();
+                    interrupt_eval();
 
                     assert(!"Rf_onintr should never return.");
                     throw;

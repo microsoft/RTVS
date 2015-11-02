@@ -9,6 +9,7 @@
     <ClCompile Include="util.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="RPlotHost.cpp" />
+    <ClCompile Include="eval.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

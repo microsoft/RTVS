@@ -4,6 +4,8 @@
 
 namespace rhost {
     namespace eval {
+        extern bool was_eval_canceled;
+
         template <class T>
         struct r_eval_result {
             bool has_value;
@@ -27,7 +29,6 @@ namespace rhost {
                 results.resize(Rf_length(sexp_parsed.get()));
                 for (int i = 0; i < results.size(); ++i) {
                     auto& result = results[i];
-                    result.is_canceled = true;
 
                     struct eval_data_t {
                         SEXP expr;
@@ -40,12 +41,14 @@ namespace rhost {
                     auto protected_eval = [](void* pdata) {
                         auto& eval_data = *static_cast<eval_data_t*>(pdata);
                         eval_data.before();
+                        was_eval_canceled = false;
                         eval_data.result.value.reset(Rf_eval(eval_data.expr, eval_data.env));
-                        eval_data.result.is_canceled = false;
                         eval_data.after();
                     };
 
                     result.has_error = !R_ToplevelExec(protected_eval, &eval_data);
+                    result.is_canceled = was_eval_canceled;
+                    was_eval_canceled = false;
 
                     if (result.value) {
                         result.has_value = true;
@@ -94,5 +97,7 @@ namespace rhost {
 
             return result;
         }
+
+        void interrupt_eval();
     }
 }
