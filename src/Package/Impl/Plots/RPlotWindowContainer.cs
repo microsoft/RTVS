@@ -105,7 +105,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         protected override void WndProc(ref Message m) {
             if (m.Msg == NativeMethods.WM_ACTIVATE_PLOT) {
                 if (!_sized) {
-                    _sized = true;
                     SizeChildPlot();
                 }
                 _lastActivationMessageTime = DateTime.Now;
