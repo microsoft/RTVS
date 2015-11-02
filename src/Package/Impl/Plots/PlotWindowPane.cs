@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -17,10 +18,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
     internal class PlotWindowPane : ToolWindowPane, IVsWindowFrameNotify3 {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
-        private static readonly uint color1 = (uint)Color.FromArgb(1, 1, 1, 1).ToArgb();
 
         private SavePlotCommand _saveCommand;
-        private Lazy<RPlotWindowContainer> _plotWindowContainer = new Lazy<RPlotWindowContainer>(() => new RPlotWindowContainer());
+        private Lazy<RPlotWindowContainer> _plotWindowContainer = Lazy.Create(() => new RPlotWindowContainer());
 
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;

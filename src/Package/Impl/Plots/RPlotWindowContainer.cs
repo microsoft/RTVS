@@ -152,8 +152,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         protected override void Dispose(bool disposing) {
-            VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
-            DestroyChildPlot();
+            if (disposing) {
+                VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
+                DestroyChildPlot();
+            }
             base.Dispose(disposing);
         }
 
