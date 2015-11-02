@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.R.Actions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WebSocketSharp;
+using WebSocketSharp.Server;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
@@ -29,11 +32,9 @@ namespace Microsoft.R.Host.Client {
         private Process _process;
         private volatile Task _runTask;
 
-        private ClientWebSocket _socket;
-        private readonly byte[] _buffer = new byte[0x100000];
-        private readonly SemaphoreSlim
-            _socketSendLock = new SemaphoreSlim(1, 1),      // for _socket.SendAsync
-            _socketReceiveLock = new SemaphoreSlim(1, 1);   // for _socket.ReceiveAsync and _buffer
+        private WebSocket _socket;
+        private BufferBlock<Task<string>> _incomingMessages = new BufferBlock<Task<string>>();
+        private readonly SemaphoreSlim _socketSendLock = new SemaphoreSlim(1, 1); // for _socket.SendAsync
 
         private bool _canEval;
         private int _rLoopDepth;
@@ -68,24 +69,14 @@ namespace Microsoft.R.Host.Client {
         private async Task<Message> ReceiveMessageAsync(CancellationToken ct) {
             var sb = new StringBuilder();
 
-            await _socketReceiveLock.WaitAsync(ct);
+            string json;
             try {
-                WebSocketReceiveResult wsrr;
-                do {
-                    wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(_buffer), ct);
-                    if (wsrr.CloseStatus != null) {
-                        return null;
-                    }
-                    sb.Append(Encoding.UTF8.GetString(_buffer, 0, wsrr.Count));
-                } while (!wsrr.EndOfMessage);
+                json = await (await _incomingMessages.ReceiveAsync(ct));
             } catch (WebSocketException ex) when (ct.IsCancellationRequested) {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
-            } finally {
-                _socketReceiveLock.Release();
             }
 
-            var json = sb.ToString();
             _log.Response(json, _rLoopDepth);
 
             var token = JToken.Parse(json);
@@ -108,11 +99,12 @@ namespace Microsoft.R.Host.Client {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             var json = JsonConvert.SerializeObject(token);
-            byte[] buffer = Encoding.UTF8.GetBytes(json);
 
             await _socketSendLock.WaitAsync(ct);
             try {
-                await _socket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length), WebSocketMessageType.Text, true, ct);
+                var sendTcs = new TaskCompletionSource<bool>();
+                _socket.SendAsync(json, result => sendTcs.SetResult(result));
+                await sendTcs.Task;
             } catch (WebSocketException ex) when (ct.IsCancellationRequested) {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
@@ -473,11 +465,30 @@ namespace Microsoft.R.Host.Client {
 
                 try {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-                    using (var socket = new ClientWebSocket()) {
-                        var uri = new Uri("ws://localhost:" + DefaultPort);
+                    string uri = "ws://localhost:" + DefaultPort;
+                    using (var socket = new WebSocket(uri)) {
+                        var openedTcs = new TaskCompletionSource<object>();
+
+                        socket.OnOpen += (sender, e) => {
+                            openedTcs.SetResult(null);
+                        };
+
+                        socket.OnMessage += (sender, e) => {
+                            _incomingMessages.Post(Task.FromResult(e.Data));
+                        };
+
+                        socket.OnError += (sender, e) => {
+                            _incomingMessages.Post(Task.FromException<string>(e.Exception));
+                        };
+
+                        socket.OnClose += (sender, e) => {
+                            _incomingMessages.Post(Task.FromException<string>(new OperationCanceledException("Connection closed by host.")));
+                        };
+
                         for (int i = 0; ; ++i) {
                             try {
-                                await socket.ConnectAsync(uri, ct);
+                                socket.ConnectAsync();
+                                await openedTcs.Task;
                                 _socket = socket;
                                 _log.ConnectedToRHostWebSocket(uri, i);
                                 break;
@@ -513,17 +524,6 @@ namespace Microsoft.R.Host.Client {
                     }
                     _log.RHostProcessExited();
                 }
-            }
-        }
-
-        public async Task AttachAndRun(Uri uri, CancellationToken ct = default(CancellationToken)) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-            using (var socket = new ClientWebSocket()) {
-                await socket.ConnectAsync(uri, ct);
-                _socket = socket;
-                await Run(ct);
             }
         }
     }
