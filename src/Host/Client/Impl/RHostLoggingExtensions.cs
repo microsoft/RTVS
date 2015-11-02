@@ -22,11 +22,11 @@ namespace Microsoft.R.Host.Client {
             log.WriteLineAsync(MessageCategory.General, "R Host process exited");
         }
 
-        public static void ConnectedToRHostWebSocket(this IActionLog log, Uri uri, int attempt) {
+        public static void ConnectedToRHostWebSocket(this IActionLog log, string uri, int attempt) {
             log.WriteLineAsync(MessageCategory.General, Invariant($"Connected to R Web Host socket at {uri} on attempt #{attempt}"));
         }
 
-        public static void FailedToConnectToRHost(this IActionLog log, Uri uri) {
+        public static void FailedToConnectToRHost(this IActionLog log, string uri) {
             log.WriteLineAsync(MessageCategory.General, Invariant($"Failed to connect to R Host at {uri}"));
         }
 
