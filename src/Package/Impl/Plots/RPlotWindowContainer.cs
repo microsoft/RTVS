@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -41,10 +42,15 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             NativeMethods.SetParent(this.Handle, hwndParent);
 
             // TODO: set watermark
+            VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
             SetBgColor();
 
             this.Show();
             return VSConstants.S_OK;
+        }
+
+        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) {
+            SetBgColor();
         }
 
         public int GetDefaultSize(SIZE[] pSize) {
@@ -146,6 +152,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         protected override void Dispose(bool disposing) {
+            VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
             DestroyChildPlot();
             base.Dispose(disposing);
         }
