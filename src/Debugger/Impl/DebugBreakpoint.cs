@@ -48,7 +48,7 @@ namespace Microsoft.R.Debugger {
 
             // Tracer expression must be in sync with DebugStackFrame._breakpointRegex
             var location = Invariant($"{Location.FileName.ToRStringLiteral()}, {Location.LineNumber}");
-            var tracer = Invariant($"quote({{.rtvs.breakpoint({location})}})");
+            var tracer = Invariant($"quote({{rtvs:::breakpoint({location})}})");
             var res = await Session.EvaluateAsync(Invariant($"setBreakpoint({location}, tracer={tracer})"));
             if (res is DebugErrorEvaluationResult) {
                 throw new InvalidOperationException(Invariant($"{res.Expression}: {res}"));

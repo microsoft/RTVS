@@ -1,0 +1,13 @@
+(function(env) {
+    info <- loadingNamespaceInfo();
+    pkg <- info$pkgname;
+    ns <- .getNamespace(as.name(pkg));
+    if (is.null(ns)) {
+        stop('cannot find namespace environment for ', pkg, domain = NA);
+    }
+
+    r_dir <- file.path(info$libname, pkg, 'R');
+    for (r_file in list.files(r_dir, pattern = '\\.R$')) {
+        source(file.path(r_dir, r_file), local = env);
+    }
+})(environment())

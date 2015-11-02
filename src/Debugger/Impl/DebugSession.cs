@@ -87,22 +87,16 @@ namespace Microsoft.R.Debugger {
 
             await TaskUtilities.SwitchToBackgroundThread();
 
-            string helpers;
-            using (var stream = typeof(DebugSession).Assembly.GetManifestResourceStream(typeof(DebugSession).Namespace + ".DebugHelpers.R"))
-            using (var reader = new StreamReader(stream)) {
-                helpers = await reader.ReadToEndAsync();
-            }
-            helpers = helpers.Replace("\r", "");
+            var libPath = Path.GetDirectoryName(typeof(DebugSession).Assembly.Location);
 
             REvaluationResult res;
             using (var eval = await RSession.BeginEvaluationAsync()) {
-                res = await eval.EvaluateAsync(helpers);
+                res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
             }
-
             if (res.ParseStatus != RParseStatus.OK) {
-                throw new InvalidDataException("DebugHelpers.R failed to parse: " + res.ParseStatus);
+                throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);
             } else if (res.Error != null) {
-                throw new InvalidDataException("DebugHelpers.R failed to eval: " + res.Error);
+                throw new InvalidDataException("Failed to execute loadNamespace('rtvs'): " + res.Error);
             }
 
             // Attach might happen when session is already at the Browse prompt, in which case we have
@@ -168,7 +162,7 @@ namespace Microsoft.R.Debugger {
             await TaskUtilities.SwitchToBackgroundThread();
             await InitializeAsync();
 
-            var jEvalResult = await InvokeDebugHelperAsync<JObject>(Invariant($".rtvs.toJSON(.rtvs.eval({expression.ToRStringLiteral()}, {env}))"));
+            var jEvalResult = await InvokeDebugHelperAsync<JObject>(Invariant($"rtvs:::toJSON(rtvs:::eval_and_describe({expression.ToRStringLiteral()}, {env}))"));
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
         }
 
@@ -217,8 +211,8 @@ namespace Microsoft.R.Debugger {
             await TaskUtilities.SwitchToBackgroundThread();
             await InitializeAsync();
 
-            var jFrames = await InvokeDebugHelperAsync<JArray>(".rtvs.traceback()");
-            Trace.Assert(jFrames.All(t => t is JObject), ".rtvs.traceback(): array of objects expected.\n\n" + jFrames);
+            var jFrames = await InvokeDebugHelperAsync<JArray>("rtvs:::describe_traceback()");
+            Trace.Assert(jFrames.All(t => t is JObject), "rtvs:::describe_traceback(): array of objects expected.\n\n" + jFrames);
 
             var stackFrames = new List<DebugStackFrame>();
 

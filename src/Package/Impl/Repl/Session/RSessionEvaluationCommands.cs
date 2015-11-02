@@ -21,10 +21,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
             return evaluation.EvaluateNonReentrantAsync($"setwd('~')\n");
         }
 
-        public static Task<REvaluationResult> GetGlobalEnvironmentVariables(this IRSessionEvaluation evaluation) {
-            return evaluation.EvaluateNonReentrantAsync($".rtvs.datainspect.env_vars(.GlobalEnv)\n");
-        }
-
         public static Task<REvaluationResult> LoadWorkspace(this IRSessionEvaluation evaluation, string path) {
             return evaluation.EvaluateNonReentrantAsync($"load('{path.Replace('\\', '/')}', .GlobalEnv)\n");
         }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <DirectoryRef Id="INSTALLFOLDER">
+    <Directory Id="RtvsPackageFolder" Name="rtvs">
+      <Component Id="RtvsPackageMetadata" Guid="{FCCB16FB-CBA7-4D96-A53E-5E4834851BE1}">
+        <File Source="$(var.BinDir)\rtvs\DESCRIPTION" />
+        <File Source="$(var.BinDir)\rtvs\NAMESPACE" />
+      </Component>
+      <Directory Id="RtvsPackageRFolder" Name="R">
+        <Component Id="RtvsPackageR" Guid="{FF41B7CB-7071-47AB-9A0B-612000EA7B83}">
+          <File Source="$(var.BinDir)\rtvs\R\rtvs" />
+          <File Source="$(var.BinDir)\rtvs\R\breakpoints.R" />
+          <File Source="$(var.BinDir)\rtvs\R\eval.R" />
+          <File Source="$(var.BinDir)\rtvs\R\json.R" />
+          <File Source="$(var.BinDir)\rtvs\R\traceback.R" />
+          <File Source="$(var.BinDir)\rtvs\R\util.R" />
+        </Component>
+      </Directory>
+    </Directory>
+  </DirectoryRef>
+
+  <ComponentGroup Id="RtvsPackage">
+    <ComponentRef Id="RtvsPackageMetadata"/>
+    <ComponentRef Id="RtvsPackageR"/>
+  </ComponentGroup>
+</Include>

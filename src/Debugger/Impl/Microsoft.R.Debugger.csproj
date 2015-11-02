@@ -70,11 +70,41 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DebugHelpers.R" />
+    <EmbeddedResource Include="rtvs\R\util.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="rtvs\R\json.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rtvs\R\eval.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rtvs\R\breakpoints.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rtvs\R\traceback.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
+    </EmbeddedResource>
+    <None Include="rtvs\DESCRIPTION">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
+    </None>
+    <None Include="rtvs\NAMESPACE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
+    </None>
+    <None Include="rtvs\R\rtvs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -8,18 +8,18 @@ using static System.FormattableString;
 namespace Microsoft.R.Debugger {
     internal enum DebugStackFrameKind {
         Normal,
-        DoTrace, // .doTrace(.rtvs.breakpoint(...))
+        DoTrace, // .doTrace(rtvs:::breakpoint(...))
         DoTraceInternals, // everything between the one above and the one below
-        Breakpoint, // .rtvs.breakpoint(...)
-        TracebackAfterBreakpoint // .rtvs.traceback() immediately following .rtvs.breakpoint(...)
+        Breakpoint, // rtvs:::breakpoint(...)
+        TracebackAfterBreakpoint // rtvs:::describe_traceback() immediately following rtvs:::breakpoint(...)
     }
 
     public class DebugStackFrame {
         private static readonly Regex _doTraceRegex = new Regex(
-            @"^\.doTrace\(\{\s*\.rtvs\.breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)\s*\}\)$",
+            @"^\.doTrace\(\{\s*rtvs:::breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)\s*\}\)$",
             RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
         private static readonly Regex _breakpointRegex = new Regex(
-            @"^\.rtvs\.breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)$",
+            @"^rtvs:::breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)$",
             RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
 
         public DebugSession Session { get; }
@@ -84,7 +84,7 @@ namespace Microsoft.R.Debugger {
                         FrameKind = DebugStackFrameKind.DoTraceInternals;
                         break;
                     case DebugStackFrameKind.Breakpoint:
-                        if (Call == ".rtvs.traceback()") {
+                        if (Call == "rtvs:::describe_traceback()") {
                             FrameKind = DebugStackFrameKind.TracebackAfterBreakpoint;
                         }
                         break;
