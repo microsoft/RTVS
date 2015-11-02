@@ -80,8 +80,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public override void LoadSettingsFromStorage() {
             _loadingFromStorage = true;
-            base.LoadSettingsFromStorage();
-            _loadingFromStorage = false;
+            try {
+                base.LoadSettingsFromStorage();
+            } finally {
+                _loadingFromStorage = false;
+            }
         }
 
         private string ValidateRBasePath(string path) {
