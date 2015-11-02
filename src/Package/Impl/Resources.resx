@@ -168,12 +168,6 @@
   <data name="SaveAsFilterR" xml:space="preserve">
     <value>R Language Files (*.r)|*.r|All Files (*.*)|*.*</value>
   </data>
-  <data name="Temp_SettingDescription" xml:space="preserve">
-    <value>Setting description</value>
-  </data>
-  <data name="Temp_SettingDisplayName" xml:space="preserve">
-    <value>Setting</value>
-  </data>
   <data name="Settings_IntellisenseCategory" xml:space="preserve">
     <value>IntelliSense</value>
   </data>
@@ -341,14 +335,11 @@
   <data name="Settings_CranMirror_Description" xml:space="preserve">
     <value>Default CRAN mirror for package installations</value>
   </data>
-  <data name="Settings_RVersion" xml:space="preserve">
+  <data name="Settings_RBasePath" xml:space="preserve">
     <value>R Engine (64-bit)</value>
   </data>
-  <data name="Settings_RVersion_Description" xml:space="preserve">
-    <value>Version of R to use (64-bit only).</value>
-  </data>
-  <data name="Settings_RVersion_Latest" xml:space="preserve">
-    <value>[Latest]</value>
+  <data name="Settings_RBasePath_Description" xml:space="preserve">
+    <value>Path to R installation (64-bit only).</value>
   </data>
   <data name="RPromptClassification" xml:space="preserve">
     <value>R Interactive Prompts</value>
@@ -446,5 +437,17 @@
   </data>
   <data name="Error_CannotSendFeedback2" xml:space="preserve">
     <value>Please compose and send e-mail manually to rtvscore@microsoft.com. If possible, attach {0} file that can be found in {1}.</value>
+  </data>
+  <data name="ChooseRInstallFolder" xml:space="preserve">
+    <value>Choose R Install Folder</value>
+  </data>
+  <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
+    <value>Cannot find R binaries in {0}. Please specify valid path to 64-bit R installation.</value>
+  </data>
+  <data name="Error_InvalidPath" xml:space="preserve">
+    <value>Invalid directory path. Exception: {0}.</value>
+  </data>
+  <data name="RPathChangedRestartVS" xml:space="preserve">
+    <value>You must restart Visual Studio after changing path to the R installation.</value>
   </data>
 </root>

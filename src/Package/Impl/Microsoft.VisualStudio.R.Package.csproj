@@ -98,7 +98,7 @@
     <Compile Include="Logging\DiagnosticLogs.cs" />
     <Compile Include="Options\Attributes\LocDefaultValueAttribute.cs" />
     <Compile Include="Options\Attributes\YesNoAskTypeConverter.cs" />
-    <Compile Include="Options\R\Tools\RVersionTypeConverter.cs" />
+    <Compile Include="Options\R\Tools\ChooseRFolderUIEditor.cs" />
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
@@ -448,6 +448,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
