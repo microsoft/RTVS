@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Task = System.Threading.Tasks.Task;
 using Microsoft.R.Core.Tokens;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     /// <summary>
@@ -70,13 +71,33 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
 
             var window = interactive.InteractiveWindow;
+            var view = interactive.InteractiveWindow.TextView;
 
             // Process all of our pending inputs until we get a complete statement
             PendingSubmission current;
             while (_pendingInputs.TryDequeue(out current)) {
+                var curLangBuffer = interactive.InteractiveWindow.CurrentLanguageBuffer;
+
+                var curLangPoint = view.MapDownToBuffer(
+                    interactive.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.Length,
+                    curLangBuffer
+                );
+                if (curLangPoint == null) {
+                    // ensure the caret is in the input buffer, otherwise inserting code does nothing
+                    view.Caret.MoveTo(
+                        view.BufferGraph.MapUpToBuffer(
+                            new SnapshotPoint(
+                                curLangBuffer.CurrentSnapshot, curLangBuffer.CurrentSnapshot.Length
+                            ),
+                            PointTrackingMode.Positive,
+                            PositionAffinity.Successor,
+                            view.TextBuffer
+                        ).Value
+                    );
+                }
 
                 window.InsertCode(current.Code);
-                string fullCode = window.CurrentLanguageBuffer.CurrentSnapshot.GetText();
+                string fullCode = curLangBuffer.CurrentSnapshot.GetText();
 
                 if (window.Evaluator.CanExecuteCode(fullCode)) {
                     // the code is complete, execute it now
@@ -87,7 +108,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 if (current.AddNewLine) {
                     // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
                     // function() {
-                    window.InsertCode(window.TextView.Options.GetNewLineCharacter());
+                    window.InsertCode(view.Options.GetNewLineCharacter());
                 }
             }
         }
@@ -139,8 +160,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
             IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
             if (current != null && !current.InteractiveWindow.IsRunning) {
-                SnapshotPoint? documentPoint = REditorDocument.MapCaretPositionFromView(textView);
                 var curBuffer = current.InteractiveWindow.CurrentLanguageBuffer;
+                SnapshotPoint? documentPoint = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, curBuffer);
                 var text = curBuffer.CurrentSnapshot.GetText();
                 if (!documentPoint.HasValue ||
                     documentPoint.Value == documentPoint.Value.Snapshot.Length ||
@@ -185,6 +206,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private static bool IsMultiLineCandidate(string text) {
+            if (text.IndexOfAny(new[] { '\n', '\r' }) != -1) {
+                // if we already have newlines then we're multiline
+                return true;
+            }
+
             var tokenizer = new RTokenizer();
             IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(
                 new TextStream(text), 0, text.Length);
