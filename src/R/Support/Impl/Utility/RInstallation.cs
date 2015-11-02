@@ -25,7 +25,7 @@ namespace Microsoft.R.Support.Utility {
                 }
             }
 
-            string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled, rPath);
+            string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled);
             EditorShell.Current.ShowErrorMessage(message);
 
             Process.Start("https://cran.r-project.org");
