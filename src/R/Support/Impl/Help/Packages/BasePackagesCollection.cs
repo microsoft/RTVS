@@ -1,6 +1,6 @@
 ﻿using System.IO;
+using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Settings;
-using Microsoft.R.Support.Utility;
 
 namespace Microsoft.R.Support.Help.Packages {
     public sealed class BasePackagesCollection : PackageCollection {
@@ -9,7 +9,7 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private static string GetInstallPath() {
-            string rInstallPath = RInstallation.GetRInstallPath();
+            string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath);
             return Path.Combine(rInstallPath, "library");
         }
     }

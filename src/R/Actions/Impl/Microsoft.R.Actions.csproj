@@ -82,7 +82,7 @@
     <Compile Include="Logging\IActionLog.cs" />
     <Compile Include="Logging\MessageCategory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\RUtility.cs" />
+    <Compile Include="Utility\RInstallation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">

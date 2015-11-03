@@ -12,7 +12,7 @@ namespace Microsoft.R.Actions.Test.Script
         [TestMethod]
         public void InstallPackages_BaseTest()
         {
-            bool result = InstallPackages.IsInstalled("base", Int32.MaxValue);
+            bool result = InstallPackages.IsInstalled("base", Int32.MaxValue, null);
             Assert.IsTrue(result);
         }
     }

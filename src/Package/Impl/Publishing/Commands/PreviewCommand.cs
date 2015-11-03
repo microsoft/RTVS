@@ -13,6 +13,7 @@ using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Actions.Logging;
 using Microsoft.R.Actions.Script;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -54,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
             IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
 
-            if (!InstallPackages.IsInstalled(flavorHandler.RequiredPackageName, 5000)) {
+            if (!InstallPackages.IsInstalled(flavorHandler.RequiredPackageName, 5000, RToolsSettings.Current.RBasePath)) {
                 EditorShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
                 return CommandResult.Disabled;
             }
@@ -83,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
             string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, Format);
 
-            _lastCommand = RCommand.ExecuteRExpressionAsync(arguments, PublishLog.Current);
+            _lastCommand = RCommand.ExecuteRExpressionAsync(arguments, PublishLog.Current, RToolsSettings.Current.RBasePath);
             _lastCommand.Task.ContinueWith((Task t) => LaunchViewer(t));
 
             return CommandResult.Executed;
