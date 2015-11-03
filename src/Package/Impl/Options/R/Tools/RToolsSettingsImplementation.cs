@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Support.Utility;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -16,7 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
     internal sealed class RToolsSettingsImplementation : IRToolsSettings {
         private string _cranMirror;
 
-        public string RVersion { get; set; } = Resources.Settings_RVersion_Latest;
+        /// <summary>
+        /// Path to 64-bit R installation such as 
+        /// 'C:\Program Files\R\R-3.2.2' without bin\x64
+        /// </summary>
+        public string RBasePath { get; set; }
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
@@ -33,8 +38,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         public RToolsSettingsImplementation() {
+            // Default settings. Will be overwritten with actual
+            // settings (if any) when settings are loaded from storage
             _cranMirror = "0-Cloud [https]";
-            RVersion = Resources.Settings_RVersion_Latest;
+            RBasePath = RInstallation.GetLatestEnginePathFromRegistry();
         }
 
         private async Task SetMirrorToSession() {

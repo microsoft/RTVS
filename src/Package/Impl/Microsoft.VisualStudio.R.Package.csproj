@@ -98,7 +98,7 @@
     <Compile Include="Logging\DiagnosticLogs.cs" />
     <Compile Include="Options\Attributes\LocDefaultValueAttribute.cs" />
     <Compile Include="Options\Attributes\YesNoAskTypeConverter.cs" />
-    <Compile Include="Options\R\Tools\RVersionTypeConverter.cs" />
+    <Compile Include="Options\R\Tools\ChooseRFolderUIEditor.cs" />
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
@@ -321,6 +321,9 @@
     </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Outlook, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost">
       <Private>False</Private>
     </Reference>
@@ -450,6 +453,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -533,6 +537,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
+    <None Include="Microsoft.R.Host.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
     <Content Include="Images\RDataNode.png" />

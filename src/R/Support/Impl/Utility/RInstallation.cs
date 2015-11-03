@@ -18,16 +18,14 @@ namespace Microsoft.R.Support.Utility {
             string rPath = RInstallation.GetRInstallPath();
             if (!string.IsNullOrEmpty(rPath)) {
                 bool rExeExists = File.Exists(Path.Combine(rPath, @"bin\R.exe"));
-                bool rTermExists = File.Exists(Path.Combine(rPath, @"bin\i386\RTerm.exe")) || File.Exists(Path.Combine(rPath, @"bin\x64\RTerm.exe"));
+                bool rTermExists = File.Exists(Path.Combine(rPath, @"bin\x64\RTerm.exe"));
 
                 if (rExeExists && rTermExists) {
                     return true;
                 }
-            } else {
-                rPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "R");
             }
 
-            string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled, rPath);
+            string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled);
             EditorShell.Current.ShowErrorMessage(message);
 
             Process.Start("https://cran.r-project.org");
@@ -40,23 +38,17 @@ namespace Microsoft.R.Support.Utility {
         }
 
         /// <summary>
-        /// Retrieves path to the installed R engine root folder
+        /// Retrieves path to the installed R engine root folder.
+        /// First tries user settings, then 64-bit registry.
         /// </summary>
         public static string GetRInstallPath() {
-            string rVersion = RToolsSettings.Current != null ? RToolsSettings.Current.RVersion : null;
-            string installPath = null;
+            string rBasePath = RToolsSettings.Current != null ? RToolsSettings.Current.RBasePath : null;
 
-            if (!string.IsNullOrEmpty(rVersion) && rVersion[0] != '[') // [Latest] (localized)
-            {
-                // First try user-specified options
-                installPath = GetRVersionInstallPathFromRegistry(rVersion);
+            if (string.IsNullOrEmpty(rBasePath) || !Directory.Exists(rBasePath)) {
+                rBasePath = RInstallation.GetLatestEnginePathFromRegistry();
             }
 
-            if (string.IsNullOrEmpty(installPath) || !Directory.Exists(installPath)) {
-                installPath = RInstallation.GetLatestEnginePathFromRegistry();
-            }
-
-            return installPath;
+            return rBasePath;
         }
 
         /// <summary>
@@ -69,18 +61,8 @@ namespace Microsoft.R.Support.Utility {
             string installPath = RInstallation.GetRInstallPath();
 
             if (!string.IsNullOrEmpty(installPath)) {
-                if (Environment.Is64BitOperatingSystem) {
-                    // Try x64 R engine
                     binFolder = Path.Combine(installPath, @"bin\x64");
                 }
-
-                if (!Directory.Exists(binFolder)) {
-                    binFolder = Path.Combine(installPath, @"bin\i386");
-                    if (!Directory.Exists(binFolder)) {
-                        binFolder = null;
-                    }
-                }
-            }
 
             return binFolder;
         }
@@ -120,7 +102,7 @@ namespace Microsoft.R.Support.Utility {
 
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
-            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)) {
+            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 RegistryKey rKey = null;
 
                 try {
@@ -129,10 +111,6 @@ namespace Microsoft.R.Support.Utility {
                         // Possibly 64-bit machine with only 32-bit R installed
                         // This is not supported as we require 64-bit R.
                         // rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R");
-                    }
-
-                    if (rKey == null) {
-                        rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R64");
                     }
 
                     if (rKey != null) {
@@ -150,7 +128,7 @@ namespace Microsoft.R.Support.Utility {
 
         private static string GetRVersionInstallPathFromRegistry(string version) {
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
-            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default)) {
+            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version)) {
                     if (rKey != null) {
                         return rKey.GetValue("InstallPath") as string;

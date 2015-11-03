@@ -12,8 +12,8 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public string RVersion {
-            get { return "[Latest]"; }
+        public string RBasePath {
+            get { return @"C:\Program Files\R\R-3.2.2"; }
             set { }
         }
 

@@ -28,6 +28,11 @@ namespace Microsoft.R.Support.Help.Packages {
                         // Most common case
                         libraryPath = Path.Combine(libraryPath, directories.First());
                     } else {
+                    }
+                    else
+                    {
+                        // Multiple library folders. Try and match to R version
+                        // specified in the Tools | Options
                         string version = GetReducedVersion();
                         string path = Path.Combine(libraryPath, version);
                         if (Directory.Exists(path)) {
@@ -40,15 +45,34 @@ namespace Microsoft.R.Support.Help.Packages {
             return libraryPath;
         }
 
-        internal static string GetReducedVersion() {
-            string rVersion = RToolsSettings.Current.RVersion;
+        /// <summary>
+        /// Based on a typical R binaries install path pattern
+        /// such as 'C:\Program Files\R\R-3.2.2' constructs path
+        /// to the user package library folder which looks like
+        /// C:\Users\[USER_NAME]\Documents\R\win-library\3.2
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetReducedVersion()
+        {
+            string rBasePath = RToolsSettings.Current.RBasePath;
             string version = string.Empty;
 
-            int index = rVersion.IndexOf("R-", StringComparison.Ordinal);
-            if (index >= 0) {
+            // TODO: this probably possible to get from R.Host instead
+            int index = rBasePath.IndexOf("R-", StringComparison.Ordinal);
+            if (index >= 0)
+            {
                 version = version.Substring(index + 2);
-                if (version.EndsWith(".0", StringComparison.Ordinal)) {
-                    version = version.Substring(0, version.Length - 2);
+                int nextSlashIndex = version.IndexOf('\\');
+                if(nextSlashIndex > 0) {
+                    version = version.Substring(0, nextSlashIndex);
+                }
+
+                // Now version should look like a.b.c where a, b and c
+                // are 1 or 2 digit numbers. ~\Documents\R\win-library\3.2
+                // ignores .c part.
+                string[] parts = version.Split(new char[] { '.' });
+                if(parts.Length >= 2) {
+                    version = parts[0] + '.' + parts[1];
                 }
             }
 

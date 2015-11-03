@@ -253,7 +253,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
+        <!--<Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>-->
         <Icon guid="ImageCatalogGuid" id="RemoteDebugger"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -489,7 +489,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" priority="0x0400" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
+        <!--<Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>-->
         <Icon guid="ImageCatalogGuid" id="ShowFullHistory"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
@@ -500,7 +500,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" priority="0x0400" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
+        <!--<Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>-->
         <Icon guid="ImageCatalogGuid" id="Package"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>

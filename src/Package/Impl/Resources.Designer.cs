@@ -115,6 +115,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose R Install Folder.
+        /// </summary>
+        public static string ChooseRInstallFolder {
+            get {
+                return ResourceManager.GetString("ChooseRInstallFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Collecting OS information.
         /// </summary>
         public static string CollectingOSInformation {
@@ -214,6 +223,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please specify valid path to 64-bit R installation..
+        /// </summary>
+        public static string Error_CannotFindRBinariesFormat {
+            get {
+                return ResourceManager.GetString("Error_CannotFindRBinariesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error sending e-mail: {0} ({1})..
         /// </summary>
         public static string Error_CannotSendFeedback1 {
@@ -228,6 +246,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_CannotSendFeedback2 {
             get {
                 return ResourceManager.GetString("Error_CannotSendFeedback2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid directory path. Exception: {0}..
+        /// </summary>
+        public static string Error_InvalidPath {
+            get {
+                return ResourceManager.GetString("Error_InvalidPath", resourceCulture);
             }
         }
         
@@ -264,6 +291,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_RestartVsAfterRInstalled {
             get {
                 return ResourceManager.GetString("Error_RestartVsAfterRInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are 3.2.*..
+        /// </summary>
+        public static string Error_UnsupportedRVersion {
+            get {
+                return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
             }
         }
         
@@ -466,6 +502,15 @@ namespace Microsoft.VisualStudio.R.Package {
             get {
                 object obj = ResourceManager.GetObject("RFileNode", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must restart Visual Studio after changing path to the R installation..
+        /// </summary>
+        public static string RPathChangedRestartVS {
+            get {
+                return ResourceManager.GetString("RPathChangedRestartVS", resourceCulture);
             }
         }
         
@@ -751,6 +796,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Engine (64-bit).
+        /// </summary>
+        public static string Settings_RBasePath {
+            get {
+                return ResourceManager.GetString("Settings_RBasePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path to R installation (64-bit only)..
+        /// </summary>
+        public static string Settings_RBasePath_Description {
+            get {
+                return ResourceManager.GetString("Settings_RBasePath_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Interactive window.
         /// </summary>
         public static string Settings_ReplCategory {
@@ -774,33 +837,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_ReplSyntaxCheck_Description {
             get {
                 return ResourceManager.GetString("Settings_ReplSyntaxCheck_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Engine (64-bit).
-        /// </summary>
-        public static string Settings_RVersion {
-            get {
-                return ResourceManager.GetString("Settings_RVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Version of R to use (64-bit only)..
-        /// </summary>
-        public static string Settings_RVersion_Description {
-            get {
-                return ResourceManager.GetString("Settings_RVersion_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [Latest].
-        /// </summary>
-        public static string Settings_RVersion_Latest {
-            get {
-                return ResourceManager.GetString("Settings_RVersion_Latest", resourceCulture);
             }
         }
         
@@ -945,24 +981,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_WorkspaceCategory {
             get {
                 return ResourceManager.GetString("Settings_WorkspaceCategory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Setting description.
-        /// </summary>
-        public static string Temp_SettingDescription {
-            get {
-                return ResourceManager.GetString("Temp_SettingDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Setting.
-        /// </summary>
-        public static string Temp_SettingDisplayName {
-            get {
-                return ResourceManager.GetString("Temp_SettingDisplayName", resourceCulture);
             }
         }
         

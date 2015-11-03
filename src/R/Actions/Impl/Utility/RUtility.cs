@@ -9,7 +9,7 @@ namespace Microsoft.R.Actions.Utility {
     /// </summary>
     public static class RUtility {
         /// <summary>
-        /// Retrieves folder that contains R binaries
+        /// Retrieves folder that contains R binaries (64-bit only)
         /// </summary>
         /// <returns></returns>
         public static string GetRBinariesFolder() {
