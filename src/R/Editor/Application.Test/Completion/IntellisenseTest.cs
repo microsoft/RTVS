@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion
 
             try
             {
-                script.Type("fun");
+                script.Type("funct");
                 script.DoIdle(100);
                 script.Type("{TAB}");
 
@@ -38,11 +38,11 @@ namespace Microsoft.R.Editor.Application.Test.Completion
 
             try
             {
-                script.Type("library(abin");
+                script.Type("library(ut");
                 script.DoIdle(100);
                 script.Type("{TAB}");
 
-                string expected = "library(abind)";
+                string expected = "library(utils)";
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
@@ -60,11 +60,11 @@ namespace Microsoft.R.Editor.Application.Test.Completion
 
             try
             {
-                script.Type("require(abin");
+                script.Type("require(uti");
                 script.DoIdle(100);
                 script.Type("{TAB}");
 
-                string expected = "require(abind)";
+                string expected = "require(utils)";
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
