@@ -12,8 +12,7 @@ using namespace rhost::eval;
 namespace rhost {
     namespace server {
         inline namespace _impl {
-            typedef websocketpp::server<websocketpp::config::asio> ws_server_type;
-            typedef ws_server_type::connection_type ws_connection_type;
+            typedef websocketpp::connection<websocketpp::config::asio> ws_connection_type;
 
             struct message {
                 std::string id;
@@ -26,9 +25,8 @@ namespace rhost {
             };
 
             DWORD main_thread_id;
-            std::unique_ptr<std::thread> server_thread;
-            std::promise<ws_server_type::connection_ptr> ws_conn_promise;
-            ws_server_type::connection_ptr ws_conn;
+            std::promise<void> connected_promise;
+            std::shared_ptr<ws_connection_type> ws_conn;
             std::atomic<bool> is_connection_closed = false;
             long long next_message_id = 0;
             bool allow_callbacks = true, allow_intr_in_CallBack = true;
@@ -489,12 +487,23 @@ namespace rhost {
             }
 
             extern "C" void atexit_handler() {
-                with_cancellation([&] {
-                    send_json(*ws_conn, picojson::value());
-                });
+                if (ws_conn) {
+                    with_cancellation([&] {
+                        send_json(*ws_conn, picojson::value());
+                    });
+                }
             }
 
-            void on_ws_message(websocketpp::connection_hdl hdl, ws_server_type::message_ptr msg) {
+            void ws_fail_handler(websocketpp::connection_hdl hdl) {
+                fatal_error("websocket connection failed: %s", ws_conn->get_ec().message().c_str());
+            }
+
+            void ws_open_handler(websocketpp::connection_hdl hdl) {
+                send_message(*ws_conn, "Microsoft.R.Host", 1.0, getDLLVersion());
+                connected_promise.set_value();
+            }
+
+            void ws_message_handler(websocketpp::connection_hdl hdl, ws_connection_type::message_ptr msg) {
                 const auto& json = msg->get_payload();
 #ifdef TRACE_JSON
                 logf("==> %s\n\n", json.c_str());
@@ -588,61 +597,110 @@ namespace rhost {
                 unblock_message_loop();
             }
 
-            void connection_close_handler(websocketpp::connection_hdl h) {
+            void ws_close_handler(websocketpp::connection_hdl h) {
                 is_connection_closed = true;
                 unblock_message_loop();
             }
 
-            void server_worker(unsigned port) {
-                ws_server_type server;
+            void server_worker(boost::asio::ip::tcp::endpoint endpoint) {
+                websocketpp::server<websocketpp::config::asio> server;
 
 #ifndef TRACE_WEBSOCKET
                 server.set_access_channels(websocketpp::log::alevel::none);
                 server.set_error_channels(websocketpp::log::elevel::none);
 #endif
 
-                server.set_open_handler([&](websocketpp::connection_hdl hdl) {
-                    ws_conn_promise.set_value(server.get_con_from_hdl(hdl));
-                });
-                server.set_message_handler(on_ws_message);
-                server.set_close_handler(connection_close_handler);
-
                 server.init_asio();
+                server.set_open_handler(ws_open_handler);
+                server.set_message_handler(ws_message_handler);
+                server.set_close_handler(ws_close_handler);
 
-                boost::asio::ip::tcp::endpoint ep(boost::asio::ip::address_v4({ 127, 0, 0, 1 }), port);
-                server.listen(ep);
+                std::ostringstream endpoint_str;
+                endpoint_str << endpoint;
+                logf("Waiting for incoming connection on %s ...\n", endpoint_str.str().c_str());
 
-                auto conn(server.get_connection());
-                server.async_accept(conn, [&](auto error_code) {
+                server.listen(endpoint);
+
+                ws_conn = server.get_connection();
+                server.async_accept(ws_conn, [&](auto error_code) {
                     if (error_code) {
-                        conn->terminate(error_code);
-                        fatal_error("Could not establish connection to client.");
+                        ws_conn->terminate(error_code);
+                        fatal_error("Could not establish connection to client: %s", error_code.message().c_str());
                     } else {
-                        conn->start();
-                        // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
-                        // To ensure that our code runs during shutdown, we need to use the corresponding atexit().
-                        rhost::crt::atexit(atexit_handler);
+                        ws_conn->start();
                     }
                 });
 
                 server.run();
             }
 
-            void server_thread_func(unsigned port) {
-                __try {
-                    server_worker(port);
-                } __finally {
-                    flush_log();
-                }
+            void client_worker(websocketpp::uri uri) {
+                websocketpp::client<websocketpp::config::asio> client;
+
+#ifndef TRACE_WEBSOCKET
+                client.set_access_channels(websocketpp::log::alevel::none);
+                client.set_error_channels(websocketpp::log::elevel::none);
+#endif
+
+                client.init_asio();
+                client.set_fail_handler(ws_fail_handler);
+                client.set_open_handler(ws_open_handler);
+                client.set_message_handler(ws_message_handler);
+                client.set_close_handler(ws_close_handler);
+
+                logf("Establishing connection to %s ...\n", uri.str().c_str());
+
+                auto uri_ptr = std::make_shared<websocketpp::uri>(uri);
+                std::error_code error_code;
+                ws_conn = client.get_connection(uri_ptr, error_code);
+                if (error_code) {
+                    ws_conn->terminate(error_code);
+                    fatal_error("Could not establish connection to server: %s", error_code.message().c_str());
+                } 
+
+                client.connect(ws_conn);
+
+                // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
+                // To ensure that our code runs during shutdown, we need to use the corresponding atexit().
+                rhost::crt::atexit(atexit_handler);
+
+                client.run();
+            }
+
+            void server_thread_func(const boost::asio::ip::tcp::endpoint& endpoint) {
             }
         }
 
-        void wait_for_client(unsigned port) {
-            main_thread_id = GetCurrentThreadId();
-            server_thread.reset(new std::thread(server_thread_func, port));
-            ws_conn = ws_conn_promise.get_future().get();
+        void register_atexit_handler() {
+            // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
+            // To ensure that our code runs during shutdown, we need to use the corresponding atexit().
+            rhost::crt::atexit(atexit_handler);
+        }
 
-            send_message(*ws_conn, "Microsoft.R.Host", 1.0, getDLLVersion());
+        std::future<void> wait_for_client(const boost::asio::ip::tcp::endpoint& endpoint) {
+            register_atexit_handler();
+            main_thread_id = GetCurrentThreadId();
+            std::thread([&] {
+                __try {
+                    [&] { server_worker(endpoint); } ();
+                } __finally {
+                    flush_log();
+                }
+            }).detach();
+            return connected_promise.get_future();
+        }
+
+        std::future<void> connect_to_server(const websocketpp::uri& uri) {
+            register_atexit_handler();
+            main_thread_id = GetCurrentThreadId();
+            std::thread([&] {
+                __try {
+                    [&] { client_worker(uri); }();
+                } __finally {
+                    flush_log();
+                }
+            }).detach();
+            return connected_promise.get_future();
         }
 
         void register_callbacks(structRstart& rp) {

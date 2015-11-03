@@ -87,3 +87,17 @@ namespace rhost {
         }
     }
 }
+
+namespace boost {
+    namespace asio {
+        namespace ip {
+            // Enable boost::asio::ip::tcp::endpoint to be used with boost::program_options.
+            void validate(boost::any& v, const std::vector<std::string> values, boost::asio::ip::tcp::endpoint*, int);
+        }
+    }
+}
+
+namespace websocketpp {
+    // Enable websocketpp::uri to be used with boost::program_options.
+    void validate(boost::any& v, const std::vector<std::string> values, websocketpp::uri*, int);
+}
