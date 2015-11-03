@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.IO;
-using Microsoft.R.Support.Utility;
+using Microsoft.R.Actions.Utility;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudioTools;

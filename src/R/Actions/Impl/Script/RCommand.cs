@@ -20,17 +20,17 @@ namespace Microsoft.R.Actions.Script {
         /// <summary>
         /// Executes command line for any R binary with arguments 
         /// </summary>
-        public static RCommand ExecuteAsync(string executable, string arguments, IActionLog log) {
+        public static RCommand ExecuteAsync(string executable, string arguments, IActionLog log, string rBasePath) {
             RCommand command = new RCommand(log);
-            command.SendCommandAsync(executable, arguments);
+            command.SendCommandAsync(rBasePath, executable, arguments);
             return command;
         }
 
         /// <summary>
         /// Executes 'R CMD arguments' 
         /// </summary>
-        public static RCommand ExecuteAsync(string arguments, IActionLog log) {
-            return ExecuteAsync("R.exe", "CMD " + arguments, log);
+        public static RCommand ExecuteAsync(string arguments, IActionLog log, string rBasePath) {
+            return ExecuteAsync("R.exe", "CMD " + arguments, log, rBasePath);
         }
 
         /// <summary>
@@ -38,8 +38,8 @@ namespace Microsoft.R.Actions.Script {
         /// </summary>
         /// <param name="msTimeout"></param>
         /// <returns>Standard output produced by RScript.exe</returns>
-        public static bool ExecuteRExpression(string expression, IActionLog log, int msTimeout) {
-            RCommand command = ExecuteRExpressionAsync(expression, log);
+        public static bool ExecuteRExpression(string expression, IActionLog log, int msTimeout, string rBasePath) {
+            RCommand command = ExecuteRExpressionAsync(expression, log, rBasePath);
             return command.Task.Wait(msTimeout);
         }
 
@@ -48,25 +48,25 @@ namespace Microsoft.R.Actions.Script {
         /// </summary>
         /// <param name="msTimeout"></param>
         /// <returns>Standard output produced by RScript.exe</returns>
-        public static RCommand ExecuteRExpressionAsync(string expression, IActionLog log) {
+        public static RCommand ExecuteRExpressionAsync(string expression, IActionLog log, string rBasePath) {
             string executable = "RScript.exe";
             string baseArgumens = "--vanilla --slave -e ";
 
-            return ExecuteAsync(executable, baseArgumens + expression, log);
+            return ExecuteAsync(executable, baseArgumens + expression, log, rBasePath);
         }
 
         private RCommand(IActionLog log) {
             _log = log;
         }
 
-        private void SendCommandAsync(string executable, string arguments) {
+        private void SendCommandAsync(string rBasePath, string executable, string arguments) {
             this.Task = Task.Run(() => {
-                Launch(executable, arguments);
+                Launch(rBasePath, executable, arguments);
             });
         }
 
-        private void Launch(string executable, string arguments) {
-            string binPath = RUtility.GetRBinariesFolder();
+        private void Launch(string rBasePath, string executable, string arguments) {
+            string binPath = RInstallation.GetBinariesFolder(rBasePath);
 
             if (!string.IsNullOrEmpty(binPath)) {
                 ProcessStartInfo info = new ProcessStartInfo();

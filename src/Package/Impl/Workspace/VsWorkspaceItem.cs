@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Workspace {
@@ -11,6 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
     internal sealed class VsWorkspaceItem : IVsWorkspaceItem, IVsRunningDocTableEvents2 {
         private IVsRunningDocumentTable _rdt;
         private uint _rdtCookie;
+        private string _path;
         private IVsHierarchy _hierarchy;
         private VSConstants.VSITEMID _itemId;
 
@@ -31,7 +33,6 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
         private void EnsureInitialized() {
             if (_hierarchy == null) {
                 VsFileInfo fileInfo = VsFileInfo.FromPath(Path);
-
                 // During a rename, it's possible this object is constructed before the document's new name is fully registered.
                 _hierarchy = fileInfo.Hierarchy;
                 _itemId = (VSConstants.VSITEMID)fileInfo.HierarchyItemId;
@@ -50,7 +51,6 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
         #endregion
 
         #region IWorkspaceItem Members
-
         /// <summary>
         /// Item moniker. For a disk-based document the same as PhysicalPath.
         /// May be something else for workspace items that are not disk items.
@@ -66,18 +66,15 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
         /// Fires when item name, path or other workspace parameters changed
         /// </summary>
         public event EventHandler<EventArgs> Changed;
-
         #endregion
 
         #region IVsWorkspaceItem
-
         /// <summary>
         /// Returns Visual Studio hierarchy this item belongs to
         /// </summary>
         public IVsHierarchy Hierarchy {
             get {
                 EnsureInitialized();
-
                 return _hierarchy;
             }
         }
@@ -88,7 +85,6 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
         public VSConstants.VSITEMID ItemId {
             get {
                 EnsureInitialized();
-
                 return _itemId;
             }
         }
@@ -124,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
         public int OnAfterAttributeChangeEx(uint docCookie, uint attributes, IVsHierarchy pHierOld, uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew) {
             bool changed = false;
 
-            VsFileInfo fileInfo = VsFileInfo.FromPath(Path);
+            VsFileInfo fileInfo = VsFileInfo.FromPath(pszMkDocumentNew != null ? pszMkDocumentNew : Path);
             uint rdtCookie = fileInfo.RunningDocumentItemCookie;
 
             if (docCookie == rdtCookie) {

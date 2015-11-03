@@ -77,16 +77,5 @@ namespace Microsoft.R.Support {
                 return ResourceManager.GetString("ColorName_RD_CurlyBraces", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R for Windows is not found.
-        ///Please navigate to https://cran.r-project.org and install R language for Windows or change path in Tools | Options | R Tools to point to the location of the R language engine.
-        ///After R is installed, please restart Visual Studio..
-        /// </summary>
-        internal static string Error_RNotInstalled {
-            get {
-                return ResourceManager.GetString("Error_RNotInstalled", resourceCulture);
-            }
-        }
     }
 }

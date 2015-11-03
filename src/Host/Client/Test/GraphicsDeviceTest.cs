@@ -1,6 +1,4 @@
-﻿using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,7 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.R.Support.Utility;
+using Microsoft.R.Actions.Utility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Host.Client.Test {
     // [TestClass]

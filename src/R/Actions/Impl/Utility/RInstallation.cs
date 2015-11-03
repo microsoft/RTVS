@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Settings;
 using Microsoft.Win32;
 
-namespace Microsoft.R.Support.Utility {
+namespace Microsoft.R.Actions.Utility {
     /// <summary>
     /// Verifies that R is installed in the folder
     /// specified in settings. If nothing is specified
     /// settings try and find highest version.
     /// </summary>
     public static class RInstallation {
-        public static bool VerifyRIsInstalled() {
-            string rPath = RInstallation.GetRInstallPath();
+        public static bool VerifyRIsInstalled(string basePath) {
+            string rPath = RInstallation.GetRInstallPath(basePath);
             if (!string.IsNullOrEmpty(rPath)) {
                 bool rExeExists = File.Exists(Path.Combine(rPath, @"bin\R.exe"));
                 bool rTermExists = File.Exists(Path.Combine(rPath, @"bin\x64\RTerm.exe"));
@@ -25,10 +22,10 @@ namespace Microsoft.R.Support.Utility {
                 }
             }
 
-            string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled);
-            EditorShell.Current.ShowErrorMessage(message);
+            //string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled);
+            //EditorShell.Current.ShowErrorMessage(message);
 
-            Process.Start("https://cran.r-project.org");
+            //Process.Start("https://cran.r-project.org");
 
             return false;
         }
@@ -41,28 +38,26 @@ namespace Microsoft.R.Support.Utility {
         /// Retrieves path to the installed R engine root folder.
         /// First tries user settings, then 64-bit registry.
         /// </summary>
-        public static string GetRInstallPath() {
-            string rBasePath = RToolsSettings.Current != null ? RToolsSettings.Current.RBasePath : null;
-
-            if (string.IsNullOrEmpty(rBasePath) || !Directory.Exists(rBasePath)) {
-                rBasePath = RInstallation.GetLatestEnginePathFromRegistry();
+        public static string GetRInstallPath(string basePath) {
+            if (string.IsNullOrEmpty(basePath) || !Directory.Exists(basePath)) {
+                basePath = RInstallation.GetLatestEnginePathFromRegistry();
             }
 
-            return rBasePath;
-            }
+            return basePath;
+        }
 
         /// <summary>
         /// Retrieves path to the installed R engine binaries folder.
         /// R version is retrieved from settings or, af none is set,
         /// highest version is retrieved from registry.
         /// </summary>
-        public static string GetBinariesFolder() {
+        public static string GetBinariesFolder(string basePath) {
             string binFolder = null;
-            string installPath = RInstallation.GetRInstallPath();
+            string installPath = RInstallation.GetRInstallPath(basePath);
 
             if (!string.IsNullOrEmpty(installPath)) {
-                    binFolder = Path.Combine(installPath, @"bin\x64");
-                }
+                binFolder = Path.Combine(installPath, @"bin\x64");
+            }
 
             return binFolder;
         }
