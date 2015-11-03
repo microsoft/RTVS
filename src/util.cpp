@@ -28,7 +28,6 @@ namespace rhost {
 namespace boost {
     namespace asio {
         namespace ip {
-            // Allow boost::asio::ip::tcp::endpoint to be used with boost::program_options.
             void validate(boost::any& v, const std::vector<std::string> values, boost::asio::ip::tcp::endpoint*, int) {
                 po::validators::check_first_occurrence(v);
                 auto& s = po::validators::get_single_string(values);

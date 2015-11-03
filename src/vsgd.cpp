@@ -2,7 +2,7 @@
 #include "log.h"
 #include "xamlbuilder.h"
 #include "Rgraphicsapi.h"
-#include "server.h"
+#include "host.h"
 #include "crtutils.h"
 
 using namespace rhost::log;
@@ -76,7 +76,7 @@ static void write_xaml(pDevDesc dd) {
     auto path = get_temp_file_path();
     xdd->xaml->write_xaml(path);
     // TODO: also keep track of the external bitmap files we create so we can delete them
-    rhost::server::plot_xaml(path);
+    rhost::host::plot_xaml(path);
 }
 
 static std::string r_fontface_to_xaml_font_weight(int fontface) {

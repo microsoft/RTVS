@@ -1,4 +1,4 @@
-#include "server.h"
+#include "host.h"
 #include "log.h"
 #include "crtutils.h"
 #include "eval.h"
@@ -10,7 +10,7 @@ using namespace rhost::util;
 using namespace rhost::eval;
 
 namespace rhost {
-    namespace server {
+    namespace host {
         inline namespace _impl {
             typedef websocketpp::connection<websocketpp::config::asio> ws_connection_type;
 

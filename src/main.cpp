@@ -3,7 +3,7 @@
 #include "log.h"
 #include "RPlotHost.h"
 #include "r_util.h"
-#include "server.h"
+#include "host.h"
 #include "Rapi.h"
 #include "util.h"
 #include "vsgd.h"
@@ -96,9 +96,9 @@ namespace rhost {
         }
         
         if (args.listen_endpoint) {
-            rhost::server::wait_for_client(*args.listen_endpoint).get();
+            rhost::host::wait_for_client(*args.listen_endpoint).get();
         } else if (args.connect_uri) {
-            rhost::server::connect_to_server(*args.connect_uri).get();
+            rhost::host::connect_to_server(*args.connect_uri).get();
         } else {
             return EXIT_FAILURE;
         }
@@ -115,7 +115,7 @@ namespace rhost {
         rp.RestoreAction = SA_RESTORE;
         rp.SaveAction = SA_NOSAVE;
 
-        rhost::server::register_callbacks(rp);
+        rhost::host::register_callbacks(rp);
 
         R_SetParams(&rp);
         R_set_command_line_arguments(args.argc, args.argv.data());

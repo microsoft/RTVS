@@ -174,7 +174,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RPlotHost.cpp" />
     <ClCompile Include="r_util.cpp" />
-    <ClCompile Include="server.cpp" />
+    <ClCompile Include="host.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="vsgd.cpp" />
   </ItemGroup>
@@ -186,7 +186,7 @@
     <ClInclude Include="Rgraphicsapi.h" />
     <ClInclude Include="RPlotHost.h" />
     <ClInclude Include="r_util.h" />
-    <ClInclude Include="server.h" />
+    <ClInclude Include="host.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="vsgd.h" />
