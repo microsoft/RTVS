@@ -41,7 +41,13 @@ namespace boost {
                 } else {
                     host = s.substr(0, colon);
                     auto port_str = s.substr(colon + 1);
-                    port = uint16_t(atoi(port_str.c_str()));
+                    try {
+                        port = std::stoi(port_str);
+                    } catch (std::invalid_argument&) {
+                        throw po::validation_error(po::validation_error::invalid_option_value);
+                    } catch (std::out_of_range&) {
+                        throw po::validation_error(po::validation_error::invalid_option_value);
+                    }
                 }
 
                 boost::asio::ip::address address;
