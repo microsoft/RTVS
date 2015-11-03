@@ -28,9 +28,6 @@ namespace Microsoft.R.Support.Help.Packages {
                         // Most common case
                         libraryPath = Path.Combine(libraryPath, directories.First());
                     } else {
-                    }
-                    else
-                    {
                         // Multiple library folders. Try and match to R version
                         // specified in the Tools | Options
                         string version = GetReducedVersion();
@@ -52,18 +49,16 @@ namespace Microsoft.R.Support.Help.Packages {
         /// C:\Users\[USER_NAME]\Documents\R\win-library\3.2
         /// </summary>
         /// <returns></returns>
-        internal static string GetReducedVersion()
-        {
+        internal static string GetReducedVersion() {
             string rBasePath = RToolsSettings.Current.RBasePath;
             string version = string.Empty;
 
             // TODO: this probably possible to get from R.Host instead
             int index = rBasePath.IndexOf("R-", StringComparison.Ordinal);
-            if (index >= 0)
-            {
+            if (index >= 0) {
                 version = version.Substring(index + 2);
                 int nextSlashIndex = version.IndexOf('\\');
-                if(nextSlashIndex > 0) {
+                if (nextSlashIndex > 0) {
                     version = version.Substring(0, nextSlashIndex);
                 }
 
@@ -71,7 +66,7 @@ namespace Microsoft.R.Support.Help.Packages {
                 // are 1 or 2 digit numbers. ~\Documents\R\win-library\3.2
                 // ignores .c part.
                 string[] parts = version.Split(new char[] { '.' });
-                if(parts.Length >= 2) {
+                if (parts.Length >= 2) {
                     version = parts[0] + '.' + parts[1];
                 }
             }

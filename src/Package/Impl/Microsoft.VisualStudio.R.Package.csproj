@@ -113,7 +113,7 @@
     <Compile Include="Plots\RPlotWindowContainer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Plots\RPlotWindowHook.cs" />
+    <Compile Include="Plots\RPlotWindowHost.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\ProjectIconProvider.cs" />
@@ -140,7 +140,7 @@
     <Compile Include="Commands\ShowContextMenuCommand.cs" />
     <Compile Include="Commands\R\VsRCommandFactory.cs" />
     <Compile Include="Commands\R\VsRTextViewConnectionListener.cs" />
-    <Compile Include="Plots\PlotWindowPane .cs" />
+    <Compile Include="Plots\PlotWindowPane.cs" />
     <Compile Include="DataInspect\Variable.cs" />
     <Compile Include="DataInspect\VariableProvider.cs" />
     <Compile Include="DataInspect\VariableView.xaml.cs">

@@ -49,7 +49,7 @@ namespace Microsoft.R.Support.Utility {
             }
 
             return rBasePath;
-        }
+            }
 
         /// <summary>
         /// Retrieves path to the installed R engine binaries folder.
@@ -112,7 +112,6 @@ namespace Microsoft.R.Support.Utility {
                         // This is not supported as we require 64-bit R.
                         // rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R");
                     }
-
                     if (rKey != null) {
                         return rKey.GetSubKeyNames();
                     }

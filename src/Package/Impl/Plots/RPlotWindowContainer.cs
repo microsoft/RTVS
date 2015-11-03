@@ -1,8 +1,14 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
@@ -11,10 +17,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     /// Parent of x64 RPlot window
     /// </summary>
     class RPlotWindowContainer : UserControl, IVsWindowPane {
- 
-        private IntPtr _rPlotWindowHandle = IntPtr.Zero;
-        private Control _rPlotWindowControl;
 
+        private DateTime _lastActivationMessageTime = DateTime.Now;
+        private bool _connectedToIdle;
+        private bool _sized;
+
+        #region IVsWindowPane
         public int ClosePane() {
             return VSConstants.S_OK;
         }
@@ -32,16 +40,21 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
             hwnd = this.Handle;
             NativeMethods.SetParent(this.Handle, hwndParent);
-            this.Show();
 
-            this.BackColor = System.Drawing.Color.Aqua;
+            // TODO: set watermark
+            VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
+            SetBgColor();
+
+            this.Show();
             return VSConstants.S_OK;
         }
 
+        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) {
+            SetBgColor();
+        }
+
         public int GetDefaultSize(SIZE[] pSize) {
-            pSize[0].cx = 200;
-            pSize[0].cy = 400;
-            return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         public int LoadViewState(IStream pStream) {
@@ -59,34 +72,102 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public int TranslateAccelerator(OLE.Interop.MSG[] lpmsg) {
             return VSConstants.E_NOTIMPL;
         }
+        #endregion
 
-        protected override void OnClientSizeChanged(EventArgs e) {
-            FindRPlotWindow();
+        private IntPtr _rPlotWindowHandle = IntPtr.Zero;
+        public IntPtr RPlotWindowHandle {
+            get {
+                if (_rPlotWindowHandle == IntPtr.Zero) {
+                    NativeMethods.EnumChildWindows(this.Handle, EnumChildWindowsProc, IntPtr.Zero);
+                    _rPlotWindowHandle = _rStaticPlotHandle;
+                }
 
-            if (_rPlotWindowControl != null) {
-                _rPlotWindowControl.Width = this.Width;
-                _rPlotWindowControl.Height = this.Height;
+                return _rPlotWindowHandle;
             }
-
-            base.OnClientSizeChanged(e);
         }
 
-        private void FindRPlotWindow() {
-            if (_rPlotWindowControl == null) {
-                NativeMethods.EnumChildWindows(this.Handle, EnumChildWindowsProc, IntPtr.Zero);
-            }
-            _rPlotWindowControl = _rPlotWindowHandle != IntPtr.Zero ? Control.FromHandle(_rPlotWindowHandle) : null;
-        }
-
-        private bool EnumChildWindowsProc(IntPtr hWnd, IntPtr lParam) {
+        private static IntPtr _rStaticPlotHandle = IntPtr.Zero;
+        private static bool EnumChildWindowsProc(IntPtr hWnd, IntPtr lParam) {
             StringBuilder sb = new StringBuilder(512);
             NativeMethods.GetClassName(hWnd, sb, 512);
             if (sb.ToString() == "GraphApp") {
-                _rPlotWindowHandle = hWnd;
+                _rStaticPlotHandle = hWnd;
                 return false;
             }
-
             return true;
+        }
+
+        protected override void OnClientSizeChanged(EventArgs e) {
+            SizeChildPlot();
+            base.OnClientSizeChanged(e);
+        }
+
+        protected override void WndProc(ref Message m) {
+            if (m.Msg == NativeMethods.WM_ACTIVATE_PLOT) {
+                if (!_sized) {
+                    SizeChildPlot();
+                }
+                _lastActivationMessageTime = DateTime.Now;
+                if (!_connectedToIdle) {
+                    _connectedToIdle = true;
+                    EditorShell.Current.Idle += OnIdle;
+                }
+            } else if (m.Msg == NativeMethods.WM_CLOSE) {
+                DestroyChildPlot();
+            }
+            base.WndProc(ref m);
+        }
+
+        private void OnIdle(object sender, EventArgs e) {
+            if ((DateTime.Now - _lastActivationMessageTime).TotalMilliseconds > 100) {
+                EditorShell.Current.Idle -= OnIdle;
+                _connectedToIdle = false;
+
+                PlotWindowPane pane = ToolWindowUtilities.FindWindowPane<PlotWindowPane>(0);
+                IVsWindowFrame frame = pane.Frame as IVsWindowFrame;
+                int onScreen = 0;
+                frame.IsOnScreen(out onScreen);
+                if (onScreen == 0) {
+                    ToolWindowUtilities.ShowWindowPane<PlotWindowPane>(0, focus: false);
+                    SizeChildPlot();
+                }
+            }
+        }
+
+        private void SizeChildPlot() {
+            IntPtr handle = RPlotWindowHandle;
+            if (handle != IntPtr.Zero) {
+                NativeMethods.MoveWindow(handle, 0, 0, this.Width - 1, this.Height - 1, bRepaint: true);
+                NativeMethods.MoveWindow(handle, 0, 0, this.Width, this.Height, bRepaint: true);
+                _sized = true;
+            }
+        }
+
+        private void DestroyChildPlot() {
+            if (_rPlotWindowHandle != IntPtr.Zero) {
+                NativeMethods.PostMessage(_rPlotWindowHandle, NativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                _rPlotWindowHandle = IntPtr.Zero;
+            }
+        }
+
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+                VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
+                DestroyChildPlot();
+            }
+            base.Dispose(disposing);
+        }
+
+        protected override void OnParentBackColorChanged(EventArgs e) {
+            SetBgColor();
+            base.OnParentBackColorChanged(e);
+        }
+
+        private void SetBgColor() {
+            IVsUIShell2 uiShell = AppShell.Current.GetGlobalService<IVsUIShell2>(typeof(SVsUIShell));
+            uint color;
+            uiShell.GetVSSysColorEx((int)__VSSYSCOLOREX.VSCOLOR_TOOLWINDOW_BACKGROUND, out color);
+            this.BackColor = ColorTranslator.FromWin32((int)color);
         }
     }
 }

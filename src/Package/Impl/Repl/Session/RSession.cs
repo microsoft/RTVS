@@ -84,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
 
-            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath());
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(), RPlotWindowHost.RPlotWindowContainerHandle);
             this.ScheduleEvaluation(async e => {
                 //await e.SetVsGraphicsDevice();
                 await e.SetDefaultWorkingDirectory();
