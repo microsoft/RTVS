@@ -554,7 +554,7 @@
       </Button>
       <!-- End top level menu -->
 
-      <Button guid="guidRToolsCmdSet" id="cmdidGoToFormattingOptions" priority="0x0200" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdGoToFormattingOptions" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
         <Strings>
           <ButtonText>Formatting &amp;Options...</ButtonText>
@@ -797,7 +797,7 @@
   </CommandPlacements>
 
   <KeyBindings>
-    <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="E" mod1="CONTROL" key2="E" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="E" mod1="CONTROL" key2="E" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
   </KeyBindings>
@@ -855,9 +855,6 @@
       <IDSymbol name="groupRContextRepl" value="122" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
 
-      <!-- See RPackageCommandId -->
-      <IDSymbol name="cmdidGoToFormattingOptions" value="500" />
-      <IDSymbol name="cmdidSendToRepl" value="501" />
       <!-- RTVS Command IDs -->
       <!-- General -->
       <IDSymbol name="icmdGoToFormattingOptions" value="400" />
