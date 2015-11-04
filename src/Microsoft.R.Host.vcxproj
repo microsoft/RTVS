@@ -168,7 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="crtutils.cpp" />
+    <ClCompile Include="msvcrt.cpp" />
     <ClCompile Include="eval.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
@@ -179,7 +179,7 @@
     <ClCompile Include="vsgd.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="crtutils.h" />
+    <ClInclude Include="msvcrt.h" />
     <ClInclude Include="eval.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="Rapi.h" />

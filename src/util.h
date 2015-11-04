@@ -85,6 +85,20 @@ namespace rhost {
             msg.push_back(picojson::value(std::forward<Arg>(arg)));
             append(msg, std::forward<Args>(args)...);
         }
+
+
+        // A C++-friendly helper for Rf_error. Invoking Rf_error directly is not a good idea, because
+        // it performs a longjmp, which will skip all C++ destructors when unwinding stack frames - so
+        // the only way to perform it safely is right at the boundary. This helper function will catch
+        // any exception type derived from std::exception, and invoke Rf_error with what() as message.
+        template<class F>
+        inline auto exceptions_to_errors(F f) -> decltype(f()) {
+            try {
+                return f();
+            } catch (std::exception& ex) {
+                Rf_error(ex.what());
+            }
+        }
     }
 }
 

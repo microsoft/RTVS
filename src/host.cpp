@@ -1,6 +1,6 @@
 #include "host.h"
 #include "log.h"
-#include "crtutils.h"
+#include "msvcrt.h"
 #include "eval.h"
 #include "util.h"
 
@@ -687,7 +687,7 @@ namespace rhost {
 
                 // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
                 // To ensure that our code runs during shutdown, we need to use the corresponding atexit().
-                rhost::crt::atexit(atexit_handler);
+                msvcrt::atexit(atexit_handler);
 
                 client.run();
             }
@@ -699,7 +699,7 @@ namespace rhost {
         void register_atexit_handler() {
             // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
             // To ensure that our code runs during shutdown, we need to use the corresponding atexit().
-            rhost::crt::atexit(atexit_handler);
+            msvcrt::atexit(atexit_handler);
         }
 
         std::future<void> wait_for_client(const boost::asio::ip::tcp::endpoint& endpoint) {

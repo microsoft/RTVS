@@ -3,7 +3,7 @@
 #include "xamlbuilder.h"
 #include "Rgraphicsapi.h"
 #include "host.h"
-#include "crtutils.h"
+#include "msvcrt.h"
 
 using namespace rhost::log;
 
@@ -525,7 +525,7 @@ extern "C"  int VSGD_Holdflush(pDevDesc dd, int level) {
 }
 
 static pDevDesc new_devdesc(double width, double height) {
-    pDevDesc dd = (pDevDesc)rhost::crt::malloc(sizeof(DevDesc));
+    pDevDesc dd = (pDevDesc)rhost::msvcrt::malloc(sizeof(DevDesc));
     if (!dd)
     {
         return 0;

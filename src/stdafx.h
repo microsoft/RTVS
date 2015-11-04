@@ -8,11 +8,14 @@
 #include <cstdlib>
 #include <fstream>
 #include <future>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <thread>
 #include <tuple>
 #include <utility>
+#include <unordered_map>
+#include <vector>
 
 #include "boost/algorithm/string.hpp"
 #include "boost/program_options/cmdline.hpp"

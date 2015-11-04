@@ -110,6 +110,11 @@ extern "C" {
         SA_SUICIDE
     } SA_TYPE;
 
+    typedef struct {
+        double r;
+        double i;
+    } Rcomplex;
+
     typedef void(*R_CFinalizer_t)(SEXP);
     typedef int(*blah1) (const char *, char *, int, int);
     typedef void(*blah2) (const char *, int);
@@ -150,6 +155,40 @@ extern "C" {
 #endif
     } structRstart, *Rstart;
 
+    typedef struct Rconn {
+        char* class_;
+        char* description;
+        int enc; 
+        char mode[5];
+        Rboolean text, isopen, incomplete, canread, canwrite, canseek, blocking, isGzcon;
+        Rboolean(*open)(struct Rconn *);
+        void(*close)(struct Rconn *);
+        void(*destroy)(struct Rconn *);
+        int(*vfprintf)(struct Rconn *, const char *, va_list);
+        int(*fgetc)(struct Rconn *);
+        int(*fgetc_internal)(struct Rconn *);
+        double(*seek)(struct Rconn *, double, int, int);
+        void(*truncate)(struct Rconn *);
+        int(*fflush)(struct Rconn *);
+        size_t(*read)(void *, size_t, size_t, struct Rconn *);
+        size_t(*write)(const void *, size_t, size_t, struct Rconn *);
+        int nPushBack, posPushBack;
+        char **PushBack;
+        int save, save2;
+        char encname[101];
+        void *inconv, *outconv;
+        char iconvbuff[25], oconvbuff[50], *next, init_out[25];
+        short navail, inavail;
+        Rboolean EOF_signalled;
+        Rboolean UTF8out;
+        void *id;
+        void *ex_ptr;
+        void *private_;
+        int status;
+    } RConn;
+
+    typedef RConn* Rconnection;
+
 #ifdef _WIN32
     __declspec(dllimport) extern UImode CharacterMode;
     __declspec(dllimport) extern RCNTXT* R_GlobalContext;
@@ -159,6 +198,11 @@ extern "C" {
     __declspec(dllimport) extern int R_DirtyImage;
     __declspec(dllimport) extern char *R_TempDir;
     __declspec(dllimport) extern int UserBreak;
+    __declspec(dllimport) extern double R_NaN;
+    __declspec(dllimport) extern double R_PosInf;
+    __declspec(dllimport) extern double R_NegInf;
+    __declspec(dllimport) extern double R_NaReal;
+    __declspec(dllimport) extern int R_NaInt;
 #endif
 
     extern void R_DefParams(Rstart);
@@ -182,6 +226,7 @@ extern "C" {
     extern void R_PreserveObject(SEXP);
     extern void R_ReleaseObject(SEXP);
     extern Rboolean R_ToplevelExec(void(*fun)(void *), void *data);
+    extern SEXP R_new_custom_connection(const char *description, const char *mode, const char *class_name, Rconnection *ptr);
 
     extern int Rf_initialize_R(int ac, char** av);
     extern int Rf_initEmbeddedR(int argc, char** argv);
@@ -189,6 +234,14 @@ extern "C" {
     extern SEXP Rf_protect(SEXP);
     extern void Rf_unprotect(int);
     extern void Rf_unprotect_ptr(SEXP);
+    extern SEXP Rf_allocVector3(SEXPTYPE, R_xlen_t, /*R_allocator_t*/ void*);
+    extern R_len_t Rf_length(SEXP);
+    extern SEXP Rf_findVar(SEXP, SEXP);
+    extern SEXP Rf_eval(SEXP, SEXP);
+    extern void Rf_onintr();
+    __declspec(noreturn) extern void Rf_error(const char *, ...);
+    extern void Rf_init_con(Rconnection, const char *description, int enc, const char* const mode);
+
     extern Rboolean Rf_isNull(SEXP s);
     extern Rboolean Rf_isSymbol(SEXP s);
     extern Rboolean Rf_isLogical(SEXP s);
@@ -198,15 +251,20 @@ extern "C" {
     extern Rboolean Rf_isEnvironment(SEXP s);
     extern Rboolean Rf_isString(SEXP s);
     extern Rboolean Rf_isObject(SEXP s);
-    extern SEXP Rf_mkChar(const char*);
+
     extern SEXP Rf_asChar(SEXP);
-    extern SEXP Rf_allocVector3(SEXPTYPE, R_xlen_t, /*R_allocator_t*/ void*);
-    extern R_len_t Rf_length(SEXP);
+    extern SEXP Rf_coerceVector(SEXP, SEXPTYPE);
+    extern SEXP Rf_PairToVectorList(SEXP x);
+    extern SEXP Rf_VectorToPairList(SEXP x);
+    extern SEXP Rf_asCharacterFactor(SEXP x);
+    extern int Rf_asLogical(SEXP x);
+    extern int Rf_asInteger(SEXP x);
+    extern double Rf_asReal(SEXP x);
+    extern Rcomplex Rf_asComplex(SEXP x);
+
+    extern SEXP Rf_mkChar(const char*);
+    extern SEXP Rf_mkString(const char*);
     extern SEXP Rf_installChar(SEXP);
-    extern SEXP Rf_findVar(SEXP, SEXP);
-    extern SEXP Rf_eval(SEXP, SEXP);
-    extern void Rf_onintr();
-    __declspec(noreturn) extern void Rf_error(const char *, ...);
 
     extern void setup_Rmainloop(void);
     extern void run_Rmainloop(void);

@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="crtutils.cpp" />
     <ClCompile Include="vsgd.cpp" />
     <ClCompile Include="r_util.cpp" />
     <ClCompile Include="util.cpp" />
@@ -10,13 +9,13 @@
     <ClCompile Include="RPlotHost.cpp" />
     <ClCompile Include="eval.cpp" />
     <ClCompile Include="host.cpp" />
+    <ClCompile Include="msvcrt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Rapi.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="Rgraphicsapi.h" />
-    <ClInclude Include="crtutils.h" />
     <ClInclude Include="xamlbuilder.h" />
     <ClInclude Include="vsgd.h" />
     <ClInclude Include="r_util.h" />
@@ -24,6 +23,7 @@
     <ClInclude Include="log.h" />
     <ClInclude Include="RPlotHost.h" />
     <ClInclude Include="host.h" />
+    <ClInclude Include="msvcrt.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

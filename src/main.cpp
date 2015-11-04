@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "crtutils.h"
+#include "msvcrt.h"
 #include "log.h"
 #include "RPlotHost.h"
 #include "r_util.h"
@@ -92,7 +92,7 @@ namespace rhost {
     int run(command_line_args& args) {
         if (args.plot_window_parent) {
             rplots::RPlotHost::Init(*args.plot_window_parent);
-            rhost::crt::atexit([] { rplots::RPlotHost::Terminate(); });
+            msvcrt::atexit([] { rplots::RPlotHost::Terminate(); });
         }
         
         if (args.listen_endpoint) {
@@ -125,7 +125,7 @@ namespace rhost {
 
         DllInfo *dll = R_getEmbeddingDllInfo();
         R_init_vsgd(dll);
-        R_init_util(dll);
+        rhost::r_util::init(dll);
 
         CharacterMode = LinkDLL;
         setup_Rmainloop();
