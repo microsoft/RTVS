@@ -43,6 +43,30 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
+        public void TokenizeIdentifierLogicalTest01() {
+            var tokens = this.Tokenize("1 <- F(~x)", new RTokenizer());
+
+            Assert.AreEqual(7, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
+            Assert.AreEqual(RTokenType.Identifier, tokens[2].TokenType);
+            Assert.AreEqual(RTokenType.OpenBrace, tokens[3].TokenType);
+            Assert.AreEqual(RTokenType.Operator, tokens[4].TokenType);
+            Assert.AreEqual(RTokenType.Identifier, tokens[5].TokenType);
+            Assert.AreEqual(RTokenType.CloseBrace, tokens[6].TokenType);
+        }
+
+        [TestMethod]
+        public void TokenizeIdentifierLogicalTest02() {
+            var tokens = this.Tokenize("1 <- F", new RTokenizer());
+
+            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
+            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
+            Assert.AreEqual(RTokenType.Logical, tokens[2].TokenType);
+        }
+
+        [TestMethod]
         public void Tokenize_IdentifiersFile()
         {
             TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Identifiers.r");
