@@ -2,7 +2,8 @@
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
-    public sealed class VsWindowFrameMock : IVsWindowFrame {
+    public sealed class VsWindowFrameMock : IVsWindowFrame, IVsWindowFrame2 {
+        #region IVsWindowFrame
         public int CloseFrame(uint grfSaveOptions) {
             return VSConstants.S_OK;
         }
@@ -20,7 +21,11 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int GetProperty(int propid, out object pvar) {
-            pvar = string.Empty;
+            if (propid == (int)__VSFPROPID.VSFPROPID_ExtWindowObject) {
+                pvar = new VsToolWindowToolbarHostMock();
+            } else {
+                pvar = null;
+            }
             return VSConstants.S_OK;
         }
 
@@ -61,5 +66,21 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         public int ShowNoActivate() {
             return VSConstants.S_OK;
         }
+        #endregion
+
+        #region IVsWindowFrame2
+        public int ActivateOwnerDockedWindow() {
+            return VSConstants.S_OK;
+        }
+
+        public int Advise(IVsWindowFrameNotify pNotify, out uint pdwCookie) {
+            pdwCookie = 1;
+            return VSConstants.S_OK;
+        }
+
+        public int Unadvise(uint dwCookie) {
+            return VSConstants.S_OK;
+        }
+        #endregion
     }
 }
