@@ -12,7 +12,6 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
     internal sealed class VsWorkspaceItem : IVsWorkspaceItem, IVsRunningDocTableEvents2 {
         private IVsRunningDocumentTable _rdt;
         private uint _rdtCookie;
-        private string _path;
         private IVsHierarchy _hierarchy;
         private VSConstants.VSITEMID _itemId;
 
