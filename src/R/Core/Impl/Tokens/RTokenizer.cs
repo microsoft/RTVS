@@ -300,7 +300,15 @@ namespace Microsoft.R.Core.Tokens {
             if (s[0] == '`') {
                 AddToken(RTokenType.Identifier, RTokenSubType.None, start, s.Length);
             } else if (Logicals.IsLogical(s)) {
-                AddToken(RTokenType.Logical, start, s.Length);
+                // Tell between F and F() 
+                bool logical = true;
+                if (s.Length == 1) {
+                    _cs.SkipWhitespace();
+                    if (_cs.CurrentChar == '(') {
+                        logical = false;
+                    }
+                }
+                AddToken(logical ? RTokenType.Logical : RTokenType.Identifier, start, s.Length);
             } else if (s == "NULL") {
                 AddToken(RTokenType.Null, RTokenSubType.BuiltinConstant, start, s.Length);
             } else if (s == "NA" || s == "NA_character_" || s == "NA_complex_" || s == "NA_integer_" || s == "NA_real_") {
