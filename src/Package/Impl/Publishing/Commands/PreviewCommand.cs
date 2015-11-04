@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
@@ -14,6 +15,7 @@ using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Actions.Logging;
 using Microsoft.R.Actions.Script;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -70,6 +72,10 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
             IEditorDocument document = MdEditorDocument.FromTextBuffer(TextView.TextBuffer);
             string inputFilePath = document.WorkspaceItem.Path;
+            var buffer = new StringBuilder(NativeMethods.MAX_PATH);
+            NativeMethods.GetShortPathName(inputFilePath, buffer, NativeMethods.MAX_PATH);
+
+            inputFilePath = buffer.ToString();
             _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
 
             try {
