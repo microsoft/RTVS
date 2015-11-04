@@ -10,6 +10,7 @@ using Microsoft.R.Actions.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Plots;
+using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -90,6 +91,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 //await e.SetVsGraphicsDevice();
                 await e.SetDefaultWorkingDirectory();
                 await e.PrepareDataInspect();
+
+                string mirrorName = RToolsSettings.Current.CranMirror;
+                string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
+                await e.SetVsCranSelection(mirrorUrl);
             });
 
             var initializationTask = _initializationTcs.Task;
