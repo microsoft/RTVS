@@ -524,7 +524,7 @@ namespace Microsoft.R.Host.Client {
                 try {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
 
-                    await Task.WhenAny(_transportTcs.Task, Task.Delay(2000000)).Unwrap();
+                    await Task.WhenAny(_transportTcs.Task, Task.Delay(3000)).Unwrap();
                     if (!_transportTcs.Task.IsCompleted) {
                         _log.FailedToConnectToRHost();
                         throw new RHostTimeoutException("Timed out waiting for R host process to connect");
