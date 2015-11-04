@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
     public sealed class VsUiShellMock : IVsUIShell {
+        private Dictionary<Guid, VsWindowFrameMock> _frames = new Dictionary<Guid, VsWindowFrameMock>();
+
         public int AddNewBFNavigationItem(IVsWindowFrame pWindowFrame, string bstrData, object punk, int fReplaceCurrent) {
             throw new NotImplementedException();
         }
@@ -21,23 +20,30 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int CreateToolWindow(uint grfCTW, uint dwToolWindowId, object punkTool, ref Guid rclsidTool, ref Guid rguidPersistenceSlot, ref Guid rguidAutoActivate, OLE.Interop.IServiceProvider psp, string pszCaption, int[] pfDefaultPosition, out IVsWindowFrame ppWindowFrame) {
-            throw new NotImplementedException();
+            var mock = new VsWindowFrameMock();
+            _frames[rguidPersistenceSlot] = mock;
+            ppWindowFrame = mock;
+            return VSConstants.S_OK;
         }
 
         public int EnableModeless(int fEnable) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int FindToolWindow(uint grfFTW, ref Guid rguidPersistenceSlot, out IVsWindowFrame ppWindowFrame) {
-            throw new NotImplementedException();
+            VsWindowFrameMock mock;
+            _frames.TryGetValue(rguidPersistenceSlot, out mock);
+            ppWindowFrame = mock;
+            return mock != null ? VSConstants.S_OK : VSConstants.E_FAIL;
         }
 
         public int FindToolWindowEx(uint grfFTW, ref Guid rguidPersistenceSlot, uint dwToolWinId, out IVsWindowFrame ppWindowFrame) {
-            throw new NotImplementedException();
+            return FindToolWindow(grfFTW, ref rguidPersistenceSlot, out ppWindowFrame);
         }
 
         public int GetAppName(out string pbstrAppName) {
-            throw new NotImplementedException();
+            pbstrAppName = "RTVS";
+            return VSConstants.S_OK;
         }
 
         public int GetCurrentBFNavigationItem(out IVsWindowFrame ppWindowFrame, out string pbstrData, out object ppunk) {
@@ -45,7 +51,8 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int GetDialogOwnerHwnd(out IntPtr phwnd) {
-            throw new NotImplementedException();
+            phwnd = IntPtr.Zero;
+            return VSConstants.S_OK;
         }
 
         public int GetDirectoryViaBrowseDlg(VSBROWSEINFOW[] pBrowse) {
@@ -57,7 +64,8 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int GetErrorInfo(out string pbstrErrText) {
-            throw new NotImplementedException();
+            pbstrErrText = string.Empty;
+            return VSConstants.S_OK;
         }
 
         public int GetNextBFNavigationItem(out IVsWindowFrame ppWindowFrame, out string pbstrData, out object ppunk) {
@@ -85,23 +93,24 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int GetVSSysColor(VSSYSCOLOR dwSysColIndex, out uint pdwRGBval) {
-            throw new NotImplementedException();
+            pdwRGBval = 0;
+            return VSConstants.S_OK;
         }
 
         public int OnModeChange(DBGMODE dbgmodeNew) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int PostExecCommand(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, ref object pvaIn) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int PostSetFocusMenuCommand(ref Guid pguidCmdGroup, uint nCmdID) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int RefreshPropertyBrowser(int dispid) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int RemoveAdjacentBFNavigationItem(RemoveBFDirection rdDir) {
@@ -113,7 +122,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int ReportErrorInfo(int hr) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int SaveDocDataToFile(VSSAVEFLAGS grfSave, object pPersistFile, string pszUntitledPath, out string pbstrDocumentNew, out int pfCanceled) {
@@ -121,15 +130,15 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int SetErrorInfo(int hr, string pszDescription, uint dwReserved, string pszHelpKeyword, string pszSource) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int SetForegroundWindow() {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int SetMRUComboText(ref Guid pguidCmdGroup, uint dwCmdID, string lpszText, int fAddToList) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int SetMRUComboTextW(Guid[] pguidCmdGroup, uint dwCmdID, string pwszText, int fAddToList) {
@@ -145,27 +154,28 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int SetWaitCursor() {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int ShowContextMenu(uint dwCompRole, ref Guid rclsidActive, int nMenuId, POINTS[] pos, IOleCommandTarget pCmdTrgtActive) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int ShowMessageBox(uint dwCompRole, ref Guid rclsidComp, string pszTitle, string pszText, string pszHelpFile, uint dwHelpContextID, OLEMSGBUTTON msgbtn, OLEMSGDEFBUTTON msgdefbtn, OLEMSGICON msgicon, int fSysAlert, out int pnResult) {
-            throw new NotImplementedException();
+            pnResult = 0;
+            return VSConstants.S_OK;
         }
 
         public int TranslateAcceleratorAsACmd(MSG[] pMsg) {
-            throw new NotImplementedException();
+            return VSConstants.S_FALSE;
         }
 
         public int UpdateCommandUI(int fImmediateUpdate) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int UpdateDocDataIsDirtyFeedback(uint docCookie, int fDirty) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
     }
 }

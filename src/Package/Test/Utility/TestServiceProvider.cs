@@ -23,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility
             _services.Add(typeof(SVsTextManager), new TextManagerMock());
 
             _guidServices.Add(typeof(SVsImageService).GUID, new VsImageServiceMock());
+            _guidServices.Add(typeof(SVsUIShell).GUID, new VsUiShellMock());
         }
 
         public object GetService(Type serviceType)
