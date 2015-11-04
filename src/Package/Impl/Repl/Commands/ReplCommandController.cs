@@ -63,39 +63,63 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 RCompletionController controller = RCompletionController.FromTextView(TextView);
                 if (controller != null) {
                     if (id == (int)VSConstants.VSStd2KCmdID.TAB) {
+                        return HandleTab(controller);
                         // If completion is up, commit it
-                        if (controller.HasActiveCompletionSession) {
-                            controller.CommitCompletionSession();
-                            controller.DismissAllSessions();
-                            return CommandResult.Executed;
-                        } else {
-                            controller.DismissAllSessions();
-                            controller.ShowCompletion(autoShownCompletion: true);
-                            return CommandResult.Executed;
-                        }
                     } else if (id == (int)VSConstants.VSStd2KCmdID.RETURN) {
-                        // If completion is up, commit it
-                        if (controller.HasActiveCompletionSession && REditorSettings.CommitOnEnter) {
-                            controller.CommitCompletionSession();
-                            controller.DismissAllSessions();
-                            return CommandResult.Executed;
-                        }
-
-                        controller.DismissAllSessions();
-                        ReplWindow.Current.ExecuteCurrentExpression(TextView);
-                        return CommandResult.Executed;
+                        return HandleEnter(controller);
                     } else if (id == (int)VSConstants.VSStd2KCmdID.CANCEL) {
-                        IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                        Guid gmdSet = RGuidList.RCmdSetGuid;
-                        object o = new object();
-                        // Post interrupt command which knows if it can interrupt R or not
-                        uiShell.PostExecCommand(ref gmdSet, RPackageCommandId.icmdInterruptR, 0, ref o);
+                        HandleCancel(controller);
                         // Allow VS to continue processing cancel
                     }
                 }
             }
 
             return base.Invoke(group, id, inputArg, ref outputArg);
+        }
+        private CommandResult HandleTab(RCompletionController controller) {
+            // If completion is up, commit it
+            if (controller.HasActiveCompletionSession) {
+                controller.CommitCompletionSession();
+                controller.DismissAllSessions();
+            } else {
+                controller.DismissAllSessions();
+                controller.ShowCompletion(autoShownCompletion: true);
+            }
+            return CommandResult.Executed;
+        }
+
+        private CommandResult HandleEnter(RCompletionController controller) {
+            // If completion is up, commit it
+            if (controller.HasActiveCompletionSession) {
+                // Check for exact match. If applicable span is 'x' and completion is 'x'
+                // then we don't complete and rather execute. If span is 'x' while
+                // current completion entry is 'X11' then we complete depending on
+                // the 'complete on enter' setting.
+                try {
+                    ICompletionSession session = controller.CompletionSession;
+                    CompletionSet set = session.SelectedCompletionSet;
+                    ITrackingSpan span = set.ApplicableTo;
+                    ITextSnapshot snapshot = span.TextBuffer.CurrentSnapshot;
+                    string spanText = snapshot.GetText(span.GetSpan(snapshot));
+                    if (spanText != set.SelectionStatus.Completion.InsertionText) {
+                        controller.CommitCompletionSession();
+                        controller.DismissAllSessions();
+                        return CommandResult.Executed;
+                    }
+                } catch (Exception) { }
+            }
+
+            controller.DismissAllSessions();
+            ReplWindow.Current.ExecuteCurrentExpression(TextView);
+            return CommandResult.Executed;
+        }
+
+        private void HandleCancel(RCompletionController controller) {
+            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            Guid gmdSet = RGuidList.RCmdSetGuid;
+            object o = new object();
+            // Post interrupt command which knows if it can interrupt R or not
+            uiShell.PostExecCommand(ref gmdSet, RPackageCommandId.icmdInterruptR, 0, ref o);
         }
 
         /// <summary>
