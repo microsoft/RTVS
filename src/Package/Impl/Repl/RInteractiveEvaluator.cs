@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             try {
                 await Session.StartHostAsync();
                 return ExecutionResult.Success;
-            } catch (MicrosoftRHostMissingException) {
+            } catch (RHostBinaryMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
                 EditorShell.Current.ShowErrorMessage(Resources.Error_Microsoft_R_Host_Missing);
                 return ExecutionResult.Failure;

@@ -63,6 +63,8 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="MessageTransportException.cs" />
+    <Compile Include="IMessageTransport.cs" />
     <Compile Include="IRContext.cs" />
     <Compile Include="IRCallbacks.cs" />
     <Compile Include="IRExpressionEvaluator.cs" />
@@ -70,7 +72,8 @@
     <Compile Include="IRSessionEvaluation.cs" />
     <Compile Include="IRSessionProvider.cs" />
     <Compile Include="IRSessionInteraction.cs" />
-    <Compile Include="MicrosoftRHostMissingException.cs" />
+    <Compile Include="RHostTimeoutException.cs" />
+    <Compile Include="RHostBinaryMissingException.cs" />
     <Compile Include="OutputType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RHost.Message.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="RException.cs" />
     <Compile Include="RHost.cs" />
     <Compile Include="ROutputEventArgs.cs" />
+    <Compile Include="WebSocketMessageTransport.cs" />
     <Compile Include="YesNoCancel.cs" />
   </ItemGroup>
   <ItemGroup>
