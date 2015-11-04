@@ -181,6 +181,7 @@
     <Compile Include="VsTextBufferMock.cs" />
     <Compile Include="VsTextLinesMock.cs" />
     <Compile Include="VsTextViewMock.cs" />
+    <Compile Include="VsToolWindowToolbarHostMock.cs" />
     <Compile Include="VsUiShellMock.cs" />
     <Compile Include="VsWindowFrameMock.cs" />
   </ItemGroup>
