@@ -12,6 +12,8 @@ using namespace rhost::eval;
 namespace rhost {
     namespace host {
         inline namespace _impl {
+            const char subprotocol[] = "Microsoft.R.Host";
+
             typedef websocketpp::connection<websocketpp::config::asio> ws_connection_type;
 
             struct message {
@@ -494,6 +496,23 @@ namespace rhost {
                 }
             }
 
+            bool ws_validate_handler(websocketpp::connection_hdl hdl) {
+                auto& protos = ws_conn->get_requested_subprotocols();
+                logf("Incoming connection requesting subprotocols: [ ");
+                for (auto proto : protos) {
+                    logf("'%s' ", proto.c_str());
+                }
+                logf("]\n");
+
+                auto it = std::find(protos.begin(), protos.end(), subprotocol);
+                if (it == protos.end()) {
+                    fatal_error("Expected subprotocol %s was not requested", subprotocol);
+                }
+
+                ws_conn->select_subprotocol(subprotocol);
+                return true;
+            }
+
             void ws_fail_handler(websocketpp::connection_hdl hdl) {
                 fatal_error("websocket connection failed: %s", ws_conn->get_ec().message().c_str());
             }
@@ -611,6 +630,7 @@ namespace rhost {
 #endif
 
                 server.init_asio();
+                server.set_validate_handler(ws_validate_handler);
                 server.set_open_handler(ws_open_handler);
                 server.set_message_handler(ws_message_handler);
                 server.set_close_handler(ws_close_handler);
@@ -619,7 +639,11 @@ namespace rhost {
                 endpoint_str << endpoint;
                 logf("Waiting for incoming connection on %s ...\n", endpoint_str.str().c_str());
 
-                server.listen(endpoint);
+                std::error_code error_code;
+                server.listen(endpoint, error_code);
+                if (error_code) {
+                    fatal_error("Could not open server socket for listening: %s", error_code.message().c_str());
+                }
 
                 ws_conn = server.get_connection();
                 server.async_accept(ws_conn, [&](auto error_code) {
@@ -658,6 +682,7 @@ namespace rhost {
                     fatal_error("Could not establish connection to server: %s", error_code.message().c_str());
                 } 
 
+                ws_conn->add_subprotocol(subprotocol);
                 client.connect(ws_conn);
 
                 // R itself is built with MinGW, and links to msvcrt.dll, so it uses the latter's exit() to terminate the main loop.
