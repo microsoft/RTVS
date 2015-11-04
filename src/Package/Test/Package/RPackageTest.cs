@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             package.Close();
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void RPackage_EditorFactoryTest()
         {
             EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
