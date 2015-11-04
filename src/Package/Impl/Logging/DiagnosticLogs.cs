@@ -8,8 +8,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Actions.Utility;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Utility;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Logging {
@@ -199,7 +200,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                     sw.WriteLine("    " + latestEngine);
                     sw.WriteLine();
 
-                    string rInstallPath = RInstallation.GetRInstallPath();
+                    string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath);
                     sw.WriteLine("R Install path:");
                     sw.WriteLine("    " + rInstallPath);
                     sw.WriteLine();

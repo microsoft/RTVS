@@ -3,7 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Utility;
+using Microsoft.R.Actions.Utility;
+using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Engine {
     public sealed class EngineSession : IDisposable {
@@ -51,7 +52,7 @@ namespace Microsoft.R.Support.Engine {
         private void LaunchREngine() {
             if (_startingTask == null) {
                 if (_rProcess == null || _rProcess.HasExited) {
-                    string binPath = RInstallation.GetBinariesFolder();
+                    string binPath = RInstallation.GetBinariesFolder(RToolsSettings.Current.RBasePath);
 
                     if (!string.IsNullOrEmpty(binPath)) {
                         string exePath = Path.Combine(binPath, "RTerm.exe");

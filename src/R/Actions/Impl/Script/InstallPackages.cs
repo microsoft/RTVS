@@ -11,34 +11,34 @@ namespace Microsoft.R.Actions.Script {
         /// <summary>
         /// Asynchronously installs a set of R packages with dependencies
         /// </summary>
-        public static RCommand Install(IEnumerable<string> packageNames, IActionLog log) {
+        public static RCommand Install(string rBasePath, IEnumerable<string> packageNames, IActionLog log) {
             string arguments = PackageListToString(packageNames);
-            return Install(arguments, log);
+            return Install(arguments, log, rBasePath);
         }
 
         /// <summary>
         /// Asynchronously install one R packages with dependencies
         /// </summary>
-        public static RCommand Install(string packageName, IActionLog log) {
-            return RCommand.ExecuteAsync("INSTALL " + packageName, log);
+        public static RCommand Install(string packageName, IActionLog log, string rBasePath) {
+            return RCommand.ExecuteAsync("INSTALL " + packageName, log, rBasePath);
         }
 
         /// <summary>
         /// Synchronously install a set of R packages with dependencies.
         /// Typically only used during setup from the MSI custom action.
         /// </summary>
-        public static void InstallSynchronously(IEnumerable<string> packageNames, int msTimeout, IActionLog log) {
+        public static void InstallSynchronously(IEnumerable<string> packageNames, int msTimeout, IActionLog log, string rBasePath) {
             string arguments = PackageListToString(packageNames);
-            if (!Install(arguments, log).Task.Wait(msTimeout)) {
+            if (!Install(arguments, log, rBasePath).Task.Wait(msTimeout)) {
                 log.WriteFormatAsync(MessageCategory.Error, Resources.Error_InstallTimeout_Format, arguments);
             }
         }
 
-        public static bool IsInstalled(string packageName, int msTimeout) {
+        public static bool IsInstalled(string packageName, int msTimeout, string rBasePath) {
             string expression = "installed.packages()";
             IActionLinesLog log = new LinesLog(NullLogWriter.Instance);
 
-            bool result = RCommand.ExecuteRExpression(expression, log, msTimeout);
+            bool result = RCommand.ExecuteRExpression(expression, log, msTimeout, rBasePath);
             if (result) {
                 // stdout is list of packages
                 // abind "abind" "C:/Users/[USER_NAME]/Documents/R/win-library/3.2" "1.4-3"   NA

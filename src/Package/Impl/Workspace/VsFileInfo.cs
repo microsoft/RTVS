@@ -1,6 +1,7 @@
 ﻿using Microsoft.Languages.Editor.Controller;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -35,7 +36,10 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
 
         public string FilePath { get; private set; }
 
-        public uint RunningDocumentItemCookie { get; private set; } // used with IVsRunningDocumentTable
+        /// <summary>
+        /// Document cookie in IVsRunningDocumentTable
+        /// </summary>
+        public uint RunningDocumentItemCookie { get; private set; }
 
         public IVsHierarchy Hierarchy {
             get {
@@ -117,7 +121,7 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
 
         private void UpdateRunningDocumentInfo() {
             if (!string.IsNullOrEmpty(FilePath)) {
-                RunningDocumentTable rdt = new RunningDocumentTable();
+                RunningDocumentTable rdt = new RunningDocumentTable(AppShell.Current.GlobalServiceProvider);
                 RunningDocumentInfo docInfo = rdt.GetDocumentInfo(FilePath);
                 RunningDocumentItemCookie = docInfo.DocCookie;
                 if (docInfo.IsHierarchyInitialized) {

@@ -28,6 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility
             "Microsoft.VisualStudio.Shell.Mocks.dll",
             "Microsoft.VisualStudio.R.Package.dll",
             "Microsoft.VisualStudio.R.Package.Test.dll",
+            "Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll",
         };
 
         private RPackageTestCompositionCatalog() :

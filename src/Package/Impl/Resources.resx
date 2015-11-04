@@ -453,4 +453,9 @@
   <data name="Error_UnsupportedRVersion" xml:space="preserve">
     <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are 3.2.*.</value>
   </data>
+  <data name="Error_RNotInstalled" xml:space="preserve">
+    <value>R for Windows is not found.
+Please navigate to https://cran.r-project.org and install R language for Windows or change path in Tools | Options | R Tools to point to the location of the R language engine.
+After R is installed, please restart Visual Studio.</value>
+  </data>
 </root>

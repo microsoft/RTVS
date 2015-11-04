@@ -295,6 +295,17 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R for Windows is not found.
+        ///Please navigate to https://cran.r-project.org and install R language for Windows or change path in Tools | Options | R Tools to point to the location of the R language engine.
+        ///After R is installed, please restart Visual Studio..
+        /// </summary>
+        public static string Error_RNotInstalled {
+            get {
+                return ResourceManager.GetString("Error_RNotInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are 3.2.*..
         /// </summary>
         public static string Error_UnsupportedRVersion {
