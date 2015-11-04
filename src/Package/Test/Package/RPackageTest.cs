@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tests.Shell;
-using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.VisualStudio.R.Package.Test.Commands
-{
+namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
     [TestClass]
     public class RPackageTest : UnitTestBase
     {
-        //[TestMethod]
+        [TestMethod]
         public void RPackage_ConstructionTest()
         {
             EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
