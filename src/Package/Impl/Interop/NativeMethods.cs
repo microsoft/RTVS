@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.Interop {
     internal static class NativeMethods {
+        public const int MAX_PATH = 1024;
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern uint GetShortPathName(string lpszLongPath, StringBuilder lpszShortPath, int cchBuffer);
+
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern uint RegisterClipboardFormat(string lpszFormat);
 
