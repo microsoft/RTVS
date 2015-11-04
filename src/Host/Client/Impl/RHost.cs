@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.R.Actions.Logging;
 using Newtonsoft.Json;
@@ -26,17 +24,16 @@ namespace Microsoft.R.Host.Client {
 
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
 
+        private IMessageTransport _transport;
+        private readonly object _transportLock = new object();
+        private readonly TaskCompletionSource<IMessageTransport> _transportTcs = new TaskCompletionSource<IMessageTransport>();
+
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
         private readonly FileLogWriter _fileLogWriter;
         private Process _process;
         private volatile Task _runTask;
-
-        private WebSocket _socket;
-        private BufferBlock<Task<string>> _incomingMessages = new BufferBlock<Task<string>>();
-        private readonly SemaphoreSlim _socketSendLock = new SemaphoreSlim(1, 1); // for _socket.SendAsync
-
         private bool _canEval;
         private int _rLoopDepth;
         private long _nextMessageId = 1;
@@ -72,8 +69,8 @@ namespace Microsoft.R.Host.Client {
 
             string json;
             try {
-                json = await (await _incomingMessages.ReceiveAsync(ct));
-            } catch (WebSocketException ex) when (ct.IsCancellationRequested) {
+                json = await _transport.ReceiveAsync(ct);
+            } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             }
@@ -100,20 +97,14 @@ namespace Microsoft.R.Host.Client {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             var json = JsonConvert.SerializeObject(token);
+            _log.Request(json, _rLoopDepth);
 
-            await _socketSendLock.WaitAsync(ct);
             try {
-                var sendTcs = new TaskCompletionSource<bool>();
-                _socket.SendAsync(json, result => sendTcs.SetResult(result));
-                await sendTcs.Task;
-            } catch (WebSocketException ex) when (ct.IsCancellationRequested) {
+                await _transport.SendAsync(json, ct);
+            } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
-            } finally {
-                _socketSendLock.Release();
             }
-
-            _log.Request(json, _rLoopDepth);
         }
 
         private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
@@ -299,7 +290,7 @@ namespace Microsoft.R.Host.Client {
                     await SendAsync("/", _cts.Token, null);
                 } catch (OperationCanceledException) {
                     return;
-                } catch (WebSocketException) {
+                } catch (MessageTransportException) {
                     return;
                 }
 
@@ -316,7 +307,7 @@ namespace Microsoft.R.Host.Client {
 
             await TaskUtilities.SwitchToBackgroundThread();
 
-            // We may get a WebSocketException from any concurrent SendAsync or ReceiveAsync when the host
+            // We may get MessageTransportException from any concurrent SendAsync or ReceiveAsync when the host
             // drops connection after we request it to do so. To ensure that those don't bubble up to the
             // client, cancel this token to indicate that we're shutting down the host - SendAsync and
             // ReceiveAsync will take care of wrapping any WSE into OperationCanceledException.
@@ -324,17 +315,17 @@ namespace Microsoft.R.Host.Client {
 
             try {
                 // Don't use _cts, since it's already cancelled. We want to try to send this message in
-                // any case, and we'll catch WebSocketException if no-one is on the other end anymore.
+                // any case, and we'll catch MessageTransportException if no-one is on the other end anymore.
                 await SendAsync(JValue.CreateNull(), new CancellationToken());
             } catch (OperationCanceledException) {
-            } catch (WebSocketException) {
+            } catch (MessageTransportException) {
             }
 
             try {
                 await _runTask;
             } catch (OperationCanceledException) {
                 // Expected during disconnect.
-            } catch (WebSocketException) {
+            } catch (MessageTransportException) {
                 // Possible and valid during disconnect.
             }
         }
@@ -432,14 +423,44 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private Task Run(CancellationToken ct) {
+        public async Task Run(IMessageTransport transport, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             if (_runTask != null) {
                 throw new InvalidOperationException("This host is already running.");
             }
 
-            return _runTask = RunWorker(ct);
+            if (transport != null) {
+                lock (_transportLock) {
+                    _transport = transport;
+                }
+            } else if (_transport == null) {
+                throw new ArgumentNullException("transport");
+            }
+
+            try {
+                await (_runTask = RunWorker(ct));
+            } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
+                // Expected cancellation, do not propagate, just exit process
+            } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
+                // Network errors during cancellation are expected, but should not be exposed to clients.
+                throw new OperationCanceledException(new OperationCanceledException().Message, ex);
+            } catch (Exception ex) {
+                Trace.Fail("Exception in RHost run loop:\n" + ex);
+                throw;
+            }
+        }
+
+        private WebSocketMessageTransport CreateWebSocketMessageTransport() {
+            lock (_transportLock) {
+                if (_transport != null) {
+                    throw new MessageTransportException("More than one incoming connection.");
+                }
+                
+                var transport = new WebSocketMessageTransport();
+                _transportTcs.SetResult(_transport = transport);
+                return transport;
+            }
         }
 
         public async Task CreateAndRun(string rHome, IntPtr plotWindowContainerHandle, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
@@ -449,7 +470,42 @@ namespace Microsoft.R.Host.Client {
             string rBinPath = Path.Combine(rHome, RBinPathX64);
 
             if (!File.Exists(rhostExe)) {
-                throw new MicrosoftRHostMissingException();
+                throw new RHostBinaryMissingException();
+            }
+
+            // Grab an available port from the ephemeral port range (per RFC 6335 8.1.2) for the server socket.
+
+            WebSocketServer server = null;
+            var rnd = new Random();
+            const int ephemeralRangeStart = 49152;
+            var ports =
+                from port in Enumerable.Range(ephemeralRangeStart, 0x10000 - ephemeralRangeStart)
+                let pos = rnd.NextDouble()
+                orderby pos
+                select port;
+
+            foreach (var port in ports) {
+                ct.ThrowIfCancellationRequested();
+
+                server = new WebSocketServer(port) { ReuseAddress = false };
+                server.AddWebSocketService("/", CreateWebSocketMessageTransport);
+
+                try {
+                    server.Start();
+                    break;
+                } catch (SocketException ex) {
+                    if (ex.SocketErrorCode == SocketError.AddressAlreadyInUse) {
+                        server = null;
+                    } else {
+                        throw new MessageTransportException(ex);
+                    }
+                } catch (WebSocketException ex) {
+                    throw new MessageTransportException(ex);
+                }
+            }
+
+            if (server == null) {
+                throw new MessageTransportException(new SocketException((int)SocketError.AddressAlreadyInUse));
             }
 
             psi = psi ?? new ProcessStartInfo();
@@ -457,7 +513,7 @@ namespace Microsoft.R.Host.Client {
             psi.UseShellExecute = false;
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
-            psi.Arguments = string.Format(CultureInfo.InvariantCulture, "--plot_window {0}", plotWindowContainerHandle.ToInt64().ToString());
+            psi.Arguments = Invariant($"--rhost-connect ws://127.0.0.1:{server.Port} --rhost-plot-window {plotWindowContainerHandle.ToInt64()}");
 
             using (this)
             using (_process = Process.Start(psi)) {
@@ -467,52 +523,14 @@ namespace Microsoft.R.Host.Client {
 
                 try {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
-                    string uri = "ws://localhost:" + DefaultPort;
-                    using (var socket = new WebSocket(uri)) {
-                        var openedTcs = new TaskCompletionSource<object>();
 
-                        socket.OnOpen += (sender, e) => {
-                            openedTcs.SetResult(null);
-                        };
-
-                        socket.OnMessage += (sender, e) => {
-                            _incomingMessages.Post(Task.FromResult(e.Data));
-                        };
-
-                        socket.OnError += (sender, e) => {
-                            _incomingMessages.Post(Task.FromException<string>(e.Exception));
-                        };
-
-                        socket.OnClose += (sender, e) => {
-                            _incomingMessages.Post(Task.FromException<string>(new OperationCanceledException("Connection closed by host.")));
-                        };
-
-                        for (int i = 0; ; ++i) {
-                            try {
-                                socket.ConnectAsync();
-                                await openedTcs.Task;
-                                _socket = socket;
-                                _log.ConnectedToRHostWebSocket(uri, i);
-                                break;
-                            } catch (WebSocketException) {
-                                if (i > 10) {
-                                    _log.FailedToConnectToRHost(uri);
-                                    throw;
-                                }
-                                await Task.Delay(100, ct);
-                            }
-                        }
-
-                        await Run(ct);
+                    await Task.WhenAny(_transportTcs.Task, Task.Delay(2000000)).Unwrap();
+                    if (!_transportTcs.Task.IsCompleted) {
+                        _log.FailedToConnectToRHost();
+                        throw new RHostTimeoutException("Timed out waiting for R host process to connect");
                     }
-                } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
-                    // Expected cancellation, do not propagate, just exit process
-                } catch (WebSocketException ex) when (ct.IsCancellationRequested) {
-                    // Network errors during cancellation are expected, but should not be exposed to clients.
-                    throw new OperationCanceledException(new OperationCanceledException().Message, ex);
-                } catch (Exception ex) {
-                    Trace.Fail("Exception in RHost run loop:\n" + ex);
-                    throw;
+
+                    await Run(null, ct);
                 } finally {
                     if (!_process.HasExited) {
                         try {
