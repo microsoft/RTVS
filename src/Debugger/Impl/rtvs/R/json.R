@@ -12,11 +12,10 @@
 # If any element of a vector, list or environment is NA, that element is skipped.
 toJSON <- function(data, con) {
   if (missing(con)) {
-    con <- textConnection(NULL, open = "w");
+    con <- memory_connection(NA, 0x10000);
     on.exit(close(con), add = TRUE);
     Recall(data, con);
-    cat('\n', file = con, sep = '');
-    return(paste0(textConnectionValue(con), collapse=''));
+    return(memory_connection_tochar(con));
   }
 
   to_literal_or_array <- function() {

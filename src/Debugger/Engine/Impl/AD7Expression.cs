@@ -31,7 +31,7 @@ namespace Microsoft.R.Debugger.Engine {
             _cts = new CancellationTokenSource();
             Task.Run(async () => {
                 try {
-                    var res = await StackFrame.StackFrame.EvaluateAsync(_expression);
+                    var res = await StackFrame.StackFrame.EvaluateAsync(_expression, reprMaxLength: AD7Property.ReprMaxLength);
                     _cts.Token.ThrowIfCancellationRequested();
                     var prop = new AD7Property(StackFrame, res);
                     StackFrame.Engine.Send(new AD7ExpressionEvaluationCompleteEvent(this, prop), AD7ExpressionEvaluationCompleteEvent.IID);
@@ -45,7 +45,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugExpression2.EvaluateSync(enum_EVALFLAGS dwFlags, uint dwTimeout, IDebugEventCallback2 pExprCallback, out IDebugProperty2 ppResult) {
-            var res = StackFrame.StackFrame.EvaluateAsync(_expression).WaitAndUnwrapExceptions();
+            var res = StackFrame.StackFrame.EvaluateAsync(_expression, reprMaxLength: AD7Property.ReprMaxLength).WaitAndUnwrapExceptions();
             ppResult = new AD7Property(StackFrame, res);
             return VSConstants.S_OK;
         }

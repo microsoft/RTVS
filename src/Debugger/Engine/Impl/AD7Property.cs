@@ -8,6 +8,9 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7Property : IDebugProperty3 {
+        internal const int ChildrenMaxLength = 100;
+        internal const int ReprMaxLength = 100;
+
         private IDebugProperty2 IDebugProperty2 => this;
         private IDebugProperty3 IDebugProperty3 => this;
 
@@ -31,7 +34,9 @@ namespace Microsoft.R.Debugger.Engine {
             IsFrameEnvironment = isFrameEnvironment;
 
             _children = Lazy.Create(() =>
-                (EvaluationResult as DebugValueEvaluationResult)?.GetChildrenAsync()?.GetResultOnUIThread()
+                (EvaluationResult as DebugValueEvaluationResult)
+                ?.GetChildrenAsync(maxLength: ChildrenMaxLength, reprMaxLength: ReprMaxLength)
+                ?.GetResultOnUIThread()
                 ?? new DebugEvaluationResult[0]);
         }
 
@@ -45,7 +50,8 @@ namespace Microsoft.R.Debugger.Engine {
 
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
             if (valueResult != null && valueResult.HasAttributes == true) {
-                var attrResult = StackFrame.StackFrame.EvaluateAsync(Invariant($"attributes({valueResult.Expression})"), "attributes()").GetResultOnUIThread();
+                string attrExpr = Invariant($"attributes({valueResult.Expression})");
+                var attrResult = StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", reprMaxLength: ReprMaxLength).GetResultOnUIThread();
                 if (!(attrResult is DebugErrorEvaluationResult)) {
                     var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                     infos = new[] { attrInfo }.Concat(infos);
