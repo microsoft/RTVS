@@ -58,10 +58,15 @@ namespace Microsoft.R.Editor.Formatting
 
             if (!spanText.Equals(formattedText, StringComparison.Ordinal))
             {
-                var selectionTracker = new RSelectionTracker(textView, textBuffer);
-                IncrementalTextChangeApplication.ApplyChange(textBuffer, spanToFormat.Start,
-                    spanToFormat.Length, formattedText, Resources.AutoFormat, selectionTracker, Int32.MaxValue);
-
+                textView.Properties["InFormatting"] = true;
+                try {
+                    var selectionTracker = new RSelectionTracker(textView, textBuffer);
+                    IncrementalTextChangeApplication.ApplyChange(textBuffer, spanToFormat.Start,
+                        spanToFormat.Length, formattedText, Resources.AutoFormat, selectionTracker, Int32.MaxValue);
+                }
+                finally {
+                    textView.Properties["InFormatting"] = false;
+                }
                 return true;
             }
 
