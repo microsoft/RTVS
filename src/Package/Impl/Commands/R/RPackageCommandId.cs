@@ -18,6 +18,9 @@
         public const int icmdAttachDebugger = 507;
         public const int icmdSourceRScript = 508;
 
+        public const int icmdRexecuteReplCmd = 571;
+        public const int icmdPasteReplCmd = 572;
+
         // Packages
         public const int icmdInstallPackages = 601;
         public const int icmdCheckForPackageUpdates = 602;

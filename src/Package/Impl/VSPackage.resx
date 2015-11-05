@@ -160,4 +160,10 @@
   <data name="7001" xml:space="preserve">
     <value>Customizes the environment to improve the visibility of commands and options that are most relevant to doing data science and machine learning work using R.</value>
   </data>
+  <data name="7002" xml:space="preserve">
+    <value>R Tools for Visual Studio</value>
+  </data>
+  <data name="7003" xml:space="preserve">
+    <value>Provides project system, interactive window, plotting, and more for the R programming language.</value>
+  </data>
 </root>
