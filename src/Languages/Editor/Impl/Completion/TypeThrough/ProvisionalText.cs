@@ -149,10 +149,8 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough {
                     signatureBroker.DismissAllSessions(_textView);
 
                     if (_overtypeSpan != null) {
-                        // delete the character just typed
-                        Span deleteSpan = new Span(_textView.Caret.Position.BufferPosition.Position - 1, 1);
                         ProvisionalText.IgnoreChange = true;
-                        _textView.TextBuffer.Replace(deleteSpan, String.Empty);
+                        _textView.TextBuffer.Replace(_overtypeSpan.GetSpan(_textView.TextBuffer.CurrentSnapshot), String.Empty);
                         ProvisionalText.IgnoreChange = false;
 
                         // move the caret to the end of the provisional span, which may have moved further away.
@@ -224,6 +222,7 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough {
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => ResoreHighlight()));
             } else if (_textView != null && !IgnoreChange) {
                 bool keepTracking = false;
+                ITextSnapshot snapshot = _textView.TextBuffer.CurrentSnapshot;
 
                 // If there is a change outside text span or change over provisional
                 // text, we are done here: commit provisional text and disconnect.
@@ -243,7 +242,6 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough {
                         char ch = GetOneTypedCharacter(_textView.TextBuffer.CurrentSnapshot, newSpan);
 
                         if (ch == ProvisionalChar) {
-                            ITextSnapshot snapshot = _textView.TextBuffer.CurrentSnapshot;
                             SnapshotSpan spanToEnd = new SnapshotSpan(snapshot, newSpan.End, CurrentSpan.End - newSpan.End - 1);
 
                             if (CanOvertype(spanToEnd)) {
@@ -259,16 +257,19 @@ namespace Microsoft.Languages.Editor.Completion.TypeThrough {
                     }
 
                     keepTracking = true;
-                } else if (CurrentSpan.Length > 0 && args.Changes.Count > 1) {
-                    // CSS formatting can cause multiple simultaneous changes, but don't allow them to end tracking
-
-                    int changeStart = args.Changes[0].NewSpan.Start;
-                    int changeEnd = args.Changes[args.Changes.Count - 1].NewSpan.End;
-
-                    if (CurrentSpan.Contains(new Span(changeStart, changeEnd - changeStart))) {
-                        // The changes are contained, so don't end tracking
+                } else if (CurrentSpan.Length > 0 && args.Changes.Count == 1 && CurrentSpan.End == args.Changes[0].NewSpan.Start) {
+                    // Extending span such as when autoformatting inserts whitespace before the provisional text.
+                    // In this case we need to include said whitespace into the tracked span.
+                    ITextChange change = args.Changes[0];
+                    if (change.OldText.TrimStart() == change.NewText.TrimStart()) {
+                        TrackingSpan = snapshot.CreateTrackingSpan(Span.FromBounds(CurrentSpan.Start, change.NewSpan.End), SpanTrackingMode.EdgeExclusive);
                         keepTracking = true;
                     }
+                } else if (CurrentSpan.Length > 0 && args.Changes.Count > 1 && _textView.Properties.ContainsProperty("InFormatting")) {
+                    // Autoformatting can cause multiple simultaneous changes, 
+                    // but don't allow them to end tracking. Autoformat start
+                    // at the beginning of the previous line.
+                    keepTracking = true;
                 }
 
                 if (!keepTracking) {
