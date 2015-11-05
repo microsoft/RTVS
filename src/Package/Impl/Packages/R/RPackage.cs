@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     [PackageRegistration(UseManagedResourcesOnly = true)]
+    [InstalledProductRegistration("#7002", "#7003", "1.0", IconResourceID = 400)]
     [Guid(RGuidList.RPackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideEditorExtension(typeof(REditorFactory), ".r", 0x32, NameResourceID = 106)]

@@ -123,6 +123,7 @@
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />
     <Compile Include="ContentType\RContentTypeDefinition.cs" />
+    <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Document\Definitions\IREditorDocument.cs" />
     <Compile Include="Document\DocumentFactory.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
