@@ -17,6 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             commands.Add(new SendToReplCommand(textView, textBuffer));
             commands.Add(new RTypingCommandHandler(textView));
             commands.Add(new RCompletionCommandHandler(textView));
+            commands.Add(new ExecuteCurrentCodeCommand(textView));
+            commands.Add(new PasteCurrentCodeCommand(textView));
 
             return commands;
         }
