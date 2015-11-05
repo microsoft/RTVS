@@ -8,14 +8,11 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Commands.Factory
-{
+namespace Microsoft.R.Editor.Commands {
     [Export(typeof(ICommandFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal class RCommandFactory: ICommandFactory
-    {
-        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer)
-        {
+    internal class RCommandFactory : ICommandFactory {
+        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             List<ICommand> commands = new List<ICommand>();
 
             commands.Add(new CommentCommand(textView, textBuffer));

@@ -96,7 +96,7 @@
     <Compile Include="Classification\RClassificationNameProvider.cs" />
     <Compile Include="Classification\RClassifier.cs" />
     <Compile Include="Commands\RCompletionCommandHandler.cs" />
-    <Compile Include="Commands\Factory\RCommandFactory.cs" />
+    <Compile Include="Commands\RCommandFactory.cs" />
     <Compile Include="Commands\REditorCommands.cs" />
     <Compile Include="Commands\RMainController.cs" />
     <Compile Include="Commands\RTextViewConnectionListener.cs" />
@@ -104,7 +104,9 @@
     <Compile Include="Comments\CommentCommand.cs" />
     <Compile Include="Comments\RCommenter.cs" />
     <Compile Include="Comments\UncommentCommand.cs" />
-    <Compile Include="Completion\AutoCompletion\SeparatorCompletion.cs" />
+    <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
+    <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
+    <Compile Include="Completion\AutoCompletion\BraceCompletionProvider.cs" />
     <Compile Include="Completion\Definitions\IVariablesProvider.cs" />
     <Compile Include="Completion\Definitions\RCompletionProviderAttribute.cs" />
     <Compile Include="Completion\Definitions\IRQuickInfoProvider.cs" />

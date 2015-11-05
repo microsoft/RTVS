@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Completion;
-using Microsoft.Languages.Editor.Completion.TypeThrough;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
@@ -18,8 +15,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Completion
-{
+namespace Microsoft.R.Editor.Completion {
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>
@@ -27,11 +23,8 @@ namespace Microsoft.R.Editor.Completion
     /// completion, signature and parameter help sessions depending 
     /// on what was typed and the current editor context.
     /// </summary>
-    public sealed class RCompletionController : CompletionController, ICommandTarget
-    {
+    public sealed class RCompletionController : CompletionController {
         private ITextBuffer _textBuffer;
-        private List<ProvisionalText> _provisionalTexts = new List<ProvisionalText>();
-        private char _eatNextQuote = '\0';
         private char _commitChar = '\0';
 
         private RCompletionController(
@@ -40,8 +33,7 @@ namespace Microsoft.R.Editor.Completion
             ICompletionBroker completionBroker,
             IQuickInfoBroker quickInfoBroker,
             ISignatureHelpBroker signatureBroker)
-            : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker)
-        {
+            : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker) {
             _textBuffer = subjectBuffers[0];
 
             ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
@@ -52,15 +44,12 @@ namespace Microsoft.R.Editor.Completion
         /// The buffer may not be a top-level buffer in the graph and
         /// may be projected into view.
         /// </summary>
-        public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
-        {
-            if (_textBuffer == null)
-            {
+        public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer) {
+            if (_textBuffer == null) {
                 _textBuffer = subjectBuffer;
             }
 
-            if (_textBuffer == subjectBuffer)
-            {
+            if (_textBuffer == subjectBuffer) {
                 ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
             }
         }
@@ -71,18 +60,14 @@ namespace Microsoft.R.Editor.Completion
         /// may be projected into view. Typically called when document
         /// is closed or buffer is removed from the view buffer graph.
         /// </summary>
-        public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer)
-        {
-            if (_textBuffer == subjectBuffer)
-            {
+        public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) {
+            if (_textBuffer == subjectBuffer) {
                 RCompletionController existingController = ServiceManager.GetService<RCompletionController>(TextView);
 
                 // This can get called multiple times without a ConnectSubjectBuffer call between
-                if (existingController != null)
-                {
+                if (existingController != null) {
                     Debug.Assert(existingController == this);
-                    if (existingController == this)
-                    {
+                    if (existingController == this) {
                         ServiceManager.RemoveService<RCompletionController>(TextView);
                     }
                 }
@@ -91,8 +76,7 @@ namespace Microsoft.R.Editor.Completion
             }
         }
 
-        private void OnDocumentReady(REditorDocument document)
-        {
+        private void OnDocumentReady(REditorDocument document) {
             // This object isn't released on content type changes, 
             // instead using the (Dis)ConnectSubjectBuffer
             // methods to control it's lifetime.
@@ -104,47 +88,39 @@ namespace Microsoft.R.Editor.Completion
             IList<ITextBuffer> subjectBuffers,
             ICompletionBroker completionBroker,
             IQuickInfoBroker quickInfoBroker,
-            ISignatureHelpBroker signatureBroker)
-        {
+            ISignatureHelpBroker signatureBroker) {
             RCompletionController completionController = null;
 
             completionController = ServiceManager.GetService<RCompletionController>(textView);
-            if (completionController == null)
-            {
+            if (completionController == null) {
                 completionController = new RCompletionController(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker);
             }
 
             return completionController;
         }
 
-        public static RCompletionController FromTextView(ITextView textView)
-        {
+        public static RCompletionController FromTextView(ITextView textView) {
             return ServiceManager.GetService<RCompletionController>(textView);
         }
 
-        protected override bool AutoCompletionEnabled
-        {
+        protected override bool AutoCompletionEnabled {
             get { return REditorSettings.CompletionEnabled; }
         }
 
-        protected override bool AutoSignatureHelpEnabled
-        {
+        protected override bool AutoSignatureHelpEnabled {
             get { return REditorSettings.SignatureHelpEnabled; }
         }
 
         /// <summary>
         /// Should this key commit a completion session?
         /// </summary>
-        public override bool IsCommitChar(char typedChar)
-        {
-            if (HasActiveCompletionSession && typedChar != 0)
-            {
+        public override bool IsCommitChar(char typedChar) {
+            if (HasActiveCompletionSession && typedChar != 0) {
                 // only ( completes keywords
                 CompletionSet completionSet = CompletionSession.SelectedCompletionSet;
                 string completionText = completionSet.SelectionStatus.Completion.InsertionText;
 
-                if (completionText == "else" || completionText == "repeat")
-                {
+                if (completionText == "else" || completionText == "repeat") {
                     // { after 'else' or 'repeat' completes keyword
                     if (typedChar == '{')
                         return true;
@@ -157,8 +133,7 @@ namespace Microsoft.R.Editor.Completion
                 }
 
                 // ';' completes after next or break keyword
-                if (completionText == "break" || completionText == "next")
-                {
+                if (completionText == "break" || completionText == "next") {
                     if (typedChar == ';')
                         return true;
 
@@ -170,8 +145,7 @@ namespace Microsoft.R.Editor.Completion
                 // Handle ( after keyword that is usually followed by expression in braces
                 // such as for(), if(), library(), ...
                 if (completionText == "if" || completionText == "for" || completionText == "while" ||
-                    completionText == "return" || completionText == "library" || completionText == "require")
-                {
+                    completionText == "return" || completionText == "library" || completionText == "require") {
                     if (typedChar == '(')
                         return true;
 
@@ -181,8 +155,7 @@ namespace Microsoft.R.Editor.Completion
                     return false;
                 }
 
-                switch (typedChar)
-                {
+                switch (typedChar) {
                     case '<':
                     case '>':
                     case '+':
@@ -210,16 +183,13 @@ namespace Microsoft.R.Editor.Completion
                 if (typedChar == ' ' && !REditorSettings.CommitOnSpace)
                     return false;
 
-                if (char.IsWhiteSpace(typedChar))
-                {
+                if (char.IsWhiteSpace(typedChar)) {
                     IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
-                    if (document != null && document.IsTransient)
-                    {
+                    if (document != null && document.IsTransient) {
                         return typedChar == '\t';
                     }
 
-                    if (typedChar == '\n' || typedChar == '\r')
-                    {
+                    if (typedChar == '\n' || typedChar == '\r') {
                         if (REditorSettings.CommitOnEnter)
                             return true;
 
@@ -244,19 +214,14 @@ namespace Microsoft.R.Editor.Completion
         /// True if character was handled and should not be 
         /// passed down to core editor or false otherwise.
         /// </returns>
-        public override bool OnPreTypeChar(char typedCharacter)
-        {
-            if (typedCharacter == '\t' && !HasActiveCompletionSession)
-            {
+        public override bool OnPreTypeChar(char typedCharacter) {
+            if (typedCharacter == '\t' && !HasActiveCompletionSession) {
                 // if previous character is not whitespace, bring it on
                 SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
-                if (position.HasValue)
-                {
+                if (position.HasValue) {
                     int pos = position.Value;
-                    if (pos > 0 && pos <= position.Value.Snapshot.Length)
-                    {
-                        if (!char.IsWhiteSpace(position.Value.Snapshot[pos - 1]))
-                        {
+                    if (pos > 0 && pos <= position.Value.Snapshot.Length) {
+                        if (!char.IsWhiteSpace(position.Value.Snapshot[pos - 1])) {
                             ShowCompletion(autoShownCompletion: false);
                             return true;
                         }
@@ -270,12 +235,9 @@ namespace Microsoft.R.Editor.Completion
         /// <summary>
         /// Should this key press trigger a completion session?
         /// </summary>
-        public override bool IsTriggerChar(char typedCharacter)
-        {
-            if (!HasActiveCompletionSession)
-            {
-                switch (typedCharacter)
-                {
+        public override bool IsTriggerChar(char typedCharacter) {
+            if (!HasActiveCompletionSession) {
+                switch (typedCharacter) {
                     case '$':
                         //case '@':
                         return true;
@@ -287,8 +249,7 @@ namespace Microsoft.R.Editor.Completion
                         return RCompletionContext.IsCaretInLibraryStatement(TextView);
 
                     default:
-                        if (REditorSettings.ShowCompletionOnFirstChar)
-                        {
+                        if (REditorSettings.ShowCompletionOnFirstChar) {
                             return Char.IsLetter(typedCharacter) || typedCharacter == '.';
                         }
                         break;
@@ -304,10 +265,8 @@ namespace Microsoft.R.Editor.Completion
         /// hits $ that commits current session for the class/object
         /// and trigger it again for object members.
         /// </summary>
-        protected override bool IsRetriggerChar(ICompletionSession session, char typedCharacter)
-        {
-            switch (typedCharacter)
-            {
+        protected override bool IsRetriggerChar(ICompletionSession session, char typedCharacter) {
+            switch (typedCharacter) {
                 case '@':
                 case '$':
                     return true;
@@ -321,40 +280,27 @@ namespace Microsoft.R.Editor.Completion
         /// controller has a chance to dismiss or initiate completion and paramenter
         /// help sessions depending on the current context.
         /// </summary>
-        public override void OnPostTypeChar(char typedCharacter)
-        {
-            if (typedCharacter == '(' || typedCharacter == ',')
-            {
-                if (!IsSameSignatureContext())
-                {
+        public override void OnPostTypeChar(char typedCharacter) {
+            if (typedCharacter == '(' || typedCharacter == ',') {
+                if (!IsSameSignatureContext()) {
                     DismissAllSessions();
                     SignatureBroker.TriggerSignatureHelp(TextView);
                 }
-            }
-            else if (HasActiveSignatureSession(TextView) && typedCharacter == ')')
-            {
+            } else if (HasActiveSignatureSession(TextView) && typedCharacter == ')') {
                 DismissAllSessions();
 
                 AstRoot ast = REditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree.AstRoot;
                 FunctionCall f = ast.GetNodeOfTypeFromPosition<FunctionCall>(TextView.Caret.Position.BufferPosition);
-                if (f != null)
-                {
+                if (f != null) {
                     SignatureBroker.TriggerSignatureHelp(TextView);
                 }
-            }
-            else if (HasActiveSignatureSession(TextView) && typedCharacter == '\n')
-            {
+            } else if (HasActiveSignatureSession(TextView) && typedCharacter == '\n') {
                 DismissAllSessions();
                 SignatureBroker.TriggerSignatureHelp(TextView);
-            }
-            else if (this.HasActiveCompletionSession)
-            {
-                if (typedCharacter == ',')
-                {
+            } else if (this.HasActiveCompletionSession) {
+                if (typedCharacter == ',') {
                     CompletionSession.Dismiss();
-                }
-                else if (typedCharacter == '\'' || typedCharacter == '\"')
-                {
+                } else if (typedCharacter == '\'' || typedCharacter == '\"') {
                     base.OnPostTypeChar(typedCharacter);
 
                     DismissAllSessions();
@@ -372,19 +318,15 @@ namespace Microsoft.R.Editor.Completion
         /// help session should be dismissed and re-triggered. This is helpful
         /// when user types nested function calls such as 'a(b(c(...), d(...)))'
         /// </summary>
-        private bool IsSameSignatureContext()
-        {
+        private bool IsSameSignatureContext() {
             var sessions = SignatureBroker.GetSessions(TextView);
             Debug.Assert(sessions.Count < 2);
-            if (sessions.Count == 1)
-            {
+            if (sessions.Count == 1) {
                 IFunctionInfo sessionFunctionInfo = null;
                 sessions[0].Properties.TryGetProperty<IFunctionInfo>("functionInfo", out sessionFunctionInfo);
 
-                if (sessionFunctionInfo != null)
-                {
-                    try
-                    {
+                if (sessionFunctionInfo != null) {
+                    try {
                         IREditorDocument document = REditorDocument.FromTextBuffer(TextView.TextBuffer);
                         document.EditorTree.EnsureTreeReady();
 
@@ -393,23 +335,18 @@ namespace Microsoft.R.Editor.Completion
                             TextView.Caret.Position.BufferPosition);
 
                         return parametersInfo != null && parametersInfo.FunctionName == sessionFunctionInfo.Name;
-                    }
-                    catch (Exception) { }
+                    } catch (Exception) { }
                 }
             }
 
             return false;
         }
 
-        public override bool CommitCompletionSession(char typedCharacter)
-        {
-            try
-            {
+        public override bool CommitCompletionSession(char typedCharacter) {
+            try {
                 _commitChar = typedCharacter;
                 return base.CommitCompletionSession(typedCharacter);
-            }
-            finally
-            {
+            } finally {
                 _commitChar = '\0';
             }
         }
@@ -417,125 +354,15 @@ namespace Microsoft.R.Editor.Completion
         /// <summary>
         /// Updates insertion text so it excludes final commit character 
         /// </summary>
-        protected override void UpdateInsertionText()
-        {
-            if (CompletionSession != null && !IsMuteCharacter(_commitChar))
-            {
+        protected override void UpdateInsertionText() {
+            if (CompletionSession != null && !IsMuteCharacter(_commitChar)) {
                 Completion curCompletion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
                 string insertionText = curCompletion.InsertionText;
 
-                if (insertionText[insertionText.Length - 1] == _commitChar)
-                {
+                if (insertionText[insertionText.Length - 1] == _commitChar) {
                     curCompletion.InsertionText = insertionText.Substring(0, insertionText.Length - 1);
                 }
             }
         }
-
-        #region Provisional text
-        protected override void OnCompletionSessionDismissed(object sender, EventArgs eventArgs)
-        {
-            if (_commitChar == '\0')
-            {
-                // Only call the base if we aren't in the midst of a commit
-                base.OnCompletionSessionDismissed(sender, eventArgs);
-            }
-        }
-
-        private void OnCloseProvisionalText(object sender, EventArgs e)
-        {
-            var provisionalText = sender as ProvisionalText;
-            if (provisionalText != null)
-            {
-                _provisionalTexts.Remove(provisionalText);
-                provisionalText.Closing -= OnCloseProvisionalText;
-            }
-        }
-
-        internal ProvisionalText GetInnerProvisionalText()
-        {
-            int minLength = Int32.MaxValue;
-            ProvisionalText innerText = null;
-
-            foreach (ProvisionalText provisionalText in _provisionalTexts)
-            {
-                if (provisionalText.CurrentSpan.Length < minLength)
-                {
-                    minLength = provisionalText.CurrentSpan.Length;
-                    innerText = provisionalText;
-                }
-            }
-
-            return innerText;
-        }
-
-        internal ProvisionalText CreateProvisionalText(Span span, char eatNextQuote)
-        {
-            var provisionalText = new ProvisionalText(TextView, span);
-
-            provisionalText.Closing += OnCloseProvisionalText;
-            _provisionalTexts.Add(provisionalText);
-
-            if (_provisionalTexts.Count == 1)
-            {
-                _eatNextQuote = eatNextQuote;
-            }
-
-            return provisionalText;
-        }
-        #endregion
-
-        #region ICommandTarget
-
-        public CommandStatus Status(Guid group, int id)
-        {
-            return CommandStatus.SupportedAndEnabled;
-        }
-
-        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
-            var typedCharacter = TypingCommandHandler.GetTypedChar(group, id, inputArg);
-
-            // Various unrelated commands (eg: VSStandardCommandSet97.SolutionCfg) comes through quite often while typing
-            if (typedCharacter == '\0')
-                return CommandResult.NotSupported;
-
-            var eatNextQuote = _eatNextQuote;
-            bool isQuote = typedCharacter == '\"' || typedCharacter == '\'';
-
-            _eatNextQuote = '\0';
-
-            if (isQuote)
-            {
-                if (eatNextQuote != '\0' && _provisionalTexts.Count > 0)
-                {
-                    ProvisionalText innerProvisionalText = _provisionalTexts[_provisionalTexts.Count - 1];
-                    if (innerProvisionalText.CurrentSpan.Length >= 2)
-                    {
-                        if ((innerProvisionalText.ProvisionalChar == typedCharacter) &&
-                            (_textBuffer.CurrentSnapshot[innerProvisionalText.CurrentSpan.Start] == typedCharacter))
-                        {
-                            return CommandResult.Executed; // eat character
-                        }
-                    }
-                }
-
-                var caretPosition = TextView.Caret.Position.BufferPosition;
-                foreach (var pt in _provisionalTexts)
-                {
-                    var span = pt.CurrentSpan;
-                    if (caretPosition == span.End - 1 && typedCharacter == pt.ProvisionalChar)
-                    {
-                        return new CommandResult(CommandStatus.Supported, 0);
-                    }
-                }
-            }
-
-            return CommandResult.NotSupported;
-        }
-
-        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
-        {
-        }
-        #endregion
-    }
+   }
 }
