@@ -47,11 +47,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             string text;
-            bool addNewLine = false;
             if (selection.StreamSelectionSpan.Length == 0)
             {
                 text = line.GetText();
-                addNewLine = true;
             }
             else
             {
@@ -60,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             ReplWindow.Show();
-            replWindow.EnqueueCode(text, addNewLine);
+            replWindow.EnqueueCode(text, addNewLine: true);
 
             var targetLine = line;
             while (targetLine.LineNumber < snapshot.LineCount - 1)
