@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.Text;
 using Microsoft.R.Actions.Logging;
@@ -26,8 +25,8 @@ namespace Microsoft.R.Host.Client {
             log.WriteLineAsync(MessageCategory.General, Invariant($"Connected to R Web Host socket at {uri} on attempt #{attempt}"));
         }
 
-        public static void FailedToConnectToRHost(this IActionLog log, string uri) {
-            log.WriteLineAsync(MessageCategory.General, Invariant($"Failed to connect to R Host at {uri}"));
+        public static void FailedToConnectToRHost(this IActionLog log) {
+            log.WriteLineAsync(MessageCategory.General, Invariant($"Timed out waiting for RHost to connect"));
         }
 
         public static void EnterRLoop(this IActionLog log, int depth) {

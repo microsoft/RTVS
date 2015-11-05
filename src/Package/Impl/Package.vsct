@@ -158,15 +158,23 @@
       </Group>
 
       <!-- Same as above, but excludes commands that are already present in Interactive Window toolbar (like Restart). -->
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup" priority="0x0550">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0600">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="interactiveWindowContextGroup" priority="0x0250">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveContextMenu"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0300">
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup" priority="0x0550">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0650">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
@@ -200,7 +208,9 @@
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
-
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0510">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+      </Group>
     </Groups>
 
     <Buttons>
@@ -245,7 +255,6 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionInterrupt"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -257,7 +266,6 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500" type="Button">
-        <!--<Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>-->
         <Icon guid="ImageCatalogGuid" id="RemoteDebugger"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -585,7 +593,7 @@
       </Button>
       <!-- End top level menu -->
 
-      <Button guid="guidRToolsCmdSet" id="cmdidGoToFormattingOptions" priority="0x0200" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdGoToFormattingOptions" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
         <Strings>
           <ButtonText>Formatting &amp;Options...</ButtonText>
@@ -817,18 +825,25 @@
       <Parent guid="guidRToolsCmdSet" id="plotToolbarZoomGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x0400">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x0410">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
+    </CommandPlacement>
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0500">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0450">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
-    </CommandPlacement>-->
+    </CommandPlacement>
 
   </CommandPlacements>
 
   <KeyBindings>
-    <KeyBinding guid="guidRToolsCmdSet" id="cmdidSendToRepl" editor="CMDUIGUID_R_EDITOR" key1="E" mod1="CONTROL" key2="E" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
     <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" key2="VK_RETURN" mod2="CONTROL"/>
@@ -887,9 +902,6 @@
       <IDSymbol name="groupRContextRepl" value="122" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
 
-      <!-- See RPackageCommandId -->
-      <IDSymbol name="cmdidGoToFormattingOptions" value="500" />
-      <IDSymbol name="cmdidSendToRepl" value="501" />
       <!-- RTVS Command IDs -->
       <!-- General -->
       <IDSymbol name="icmdGoToFormattingOptions" value="400" />
@@ -899,7 +911,6 @@
       <IDSymbol name="icmdSendFrown" value="404" />
 
       <!-- REPL-->
-      <IDSymbol name="icmdSendToRepl" value="501" />
       <IDSymbol name="icmdLoadWorkspace" value="502" />
       <IDSymbol name="icmdSaveWorkspace" value="503" />
       <IDSymbol name="icmdSetWorkingDirectory" value="504" />
@@ -912,6 +923,7 @@
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
       <IDSymbol name="sessionSubMenuDirectoryGroup" value="553"/>
       <IDSymbol name="sessionSubMenuRInteractiveGroup" value="554"/>
+      <IDSymbol name="sessionSubMenuEditorGroup" value="555"/>
 
       <IDSymbol name="interactiveWindowContextGroup" value="570"/>
       <IDSymbol name="icmdRexecuteReplCmd" value="571"/>
