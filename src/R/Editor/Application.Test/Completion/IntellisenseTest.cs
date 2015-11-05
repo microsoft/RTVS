@@ -3,19 +3,15 @@ using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Application.Test.Completion
-{
+namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class IntellisenseTest
-    {
+    public class IntellisenseTest {
         [TestMethod]
-        public void R_KeywordIntellisense()
-        {
+        public void R_KeywordIntellisense() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
-            try
-            {
+            try {
                 script.Type("funct");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -24,20 +20,16 @@ namespace Microsoft.R.Editor.Application.Test.Completion
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
+            } finally {
                 script.Close();
             }
         }
 
         [TestMethod]
-        public void R_LibraryIntellisense()
-        {
+        public void R_LibraryIntellisense() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
-            try
-            {
+            try {
                 script.Type("library(ut");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -46,20 +38,16 @@ namespace Microsoft.R.Editor.Application.Test.Completion
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
+            } finally {
                 script.Close();
             }
         }
 
         [TestMethod]
-        public void R_RequireIntellisense()
-        {
+        public void R_RequireIntellisense() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
-            try
-            {
+            try {
                 script.Type("require(uti");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -68,9 +56,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
+            } finally {
                 script.Close();
             }
         }

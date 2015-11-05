@@ -3,19 +3,15 @@ using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Application.Test.Formatting
-{
+namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class SmartIndentTest
-    {
+    public class SmartIndentTest {
         [TestMethod]
-        public void R_SmartIndentTest()
-        {
+        public void R_SmartIndentTest() {
             var script = new TestScript("{\r\n}", RContentTypeDefinition.ContentType);
 
-            try
-            {
+            try {
                 script.MoveRight();
                 script.Type("{ENTER}a");
                 script.DoIdle(300);
@@ -24,9 +20,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
+            } finally {
                 script.Close();
             }
         }

@@ -90,6 +90,7 @@
   <ItemGroup>
     <Compile Include="Completion\ProvisionalTextTest.cs" />
     <Compile Include="EditorAppTestFilesSetup.cs" />
+    <Compile Include="Formatting\FormatSelectionTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />
     <Compile Include="Formatting\AutoFormatTest.cs" />
     <Compile Include="TestShell\Editor.cs" />
