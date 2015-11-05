@@ -22,8 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             : ClassificationFormatDefinition {
             private ReplPromptClassificationFormat() {
                 this.DisplayName = Resources.RPromptClassification;
-                this.ForegroundColor = Colors.Blue;
-                this.BackgroundColor = Colors.LightGray;
+                this.ForegroundColor = Colors.Teal;
             }
         }
     }
