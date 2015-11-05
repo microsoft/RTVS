@@ -100,7 +100,7 @@ namespace Microsoft.R.Editor.Formatting
             // and in this case we want one level less of indentation.          
 
             string indentString = IndentBuilder.GetIndentString(textIndentInSpaces, options.IndentType, options.TabSize);
-            int outerIndentInSpaces = SmartIndenter.OuterIndentSizeFromScope(textBuffer, scope, options);
+            int outerIndentInSpaces = SmartIndenter.InnerIndentSizeFromScope(textBuffer, scope, options);
             string outerIndentString = IndentBuilder.GetIndentString(outerIndentInSpaces, options.IndentType, options.TabSize);
 
             var sb = new StringBuilder();
