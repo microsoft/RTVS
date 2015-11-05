@@ -8,7 +8,7 @@
 #
 # If provided, fields should be a character vector listing the fields in the output environment that
 # are desired; only those fields will be included in the output.
-describe_object <- function(obj, res, fields) {
+describe_object <- function(obj, res, fields, repr_max_length = NA) {
   if (missing(res)) {
     res <- new.env();
   }   
@@ -24,7 +24,7 @@ describe_object <- function(obj, res, fields) {
     repr <- new.env();
     
     if (field('repr.dput')) {
-      repr$dput <- NA_if_error(dput_str(obj));
+      repr$dput <- NA_if_error(dput_str(obj, repr_max_length, 0x100));
     }
     
     if (field('repr.toString')) {
@@ -32,7 +32,7 @@ describe_object <- function(obj, res, fields) {
     }
     
     if (field('repr.str')) {
-      repr$str <- NA_if_error(fancy_str(obj)[1]);
+      repr$str <- NA_if_error(fancy_str(obj, repr_max_length, 0x100));
     }
   
     res$repr <- repr;
@@ -100,7 +100,7 @@ describe_object <- function(obj, res, fields) {
 # If provided, fields should be a character vector listing the fields in the output environment that
 # are desired; only those fields will be included in the output (however, fields that are used to
 # distinguish between various result kinds - error/value/promise/active_binding - are always included).
-eval_and_describe <- function(expr, env, kind, fields, obj) {
+eval_and_describe <- function(expr, env, kind, fields, obj, repr_max_length = NA) {
   res <- new.env();
   
   field <-
@@ -135,7 +135,7 @@ eval_and_describe <- function(expr, env, kind, fields, obj) {
   });
 
   if (is.null(err)) {
-    describe_object(obj, res, fields);
+    describe_object(obj, res, fields, repr_max_length);
   } else {
     res$error <- force_toString(NA_if_error(conditionMessage(err)));
   }
@@ -143,16 +143,12 @@ eval_and_describe <- function(expr, env, kind, fields, obj) {
   res
 }
 
-describe_children <- function(obj, env, fields, count) {
+describe_children <- function(obj, env, fields, count = NULL, repr_max_length = NA) {
   if (!missing(env)) {
     expr <- obj;
     obj <- eval(parse(text = obj), env);
   } else {
     expr <- 'obj';
-  }
-  
-  if (missing(count)) {
-    count <- NULL;
   }
 
   # Preallocate to avoid growing the list on every new child.
@@ -178,7 +174,7 @@ describe_children <- function(obj, env, fields, count) {
 
       # Check if it's a promise, and retrieve the promise expression if it is.
       code <- tryCatch({
-        .Call(".rtvs.Call.unevaluated_promise", name, obj)
+        unevaluated_promise(name, obj)
       }, error = function(e) {
         NULL
       });
@@ -192,7 +188,7 @@ describe_children <- function(obj, env, fields, count) {
       } else {
         # It's just a regular binding, so get the actual value.
         item_expr <- paste0(expr, '$', dput_symbol(name), collapse = '');
-        value <- eval_and_describe(item_expr, environment(), '$', fields, get(name, envir = obj));
+        value <- eval_and_describe(item_expr, environment(), '$', fields, get(name, envir = obj), repr_max_length);
       }
       
       child <- list(value);
@@ -232,7 +228,7 @@ describe_children <- function(obj, env, fields, count) {
         slot_expr <- paste0('methods::slot((', expr, '), ', dput_str(name), ')', collapse = '')
       }
       
-      value <- eval_and_describe(slot_expr, environment(), '@', fields, slot(obj, name));
+      value <- eval_and_describe(slot_expr, environment(), '@', fields, slot(obj, name), repr_max_length);
       
       child <- list(value);
       names(child) <- accessor;
@@ -274,7 +270,6 @@ describe_children <- function(obj, env, fields, count) {
         # c(1,2,3), and names() is c('x','y','x'), then c[[1]] is named 'x', but c[[3]]
         # is effectively unnamed, because there's no way to address it by name.
         name <- force_toString(names[[i]]);
-        cat(match(name, names));
         if (name != '' && match(name, names, -1) == i) {
           kind <- '$';
           # Named items can be accessed with '$' in lists, but other types require brackets.
@@ -285,7 +280,7 @@ describe_children <- function(obj, env, fields, count) {
           }
         }
         
-        value <- eval_and_describe(paste0(expr, accessor, collapse = ''), environment(), kind, fields, obj[[i]]);
+        value <- eval_and_describe(paste0(expr, accessor, collapse = ''), environment(), kind, fields, obj[[i]], repr_max_length);
         
         child <- list(value);
         names(child) <- accessor;

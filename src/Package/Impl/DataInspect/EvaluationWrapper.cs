@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 var fields = (DebugEvaluationResultFields.All & ~DebugEvaluationResultFields.ReprAll) |
                     DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
-                var children = await valueEvaluation.GetChildrenAsync(fields, _truncateChildren ? (int?)20 : null);    // TODO: consider exception propagation such as OperationCanceledException
+                var children = await valueEvaluation.GetChildrenAsync(fields, _truncateChildren ? (int?)20 : null, 100);    // TODO: consider exception propagation such as OperationCanceledException
 
                 result = new List<EvaluationWrapper>();
                 foreach (var child in children) {

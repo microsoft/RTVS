@@ -1,10 +1,31 @@
+call_embedded <- function(name, ...) {
+  .Call(paste0('rtvs::Call.', name, collapse = ''), ..., PACKAGE = '(embedding)')
+}
+
+memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
+  call_embedded('memory_connection', max_length, expected_length, overflow_suffix, eof_marker)
+}
+
+memory_connection_overflown <- function(con) {
+  call_embedded('memory_connection_overflown', con)
+}
+
+memory_connection_tochar <- function(con) {
+  call_embedded('memory_connection_tochar', con)
+}
+
+unevaluated_promise <- function(name, env) {
+  call_embedded("unevaluated_promise", name, env)
+}
+
+
 NA_if_error <- function(expr) {
   tryCatch(expr, error = function(e) { NA })
 }
 
 # Like toString, but guarantees that result is a single-element character vector.
 force_toString <- function(obj) {
-  if (is.null(obj) || (length(obj) == 1 && is.na(obj))) {
+  if (is.null(obj) || (length(obj) == 1 && is.atomic(obj) && is.na(obj))) {
     return('');
   }
   s <- paste0(toString(obj), collapse='');
@@ -16,13 +37,21 @@ force_number <- function(x) {
   if (!is.numeric(x) || length(x) != 1) NA else x;
 }
 
-# Like dput, but returns the value as string rather than printing it.
-dput_str <- function(obj) {
-  con <- textConnection(NULL, open = "w");
+
+# Like dput, but returns the value as string rather than printing it, and can limit
+# the output to a desired length.
+dput_str <- function(obj, max_length = NA, expected_length = NA, overflow_suffix = '...') {
+  con <- memory_connection(max_length, expected_length, overflow_suffix);
   on.exit(close(con), add = TRUE);
   
-  dput(obj, con);
-  paste0(textConnectionValue(con), collapse='\n')
+  tryCatch({
+    dput(obj, con);
+  }, error = function(e) {
+  });
+  
+  # Strip leading and trailing whitespace - it is never significant, and there's always
+  # at least a trailing '\n' that dput always outputs.
+  gsub("^\\s+|\\s+$", "", memory_connection_tochar(con))
 }
 
 # A wrapper for dput_str that will first make name a symbol if it can be a legitimate one.
@@ -33,22 +62,29 @@ dput_symbol <- function(name) {
   dput_str(name)
 }
 
-# Like str, but special-cases some common types to provide a more descriptive and concise output.
-fancy_str <- function(obj) {
-  str <-
+# Like str(...)[[1]], but special-cases some common types to provide a more descriptive
+# and concise output, and can limit the output to a desired length.
+fancy_str <- function(obj, max_length = NA, expected_length = NA, overflow_suffix = '...') {
+  con <- memory_connection(max_length, expected_length, overflow_suffix, eof_marker = '\n');
+  on.exit(close(con), add = TRUE);
+
+  tryCatch({
     if (length(obj) == 1) {
       if (any(class(obj) == 'factor')) {
         if (is.na(obj)) {
-          'NA'
+          cat('NA', file = con);
         } else {
-          capture.output(str(levels(obj)[[obj]], max.level = 0, give.head = FALSE))
+          capture.output(str(levels(obj)[[obj]], max.level = 0, give.head = FALSE), file = con);
         }
       } else {
-        capture.output(str(obj, max.level = 0, give.head = FALSE))
+        capture.output(str(obj, max.level = 0, give.head = FALSE), file = con);
       }
     } else {
-      capture.output(str(obj, max.level = 0, give.head = TRUE))
-    };
-  
-  if (!is.character(str) || length(str) == 0) NA else str;
+      capture.output(str(obj, max.level = 0, give.head = TRUE), file = con);
+    }
+  }, error = function(e) {
+  });
+    
+  str <- memory_connection_tochar(con);
+  if (length(str) == 0) NA else str;
 }
