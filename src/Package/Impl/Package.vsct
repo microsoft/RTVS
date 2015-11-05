@@ -270,7 +270,6 @@
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <ButtonText>Attach Debugger</ButtonText>
           <MenuText>A&amp;ttach Debugger</MenuText>
