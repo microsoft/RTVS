@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Languages.Core.Formatting;
+﻿using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
@@ -12,19 +11,14 @@ using Microsoft.R.Editor.SmartIndent;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Formatting
-{
-    internal static class AutoFormat
-    {
-        public static bool IsAutoformatTriggerCharacter(char ch)
-        {
-            return ch == '\n' || ch == '\r' || ch == '}' || ch == ';';
+namespace Microsoft.R.Editor.Formatting {
+    internal static class AutoFormat {
+        public static bool IsAutoformatTriggerCharacter(char ch) {
+            return ch == '\n' || ch == '\r' || ch == ';';
         }
 
-        public static void HandleAutoFormat(ITextView textView, ITextBuffer textBuffer, AstRoot ast, char typedChar)
-        {
-            if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0 || !IsAutoformatTriggerCharacter(typedChar))
-            {
+        public static void HandleAutoFormat(ITextView textView, ITextBuffer textBuffer, AstRoot ast, char typedChar) {
+            if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0 || !IsAutoformatTriggerCharacter(typedChar)) {
                 return;
             }
 
@@ -37,25 +31,19 @@ namespace Microsoft.R.Editor.Formatting
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
             ITextRange formatRange;
 
-            if (ast.Comments.Contains(position))
-            {
+            if (ast.Comments.Contains(position)) {
                 return;
             }
 
             IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-            if (typedChar == '}')
-            {
+            if (typedChar == '}') {
                 // If user typed } then fromat the enclosing scope
                 scope = ast.GetNodeOfTypeFromPosition<IScope>(position - 1);
                 formatRange = scope;
-            }
-            else if (typedChar == '\n' || typedChar == '\r')
-            {
+            } else if (typedChar == '\n' || typedChar == '\r') {
                 position = snapshot.GetLineFromLineNumber(line.LineNumber - 1).Start;
                 formatRange = new TextRange(position, 0);
-            }
-            else
-            {
+            } else {
                 // Just format the line that was modified
                 formatRange = new TextRange(position, 0);
             }
@@ -64,8 +52,7 @@ namespace Microsoft.R.Editor.Formatting
             undoAction.Open(Resources.AutoFormat);
             bool changed = false;
 
-            try
-            {
+            try {
                 // Now format the scope
                 changed = RangeFormatter.FormatRange(textView, textBuffer, formatRange, ast, REditorSettings.FormatOptions);
 
@@ -92,29 +79,23 @@ namespace Microsoft.R.Editor.Formatting
                 line = snapshot.GetLineFromPosition(position);
 
                 string textBeforeCaret = snapshot.GetText(Span.FromBounds(line.Start, position));
-                if (string.IsNullOrWhiteSpace(textBeforeCaret))
-                {
+                if (string.IsNullOrWhiteSpace(textBeforeCaret)) {
                     string textAfterCaret = snapshot.GetText(Span.FromBounds(position, line.End)).TrimStart();
-                    if (textAfterCaret.Length >= 1 && textAfterCaret[0] == '}' && scope != null && scope.OpenCurlyBrace != null)
-                    {
+                    if (textAfterCaret.Length >= 1 && textAfterCaret[0] == '}' && scope != null && scope.OpenCurlyBrace != null) {
                         // Open curly brace must be on the previous line
                         int openCurlyLineNumber = snapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
-                        if (line.LineNumber == openCurlyLineNumber + 1)
-                        {
+                        if (line.LineNumber == openCurlyLineNumber + 1) {
                             IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
                             changed = true;
                         }
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 undoAction.Close(!changed);
             }
         }
 
-        private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IScope scope, RFormatOptions options)
-        {
+        private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IScope scope, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             var positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
             if (positionInBuffer == null) {
@@ -132,8 +113,8 @@ namespace Microsoft.R.Editor.Formatting
             ITextSnapshotLine line = snapshot.GetLineFromPosition(scope.OpenCurlyBrace.Start);
             string lineBreakText = line.GetLineBreakText();
 
-            textBuffer.Replace(Span.FromBounds(caretLine.Start, caretLine.End),
-                innerIndentString + lineBreakText + braceindentString + "}");
+            textBuffer.Replace(Span.FromBounds(caretLine.Start, caretLine.End - 1),
+                innerIndentString + lineBreakText + braceindentString);
 
             var caretPoint = textView.MapUpToBuffer(caretLine.Start.Position, textBuffer);
             if (caretPoint != null) {

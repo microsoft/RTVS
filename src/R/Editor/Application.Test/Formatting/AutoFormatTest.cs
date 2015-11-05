@@ -3,19 +3,15 @@ using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Application.Test.Formatting
-{
+namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class AutoFormatTest
-    {
+    public class AutoFormatTest {
         [TestMethod]
-        public void R_AutoFormatFunctionBraces()
-        {
+        public void R_AutoFormatFunctionBraces() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
-            try
-            {
+            try {
                 script.Type("function(a,b){");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -24,20 +20,16 @@ namespace Microsoft.R.Editor.Application.Test.Formatting
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
+            } finally {
                 script.Close();
             }
         }
 
         [TestMethod]
-        public void R_AutoFormatScopeBraces01()
-        {
+        public void R_AutoFormatScopeBraces01() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
-            try
-            {
+            try {
                 script.Type("{");
                 script.DoIdle(300);
                 script.Type("{ENTER}");
@@ -46,20 +38,16 @@ namespace Microsoft.R.Editor.Application.Test.Formatting
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
+            } finally {
                 script.Close();
             }
         }
 
         [TestMethod]
-        public void R_AutoFormatScopeBraces02()
-        {
+        public void R_AutoFormatScopeBraces02() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
-            try
-            {
+            try {
                 script.Type("if(x>1){ENTER}{");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -68,20 +56,36 @@ namespace Microsoft.R.Editor.Application.Test.Formatting
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
+            } finally {
                 script.Close();
             }
         }
 
         [TestMethod]
-        public void R_AutoFormatIfNoScope()
-        {
+        public void R_AutoFormatScopeBraces03() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
-            try
-            {
+            try {
+                script.Type("while(true) {");
+                script.DoIdle(300);
+                script.Type("{ENTER}if(x>1) {");
+                script.DoIdle(300);
+                script.Type("{ENTER}foo");
+
+                string expected = "while (true) {\r\n    if (x > 1) {\r\n        foo\r\n    }\r\n}";
+                string actual = script.EditorText;
+
+                Assert.AreEqual(expected, actual);
+            } finally {
+                script.Close();
+            }
+        }
+
+        [TestMethod]
+        public void R_AutoFormatIfNoScope() {
+            var script = new TestScript(RContentTypeDefinition.ContentType);
+
+            try {
                 script.Type("if(x>1)");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -90,21 +94,17 @@ namespace Microsoft.R.Editor.Application.Test.Formatting
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
+            } finally {
                 script.Close();
             }
         }
 
         [TestMethod]
-        public void R_AutoFormatFuncionDefinition01()
-        {
+        public void R_AutoFormatFuncionDefinition01() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             string text = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07, {ENTER}          yname = NULL){ENTER}{{ENTER}abind(a, )";
 
-            try
-            {
+            try {
                 script.Type(text);
                 script.DoIdle(300);
 
@@ -117,9 +117,7 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
     abind(a, )
 }";
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
+            } finally {
                 script.Close();
             }
         }
