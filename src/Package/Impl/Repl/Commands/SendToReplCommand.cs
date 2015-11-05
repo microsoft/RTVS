@@ -41,10 +41,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             {
                 return CommandResult.Disabled;
             }
-            else if (TextView.Properties.ContainsProperty(_executedToEnd))
-            {
-                return CommandResult.Executed;
-            }
 
             string text;
             if (selection.StreamSelectionSpan.Length == 0)
@@ -73,14 +69,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 }
             }
 
-            if (targetLine == line && 
-                selection.StreamSelectionSpan.Length == 0)
-            {
-                // we're at the end of the buffer, we don't want to continue executing
-                TextView.Caret.PositionChanged += Caret_PositionChanged;
-                TextView.Properties[_executedToEnd] = this;
-            }
-
             // Take focus back if REPL window has stolen it
             if (!TextView.HasAggregateFocus)
             {
@@ -90,12 +78,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
             
             return CommandResult.Executed;
-        }
-
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
-        {
-            TextView.Properties.RemoveProperty(_executedToEnd);
-            TextView.Caret.PositionChanged -= Caret_PositionChanged;
         }
 
         protected override void Dispose(bool disposing) {
