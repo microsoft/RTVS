@@ -86,7 +86,10 @@ namespace Microsoft.R.Editor.Formatting {
 
             if (RespectUserIndent(textBuffer, ast, position)) {
                 textIndentInSpaces = IndentBuilder.TextIndentInSpaces(lineText, options.TabSize);
-            } else {
+            } else if(lineText.Trim() == "}") {
+                textIndentInSpaces = Math.Max(0, SmartIndenter.GetSmartIndent(line, ast) - options.IndentSize);
+            }
+            else {
                 textIndentInSpaces = SmartIndenter.GetSmartIndent(line, ast);
             }
 

@@ -19,6 +19,7 @@ using Task = System.Threading.Tasks.Task;
 using Microsoft.R.Core.Tokens;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Core.AST.Statements.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     /// <summary>
@@ -194,11 +195,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                         var tree = document.EditorTree;
                         tree.EnsureTreeReady();
 
-                        AutoFormat.FormatLine(
+                        FormatOperations.FormatNode<IStatement>(
                             current.InteractiveWindow.TextView,
                             curBuffer,
-                            tree.AstRoot,
-                            -1
+                            Math.Max(documentPoint.Value - 1, 0)
                         );
                     }
                 }

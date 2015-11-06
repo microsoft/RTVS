@@ -1,7 +1,8 @@
-﻿using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
+﻿using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Editor.Tree.Definitions;
+using Microsoft.R.Editor.Settings;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.BraceCompletion;
 
 namespace Microsoft.R.Editor.Completion.AutoCompletion {
@@ -21,12 +22,10 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// </remarks>
         /// <param name="session">Default brace completion session</param>
         public void Start(IBraceCompletionSession session) {
-            if (session.OpeningBrace == '{') {
+            if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
                 AutoFormat.IgnoreOnce = false;
-                IEditorTree tree = GetEditorTree(session);
-                if (tree != null) {
-                    AutoFormat.FormatLine(session.TextView, session.SubjectBuffer, tree.AstRoot, 0);
-                }
+                EnsureTreeReady(session.SubjectBuffer);
+                FormatOperations.FormatCurrentNode<IStatement>(session.TextView, session.SubjectBuffer);
             }
         }
 
@@ -35,12 +34,10 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// </summary>
         /// <param name="session">Default brace completion session</param>
         public void Finish(IBraceCompletionSession session) {
-            if (session.OpeningBrace == '{') {
+            if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
                 AutoFormat.IgnoreOnce = false;
-                IEditorTree tree = GetEditorTree(session);
-                if (tree != null) {
-                    AutoFormat.FormatCurrentScope(session.TextView, session.SubjectBuffer, tree.AstRoot, indentCaret: false);
-                }
+                EnsureTreeReady(session.SubjectBuffer);
+                FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, indentCaret: false);
             }
         }
 
@@ -56,12 +53,10 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// </remarks>
         /// <param name="session">Default brace completion session</param>
         public void OnReturn(IBraceCompletionSession session) {
-            if (session.OpeningBrace == '{') {
-                IEditorTree tree = GetEditorTree(session);
-                if (tree != null) {
-                    AutoFormat.FormatCurrentScope(session.TextView, session.SubjectBuffer, tree.AstRoot, indentCaret: true);
-                }
+            if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
                 AutoFormat.IgnoreOnce = true;
+                EnsureTreeReady(session.SubjectBuffer);
+                FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, indentCaret: true);
             }
         }
 
@@ -81,15 +76,11 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
             return true;
         }
 
-        private IEditorTree GetEditorTree(IBraceCompletionSession session) {
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(session.SubjectBuffer);
+        private void EnsureTreeReady(ITextBuffer subjectBuffer) {
+            var document = REditorDocument.TryFromTextBuffer(subjectBuffer);
             if (document != null) {
-                IEditorTree tree = document.EditorTree;
-                tree.EnsureTreeReady();
-                return tree;
+                document.EditorTree.EnsureTreeReady();
             }
-
-            return null;
         }
     }
 }
