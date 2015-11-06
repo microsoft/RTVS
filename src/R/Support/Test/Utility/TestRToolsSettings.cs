@@ -6,7 +6,7 @@ using Microsoft.R.Support.Settings.Definitions;
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
     [Export(typeof(IRToolsSettings))]
-    class TestRToolsSettings : IRToolsSettings {
+    public sealed class TestRToolsSettings : IRToolsSettings {
         public string CranMirror {
             get { return string.Empty; }
             set { }

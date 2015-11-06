@@ -123,18 +123,19 @@ namespace Microsoft.R.Editor.SmartIndent
                 int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
 
                 IKeywordScopeStatement scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(nonWsPosition);
-                if (scopeStatement != null && (scopeStatement.Scope == null || scopeStatement.Scope is SimpleScope))
-                {
-                    // There is if with a simple scope above. However, we need to check 
-                    // if the line that is being formatted is actually part of this scope.
-                    if (scopeStatement.Scope == null || (scopeStatement.Scope != null && line.Start < scopeStatement.Scope.End))
-                    {
-                        return GetBlockIndent(line) + REditorSettings.IndentSize;
+                if (scopeStatement != null) {
+                    if (scopeStatement.Scope == null || scopeStatement.Scope is SimpleScope) {
+                        // There is if with a simple scope above. However, we need to check 
+                        // if the line that is being formatted is actually part of this scope.
+                        if (scopeStatement.Scope == null || (scopeStatement.Scope != null && line.Start < scopeStatement.Scope.End)) {
+                            return GetBlockIndent(line) + REditorSettings.IndentSize;
+                        } else {
+                            scope = ast.GetNodeOfTypeFromPosition<IScope>(scopeStatement.Start);
+                            return InnerIndentSizeFromScope(textBuffer, scope, REditorSettings.FormatOptions);
+                        }
                     }
-                    else
-                    {
-                        scope = ast.GetNodeOfTypeFromPosition<IScope>(scopeStatement.Start);
-                        return InnerIndentSizeFromScope(textBuffer, scope, REditorSettings.FormatOptions);
+                    else {
+                        return InnerIndentSizeFromScope(textBuffer, scopeStatement.Scope, REditorSettings.FormatOptions);
                     }
                 }
             }
