@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Formatting {
     internal static class AutoFormat {
         public static bool IsAutoformatTriggerCharacter(char ch) {
-            return ch == '\n' || ch == '\r' || ch == ';';
+            return ch == '\n' || ch == '\r' || ch == ';' || ch == '}';
         }
 
         public static bool IgnoreOnce { get; set; }

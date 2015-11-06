@@ -24,11 +24,9 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Languages.Editor.Application.Core
-{
+namespace Microsoft.Languages.Editor.Application.Core {
     [ExcludeFromCodeCoverage]
-    public sealed class CoreEditor
-    {
+    public sealed class CoreEditor {
         public ICommandTarget BaseController { get; private set; }
 
         [Import]
@@ -67,10 +65,8 @@ namespace Microsoft.Languages.Editor.Application.Core
         private IEditorInstance _editorIntance;
         private IWorkspaceItem _workspaceItem;
 
-        public CoreEditor(string text, string filePath, string contentTypeName)
-        {
-            if (_editorShell == null)
-            {
+        public CoreEditor(string text, string filePath, string contentTypeName) {
+            if (_editorShell == null) {
                 _editorShell = TestEditorShell.Create(AppCompositionCatalog.Current);
                 EditorShell.SetShell(_editorShell);
 
@@ -81,8 +77,7 @@ namespace Microsoft.Languages.Editor.Application.Core
             _compositionService.SatisfyImportsOnce(this);
             _filePath = filePath;
 
-            if (string.IsNullOrEmpty(_filePath) || Path.GetExtension(_filePath).Length == 0)
-            {
+            if (string.IsNullOrEmpty(_filePath) || Path.GetExtension(_filePath).Length == 0) {
                 if (contentTypeName == null)
                     throw new ArgumentNullException("contentTypeName");
 
@@ -94,10 +89,8 @@ namespace Microsoft.Languages.Editor.Application.Core
 
         #region Properties
 
-        public IWpfTextView View
-        {
-            get
-            {
+        public IWpfTextView View {
+            get {
                 if (_wpftextViewHost != null)
                     return _wpftextViewHost.TextView;
 
@@ -105,10 +98,8 @@ namespace Microsoft.Languages.Editor.Application.Core
             }
         }
 
-        public ITextBufferUndoManager UndoManager
-        {
-            get
-            {
+        public ITextBufferUndoManager UndoManager {
+            get {
                 if (_undoManager == null)
                     _undoManager = TextBufferUndoManagerProvider.GetTextBufferUndoManager(TextBuffer);
 
@@ -116,10 +107,8 @@ namespace Microsoft.Languages.Editor.Application.Core
             }
         }
 
-        public IEditorOperations EditorOperations
-        {
-            get
-            {
+        public IEditorOperations EditorOperations {
+            get {
                 if (_editorOperations == null)
                     _editorOperations = EditorOperationsFactoryService.GetEditorOperations(View);
 
@@ -127,24 +116,21 @@ namespace Microsoft.Languages.Editor.Application.Core
             }
         }
 
-        public IEditorOptions EditorOptions
-        { get { return EditorOptionsFactoryService.GetOptions(View); } }
+        public IEditorOptions EditorOptions { get { return EditorOptionsFactoryService.GetOptions(View); } }
 
 
-        private IEditorOptions EditorOptionsForTabs
-        { get { return EditorOptionsFactoryService.GetOptions(TextBuffer); } }
+        private IEditorOptions EditorOptionsForTabs { get { return EditorOptionsFactoryService.GetOptions(TextBuffer); } }
 
 
-        private IEditorOptions GlobalOptions
-        { get { return EditorOptionsFactoryService.GlobalOptions; } }
+        private IEditorOptions GlobalOptions {
+            get { return EditorOptionsFactoryService.GlobalOptions; }
+        }
 
         /// <summary>
         /// Calling TextBuffer is only valid after instantiating the View
         /// </summary>
-        private ITextBuffer TextBuffer
-        {
-            get
-            {
+        private ITextBuffer TextBuffer {
+            get {
                 Debug.Assert(_wpftextViewHost != null, "View was not created yet");
 
                 if (_wpftextViewHost.TextView != null)
@@ -154,12 +140,9 @@ namespace Microsoft.Languages.Editor.Application.Core
             }
         }
 
-        private IContentType ContentType
-        {
-            get
-            {
-                if (_contentType == null)
-                {
+        private IContentType ContentType {
+            get {
+                if (_contentType == null) {
                     var ctl = new ContentTypeLocator(_compositionService);
                     _contentType = ctl.FindContentType(_filePath);
                 }
@@ -170,8 +153,7 @@ namespace Microsoft.Languages.Editor.Application.Core
 
         #endregion
 
-        private void CreateTextViewHost(string text, string filePath)
-        {
+        private void CreateTextViewHost(string text, string filePath) {
             if (text == null)
                 text = string.Empty;
 
@@ -182,22 +164,20 @@ namespace Microsoft.Languages.Editor.Application.Core
 
             ITextDataModel textDataModel;
 
-            if (_editorIntance != null)
-            {
+            if (_editorIntance != null) {
                 textDataModel = new TextDataModel(diskBuffer, _editorIntance.ViewBuffer);
-            }
-            else
-            {
+            } else {
                 textDataModel = new TextDataModel(diskBuffer, diskBuffer);
             }
 
             var textBuffer = textDataModel.DocumentBuffer;
             TextDocument = TextDocumentFactoryService.CreateTextDocument(textBuffer, filePath);
 
+            SetGlobalEditorOptions();
+
             var textView = TextEditorFactoryService.CreateTextView(textDataModel,
                                                                    new DefaultTextViewRoleSet(),
                                                                    GlobalOptions);
-
             _wpftextViewHost = TextEditorFactoryService.CreateTextViewHost(textView, true);
 
             ApplyDefaultSettings();
@@ -207,82 +187,67 @@ namespace Microsoft.Languages.Editor.Application.Core
             var baseController = new BaseController();
             BaseController = baseController;
 
-            if (_editorIntance != null)
-            {
+            if (_editorIntance != null) {
                 CommandTarget = _editorIntance.GetCommandTarget(textView);
                 var controller = CommandTarget as Microsoft.Languages.Editor.Controller.Controller;
                 controller.ChainedController = baseController;
-            }
-            else
-            {
+            } else {
                 CommandTarget = baseController;
             }
 
             baseController.Initialize(textView, EditorOperations, UndoManager);
         }
 
-        public void Close()
-        {
-            if (_wpftextViewHost != null)
-            {
+        public void Close() {
+            if (_wpftextViewHost != null) {
                 _wpftextViewHost.Close();
                 _wpftextViewHost = null;
             }
 
-            if (_editorIntance != null)
-            {
+            if (_editorIntance != null) {
                 _editorIntance.Dispose();
                 _editorIntance = null;
             }
         }
 
-        private void ApplyDefaultSettings()
-        {
-            EditorOptions.SetOptionValue<bool>(DefaultTextViewOptions.UseVisibleWhitespaceId, true);
+        private void SetGlobalEditorOptions() {
+            IEditorOptions options = EditorOptionsFactoryService.GlobalOptions;
 
-            EditorOptions.SetOptionValue<int>(DefaultOptions.TabSizeOptionId, 4);
-            EditorOptions.SetOptionValue<int>(DefaultOptions.IndentSizeOptionId, 4);
-            EditorOptions.SetOptionValue<bool>(DefaultTextViewHostOptions.LineNumberMarginId, true);
-            EditorOptions.SetOptionValue<bool>(DefaultTextViewHostOptions.OutliningMarginId, true);
+            options.SetOptionValue<bool>(DefaultTextViewOptions.UseVisibleWhitespaceId, true);
+            options.SetOptionValue<bool>(DefaultTextViewOptions.BraceCompletionEnabledOptionId, true);
+
+            options.SetOptionValue<bool>(DefaultTextViewHostOptions.LineNumberMarginId, true);
+            options.SetOptionValue<bool>(DefaultTextViewHostOptions.OutliningMarginId, true);
+        }
+
+        private void ApplyDefaultSettings() {
 
             var textFormatMap = ClassificationFormatMapService.GetClassificationFormatMap("text");
             textFormatMap.DefaultTextProperties = textFormatMap.DefaultTextProperties.SetFontRenderingEmSize(11);
             textFormatMap.DefaultTextProperties = textFormatMap.DefaultTextProperties.SetTypeface(new Typeface("Consolas"));
         }
 
-        public bool HasFocus
-        {
-            get
-            {
-                if (View != null && View.VisualElement != null && Control != null)
-                {
+        public bool HasFocus {
+            get {
+                if (View != null && View.VisualElement != null && Control != null) {
                     return View.VisualElement.IsKeyboardFocusWithin;
-                }
-                else
-                {
+                } else {
                     return false;
                 }
             }
         }
 
         private ContentControl _contentControl = new ContentControl();
-        public Control Control
-        { get { return _contentControl; } }
+        public Control Control { get { return _contentControl; } }
 
-        public ICommandTarget CommandTarget
-        { get; private set; }
+        public ICommandTarget CommandTarget { get; private set; }
 
-        public void Focus()
-        {
-            if (View != null && View.VisualElement != null)
-            {
-                if (!View.VisualElement.Focus())
-                {
+        public void Focus() {
+            if (View != null && View.VisualElement != null) {
+                if (!View.VisualElement.Focus()) {
                     Dispatcher.CurrentDispatcher.BeginInvoke(
-                        (Action)(() =>
-                        {
-                            if (View != null && View.VisualElement != null)
-                            {
+                        (Action)(() => {
+                            if (View != null && View.VisualElement != null) {
                                 View.VisualElement.Focus();
                             }
                         })
@@ -292,23 +257,18 @@ namespace Microsoft.Languages.Editor.Application.Core
             }
         }
 
-        public bool Dirty
-        { get { return (TextDocument != null) ? TextDocument.IsDirty : false; } }
+        public bool Dirty { get { return (TextDocument != null) ? TextDocument.IsDirty : false; } }
 
         public ITextDocument TextDocument { get; private set; }
 
-        public string Text
-        {
-            get
-            {
+        public string Text {
+            get {
                 return TextBuffer.CurrentSnapshot.GetText();
             }
-            set
-            {
+            set {
                 string text = value;
 
-                if (text == null)
-                {
+                if (text == null) {
                     text = string.Empty;
                 }
 
@@ -316,39 +276,32 @@ namespace Microsoft.Languages.Editor.Application.Core
             }
         }
 
-        public int CurrentColumn
-        {
-            get
-            {
+        public int CurrentColumn {
+            get {
                 ITextViewLine caretViewLine = View.Caret.ContainingTextViewLine;
                 double columnWidth = View.FormattedLineSource.ColumnWidth;
                 return (int)Math.Round((View.Caret.Left - caretViewLine.Left) / columnWidth);
             }
         }
 
-        public int CurrentLine
-        {
-            get
-            {
+        public int CurrentLine {
+            get {
                 int caretIndex = View.Caret.Position.VirtualBufferPosition.Position;
                 return View.TextSnapshot.GetLineNumberFromPosition(caretIndex);
             }
         }
 
-        public void GoTo(int line, int offsetFromStart, int length)
-        {
+        public void GoTo(int line, int offsetFromStart, int length) {
             var snapshot = View.TextSnapshot;
 
-            if (line >= snapshot.LineCount || line < 0)
-            {
+            if (line >= snapshot.LineCount || line < 0) {
                 Debug.Fail("Line number must be between 0 and linecount");
                 return;
             }
 
             var snapshotLine = View.TextSnapshot.GetLineFromLineNumber(line);
 
-            if (offsetFromStart > 0 && (offsetFromStart > snapshotLine.LengthIncludingLineBreak || offsetFromStart < 0))
-            {
+            if (offsetFromStart > 0 && (offsetFromStart > snapshotLine.LengthIncludingLineBreak || offsetFromStart < 0)) {
                 Debug.Fail("Offset must be between 0 and chars in line");
                 return;
             }
@@ -361,8 +314,7 @@ namespace Microsoft.Languages.Editor.Application.Core
 
             Debug.Assert(length >= 0, "Length must be 0 or more");
 
-            if (length > 0)
-            {
+            if (length > 0) {
                 SnapshotSpan selectionSpan = new SnapshotSpan(bufferPosition, length);
 
                 View.Selection.Select(selectionSpan, false);
@@ -371,14 +323,11 @@ namespace Microsoft.Languages.Editor.Application.Core
             Focus();
         }
 
-        public int LineCount
-        { get { return TextBuffer.CurrentSnapshot.LineCount; } }
+        public int LineCount { get { return TextBuffer.CurrentSnapshot.LineCount; } }
 
 
-        public void SelectAll()
-        { EditorOperations.SelectAll(); }
+        public void SelectAll() { EditorOperations.SelectAll(); }
 
-        public string SelectedText
-        { get { return EditorOperations.SelectedText; } }
+        public string SelectedText { get { return EditorOperations.SelectedText; } }
     }
 }
