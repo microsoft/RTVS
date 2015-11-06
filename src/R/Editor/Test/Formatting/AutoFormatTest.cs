@@ -41,38 +41,6 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [TestMethod]
-        public void AutoFormat_SmartIndentTest01() {
-            ITextView textView = TestAutoFormat(8, "\n", "if(x>1){}");
-
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-            string expected = "if (x > 1) {\n    \r\n}";
-
-            Assert.AreEqual(expected, actual);
-            Assert.AreEqual(17, textView.Caret.Position.BufferPosition);
-        }
-
-        [TestMethod]
-        public void AutoFormat_SmartIndentTest02() {
-            ITextView textView = TestAutoFormat(12, "\n", "if (x > 1) {\r\n    \r\n}");
-
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-            string expected = "if (x > 1) {\n\r\n    \r\n}";
-
-            Assert.AreEqual(expected, actual);
-            Assert.AreEqual(13, textView.Caret.Position.BufferPosition);
-        }
-
-        [TestMethod]
-        public void AutoFormat_SmartIndentTest03() {
-            ITextView textView = TestAutoFormat(14, "\n", "if (x > 1) {\r\n}");
-
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-            string expected = "if (x > 1) {\r\n\n}";
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
         public void AutoFormat_SmartIndentTest05() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
@@ -85,38 +53,6 @@ namespace Microsoft.R.Editor.Test.Formatting {
 
             Assert.IsTrue(indent.HasValue);
             Assert.AreEqual(2, indent);
-        }
-
-        [TestMethod]
-        public void AutoFormat_SmartIndentTest06() {
-            ITextView textView = TestAutoFormat(6, "\n", "func({})");
-
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-            string expected = "func({\n    \r\n}";
-
-            Assert.AreEqual(expected, actual);
-            Assert.AreEqual(11, textView.Caret.Position.BufferPosition);
-        }
-
-        [TestMethod]
-        public void AutoFormat_SmartIndentTest07() {
-            ITextView textView = TestAutoFormat(13, "\n", "if (x > 1)\r\n{\r\n}");
-
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-            string expected = "if (x > 1)\r\n{\n\r\n}";
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void AutoFormat_ScopeTest01() {
-            string content = "if (x > 1)\r\n{ x<-1\r\n";
-            ITextView textView = TestAutoFormat(content.Length, "}", content);
-
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-            string expected = "if (x > 1) {\r\n    x <- 1\r\n}";
-
-            Assert.AreEqual(expected, actual);
         }
 
         private ITextView TestAutoFormat(int position, string textToType, string initialContent = "") {
@@ -136,7 +72,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                             textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
                             offset = -1;
                         }
-                        AutoFormat.FormatLine(textView, textView.TextBuffer, ast, offset);
+                        FormatOperations.FormatLine(textView, textView.TextBuffer, ast, offset);
                     }
                 } else {
                     ITextSnapshotLine line = e.After.GetLineFromPosition(position);

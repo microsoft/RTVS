@@ -17,8 +17,7 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("if(true){if(false){}}");
             string expected =
 @"if (true) {
-  if (false) {
-  }
+  if (false) { }
 }";
             Assert.AreEqual(expected, actual);
         }
@@ -30,8 +29,7 @@ namespace Microsoft.R.Core.Test.Formatting
             string actual = f.Format("if(a == a+((b+c)/x)){if(func(a,b, c+2, x=2, ...)){}}");
             string expected =
 @"if (a == a + ((b + c) / x)) {
-  if (func(a, b, c + 2, x = 2, ...)) {
-  }
+  if (func(a, b, c + 2, x = 2, ...)) { }
 }";
             Assert.AreEqual(expected, actual);
         }
@@ -50,9 +48,7 @@ namespace Microsoft.R.Core.Test.Formatting
             string expected =
 @"if (a == a + ((b + c) / x))
 {
-	if (func(a, b, c + 2, x = 2, ...))
-	{
-	}
+	if (func(a, b, c + 2, x = 2, ...)) { }
 }";
             Assert.AreEqual(expected, actual);
         }
