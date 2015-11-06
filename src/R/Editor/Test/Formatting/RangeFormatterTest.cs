@@ -198,7 +198,7 @@ foo(cache=TRUE)
             RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(0, 1), ast, new RFormatOptions());
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
-            Assert.AreEqual("{\r\n}", actual);
+            Assert.AreEqual("{ }", actual);
         }
 
         [TestMethod]

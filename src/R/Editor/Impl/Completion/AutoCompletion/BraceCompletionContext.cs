@@ -25,10 +25,12 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// </remarks>
         /// <param name="session">Default brace completion session</param>
         public void Start(IBraceCompletionSession session) {
-            AutoFormat.IgnoreOnce = false;
-            IEditorTree tree = GetEditorTree(session);
-            if (tree != null) {
-                AutoFormat.FormatLine(session.TextView, session.SubjectBuffer, tree.AstRoot, session.ClosingBrace);
+            if (session.OpeningBrace == '{') {
+                AutoFormat.IgnoreOnce = false;
+                IEditorTree tree = GetEditorTree(session);
+                if (tree != null) {
+                    AutoFormat.FormatLine(session.TextView, session.SubjectBuffer, tree.AstRoot, 0);
+                }
             }
         }
 
@@ -37,6 +39,13 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// </summary>
         /// <param name="session">Default brace completion session</param>
         public void Finish(IBraceCompletionSession session) {
+            if (session.OpeningBrace == '{') {
+                AutoFormat.IgnoreOnce = false;
+                IEditorTree tree = GetEditorTree(session);
+                if (tree != null) {
+                    AutoFormat.FormatCurrentScope(session.TextView, session.SubjectBuffer, tree.AstRoot, indentCaret: false);
+                }
+            }
         }
 
         /// <summary>
@@ -51,11 +60,13 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// </remarks>
         /// <param name="session">Default brace completion session</param>
         public void OnReturn(IBraceCompletionSession session) {
-            IEditorTree tree = GetEditorTree(session);
-            if (tree != null) {
-                AutoFormat.FormatCurrentScope(session.TextView, session.SubjectBuffer, tree.AstRoot);
+            if (session.OpeningBrace == '{') {
+                IEditorTree tree = GetEditorTree(session);
+                if (tree != null) {
+                    AutoFormat.FormatCurrentScope(session.TextView, session.SubjectBuffer, tree.AstRoot, indentCaret: true);
+                }
+                AutoFormat.IgnoreOnce = true;
             }
-            AutoFormat.IgnoreOnce = true;
         }
 
         /// <summary>

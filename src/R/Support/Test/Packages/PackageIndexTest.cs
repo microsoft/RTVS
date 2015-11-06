@@ -60,21 +60,20 @@ namespace Microsoft.R.Support.Test.Packages
                 "utils",
              };
 
-            Assert.AreEqual(30, basePackages.Count());
-
             string installPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-                @"R\R-3.2.0\library");
+                @"R\R-3.2.2\library");
 
             int i = 0;
-            foreach (IPackageInfo pi in basePackages)
+            foreach (string name in packageNames)
             {
-                Assert.AreEqual(packageNames[i], pi.Name);
+                IPackageInfo info = basePackages.FirstOrDefault((x) => x.Name == name);
+                Assert.IsNotNull(info);
 
-                IPackageInfo pi1 = PackageIndex.GetPackageByName(pi.Name);
+                IPackageInfo pi1 = PackageIndex.GetPackageByName(info.Name);
                 Assert.IsNotNull(pi1);
 
-                Assert.AreEqual(pi.Name, pi1.Name);
+                Assert.AreEqual(info.Name, pi1.Name);
 
                 i++;
             }

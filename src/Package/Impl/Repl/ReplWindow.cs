@@ -194,11 +194,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                         var tree = document.EditorTree;
                         tree.EnsureTreeReady();
 
-                        AutoFormat.HandleAutoFormat(
+                        AutoFormat.FormatLine(
                             current.InteractiveWindow.TextView,
                             curBuffer,
                             tree.AstRoot,
-                            '\n'
+                            -1
                         );
                     }
                 }
