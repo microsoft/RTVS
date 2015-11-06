@@ -30,9 +30,9 @@ namespace Microsoft.Languages.Editor.Application.Controller
 
         #region ICommandTarget Members
 
-        public CommandResult Invoke(Guid group, int id, object args, ref object result)
+        public CommandResult Invoke(Guid group, int id, object args, ref object outargs)
         {
-            object outargs = new object();
+            CommandResult result = CommandResult.Executed;
             _braceCompletionTarget.Invoke(group, id, args, ref outargs);
 
             if (group == VSConstants.VSStd2K)
@@ -50,11 +50,14 @@ namespace Microsoft.Languages.Editor.Application.Controller
                             text = Char.ConvertFromUtf32((System.UInt16)args);
                         }
 
-                        return this.PerformEditAction(() => _editorOperations.InsertText(text));
+                        result = this.PerformEditAction(() => _editorOperations.InsertText(text));
+                        break;
                     case (int)VSConstants.VSStd2KCmdID.BACKSPACE:
-                        return this.PerformEditAction(() => _editorOperations.Backspace());
+                        result = this.PerformEditAction(() => _editorOperations.Backspace());
+                        break;
                     case (int)VSConstants.VSStd2KCmdID.DELETE:
-                        return this.PerformEditAction(() => _editorOperations.Delete());
+                        result = this.PerformEditAction(() => _editorOperations.Delete());
+                        break;
                     case (int)VSConstants.VSStd2KCmdID.CANCEL:
                         _editorOperations.ResetSelection();
                         break;
@@ -107,11 +110,14 @@ namespace Microsoft.Languages.Editor.Application.Controller
                         _editorOperations.MoveToEndOfLine(false);
                         break;
                     case (int)VSConstants.VSStd2KCmdID.BACKTAB:
-                        return this.PerformEditAction(() => _editorOperations.Unindent());
+                        result = this.PerformEditAction(() => _editorOperations.Unindent());
+                        break;
                     case (int)VSConstants.VSStd2KCmdID.TAB:
-                        return this.PerformEditAction(() => _editorOperations.Indent());
+                        result = this.PerformEditAction(() => _editorOperations.Indent());
+                        break;
                     case (int)VSConstants.VSStd2KCmdID.RETURN:
-                        return  this.PerformEditAction(() => _editorOperations.InsertNewLine());
+                        result = this.PerformEditAction(() => _editorOperations.InsertNewLine());
+                        break;
                     case (int)VSConstants.VSStd2KCmdID.CTLMOVERIGHT:
                         _editorOperations.MoveToNextWord(true);
                         break;
@@ -130,9 +136,11 @@ namespace Microsoft.Languages.Editor.Application.Controller
                         break;
 
                     case (int) VSConstants.VSStd2KCmdID.DELETEWORDLEFT:
-                        return this.PerformEditAction(() => _editorOperations.DeleteWordToLeft());
+                        result = this.PerformEditAction(() => _editorOperations.DeleteWordToLeft());
+                        break;
                     case (int) VSConstants.VSStd2KCmdID.DELETEWORDRIGHT:
-                        return this.PerformEditAction(() => _editorOperations.DeleteWordToRight());
+                        result = this.PerformEditAction(() => _editorOperations.DeleteWordToRight());
+                        break;
                     case (int) VSConstants.VSStd2KCmdID.SELECTALL:
                         _editorOperations.SelectAll();
                         break;
@@ -199,7 +207,8 @@ namespace Microsoft.Languages.Editor.Application.Controller
                         return CommandResult.NotSupported;
                 }
 
-                return CommandResult.Executed;
+                _braceCompletionTarget.PostProcessInvoke(CommandResult.Executed, group, id, args, ref outargs);
+                return result;
             }
 
             return CommandResult.NotSupported;
@@ -207,8 +216,6 @@ namespace Microsoft.Languages.Editor.Application.Controller
 
         public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
         {
-            _braceCompletionTarget.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
-            return;
         }
 
         public CommandStatus Status(Guid group, int id)
