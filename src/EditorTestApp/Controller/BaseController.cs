@@ -7,18 +7,15 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Microsoft.VisualStudio.Text.Operations;
 
-namespace Microsoft.Languages.Editor.Application.Controller
-{
+namespace Microsoft.Languages.Editor.Application.Controller {
     [ExcludeFromCodeCoverage]
-    internal class BaseController : ICommandTarget
-    {
+    internal class BaseController : ICommandTarget {
         private ITextView _view;
         private IEditorOperations _editorOperations;
         private ITextBufferUndoManager _undoManager;
         private BraceCompletionCommandTarget _braceCompletionTarget;
 
-        public void Initialize(ITextView view, IEditorOperations editorOperations, ITextBufferUndoManager undoManager)
-        {
+        public void Initialize(ITextView view, IEditorOperations editorOperations, ITextBufferUndoManager undoManager) {
             Debug.Assert(view != null, "view must not be null");
             Debug.Assert(editorOperations != null, "editor operations must not be null");
 
@@ -30,23 +27,19 @@ namespace Microsoft.Languages.Editor.Application.Controller
 
         #region ICommandTarget Members
 
-        public CommandResult Invoke(Guid group, int id, object args, ref object outargs)
-        {
-            CommandResult result = CommandResult.Executed;
-            _braceCompletionTarget.Invoke(group, id, args, ref outargs);
+        public CommandResult Invoke(Guid group, int id, object args, ref object outargs) {
+            CommandResult result = _braceCompletionTarget.Invoke(group, id, args, ref outargs);
+            if (result.WasExecuted) {
+                return result;
+            }
 
-            if (group == VSConstants.VSStd2K)
-            {
-                switch (id)
-                {
+            if (group == VSConstants.VSStd2K) {
+                switch (id) {
                     case (int)VSConstants.VSStd2KCmdID.TYPECHAR:
                         string text;
-                        if (args is char)
-                        {
+                        if (args is char) {
                             text = args.ToString();
-                        }
-                        else
-                        {
+                        } else {
                             text = Char.ConvertFromUtf32((System.UInt16)args);
                         }
 
@@ -135,58 +128,54 @@ namespace Microsoft.Languages.Editor.Application.Controller
                         _editorOperations.Options.SetOptionValue(DefaultTextViewOptions.OverwriteModeId, !isEnabled);
                         break;
 
-                    case (int) VSConstants.VSStd2KCmdID.DELETEWORDLEFT:
+                    case (int)VSConstants.VSStd2KCmdID.DELETEWORDLEFT:
                         result = this.PerformEditAction(() => _editorOperations.DeleteWordToLeft());
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.DELETEWORDRIGHT:
+                    case (int)VSConstants.VSStd2KCmdID.DELETEWORDRIGHT:
                         result = this.PerformEditAction(() => _editorOperations.DeleteWordToRight());
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.SELECTALL:
+                    case (int)VSConstants.VSStd2KCmdID.SELECTALL:
                         _editorOperations.SelectAll();
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.SELECTCURRENTWORD:
+                    case (int)VSConstants.VSStd2KCmdID.SELECTCURRENTWORD:
                         _editorOperations.SelectCurrentWord();
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.WORDNEXT:
+                    case (int)VSConstants.VSStd2KCmdID.WORDNEXT:
                         _editorOperations.MoveToNextWord(false);
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.WORDPREV:
+                    case (int)VSConstants.VSStd2KCmdID.WORDPREV:
                         _editorOperations.MoveToPreviousWord(false);
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.TOPLINE:
+                    case (int)VSConstants.VSStd2KCmdID.TOPLINE:
                         _editorOperations.MoveToStartOfDocument(false);
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.BOTTOMLINE:
+                    case (int)VSConstants.VSStd2KCmdID.BOTTOMLINE:
                         _editorOperations.MoveToEndOfDocument(false);
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.SCROLLUP:
+                    case (int)VSConstants.VSStd2KCmdID.SCROLLUP:
                         _editorOperations.ScrollUpAndMoveCaretIfNecessary();
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.SCROLLDN:
+                    case (int)VSConstants.VSStd2KCmdID.SCROLLDN:
                         _editorOperations.ScrollDownAndMoveCaretIfNecessary();
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.COPY:
+                    case (int)VSConstants.VSStd2KCmdID.COPY:
                         _editorOperations.CopySelection();
                         break;
-                    case (int) VSConstants.VSStd2KCmdID.CUT:
+                    case (int)VSConstants.VSStd2KCmdID.CUT:
                         return this.PerformEditAction(() => _editorOperations.CutSelection());
-                    case (int) VSConstants.VSStd2KCmdID.PASTE:
+                    case (int)VSConstants.VSStd2KCmdID.PASTE:
                         string pastedText = args as string;
-                        
-                        if (pastedText != null)
-                        {
+
+                        if (pastedText != null) {
                             return this.PerformEditAction(() => _editorOperations.InsertText(pastedText));
-                        } 
-                        else
-                        {
+                        } else {
                             return this.PerformEditAction(() => _editorOperations.Paste());
                         }
 
-                    case (int) VSConstants.VSStd2KCmdID.UNDO:
-                        
-                        if (UndoManager != null && 
-                            UndoManager.TextBufferUndoHistory.CanUndo)
-                        {
+                    case (int)VSConstants.VSStd2KCmdID.UNDO:
+
+                        if (UndoManager != null &&
+                            UndoManager.TextBufferUndoHistory.CanUndo) {
                             UndoManager.TextBufferUndoHistory.Undo(1);
                             break;
                         }
@@ -194,10 +183,9 @@ namespace Microsoft.Languages.Editor.Application.Controller
                         return CommandResult.Disabled;
 
                     case (int)VSConstants.VSStd2KCmdID.REDO:
-                        
-                        if (UndoManager != null && 
-                            UndoManager.TextBufferUndoHistory.CanRedo)
-                        {
+
+                        if (UndoManager != null &&
+                            UndoManager.TextBufferUndoHistory.CanRedo) {
                             UndoManager.TextBufferUndoHistory.Redo(1);
                             break;
                         }
@@ -214,16 +202,12 @@ namespace Microsoft.Languages.Editor.Application.Controller
             return CommandResult.NotSupported;
         }
 
-        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
         }
 
-        public CommandStatus Status(Guid group, int id)
-        {
-            if (group == VSConstants.VSStd2K)
-            {
-                switch (id)
-                {
+        public CommandStatus Status(Guid group, int id) {
+            if (group == VSConstants.VSStd2K) {
+                switch (id) {
                     // can performEditAction
                     case (int)VSConstants.VSStd2KCmdID.TYPECHAR:
                     case (int)VSConstants.VSStd2KCmdID.BACKSPACE:
@@ -235,34 +219,25 @@ namespace Microsoft.Languages.Editor.Application.Controller
                         return CanPerformEditAction();
                     case (int)VSConstants.VSStd2KCmdID.DELETE:
 
-                        if (_editorOperations.CanDelete)
-                        {
+                        if (_editorOperations.CanDelete) {
                             return CommandStatus.SupportedAndEnabled;
-                        }
-                        else
-                        {
+                        } else {
                             return CommandStatus.Supported;
                         }
 
                     case (int)VSConstants.VSStd2KCmdID.CUT:
 
-                        if (_editorOperations.CanCut)
-                        {
+                        if (_editorOperations.CanCut) {
                             return CommandStatus.SupportedAndEnabled;
-                        }
-                        else
-                        {
+                        } else {
                             return CommandStatus.Supported;
                         }
 
                     case (int)VSConstants.VSStd2KCmdID.PASTE:
 
-                        if (_editorOperations.CanPaste)
-                        {
+                        if (_editorOperations.CanPaste) {
                             return CommandStatus.SupportedAndEnabled;
-                        }
-                        else
-                        {
+                        } else {
                             return CommandStatus.Supported;
                         }
 
@@ -288,37 +263,31 @@ namespace Microsoft.Languages.Editor.Application.Controller
                     case (int)VSConstants.VSStd2KCmdID.TOPLINE_EXT:
                     case (int)VSConstants.VSStd2KCmdID.BOTTOMLINE_EXT:
                     case (int)VSConstants.VSStd2KCmdID.INSERT:
-                    case (int) VSConstants.VSStd2KCmdID.SELECTALL:
-                    case (int) VSConstants.VSStd2KCmdID.SELECTCURRENTWORD:
-                    case (int) VSConstants.VSStd2KCmdID.WORDNEXT:
-                    case (int) VSConstants.VSStd2KCmdID.WORDPREV:
-                    case (int) VSConstants.VSStd2KCmdID.TOPLINE:
-                    case (int) VSConstants.VSStd2KCmdID.BOTTOMLINE:
-                    case (int) VSConstants.VSStd2KCmdID.SCROLLUP:
-                    case (int) VSConstants.VSStd2KCmdID.SCROLLDN:
-                    case (int) VSConstants.VSStd2KCmdID.COPY:
+                    case (int)VSConstants.VSStd2KCmdID.SELECTALL:
+                    case (int)VSConstants.VSStd2KCmdID.SELECTCURRENTWORD:
+                    case (int)VSConstants.VSStd2KCmdID.WORDNEXT:
+                    case (int)VSConstants.VSStd2KCmdID.WORDPREV:
+                    case (int)VSConstants.VSStd2KCmdID.TOPLINE:
+                    case (int)VSConstants.VSStd2KCmdID.BOTTOMLINE:
+                    case (int)VSConstants.VSStd2KCmdID.SCROLLUP:
+                    case (int)VSConstants.VSStd2KCmdID.SCROLLDN:
+                    case (int)VSConstants.VSStd2KCmdID.COPY:
                         return CommandStatus.SupportedAndEnabled;
-                    case (int) VSConstants.VSStd2KCmdID.UNDO:
+                    case (int)VSConstants.VSStd2KCmdID.UNDO:
 
-                        if (UndoManager != null && 
-                            UndoManager.TextBufferUndoHistory.CanUndo)
-                            {
-                                return CommandStatus.SupportedAndEnabled;
-                            }
-                            else
-                            {
-                                return CommandStatus.Supported;
-                            }
+                        if (UndoManager != null &&
+                            UndoManager.TextBufferUndoHistory.CanUndo) {
+                            return CommandStatus.SupportedAndEnabled;
+                        } else {
+                            return CommandStatus.Supported;
+                        }
 
                     case (int)VSConstants.VSStd2KCmdID.REDO:
 
-                        if (UndoManager != null && 
-                            UndoManager.TextBufferUndoHistory.CanRedo)
-                        {
+                        if (UndoManager != null &&
+                            UndoManager.TextBufferUndoHistory.CanRedo) {
                             return CommandStatus.SupportedAndEnabled;
-                        }
-                        else
-                        {
+                        } else {
                             return CommandStatus.Supported;
                         }
                 }
@@ -333,10 +302,8 @@ namespace Microsoft.Languages.Editor.Application.Controller
         /// Performs the passed editAction if the view does not prohibit user input.
         /// </summary>
         /// <returns>True if the editAction was performed.</returns>
-        private CommandResult PerformEditAction(Action editAction)
-        {
-            if (!_view.Options.GetOptionValue<bool>(DefaultTextViewOptions.ViewProhibitUserInputId))
-            {
+        private CommandResult PerformEditAction(Action editAction) {
+            if (!_view.Options.GetOptionValue<bool>(DefaultTextViewOptions.ViewProhibitUserInputId)) {
                 editAction.Invoke();
                 return CommandResult.Executed;
             }
@@ -344,17 +311,14 @@ namespace Microsoft.Languages.Editor.Application.Controller
             return CommandResult.Disabled;
         }
 
-        private CommandStatus CanPerformEditAction()
-        {
-            if (!_view.Options.GetOptionValue<bool>(DefaultTextViewOptions.ViewProhibitUserInputId))
-            {
+        private CommandStatus CanPerformEditAction() {
+            if (!_view.Options.GetOptionValue<bool>(DefaultTextViewOptions.ViewProhibitUserInputId)) {
                 return CommandStatus.SupportedAndEnabled;
             }
 
             return CommandStatus.Supported;
         }
 
-        private ITextBufferUndoManager UndoManager
-        { get { return _undoManager; } }
+        private ITextBufferUndoManager UndoManager { get { return _undoManager; } }
     }
 }

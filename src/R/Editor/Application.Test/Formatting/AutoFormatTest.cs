@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Application.Test.Formatting {
@@ -30,11 +31,11 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
             try {
-                script.Type("{");
+                script.Type("if(x>1){ENTER}{");
                 script.DoIdle(300);
-                script.Type("{ENTER}");
+                script.Type("{ENTER}a");
 
-                string expected = "{\r\n    \r\n}";
+                string expected = "if (x > 1) {\r\n    a\r\n}";
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
@@ -48,6 +49,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
             try {
+                REditorSettings.FormatOptions.BracesOnNewLine = true;
+
                 script.Type("if(x>1){ENTER}{");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
