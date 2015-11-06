@@ -11,7 +11,7 @@ namespace Microsoft.R.Debugger.Engine {
         public const string SymbolProviderGuidString = "366C0C4E-27B0-4847-9BCB-480B139E5CCF";
         public static readonly Guid SymbolProviderGuid = new Guid(SymbolProviderGuidString);
 
-        public const string LanguageGuidString = "29C0D8E0-C01C-412B-BEE8-7A7A253A31E6";
+        public const string LanguageGuidString = "652D96EE-B796-4BD7-AD7F-EDEA65528946";
         public static readonly Guid LanguageGuid = new Guid(LanguageGuidString);
 
         public const string ExceptionCategoryGuidString = "4717209D-0829-4DA2-899B-4F885D627BBF";
