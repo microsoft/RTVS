@@ -1,4 +1,5 @@
-﻿using Microsoft.Languages.Core.Formatting;
+﻿using System;
+using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
@@ -19,6 +20,40 @@ namespace Microsoft.R.Editor.Formatting {
 
         public static bool IgnoreOnce { get; set; }
 
+        public static void HandleType(ITextView textView, ITextBuffer textBuffer, AstRoot ast, char typedChar) {
+            if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0 || IgnoreOnce) {
+                IgnoreOnce = false;
+                return;
+            }
+
+            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
+            var positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
+            if (positionInBuffer == null) {
+                return;
+            }
+
+            int position = positionInBuffer.Value.Position;
+            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
+            ITextRange formatRange;
+
+            if (ast.Comments.Contains(position)) {
+                return;
+            }
+
+            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
+            if (typedChar == '}') {
+                // If user typed } then format the enclosing scope
+                scope = ast.GetNodeOfTypeFromPosition<IScope>(position - 1);
+                FormatScope(textView, textBuffer, ast, scope, indentCaret: false);
+            } else if (typedChar == '\n' || typedChar == '\r') {
+                FormatLine(textView, textBuffer, ast, -1);
+            } else {
+                // Just format the line that was modified
+                formatRange = new TextRange(position, 0);
+                UndoableFormatRange(textView, textBuffer, ast, formatRange);
+            }
+        }
+
         /// <summary>
         /// Formats line relatively to the line that the caret is currently at
         /// </summary>
@@ -35,25 +70,16 @@ namespace Microsoft.R.Editor.Formatting {
 
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
-            ITextSnapshotLine line = snapshot.GetLineFromLineNumber(lineNumber + offset);
+            ITextSnapshotLine line = snapshot.GetLineFromLineNumber(Math.Max(0, lineNumber + offset));
             ITextRange formatRange = new TextRange(line.Start, line.Length);
 
-            ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
-            undoAction.Open(Resources.AutoFormat);
-            bool changed = false;
-
-            try {
-                // Now format the scope
-                changed = RangeFormatter.FormatRange(textView, textBuffer, formatRange, ast, REditorSettings.FormatOptions);
-            } finally {
-                undoAction.Close(!changed);
-            }
-        }
+            UndoableFormatRange(textView, textBuffer, ast, formatRange);
+         }
 
         /// <summary>
         /// Formats scope the caret is currently in
         /// </summary>
-        public static void FormatCurrentScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast) {
+        public static void FormatCurrentScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast, bool indentCaret) {
             if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0) {
                 return;
             }
@@ -66,6 +92,10 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value.Position);
 
+            FormatScope(textView, textBuffer, ast, scope, indentCaret);
+        }
+
+        private static void FormatScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast, IScope scope, bool indentCaret) {
             ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
             undoAction.Open(Resources.AutoFormat);
             bool changed = false;
@@ -73,83 +103,9 @@ namespace Microsoft.R.Editor.Formatting {
             try {
                 // Now format the scope
                 changed = RangeFormatter.FormatRange(textView, textBuffer, scope, ast, REditorSettings.FormatOptions);
-            } finally {
-                undoAction.Close(!changed);
-            }
-        }
-
-        public static void HandleAutoFormat(ITextView textView, ITextBuffer textBuffer, AstRoot ast, char typedChar) {
-            if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0 || IgnoreOnce) {
-                return;
-            }
-
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            var positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
-            if (positionInBuffer == null) {
-                return;
-            }
-            int position = positionInBuffer.Value.Position;
-            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
-            ITextRange formatRange;
-
-            if (ast.Comments.Contains(position)) {
-                return;
-            }
-
-            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-            if (typedChar == '}') {
-                // If user typed } then fromat the enclosing scope
-                scope = ast.GetNodeOfTypeFromPosition<IScope>(position - 1);
-                formatRange = scope;
-            } else if (typedChar == '\n' || typedChar == '\r') {
-                position = snapshot.GetLineFromLineNumber(line.LineNumber - 1).Start;
-                formatRange = new TextRange(position, 0);
-            } else {
-                // Just format the line that was modified
-                formatRange = new TextRange(position, 0);
-            }
-
-            ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
-            undoAction.Open(Resources.AutoFormat);
-            bool changed = false;
-
-            try {
-                // Now format the scope
-                changed = RangeFormatter.FormatRange(textView, textBuffer, formatRange, ast, REditorSettings.FormatOptions);
-
-                // See if this was ENTER in {[whitespace]|[whitespace]} in which case
-                // we want to add another line break and indent the caret so 
-                //
-                //      if (...) {
-                //      |}
-                //
-                // turns into
-                //
-                //      if(...) {
-                //          |
-                //      }
-                //
-                // we do it AFTER formatting since it is when then indentation is known
-
-                snapshot = textBuffer.CurrentSnapshot;
-                positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
-                if (positionInBuffer == null) {
-                    return;
-                }
-                position = positionInBuffer.Value.Position;
-                line = snapshot.GetLineFromPosition(position);
-
-                string textBeforeCaret = snapshot.GetText(Span.FromBounds(line.Start, position));
-                if (string.IsNullOrWhiteSpace(textBeforeCaret)) {
-                    string textAfterCaret = snapshot.GetText(Span.FromBounds(position, line.End)).TrimStart();
-                    if (textAfterCaret.Length >= 1 && textAfterCaret[0] == '}' && scope != null && scope.OpenCurlyBrace != null) {
-                        // Open curly brace must be on the previous line
-                        int openCurlyLineNumber = snapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
-                        if (line.LineNumber == openCurlyLineNumber + 1) {
-                            IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
-                            changed = true;
-                        }
-                    }
+                if (indentCaret) {
+                    IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
+                    changed = true;
                 }
             } finally {
                 undoAction.Close(!changed);
@@ -158,33 +114,42 @@ namespace Microsoft.R.Editor.Formatting {
 
         private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IScope scope, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            var positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
-            if (positionInBuffer == null) {
+
+            SnapshotPoint? positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
+            if (!positionInBuffer.HasValue) {
                 return;
             }
+
             int position = positionInBuffer.Value.Position;
             ITextSnapshotLine caretLine = snapshot.GetLineFromPosition(position);
 
-            int braceIndentSize = SmartIndenter.OuterIndentSizeFromScope(textBuffer, scope, options);
-            string braceindentString = IndentBuilder.GetIndentString(braceIndentSize, options.IndentType, options.TabSize);
-
             int innerIndentSize = SmartIndenter.InnerIndentSizeFromScope(textBuffer, scope, options);
-            string innerIndentString = IndentBuilder.GetIndentString(innerIndentSize, options.IndentType, options.TabSize);
 
-            ITextSnapshotLine line = snapshot.GetLineFromPosition(scope.OpenCurlyBrace.Start);
-            string lineBreakText = line.GetLineBreakText();
+            int openBraceLineNumber = snapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
+            ITextSnapshotLine braceLine = snapshot.GetLineFromLineNumber(openBraceLineNumber);
+            ITextSnapshotLine indentLine = snapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
+            string lineBreakText = braceLine.GetLineBreakText();
 
-            textBuffer.Replace(Span.FromBounds(caretLine.Start, caretLine.End - 1),
-                innerIndentString + lineBreakText + braceindentString);
+            textBuffer.Insert(indentLine.Start, lineBreakText);
 
-            var caretPoint = textView.MapUpToBuffer(caretLine.Start.Position, textBuffer);
-            if (caretPoint != null) {
-                textView.Caret.MoveTo(
-                    new VirtualSnapshotPoint(
-                        textView.TextBuffer.CurrentSnapshot,
-                        caretPoint.Value.Position + innerIndentString.Length
-                    )
-                );
+            positionInBuffer = textView.MapUpToBuffer(indentLine.Start.Position, textView.TextBuffer);
+            if (!positionInBuffer.HasValue) {
+                return;
+            }
+
+            indentLine = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(positionInBuffer.Value);
+            textView.Caret.MoveTo(new VirtualSnapshotPoint(indentLine, innerIndentSize));
+        }
+
+        private static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, AstRoot ast, ITextRange formatRange) {
+            ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
+            undoAction.Open(Resources.AutoFormat);
+            bool changed = false;
+            try {
+                // Now format the scope
+                changed = RangeFormatter.FormatRange(textView, textBuffer, formatRange, ast, REditorSettings.FormatOptions);
+            } finally {
+                undoAction.Close(!changed);
             }
         }
 

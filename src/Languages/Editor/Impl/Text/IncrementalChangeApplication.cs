@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Text {
     public static class IncrementalTextChangeApplication {
+#if _NOT_USED_
         /// Takes current text buffer and new text then builds list of changed
         /// regions and applies them to the buffer. This way we can avoid 
         /// destruction of bookmarks and other markers. Complete
@@ -41,13 +42,28 @@ namespace Microsoft.Languages.Editor.Text {
                 }
             }
         }
-
+#endif
+        /// <summary>
+        /// Incrementally applies whitespace change to the buffer 
+        /// having old and new tokens produced from the 'before formatting' 
+        /// and 'after formatting' versions of the same text.
+        /// </summary>
+        /// <param name="textBuffer">Text buffer to apply changes to</param>
+        /// <param name="newTextProvider">Text provider of the text fragment before formatting</param>
+        /// <param name="newTextProvider">Text provider of the formatted text</param>
+        /// <param name="oldTokens">Tokens from the 'before' text fragment</param>
+        /// <param name="newTokens">Tokens from the 'after' text fragment</param>
+        /// <param name="formatRange">Range that is being formatted in the text buffer</param>
+        /// <param name="transactionName">Name of the undo transaction to open</param>
+        /// <param name="selectionTracker">Selection tracker object that will save, track
+        /// and restore selection after changes have been applied.</param>
         public static void ApplyChangeByTokens(
             ITextBuffer textBuffer,
+            ITextProvider oldTextProvider,
             ITextProvider newTextProvider,
             IReadOnlyList<ITextRange> oldTokens,
             IReadOnlyList<ITextRange> newTokens,
-            int start,
+            ITextRange formatRange,
             string transactionName,
             ISelectionTracker selectionTracker) {
 
@@ -56,16 +72,27 @@ namespace Microsoft.Languages.Editor.Text {
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
                 using (var selectionUndo = new SelectionUndo(selectionTracker, transactionName, automaticTracking: false)) {
                     using (ITextEdit edit = textBuffer.CreateEdit()) {
-                        // Replace whitespace between tokens in reverse so relative positions match
-                        int oldStart = 0;
-                        int newStart = 0;
-                        for (int i = newTokens.Count - 1; i >= 0; i--) {
-                            string newText = newTextProvider.GetText(TextRange.FromBounds(newStart, newTokens[i].Start));
-                            edit.Replace(start + oldStart, oldTokens[i].Start - oldStart, newText);
-                            oldStart = oldTokens[i].End;
-                            newStart = newTokens[i].End;
-                        }
+                        if (oldTokens.Count > 0) {
+                            // Replace whitespace between tokens in reverse so relative positions match
+                            int oldEnd = oldTextProvider.Length;
+                            int newEnd = newTextProvider.Length;
+                            string oldText, newText;
+                            for (int i = newTokens.Count - 1; i >= 0; i--) {
+                                oldText = oldTextProvider.GetText(TextRange.FromBounds(oldTokens[i].End, oldEnd));
+                                newText = newTextProvider.GetText(TextRange.FromBounds(newTokens[i].End, newEnd));
+                                if (oldText != newText) {
+                                    edit.Replace(formatRange.Start + oldTokens[i].End, oldEnd - oldTokens[i].End, newText);
+                                }
+                                oldEnd = oldTokens[i].Start;
+                                newEnd = newTokens[i].Start;
+                            }
+                            newText = newTextProvider.GetText(TextRange.FromBounds(0, newEnd));
+                            edit.Replace(formatRange.Start, oldEnd, newText);
+                        } else {
+                            string newText = newTextProvider.GetText(TextRange.FromBounds(0, newTextProvider.Length));
+                            edit.Replace(formatRange.Start, formatRange.Length, newText);
 
+                        }
                         edit.Apply();
                     }
                 }
