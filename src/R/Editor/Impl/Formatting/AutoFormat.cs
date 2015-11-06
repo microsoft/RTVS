@@ -17,8 +17,69 @@ namespace Microsoft.R.Editor.Formatting {
             return ch == '\n' || ch == '\r' || ch == ';';
         }
 
+        public static bool IgnoreOnce { get; set; }
+
+        /// <summary>
+        /// Formats line relatively to the line that the caret is currently at
+        /// </summary>
+        public static void FormatLine(ITextView textView, ITextBuffer textBuffer, AstRoot ast, int offset) {
+            if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0 || IgnoreOnce) {
+                IgnoreOnce = false;
+                return;
+            }
+
+            SnapshotPoint? caretPoint = MapCaretToBuffer(textView, textBuffer);
+            if (!caretPoint.HasValue) {
+                return;
+            }
+
+            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
+            int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
+            ITextSnapshotLine line = snapshot.GetLineFromLineNumber(lineNumber + offset);
+            ITextRange formatRange = new TextRange(line.Start, line.Length);
+
+            ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
+            undoAction.Open(Resources.AutoFormat);
+            bool changed = false;
+
+            try {
+                // Now format the scope
+                changed = RangeFormatter.FormatRange(textView, textBuffer, formatRange, ast, REditorSettings.FormatOptions);
+            } finally {
+                undoAction.Close(!changed);
+            }
+        }
+
+        /// <summary>
+        /// Formats scope the caret is currently in
+        /// </summary>
+        public static void FormatCurrentScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast) {
+            if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0) {
+                return;
+            }
+
+            SnapshotPoint? caretPoint = MapCaretToBuffer(textView, textBuffer);
+            if (!caretPoint.HasValue) {
+                return;
+            }
+
+            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
+            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value.Position);
+
+            ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
+            undoAction.Open(Resources.AutoFormat);
+            bool changed = false;
+
+            try {
+                // Now format the scope
+                changed = RangeFormatter.FormatRange(textView, textBuffer, scope, ast, REditorSettings.FormatOptions);
+            } finally {
+                undoAction.Close(!changed);
+            }
+        }
+
         public static void HandleAutoFormat(ITextView textView, ITextBuffer textBuffer, AstRoot ast, char typedChar) {
-            if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0 || !IsAutoformatTriggerCharacter(typedChar)) {
+            if (!REditorSettings.AutoFormat || textBuffer.CurrentSnapshot.Length == 0 || IgnoreOnce) {
                 return;
             }
 
@@ -125,6 +186,11 @@ namespace Microsoft.R.Editor.Formatting {
                     )
                 );
             }
+        }
+
+        private static SnapshotPoint? MapCaretToBuffer(ITextView textView, ITextBuffer textBuffer) {
+            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
+            return textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
         }
     }
 }

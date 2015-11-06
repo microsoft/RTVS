@@ -18,20 +18,15 @@ namespace Microsoft.R.Editor.Commands {
     /// Implements <seealso cref="ICommandTarget" /> 
     /// to receive typing as commands
     /// </summary>
-    internal class RTypingCommandHandler : TypingCommandHandler
-    {
+    internal class RTypingCommandHandler : TypingCommandHandler {
         public RTypingCommandHandler(ITextView textView)
-            : base(textView)
-        {
+            : base(textView) {
         }
 
         #region ICommand
-        public override void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
-        {
-            if (group == VSConstants.VSStd2K)
-            {
+        public override void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
+            if (group == VSConstants.VSStd2K) {
                 char typedChar = GetTypedChar(group, id, inputArg);
-
                 if (AutoFormat.IsAutoformatTriggerCharacter(typedChar)) {
                     IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
                     if (document != null) {
@@ -44,7 +39,8 @@ namespace Microsoft.R.Editor.Commands {
                             PositionAffinity.Successor
                         );
                         if (rPoint != null) {
-                            AutoFormat.HandleAutoFormat(TextView, rPoint.Value.Snapshot.TextBuffer, tree.AstRoot, typedChar);
+                            int offset = typedChar == '\r' || typedChar == '\n' ? -1 : 0;
+                            AutoFormat.FormatLine(TextView, rPoint.Value.Snapshot.TextBuffer, tree.AstRoot, offset);
                         }
                     }
                 }
@@ -54,8 +50,7 @@ namespace Microsoft.R.Editor.Commands {
         }
         #endregion
 
-        protected override CompletionController CompletionController
-        {
+        protected override CompletionController CompletionController {
             get { return ServiceManager.GetService<RCompletionController>(TextView); }
         }
     }
