@@ -28,21 +28,7 @@ namespace Microsoft.R.Editor.Commands {
             if (group == VSConstants.VSStd2K) {
                 char typedChar = GetTypedChar(group, id, inputArg);
                 if (AutoFormat.IsAutoformatTriggerCharacter(typedChar)) {
-                    IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
-                    if (document != null) {
-                        IEditorTree tree = document.EditorTree;
-                        tree.EnsureTreeReady();
-                        var rPoint = TextView.BufferGraph.MapDownToFirstMatch(
-                            TextView.Caret.Position.BufferPosition,
-                            PointTrackingMode.Positive,
-                            snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType),
-                            PositionAffinity.Successor
-                        );
-                        if (rPoint != null) {
-                            int offset = typedChar == '\r' || typedChar == '\n' ? -1 : 0;
-                            AutoFormat.FormatLine(TextView, rPoint.Value.Snapshot.TextBuffer, tree.AstRoot, offset);
-                        }
-                    }
+                    HandleAutoformat(typedChar);
                 }
 
                 base.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
@@ -52,6 +38,38 @@ namespace Microsoft.R.Editor.Commands {
 
         protected override CompletionController CompletionController {
             get { return ServiceManager.GetService<RCompletionController>(TextView); }
+        }
+
+        private void HandleAutoformat(char typedChar) {
+            IEditorTree tree;
+            SnapshotPoint? rPoint = GetCaretPointInBuffer(out tree);
+            if (rPoint.HasValue) {
+                ITextBuffer subjectBuffer = rPoint.Value.Snapshot.TextBuffer;
+                if (typedChar == '\r' || typedChar == '\n' || typedChar == ';') {
+                    int offset = typedChar == '\r' || typedChar == '\n' ? -1 : 0;
+                    AutoFormat.FormatLine(TextView, subjectBuffer, tree.AstRoot, offset);
+                }
+                else if(typedChar == '}') {
+                    AutoFormat.FormatCurrentScope(TextView, subjectBuffer, tree.AstRoot, indentCaret: false);
+                }
+            }
+        }
+
+        private SnapshotPoint? GetCaretPointInBuffer(out IEditorTree tree) {
+            tree = null;
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
+            if (document != null) {
+                tree = document.EditorTree;
+                tree.EnsureTreeReady();
+                return TextView.BufferGraph.MapDownToFirstMatch(
+                    TextView.Caret.Position.BufferPosition,
+                    PointTrackingMode.Positive,
+                    snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType),
+                    PositionAffinity.Successor
+                );
+            }
+
+            return null;
         }
     }
 }

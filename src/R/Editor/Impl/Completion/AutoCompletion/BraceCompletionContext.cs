@@ -1,11 +1,7 @@
-﻿using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Undo;
-using Microsoft.R.Editor.Document;
+﻿using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Tree.Definitions;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.BraceCompletion;
 
 namespace Microsoft.R.Editor.Completion.AutoCompletion {
