@@ -15,6 +15,7 @@ namespace Microsoft.Languages.Editor.Application.Controller
         private ITextView _view;
         private IEditorOperations _editorOperations;
         private ITextBufferUndoManager _undoManager;
+        private BraceCompletionCommandTarget _braceCompletionTarget;
 
         public void Initialize(ITextView view, IEditorOperations editorOperations, ITextBufferUndoManager undoManager)
         {
@@ -24,12 +25,16 @@ namespace Microsoft.Languages.Editor.Application.Controller
             _view = view;
             _editorOperations = editorOperations;
             _undoManager = undoManager;
+            _braceCompletionTarget = new BraceCompletionCommandTarget(view);
         }
 
         #region ICommandTarget Members
 
         public CommandResult Invoke(Guid group, int id, object args, ref object result)
         {
+            object outargs = new object();
+            _braceCompletionTarget.Invoke(group, id, args, ref outargs);
+
             if (group == VSConstants.VSStd2K)
             {
                 switch (id)
@@ -202,6 +207,7 @@ namespace Microsoft.Languages.Editor.Application.Controller
 
         public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
         {
+            _braceCompletionTarget.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
             return;
         }
 
