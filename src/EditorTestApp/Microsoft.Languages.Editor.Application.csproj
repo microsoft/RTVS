@@ -22,6 +22,7 @@
   <ItemGroup>
     <Compile Include="Composition\ContentTypeLocator.cs" />
     <Compile Include="Controller\BaseController.cs" />
+    <Compile Include="Controller\BraceCompletionCommandTarget.cs" />
     <Compile Include="Controller\DefaultKeyStrokeProcessor.cs" />
     <Compile Include="Controller\DefaultKeyStrokeProcessorProvider.cs" />
     <Compile Include="Controller\KeyToCommandMapping.cs" />
