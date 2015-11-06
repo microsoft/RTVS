@@ -11,6 +11,7 @@ using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Formatting;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Selection;
 using Microsoft.R.Editor.SmartIndent;
 using Microsoft.VisualStudio.Text;
@@ -18,18 +19,18 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class RangeFormatter {
-        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange range, AstRoot ast, RFormatOptions options) {
+        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, AstRoot ast, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
 
-            int start = range.Start;
-            int end = range.End;
+            int start = formatRange.Start;
+            int end = formatRange.End;
 
             // When user clicks editor margin to select a line, selection actually
             // ends in the beginning of the next line. In order to prevent formatting
             // of the next line that user did not select, we need to shrink span to
             // format and exclude the trailing line break.
-            ITextSnapshotLine line = snapshot.GetLineFromPosition(range.End);
-            if (line.Start.Position == range.End && range.Length > 0) {
+            ITextSnapshotLine line = snapshot.GetLineFromPosition(formatRange.End);
+            if (line.Start.Position == formatRange.End && formatRange.Length > 0) {
                 if (line.LineNumber > 0) {
                     line = snapshot.GetLineFromLineNumber(line.LineNumber - 1);
                     end = line.End.Position;
@@ -41,13 +42,13 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine startLine = snapshot.GetLineFromPosition(start);
             ITextSnapshotLine endLine = snapshot.GetLineFromPosition(end);
 
-            ITextRange rangeToFormat = TextRange.FromBounds(startLine.Start, endLine.End);
-            return FormatRangeExact(textView, textBuffer, rangeToFormat, ast, options);
+            formatRange = TextRange.FromBounds(startLine.Start, endLine.End);
+            return FormatRangeExact(textView, textBuffer, formatRange, ast, options);
         }
 
-        public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer, ITextRange range, AstRoot ast, RFormatOptions options) {
+        public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, AstRoot ast, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            Span spanToFormat = new Span(range.Start, range.Length);
+            Span spanToFormat = new Span(formatRange.Start, formatRange.Length);
             string spanText = snapshot.GetText(spanToFormat.Start, spanToFormat.Length);
             string trimmedSpanText = spanText.Trim();
 
@@ -59,8 +60,10 @@ namespace Microsoft.R.Editor.Formatting {
 
             if (!spanText.Equals(formattedText, StringComparison.Ordinal)) {
                 var selectionTracker = new RSelectionTracker(textView, textBuffer);
-                IncrementalTextChangeApplication.ApplyChange(textBuffer, spanToFormat.Start,
-                    spanToFormat.Length, formattedText, Resources.AutoFormat, selectionTracker, Int32.MaxValue);
+                RTokenizer tokenizer = new RTokenizer();
+                IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(spanText);
+                IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
+                IncrementalTextChangeApplication.ApplyChangeByTokens(textBuffer, new TextStream(formattedText), oldTokens, newTokens, formatRange.Start, Resources.AutoFormat, selectionTracker);
                 return true;
             }
 
