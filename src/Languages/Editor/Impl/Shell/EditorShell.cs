@@ -183,9 +183,10 @@ namespace Microsoft.Languages.Editor.Shell {
         private static void CacheHostProperties() {
             // Dev12 bug 786618 - Cache some host properties so that they can be accessed from background
             // threads even after the host has been cleaned up.
-
-            HostUserFolder = Current.UserFolder;
-            HostLocaleId = Current.LocaleId;
+            DispatchOnUIThread(() => {
+                HostUserFolder = Current.UserFolder;
+                HostLocaleId = Current.LocaleId;
+            });
         }
 
         private static void DisposeSettings() {
