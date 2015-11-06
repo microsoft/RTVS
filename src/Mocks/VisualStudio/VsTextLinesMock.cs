@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace Microsoft.VisualStudio.Shell.Mocks
-{
+namespace Microsoft.VisualStudio.Shell.Mocks {
     public sealed class VsTextLinesMock : VsTextBufferMock, IVsTextLines, IObjectWithSite, IConnectionPointContainer
     {
         public int AdviseTextLinesEvents(IVsTextLinesEvents pSink, out uint pdwCookie)

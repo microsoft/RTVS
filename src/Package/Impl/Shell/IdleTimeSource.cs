@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -17,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             crinfo[0].grfcadvf = (uint)_OLECADVF.olecadvfModal | (uint)_OLECADVF.olecadvfRedrawOff | (uint)_OLECADVF.olecadvfWarningsOff;
             crinfo[0].uIdleTimeInterval = 200;
 
-            var oleComponentManager = ServiceProvider.GlobalProvider.GetService(typeof(SOleComponentManager)) as IOleComponentManager;
+            var oleComponentManager = AppShell.Current.GetGlobalService<IOleComponentManager>(typeof(SOleComponentManager));
             oleComponentManager.FRegisterComponent(this, crinfo, out _componentID);
         }
 

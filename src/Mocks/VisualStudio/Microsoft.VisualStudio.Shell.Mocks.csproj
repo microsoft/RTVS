@@ -167,6 +167,7 @@
     <Compile Include="ImageHandleMock.cs" />
     <Compile Include="InteractiveWindowMock.cs" />
     <Compile Include="MenuCommandServiceMock.cs" />
+    <Compile Include="OleComponentManagerMock.cs" />
     <Compile Include="ProjectServiceAccessorMock.cs" />
     <Compile Include="ProjectServiceMock.cs" />
     <Compile Include="TextManagerMock.cs" />
@@ -178,6 +179,8 @@
     <Compile Include="VsInteractiveWindowFactoryMock.cs" />
     <Compile Include="VsInteractiveWindowMock.cs" />
     <Compile Include="VsRegisterEditorsMock.cs" />
+    <Compile Include="VsSettingsManagerMock.cs" />
+    <Compile Include="VsSettingsStoreMock.cs" />
     <Compile Include="VsTextBufferMock.cs" />
     <Compile Include="VsTextLinesMock.cs" />
     <Compile Include="VsTextViewMock.cs" />

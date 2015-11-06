@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal static class ProjectIconProvider {
         private static IVsImageMonikerImageList _monikerImageList;
-        private static ImageList _imageList = new ImageList();
+        private static ImageList _imageList;
 
         public static ImageMoniker ProjectNodeImage { get; private set; }
         public static ImageMoniker RFileNodeImage { get; private set; }
@@ -19,6 +19,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         public static void LoadProjectImages() {
             if (_monikerImageList == null) {
                 IVsImageService2 imageService = AppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
+
+                if(_imageList == null) {
+                    _imageList = new ImageList();
+                }
 
                 _imageList.Images.Add(Resources.RProjectNode);
                 _imageList.Images.Add(Resources.RFileNode);
