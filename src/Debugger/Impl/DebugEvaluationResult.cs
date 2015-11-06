@@ -95,7 +95,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task<DebugEvaluationResult> SetValueAsync(string value) {
-            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"));
+            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0);
         }
     }
 
@@ -214,7 +214,8 @@ namespace Microsoft.R.Debugger {
 
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
-            int? maxLength = null
+            int? maxLength = null,
+            int? reprMaxLength = null
         ) {
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -222,7 +223,9 @@ namespace Microsoft.R.Debugger {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
             }
 
-            var call = Invariant($"rtvs:::toJSON(rtvs:::describe_children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, {fields.ToRVector()}, {maxLength}))");
+            var call = Invariant($@"rtvs:::toJSON(rtvs:::describe_children(
+                {Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, 
+                {fields.ToRVector()}, {maxLength}, {reprMaxLength}))");
             var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),

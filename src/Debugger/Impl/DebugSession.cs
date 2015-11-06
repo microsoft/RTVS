@@ -152,17 +152,26 @@ namespace Microsoft.R.Debugger {
             return token;
         }
 
-        public Task<DebugEvaluationResult> EvaluateAsync(string expression, string name = null, string env = "NULL") {
-            return EvaluateAsync(null, expression, name, env);
+        public Task<DebugEvaluationResult> EvaluateAsync(string expression) {
+            return EvaluateAsync(null, expression);
         }
 
-        public async Task<DebugEvaluationResult> EvaluateAsync(DebugStackFrame stackFrame, string expression, string name = null, string env = "NULL") {
+        public async Task<DebugEvaluationResult> EvaluateAsync(
+            DebugStackFrame stackFrame,
+            string expression,
+            string name = null,
+            string env = null,
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
+            int? reprMaxLength = null
+        ) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
             await InitializeAsync();
 
-            var jEvalResult = await InvokeDebugHelperAsync<JObject>(Invariant($"rtvs:::toJSON(rtvs:::eval_and_describe({expression.ToRStringLiteral()}, {env}))"));
+            env = env ?? stackFrame?.SysFrame ?? "NULL";
+            var code = Invariant($"rtvs:::toJSON(rtvs:::eval_and_describe({expression.ToRStringLiteral()}, {env},, {fields.ToRVector()},, {reprMaxLength}))");
+            var jEvalResult = await InvokeDebugHelperAsync<JObject>(code);
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
         }
 
