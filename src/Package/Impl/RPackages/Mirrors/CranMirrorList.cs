@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
     /// <summary>
@@ -58,8 +59,10 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
             string content;
 
             if (File.Exists(_cranCsvFileTempPath)) {
-                using (var streamReader = new StreamReader(_cranCsvFileTempPath)) {
-                    content = streamReader.ReadToEnd();
+                using (var fs = File.Open(_cranCsvFileTempPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+                    byte[] buffer = new byte[fs.Length];
+                    fs.Read(buffer, 0, (int)fs.Length);
+                    content = Encoding.UTF8.GetString(buffer);
                 }
             } else {
                 var assembly = Assembly.GetExecutingAssembly();
@@ -72,19 +75,22 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
             ReadCsv(content);
 
             using (WebClient webClient = new WebClient()) {
+                string tempFile = Path.GetTempFileName();
                 webClient.DownloadFileCompleted += OnDownloadFileCompleted;
-                webClient.DownloadFileAsync(new Uri("https://cran.r-project.org/CRAN_mirrors.csv", UriKind.Absolute), _cranCsvFileTempPath);
+                webClient.DownloadFileAsync(new Uri("https://cran.r-project.org/CRAN_mirrors.csv", UriKind.Absolute), tempFile, tempFile);
             }
         }
 
         private static void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e) {
+            string file = e.UserState as string;
             string content = null;
 
             if (!e.Cancelled && e.Error != null) {
                 try {
-                    if (File.Exists(_cranCsvFileTempPath)) {
-                        var sr = new StreamReader(_cranCsvFileTempPath);
+                    if (File.Exists(file)) {
+                        var sr = new StreamReader(file);
                         content = sr.ReadToEnd();
+                        File.Copy(file, _cranCsvFileTempPath);
                     }
                 } catch (IOException) { }
             }

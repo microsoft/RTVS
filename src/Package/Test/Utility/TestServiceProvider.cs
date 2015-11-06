@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Mocks;
@@ -24,6 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility
 
             _guidServices.Add(typeof(SVsImageService).GUID, new VsImageServiceMock());
             _guidServices.Add(typeof(SVsUIShell).GUID, new VsUiShellMock());
+            _guidServices.Add(typeof(SOleComponentManager).GUID, new OleComponentManagerMock());
+            _guidServices.Add(typeof(SVsSettingsManager).GUID, new VsSettingsManagerMock());
         }
 
         public object GetService(Type serviceType)

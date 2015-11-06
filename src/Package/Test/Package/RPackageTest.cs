@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -10,39 +12,40 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class RPackageTest : UnitTestBase
-    {
+    public class RPackageTest : UnitTestBase {
         [TestMethod]
-        public void RPackage_ConstructionTest()
-        {
-            EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
+        public void RPackage_ConstructionTest() {
+            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
+                var package = new TestRPackage();
+                package.Init();
+                package.Close();
 
-            var package = new TestRPackage();
-            package.Init();
-            package.Close();
+                evt.Set();
+            }, RPackageTestCompositionCatalog.Current);
         }
 
         [TestMethod]
-        public void RPackage_EditorFactoryTest()
-        {
-            EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
+        public void RPackage_EditorFactoryTest() {
+            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
+                var package = new TestRPackage();
+                package.Init();
 
-            var package = new TestRPackage();
-            package.Init();
+                IntPtr docView;
+                IntPtr docData;
+                string caption;
+                Guid commandUiGuid;
+                int flags;
 
-            IntPtr docView;
-            IntPtr docData;
-            string caption;
-            Guid commandUiGuid;
-            int flags;
+                var editorFactory = new REditorFactory(package);
+                editorFactory.InstanceFactory = new TestInstanceFactory();
 
-            var editorFactory = new REditorFactory(package);
-            editorFactory.InstanceFactory = new TestInstanceFactory();
+                editorFactory.CreateEditorInstance(VSConstants.CEF_OPENFILE, "file.r", string.Empty, null, 0, IntPtr.Zero,
+                    out docView, out docData, out caption, out commandUiGuid, out flags);
 
-            editorFactory.CreateEditorInstance(VSConstants.CEF_OPENFILE, "file.r", string.Empty, null, 0, IntPtr.Zero,
-                out docView, out docData, out caption, out commandUiGuid, out flags);
+                package.Close();
 
-            package.Close();
+                evt.Set();
+            }, RPackageTestCompositionCatalog.Current);
         }
     }
 }

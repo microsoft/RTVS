@@ -12,7 +12,7 @@ namespace Microsoft.Languages.Editor.Application.Packages
     [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
-    [Name("HTML Text View Connection Listener")]
+    [Name("R Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class TestRTextViewConnectionListener : RTextViewConnectionListener
     {
