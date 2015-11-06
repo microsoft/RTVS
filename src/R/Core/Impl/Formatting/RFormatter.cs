@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.Tokens;
-using System.Diagnostics;
 
 namespace Microsoft.R.Core.Formatting {
     /// <summary>
@@ -106,11 +105,19 @@ namespace Microsoft.R.Core.Formatting {
                 }
             }
 
-            if (_options.BracesOnNewLine) {
-                _tb.SoftLineBreak();
+            // If scope is empty, make it { }
+            if (_tokens.NextToken.TokenType == RTokenType.CloseCurlyBrace && 
+                 IsWhiteSpaceOnlyRange(_tokens.CurrentToken.End, _tokens.NextToken.Start)) {
+                AppendToken(leadingSpace: _tokens.PreviousToken.TokenType == RTokenType.CloseBrace, trailingSpace: true);
+                AppendToken(leadingSpace: false, trailingSpace: false);
+                return;
             } else {
-                if (!IsOpenBraceToken(_tokens.PreviousToken.TokenType)) {
-                    _tb.AppendSpace();
+                if (_options.BracesOnNewLine) {
+                    _tb.SoftLineBreak();
+                } else {
+                    if (!IsOpenBraceToken(_tokens.PreviousToken.TokenType)) {
+                        _tb.AppendSpace();
+                    }
                 }
             }
 
@@ -665,6 +672,18 @@ namespace Microsoft.R.Core.Formatting {
             var tokenizer = new RTokenizer(separateComments: false);
             var tokens = tokenizer.Tokenize(_textProvider, 0, _textProvider.Length);
             _tokens = new TokenStream<RToken>(tokens, RToken.EndOfStreamToken);
+        }
+
+        private bool IsWhiteSpaceOnlyRange(int start, int end) {
+            if(end < start) {
+                end = _textProvider.Length;
+            }
+            for (int i = start; i < end; i++) {
+                if (char.IsWhiteSpace(_textProvider[i])) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

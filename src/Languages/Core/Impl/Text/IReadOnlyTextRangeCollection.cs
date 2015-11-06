@@ -5,11 +5,7 @@ namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Represents collection of ITextRange items
     /// </summary>
-    public interface IReadOnlyTextRangeCollection<T> : ICompositeTextRange, IReadOnlyCollection<T> {
-        /// <summary>
-        /// Retrieves Nth item in the collection
-        /// </summary>
-        T this[int index] { get; }
+    public interface IReadOnlyTextRangeCollection<T> : ICompositeTextRange, IReadOnlyList<T> {
 
         /// <summary>
         /// Returns index of item that starts at the given position if exists, -1 otherwise.
