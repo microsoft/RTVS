@@ -1,6 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Debugger.Interop;
-using System.Runtime.InteropServices;
+﻿using System;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages {
     class ProvideDebugLanguageAttribute : RegistrationAttribute {
@@ -8,8 +7,8 @@ namespace Microsoft.VisualStudio.R.Packages {
 
         public ProvideDebugLanguageAttribute(string languageName, string languageGuid, string eeGuid, string debugEngineGuid) {
             _languageName = languageName;
-            _languageGuid = languageGuid;
-            _eeGuid = eeGuid;
+            _languageGuid = new Guid(languageGuid).ToString("B");
+            _eeGuid = new Guid(eeGuid).ToString("B");
             _engineGuid = debugEngineGuid;
         }
 
