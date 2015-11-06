@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Test.Utility;
@@ -16,15 +17,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Test.Formatting
-{
+namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class AutoFormatTest : UnitTestBase
-    {
+    public class AutoFormatTest : UnitTestBase {
         [TestMethod]
-        public void AutoFormat_TypeOneLineTest()
-        {
+        public void AutoFormat_TypeOneLineTest() {
             ITextView textView = TestAutoFormat(0, "x<-1\n");
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
@@ -33,8 +31,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void AutoFormat_FunctionDefinitionTest01()
-        {
+        public void AutoFormat_FunctionDefinitionTest01() {
             ITextView textView = TestAutoFormat(16, "\n", "x<-function(x,y,");
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -44,8 +41,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void AutoFormat_SmartIndentTest01()
-        {
+        public void AutoFormat_SmartIndentTest01() {
             ITextView textView = TestAutoFormat(8, "\n", "if(x>1){}");
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -56,8 +52,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void AutoFormat_SmartIndentTest02()
-        {
+        public void AutoFormat_SmartIndentTest02() {
             ITextView textView = TestAutoFormat(12, "\n", "if (x > 1) {\r\n    \r\n}");
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -68,8 +63,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void AutoFormat_SmartIndentTest03()
-        {
+        public void AutoFormat_SmartIndentTest03() {
             ITextView textView = TestAutoFormat(14, "\n", "if (x > 1) {\r\n}");
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -79,8 +73,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void AutoFormat_SmartIndentTest05()
-        {
+        public void AutoFormat_SmartIndentTest05() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
             var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));
@@ -95,8 +88,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void AutoFormat_SmartIndentTest06()
-        {
+        public void AutoFormat_SmartIndentTest06() {
             ITextView textView = TestAutoFormat(6, "\n", "func({})");
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -107,8 +99,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void AutoFormat_SmartIndentTest07()
-        {
+        public void AutoFormat_SmartIndentTest07() {
             ITextView textView = TestAutoFormat(13, "\n", "if (x > 1)\r\n{\r\n}");
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -118,8 +109,7 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void AutoFormat_ScopeTest01()
-        {
+        public void AutoFormat_ScopeTest01() {
             string content = "if (x > 1)\r\n{ x<-1\r\n";
             ITextView textView = TestAutoFormat(content.Length, "}", content);
 
@@ -129,30 +119,28 @@ namespace Microsoft.R.Editor.Test.Formatting
             Assert.AreEqual(expected, actual);
         }
 
-        private ITextView TestAutoFormat(int position, string textToType, string initialContent = "")
-        {
+        private ITextView TestAutoFormat(int position, string textToType, string initialContent = "") {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(initialContent, position, out ast);
 
-            textView.TextBuffer.Changed += (object sender, TextContentChangedEventArgs e) =>
-            {
+            textView.TextBuffer.Changed += (object sender, TextContentChangedEventArgs e) => {
                 List<TextChangeEventArgs> textChanges = TextUtility.ConvertToRelative(e);
                 ast.ReflectTextChanges(textChanges);
 
-                if (e.Changes[0].NewText.Length == 1)
-                {
-                    if (e.Changes[0].NewText[0] == '\r' || e.Changes[0].NewText[0] == '\n')
-                    {
-                        position = e.Changes[0].OldPosition + 1;
-                        textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
+                if (e.Changes[0].NewText.Length == 1) {
+                    char ch = e.Changes[0].NewText[0];
+                    if (AutoFormat.IsAutoformatTriggerCharacter(ch)) {
+                        int offset = 0;
+                        if (e.Changes[0].NewText[0] == '\r' || e.Changes[0].NewText[0] == '\n') {
+                            position = e.Changes[0].OldPosition + 1;
+                            textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
+                            offset = -1;
+                        }
+                        AutoFormat.FormatLine(textView, textView.TextBuffer, ast, offset);
                     }
-
-                    AutoFormat.HandleAutoFormat(textView, textView.TextBuffer, ast, e.Changes[0].NewText[0]);
-                }
-                else
-                {
+                } else {
                     ITextSnapshotLine line = e.After.GetLineFromPosition(position);
-                    textView.Caret.MoveTo(new SnapshotPoint(e.After, line.Length + 1));
+                    textView.Caret.MoveTo(new SnapshotPoint(e.After, Math.Min(e.After.Length, line.Length + 1)));
                 }
             };
 

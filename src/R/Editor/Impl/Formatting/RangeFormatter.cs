@@ -63,7 +63,12 @@ namespace Microsoft.R.Editor.Formatting {
                 RTokenizer tokenizer = new RTokenizer();
                 IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(spanText);
                 IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
-                IncrementalTextChangeApplication.ApplyChangeByTokens(textBuffer, new TextStream(formattedText), oldTokens, newTokens, formatRange.Start, Resources.AutoFormat, selectionTracker);
+                IncrementalTextChangeApplication.ApplyChangeByTokens(
+                    textBuffer, 
+                    new TextStream(spanText), new TextStream(formattedText), 
+                    oldTokens, newTokens, 
+                    formatRange, 
+                    Resources.AutoFormat, selectionTracker);
                 return true;
             }
 
@@ -85,16 +90,7 @@ namespace Microsoft.R.Editor.Formatting {
                 textIndentInSpaces = SmartIndenter.GetSmartIndent(line, ast);
             }
 
-            // Figure out indent from the enclosing scope
-            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-
-            // Check if position is actually inside the scope.
-            // In range formatting it may be outside as in |{...}|
-            // and in this case we want one level less of indentation.          
-
             string indentString = IndentBuilder.GetIndentString(textIndentInSpaces, options.IndentType, options.TabSize);
-            int outerIndentInSpaces = SmartIndenter.InnerIndentSizeFromScope(textBuffer, scope, options);
-            string outerIndentString = IndentBuilder.GetIndentString(outerIndentInSpaces, options.IndentType, options.TabSize);
 
             var sb = new StringBuilder();
             IList<string> lines = TextHelper.SplitTextIntoLines(formattedText);
@@ -103,7 +99,7 @@ namespace Microsoft.R.Editor.Formatting {
                 lineText = lines[i];
 
                 if (i == lines.Count - 1 && lineText.Trim() == "}") {
-                    sb.Append(outerIndentString);
+                    sb.Append(indentString);
                     sb.Append('}');
                     break;
                 }
