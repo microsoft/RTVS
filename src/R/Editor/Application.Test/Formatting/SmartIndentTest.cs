@@ -10,12 +10,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     public class SmartIndentTest {
         [TestMethod]
         public void R_SmartIndentTest() {
-            var script = new TestScript("{\r\n}", RContentTypeDefinition.ContentType);
+            var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = false;
 
             try {
                 script.MoveRight();
-                script.Type("{ENTER}a");
+                script.Type("{{ENTER}a");
                 script.DoIdle(300);
 
                 string expected = "{\r\n    a\r\n}";
