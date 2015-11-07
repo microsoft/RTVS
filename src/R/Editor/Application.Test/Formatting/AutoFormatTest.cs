@@ -29,6 +29,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [TestMethod]
         public void R_AutoFormatScopeBraces01() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = false;
 
             try {
                 script.Type("if(x>1){ENTER}{");
@@ -47,10 +48,9 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [TestMethod]
         public void R_AutoFormatScopeBraces02() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = true;
 
             try {
-                REditorSettings.FormatOptions.BracesOnNewLine = true;
-
                 script.Type("if(x>1){ENTER}{");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -67,6 +67,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [TestMethod]
         public void R_AutoFormatScopeBraces03() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = false;
 
             try {
                 script.Type("while(true) {");
@@ -105,6 +106,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [TestMethod]
         public void R_AutoFormatFuncionDefinition01() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = true;
             string text = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07, {ENTER}          yname = NULL){ENTER}{{ENTER}abind(a, )";
 
             try {
@@ -116,9 +118,9 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 @"library(abind)
 x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
           yname = NULL)
-{
-    abind(a, )
-}";
+    {
+        abind(a, )
+    }";
                 Assert.AreEqual(expected, actual);
             } finally {
                 script.Close();
