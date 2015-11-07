@@ -86,6 +86,46 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        public void R_AutoFormatScopeBraces04() {
+            var script = new TestScript(RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+            try {
+                script.Type("while(true) {");
+                script.DoIdle(300);
+                script.Type("}");
+
+                string expected = "while (true) {\r\n}";
+                string actual = script.EditorText;
+
+                Assert.AreEqual(expected, actual);
+            } finally {
+                script.Close();
+            }
+        }
+
+        [TestMethod]
+        public void R_AutoFormatScopeBraces05() {
+            var script = new TestScript(RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+            try {
+                script.Type("while(true) {");
+                script.DoIdle(300);
+                script.Type("{ENTER}if(x>1) {");
+                script.DoIdle(300);
+                script.Type("}}");
+
+                string expected = "while (true) {\r\n    if (x > 1) {\r\n    }\r\n}";
+                string actual = script.EditorText;
+
+                Assert.AreEqual(expected, actual);
+            } finally {
+                script.Close();
+            }
+        }
+
+        [TestMethod]
         public void R_AutoFormatIfNoScope() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
@@ -118,9 +158,9 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 @"library(abind)
 x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
           yname = NULL)
-    {
-        abind(a, )
-    }";
+{
+    abind(a, )
+}";
                 Assert.AreEqual(expected, actual);
             } finally {
                 script.Close();
