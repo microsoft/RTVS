@@ -6,6 +6,7 @@ using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
@@ -36,7 +37,9 @@ namespace Microsoft.R.Editor.Formatting {
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
                 AstRoot ast = document.EditorTree.AstRoot;
                 IAstNode node = ast.GetNodeOfTypeFromPosition<T>(position) as IAstNode;
-                UndoableFormatRange(textView, textBuffer, ast, node);
+                if (node != null) {
+                    UndoableFormatRange(textView, textBuffer, ast, node);
+                }
             }
         }
 
@@ -51,26 +54,36 @@ namespace Microsoft.R.Editor.Formatting {
         public static void FormatScope(ITextView textView, ITextBuffer textBuffer, int position, bool indentCaret) {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
             if (document != null) {
+                int baseIndentPosition = -1;
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
                 AstRoot ast = document.EditorTree.AstRoot;
                 IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-                FormatScope(textView, textBuffer, ast, scope, indentCaret);
+                // Scope indentation is defined by its parent statement.
+                IAstNodeWithScope parentStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(position);
+                if (parentStatement != null && parentStatement.Scope == scope) {
+                    ITextSnapshotLine baseLine = snapshot.GetLineFromPosition(parentStatement.Start);
+                    baseIndentPosition = baseLine.Start;
+                }
+                FormatScope(textView, textBuffer, ast, scope, baseIndentPosition, indentCaret);
             }
         }
 
         /// <summary>
         /// Formats specific scope
         /// </summary>
-        private static void FormatScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast, IScope scope, bool indentCaret) {
+        private static void FormatScope(ITextView textView, ITextBuffer textBuffer,
+                                        AstRoot ast, IScope scope, int baseIndentPosition, bool indentCaret) {
             ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
             undoAction.Open(Resources.AutoFormat);
             bool changed = false;
 
             try {
                 // Now format the scope
-                changed = RangeFormatter.FormatRange(textView, textBuffer, scope, ast, REditorSettings.FormatOptions);
+                changed = RangeFormatter.FormatRangeExact(textView, textBuffer, scope, ast,
+                                           REditorSettings.FormatOptions, baseIndentPosition, indentCaret);
                 if (indentCaret) {
-                    IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
+                    IAstNodeWithScope node = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(scope.Start);
+                    IndentCaretInNewScope(textView, textBuffer, node, REditorSettings.FormatOptions);
                     changed = true;
                 }
             } finally {
@@ -112,7 +125,7 @@ namespace Microsoft.R.Editor.Formatting {
             return textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
         }
 
-        private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IScope scope, RFormatOptions options) {
+        private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IAstNodeWithScope statement, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
 
             SnapshotPoint? positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
@@ -123,9 +136,9 @@ namespace Microsoft.R.Editor.Formatting {
             int position = positionInBuffer.Value.Position;
             ITextSnapshotLine caretLine = snapshot.GetLineFromPosition(position);
 
-            int innerIndentSize = SmartIndenter.InnerIndentSizeFromScope(textBuffer, scope, options);
+            int innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(textBuffer, statement, options);
 
-            int openBraceLineNumber = snapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
+            int openBraceLineNumber = snapshot.GetLineNumberFromPosition(statement.Scope.OpenCurlyBrace.Start);
             ITextSnapshotLine braceLine = snapshot.GetLineFromLineNumber(openBraceLineNumber);
             ITextSnapshotLine indentLine = snapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
             string lineBreakText = braceLine.GetLineBreakText();

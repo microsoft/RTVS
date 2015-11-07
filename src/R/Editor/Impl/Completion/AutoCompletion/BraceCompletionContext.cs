@@ -34,11 +34,11 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// </summary>
         /// <param name="session">Default brace completion session</param>
         public void Finish(IBraceCompletionSession session) {
-            if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
-                AutoFormat.IgnoreOnce = false;
-                EnsureTreeReady(session.SubjectBuffer);
-                FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, indentCaret: false);
-            }
+            //if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
+            //    AutoFormat.IgnoreOnce = false;
+            //    EnsureTreeReady(session.SubjectBuffer);
+            //    FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, indentCaret: false);
+            //}
         }
 
         /// <summary>
