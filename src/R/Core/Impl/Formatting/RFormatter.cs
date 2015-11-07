@@ -105,8 +105,8 @@ namespace Microsoft.R.Core.Formatting {
                 }
             }
 
-            // If scope is empty, make it { }
-            if (_tokens.NextToken.TokenType == RTokenType.CloseCurlyBrace && 
+            // If scope is empty, make it { } unless there is a line break already in it
+            if (_tokens.NextToken.TokenType == RTokenType.CloseCurlyBrace &&
                  IsWhiteSpaceOnlyRange(_tokens.CurrentToken.End, _tokens.NextToken.Start)) {
                 AppendToken(leadingSpace: _tokens.PreviousToken.TokenType == RTokenType.CloseBrace, trailingSpace: true);
                 AppendToken(leadingSpace: false, trailingSpace: false);
@@ -675,11 +675,15 @@ namespace Microsoft.R.Core.Formatting {
         }
 
         private bool IsWhiteSpaceOnlyRange(int start, int end) {
-            if(end < start) {
+            if (end < start) {
                 end = _textProvider.Length;
             }
             for (int i = start; i < end; i++) {
-                if (char.IsWhiteSpace(_textProvider[i])) {
+                char ch = _textProvider[i];
+                if (!char.IsWhiteSpace(ch)) {
+                    return false;
+                }
+                if (ch == '\r' || ch == '\n') {
                     return false;
                 }
             }

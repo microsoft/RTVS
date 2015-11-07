@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Application.Test.Formatting {
@@ -10,6 +11,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [TestMethod]
         public void R_SmartIndentTest() {
             var script = new TestScript("{\r\n}", RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = false;
 
             try {
                 script.MoveRight();

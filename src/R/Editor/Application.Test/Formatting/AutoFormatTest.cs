@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
-                string expected = "if (x > 1)\r\n{\r\n    a\r\n}";
+                string expected = "if (x > 1) \r\n{\r\n    a\r\n}";
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
@@ -95,7 +95,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("}");
 
-                string expected = "while (true) {\r\n}";
+                string expected = "while (true) { }";
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
@@ -114,9 +114,48 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}if(x>1) {");
                 script.DoIdle(300);
+                script.Type("{ENTER}");
                 script.Type("}}");
 
                 string expected = "while (true) {\r\n    if (x > 1) {\r\n    }\r\n}";
+                string actual = script.EditorText;
+
+                Assert.AreEqual(expected, actual);
+            } finally {
+                script.Close();
+            }
+        }
+
+        [TestMethod]
+        public void R_AutoFormatScopeBraces06() {
+            var script = new TestScript(RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = true;
+
+            try {
+                script.Type("x <-function(a) {");
+                script.DoIdle(300);
+                script.Type("{ENTER}a");
+
+                string expected = "x <- function(a) \r\n{\r\n    a\r\n}";
+                string actual = script.EditorText;
+
+                Assert.AreEqual(expected, actual);
+            } finally {
+                script.Close();
+            }
+        }
+
+        [TestMethod]
+        public void R_AutoFormatScopeBraces07() {
+            var script = new TestScript(RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = true;
+
+            try {
+                script.Type("x <-function(a,{ENTER}{TAB}b){ENTER}{");
+                script.DoIdle(300);
+                script.Type("{ENTER}a");
+
+                string expected = "x <- function(a,\r\n    b) \r\n{\r\n    a\r\n}";
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
