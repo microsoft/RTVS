@@ -513,7 +513,7 @@ namespace Microsoft.R.Host.Client {
             psi.UseShellExecute = false;
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
-            psi.Arguments = Invariant($"--rhost-connect ws://127.0.0.1:{server.Port} --rhost-plot-window {plotWindowContainerHandle.ToInt64()}");
+            psi.Arguments = Invariant($"--rhost-connect ws://127.0.0.1:{server.Port} --rhost-reparent-plot-windows {plotWindowContainerHandle.ToInt64()}");
 
             using (this)
             using (_process = Process.Start(psi)) {
