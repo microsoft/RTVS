@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.Type("[");
                 script.Type("\"");
 
-                string expected = "{ ([\"\"])}";
+                string expected = "{([\"\"])}";
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.Type("}");
                 script.DoIdle(1000);
 
-                expected = "{ ([\"\"])}";
+                expected = "{([\"\"])}";
                 actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
@@ -75,6 +75,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [TestMethod]
         public void R_ProvisionalCurlyBrace01() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = false;
 
             try {
                 script.Type("while(TRUE) {");
