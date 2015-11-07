@@ -9,7 +9,6 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Selection;
@@ -19,9 +18,9 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class RangeFormatter {
-        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, AstRoot ast, RFormatOptions options) {
+        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange,
+                                       AstRoot ast, RFormatOptions options, bool respectUserIndent = true) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-
             int start = formatRange.Start;
             int end = formatRange.End;
 
@@ -30,6 +29,7 @@ namespace Microsoft.R.Editor.Formatting {
             // of the next line that user did not select, we need to shrink span to
             // format and exclude the trailing line break.
             ITextSnapshotLine line = snapshot.GetLineFromPosition(formatRange.End);
+
             if (line.Start.Position == formatRange.End && formatRange.Length > 0) {
                 if (line.LineNumber > 0) {
                     line = snapshot.GetLineFromLineNumber(line.LineNumber - 1);
@@ -43,10 +43,11 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine endLine = snapshot.GetLineFromPosition(end);
 
             formatRange = TextRange.FromBounds(startLine.Start, endLine.End);
-            return FormatRangeExact(textView, textBuffer, formatRange, ast, options);
+            return FormatRangeExact(textView, textBuffer, formatRange, ast, options, -1, respectUserIndent);
         }
 
-        public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, AstRoot ast, RFormatOptions options) {
+        public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange,
+                                            AstRoot ast, RFormatOptions options, int baseIndentPosition, bool respectUserIndent = true) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             Span spanToFormat = new Span(formatRange.Start, formatRange.Length);
             string spanText = snapshot.GetText(spanToFormat.Start, spanToFormat.Length);
@@ -56,7 +57,7 @@ namespace Microsoft.R.Editor.Formatting {
             string formattedText = formatter.Format(trimmedSpanText);
 
             formattedText = formattedText.Trim(); // there may be inserted line breaks after {
-            formattedText = AppendIndent(textBuffer, spanToFormat.Start, ast, formattedText, options);
+            formattedText = IndentLines(textBuffer, spanToFormat.Start, ast, formattedText, options, baseIndentPosition, respectUserIndent);
 
             if (!spanText.Equals(formattedText, StringComparison.Ordinal)) {
                 var selectionTracker = new RSelectionTracker(textView, textBuffer);
@@ -64,10 +65,10 @@ namespace Microsoft.R.Editor.Formatting {
                 IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(spanText);
                 IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
                 IncrementalTextChangeApplication.ApplyChangeByTokens(
-                    textBuffer, 
-                    new TextStream(spanText), new TextStream(formattedText), 
-                    oldTokens, newTokens, 
-                    formatRange, 
+                    textBuffer,
+                    new TextStream(spanText), new TextStream(formattedText),
+                    oldTokens, newTokens,
+                    formatRange,
                     Resources.AutoFormat, selectionTracker);
                 return true;
             }
@@ -79,27 +80,46 @@ namespace Microsoft.R.Editor.Formatting {
         /// Appends indentation to each line so formatted text appears properly 
         /// indented inside the host document (script block in HTML page).
         /// </summary>
-        private static string AppendIndent(ITextBuffer textBuffer, int position, AstRoot ast, string formattedText, RFormatOptions options) {
-            ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromPosition(position);
-            string lineText = line.GetText();
-            int textIndentInSpaces;
+        private static string IndentLines(ITextBuffer textBuffer, int rangeStartPosition, AstRoot ast,
+                                           string formattedText, RFormatOptions options,
+                                           int statementPosition, bool respectUserIndent = true) {
+            ITextSnapshotLine firstLine = textBuffer.CurrentSnapshot.GetLineFromPosition(rangeStartPosition);
+            string firstLineText = firstLine.GetText();
+            int baseIndentInSpaces;
 
-            if (RespectUserIndent(textBuffer, ast, position)) {
-                textIndentInSpaces = IndentBuilder.TextIndentInSpaces(lineText, options.TabSize);
-            } else if(lineText.Trim() == "}") {
-                textIndentInSpaces = Math.Max(0, SmartIndenter.GetSmartIndent(line, ast) - options.IndentSize);
+            if (statementPosition >= 0) {
+                // If parent statement position is provided, use it to determine indentation
+                ITextSnapshotLine statementLine = textBuffer.CurrentSnapshot.GetLineFromPosition(statementPosition);
+                baseIndentInSpaces = SmartIndenter.GetSmartIndent(statementLine, ast);
+            } else if (respectUserIndent && RespectUserIndent(textBuffer, ast, rangeStartPosition)) {
+                // Determine indent from fist line in multiline constructs
+                // such as when function argument list spans multiple lines
+                baseIndentInSpaces = IndentBuilder.TextIndentInSpaces(firstLineText, options.TabSize);
+            } else {
+                baseIndentInSpaces = SmartIndenter.GetSmartIndent(firstLine, ast);
             }
-            else {
-                textIndentInSpaces = SmartIndenter.GetSmartIndent(line, ast);
-            }
 
-            string indentString = IndentBuilder.GetIndentString(textIndentInSpaces, options.IndentType, options.TabSize);
-
+            string indentString = IndentBuilder.GetIndentString(baseIndentInSpaces, options.IndentType, options.TabSize);
+ 
             var sb = new StringBuilder();
             IList<string> lines = TextHelper.SplitTextIntoLines(formattedText);
 
             for (int i = 0; i < lines.Count; i++) {
-                lineText = lines[i];
+                string lineText = lines[i];
+
+                if (i == 0 && lineText.Trim() == "{") {
+                    if (options.BracesOnNewLine && !LineBreakBeforePosition(textBuffer, rangeStartPosition)) {
+                        sb.Append("\r\n");
+                    }
+                    if (statementPosition < 0 || options.BracesOnNewLine) {
+                        sb.Append(indentString);
+                    }
+                    sb.Append('{');
+                    if (i < lines.Count - 1) {
+                        sb.Append("\r\n");
+                    }
+                    continue;
+                }
 
                 if (i == lines.Count - 1 && lineText.Trim() == "}") {
                     sb.Append(indentString);
@@ -113,12 +133,25 @@ namespace Microsoft.R.Editor.Formatting {
                 }
 
                 sb.Append(lineText);
-
-                if (i < lines.Count - 1)
+                if (i < lines.Count - 1) {
                     sb.Append("\r\n");
+                }
             }
 
             return sb.ToString();
+        }
+
+        private static bool LineBreakBeforePosition(ITextBuffer textBuffer, int position) {
+            for (int i = position - 1; i >= 0; i--) {
+                char ch = textBuffer.CurrentSnapshot[i];
+                if (ch == '\r' || ch == '\n') {
+                    return true;
+                }
+                if (!char.IsWhiteSpace(ch)) {
+                    break;
+                }
+            }
+            return false;
         }
 
         /// <summary>

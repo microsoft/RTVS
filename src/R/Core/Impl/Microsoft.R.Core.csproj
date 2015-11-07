@@ -95,6 +95,7 @@
     <Compile Include="AST\Statements\Definitions\IKeywordScopeStatement.cs" />
     <Compile Include="AST\Statements\Definitions\IKeyword.cs" />
     <Compile Include="AST\Statements\Definitions\IStatement.cs" />
+    <Compile Include="AST\Statements\Definitions\IStatementWithScope.cs" />
     <Compile Include="AST\Statements\EmptyStatement.cs" />
     <Compile Include="AST\Statements\Functions\FunctionStatement.cs" />
     <Compile Include="AST\Statements\KeywordExpression.cs" />
