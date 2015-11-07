@@ -165,6 +165,24 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        public void R_AutoFormatScopeBraces08() {
+            var script = new TestScript("while (true) {\r\n}", RContentTypeDefinition.ContentType);
+            REditorSettings.FormatOptions.BracesOnNewLine = true;
+
+            try {
+                script.MoveDown();
+                script.Enter();
+
+                string expected = "while (true) {\r\n\r\n}";
+                string actual = script.EditorText;
+
+                Assert.AreEqual(expected, actual);
+            } finally {
+                script.Close();
+            }
+        }
+
+        [TestMethod]
         public void R_AutoFormatIfNoScope() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
@@ -196,7 +214,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected =
 @"library(abind)
 x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
-          yname = NULL)
+          yname = NULL) 
 {
     abind(a, )
 }";
