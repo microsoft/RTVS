@@ -103,17 +103,33 @@ namespace Microsoft.R.Editor.SmartIndent {
 
                 IAstNodeWithScope scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
                 if (scopeStatement != null) {
-                    if (scopeStatement.Scope == null || scopeStatement.Scope is SimpleScope) {
-                        // There is if with a simple scope above. However, we need to check 
-                        // if the line that is being formatted is actually part of this scope.
-                        if (scopeStatement.Scope == null || (scopeStatement.Scope != null && line.Start < scopeStatement.Scope.End)) {
-                            return GetBlockIndent(line) + REditorSettings.IndentSize;
-                        } else {
-                            return InnerIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
-                        }
-                    } else {
-                        return InnerIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
+                    if (scopeStatement.Scope == null) {
+                        // No scope of any kind, use block indent
+                        return GetBlockIndent(line) + REditorSettings.IndentSize;
                     }
+
+                    if (scopeStatement.Scope is SimpleScope) {
+                        // There is statement with a simple scope above. We need to check 
+                        // if the line that is being formatted is actually part of this scope.
+                        if (line.Start < scopeStatement.Scope.End) {
+                            // Indent line one level deeper that the statement
+                            return GetBlockIndent(line) + REditorSettings.IndentSize;
+                        }
+                        
+                        // Line is not part of the scope, hence regular indent
+                        return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
+                    }
+
+                    // Check if line is the last line in scope and if so, 
+                    // it should be indented at the outer indent
+                    if (scopeStatement.Scope.CloseCurlyBrace != null) {
+                        int endOfScopeLine = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.CloseCurlyBrace.Start);
+                        if (endOfScopeLine == line.LineNumber) {
+                            return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
+                        }
+                    }
+
+                    return InnerIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
                 }
             }
 
@@ -134,7 +150,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             return 0;
         }
 
-        public static int OuterIndentSizeFromScope(ITextBuffer textBuffer, IAstNode node, RFormatOptions options) {
+        public static int OuterIndentSizeFromNode(ITextBuffer textBuffer, IAstNode node, RFormatOptions options) {
             if (node != null) {
                 ITextSnapshotLine startLine = textBuffer.CurrentSnapshot.GetLineFromPosition(node.Start);
                 return OuterIndentSizeFromLine(startLine, options);

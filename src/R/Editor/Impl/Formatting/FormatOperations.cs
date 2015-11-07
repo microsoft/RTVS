@@ -82,8 +82,7 @@ namespace Microsoft.R.Editor.Formatting {
                 changed = RangeFormatter.FormatRangeExact(textView, textBuffer, scope, ast,
                                            REditorSettings.FormatOptions, baseIndentPosition, indentCaret);
                 if (indentCaret) {
-                    IAstNodeWithScope node = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(scope.Start);
-                    IndentCaretInNewScope(textView, textBuffer, node, REditorSettings.FormatOptions);
+                    IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
                     changed = true;
                 }
             } finally {
@@ -125,20 +124,20 @@ namespace Microsoft.R.Editor.Formatting {
             return textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
         }
 
-        private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IAstNodeWithScope statement, RFormatOptions options) {
+        private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IScope scope, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
 
             SnapshotPoint? positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
-            if (!positionInBuffer.HasValue) {
+            if (!positionInBuffer.HasValue || scope == null) {
                 return;
             }
 
             int position = positionInBuffer.Value.Position;
             ITextSnapshotLine caretLine = snapshot.GetLineFromPosition(position);
 
-            int innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(textBuffer, statement, options);
+            int innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(textBuffer, scope, options);
 
-            int openBraceLineNumber = snapshot.GetLineNumberFromPosition(statement.Scope.OpenCurlyBrace.Start);
+            int openBraceLineNumber = snapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
             ITextSnapshotLine braceLine = snapshot.GetLineFromLineNumber(openBraceLineNumber);
             ITextSnapshotLine indentLine = snapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
             string lineBreakText = braceLine.GetLineBreakText();
