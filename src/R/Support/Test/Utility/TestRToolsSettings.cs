@@ -32,9 +32,12 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public string WorkingDirectory { get; set; }
-
         public void LoadFromStorage() {
         }
+
+        public string WorkingDirectory { get; set; } = string.Empty;
+
+        public string[] WorkingDirectoryList { get; set; } = new string[0];
+
     }
 }

@@ -5,7 +5,6 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

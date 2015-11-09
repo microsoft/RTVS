@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set {
                 value = ValidateRBasePath(value);
                 if (value != null) {
-                    if(RToolsSettings.Current.RBasePath != value && !_loadingFromStorage) {
+                    if (RToolsSettings.Current.RBasePath != value && !_loadingFromStorage) {
                         EditorShell.Current.ShowErrorMessage(Resources.RPathChangedRestartVS);
                     }
                     RToolsSettings.Current.RBasePath = value;
@@ -82,7 +82,14 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         /// REPL working directory: not exposed in Tools | Options dialog,
         /// only saved along with other settings.
         /// </summary>
-        internal string WorkingDirectory { get; set; }
+        internal string WorkingDirectory {
+            get { return RToolsSettings.Current.WorkingDirectory; }
+            set { RToolsSettings.Current.WorkingDirectory = value; }
+        }
+        internal string[] WorkingDirectoryList {
+            get { return RToolsSettings.Current.WorkingDirectoryList; }
+            set { RToolsSettings.Current.WorkingDirectoryList = value; }
+        }
 
         public override void LoadSettingsFromStorage() {
             _loadingFromStorage = true;
@@ -95,14 +102,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         private string ValidateRBasePath(string path) {
             // If path is null, folder selector dialog was canceled
-            if(path != null) {
+            if (path != null) {
                 bool valid = IsValidRBasePath(path, showErrors: !_loadingFromStorage);
-                if(!valid) {
-                    if(_loadingFromStorage) {
+                if (!valid) {
+                    if (_loadingFromStorage) {
                         // Bad data in the settings storage. Fix the value to default.
                         path = RInstallation.GetLatestEnginePathFromRegistry();
-                    }
-                    else {
+                    } else {
                         path = null; // Prevents assignment of bad values to the property.
                     }
                 }
@@ -116,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             try {
                 string rDirectory = Path.Combine(path, @"bin\x64");
                 string rDllPath = Path.Combine(rDirectory, "R.dll");
-                if(File.Exists(rDllPath)) {
+                if (File.Exists(rDllPath)) {
                     FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(rDllPath);
                     int minor, revision;
                     RVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
@@ -126,8 +132,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 } else {
                     message = string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, rDirectory);
                 }
-            }
-            catch(ArgumentException aex) {
+            } catch (ArgumentException aex) {
                 message = string.Format(CultureInfo.InvariantCulture, Resources.Error_InvalidPath, aex.Message);
             } catch (IOException ioex) {
                 message = string.Format(CultureInfo.InvariantCulture, Resources.Error_InvalidPath, ioex.Message);
@@ -155,8 +160,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             revision = minorVersion % 10;
             if (minorVersion < 100) {
                 minor = minorVersion / 10;
-            }
-            else {
+            } else {
                 minor = minorVersion / 100;
             }
         }
