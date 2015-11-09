@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.ContentType;
@@ -15,6 +16,7 @@ namespace Microsoft.R.Editor.Commands {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             List<ICommand> commands = new List<ICommand>();
 
+            commands.Add(new GotoBraceCommand(textView, textBuffer));
             commands.Add(new CommentCommand(textView, textBuffer));
             commands.Add(new UncommentCommand(textView, textBuffer));
             commands.Add(new FormatDocumentCommand(textView, textBuffer));
