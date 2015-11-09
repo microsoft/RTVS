@@ -9,6 +9,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     [TestClass]
     public class SmartIndentTest {
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_SmartIndentTest() {
             var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = false;

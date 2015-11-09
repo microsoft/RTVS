@@ -10,12 +10,14 @@ namespace Microsoft.R.Editor.Application.Test.IO
     public class OpenFilesTest: UnitTestBase
     {
         //[TestMethod]
+        [TestCategory("Interactive")]
         public void OpenFile_R()
         {
             OpenFileInEditor("lsfit.r");
         }
 
         //[TestMethod]
+        [TestCategory("Interactive")]
         public void OpenFile_RD()
         {
             OpenFileInEditor("01.rd");

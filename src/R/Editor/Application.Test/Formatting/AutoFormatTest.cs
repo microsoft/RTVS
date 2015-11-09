@@ -9,6 +9,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     [TestClass]
     public class AutoFormatTest {
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatFunctionBraces() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
@@ -27,6 +28,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces01() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -46,6 +48,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces02() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = true;
@@ -65,6 +68,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces03() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -86,6 +90,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces04() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -105,6 +110,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces05() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -127,6 +133,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces06() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = true;
@@ -146,6 +153,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces07() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = true;
@@ -165,6 +173,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces08() {
             var script = new TestScript("while (true) {\r\n}", RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = true;
@@ -183,6 +192,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatIfNoScope() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
@@ -201,6 +211,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_AutoFormatFuncionDefinition01() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = true;

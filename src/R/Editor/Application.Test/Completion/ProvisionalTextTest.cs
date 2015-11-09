@@ -9,6 +9,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
     [TestClass]
     public sealed class RProvisionalTextTest {
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_ProvisionalText01() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
@@ -41,6 +42,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_ProvisionalText02() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
@@ -73,6 +75,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_ProvisionalCurlyBrace01() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
             REditorSettings.FormatOptions.BracesOnNewLine = false;
