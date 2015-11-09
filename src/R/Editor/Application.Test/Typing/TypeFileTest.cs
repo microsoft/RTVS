@@ -12,6 +12,7 @@ namespace Microsoft.R.Editor.Application.Test.Typing
     public class TypeFileTest : UnitTestBase
     {
         //[TestMethod]
+        [TestCategory("Interactive")]
         public void TypeFile_R()
         {
             string actual = TypeFileInEditor("lsfit-part.r", RContentTypeDefinition.ContentType);
@@ -20,6 +21,7 @@ namespace Microsoft.R.Editor.Application.Test.Typing
         }
 
         //[TestMethod]
+        [TestCategory("Interactive")]
         public void TypeFile_RD()
         {
             TypeFileInEditor("01.rd", RdContentTypeDefinition.ContentType);

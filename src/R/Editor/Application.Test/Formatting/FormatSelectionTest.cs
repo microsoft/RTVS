@@ -9,6 +9,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     [TestClass]
     public class FormatSelectionTest {
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_FormatSelection01() {
             string content = 
 @"

@@ -8,6 +8,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
     [TestClass]
     public class IntellisenseTest {
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_KeywordIntellisense() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
@@ -26,6 +27,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_LibraryIntellisense() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
@@ -44,6 +46,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [TestMethod]
+        [TestCategory("Interactive")]
         public void R_RequireIntellisense() {
             var script = new TestScript(RContentTypeDefinition.ContentType);
 
