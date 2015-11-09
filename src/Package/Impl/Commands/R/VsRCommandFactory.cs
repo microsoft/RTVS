@@ -19,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
             commands.Add(new SendToReplCommand(textView, textBuffer));
             commands.Add(new SourceRScriptCommand(textView));
             commands.Add(new GoToFormattingOptionsCommand(textView, textBuffer));
+            commands.Add(new SetWorkingDirectoryCommand(textView));
 
             return commands;
         }

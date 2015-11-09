@@ -17,5 +17,7 @@ namespace Microsoft.R.Support.Settings.Definitions {
 
         YesNoAsk LoadRDataOnProjectLoad { get; set; }
         YesNoAsk SaveRDataOnProjectUnload { get; set; }
+
+        string WorkingDirectory { get; set; }
     }
 }

@@ -36,6 +36,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
+        public string WorkingDirectory { get; set; } = string.Empty;
+
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
             // settings (if any) when settings are loaded from storage

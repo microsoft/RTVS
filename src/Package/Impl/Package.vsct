@@ -89,7 +89,7 @@
         </Strings>
       </Menu>
 
-    <!-- Windows flyout -->
+      <!-- Windows flyout -->
       <Menu guid="guidRToolsCmdSet" id="windowsSubMenu" type="Menu" priority="0x1000">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
@@ -149,33 +149,29 @@
         <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0100">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
-      </Group>
-
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRGroup" priority="0x0200">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
-      </Group>
-
       <!-- Same as above, but excludes commands that are already present in Interactive Window toolbar (like Restart). -->
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup" priority="0x0550">
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0600">
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0400">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="interactiveWindowContextGroup" priority="0x0250">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveContextMenu"/>
-      </Group>
-
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup" priority="0x0550">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
-      </Group>
-
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0650">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup" priority="0x0100">
@@ -205,10 +201,13 @@
       </Group>
 
       <!-- InteractiveWindow -->
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0500">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0510">
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0510">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0520">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
     </Groups>
@@ -316,7 +315,7 @@
       </Button>
 
       <!-- End REPL -->
-      
+
       <!-- Packages flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdInstallPackages" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="packagesSubMenuGroup"/>
@@ -497,7 +496,7 @@
 
       <!-- Windows flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdShowReplWindow" priority="0x0100" type="Button">
-         <Icon guid="replWindowIconGuid" id="replWindowIcon"/>
+        <Icon guid="replWindowIconGuid" id="replWindowIcon"/>
         <Strings>
           <ButtonText>R Interactive</ButtonText>
           <MenuText>&amp;R Interactive</MenuText>

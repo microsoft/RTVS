@@ -115,6 +115,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose Directory.
+        /// </summary>
+        public static string ChooseDirectory {
+            get {
+                return ResourceManager.GetString("ChooseDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Choose R Install Folder.
         /// </summary>
         public static string ChooseRInstallFolder {
