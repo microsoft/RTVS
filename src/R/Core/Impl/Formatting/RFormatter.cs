@@ -114,10 +114,8 @@ namespace Microsoft.R.Core.Formatting {
             } else {
                 if (_options.BracesOnNewLine) {
                     _tb.SoftLineBreak();
-                } else {
-                    if (!IsOpenBraceToken(_tokens.PreviousToken.TokenType)) {
-                        _tb.AppendSpace();
-                    }
+                } else if (!IsOpenBraceToken(_tokens.PreviousToken.TokenType)) {
+                    _tb.AppendSpace();
                 }
             }
 

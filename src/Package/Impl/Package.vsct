@@ -97,6 +97,18 @@
         </Strings>
       </Menu>
     </Menus>
+
+    <Combos>
+      <Combo guid="guidRToolsCmdSet" id="icmdWorkingDirectoryCombo" defaultWidth="140" 
+             idCommandList="icmdWorkingDirectoryComboList" priority="0x800" type="DropDownCombo">
+        <Parent guid="guidRToolsCmdSet" id="sessionDirectoryComboGroup"/>
+        <CommandFlag>StretchHorizontally</CommandFlag>
+        <CommandFlag>ComboCommitsOnDrop</CommandFlag>
+        <Strings>
+          <ButtonText>Select Working Directory</ButtonText>
+        </Strings>
+      </Combo>
+    </Combos>
     <!-- 
       In this section you can define new menu groups. A menu group is a container for 
       other menus or buttons (commands); from a visual point of view you can see the 
@@ -212,6 +224,9 @@
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0520">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="sessionDirectoryComboGroup"  priority="0x0600">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
     </Groups>
@@ -920,12 +935,15 @@
       <IDSymbol name="icmdInterruptR" value="506" />
       <IDSymbol name="icmdAttachDebugger" value="507" />
       <IDSymbol name="icmdSourceRScript" value="508" />
-
+      <IDSymbol name="icmdWorkingDirectoryCombo" value="509" />
+      <IDSymbol name="icmdWorkingDirectoryComboList" value="510" />
+      
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
       <IDSymbol name="sessionSubMenuDirectoryGroup" value="553"/>
       <IDSymbol name="sessionSubMenuRInteractiveGroup" value="554"/>
       <IDSymbol name="sessionSubMenuEditorGroup" value="555"/>
+      <IDSymbol name="sessionDirectoryComboGroup" value="556"/>
 
       <IDSymbol name="interactiveWindowContextGroup" value="570"/>
       <IDSymbol name="icmdRexecuteReplCmd" value="571"/>

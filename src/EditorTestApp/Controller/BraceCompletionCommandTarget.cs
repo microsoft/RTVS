@@ -112,7 +112,6 @@ namespace Microsoft.Languages.Editor.Application.Controller {
                             break;
                         case (int)VSConstants.VSStd2KCmdID.TAB:
                             if (!IsCompletionActive) {
-                                bool handledCommand = false;
                                 Manager.PostTab();
                             }
                             break;

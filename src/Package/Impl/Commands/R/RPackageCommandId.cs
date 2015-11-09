@@ -17,6 +17,8 @@
         public const int icmdInterruptR = 506;
         public const int icmdAttachDebugger = 507;
         public const int icmdSourceRScript = 508;
+        public const int icmdWorkingDirectoryCombo = 509;
+        public const int icmdWorkingDirectoryComboList = 510;
 
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;
