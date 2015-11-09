@@ -197,20 +197,20 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\NugetPackages\boost.1.59.0.0\build\native\boost.targets" Condition="Exists('..\NugetPackages\boost.1.59.0.0\build\native\boost.targets')" />
-    <Import Project="..\NugetPackages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets" Condition="Exists('..\NugetPackages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets')" />
-    <Import Project="..\NugetPackages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets" Condition="Exists('..\NugetPackages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets')" />
-    <Import Project="..\NugetPackages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets" Condition="Exists('..\NugetPackages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets')" />
-    <Import Project="..\NugetPackages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets" Condition="Exists('..\NugetPackages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets')" />
+    <Import Project="$(SolutionDir)\..\NugetPackages\boost.1.59.0.0\build\native\boost.targets" Condition="Exists('$(SolutionDir)\..\NugetPackages\boost.1.59.0.0\build\native\boost.targets')" />
+    <Import Project="$(SolutionDir)\..\NugetPackages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets" Condition="Exists('$(SolutionDir)\..\NugetPackages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets')" />
+    <Import Project="$(SolutionDir)\..\NugetPackages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets" Condition="Exists('$(SolutionDir)\..\NugetPackages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets')" />
+    <Import Project="$(SolutionDir)\..\NugetPackages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets" Condition="Exists('$(SolutionDir)\..\NugetPackages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets')" />
+    <Import Project="$(SolutionDir)\..\NugetPackages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets" Condition="Exists('$(SolutionDir)\..\NugetPackages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\NugetPackages\boost.1.59.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\NugetPackages\boost.1.59.0.0\build\native\boost.targets'))" />
-    <Error Condition="!Exists('..\NugetPackages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\NugetPackages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets'))" />
-    <Error Condition="!Exists('..\NugetPackages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\NugetPackages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets'))" />
-    <Error Condition="!Exists('..\NugetPackages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\NugetPackages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets'))" />
-    <Error Condition="!Exists('..\NugetPackages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\NugetPackages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets'))" />
+    <Error Condition="!Exists('$(SolutionDir)\..\NugetPackages\boost.1.59.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\..\NugetPackages\boost.1.59.0.0\build\native\boost.targets'))" />
+    <Error Condition="!Exists('$(SolutionDir)\..\NugetPackages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\..\NugetPackages\boost_system-vc140.1.59.0.0\build\native\boost_system-vc140.targets'))" />
+    <Error Condition="!Exists('$(SolutionDir)\..\NugetPackages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\..\NugetPackages\boost_date_time-vc140.1.59.0.0\build\native\boost_date_time-vc140.targets'))" />
+    <Error Condition="!Exists('$(SolutionDir)\..\NugetPackages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\..\NugetPackages\boost_regex-vc140.1.59.0.0\build\native\boost_regex-vc140.targets'))" />
+    <Error Condition="!Exists('$(SolutionDir)\..\NugetPackages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\..\NugetPackages\boost_program_options-vc140.1.59.0.0\build\native\boost_program_options-vc140.targets'))" />
   </Target>
 </Project>
