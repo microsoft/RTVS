@@ -73,6 +73,14 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BraceMatch\BraceHighlighter.cs" />
+    <Compile Include="BraceMatch\BraceHighlightProvider.cs" />
+    <Compile Include="BraceMatch\BraceHighlightTag.cs" />
+    <Compile Include="BraceMatch\BraceMatch.cs" />
+    <Compile Include="BraceMatch\BraceMatcher.cs" />
+    <Compile Include="BraceMatch\Definitions\IBraceMatcher.cs" />
+    <Compile Include="BraceMatch\Definitions\IBraceMatcherProvider.cs" />
+    <Compile Include="BraceMatch\GotoBraceCommand.cs" />
     <Compile Include="Classification\TokenBasedClassifier.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
     <Compile Include="EditorHelpers\TrackingHelper.cs" />
