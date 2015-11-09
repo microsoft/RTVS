@@ -7,6 +7,7 @@ using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
@@ -62,6 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         await evaluation.LoadWorkspace(rdataPath);
                     }
                     await evaluation.SetWorkingDirectory(_projectDirectory);
+                    RToolsSettings.Current.WorkingDirectory = _projectDirectory;
                 }
             }
         }

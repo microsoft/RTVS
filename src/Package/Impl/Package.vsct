@@ -99,9 +99,9 @@
     </Menus>
 
     <Combos>
-      <Combo guid="guidRToolsCmdSet" id="icmdWorkingDirectoryCombo" defaultWidth="140" 
-             idCommandList="icmdWorkingDirectoryComboList" priority="0x800" type="DropDownCombo">
-        <Parent guid="guidRToolsCmdSet" id="sessionDirectoryComboGroup"/>
+      <Combo guid="guidRToolsCmdSet" id="icmdSetWorkingDirectory" defaultWidth="140" 
+             idCommandList="icmdGetWorkingDirectoryList" priority="0x100" type="DropDownCombo">
+        <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
         <CommandFlag>StretchHorizontally</CommandFlag>
         <CommandFlag>ComboCommitsOnDrop</CommandFlag>
         <Strings>
@@ -213,16 +213,13 @@
       </Group>
 
       <!-- InteractiveWindow -->
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup" priority="0x0500">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
-      </Group>
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0510">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0520">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="sessionDirectoryComboGroup"  priority="0x0600">
+      <Group guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup" priority="0x0650">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
     </Groups>
@@ -291,16 +288,15 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdSetWorkingDirectory" priority="0x0400" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuDirectoryGroup"/>
+      <Button guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x0400" type="Button">
         <Icon guid="ImageCatalogGuid" id="DocumentsFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Set Working Directory...</ButtonText>
-          <MenuText>Set Working &amp;Directory...</MenuText>
-          <CommandName>Set Working Directory</CommandName>
+          <ButtonText>Select Working Directory...</ButtonText>
+          <MenuText>Select Working &amp;Directory...</MenuText>
+          <CommandName>Select Working Directory</CommandName>
         </Strings>
       </Button>
       <!-- End Workspace flyout -->
@@ -853,7 +849,14 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0450">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
-
+    
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+    
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
+    </CommandPlacement>
   </CommandPlacements>
 
   <KeyBindings>
@@ -926,20 +929,20 @@
       <!-- REPL-->
       <IDSymbol name="icmdLoadWorkspace" value="502" />
       <IDSymbol name="icmdSaveWorkspace" value="503" />
-      <IDSymbol name="icmdSetWorkingDirectory" value="504" />
+      <IDSymbol name="icmdSelectWorkingDirectory" value="504" />
       <IDSymbol name="icmdRestartR" value="505" />
       <IDSymbol name="icmdInterruptR" value="506" />
       <IDSymbol name="icmdAttachDebugger" value="507" />
       <IDSymbol name="icmdSourceRScript" value="508" />
-      <IDSymbol name="icmdWorkingDirectoryCombo" value="509" />
-      <IDSymbol name="icmdWorkingDirectoryComboList" value="510" />
-      
+      <IDSymbol name="icmdGetWorkingDirectoryList" value="509" />
+      <IDSymbol name="icmdSetWorkingDirectory" value="510" />
+
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
       <IDSymbol name="sessionSubMenuDirectoryGroup" value="553"/>
       <IDSymbol name="sessionSubMenuRInteractiveGroup" value="554"/>
       <IDSymbol name="sessionSubMenuEditorGroup" value="555"/>
-      <IDSymbol name="sessionDirectoryComboGroup" value="556"/>
+      <IDSymbol name="sessionToolbarDirectoryGroup" value="556"/>
 
       <IDSymbol name="interactiveWindowContextGroup" value="570"/>
       <IDSymbol name="icmdRexecuteReplCmd" value="571"/>

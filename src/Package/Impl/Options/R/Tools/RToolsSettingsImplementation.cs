@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.Composition;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
@@ -9,12 +11,16 @@ using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IRToolsSettings))]
     internal sealed class RToolsSettingsImplementation : IRToolsSettings {
+        private const int MaxDirectoryEntries = 8;
         private string _cranMirror;
+        private string _workingDirectory;
 
         /// <summary>
         /// Path to 64-bit R installation such as 
@@ -36,7 +42,19 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        public string WorkingDirectory { get; set; } = string.Empty;
+        public string WorkingDirectory {
+            get { return _workingDirectory; }
+            set {
+                _workingDirectory = value;
+                UpdateWorkingDirectoryList(_workingDirectory);
+                EditorShell.DispatchOnUIThread(() => {
+                    IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                    shell.UpdateCommandUI(1);
+                });
+            }
+        }
+
+        public string[] WorkingDirectoryList { get; set; } = new string[0];
 
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
@@ -64,6 +82,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             // settings loaded. Just calling LoadSettingsFromStorage()
             // does not work.
             using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) { }
+        }
+
+        private void UpdateWorkingDirectoryList(string newDirectory) {
+            List<string> list = new List<string>(WorkingDirectoryList);
+            if (!list.Contains(newDirectory)) {
+                list.Insert(0, newDirectory);
+                if (list.Count > MaxDirectoryEntries) {
+                    list.RemoveAt(list.Count - 1);
+                }
+                RToolsSettings.Current.WorkingDirectoryList = list.ToArray();
+            }
         }
     }
 }
