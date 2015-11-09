@@ -125,6 +125,7 @@
     <Compile Include="Repl\Commands\ExecuteCurrentCodeCommand.cs" />
     <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
+    <Compile Include="Repl\Commands\SetWorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Commands\RexecuteCommand.cs" />
     <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />

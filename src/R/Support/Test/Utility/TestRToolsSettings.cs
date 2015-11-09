@@ -32,6 +32,8 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
+        public string WorkingDirectory { get; set; }
+
         public void LoadFromStorage() {
         }
     }

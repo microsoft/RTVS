@@ -78,6 +78,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
+        /// <summary>
+        /// REPL working directory: not exposed in Tools | Options dialog,
+        /// only saved along with other settings.
+        /// </summary>
+        internal string WorkingDirectory { get; set; }
+
         public override void LoadSettingsFromStorage() {
             _loadingFromStorage = true;
             try {
