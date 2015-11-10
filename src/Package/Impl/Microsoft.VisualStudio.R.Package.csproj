@@ -499,6 +499,7 @@
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Process\src\Microsoft.R.Host.vcxproj">
+      <SetPlatform>Platform=x64</SetPlatform>
       <Project>{131842ce-daf9-4c0e-8409-4a26ef7961a7}</Project>
       <Name>Microsoft.R.Host</Name>
     </ProjectReference>
