@@ -93,7 +93,12 @@
     <Compile Include="Feedback\SendFrownCommand.cs" />
     <Compile Include="Feedback\SendMailCommand.cs" />
     <Compile Include="Feedback\SendSmileCommand.cs" />
+    <Compile Include="Help\HelpHomeCommand.cs" />
+    <Compile Include="Help\HelpRefreshCommand.cs" />
+    <Compile Include="Help\HelpNextCommand.cs" />
     <Compile Include="Help\HelpWindowPane.cs" />
+    <Compile Include="Help\ShowHelpWindowCommand.cs" />
+    <Compile Include="Help\HelpPreviousCommand.cs" />
     <Compile Include="Interop\MailUtility.cs" />
     <Compile Include="Logging\LogCleanup.cs" />
     <Compile Include="Logging\DiagnosticLogs.cs" />

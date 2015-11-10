@@ -20,6 +20,7 @@
       </Menu>
       <!-- End R code editor context menu -->
 
+      <!-- Plot window toolbar -->
       <Menu guid="guidRToolsCmdSet" id="plotWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
         <Parent guid="guidRToolsCmdSet" id="0" />
         <CommandFlag>DefaultDocked</CommandFlag>
@@ -32,6 +33,20 @@
         </Strings>
       </Menu>
 
+      <!-- Help window toolbar -->
+      <Menu guid="guidRToolsCmdSet" id="helpWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
+        <Parent guid="guidRToolsCmdSet" id="0" />
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <CommandFlag>NoToolbarClose</CommandFlag>
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>R Help Window</ButtonText>
+          <CommandName>R Help Window</CommandName>
+        </Strings>
+      </Menu>
+
+      <!-- Top Level 'R Tools' menu -->
       <Menu guid="guidRToolsCmdSet" id="TopLevelMenu" priority="0x1000" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
         <Strings>
@@ -99,7 +114,8 @@
     </Menus>
 
     <Combos>
-      <Combo guid="guidRToolsCmdSet" id="icmdSetWorkingDirectory" defaultWidth="140" 
+      <!-- REPL current directory combo -->
+      <Combo guid="guidRToolsCmdSet" id="icmdSetWorkingDirectory" defaultWidth="140"
              idCommandList="icmdGetWorkingDirectoryList" priority="0x100" type="DropDownCombo">
         <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
         <CommandFlag>StretchHorizontally</CommandFlag>
@@ -210,6 +226,14 @@
       </Group>
       <Group guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup" priority="0x0400">
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
+      </Group>
+
+      <!-- Help window -->
+      <Group guid="guidRToolsCmdSet" id="helpWindowNavGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="helpWindowToolBarId"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="helpWindowGeneralGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="helpWindowToolBarId"/>
       </Group>
 
       <!-- InteractiveWindow -->
@@ -502,7 +526,6 @@
           <CommandName>Publish</CommandName>
         </Strings>
       </Button>
-
       <!-- End of Publish flyout -->
 
       <!-- Windows flyout -->
@@ -547,7 +570,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" priority="0x0400" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" priority="0x0500" type="Button">
         <!--<Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>-->
         <Icon guid="ImageCatalogGuid" id="Package"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -555,6 +578,17 @@
           <ButtonText>Packages</ButtonText>
           <MenuText>P&amp;ackages</MenuText>
           <CommandName>Show Packages Window</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdShowHelpWindow" priority="0x0600" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="StatusHelp"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Help</ButtonText>
+          <MenuText>&amp;Help</MenuText>
+          <CommandName>R Help Window</CommandName>
         </Strings>
       </Button>
       <!-- End Windows flyout -->
@@ -601,6 +635,44 @@
         </Strings>
       </Button>
       <!-- End top level menu -->
+
+      <!-- Help window buttons -->
+      <Button guid="guidRToolsCmdSet" id="icmdHelpPrevious" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="helpWindowNavGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Previous"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Previous</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdHelpNext" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="helpWindowNavGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Next"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Next</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdHelpHome" priority="0x0300" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="helpWindowNavGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Home"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Home</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdHelpRefresh" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="helpWindowGeneralGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Refresh"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Refresh</ButtonText>
+        </Strings>
+      </Button>
+      <!-- End help window buttons -->
 
       <Button guid="guidRToolsCmdSet" id="icmdGoToFormattingOptions" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
@@ -833,6 +905,7 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdZoomOutPlot" priority="0x0200">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarZoomGroup"/>
     </CommandPlacement>
+    <!-- End Plot Window toolbar -->
 
     <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x0400">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
@@ -849,11 +922,11 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0450">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
@@ -862,7 +935,7 @@
   <KeyBindings>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
-    <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" key2="VK_RETURN" mod2="CONTROL"/>
+    <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
   </KeyBindings>
 
   <UsedCommands>
@@ -979,12 +1052,22 @@
       <IDSymbol name="icmdShowVariableExplorerWindow" value="903" />
       <IDSymbol name="icmdShowHistoryWindow" value="904" />
       <IDSymbol name="icmdShowPackagesWindow" value="905" />
+      <IDSymbol name="icmdShowHelpWindow" value="906" />
+
+      <!-- Help -->
+      <IDSymbol name="icmdHelpPrevious" value="1100" />
+      <IDSymbol name="icmdHelpNext" value="1101" />
+      <IDSymbol name="icmdHelpHome" value="1102" />
+      <IDSymbol name="icmdHelpRefresh" value="1103" />
 
       <IDSymbol name="plotToolbarFileGroup" value="0x1000" />
       <IDSymbol name="plotToolbarPrintGroup" value="0x1100" />
       <IDSymbol name="plotToolbarCopyGroup" value="0x1200" />
       <IDSymbol name="plotToolbarZoomGroup" value="0x1300" />
       <IDSymbol name="plotWindowToolBarId" value="0x2000" />
+      <IDSymbol name="helpWindowToolBarId" value="0x2010"/>
+      <IDSymbol name="helpWindowNavGroup" value="0x2011"/>
+      <IDSymbol name="helpWindowGeneralGroup" value="0x2012"/>
 
       <!-- Submenus-->
       <IDSymbol name="mainMenuGroup" value="0x100"/>
@@ -1009,6 +1092,7 @@
     <GuidSymbol name="CMDUIGUID_R_EDITOR" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
     <!-- Markdown Editor Factory Guid -->
     <GuidSymbol name="CMDUIGUID_MD_EDITOR" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
+    <GuidSymbol name="CMDUIGUID_HELP_WINDOW" value="{9E909526-A616-43B2-A82B-FD639DCD40CB}" />
 
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />

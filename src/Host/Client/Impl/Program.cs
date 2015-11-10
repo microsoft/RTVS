@@ -69,6 +69,14 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync(xamlFilePath);
         }
 
+        public async Task SetCurrentDirectory(string directory) {
+            await Console.Error.WriteLineAsync("Set directory: " + directory);
+        }
+
+        public async Task ShowHelp(string url) {
+            await Console.Error.WriteLineAsync("Show help: " + url);
+        }
+
         private async Task<string> ReadLineAsync(string prompt, bool isEvaluationAllowed, CancellationToken ct) {
             while (true) {
                 await Console.Out.WriteAsync($"|{_nesting}| {prompt}");

@@ -9,6 +9,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -365,6 +366,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         /// <param name="url"></param>
         /// <returns></returns>
         Task IRCallbacks.ShowHelp(string url) {
+            HelpWindowPane.Navigate(url);
             return Task.CompletedTask;
         }
 
