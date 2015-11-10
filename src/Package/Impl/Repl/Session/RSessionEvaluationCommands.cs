@@ -51,6 +51,16 @@ options(device='.rtvs.vsgd')
             return evaluation.EvaluateAsync(script);
         }
 
+        public static Task<REvaluationResult> SetVsHelpRedirection(this IRSessionEvaluation evaluation) {
+            var script =
+@"    local({
+        options(browser = function(url) { 
+            .Call('rtvs::Call.browser', url)) 
+        })
+      })";
+            return evaluation.EvaluateAsync(script);
+        }
+
         private static Task<REvaluationResult> EvaluateNonReentrantAsync(this IRSessionEvaluation evaluation, FormattableString commandText) {
             return evaluation.EvaluateAsync(FormattableString.Invariant(commandText));
         }

@@ -461,4 +461,7 @@ After R is installed, please restart Visual Studio.</value>
   <data name="ChooseDirectory" xml:space="preserve">
     <value>Choose Directory</value>
   </data>
+  <data name="HelpWindowCaption" xml:space="preserve">
+    <value>R Help</value>
+  </data>
 </root>
