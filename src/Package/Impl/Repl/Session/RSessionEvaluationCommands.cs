@@ -55,7 +55,7 @@ options(device='.rtvs.vsgd')
             var script =
 @"    local({
         options(browser = function(url) { 
-            .Call('rtvs::Call.browser', url)) 
+            .Call('rtvs::Call.browser', url) 
         })
       })";
             return evaluation.EvaluateAsync(script);

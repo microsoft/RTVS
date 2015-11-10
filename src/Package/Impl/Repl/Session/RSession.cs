@@ -365,9 +365,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        Task IRCallbacks.ShowHelp(string url) {
+        async Task IRCallbacks.ShowHelp(string url) {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             HelpWindowPane.Navigate(url);
-            return Task.CompletedTask;
         }
 
         private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags) {

@@ -8,8 +8,8 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return RPackage.Current.FindWindowPane(typeof(T), id, true) as T;
         }
 
-        public static void ShowWindowPane<T>(int id, bool focus) {
-            var window = RPackage.Current.FindWindowPane(typeof(T), id, true) as ToolWindowPane;
+        public static T ShowWindowPane<T>(int id, bool focus) where T : ToolWindowPane {
+            T window = RPackage.Current.FindWindowPane(typeof(T), id, true) as T;
             if (window != null) {
                 var frame = window.Frame as IVsWindowFrame;
                 if (frame != null) {
@@ -22,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                     }
                 }
             }
+            return window;
         }
     }
 }
