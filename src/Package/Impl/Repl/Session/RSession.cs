@@ -348,6 +348,25 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             }
         }
 
+        /// <summary>
+        /// Tracks change of current directory in R session command line.
+        /// R Host pushes new directory to VS so it can correctly display 
+        /// the directory name in the REPL window toolbar.
+        /// </summary>
+        Task IRCallbacks.SetCurrentDirectory(string directory) {
+            RToolsSettings.Current.WorkingDirectory = directory;
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Asks VS to open specified URL in the help window browser
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        Task IRCallbacks.ShowHelp(string url) {
+            return Task.CompletedTask;
+        }
+
         private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags) {
             IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
