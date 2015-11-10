@@ -38,6 +38,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigated(object sender, NavigationEventArgs e) {
+            // Upon vavigation we need to ask VS to update UI so 
+            // Back /Forward buttons become properly enabled or disabled.
             IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(1);
         }

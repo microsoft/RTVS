@@ -53,11 +53,9 @@ options(device='.rtvs.vsgd')
 
         public static Task<REvaluationResult> SetVsHelpRedirection(this IRSessionEvaluation evaluation) {
             var script =
-@"    local({
-        options(browser = function(url) { 
-            .Call('rtvs::Call.browser', url) 
-        })
-      })";
+@"options(browser = function(url) { 
+      .Call('rtvs::Call.browser', url) 
+  })";
             return evaluation.EvaluateAsync(script);
         }
 
