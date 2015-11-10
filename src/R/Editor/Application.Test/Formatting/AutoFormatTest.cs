@@ -11,9 +11,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatFunctionBraces() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-
-            try {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("function(a,b){");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -22,18 +20,15 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces01() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = false;
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
 
-            try {
                 script.Type("if(x>1){ENTER}{");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -42,18 +37,15 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces02() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = true;
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = true;
 
-            try {
                 script.Type("if(x>1){ENTER}{");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -62,18 +54,15 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces03() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = false;
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
 
-            try {
                 script.Type("while(true) {");
                 script.DoIdle(300);
                 script.Type("{ENTER}if(x>1) {");
@@ -84,18 +73,15 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces04() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = false;
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
 
-            try {
                 script.Type("while(true) {");
                 script.DoIdle(300);
                 script.Type("}");
@@ -104,18 +90,15 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces05() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = false;
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
 
-            try {
                 script.Type("while(true) {");
                 script.DoIdle(300);
                 script.Type("{ENTER}if(x>1) {");
@@ -127,18 +110,15 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces06() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = true;
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = true;
 
-            try {
                 script.Type("x <-function(a) {");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -147,18 +127,15 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces07() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = true;
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = true;
 
-            try {
                 script.Type("x <-function(a,{ENTER}{TAB}b){ENTER}{");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -167,18 +144,15 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatScopeBraces08() {
-            var script = new TestScript("while (true) {\r\n}", RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = true;
+            using (var script = new TestScript("while (true) {\r\n}", RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = true;
 
-            try {
                 script.MoveDown();
                 script.Enter();
 
@@ -186,17 +160,13 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatIfNoScope() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-
-            try {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("if(x>1)");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -205,19 +175,16 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_AutoFormatFuncionDefinition01() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = true;
-            string text = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07, {ENTER}          yname = NULL){ENTER}{{ENTER}abind(a, )";
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = true;
+                string text = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07, {ENTER}          yname = NULL){ENTER}{{ENTER}abind(a, )";
 
-            try {
                 script.Type(text);
                 script.DoIdle(300);
 
@@ -230,8 +197,6 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
     abind(a, )
 }";
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
     }

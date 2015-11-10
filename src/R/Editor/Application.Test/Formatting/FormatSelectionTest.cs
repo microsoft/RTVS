@@ -11,7 +11,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_FormatSelection01() {
-            string content = 
+            string content =
 @"
 while (TRUE) {
         if(x>1) {
@@ -24,16 +24,12 @@ while (TRUE) {
     if (x > 1) {
     }
 }";
-            var script = new TestScript(content, RContentTypeDefinition.ContentType);
-
-            try {
+            using (var script = new TestScript(content, RContentTypeDefinition.ContentType)) {
                 script.Select(20, 21);
                 script.Execute(VSConstants.VSStd2KCmdID.FORMATSELECTION, 50);
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
     }
