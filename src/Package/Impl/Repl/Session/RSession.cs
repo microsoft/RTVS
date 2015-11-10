@@ -351,21 +351,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         }
 
         /// <summary>
-        /// Tracks change of current directory in R session command line.
-        /// R Host pushes new directory to VS so it can correctly display 
-        /// the directory name in the REPL window toolbar.
-        /// </summary>
-        Task IRCallbacks.SetCurrentDirectory(string directory) {
-            RToolsSettings.Current.WorkingDirectory = directory;
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
         /// Asks VS to open specified URL in the help window browser
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        async Task IRCallbacks.ShowHelp(string url) {
+        async Task IRCallbacks.Browser(string url) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             HelpWindowPane.Navigate(url);
         }

@@ -383,12 +383,8 @@ namespace Microsoft.R.Host.Client {
                                 // TODO: delete temporary xaml and bitmap files
                                 break;
 
-                            case "ShowHelp":
-                                await _callbacks.ShowHelp(message.GetString(0, "help_url"));
-                                break;
-
-                            case "SetCurrentDirectory":
-                                await _callbacks.SetCurrentDirectory(message.GetString(0, "directory_path"));
+                            case "Browser":
+                                await _callbacks.Browser(message.GetString(0, "help_url"));
                                 break;
 
                             default:

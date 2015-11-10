@@ -281,11 +281,7 @@ grid.newpage()
                 return Task.CompletedTask;
             }
 
-            public Task SetCurrentDirectory(string directory) {
-                return Task.CompletedTask;
-            }
-
-            public Task ShowHelp(string url) {
+            public Task Browser(string url) {
                 return Task.CompletedTask;
             }
         }
