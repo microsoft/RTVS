@@ -10,9 +10,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_KeywordIntellisense() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-
-            try {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("funct");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -21,17 +19,13 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_LibraryIntellisense() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-
-            try {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("library(ut");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -40,17 +34,13 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_RequireIntellisense() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-
-            try {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("require(uti");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -59,8 +49,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
     }

@@ -11,9 +11,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_ProvisionalText01() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-
-            try {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("{");
                 script.Type("(");
                 script.Type("[");
@@ -36,17 +34,13 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_ProvisionalText02() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-
-            try {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("c(\"");
 
                 string expected = "c(\"\")";
@@ -69,19 +63,18 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
 
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_ProvisionalCurlyBrace01() {
-            var script = new TestScript(RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = false;
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
 
-            try {
-                script.Type("while(TRUE) {");
+                script.Type("while(TRUE)");
+                script.DoIdle(300);
+                script.Type("{");
                 script.DoIdle(300);
                 script.Type("{ENTER}}");
 
@@ -89,10 +82,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
-
     }
 }

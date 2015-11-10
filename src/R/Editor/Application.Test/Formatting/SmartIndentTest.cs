@@ -11,10 +11,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [TestMethod]
         [TestCategory("Interactive")]
         public void R_SmartIndentTest() {
-            var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType);
-            REditorSettings.FormatOptions.BracesOnNewLine = false;
-
-            try {
+            using (var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
                 script.MoveRight();
                 script.Type("{{ENTER}a");
                 script.DoIdle(300);
@@ -23,8 +21,6 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);
-            } finally {
-                script.Close();
             }
         }
     }

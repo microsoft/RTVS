@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text.Classification;
 namespace Microsoft.R.Editor.Application.Test.TestShell
 {
     [ExcludeFromCodeCoverage]
-    public partial class TestScript
+    public sealed partial class TestScript: IDisposable
     {
         /// <summary>
         /// Text content of the editor document
@@ -119,7 +119,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
         /// <summary>
         /// Terminates script and closes editor window
         /// </summary>
-        public void Close()
+        private void Close()
         {
             EditorWindow.Close();
         }
@@ -167,6 +167,10 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
             }
 
             return sb.ToString();
+        }
+
+        public void Dispose() {
+            Close();
         }
     }
 }
