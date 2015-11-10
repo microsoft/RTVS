@@ -77,4 +77,8 @@ UpgradeLog*.htm
 # SQL Server files
 *.mdf
 *.ldf
+src/R.opensdf
+src/R.sdf
+
+# R files
 .Rproj.user
