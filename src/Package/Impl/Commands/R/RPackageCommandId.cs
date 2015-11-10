@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.VisualStudio.R.Package.Commands {
     public static class RPackageCommandId {
         public const int plotWindowToolBarId = 0x2000;
+        public const int helpWindowToolBarId = 0x2010;
 
         // General
         public const int icmdGoToFormattingOptions = 400;
@@ -48,11 +49,18 @@
         public const int icmdShowVariableExplorerWindow = 903;
         public const int icmdShowHistoryWindow = 904;
         public const int icmdShowPackagesWindow = 905;
+        public const int icmdShowHelpWindow = 906;
 
         // Publishing
         //public const int icmdPublishDialog = 1001;
         //public const int icmdPublishPreviewHtml = 1002;
         //public const int icmdPublishPreviewPdf = 1003;
         //public const int icmdPublishPreviewWord = 1004;
+
+        // Help
+        public const int icmdHelpPrevious = 1100;
+        public const int icmdHelpNext = 1101;
+        public const int icmdHelpHome = 1102;
+        public const int icmdHelpRefresh = 1103;
     }
 }

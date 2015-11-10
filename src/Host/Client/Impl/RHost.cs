@@ -383,6 +383,10 @@ namespace Microsoft.R.Host.Client {
                                 // TODO: delete temporary xaml and bitmap files
                                 break;
 
+                            case "Browser":
+                                await _callbacks.Browser(message.GetString(0, "help_url"));
+                                break;
+
                             default:
                                 throw ProtocolError($"Unrecognized host message name:", message);
                         }

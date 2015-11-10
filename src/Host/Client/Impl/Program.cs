@@ -69,6 +69,10 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync(xamlFilePath);
         }
 
+        public async Task Browser(string url) {
+            await Console.Error.WriteLineAsync("Browser: " + url);
+        }
+
         private async Task<string> ReadLineAsync(string prompt, bool isEvaluationAllowed, CancellationToken ct) {
             while (true) {
                 await Console.Out.WriteAsync($"|{_nesting}| {prompt}");

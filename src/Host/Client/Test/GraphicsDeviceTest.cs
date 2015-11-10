@@ -171,7 +171,7 @@ grid.newpage()
             var sb = new StringBuilder();
             int i = 0;
             while (i < xyPoints.Length) {
-                sb.AppendFormat("{0},{1} ", xyPoints[i], xyPoints[i+1]);
+                sb.AppendFormat("{0},{1} ", xyPoints[i], xyPoints[i + 1]);
                 i += 2;
             }
             CheckStringAttr(element, "Points", sb.ToString().Trim());
@@ -231,7 +231,8 @@ grid.newpage()
         class Callbacks : IRCallbacks {
             private string _inputCode;
             public List<string> XamlFilePaths {
-                get; private set; }
+                get; private set;
+            }
 
             public Callbacks(string code) {
                 _inputCode = code;
@@ -277,6 +278,10 @@ grid.newpage()
 
             public Task PlotXaml(string xamlFilePath, CancellationToken ct) {
                 XamlFilePaths.Add(xamlFilePath);
+                return Task.CompletedTask;
+            }
+
+            public Task Browser(string url) {
                 return Task.CompletedTask;
             }
         }
