@@ -19,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     [Guid(WindowGuid)]
     internal class HelpWindowPane : ToolWindowPane {
         internal const string WindowGuid = "9E909526-A616-43B2-A82B-FD639DCD40CB";
+        private static bool _dontNavigateToDefault;
 
         private WebBrowser _browser;
 
@@ -32,7 +33,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _browser.Navigated += OnNavigated;
 
             Content = _browser;
-            NavigateTo(HelpHomeCommand.HomeUrl);
+            if (!_dontNavigateToDefault) {
+                // When window is not visible and request comes for help,
+                // don't navigate to default page as it will be immediately
+                // replaced by the requested help page anyway.
+                NavigateTo(HelpHomeCommand.HomeUrl);
+            }
 
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
             Controller c = new Controller();
@@ -64,6 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public static void Navigate(string url) {
             // Filter our localhost help from absolute URLs except the landing page
             if (IsHelpUrl(url)) {
+                _dontNavigateToDefault = true;
                 HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
                 if (pane != null) {
                     pane.NavigateTo(url);

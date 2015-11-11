@@ -239,11 +239,11 @@ namespace Microsoft.R.Editor.Settings
 
         public static bool SyntaxCheckInRepl
         {
-            get { return Storage.GetBoolean(REditorSettings.SyntaxCheckInReplKey, true); }
+            get { return Storage.GetBoolean(REditorSettings.SyntaxCheckInReplKey, false); }
             set
             {
                 if (IsWritable)
-                    WritableStorage.SetBoolean(REditorSettings.SyntaxCheckInReplKey, true);
+                    WritableStorage.SetBoolean(REditorSettings.SyntaxCheckInReplKey, false);
             }
         }
 

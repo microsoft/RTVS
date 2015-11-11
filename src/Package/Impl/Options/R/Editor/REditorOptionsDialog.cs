@@ -160,7 +160,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [CustomLocDisplayName("Settings_ReplSyntaxCheck")]
         [LocDescription("Settings_ReplSyntaxCheck_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool SyntaxCheckInRepl
         {
             get { return REditorSettings.SyntaxCheckInRepl; }
