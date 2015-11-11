@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Globalization;
-using Microsoft.Languages.Editor.QuickInfo;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
