@@ -129,9 +129,6 @@
     <Compile Include="EditorHelpers\TextBufferHelper.cs" />
     <Compile Include="EditorHelpers\TextChange.cs" />
     <Compile Include="EditorHelpers\TextViewHelpers.cs" />
-    <Compile Include="QuickInfo\QuickInfoWithLink.xaml.cs">
-      <DependentUpon>QuickInfoWithLink.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Selection\ISelectionTracker.cs" />
     <Compile Include="Selection\SelectionTracker.cs" />
     <Compile Include="Selection\SelectionUndo.cs" />
@@ -179,12 +176,6 @@
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="QuickInfo\QuickInfoWithLink.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
