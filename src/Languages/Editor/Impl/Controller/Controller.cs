@@ -6,7 +6,7 @@ namespace Microsoft.Languages.Editor.Controller {
     /// <summary>
     /// Command controller (Model-View-Controller pattern)
     /// </summary>
-    public class Controller : IDynamicCommandTarget, IDisposable {
+    public class Controller : ICommandTarget, IDisposable {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Dictionary<Guid, Dictionary<int, ICommand>> CommandMap { get; private set; }
 
@@ -92,17 +92,6 @@ namespace Microsoft.Languages.Editor.Controller {
 
             if (cmd != null && ChainedController == null)
                 cmd.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
-        }
-
-        public virtual string GetCommandName(Guid group, int id) {
-            ICommand cmd = Find(group, id);
-            if (cmd != null) {
-                IDynamicCommandTarget dct = cmd as IDynamicCommandTarget;
-                if (dct != null) {
-                    return dct.GetCommandName(group, id);
-                }
-            }
-            return null;
         }
         #endregion
 

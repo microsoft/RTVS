@@ -16,6 +16,7 @@
       <Menu guid="guidRToolsCmdSet" id="rCodeEditorContextMenu" type="Context">
         <CommandFlag>DontCache</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>R Context</ButtonText>
         </Strings>
@@ -41,7 +42,6 @@
         <CommandFlag>DefaultDocked</CommandFlag>
         <CommandFlag>NoToolbarClose</CommandFlag>
         <CommandFlag>AlwaysCreate</CommandFlag>
-        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <ButtonText>R Help Window</ButtonText>
           <CommandName>R Help Window</CommandName>
@@ -951,6 +951,7 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
     <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="CMDUIGUID_R_EDITOR" key1="VK_F1" />
   </KeyBindings>
 
   <UsedCommands>

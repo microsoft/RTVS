@@ -21,7 +21,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
             commands.Add(new SourceRScriptCommand(textView));
             commands.Add(new GoToFormattingOptionsCommand(textView, textBuffer));
             commands.Add(new WorkingDirectoryCommand(textView));
-            commands.Add(new ShowHelpOnCurrentCommand(textView));
 
             return commands;
         }

@@ -41,7 +41,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowRInteractiveWindowsCommand(),
 
                 new ShowVariableWindowCommand(),
-                new ShowHelpWindowCommand()
+                new ShowHelpWindowCommand(),
+                new ShowHelpOnCurrentCommand()
             };
         }
     }
