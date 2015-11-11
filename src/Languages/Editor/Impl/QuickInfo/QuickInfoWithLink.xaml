@@ -1,0 +1,45 @@
+﻿<UserControl
+    x:Class="Microsoft.Languages.Editor.QuickInfo.QuickInfoWithLink"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    MaxWidth="600"
+    AutomationProperties.Name="RtvsQuickInfo"
+    AutomationProperties.AutomationId="RtvsQuickInfo">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock
+            Name="QuickInfo"
+            Grid.Row="0"
+            Margin="6"
+            TextWrapping="Wrap"
+            Foreground = "{DynamicResource {x:Static SystemColors.InfoTextBrushKey}}"
+            AutomationProperties.AutomationId="QuickInfoText"
+            AutomationProperties.Name="QuickInfoText" />
+        <TextBlock
+            Grid.Row="1"
+            Margin="6"
+            TextWrapping="Wrap"
+            Name="QuickInfoLinkBlock">
+            <Hyperlink
+                Name="QuickInfoLink"
+                AutomationProperties.AutomationId="QuickInfoLink"
+                AutomationProperties.Name="QuickInfoLink" 
+                Click="QuickInfoLink_Click">
+                <TextBlock
+                    Name="QuickInfoLinkText"
+                    AutomationProperties.AutomationId="QuickInfoLinkText"
+                    AutomationProperties.Name="QuickInfoLinkText" />
+            </Hyperlink>
+        </TextBlock>
+    </Grid>
+</UserControl>

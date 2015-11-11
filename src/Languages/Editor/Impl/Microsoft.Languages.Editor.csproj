@@ -64,6 +64,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
@@ -128,6 +129,9 @@
     <Compile Include="EditorHelpers\TextBufferHelper.cs" />
     <Compile Include="EditorHelpers\TextChange.cs" />
     <Compile Include="EditorHelpers\TextViewHelpers.cs" />
+    <Compile Include="QuickInfo\QuickInfoWithLink.xaml.cs">
+      <DependentUpon>QuickInfoWithLink.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Selection\ISelectionTracker.cs" />
     <Compile Include="Selection\SelectionTracker.cs" />
     <Compile Include="Selection\SelectionUndo.cs" />
@@ -176,7 +180,12 @@
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="QuickInfo\QuickInfoWithLink.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
   <ItemGroup>
     <None Include="35MSSharedLib1024.snk" />
   </ItemGroup>
