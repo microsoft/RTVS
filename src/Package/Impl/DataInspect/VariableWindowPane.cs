@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -7,6 +8,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableWindowPane() {
             Caption = Resources.VariableWindowCaption;
             Content = new VariableView();
+
+            BitmapImageMoniker = KnownMonikers.VariableProperty;
         }
     }
 }
