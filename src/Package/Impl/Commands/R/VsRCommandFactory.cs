@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
@@ -20,6 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
             commands.Add(new SourceRScriptCommand(textView));
             commands.Add(new GoToFormattingOptionsCommand(textView, textBuffer));
             commands.Add(new WorkingDirectoryCommand(textView));
+            commands.Add(new ShowHelpOnCurrentCommand(textView));
 
             return commands;
         }

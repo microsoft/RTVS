@@ -464,4 +464,7 @@ After R is installed, please restart Visual Studio.</value>
   <data name="HelpWindowCaption" xml:space="preserve">
     <value>R Help</value>
   </data>
+  <data name="OpenFunctionHelp" xml:space="preserve">
+    <value>Help on {0}</value>
+  </data>
 </root>

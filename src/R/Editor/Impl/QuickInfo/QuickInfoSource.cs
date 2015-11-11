@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using Microsoft.Languages.Editor.QuickInfo;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
@@ -96,17 +97,7 @@ namespace Microsoft.R.Editor.QuickInfo {
                         }
 
                         if (text.Length > 0) {
-                            var content = text;
-                            new QuickInfoWithLink(functionInfo.Name, functionInfo.Name, (o) => {
-                                // Execute help command here
-                            },
-                            null,
-                            () => {
-                                if (session != null)
-                                    session.Dismiss();
-                            });
-
-                            quickInfoContent.Add(content);
+                            quickInfoContent.Add(text);
                             return true;
                         }
                     }

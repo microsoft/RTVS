@@ -14,6 +14,8 @@
     <Menus>
       <!-- R code editor context menu -->
       <Menu guid="guidRToolsCmdSet" id="rCodeEditorContextMenu" type="Context">
+        <CommandFlag>DontCache</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <ButtonText>R Context</ButtonText>
         </Strings>
@@ -138,6 +140,9 @@
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <Group guid="guidRToolsCmdSet" id="groupRContextFormat" priority="0x0810">
+        <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="groupRContextHelp" priority="0x0820">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <!-- End R code editor context menu groups -->
@@ -326,7 +331,6 @@
       <!-- End Workspace flyout -->
 
       <!-- REPL -->
-
       <Button guid="guidRToolsCmdSet" id="icmdRexecuteReplCmd" priority="0x0400" type="Button">
         <Parent guid="guidRToolsCmdSet" id="interactiveWindowContextGroup"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -348,7 +352,6 @@
           <CommandName>Paste Selection</CommandName>
         </Strings>
       </Button>
-
       <!-- End REPL -->
 
       <!-- Packages flyout -->
@@ -692,6 +695,18 @@
         </Strings>
       </Button>
 
+      <!-- Context menu -->
+      <Button guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="groupRContextHelp"/>
+        <Icon guid="ImageCatalogGuid" id="StatusHelpOutline"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Help On Current</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
   </Commands>
 
@@ -989,6 +1004,7 @@
       <IDSymbol name="groupRContextFormat" value="120" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
       <IDSymbol name="groupRContextRepl" value="122" />
+      <IDSymbol name="groupRContextHelp" value="124"/>
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
 
       <!-- RTVS Command IDs -->
@@ -1059,6 +1075,7 @@
       <IDSymbol name="icmdHelpNext" value="1101" />
       <IDSymbol name="icmdHelpHome" value="1102" />
       <IDSymbol name="icmdHelpRefresh" value="1103" />
+      <IDSymbol name="icmdHelpOnCurrent" value="1104"/>
 
       <IDSymbol name="plotToolbarFileGroup" value="0x1000" />
       <IDSymbol name="plotToolbarPrintGroup" value="0x1100" />

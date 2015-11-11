@@ -27,6 +27,22 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         #region IOleCommandTarget
 
         public int QueryStatus(ref Guid guidCommandGroup, uint commandCount, OLECMD[] commandArray, IntPtr commandText) {
+            IDynamicCommandTarget dct = _commandTarget as IDynamicCommandTarget;
+            if (dct != null && commandText != IntPtr.Zero) {
+                OLECMDTEXT oleCmdText = Marshal.PtrToStructure<OLECMDTEXT>(commandText);
+                if (oleCmdText.rgwz != IntPtr.Zero && ((oleCmdText.cmdtextf & (uint)OLECMDTEXTF.OLECMDTEXTF_NAME) != 0)) {
+                    string name = dct.GetCommandName(guidCommandGroup, (int)commandArray[0].cmdID);
+                    if (!string.IsNullOrEmpty(name)) {
+                        try {
+                            if (oleCmdText.rgwz != IntPtr.Zero) {
+                                int length = (int)Math.Max(oleCmdText.cwBuf - 2, name.Length);
+                                Marshal.Copy(name.ToCharArray(), 0, oleCmdText.rgwz, length);
+                                oleCmdText.cwActual = (uint)length;
+                            }
+                        } catch (Exception) { }
+                    }
+                }
+            }
             CommandStatus status = _commandTarget.Status(guidCommandGroup, (int)commandArray[0].cmdID);
             return OleCommand.MakeOleCommandStatus(status, commandArray);
         }
