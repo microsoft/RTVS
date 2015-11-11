@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -26,6 +27,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             BitmapImageMoniker = KnownMonikers.StatusHelp;
 
             _browser = new WebBrowser();
+
+            _browser.Navigating += OnNavigating;
             _browser.Navigated += OnNavigated;
 
             Content = _browser;
@@ -37,6 +40,14 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
         }
 
+        private void OnNavigating(object sender, NavigatingCancelEventArgs e) {
+            string url = e.Uri.ToString();
+            if (!IsHelpUrl(url)) {
+                e.Cancel = true;
+                Process.Start(url);
+            }
+        }
+
         private void OnNavigated(object sender, NavigationEventArgs e) {
             // Upon vavigation we need to ask VS to update UI so 
             // Back /Forward buttons become properly enabled or disabled.
@@ -44,17 +55,26 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             shell.UpdateCommandUI(1);
         }
 
-        public void NavigateTo(string url) {
+        private void NavigateTo(string url) {
             if (_browser != null) {
                 _browser.Navigate(url);
             }
         }
 
         public static void Navigate(string url) {
-            HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
-            if (pane != null) {
-                pane.NavigateTo(url);
+            // Filter our localhost help from absolute URLs except the landing page
+            if (IsHelpUrl(url)) {
+                HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
+                if (pane != null) {
+                    pane.NavigateTo(url);
+                }
+            } else {
+                Process.Start(url);
             }
+        }
+
+        private static bool IsHelpUrl(string url) {
+            return url == HelpHomeCommand.HomeUrl || url == (HelpHomeCommand.HomeUrl + "/") || url.StartsWith("http://127.0.0.1");
         }
 
         private IEnumerable<ICommand> GetCommands() {
@@ -69,6 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void Dispose(bool disposing) {
             if (disposing && _browser != null) {
+                _browser.Navigating -= OnNavigating;
                 _browser.Navigated -= OnNavigated;
                 _browser.Dispose();
                 _browser = null;
