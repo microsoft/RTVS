@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Common.Core;
@@ -14,7 +15,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     /// <summary>
-    /// 'Help on ...' command appears in the editor context menu.
+    /// 'Help on ...' command that appears in the editor context menu.
     /// </summary>
     /// <remarks>
     /// Since command changes its name we have to make it package command
@@ -23,6 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// with OLECMDTEXTF_NAME requesting changing names.
     /// </remarks>
     internal sealed class ShowHelpOnCurrentCommand : PackageCommand {
+        private const int MaxHelpItemLength = 128;
         public ShowHelpOnCurrentCommand() :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent) { }
 
@@ -31,8 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (!string.IsNullOrEmpty(item)) {
                 Enabled = true;
                 Text = string.Format(CultureInfo.InvariantCulture, Resources.OpenFunctionHelp, item);
-            }
-            else {
+            } else {
                 Enabled = false;
             }
         }
@@ -41,20 +42,41 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             var rSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             IReadOnlyDictionary<int, IRSession> sessions = rSessionProvider.GetSessions();
             IRSession session = sessions.Values.FirstOrDefault();
-            if(session != null) { 
+            if (session != null) {
+                // Fetch identifier under the cursor
                 string item = GetItemUnderCaret();
-                if (item != null) {
+                if (item != null && item.Length < MaxHelpItemLength) {
+                    // Go to background thread
                     await TaskUtilities.SwitchToBackgroundThread();
-                    session.ScheduleEvaluation(async (e) => {
-                        REvaluationResult result = await e.EvaluateAsync("?" + item);
-                        if(string.IsNullOrEmpty(result.StringResult) || result.StringResult == "NA") {
-                            // Help page not found. This may happen when name is valid
-                            // but it comesn from a library that hasn't been loaded yet
-                            // such as when user requests help for an item in the code
-                            // editor while code has never been executed. Try wider search.
-                            result = await e.EvaluateAsync("??" + item);
+                    
+                    // First check if expression can be evaluated. If result is non-empty
+                    // then R knows about the item and '?item' interaction will succed.
+                    // If response is empty then we'll try '??item' instead.
+                    string prefix = "?";
+                    using (IRSessionEvaluation evaluation = await session.BeginEvaluationAsync(isMutating: false)) {
+                        REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
+                        if (string.IsNullOrEmpty(result.StringResult) || result.StringResult == "NA") {
+                            prefix = "??";
                         }
-                    });
+                    }
+
+                    // Now actually request the help. First call may throw since 'starting help server...'
+                    // message in REPL is actually an error (comes in red) so we'll get RException.
+                    int retries = 0;
+                    while (retries < 3) {
+                        using (IRSessionInteraction interaction = await session.BeginInteractionAsync(isVisible: false)) {
+                            try {
+                                await interaction.RespondAsync(prefix + item + Environment.NewLine);
+                            } catch (RException ex) {
+                                if ((uint)ex.HResult == 0x80131500) {
+                                    // Typically 'starting help server...' so try again
+                                    retries++;
+                                    continue;
+                                }
+                            }
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -72,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private string GetItem(string lineText, int position) {
             int start = 0;
-            int end = 0;
+            int end = lineText.Length;
             for (int i = position - 1; i >= 0; i--) {
                 char ch = lineText[i];
                 if (!RTokenizer.IsIdentifierCharacter(ch)) {

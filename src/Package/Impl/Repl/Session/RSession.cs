@@ -82,12 +82,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            IntPtr handle = RPlotWindowHost.RPlotWindowContainerHandle;
             await TaskUtilities.SwitchToBackgroundThread();
 
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
 
-            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), RPlotWindowHost.RPlotWindowContainerHandle);
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), handle);
             this.ScheduleEvaluation(async e => {
                 //await e.SetVsGraphicsDevice();
                 await e.SetDefaultWorkingDirectory();

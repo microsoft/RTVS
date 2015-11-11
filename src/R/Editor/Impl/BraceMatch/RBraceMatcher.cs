@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.BraceMatch {
             Stack<RTokenType> stack = new Stack<RTokenType>();
 
             int startIndex = -1;
-            for (int i = 0; i < tokens.Length; i++)
+            for (int i = 0; i < tokens.Count; i++)
             {
                 if (tokens[i].Start == position)
                 {
@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.BraceMatch {
 
             if (!reversed)
             {
-                for (int i = startIndex; i < tokens.Length; i++)
+                for (int i = startIndex; i < tokens.Count; i++)
                 {
                     RToken token = tokens[i];
 

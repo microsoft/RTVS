@@ -71,7 +71,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             RToolsSettings.Init(AppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
-            RPlotWindowHost.Init();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
