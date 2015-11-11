@@ -9,6 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Caption = Resources.VariableWindowCaption;
             Content = new VariableView();
 
+            // this value matches with icmdShowVariableExplorerWindow's Icon in VSCT file
             BitmapImageMoniker = KnownMonikers.VariableProperty;
         }
     }
