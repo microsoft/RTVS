@@ -296,9 +296,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <EmbeddedResource Include="DataInspect\DataInspect.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <EmbeddedResource Include="RPackages\Mirrors\CranMirrors.csv" />
     <None Include="Rules\rtvs.rules.props">

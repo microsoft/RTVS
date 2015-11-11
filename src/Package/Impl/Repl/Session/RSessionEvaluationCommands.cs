@@ -62,22 +62,5 @@ options(device='.rtvs.vsgd')
         private static Task<REvaluationResult> EvaluateNonReentrantAsync(this IRSessionEvaluation evaluation, FormattableString commandText) {
             return evaluation.EvaluateAsync(FormattableString.Invariant(commandText));
         }
-
-        public static Task<REvaluationResult> PrepareDataInspect(this IRSessionEvaluation evaluation)
-        {
-            string script = null;
-
-            var assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.DataInspect.DataInspect.R"))
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    script = reader.ReadToEnd();
-                }
-            }
-            script += "\n";
-
-            return evaluation.EvaluateAsync(script);
-        }
     }
 }

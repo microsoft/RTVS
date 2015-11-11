@@ -91,7 +91,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             this.ScheduleEvaluation(async e => {
                 //await e.SetVsGraphicsDevice();
                 await e.SetDefaultWorkingDirectory();
-                await e.PrepareDataInspect();
 
                 string mirrorName = RToolsSettings.Current.CranMirror;
                 string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
