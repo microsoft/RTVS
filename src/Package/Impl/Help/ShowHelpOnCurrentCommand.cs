@@ -39,44 +39,52 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         protected override async void Handle() {
-            var rSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            IRSession session = rSessionProvider.Current;
-            if (session != null) {
-                // Fetch identifier under the cursor
-                string item = GetItemUnderCaret();
-                if (item != null && item.Length < MaxHelpItemLength) {
-                    // Go to background thread
-                    await TaskUtilities.SwitchToBackgroundThread();
-                    
-                    // First check if expression can be evaluated. If result is non-empty
-                    // then R knows about the item and '?item' interaction will succed.
-                    // If response is empty then we'll try '??item' instead.
-                    string prefix = "?";
-                    using (IRSessionEvaluation evaluation = await session.BeginEvaluationAsync(isMutating: false)) {
-                        REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
-                        if (string.IsNullOrEmpty(result.StringResult) || result.StringResult == "NA") {
-                            prefix = "??";
-                        }
-                    }
-
-                    // Now actually request the help. First call may throw since 'starting help server...'
-                    // message in REPL is actually an error (comes in red) so we'll get RException.
-                    int retries = 0;
-                    while (retries < 3) {
-                        using (IRSessionInteraction interaction = await session.BeginInteractionAsync(isVisible: false)) {
-                            try {
-                                await interaction.RespondAsync(prefix + item + Environment.NewLine);
-                            } catch (RException ex) {
-                                if ((uint)ex.HResult == 0x80131500) {
-                                    // Typically 'starting help server...' so try again
-                                    retries++;
-                                    continue;
+            try {
+                var rSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                IRSession session = rSessionProvider.Current;
+                if (session != null) {
+                    // Fetch identifier under the cursor
+                    string item = GetItemUnderCaret();
+                    if (item != null && item.Length < MaxHelpItemLength) {
+                        // First check if expression can be evaluated. If result is non-empty
+                        // then R knows about the item and '?item' interaction will succed.
+                        // If response is empty then we'll try '??item' instead.
+                        string prefix = "?";
+                        using (IRSessionEvaluation evaluation = await session.BeginEvaluationAsync(isMutating: false)) {
+                            REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
+                            if (result.ParseStatus == RParseStatus.OK && string.IsNullOrEmpty(result.Error)) {
+                                if (string.IsNullOrEmpty(result.StringResult) || result.StringResult == "NA") {
+                                    prefix = "??";
                                 }
+                            } else {
+                                // Parsing or other errors, bail out
+                                return;
                             }
                         }
-                        break;
+
+                        // Now actually request the help. First call may throw since 'starting help server...'
+                        // message in REPL is actually an error (comes in red) so we'll get RException.
+                        int retries = 0;
+                        while (retries < 3) {
+                            using (IRSessionInteraction interaction = await session.BeginInteractionAsync(isVisible: false)) {
+                                try {
+                                    await interaction.RespondAsync(prefix + item + Environment.NewLine);
+                                } catch (RException ex) {
+                                    if ((uint)ex.HResult == 0x80131500) {
+                                        // Typically 'starting help server...' so try again
+                                        retries++;
+                                        continue;
+                                    }
+                                } catch (OperationCanceledException) {
+                                }
+                            }
+                            break;
+                        }
                     }
                 }
+            }
+            catch(Exception) {
+                // Catch everything so exceptions don't leave the async void method
             }
         }
 

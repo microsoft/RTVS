@@ -14,8 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                     RPlotWindowContainer plotContainer = pane.GetIVsWindowPane() as RPlotWindowContainer;
                     Debug.Assert(plotContainer != null);
 
-                    Control c = plotContainer as Control;
-                    Debug.Assert(c != null);
+                    Control c = (Control)plotContainer;
                     Debug.Assert(c.Handle != IntPtr.Zero);
 
                     _handle = c.Handle;
