@@ -77,19 +77,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             await cancelTask;
         }
 
-        public async Task StartHostAsync() {
+        public async Task StartHostAsync(IntPtr plotWindowHandle) {
             if (_hostRunTask != null && !_hostRunTask.IsCompleted) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            IntPtr handle = RPlotWindowHost.RPlotWindowContainerHandle;
             await TaskUtilities.SwitchToBackgroundThread();
 
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
 
-            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), handle);
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), plotWindowHandle);
             this.ScheduleEvaluation(async e => {
                 //await e.SetVsGraphicsDevice();
                 await e.SetDefaultWorkingDirectory();

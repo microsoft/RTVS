@@ -40,8 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override async void Handle() {
             var rSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            IReadOnlyDictionary<int, IRSession> sessions = rSessionProvider.GetSessions();
-            IRSession session = sessions.Values.FirstOrDefault();
+            IRSession session = rSessionProvider.Current;
             if (session != null) {
                 // Fetch identifier under the cursor
                 string item = GetItemUnderCaret();

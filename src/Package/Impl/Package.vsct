@@ -207,6 +207,10 @@
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveContextMenu"/>
       </Group>
 
+      <Group guid="guidRToolsCmdSet" id="interactiveWindowHelpGroup" priority="0x0500">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveContextMenu"/>
+      </Group>
+
       <Group guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
       </Group>
@@ -697,7 +701,6 @@
 
       <!-- Context menu -->
       <Button guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="groupRContextHelp"/>
         <Icon guid="ImageCatalogGuid" id="StatusHelpOutline"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -945,6 +948,15 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
+    
+    <!-- Contextual help -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextHelp"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="interactiveWindowHelpGroup"/>
+    </CommandPlacement>
   </CommandPlacements>
 
   <KeyBindings>
@@ -1037,6 +1049,7 @@
       <IDSymbol name="interactiveWindowContextGroup" value="570"/>
       <IDSymbol name="icmdRexecuteReplCmd" value="571"/>
       <IDSymbol name="icmdPasteReplCmd" value="572"/>
+      <IDSymbol name="interactiveWindowHelpGroup" value="573"/>
 
       <!-- Packages-->
       <IDSymbol name="icmdInstallPackages" value="601" />

@@ -16,8 +16,11 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         protected virtual IEnumerable<IVsProjectFactory> CreateProjectFactories() { return new IVsProjectFactory[0]; }
         protected virtual IEnumerable<MenuCommand> CreateMenuCommands() { return new MenuCommand[0]; }
 
+        /// <summary>
+        /// Retrieve service local to the package such as IMenuService
+        /// </summary>
         public T GetPackageService<T>(Type t = null) where T : class {
-            return GetService(t != null ? t : typeof(T)) as T;
+            return GetService(t ?? typeof(T)) as T;
         }
 
         /// <summary>

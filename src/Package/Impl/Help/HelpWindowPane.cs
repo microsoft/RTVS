@@ -74,10 +74,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
                 if (pane != null) {
                     pane.NavigateTo(url);
+                    return;
                 }
-            } else {
-                Process.Start(url);
             }
+            Process.Start(url);
         }
 
         private static bool IsHelpUrl(string url) {

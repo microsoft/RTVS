@@ -7,17 +7,23 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
+        private IntPtr _plotWindowHandle;
+
         public IRSession Session { get; private set; }
 
         public RInteractiveEvaluator(IRSession session) {
             Session = session;
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
+
+            // Cache handle here since it must be done on UI thread
+            _plotWindowHandle = RPlotWindowHost.RPlotWindowContainerHandle;
         }
 
         public void Dispose() {
@@ -27,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public async Task<ExecutionResult> InitializeAsync() {
             try {
-                await Session.StartHostAsync();
+                await Session.StartHostAsync(_plotWindowHandle);
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
