@@ -4,8 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
+using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -44,6 +47,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
                 Class = string.Join(", ", escaped); // TODO: escape ',' in class names
                 HasChildren = valueEvaluation.HasChildren;
+
+                CanShowDetail = ComputeDetailAvailability();
+                if (CanShowDetail) {
+                    ShowDetailCommand = new DelegateCommand(
+                        (o) => ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true),
+                        (o) => CanShowDetail);
+                }
             }
         }
 
@@ -137,5 +147,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             return value;
         }
+
+        #region Detail Grid
+
+        public bool CanShowDetail { get; private set; }
+
+        private bool ComputeDetailAvailability() {
+            return this.Class.Contains("matrix");
+        }
+
+        public ICommand ShowDetailCommand { get; }
+
+        #endregion
     }
 }

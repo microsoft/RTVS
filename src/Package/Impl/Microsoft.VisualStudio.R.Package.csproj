@@ -85,6 +85,10 @@
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\EvaluationWrapper.cs" />
     <Compile Include="DataInspect\MultiplyConverter.cs" />
+    <Compile Include="DataInspect\VariableGridHost.xaml.cs">
+      <DependentUpon>VariableGridHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataInspect\VariableGridWindowPane.cs" />
     <Compile Include="DataInspect\WorkspaceVariableProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\ITreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\ObservableTreeNode.cs" />
@@ -297,9 +301,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <EmbeddedResource Include="DataInspect\DataInspect.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <EmbeddedResource Include="RPackages\Mirrors\CranMirrors.csv" />
     <None Include="Rules\rtvs.rules.props">
@@ -677,6 +678,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DataInspect\VariableGridHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Plots\XamlPresenter.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
