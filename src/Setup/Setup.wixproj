@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props')" />
   <Import Project="..\R.Build.Version.targets" />
   <Import Project="..\R.Wix.Settings.targets" />
   <PropertyGroup>
@@ -14,6 +15,8 @@
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <BaseIntermediateOutputPath>..\..\obj\</BaseIntermediateOutputPath>
@@ -42,8 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
-    <Content Include="35MSSharedLib1024.snk" />
     <Content Include="Assemblies.wxi" />
+    <Content Include="packages.config" />
     <Content Include="RtvsPackage.wxi" />
     <Content Include="Profiles.wxi" />
     <Content Include="CpsRules.wxi" />
@@ -54,81 +57,15 @@
     <Content Include="Definitions.wxi" />
     <Content Include="RFile.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Core\Impl\Microsoft.Common.Core.csproj">
-      <Name>Microsoft.Common.Core</Name>
-      <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
-      <Name>Microsoft.R.Host.Client</Name>
-      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
-      <Name>Microsoft.Languages.Editor</Name>
-      <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
-      <Name>Microsoft.Markdown.Editor</Name>
-      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\Package\Impl\Microsoft.VisualStudio.R.Package.csproj">
-      <Name>Microsoft.VisualStudio.R.Package</Name>
-      <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj">
-      <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
-      <Project>{41aa8769-0fbc-4a80-8498-21c833f0c2ac}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\R\Core\Impl\Microsoft.R.Core.csproj">
-      <Name>Microsoft.R.Core</Name>
-      <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Name>Microsoft.R.Editor</Name>
-      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\R\Support\Impl\Microsoft.R.Support.csproj">
-      <Name>Microsoft.R.Support</Name>
-      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="..\R.Wix.targets" />
+  <Import Project="$(WixTargetsPath)" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props'))" />
+    <Error Condition="!Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets'))" />
+  </Target>
+  <Import Project="..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" />
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
 	Other similar extension points exist, see Wix.targets.
