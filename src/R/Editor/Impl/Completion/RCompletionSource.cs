@@ -52,6 +52,7 @@ namespace Microsoft.R.Editor.Completion {
             Span applicableSpan = GetApplicableSpan(position, session);
             ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan, SpanTrackingMode.EdgeInclusive);
             List<RCompletion> completions = new List<RCompletion>();
+            bool sort = true;
 
             foreach (IRCompletionListProvider provider in providers) {
                 IReadOnlyCollection<RCompletion> entries = provider.GetEntries(context);
@@ -60,10 +61,13 @@ namespace Microsoft.R.Editor.Completion {
                 if (entries.Count > 0) {
                     completions.AddRange(entries);
                 }
+                sort &= provider.AllowSorting;
             }
 
-            completions.Sort(RCompletion.Compare);
-            completions.RemoveDuplicates();
+            if (sort) {
+                completions.Sort(RCompletion.Compare);
+                completions.RemoveDuplicates();
+            }
 
             CompletionSet completionSet = new RCompletionSet(_textBuffer, trackingSpan, completions);
             completionSets.Add(completionSet);

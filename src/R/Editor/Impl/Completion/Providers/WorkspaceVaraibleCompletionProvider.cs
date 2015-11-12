@@ -23,6 +23,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
         }
 
         #region IRCompletionListProvider
+        public bool AllowSorting { get; } = true;
+
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
             ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);

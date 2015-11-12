@@ -14,6 +14,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// </summary>
     public class PackagesCompletionProvider : IRCompletionListProvider {
         #region IRCompletionListProvider
+        public bool AllowSorting { get; } = true;
+
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
             ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic);

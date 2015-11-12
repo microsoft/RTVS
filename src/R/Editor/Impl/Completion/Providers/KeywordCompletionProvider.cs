@@ -13,6 +13,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
     [Export(typeof(IRCompletionListProvider))]
     public class KeywordCompletionProvider : IRCompletionListProvider {
         #region IRCompletionListProvider
+        public bool AllowSorting { get; } = true;
+
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
 

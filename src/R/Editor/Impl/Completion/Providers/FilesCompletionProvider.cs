@@ -5,7 +5,6 @@ using System.IO;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Support.Settings;
@@ -26,69 +25,43 @@ namespace Microsoft.R.Editor.Completion.Providers {
         }
 
         #region IRCompletionListProvider
+        public bool AllowSorting { get; } = false;
+
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
             ImageSource folderGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
             string currentDir = RToolsSettings.Current.WorkingDirectory;
-            string directory;
+            string directory = currentDir;
 
             try {
-                directory = Path.Combine(currentDir, _directory);
-                if (!Directory.Exists(directory)) {
-                    directory = currentDir;
+                string dir = Path.Combine(currentDir, _directory);
+                if (Directory.Exists(dir)) {
+                    directory = dir;
                 }
-            } catch (IOException) {
-                directory = currentDir;
-            }
+            } catch (IOException) { } catch (AccessViolationException) { }
 
             try {
                 foreach (string dir in Directory.GetDirectories(directory)) {
-                    string dirName = Path.GetFileName(dir);
-                    completions.Add(new RCompletion(dirName, dirName + "/", string.Empty, folderGlyph));
+                    DirectoryInfo di = new DirectoryInfo(dir);
+                    if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
+                        string dirName = Path.GetFileName(dir);
+                        completions.Add(new RCompletion(dirName, dirName + "/", string.Empty, folderGlyph));
+                    }
                 }
 
                 foreach (string file in Directory.GetFiles(directory)) {
-                    ImageSource fileGlyph = GetImageForFile(file);
-                    string fileName = Path.GetFileName(file);
-                    completions.Add(new RCompletion(fileName, fileName, string.Empty, fileGlyph));
+                    FileInfo di = new FileInfo(file);
+                    if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
+                        ImageSource fileGlyph = ImagesProvider.GetFileIcon(file);
+                        string fileName = Path.GetFileName(file);
+                        completions.Add(new RCompletion(fileName, fileName, string.Empty, fileGlyph));
+                    }
                 }
-            } catch (IOException) { }
+            } catch (IOException) { } catch(AccessViolationException) { }
 
             return completions;
         }
         #endregion
-
-        private ImageSource GetImageForFile(string name) {
-            string ext = Path.GetExtension(name);
-            if (ext == ".R" || ext == ".r") {
-                return ImagesProvider.GetImage("RFileNode");
-            }
-            if (ext.Equals(".rproj", StringComparison.OrdinalIgnoreCase)) {
-                return ImagesProvider.GetImage("RProjectNode");
-            }
-            if (ext.Equals(".rdata", StringComparison.OrdinalIgnoreCase)) {
-                return ImagesProvider.GetImage("RDataNode");
-            }
-            if (ext.Equals(".md", StringComparison.OrdinalIgnoreCase)) {
-                return ImagesProvider.GetImage("MarkdownFile");
-            }
-            if (ext.Equals(".rmd", StringComparison.OrdinalIgnoreCase)) {
-                return ImagesProvider.GetImage("MarkdownFile");
-            }
-            if (ext.Equals(".html", StringComparison.OrdinalIgnoreCase)) {
-                return ImagesProvider.GetImage("HTMLFile");
-            }
-            if (ext.Equals(".css", StringComparison.OrdinalIgnoreCase)) {
-                return ImagesProvider.GetImage("StyleSheet");
-            }
-            if (ext.Equals(".xml", StringComparison.OrdinalIgnoreCase)) {
-                return ImagesProvider.GetImage("XMLFile");
-            }
-            if (ext.Equals(".txt", StringComparison.OrdinalIgnoreCase)) {
-                return ImagesProvider.GetImage("TextFile");
-            }
-            return ImagesProvider.GetImage("Document");
-        }
 
         private string ExtractDirectory(string directory) {
             if (directory.Length > 0 && (directory[0] == '\"' || directory[0] == '\'')) {
