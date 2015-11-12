@@ -1,11 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <!-- 
-      When building from a dev machine, the BuildNumber won't be set, so set it to 65000.1 
-      to indicate this is a private build. 65000 is also greater than lab build numbers and hence
-      developer can update MSI installed from the official build by the private copy 
-    -->
     <!-- 1.0.YMMDD.HHMM -->
     <Year>$([System.DateTime]::Now.Year)</Year>
     <YearMinus4>$([MSBuild]::Subtract($(Year), 4))</YearMinus4>
@@ -14,11 +9,14 @@
     <Date>$([System.DateTime]::Now.ToString("MMdd"))</Date>
     <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
-    <MajorVersion>1.0</MajorVersion>
-    <BuildNumber>$(LastDigitOfYear)$(Date).$(Time)</BuildNumber>
+    <MajorVersion>1</MajorVersion>
+    <MinorVersion>0</MinorVersion>
+    <Build>$(LastDigitOfYear)$(Date)</Build>
+    <Revision>$(Time)</Revision>
+    <BuildNumber Condition="'$(BuildNumber)' == ''">$(Build).$(Revision)</BuildNumber>
 
-    <AssemblyVersion>$(MajorVersion).$(BuildNumber)</AssemblyVersion>
-    <BuildVersion>$(MajorVersion).$(BuildNumber)</BuildVersion>
+    <AssemblyVersion>$(MajorVersion).$(MajorVersion).$(BuildNumber)</AssemblyVersion>
+    <BuildVersion>$(MajorVersion).$(MajorVersion).$(Build).$(Revision)</BuildVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,14 +31,17 @@
     </AssemblyVersionAttribute>
   </ItemGroup>
 
+  <!-- C# -->
   <Target Name="DeleteVersionInfoFile" BeforeTargets="GenerateAssemblyInfoFile">
     <Delete Files="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs" />
   </Target>
 
-  <Target Name="GenerateAssemblyInfoFile" Inputs="$(MSBuildAllProjects)" Outputs="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs">
+  <Target Name="GenerateAssemblyInfoFile"
+          Inputs="$(MSBuildAllProjects)"
+          Outputs="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs">
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
-							Language="C#"
-							OutputFile="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs">
+                       Language="C#"
+                       OutputFile="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs">
       <Output TaskParameter="OutputFile" ItemName="Compile" />
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
     </WriteCodeFragment>
@@ -50,4 +51,18 @@
     <CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>
     <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
   </PropertyGroup>
+
+  <!-- C++ -->
+  <Target Name="GenerateNativeVersionInfoFile"
+          Inputs="$(MSBuildAllProjects)"
+          Outputs="$(MSBuildProjectDirectory)\GeneratedVersion.h"
+          BeforeTargets="PrepareForBuild">
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)\GeneratedVersion.h"
+                      Overwrite="true"
+                      Lines="#define VER_FILEVERSION $(MajorVersion),$(MinorVersion),$(Build),$(Revision);
+                             #define VER_FILEVERSION_STR &quot;$(BuildVersion)\0&quot;;
+                             #define VER_PRODUCTVERSION $(MajorVersion),$(MinorVersion),0,0;
+                             #define VER_PRODUCTVERSION_STR &quot;$(MajorVersion).$(MinorVersion)\0&quot;">
+    </WriteLinesToFile>
+  </Target>
 </Project>
