@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Common.Core;
@@ -50,17 +51,22 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                         // then R knows about the item and '?item' interaction will succed.
                         // If response is empty then we'll try '??item' instead.
                         string prefix = "?";
-                        using (IRSessionEvaluation evaluation = await session.BeginEvaluationAsync(isMutating: false)) {
-                            REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
-                            if (result.ParseStatus == RParseStatus.OK && string.IsNullOrEmpty(result.Error)) {
-                                if (string.IsNullOrEmpty(result.StringResult) || result.StringResult == "NA") {
-                                    prefix = "??";
+                        try {
+                            using (IRSessionEvaluation evaluation = await session.BeginEvaluationAsync(isMutating: false)) {
+                                REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
+                                if (result.ParseStatus == RParseStatus.OK && string.IsNullOrEmpty(result.Error)) {
+                                    if (string.IsNullOrEmpty(result.StringResult) || result.StringResult == "NA") {
+                                        prefix = "??";
+                                    }
+                                } else {
+                                    // Parsing or other errors, bail out
+                                    Debug.Assert(false,
+                                        string.Format(CultureInfo.InvariantCulture,
+                                        "Evaluation of help expression failed. Error: {0}, Status: {1}", result.Error, result.ParseStatus));
+                                    return;
                                 }
-                            } else {
-                                // Parsing or other errors, bail out
-                                return;
                             }
-                        }
+                        } catch (RException) { } catch (OperationCanceledException) { }
 
                         // Now actually request the help. First call may throw since 'starting help server...'
                         // message in REPL is actually an error (comes in red) so we'll get RException.
@@ -75,16 +81,18 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                                         retries++;
                                         continue;
                                     }
-                                } catch (OperationCanceledException) {
-                                }
+                                } catch (OperationCanceledException) { }
                             }
                             break;
                         }
                     }
                 }
-            }
-            catch(Exception) {
+            } catch (Exception ex) {
+                Debug.Assert(false, string.Format(CultureInfo.InvariantCulture, "Help on current item failed. Exception: {0}", ex.Message));
                 // Catch everything so exceptions don't leave the async void method
+                if (ex.IsCriticalException()) {
+                    throw;
+                }
             }
         }
 
