@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -18,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     [Guid(WindowGuid)]
     internal class HelpWindowPane : ToolWindowPane {
         internal const string WindowGuid = "9E909526-A616-43B2-A82B-FD639DCD40CB";
+        private static bool _dontNavigateToDefault;
 
         private WebBrowser _browser;
 
@@ -26,15 +28,30 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             BitmapImageMoniker = KnownMonikers.StatusHelp;
 
             _browser = new WebBrowser();
+
+            _browser.Navigating += OnNavigating;
             _browser.Navigated += OnNavigated;
 
             Content = _browser;
-            NavigateTo(HelpHomeCommand.HomeUrl);
+            if (!_dontNavigateToDefault) {
+                // When window is not visible and request comes for help,
+                // don't navigate to default page as it will be immediately
+                // replaced by the requested help page anyway.
+                NavigateTo(HelpHomeCommand.HomeUrl);
+            }
 
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
             Controller c = new Controller();
             c.AddCommandSet(GetCommands());
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
+        }
+
+        private void OnNavigating(object sender, NavigatingCancelEventArgs e) {
+            string url = e.Uri.ToString();
+            if (!IsHelpUrl(url)) {
+                e.Cancel = true;
+                Process.Start(url);
+            }
         }
 
         private void OnNavigated(object sender, NavigationEventArgs e) {
@@ -44,17 +61,27 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             shell.UpdateCommandUI(1);
         }
 
-        public void NavigateTo(string url) {
+        private void NavigateTo(string url) {
             if (_browser != null) {
                 _browser.Navigate(url);
             }
         }
 
         public static void Navigate(string url) {
-            HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
-            if (pane != null) {
-                pane.NavigateTo(url);
+            // Filter our localhost help from absolute URLs except the landing page
+            if (IsHelpUrl(url)) {
+                _dontNavigateToDefault = true;
+                HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
+                if (pane != null) {
+                    pane.NavigateTo(url);
+                    return;
+                }
             }
+            Process.Start(url);
+        }
+
+        private static bool IsHelpUrl(string url) {
+            return url == HelpHomeCommand.HomeUrl || url == (HelpHomeCommand.HomeUrl + "/") || url.StartsWith("http://127.0.0.1");
         }
 
         private IEnumerable<ICommand> GetCommands() {
@@ -69,6 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void Dispose(bool disposing) {
             if (disposing && _browser != null) {
+                _browser.Navigating -= OnNavigating;
                 _browser.Navigated -= OnNavigated;
                 _browser.Dispose();
                 _browser = null;

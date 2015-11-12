@@ -72,6 +72,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                         // Allow VS to continue processing cancel
                     }
                 }
+            } else if (group == VSConstants.GUID_VSStandardCommandSet97) {
+                if (id == (int)VSConstants.VSStd97CmdID.F1Help) {
+                    RCompletionController controller = RCompletionController.FromTextView(TextView);
+                    if (controller != null) {
+                        // Translate to R help
+                        HandleF1Help(controller);
+                        return CommandResult.Executed;
+                    }
+                }
             }
 
             return base.Invoke(group, id, inputArg, ref outputArg);
@@ -120,6 +129,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             object o = new object();
             // Post interrupt command which knows if it can interrupt R or not
             uiShell.PostExecCommand(ref gmdSet, RPackageCommandId.icmdInterruptR, 0, ref o);
+        }
+
+        private void HandleF1Help(RCompletionController controller) {
+            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            Guid gmdSet = RGuidList.RCmdSetGuid;
+            object o = new object();
+            // Post interrupt command which knows if it can interrupt R or not
+            uiShell.PostExecCommand(ref gmdSet, RPackageCommandId.icmdHelpOnCurrent, 0, ref o);
         }
 
         /// <summary>

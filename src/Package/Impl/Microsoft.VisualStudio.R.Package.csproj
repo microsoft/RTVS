@@ -102,6 +102,7 @@
     <Compile Include="Help\HelpNextCommand.cs" />
     <Compile Include="Help\HelpWindowPane.cs" />
     <Compile Include="Help\NativeMethods.cs" />
+    <Compile Include="Help\ShowHelpOnCurrentCommand.cs" />
     <Compile Include="Help\ShowHelpWindowCommand.cs" />
     <Compile Include="Help\HelpPreviousCommand.cs" />
     <Compile Include="Interop\MailUtility.cs" />
