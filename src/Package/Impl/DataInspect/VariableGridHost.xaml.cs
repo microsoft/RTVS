@@ -18,8 +18,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Interaction logic for VariableGridHost.xaml
     /// </summary>
     public partial class VariableGridHost : UserControl {
+
+        private static int RowCount = 100;
+        private static int ColumnCount = 100;
+
         public VariableGridHost() {
             InitializeComponent();
+
+            this.VGrid.ItemsSource = new VariableGridDataSource(RowCount, ColumnCount);
         }
     }
 }

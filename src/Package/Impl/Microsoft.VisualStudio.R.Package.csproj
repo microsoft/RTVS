@@ -83,6 +83,14 @@
     <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
+    <Compile Include="DataInspect\DynamicGrid\ConstantCountList.cs" />
+    <Compile Include="DataInspect\DynamicGrid\MaxDouble.cs" />
+    <Compile Include="DataInspect\DynamicGrid\Range.cs" />
+    <Compile Include="DataInspect\DynamicGrid\VariableGrid.cs" />
+    <Compile Include="DataInspect\DynamicGrid\VariableGridCell.cs" />
+    <Compile Include="DataInspect\DynamicGrid\VariableGridDataSource.cs" />
+    <Compile Include="DataInspect\DynamicGrid\VariableGridPanel.cs" />
+    <Compile Include="DataInspect\DynamicGrid\VariableGridStack.cs" />
     <Compile Include="DataInspect\EvaluationWrapper.cs" />
     <Compile Include="DataInspect\MultiplyConverter.cs" />
     <Compile Include="DataInspect\VariableGridHost.xaml.cs">
