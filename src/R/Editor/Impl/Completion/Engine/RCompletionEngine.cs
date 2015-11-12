@@ -47,11 +47,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             }
 
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
-                // Only complete data member names in REPL
-                if (document != null && document.IsTransient) {
-                    providers.Add(new WorkspaceVaraibleCompletionProvider());
-                }
-
+                providers.Add(new WorkspaceVaraibleCompletionProvider());
                 return providers;
             }
 
