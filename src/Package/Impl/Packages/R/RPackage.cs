@@ -51,6 +51,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
     [ProvideDebugPortPicker(typeof(RDebugPortPicker))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
+    [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     internal class RPackage : BasePackage<RLanguageService> {
         public const string OptionsDialogName = "R Tools";
 
