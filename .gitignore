@@ -8,6 +8,7 @@
 
 # Assembly version information
 AssemblyVersionInfo.cs
+GeneratedVersion.h
 
 # Build results
 [Dd]ebug/
