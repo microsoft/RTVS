@@ -70,15 +70,6 @@ namespace Microsoft.UnitTests.Core.Threading
             exception?.Throw();
         }
 
-        public void Wait(IDataflowBlock block)
-        {
-            TaskScheduler.Wait();
-            if (block.Completion.IsFaulted && block.Completion.Exception != null)
-            {
-                throw block.Completion.Exception;
-            }
-        }
-
         public void WaitForUpcomingTasks(IDataflowBlock block, int ms = 1000)
         {
             TaskScheduler.WaitForUpcomingTasks(ms);

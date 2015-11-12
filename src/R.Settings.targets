@@ -1,11 +1,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	
-	<!-- Common Build Settings and Configurations -->
-	<PropertyGroup>
-		<DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">$(DefineConstants);VS14</DefineConstants>
+  <!-- Common Build Settings and Configurations -->
+  <PropertyGroup>
+    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">$(DefineConstants);VS14</DefineConstants>
     <RootDirectory>$(MSBuildThisFileDirectory)\..\</RootDirectory>
     <MicroBuildPluginDirectory Condition=" '$(MicroBuildPluginDirectory)' == '' ">$(RootDirectory)\NugetPackages\</MicroBuildPluginDirectory>
-	</PropertyGroup>
+    <PrivateAssembliesFolderPath>$(DevEnvDir)\PrivateAssemblies\</PrivateAssembliesFolderPath>
+  </PropertyGroup>
 
 	<PropertyGroup Condition=" $(VisualStudioVersion) == '14.0' ">
 		<TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
