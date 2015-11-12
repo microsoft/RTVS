@@ -76,9 +76,11 @@ namespace Microsoft.R.Host.Client {
             base.OnError(e);
 
             var ex = e.Exception;
-            if (ex is SocketException || ex is WebSocketException) {
+            if (ex == null) {
+                ex = new MessageTransportException();
+            } else if (ex is SocketException || ex is WebSocketException) {
                 ex = new MessageTransportException(ex);
-            }
+            } 
 
             _incomingMessages.Post(Task.FromException<string>(ex));
         }
