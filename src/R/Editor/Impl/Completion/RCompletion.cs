@@ -2,31 +2,23 @@
 using System.Diagnostics;
 using System.Windows.Media;
 
-namespace Microsoft.R.Editor.Completion
-{
+namespace Microsoft.R.Editor.Completion {
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>
     /// Completion entry in the R intellisense completion set
     /// </summary>
     [DebuggerDisplay("{DisplayText}")]
-    public class RCompletion : Completion, IComparable<RCompletion>
-    {
-        public bool RetriggerIntellisense { get; private set; }
-
+    public class RCompletion : Completion, IComparable<RCompletion> {
         public RCompletion(
             string displayText,
             string insertionText,
             string description,
-            ImageSource iconSource,
-            bool retriggerIntellisense = false) :
-            base(displayText, insertionText, description, iconSource, string.Empty)
-        {
-            this.RetriggerIntellisense = retriggerIntellisense;
+            ImageSource iconSource) :
+            base(displayText, insertionText, description, iconSource, string.Empty) {
         }
 
-        public static int Compare(Completion completion1, Completion completion2)
-        {
+        public static int Compare(Completion completion1, Completion completion2) {
             if (completion1 == null || completion2 == null)
                 return -1;
 
@@ -38,8 +30,7 @@ namespace Microsoft.R.Editor.Completion
         }
 
         #region IComparable<RCompletion>
-        public int CompareTo(RCompletion other)
-        {
+        public int CompareTo(RCompletion other) {
             return DisplayText.CompareTo(other.DisplayText);
         }
         #endregion

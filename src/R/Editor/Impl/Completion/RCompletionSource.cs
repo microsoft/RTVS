@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Shell;
@@ -13,17 +12,14 @@ using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Completion
-{
+namespace Microsoft.R.Editor.Completion {
     /// <summary>
     /// Provides actual content for the intellisense dropdown
     /// </summary>
-    public sealed class RCompletionSource : ICompletionSource
-    {
+    public sealed class RCompletionSource : ICompletionSource {
         private ITextBuffer _textBuffer;
 
-        public RCompletionSource(ITextBuffer textBuffer)
-        {
+        public RCompletionSource(ITextBuffer textBuffer) {
             _textBuffer = textBuffer;
         }
 
@@ -32,8 +28,7 @@ namespace Microsoft.R.Editor.Completion
         /// </summary>
         /// <param name="session">Completion session</param>
         /// <param name="completionSets">Completion sets to populate</param>
-        public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
-        {
+        public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             Debug.Assert(EditorShell.IsUIThread);
 
             IREditorDocument doc = REditorDocument.TryFromTextBuffer(_textBuffer);
@@ -44,8 +39,7 @@ namespace Microsoft.R.Editor.Completion
             PopulateCompletionList(position, session, completionSets, doc.EditorTree.AstRoot);
         }
 
-        internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast)
-        {
+        internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast) {
             RCompletionContext context = new RCompletionContext(session, _textBuffer, ast, position);
 
             bool autoShownCompletion = true;
@@ -59,13 +53,11 @@ namespace Microsoft.R.Editor.Completion
             ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan, SpanTrackingMode.EdgeInclusive);
             List<RCompletion> completions = new List<RCompletion>();
 
-            foreach (IRCompletionListProvider provider in providers)
-            {
+            foreach (IRCompletionListProvider provider in providers) {
                 IReadOnlyCollection<RCompletion> entries = provider.GetEntries(context);
                 Debug.Assert(entries != null);
 
-                if (entries.Count > 0)
-                {
+                if (entries.Count > 0) {
                     completions.AddRange(entries);
                 }
             }
@@ -73,7 +65,7 @@ namespace Microsoft.R.Editor.Completion
             completions.Sort(RCompletion.Compare);
             completions.RemoveDuplicates();
 
-            CompletionSet completionSet = new RCompletionSet(trackingSpan, completions);
+            CompletionSet completionSet = new RCompletionSet(_textBuffer, trackingSpan, completions);
             completionSets.Add(completionSet);
         }
 
@@ -84,11 +76,9 @@ namespace Microsoft.R.Editor.Completion
         /// tracking span as user types and filter completion session
         /// based on the data inside the tracking span.
         /// </summary>
-        private Span GetApplicableSpan(int position, ICompletionSession session)
-        {
+        private Span GetApplicableSpan(int position, ICompletionSession session) {
             var selectedSpans = session.TextView.Selection.SelectedSpans;
-            if (selectedSpans.Count == 1 && selectedSpans[0].Span.Length > 0)
-            {
+            if (selectedSpans.Count == 1 && selectedSpans[0].Span.Length > 0) {
                 return selectedSpans[0].Span;
             }
 
@@ -100,28 +90,23 @@ namespace Microsoft.R.Editor.Completion
             int start = 0;
             int end = line.Length;
 
-            for (int i = linePosition - 1; i >= 0; i--)
-            {
+            for (int i = linePosition - 1; i >= 0; i--) {
                 char ch = lineText[i];
-                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.')
-                {
+                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.') {
                     start = i + 1;
                     break;
                 }
             }
 
-            for (int i = linePosition; i < lineText.Length; i++)
-            {
+            for (int i = linePosition; i < lineText.Length; i++) {
                 char ch = lineText[i];
-                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.')
-                {
+                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.') {
                     end = i;
                     break;
                 }
             }
 
-            if (start < end)
-            {
+            if (start < end) {
                 return new Span(start + line.Start, end - start);
             }
 
@@ -129,10 +114,8 @@ namespace Microsoft.R.Editor.Completion
         }
 
         #region Dispose
-        public void Dispose()
-        {
-            if (_textBuffer != null)
-            {
+        public void Dispose() {
+            if (_textBuffer != null) {
                 _textBuffer = null;
             }
         }

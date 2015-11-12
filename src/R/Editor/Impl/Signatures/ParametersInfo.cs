@@ -1,13 +1,11 @@
 ﻿using System;
 using Microsoft.R.Core.AST.Operators;
 
-namespace Microsoft.R.Editor.Signatures
-{
+namespace Microsoft.R.Editor.Signatures {
     /// <summary>
-    /// Desacribes parameter (actual argument) in a function call
+    /// Describes parameter (actual argument) in a function call
     /// </summary>
-    public sealed class ParameterInfo
-    {
+    public sealed class ParameterInfo {
         /// <summary>
         /// Function call
         /// </summary>
@@ -31,13 +29,11 @@ namespace Microsoft.R.Editor.Signatures
         /// <summary>
         /// Function signature end in the current text snapshot
         /// </summary>
-        public int SignatureEnd
-        {
+        public int SignatureEnd {
             get { return FunctionCall.SignatureEnd; }
         }
 
-        public ParameterInfo(string functionName, FunctionCall functionCall, int parameterIndex, string parameterName)
-        {
+        public ParameterInfo(string functionName, FunctionCall functionCall, int parameterIndex, string parameterName) {
             if (functionName == null)
                 throw new ArgumentNullException("functionName");
 

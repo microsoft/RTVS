@@ -118,6 +118,7 @@
     <Compile Include="Completion\Providers\CompletionControllerProvider.cs" />
     <Compile Include="Completion\Providers\CompletionSourceProvider.cs" />
     <Compile Include="Completion\Providers\CompletionTypeAttribute.cs" />
+    <Compile Include="Completion\Providers\ParameterNameCompletionProvider.cs" />
     <Compile Include="Completion\Providers\PackagesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\FunctionCompletionProvider.cs" />
     <Compile Include="Completion\Providers\KeywordCompletionProvider.cs" />
