@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9174C912-E757-4ECD-9D6E-9604BEF74900}</ProjectGuid>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
     <RootNamespace>Microsoft.Languages.Editor.Application</RootNamespace>
-  </PropertyGroup>
-  <PropertyGroup>
     <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <Import Project="..\R.Settings.targets" />
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(RootDirectory)\obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(RootDirectory)\bin\</BaseOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
+    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -105,5 +105,12 @@
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\WindowsBase.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
+      <Authenticode>Microsoft</Authenticode>
+      <StrongName>StrongName</StrongName>
+    </FilesToSign>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
+  <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
 </Project>
