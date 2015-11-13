@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.BraceMatch {
-    public abstract class BraceMatcher<TokenTypeT> : IBraceMatcher where TokenTypeT : struct {
+    public abstract class BraceMatcher<TokenClassT, TokenTypeT> : IBraceMatcher
+        where TokenClassT : IToken<TokenTypeT> {
+
         public enum BraceType {
             Curly,
             Square,
@@ -20,9 +24,12 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         public ITextView TextView { get; private set; }
         public ITextBuffer TextBuffer { get; private set; }
 
-        public BraceMatcher(ITextView textView, ITextBuffer textBuffer) {
+        private IComparer<TokenTypeT> _tokenComparer;
+
+        public BraceMatcher(ITextView textView, ITextBuffer textBuffer, IComparer<TokenTypeT> tokenComparer) {
             TextView = textView;
             TextBuffer = textBuffer;
+            _tokenComparer = tokenComparer;
         }
 
         public bool GetBracesFromPosition(ITextSnapshot snapshot, int currentPosition, bool extendSelection, out int startPosition, out int endPosition) {
@@ -60,9 +67,74 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             return BraceTypeToTokenTypeMap.ContainsKey(braceType);
         }
 
-        public abstract bool GetLanguageBracesFromPosition(
+        protected abstract IReadOnlyTextRangeCollection<TokenClassT> GetTokens(int start, int length);
+
+        public virtual bool GetLanguageBracesFromPosition(
             BraceType braceType,
-            int position, bool reversed, out int start, out int end);
+            int position, bool reversed, out int start, out int end) {
+            TokenTypeT startTokenType = BraceTypeToTokenTypeMap[braceType].Item1;
+            TokenTypeT endTokenType = BraceTypeToTokenTypeMap[braceType].Item2;
+            IReadOnlyTextRangeCollection<TokenClassT> tokens = GetTokens(0, TextBuffer.CurrentSnapshot.Length);
+
+            start = -1;
+            end = -1;
+
+            Stack<TokenTypeT> stack = new Stack<TokenTypeT>();
+
+            int startIndex = -1;
+            for (int i = 0; i < tokens.Count; i++) {
+                if (tokens[i].Start == position) {
+                    startIndex = i;
+                    break;
+                }
+            }
+
+            if (startIndex < 0)
+                return false;
+
+            if (_tokenComparer.Compare(tokens[startIndex].TokenType, startTokenType) != 0 && _tokenComparer.Compare(tokens[startIndex].TokenType, endTokenType) != 0)
+                return false;
+
+            if (!reversed) {
+                for (int i = startIndex; i < tokens.Count; i++) {
+                    TokenClassT token = tokens[i];
+
+                    if (token.TokenType.Equals(startTokenType)) {
+                        stack.Push(token.TokenType);
+                    } else if (_tokenComparer.Compare(token.TokenType, endTokenType) == 0) {
+                        if (stack.Count > 0)
+                            stack.Pop();
+
+                        if (stack.Count == 0) {
+                            start = tokens[startIndex].Start;
+                            end = token.Start;
+                            return true;
+                        }
+                    }
+                }
+            } else {
+                for (int i = startIndex; i >= 0; i--) {
+                    TokenClassT token = tokens[i];
+
+                    if (_tokenComparer.Compare(token.TokenType, endTokenType) == 0) {
+                        stack.Push(token.TokenType);
+                    } else if (_tokenComparer.Compare(token.TokenType, startTokenType) == 0) {
+                        if (stack.Count > 0)
+                            stack.Pop();
+
+                        if (stack.Count == 0) {
+                            start = token.Start;
+                            end = token.Start;
+
+                            end = tokens[startIndex].Start;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
 
         public bool GetMatchingBraceType(char ch, out BraceType braceType, out bool reversed) {
             braceType = BraceType.Unknown;

@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 if (Directory.Exists(dir)) {
                     directory = dir;
                 }
-            } catch (IOException) { } catch (AccessViolationException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (ArgumentException) { }
 
             try {
                 foreach (string dir in Directory.GetDirectories(directory)) {
@@ -57,17 +57,20 @@ namespace Microsoft.R.Editor.Completion.Providers {
                         completions.Add(new RCompletion(fileName, fileName, string.Empty, fileGlyph));
                     }
                 }
-            } catch (IOException) { } catch(AccessViolationException) { }
+            } catch (IOException) { } catch(UnauthorizedAccessException) { } catch(ArgumentException) { }
 
             return completions;
         }
         #endregion
 
         private string ExtractDirectory(string directory) {
-            if (directory.Length > 0 && (directory[0] == '\"' || directory[0] == '\'')) {
+            if(directory.Length == 0) {
+                return string.Empty;
+            }
+            if (directory[0] == '\"' || directory[0] == '\'') {
                 directory = directory.Substring(1);
             }
-            if (directory.Length > 0 && (directory[directory.Length - 1] == '\"' || directory[directory.Length - 1] == '\'')) {
+            if (directory[directory.Length - 1] == '\"' || directory[directory.Length - 1] == '\'') {
                 directory = directory.Substring(0, directory.Length - 1);
             }
             return directory.Replace('/', '\\');

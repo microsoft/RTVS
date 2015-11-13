@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -50,7 +51,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 var previouslyRenamedRelativePath = changeset.RenamedFiles.GetFirstKeyByValueIgnoreCase(oldRelativePath);
                 if (string.IsNullOrEmpty(previouslyRenamedRelativePath)) {
                     changeset.RenamedFiles[oldRelativePath] = newRelativePath;
-                } else if (previouslyRenamedRelativePath.Equals(newRelativePath, StringComparison.OrdinalIgnoreCase)) {
+                } else if (previouslyRenamedRelativePath.EqualsIgnoreCase(newRelativePath)) {
                     changeset.RenamedFiles.Remove(previouslyRenamedRelativePath);
                 } else {
                     changeset.RenamedFiles[previouslyRenamedRelativePath] = newRelativePath;

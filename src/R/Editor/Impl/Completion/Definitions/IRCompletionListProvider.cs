@@ -19,7 +19,7 @@ namespace Microsoft.R.Editor.Completion.Definitions
         /// <summary>
         /// Allows or disallows sorting of the provided entries.
         /// For example, file list provider wants directories first 
-        /// anf files last similar to regular Windows Explorer display.
+        /// and files last similar to regular Windows Explorer display.
         /// </summary>
         bool AllowSorting { get; }
     }

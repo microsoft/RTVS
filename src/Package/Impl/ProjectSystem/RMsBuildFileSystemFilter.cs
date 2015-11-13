@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -18,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
         private static bool HasExtension(string filePath, params string[] possibleExtensions) {
             var extension = Path.GetExtension(filePath);
-            return !string.IsNullOrEmpty(extension) && possibleExtensions.Any(pe => extension.Equals(pe, StringComparison.OrdinalIgnoreCase));
+            return !string.IsNullOrEmpty(extension) && possibleExtensions.Any(pe => extension.EqualsIgnoreCase(pe));
         }
     }
 }

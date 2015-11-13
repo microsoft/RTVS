@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Markdown.Editor.Flavor {
@@ -14,7 +15,7 @@ namespace Microsoft.Markdown.Editor.Flavor {
             if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out textDocument)) {
                 if (!string.IsNullOrEmpty(textDocument.FilePath)) {
                     string ext = Path.GetExtension(textDocument.FilePath);
-                    if (ext.Equals(".rmd", StringComparison.OrdinalIgnoreCase)) {
+                    if (ext.EqualsIgnoreCase(".rmd")) {
                         return MarkdownFlavor.R;
                     }
                 }

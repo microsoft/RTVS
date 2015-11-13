@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
@@ -14,15 +15,15 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
 
             public void Apply(Changeset changeset) {
-                if (!_fullPath.StartsWith(_rootDirectory, StringComparison.OrdinalIgnoreCase)) {
+                if (!_fullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     return;
                 }
 
                 var relativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _fullPath));
 
                 // Remove all the files and directories that start with relativePath
-                changeset.AddedDirectories.RemoveWhere(d => d.StartsWith(relativePath, StringComparison.OrdinalIgnoreCase));
-                changeset.AddedFiles.RemoveWhere(f => f.StartsWith(relativePath, StringComparison.OrdinalIgnoreCase));
+                changeset.AddedDirectories.RemoveWhere(d => d.StartsWithIgnoreCase(relativePath));
+                changeset.AddedFiles.RemoveWhere(f => f.StartsWithIgnoreCase(relativePath));
 
                 // If directory was previously added to AddedDirectories, we need to remove all its content as well
                 if (changeset.AddedDirectories.Remove(relativePath)) {

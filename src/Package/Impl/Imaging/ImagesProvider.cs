@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Microsoft.Common.Core;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
@@ -18,6 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
     [Export(typeof(IImagesProvider))]
     internal sealed class ImagesProvider : IImagesProvider {
         private Dictionary<string, ImageMoniker> _monikerCache = new Dictionary<string, ImageMoniker>();
+        private Lazy<StringDictionary> _fileExtensionCache = Lazy.Create(() => CreateExtensionCache());
 
         /// <summary>
         /// Returns image source given name of the image moniker
@@ -36,53 +39,9 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         /// Given file name returns icon depending on the file extension
         /// </summary>
         public ImageSource GetFileIcon(string file) {
-            string ext = Path.GetExtension(file);
-            if (ext == ".R" || ext == ".r") {
-                return GetImage("RFileNode");
-            }
-            if (ext.Equals(".rproj", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("RProjectNode");
-            }
-            if (ext.Equals(".rdata", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("RDataNode");
-            }
-            if (ext.Equals(".md", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("MarkdownFile");
-            }
-            if (ext.Equals(".rmd", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("MarkdownFile");
-            }
-            if (ext.Equals(".html", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("HTMLFile");
-            }
-            if (ext.Equals(".css", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("StyleSheet");
-            }
-            if (ext.Equals(".xml", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("XMLFile");
-            }
-            if (ext.Equals(".txt", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("TextFile");
-            }
-            if (ext.Equals(".docx", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("OfficeWord2013");
-            }
-            if (ext.Equals(".xlsx", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("OfficeExcel2013");
-            }
-            if (ext.Equals(".py", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("PYFileNode");
-            }
-            if (ext.Equals(".cpp", StringComparison.OrdinalIgnoreCase) ||
-                ext.Equals(".cxx", StringComparison.OrdinalIgnoreCase) ||
-                ext.Equals(".rcpp", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("CPPFileNode");
-            }
-            if (ext.Equals(".c", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("CFile");
-            }
-            if (ext.Equals(".h", StringComparison.OrdinalIgnoreCase) || ext.Equals(".hpp", StringComparison.OrdinalIgnoreCase)) {
-                return GetImage("CPPHeaderFile");
+            string ext = Path.GetExtension(file).ToLowerInvariant();
+            if(_fileExtensionCache.Value.ContainsKey(ext)) {
+                return GetImage(_fileExtensionCache.Value[ext]);
             }
             return GetImage("Document");
         }
@@ -107,6 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
 
         public static ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
             IVsImageService2 imageService = AppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
+            ImageSource glyph = null;
 
             ImageAttributes imageAttributes = new ImageAttributes();
             imageAttributes.Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags;
@@ -118,10 +78,13 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
 
             IVsUIObject result = imageService.GetImage(imageMoniker, imageAttributes);
 
-            Object data;
-            result.get_Data(out data);
-            ImageSource glyph = data as ImageSource;
-            glyph.Freeze();
+            Object data = null;
+            if (result.get_Data(out data) == VSConstants.S_OK) {
+                glyph = data as ImageSource;
+                if (glyph != null) {
+                    glyph.Freeze();
+                }
+            }
 
             return glyph;
         }
@@ -156,6 +119,30 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             }
 
             return source;
+        }
+
+        private static StringDictionary CreateExtensionCache() {
+            StringDictionary dict = new StringDictionary();
+
+            dict[".r"] = "RFileNode";
+            dict[".rproj"] = "RProjectNode";
+            dict[".rdata"] = "RDataNode";
+            dict[".md"] = "MarkdownFile";
+            dict[".html"] = "HTMLFile";
+            dict[".css"] = "StyleSheet";
+            dict[".xml"] = "XMLFile";
+            dict[".txt"] = "TextFile";
+            dict[".docx"] = "OfficeWord2013";
+            dict[".xlsx"] = "OfficeExcel2013";
+            dict[".py"] = "PYFileNode";
+            dict[".cpp"] = "CPPFileNode";
+            dict[".cxx"] = "CPPFileNode";
+            dict[".rcpp"] = "CPPFileNode";
+            dict[".c"] = "CFile";
+            dict[".h"] = "CPPHeaderFile";
+            dict[".hpp"] = "CPPHeaderFile";
+
+            return dict;
         }
     }
 }
