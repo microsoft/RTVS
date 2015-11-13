@@ -39,7 +39,12 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
             IAstNode node = context.AstRoot.NodeFromPosition(context.Position);
             if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
-                // No completion in strings
+                string directory = node.Root.TextProvider.GetText(node);
+                // Bring file/folder completion when either string is empty or ends with /
+                // assuming that / specifies directory where files are.
+                if (directory.Length == 2 || directory.EndsWith("/\"", StringComparison.Ordinal) || directory.EndsWith("/\'", StringComparison.Ordinal)) {
+                    providers.Add(new FilesCompletionProvider(directory));
+                }
                 return providers;
             }
 

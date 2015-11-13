@@ -5,12 +5,9 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
-{
-    public class REditorOptionsDialog : DialogPage
-    {
-        public REditorOptionsDialog()
-        {
+namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
+    public class REditorOptionsDialog : DialogPage {
+        public REditorOptionsDialog() {
             this.SettingsRegistryPath = @"UserSettings\R_Tools";
         }
 
@@ -19,30 +16,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocDescription("Settings_EnableSyntaxCheck_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
-        public bool EnableValidation
-        {
+        public bool EnableValidation {
             get { return REditorSettings.SyntaxCheck; }
             set { REditorSettings.SyntaxCheck = value; }
         }
-
-        //[LocCategory("Settings_IntellisenseCategory")]
-        //[CustomLocDisplayName("Settings_ShowInternalFunctions")]
-        //[LocDescription("Settings_ShowInternalFunctions_Description")]
-        //[TypeConverter(typeof(OnOffTypeConverter))]
-        //[DefaultValue(true)]
-        //public bool ShowInternalFunctions
-        //{
-        //    get { return REditorSettings.ShowInternalFunctions; }
-        //    set { REditorSettings.ShowInternalFunctions = value; }
-        //}
 
         [LocCategory("Settings_IntellisenseCategory")]
         [CustomLocDisplayName("Settings_CommitOnSpace")]
         [LocDescription("Settings_CommitOnSpace_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(false)]
-        public bool CommitOnSpace
-        {
+        public bool CommitOnSpace {
             get { return REditorSettings.CommitOnSpace; }
             set { REditorSettings.CommitOnSpace = value; }
         }
@@ -52,8 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocDescription("Settings_CommitOnEnter_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(false)]
-        public bool CommitOnEnter
-        {
+        public bool CommitOnEnter {
             get { return REditorSettings.CommitOnEnter; }
             set { REditorSettings.CommitOnEnter = value; }
         }
@@ -63,8 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocDescription("Settings_TriggerOnFirstChar_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
-        public bool TriggerOnFirstChar
-        {
+        public bool TriggerOnFirstChar {
             get { return REditorSettings.ShowCompletionOnFirstChar; }
             set { REditorSettings.ShowCompletionOnFirstChar = value; }
         }
@@ -73,30 +55,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [CustomLocDisplayName("Settings_PartialArgumentNameMatch")]
         [LocDescription("Settings_PartialArgumentNameMatch_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
-        [DefaultValue(false)]
-        public bool PartialArgumentNameMatch
-        {
+        [DefaultValue(true)]
+        public bool PartialArgumentNameMatch {
             get { return REditorSettings.PartialArgumentNameMatch; }
             set { REditorSettings.PartialArgumentNameMatch = value; }
         }
-
-        //[LocCategory("Settings_IntellisenseCategory")]
-        //[CustomLocDisplayName("Settings_ShowTclFunctions")]
-        //[LocDescription("Settings_ShowTclFunctions_Description")]
-        //[TypeConverter(typeof(OnOffTypeConverter))]
-        //[DefaultValue(false)]
-        //public bool ShowTclFunctions
-        //{
-        //    get { return REditorSettings.ShowTclFunctions; }
-        //    set { REditorSettings.ShowTclFunctions = value; }
-        //}
 
         [LocCategory("Settings_FormattingCategory")]
         [CustomLocDisplayName("Settings_BracesExpanded")]
         [LocDescription("Settings_BracesExpanded_Description")]
         [DefaultValue(false)]
-        public bool BracesOnNewLine
-        {
+        public bool BracesOnNewLine {
             get { return REditorSettings.FormatOptions.BracesOnNewLine; }
             set { REditorSettings.FormatOptions.BracesOnNewLine = value; }
         }
@@ -106,8 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocDescription("Settings_SpaceAfterKeyword_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
-        public bool SpaceAfterKeyword
-        {
+        public bool SpaceAfterKeyword {
             get { return REditorSettings.FormatOptions.SpaceAfterKeyword; }
             set { REditorSettings.FormatOptions.SpaceAfterKeyword = value; }
         }
@@ -117,8 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocDescription("Settings_SpaceAfterComma_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
-        public bool SpaceAfterComma
-        {
+        public bool SpaceAfterComma {
             get { return REditorSettings.FormatOptions.SpaceAfterComma; }
             set { REditorSettings.FormatOptions.SpaceAfterComma = value; }
         }
@@ -128,8 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocDescription("Settings_FormatOnPaste_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
-        public bool FormatOnPaste
-        {
+        public bool FormatOnPaste {
             get { return REditorSettings.FormatOnPaste; }
             set { REditorSettings.FormatOnPaste = value; }
         }
@@ -139,8 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocDescription("Settings_AutoFormat_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(true)]
-        public bool AutoFormat
-        {
+        public bool AutoFormat {
             get { return REditorSettings.AutoFormat; }
             set { REditorSettings.AutoFormat = value; }
         }
@@ -150,8 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocDescription("Settings_SendToRepl_Description")]
         [TypeConverter(typeof(ReplShortcutTypeConverter))]
         [DefaultValue(true)]
-        public bool SendToReplOnCtrlEnter
-        {
+        public bool SendToReplOnCtrlEnter {
             get { return REditorSettings.SendToReplOnCtrlEnter; }
             set { REditorSettings.SendToReplOnCtrlEnter = value; }
         }
@@ -161,14 +125,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor
         [LocDescription("Settings_ReplSyntaxCheck_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]
         [DefaultValue(false)]
-        public bool SyntaxCheckInRepl
-        {
+        public bool SyntaxCheckInRepl {
             get { return REditorSettings.SyntaxCheckInRepl; }
             set { REditorSettings.SyntaxCheckInRepl = value; }
         }
 
-        public override void ResetSettings()
-        {
+        public override void ResetSettings() {
             REditorSettings.ResetSettings();
             base.ResetSettings();
         }
