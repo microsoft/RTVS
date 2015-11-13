@@ -35,7 +35,14 @@ namespace Microsoft.R.Editor.Formatting {
                         FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, -1);
                     }
                 } else if (typedChar == ';') {
-                    FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, 0);
+                    // Verify we are at the end of the string and not in a middle
+                    // of another string or inside a statement.
+                    ITextSnapshotLine line = subjectBuffer.CurrentSnapshot.GetLineFromPosition(rPoint.Value.Position);
+                    int positionInLine = rPoint.Value.Position - line.Start;
+                    string lineText = line.GetText();
+                    if (positionInLine >= lineText.TrimEnd().Length) {
+                        FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, 0);
+                    }
                 } else if (typedChar == '}') {
                     FormatOperations.FormatNode<IStatement>(textView, subjectBuffer, Math.Max(rPoint.Value - 1, 0));
                 }
