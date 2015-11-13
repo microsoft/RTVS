@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
@@ -20,7 +21,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
 
             public void Apply(Changeset changeset) {
-                if (!_directoryFullPath.StartsWith(_rootDirectory, StringComparison.OrdinalIgnoreCase)) {
+                if (!_directoryFullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     return;
                 }
 

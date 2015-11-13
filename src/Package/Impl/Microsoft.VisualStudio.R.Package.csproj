@@ -81,6 +81,7 @@
     <Compile Include="Help\ShowHelpOnCurrentCommand.cs" />
     <Compile Include="Help\ShowHelpWindowCommand.cs" />
     <Compile Include="Help\HelpPreviousCommand.cs" />
+    <Compile Include="Imaging\ImagesProvider.cs" />
     <Compile Include="Interop\MailUtility.cs" />
     <Compile Include="Logging\LogCleanup.cs" />
     <Compile Include="Logging\DiagnosticLogs.cs" />

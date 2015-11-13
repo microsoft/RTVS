@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
@@ -11,23 +13,12 @@ namespace Microsoft.R.Core.AST.Arguments {
     /// are 'a, b+1, c[3]' or '1,,3.
     /// </summary>
     [DebuggerDisplay("Arguments: {Count} [{Start}...{End})")]
-    public abstract class CommaSeparatedList : AstNode {
-        private List<CommaSeparatedItem> _arguments = new List<CommaSeparatedItem>(1);
+    public abstract class CommaSeparatedList : AstNode, IReadOnlyList<CommaSeparatedItem> {
+        private List<CommaSeparatedItem> _arguments = new List<CommaSeparatedItem>();
         private RTokenType _terminatingTokenType;
 
         public CommaSeparatedList(RTokenType terminatingTokenType) {
             _terminatingTokenType = terminatingTokenType;
-        }
-
-        /// <summary>
-        /// Number of items in the list
-        /// </summary>
-        public int Count {
-            get { return _arguments.Count; }
-        }
-
-        public CommaSeparatedItem this[int i] {
-            get { return _arguments[i]; }
         }
 
         protected abstract CommaSeparatedItem CreateItem(IAstNode parent, ParseContext context);
@@ -132,5 +123,26 @@ namespace Microsoft.R.Core.AST.Arguments {
             StubArgument arg = new StubArgument();
             _arguments.Add(arg);
         }
+
+        #region IReadOnlyList<CommaSeparatedItem>
+        /// <summary>
+        /// Number of items in the list
+        /// </summary>
+        public int Count {
+            get { return _arguments.Count; }
+        }
+
+        public CommaSeparatedItem this[int i] {
+            get { return _arguments[i]; }
+        }
+
+        public IEnumerator<CommaSeparatedItem> GetEnumerator() {
+            return _arguments.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return _arguments.GetEnumerator();
+        }
+        #endregion
     }
 }

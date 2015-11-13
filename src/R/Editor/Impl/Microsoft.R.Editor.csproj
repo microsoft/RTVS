@@ -96,6 +96,8 @@
     <Compile Include="Completion\Providers\CompletionControllerProvider.cs" />
     <Compile Include="Completion\Providers\CompletionSourceProvider.cs" />
     <Compile Include="Completion\Providers\CompletionTypeAttribute.cs" />
+    <Compile Include="Completion\Providers\FilesCompletionProvider.cs" />
+    <Compile Include="Completion\Providers\ParameterNameCompletionProvider.cs" />
     <Compile Include="Completion\Providers\PackagesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\FunctionCompletionProvider.cs" />
     <Compile Include="Completion\Providers\KeywordCompletionProvider.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="Formatting\FormatSelectionCommand.cs" />
     <Compile Include="Formatting\FormatOnPasteCommand.cs" />
     <Compile Include="Formatting\RangeFormatter.cs" />
+    <Compile Include="Imaging\IImagesProvider.cs" />
     <Compile Include="Outline\ROutlineTaggerProvider.cs" />
     <Compile Include="Outline\OutlineTagsCommandHandler.cs" />
     <Compile Include="Outline\ROutliningRegionTag.cs" />
@@ -183,6 +186,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>

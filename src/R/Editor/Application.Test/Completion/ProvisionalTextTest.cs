@@ -72,13 +72,13 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
-                script.Type("while(TRUE)");
+                script.Type("while(1)");
                 script.DoIdle(300);
                 script.Type("{");
                 script.DoIdle(300);
                 script.Type("{ENTER}}");
 
-                string expected = "while (TRUE) {\r\n}";
+                string expected = "while (1) {\r\n}";
                 string actual = script.EditorText;
 
                 Assert.AreEqual(expected, actual);

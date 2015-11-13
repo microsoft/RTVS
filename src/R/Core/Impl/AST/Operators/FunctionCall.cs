@@ -174,5 +174,16 @@ namespace Microsoft.R.Core.AST.Operators {
                 _virtualEnd = context.TextProvider.Length;
             }
         }
+
+        #region ITextRange
+        public override void Shift(int offset) {
+            _virtualEnd += offset;
+            base.Shift(offset);
+        }
+        public override void ShiftStartingFrom(int position, int offset) {
+            _virtualEnd += offset;
+            base.ShiftStartingFrom(position, offset);
+        }
+        #endregion
     }
 }

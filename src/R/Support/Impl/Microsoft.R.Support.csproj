@@ -27,7 +27,7 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
-    <WebEditorFolderPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Editors\</WebEditorFolderPath>
+    <WebEditorFolderPath>$(DevEnvDir)Extensions\Microsoft\Web Tools\Editors</WebEditorFolderPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="$(WebEditorFolderPath)\Microsoft.Html.Core.dll" />
@@ -98,6 +98,9 @@
     <Compile Include="Help\Packages\PackageEnumeration.cs" />
     <Compile Include="Help\NamedItemInfo.cs" />
     <Compile Include="Help\Functions\ArgumentInfo.cs" />
+    <Compile Include="RD\BraceMatch\RdBraceHighlightProvider.cs" />
+    <Compile Include="RD\BraceMatch\RdBraceMatcher.cs" />
+    <Compile Include="RD\BraceMatch\RdBraceMatcherProvider.cs" />
     <Compile Include="RD\Parser\RdFunctionSignature.cs" />
     <Compile Include="RD\Parser\RdArgumentDescription.cs" />
     <Compile Include="RD\Parser\RdParseContext.cs" />

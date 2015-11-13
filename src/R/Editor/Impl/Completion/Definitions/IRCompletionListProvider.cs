@@ -15,5 +15,12 @@ namespace Microsoft.R.Editor.Completion.Definitions
         /// <param name="context">Completion context</param>
         /// <returns>List of completion entries</returns>
         IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context);
+
+        /// <summary>
+        /// Allows or disallows sorting of the provided entries.
+        /// For example, file list provider wants directories first 
+        /// and files last similar to regular Windows Explorer display.
+        /// </summary>
+        bool AllowSorting { get; }
     }
 }

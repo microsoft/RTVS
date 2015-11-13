@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
@@ -141,7 +142,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         }
 
         private static bool IsFileAllowed(string rootDirectory, string fullPath, IFileSystem fileSystem, IMsBuildFileSystemFilter filter, out string relativePath) {
-            if (!fullPath.StartsWith(rootDirectory, StringComparison.OrdinalIgnoreCase)) {
+            if (!fullPath.StartsWithIgnoreCase(rootDirectory)) {
                 relativePath = null;
                 return false;
             }

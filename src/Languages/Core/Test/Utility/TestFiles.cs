@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Core.Test.Utility
@@ -38,7 +39,7 @@ namespace Microsoft.Languages.Core.Test.Utility
             IEnumerable<string> filesInFolder = Directory.EnumerateFiles(path);
             foreach (string name in filesInFolder)
             {
-                if (name.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
+                if (name.EndsWithIgnoreCase(extension))
                     files.Add(name);
             }
 
