@@ -282,9 +282,9 @@ namespace Microsoft.R.Editor.Completion {
         /// </summary>
         public override void OnPostTypeChar(char typedCharacter) {
             if (typedCharacter == '(' || typedCharacter == ',') {
-                if (!IsSameSignatureContext()) {
+                if (!SignatureHelpContext.IsSameSignatureContext(TextView, _textBuffer)) {
                     DismissAllSessions();
-                    SignatureBroker.TriggerSignatureHelp(TextView);
+                    TriggerSignatureHelp();
                 }
             } else if (HasActiveSignatureSession(TextView) && typedCharacter == ')') {
                 DismissAllSessions();
@@ -292,14 +292,14 @@ namespace Microsoft.R.Editor.Completion {
                 AstRoot ast = REditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree.AstRoot;
                 FunctionCall f = ast.GetNodeOfTypeFromPosition<FunctionCall>(TextView.Caret.Position.BufferPosition);
                 if (f != null) {
-                    SignatureBroker.TriggerSignatureHelp(TextView);
+                    TriggerSignatureHelp();
                 }
             } else if (HasActiveSignatureSession(TextView) && typedCharacter == '\n') {
                 DismissAllSessions();
-                SignatureBroker.TriggerSignatureHelp(TextView);
+                TriggerSignatureHelp();
             } else if (this.HasActiveCompletionSession) {
                 if (typedCharacter == ',') {
-                    CompletionSession.Dismiss();
+                    DismissCompletionSession();
                 } else if (typedCharacter == '\'' || typedCharacter == '\"') {
                     base.OnPostTypeChar(typedCharacter);
 
@@ -310,36 +310,6 @@ namespace Microsoft.R.Editor.Completion {
             }
 
             base.OnPostTypeChar(typedCharacter);
-        }
-
-        /// <summary>
-        /// Determines if current caret position is in the same function
-        /// argument list as before or is it a different one and signature 
-        /// help session should be dismissed and re-triggered. This is helpful
-        /// when user types nested function calls such as 'a(b(c(...), d(...)))'
-        /// </summary>
-        private bool IsSameSignatureContext() {
-            var sessions = SignatureBroker.GetSessions(TextView);
-            Debug.Assert(sessions.Count < 2);
-            if (sessions.Count == 1) {
-                IFunctionInfo sessionFunctionInfo = null;
-                sessions[0].Properties.TryGetProperty<IFunctionInfo>("functionInfo", out sessionFunctionInfo);
-
-                if (sessionFunctionInfo != null) {
-                    try {
-                        IREditorDocument document = REditorDocument.FromTextBuffer(TextView.TextBuffer);
-                        document.EditorTree.EnsureTreeReady();
-
-                        ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(
-                            document.EditorTree.AstRoot, _textBuffer.CurrentSnapshot,
-                            TextView.Caret.Position.BufferPosition);
-
-                        return parametersInfo != null && parametersInfo.FunctionName == sessionFunctionInfo.Name;
-                    } catch (Exception) { }
-                }
-            }
-
-            return false;
         }
 
         public override bool CommitCompletionSession(char typedCharacter) {
@@ -364,5 +334,18 @@ namespace Microsoft.R.Editor.Completion {
                 }
             }
         }
-   }
+
+        /// <summary>
+        /// Overrides default session since we want to track signature as caret moves.
+        /// Default signature session dismisses when caret changes position.
+        /// </summary>
+        public override void TriggerSignatureHelp() {
+            DismissAllSessions();
+            SnapshotPoint? point = REditorDocument.MapCaretPositionFromView(TextView);
+            if (point.HasValue) {
+                ITrackingPoint trackingPoint = _textBuffer.CurrentSnapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
+                SignatureBroker.TriggerSignatureHelp(TextView, trackingPoint, trackCaret: false);
+            }
+        }
+    }
 }

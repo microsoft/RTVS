@@ -36,6 +36,11 @@ namespace Microsoft.R.Core.AST.Arguments {
                 }
             } else {
                 this.DefaultValue = new NullExpression();
+                if (context.Tokens.IsEndOfStream()) {
+                    context.AddError(new ParseError(ParseErrorType.ExpressionExpected, ErrorLocation.Token, context.Tokens.CurrentToken));
+                } else {
+                    context.AddError(new ParseError(ParseErrorType.ExpressionExpected, ErrorLocation.Token, EqualsSign));
+                }
             }
 
             return base.Parse(context, parent);

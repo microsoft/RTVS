@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
@@ -11,10 +10,8 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Signatures
-{
-    public partial class SignatureHelp : ISignature
-    {
+namespace Microsoft.R.Editor.Signatures {
+    public partial class SignatureHelp : ISignature {
         // http://msdn.microsoft.com/en-us/library/microsoft.visualstudio.language.intellisense.isignature.aspx
 
         protected ITextView TextView { get; set; }
@@ -28,9 +25,8 @@ namespace Microsoft.R.Editor.Signatures
 
         public string FunctionName { get; private set; }
 
-        public SignatureHelp(ISignatureHelpSession session, ITextBuffer subjectBuffer, string functionName, 
-                             string documentation, ISignatureInfo signatureInfo)
-        {
+        public SignatureHelp(ISignatureHelpSession session, ITextBuffer subjectBuffer, string functionName,
+                             string documentation, ISignatureInfo signatureInfo) {
             FunctionName = functionName;
             _signatureInfo = signatureInfo;
 
@@ -41,39 +37,35 @@ namespace Microsoft.R.Editor.Signatures
             Session.Dismissed += OnSessionDismissed;
 
             TextView = session.TextView;
+            TextView.Caret.PositionChanged += OnCaretPositionChanged;
 
             SubjectBuffer = subjectBuffer;
             SubjectBuffer.Changed += OnSubjectBufferChanged;
         }
 
-        internal int ComputeCurrentParameter(ITextSnapshot snapshot, AstRoot ast, int position)
-        {
+        internal int ComputeCurrentParameter(ITextSnapshot snapshot, AstRoot ast, int position) {
             ParameterInfo parameterInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
             int index = 0;
 
-            if (parameterInfo != null)
-            {
-                // A function f <- function(foo, bar) is said to have formal parameters "foo" and "bar", 
-                // and the call f(foo=3, ba=13) is said to have (actual) arguments "foo" and "ba".
-                // R first matches all arguments that have exactly the same name as a formal parameter. 
-                // Two identical argument names cause an error. Then, R matches any argument names that
-                // partially matches a(yet unmatched) formal parameter. But if two argument names partially 
-                // match the same formal parameter, that also causes an error. Also, it only matches 
-                // formal parameters before ... So formal parameters after ... must be specified using 
-                // their full names. Then the unnamed arguments are matched in positional order to 
-                // the remaining formal arguments.
+            if (parameterInfo != null) {
+                index = parameterInfo.ParameterIndex;
+                if (parameterInfo.NamedParameter) {
+                    // A function f <- function(foo, bar) is said to have formal parameters "foo" and "bar", 
+                    // and the call f(foo=3, ba=13) is said to have (actual) arguments "foo" and "ba".
+                    // R first matches all arguments that have exactly the same name as a formal parameter. 
+                    // Two identical argument names cause an error. Then, R matches any argument names that
+                    // partially matches a(yet unmatched) formal parameter. But if two argument names partially 
+                    // match the same formal parameter, that also causes an error. Also, it only matches 
+                    // formal parameters before ... So formal parameters after ... must be specified using 
+                    // their full names. Then the unnamed arguments are matched in positional order to 
+                    // the remaining formal arguments.
 
-                int argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, REditorSettings.PartialArgumentNameMatch);
-                if (argumentIndexInSignature >= 0)
-                {
-                    index = argumentIndexInSignature;
-                }
-                else
-                {
-                    index = parameterInfo.ParameterIndex;
+                    int argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, REditorSettings.PartialArgumentNameMatch);
+                    if (argumentIndexInSignature >= 0) {
+                        index = argumentIndexInSignature;
+                    }
                 }
             }
-
             return index;
         }
 
@@ -91,16 +83,12 @@ namespace Microsoft.R.Editor.Signatures
         /// <summary>
         /// Span of text in the buffer to which this signature help is applicable.
         /// </summary>
-        public ITrackingSpan ApplicableToSpan
-        {
-            get
-            {
+        public ITrackingSpan ApplicableToSpan {
+            get {
                 return _applicableToSpan;
             }
-            set
-            {
-                if (SubjectBuffer != null)
-                {
+            set {
+                if (SubjectBuffer != null) {
                     _initialPosition = value.GetStartPoint(SubjectBuffer.CurrentSnapshot);
                 }
 
@@ -126,13 +114,10 @@ namespace Microsoft.R.Editor.Signatures
         /// <summary>
         /// Current parameter for this signature.
         /// </summary>
-        public IParameter CurrentParameter
-        {
+        public IParameter CurrentParameter {
             get { return _currentParameter; }
-            internal set
-            {
-                if (_currentParameter != value)
-                {
+            internal set {
+                if (_currentParameter != value) {
                     IParameter prevCurrentParameter = _currentParameter;
                     _currentParameter = value;
 
@@ -143,66 +128,73 @@ namespace Microsoft.R.Editor.Signatures
         }
         #endregion
 
-        protected virtual void OnSubjectBufferChanged(object sender, TextContentChangedEventArgs e)
-        {
-            if (Session != null && e.Changes.Count > 0)
-            {
+        protected virtual void OnSubjectBufferChanged(object sender, TextContentChangedEventArgs e) {
+            if (Session != null && e.Changes.Count > 0) {
                 int start, oldLength, newLength;
                 TextUtility.CombineChanges(e, out start, out oldLength, out newLength);
 
                 int position = start + newLength;
-                if (position < _initialPosition)
-                {
-                    Session.Dismiss();
+                if (position < _initialPosition) {
+                    SignatureHelp.DismissSession(TextView);
+                } else {
+                    UpdateCurrentParameter();
                 }
-                else
-                {
-                    IREditorDocument document = REditorDocument.TryFromTextBuffer(e.After.TextBuffer);
-                    if (document != null)
-                    {
-                        SnapshotPoint? p = REditorDocument.MapCaretPositionFromView(TextView);
-                        if (p.HasValue)
-                        {
-                            document.EditorTree.EnsureTreeReady();
-                            ComputeCurrentParameter(document.EditorTree.AstRoot, p.Value.Position);
-                        }
-                        else
-                        {
-                            Session.Dismiss();
-                        }
+            }
+        }
+
+        private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
+            if (SignatureHelpContext.IsSameSignatureContext(TextView, SubjectBuffer)) {
+                UpdateCurrentParameter();
+            }
+            else {
+                SignatureHelp.DismissSession(TextView, retrigger: true);
+            }
+        }
+
+        private void UpdateCurrentParameter() {
+            if (SubjectBuffer != null && TextView != null) {
+                IREditorDocument document = REditorDocument.TryFromTextBuffer(SubjectBuffer);
+                if (document != null) {
+                    SnapshotPoint? p = REditorDocument.MapCaretPositionFromView(TextView);
+                    if (p.HasValue) {
+                        document.EditorTree.EnsureTreeReady();
+                        ComputeCurrentParameter(document.EditorTree.AstRoot, p.Value.Position);
+                    } else {
+                        SignatureHelp.DismissSession(TextView);
                     }
                 }
             }
         }
 
-        protected virtual void OnSessionDismissed(object sender, EventArgs e)
-        {
-            Session.Dismissed -= OnSessionDismissed;
-            SubjectBuffer.Changed -= OnSubjectBufferChanged;
-
-            Session = null;
-            TextView = null;
-            SubjectBuffer = null;
-        }
-
-        public virtual void ComputeCurrentParameter(AstRoot ast, int position)
-        {
-            if (Parameters == null || Parameters.Count == 0 || SubjectBuffer == null)
-            {
+        public virtual void ComputeCurrentParameter(AstRoot ast, int position) {
+            if (Parameters == null || Parameters.Count == 0 || SubjectBuffer == null) {
                 this.CurrentParameter = null;
                 return;
             }
 
             var parameterIndex = ComputeCurrentParameter(SubjectBuffer.CurrentSnapshot, ast, position);
-
-            if (parameterIndex < Parameters.Count)
-            {
+            if (parameterIndex < Parameters.Count) {
                 this.CurrentParameter = Parameters[parameterIndex];
-            }
-            else
-            {
+            } else {
                 //too many commas, so use the last parameter as the current one.
                 this.CurrentParameter = Parameters[Parameters.Count - 1];
+            }
+        }
+
+        protected virtual void OnSessionDismissed(object sender, EventArgs e) {
+            if (Session != null) {
+                Session.Dismissed -= OnSessionDismissed;
+                Session = null;
+            }
+
+            if (SubjectBuffer != null) {
+                SubjectBuffer.Changed -= OnSubjectBufferChanged;
+                SubjectBuffer = null;
+            }
+
+            if (TextView != null) {
+                TextView.Caret.PositionChanged -= OnCaretPositionChanged;
+                TextView = null;
             }
         }
     }

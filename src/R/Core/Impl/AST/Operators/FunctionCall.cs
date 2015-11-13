@@ -106,13 +106,22 @@ namespace Microsoft.R.Core.AST.Operators {
             return Arguments.Count - 1;
         }
 
-        public string GetParameterName(int index) {
+        /// <summary>
+        /// Finds parameter name by parameter index and determines
+        /// if the parameter is a named argument.
+        /// </summary>
+        /// <param name="index">Parameter index</param>
+        /// <param name="namedParameter">If true, parameter is a named argument</param>
+        /// <returns></returns>
+        public string GetParameterName(int index, out bool namedParameter) {
+            namedParameter = false;
             if (index < 0 || index > Arguments.Count - 1) {
                 return string.Empty;
             }
 
             CommaSeparatedItem arg = Arguments[index];
             if (arg is NamedArgument) {
+                namedParameter = true;
                 return ((NamedArgument)arg).Name;
             } else if (arg is ExpressionArgument) {
                 IExpression exp = ((ExpressionArgument)arg).ArgumentValue;

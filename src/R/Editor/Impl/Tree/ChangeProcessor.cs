@@ -156,32 +156,5 @@ namespace Microsoft.R.Editor.Tree
             AstRoot newTree = RParser.Parse(newSnapshot);
             changes.ChangeQueue.Enqueue(new EditorTreeChange_NewTree(newTree));
         }
-
-        /// <summary>
-        /// Finds well formed ancestor scope. Well formed means element has
-        /// both open { and closing }.
-        /// </summary>
-        /// <param name="node">Node to start search with</param>
-        /// <returns>Well formed ancestor scope or root node</returns>
-        //private static IAstNode FindWellFormedOuterScope(IAstNode node)
-        //{
-        //    var parent = node.Parent;
-
-        //    while (true)
-        //    {
-        //        if (parent is AstRoot)
-        //            break;
-
-        //        IScope scope = parent as IScope;
-        //        if (scope != null && scope.OpenCurlyBrace != null && scope.CloseCurlyBrace != null)
-        //        {
-        //            break;
-        //        }
-
-        //        parent = parent.Parent;
-        //    }
-
-        //    return parent;
-        //}
     }
 }

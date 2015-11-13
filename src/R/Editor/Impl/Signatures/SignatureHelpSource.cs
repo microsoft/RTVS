@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
@@ -15,8 +13,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Signatures
-{
+namespace Microsoft.R.Editor.Signatures {
     sealed class SignatureHelpSource : ISignatureHelpSource
     {
         ITextBuffer _textBuffer;
@@ -30,7 +27,7 @@ namespace Microsoft.R.Editor.Signatures
         #region ISignatureHelpSource
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures)
         {
-            if (!REditorSettings.SignatureHelpEnabled)
+            if (!REditorSettings.SignatureHelpEnabled || session.IsDismissed)
                 return;
 
             var document = REditorDocument.TryFromTextBuffer(_textBuffer);
@@ -76,9 +73,7 @@ namespace Microsoft.R.Editor.Signatures
 
         private void TriggerSignatureHelp(object o)
         {
-            ISignatureHelpBroker signatureBroker = EditorShell.Current.ExportProvider.GetExport<ISignatureHelpBroker>().Value;
-            CompletionController.DismissSignatureSession(o as ITextView);
-            signatureBroker.TriggerSignatureHelp(o as ITextView);
+            SignatureHelp.TriggerSignatureHelp(o as ITextView);
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session)
