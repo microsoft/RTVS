@@ -82,6 +82,7 @@
     <Compile Include="BraceMatch\Definitions\IBraceMatcher.cs" />
     <Compile Include="BraceMatch\Definitions\IBraceMatcherProvider.cs" />
     <Compile Include="BraceMatch\GotoBraceCommand.cs" />
+    <Compile Include="BraceMatch\BraceTokenPair.cs" />
     <Compile Include="Classification\TokenBasedClassifier.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
     <Compile Include="EditorHelpers\TrackingHelper.cs" />

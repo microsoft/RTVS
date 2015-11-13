@@ -10,9 +10,9 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.BraceMatch {
     internal sealed class RBraceMatcher : BraceMatcher<RToken, RTokenType> {
         static RBraceMatcher() {
-            BraceTypeToTokenTypeMap.Add(BraceType.Curly, new Tuple<RTokenType, RTokenType>(RTokenType.OpenCurlyBrace, RTokenType.CloseCurlyBrace));
-            BraceTypeToTokenTypeMap.Add(BraceType.Parenthesis, new Tuple<RTokenType, RTokenType>(RTokenType.OpenBrace, RTokenType.CloseBrace));
-            BraceTypeToTokenTypeMap.Add(BraceType.Square, new Tuple<RTokenType, RTokenType>(RTokenType.OpenSquareBracket, RTokenType.CloseSquareBracket));
+            BraceTypeToTokenTypeMap.Add(BraceType.Curly, new BraceTokenPair<RTokenType>(RTokenType.OpenCurlyBrace, RTokenType.CloseCurlyBrace));
+            BraceTypeToTokenTypeMap.Add(BraceType.Parenthesis, new BraceTokenPair<RTokenType>(RTokenType.OpenBrace, RTokenType.CloseBrace));
+            BraceTypeToTokenTypeMap.Add(BraceType.Square, new BraceTokenPair<RTokenType>(RTokenType.OpenSquareBracket, RTokenType.CloseSquareBracket));
         }
 
         public RBraceMatcher(ITextView textView, ITextBuffer textBuffer) : 

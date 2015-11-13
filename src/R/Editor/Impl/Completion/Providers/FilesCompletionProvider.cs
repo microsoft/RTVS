@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             List<RCompletion> completions = new List<RCompletion>();
             ImageSource folderGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
             string currentDir = RToolsSettings.Current.WorkingDirectory;
-            string directory = currentDir;
+            string directory = null;
 
             try {
                 string dir = Path.Combine(currentDir, _directory);
@@ -40,24 +40,26 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 }
             } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (ArgumentException) { }
 
-            try {
-                foreach (string dir in Directory.GetDirectories(directory)) {
-                    DirectoryInfo di = new DirectoryInfo(dir);
-                    if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
-                        string dirName = Path.GetFileName(dir);
-                        completions.Add(new RCompletion(dirName, dirName + "/", string.Empty, folderGlyph));
+            if (directory != null) {
+                try {
+                    foreach (string dir in Directory.GetDirectories(directory)) {
+                        DirectoryInfo di = new DirectoryInfo(dir);
+                        if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
+                            string dirName = Path.GetFileName(dir);
+                            completions.Add(new RCompletion(dirName, dirName + "/", string.Empty, folderGlyph));
+                        }
                     }
-                }
 
-                foreach (string file in Directory.GetFiles(directory)) {
-                    FileInfo di = new FileInfo(file);
-                    if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
-                        ImageSource fileGlyph = ImagesProvider.GetFileIcon(file);
-                        string fileName = Path.GetFileName(file);
-                        completions.Add(new RCompletion(fileName, fileName, string.Empty, fileGlyph));
+                    foreach (string file in Directory.GetFiles(directory)) {
+                        FileInfo di = new FileInfo(file);
+                        if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
+                            ImageSource fileGlyph = ImagesProvider.GetFileIcon(file);
+                            string fileName = Path.GetFileName(file);
+                            completions.Add(new RCompletion(fileName, fileName, string.Empty, fileGlyph));
+                        }
                     }
-                }
-            } catch (IOException) { } catch(UnauthorizedAccessException) { } catch(ArgumentException) { }
+                } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            }
 
             return completions;
         }

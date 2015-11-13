@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
     [Export(typeof(IImagesProvider))]
     internal sealed class ImagesProvider : IImagesProvider {
         private Dictionary<string, ImageMoniker> _monikerCache = new Dictionary<string, ImageMoniker>();
-        private Lazy<StringDictionary> _fileExtensionCache = Lazy.Create(() => CreateExtensionCache());
+        private Lazy<Dictionary<string, string>> _fileExtensionCache = Lazy.Create(() => CreateExtensionCache());
 
         /// <summary>
         /// Returns image source given name of the image moniker
@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         /// Given file name returns icon depending on the file extension
         /// </summary>
         public ImageSource GetFileIcon(string file) {
-            string ext = Path.GetExtension(file).ToLowerInvariant();
+            string ext = Path.GetExtension(file);
             if(_fileExtensionCache.Value.ContainsKey(ext)) {
                 return GetImage(_fileExtensionCache.Value[ext]);
             }
@@ -121,8 +121,8 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             return source;
         }
 
-        private static StringDictionary CreateExtensionCache() {
-            StringDictionary dict = new StringDictionary();
+        private static Dictionary<string, string> CreateExtensionCache() {
+            Dictionary<string, string> dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             dict[".r"] = "RFileNode";
             dict[".rproj"] = "RProjectNode";

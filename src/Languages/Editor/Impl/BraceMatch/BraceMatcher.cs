@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
 
         // Overriding classes should provide actual values in their static constructors.
         // Reserving space for three items, as the most-commonly used braces are Curly, Square, and Parenthesis.
-        protected static Dictionary<BraceType, Tuple<TokenTypeT, TokenTypeT>> BraceTypeToTokenTypeMap = new Dictionary<BraceType, Tuple<TokenTypeT, TokenTypeT>>(3);
+        protected static Dictionary<BraceType, BraceTokenPair<TokenTypeT>> BraceTypeToTokenTypeMap = new Dictionary<BraceType, BraceTokenPair<TokenTypeT>>(3);
 
         public ITextView TextView { get; private set; }
         public ITextBuffer TextBuffer { get; private set; }
@@ -72,8 +72,8 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         public virtual bool GetLanguageBracesFromPosition(
             BraceType braceType,
             int position, bool reversed, out int start, out int end) {
-            TokenTypeT startTokenType = BraceTypeToTokenTypeMap[braceType].Item1;
-            TokenTypeT endTokenType = BraceTypeToTokenTypeMap[braceType].Item2;
+            TokenTypeT startTokenType = BraceTypeToTokenTypeMap[braceType].OpenBrace;
+            TokenTypeT endTokenType = BraceTypeToTokenTypeMap[braceType].CloseBrace;
             IReadOnlyTextRangeCollection<TokenClassT> tokens = GetTokens(0, TextBuffer.CurrentSnapshot.Length);
 
             start = -1;
