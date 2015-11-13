@@ -10,7 +10,6 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
-using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -36,7 +35,7 @@ namespace Microsoft.R.Editor.Completion {
             : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker) {
             _textBuffer = subjectBuffers[0];
 
-            ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
+            ServiceManager.AddService<RCompletionController>(this, TextView);
         }
 
         /// <summary>
@@ -45,13 +44,7 @@ namespace Microsoft.R.Editor.Completion {
         /// may be projected into view.
         /// </summary>
         public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer) {
-            if (_textBuffer == null) {
-                _textBuffer = subjectBuffer;
-            }
-
-            if (_textBuffer == subjectBuffer) {
-                ServiceManager.AdviseServiceAdded<REditorDocument>(_textBuffer, OnDocumentReady);
-            }
+            _textBuffer = subjectBuffer;
         }
 
         /// <summary>
@@ -74,13 +67,6 @@ namespace Microsoft.R.Editor.Completion {
 
                 _textBuffer = null;
             }
-        }
-
-        private void OnDocumentReady(REditorDocument document) {
-            // This object isn't released on content type changes, 
-            // instead using the (Dis)ConnectSubjectBuffer
-            // methods to control it's lifetime.
-            ServiceManager.AddService<RCompletionController>(this, TextView);
         }
 
         public static RCompletionController Create(

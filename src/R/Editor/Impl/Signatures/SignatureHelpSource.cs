@@ -146,7 +146,10 @@ namespace Microsoft.R.Editor.Signatures {
         #region IDisposable
         public void Dispose()
         {
-            _textBuffer = null;
+            if (_textBuffer != null) {
+                ServiceManager.RemoveService<SignatureHelpSource>(_textBuffer);
+                _textBuffer = null;
+            }
         }
         #endregion
     }
