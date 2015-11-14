@@ -37,6 +37,9 @@
         public const int icmdCopyPlot = 707;
         public const int icmdZoomInPlot = 708;
         public const int icmdZoomOutPlot = 709;
+        public const int icmdNextPlot = 710;
+        public const int icmdPrevPlot = 711;
+        public const int icmdClearPlots = 712;
 
         // Data
         public const int icmdImportDataset = 801;
