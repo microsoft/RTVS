@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using static System.FormattableString;
@@ -34,7 +35,7 @@ namespace Microsoft.R.Debugger {
     public sealed class DebugBreakpoint {
         public DebugSession Session { get; }
         public DebugBreakpointLocation Location { get; }
-        internal int UseCount { get; set; }
+        internal int UseCount { get; private set; }
 
         public event EventHandler BreakpointHit;
 
@@ -43,16 +44,25 @@ namespace Microsoft.R.Debugger {
             Location = location;
         }
 
+        internal string GetAddBreakpointExpression(bool reapply) {
+            string fileName = null;
+            try {
+                fileName = Path.GetFileName(Location.FileName);
+            } catch (ArgumentException) {
+                return null;
+            }
+
+            return Invariant($"rtvs:::add_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber}, {(reapply ? "TRUE" : "FALSE")})");
+        }
+
         internal async Task SetBreakpointAsync() {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            // Tracer expression must be in sync with DebugStackFrame._breakpointRegex
-            var location = Invariant($"{Location.FileName.ToRStringLiteral()}, {Location.LineNumber}");
-            var tracer = Invariant($"quote({{rtvs:::breakpoint({location})}})");
-            var res = await Session.EvaluateAsync(Invariant($"setBreakpoint({location}, tracer={tracer})"));
+            var res = await Session.EvaluateAsync(GetAddBreakpointExpression(true));
             if (res is DebugErrorEvaluationResult) {
                 throw new InvalidOperationException(Invariant($"{res.Expression}: {res}"));
             }
+
             ++UseCount;
         }
 
@@ -60,8 +70,17 @@ namespace Microsoft.R.Debugger {
             Trace.Assert(UseCount > 0);
             await TaskUtilities.SwitchToBackgroundThread();
 
+            string fileName = null;
+            try {
+                fileName = Path.GetFileName(Location.FileName);
+            } catch (ArgumentException) {
+                return;
+            }
+
             if (--UseCount == 0) {
-                var res = await Session.EvaluateAsync(Invariant($"setBreakpoint({Location.FileName.ToRStringLiteral()}, {Location.LineNumber}, clear=TRUE)"));
+                Session.RemoveBreakpoint(this);
+
+                var res = await Session.EvaluateAsync(Invariant($"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})"));
                 if (res is DebugErrorEvaluationResult) {
                     throw new InvalidOperationException(Invariant($"{res.Expression}: {res}"));
                 }

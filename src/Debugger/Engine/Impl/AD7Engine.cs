@@ -116,6 +116,9 @@ namespace Microsoft.R.Debugger.Engine {
             DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetResultOnUIThread();
             MainThread = new AD7Thread(this);
 
+            // Enable breakpoint instrumentation.
+            DebugSession.EnableBreakpoints(true).GetResultOnUIThread();
+
             // Send notification after acquiring the session - we need it in case there were any breakpoints pending before
             // the attach, in which case we'll immediately get breakpoint creation requests as soon as we send these, and
             // we will need the session to process them.
@@ -238,7 +241,15 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugProgram2.Detach() {
             ThrowIfDisposed();
-            Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
+
+            try {
+                // Disable breakpoint instrumentation.
+                DebugSession.EnableBreakpoints(false).GetResultOnUIThread();
+            } finally {
+                // Detach should never fail, even if something above didn't work.
+                Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
+            }
+
             return VSConstants.S_OK;
         }
 

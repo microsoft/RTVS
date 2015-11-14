@@ -16,7 +16,7 @@ namespace Microsoft.R.Debugger {
 
     public class DebugStackFrame {
         private static readonly Regex _doTraceRegex = new Regex(
-            @"^\.doTrace\(\{\s*rtvs:::breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)\s*\}\)$",
+            @"^\.doTrace\(\s*rtvs:::breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)\s*\)$",
             RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
         private static readonly Regex _breakpointRegex = new Regex(
             @"^rtvs:::breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)$",
