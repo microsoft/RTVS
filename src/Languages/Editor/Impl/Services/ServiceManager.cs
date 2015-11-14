@@ -352,6 +352,20 @@ namespace Microsoft.Languages.Editor.Services {
             if (_propertyOwner != null) {
                 _propertyOwner.Properties.RemoveProperty(typeof(ServiceManager));
 
+                foreach (var s in _servicesByType.Values) {
+                    var d = s as IDisposable;
+                    if(d != null) {
+                        d.Dispose();
+                    }
+                }
+
+                foreach (var s in _servicesByContentType.Values) {
+                    var d = s as IDisposable;
+                    if (d != null) {
+                        d.Dispose();
+                    }
+                }
+
                 _servicesByType.Clear();
                 _servicesByContentType.Clear();
 

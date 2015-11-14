@@ -115,5 +115,12 @@ namespace Microsoft.R.Editor.Tree.Definitions
         /// path (such as during typing) is highly not recommended.
         /// </summary>
         void EnsureTreeReady();
+
+        /// <summary>
+        /// Initiates async processing of text buffer changes 
+        /// accumulated so far. When parsing and tree update completes
+        /// tree will invoke the provided callback.
+        /// </summary>
+        void ProcessChangesAsync(Action completeCallback);
     }
 }
