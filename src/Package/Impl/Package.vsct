@@ -176,7 +176,7 @@
         <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
       </Group>
       <Group guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup" priority="0x0300">
-        <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
+        <!--<Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>-->
       </Group>
       <Group guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup" priority="0x0400">
         <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
@@ -234,7 +234,7 @@
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
       </Group>
       <Group guid="guidRToolsCmdSet" id="plotSubMenuZoomGroup" priority="0x0400">
-        <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
+        <!--<Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>-->
       </Group>
 
       <!-- Help window -->
