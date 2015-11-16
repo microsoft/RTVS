@@ -1,14 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.R.Package.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotWindowMenu {
-        private Dictionary<string, int> _menuCommands = new Dictionary<string, int>();
+        private Dictionary<string, int> _nameToWindowsIdMap = new Dictionary<string, int>();
+        private Dictionary<int, PlotCommand> _idToPlotCommandMap = new Dictionary<int, PlotCommand>();
 
-        public PlotWindowMenu(IntPtr hMenu) {
+        public PlotWindowMenu(IntPtr hWnd, IntPtr hMenu) {
             ProcessMenu(hMenu);
+            ExtractcommandIds(hWnd);
+        }
+
+        public void Execute(int id) {
+            PlotCommand cmd;
+            if (_idToPlotCommandMap.TryGetValue(id, out cmd)) {
+                cmd.Execute();
+            } else {
+                Debug.Assert(false, "Unable to find plot command " + id.ToString());
+            }
+        }
+
+        private void ExtractcommandIds(IntPtr hWnd) {
+            _idToPlotCommandMap[RPackageCommandId.icmdExportPlotAsPdf] = new PlotCommand(hWnd, _nameToWindowsIdMap, "pdf");
+            _idToPlotCommandMap[RPackageCommandId.icmdExportPlotAsPng] = new PlotCommand(hWnd, _nameToWindowsIdMap, "png");
+            _idToPlotCommandMap[RPackageCommandId.icmdExportPlotAsBitmap] = new PlotCommand(hWnd, _nameToWindowsIdMap, "bmp");
+
+            _idToPlotCommandMap[RPackageCommandId.icmdCopyPlotAsMetafile] = new PlotCommand(hWnd, _nameToWindowsIdMap, "as a metafile");
+            _idToPlotCommandMap[RPackageCommandId.icmdCopyPlotAsBitmap] = new PlotCommand(hWnd, _nameToWindowsIdMap, "as a bitmap");
+
+            _idToPlotCommandMap[RPackageCommandId.icmdPrevPlot] = new PlotCommand(hWnd, _nameToWindowsIdMap, "previous");
+            _idToPlotCommandMap[RPackageCommandId.icmdNextPlot] = new PlotCommand(hWnd, _nameToWindowsIdMap, "next");
+
+            _idToPlotCommandMap[RPackageCommandId.icmdClearPlots] = new PlotCommand(hWnd, _nameToWindowsIdMap, "clear");
+            _idToPlotCommandMap[RPackageCommandId.icmdPrintPlot] = new PlotCommand(hWnd, _nameToWindowsIdMap, "print");
+
+            var recording = new PlotCommand(hWnd, _nameToWindowsIdMap, "recording");
+            NativeMethods.PostMessage(hWnd, NativeMethods.WM_COMMAND, new IntPtr(recording.Id), IntPtr.Zero);
+
+            _nameToWindowsIdMap.Clear();
         }
 
         private void ProcessMenu(IntPtr hMenu) {
@@ -34,7 +67,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                             if (itemId > 0) {
                                 string itemName = GetItemName(hMenu, i);
                                 Debug.Assert(itemName.Length > 0);
-                                _menuCommands[itemName] = itemId;
+                                itemName = itemName.Replace("&", string.Empty).ToLowerInvariant();
+                                _nameToWindowsIdMap[itemName] = itemId;
                             }
                         }
                     }
@@ -87,6 +121,29 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 return (int)mii.wID;
             }
             return 0;
+        }
+
+        class PlotCommand {
+            private IntPtr _hwndRPlotWindow;
+            public int Id { get; private set; }
+            public PlotCommand(IntPtr hwndRPlotWindow, Dictionary<string, int> commands, string text) {
+                _hwndRPlotWindow = hwndRPlotWindow;
+
+                Id = FindCommandByText(commands, text);
+                Debug.Assert(Id > 0);
+            }
+
+            public void Execute() {
+                NativeMethods.PostMessage(_hwndRPlotWindow, NativeMethods.WM_COMMAND, new IntPtr(Id), IntPtr.Zero);
+            }
+
+            private int FindCommandByText(Dictionary<string, int> commands, string text) {
+                string key = commands.Keys.FirstOrDefault(x => x.Contains(text));
+                if (key != null) {
+                    return commands[key];
+                }
+                return 0;
+            }
         }
     }
 }
