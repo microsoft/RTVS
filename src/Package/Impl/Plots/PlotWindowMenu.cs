@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _idToPlotCommandMap[RPackageCommandId.icmdPrintPlot] = new PlotCommand(hWnd, _nameToWindowsIdMap, "print");
 
             var recording = new PlotCommand(hWnd, _nameToWindowsIdMap, "recording");
-            NativeMethods.PostMessage(hWnd, NativeMethods.WM_COMMAND, new IntPtr(recording.Id), IntPtr.Zero);
+            recording.Execute();
 
             _nameToWindowsIdMap.Clear();
         }
@@ -134,7 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
 
             public void Execute() {
-                NativeMethods.PostMessage(_hwndRPlotWindow, NativeMethods.WM_COMMAND, new IntPtr(Id), IntPtr.Zero);
+                NativeMethods.PostMessage(_hwndRPlotWindow, NativeMethods.WM_COMMAND, new IntPtr(Id), _hwndRPlotWindow);
             }
 
             private int FindCommandByText(Dictionary<string, int> commands, string text) {

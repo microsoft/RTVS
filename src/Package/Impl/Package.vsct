@@ -506,27 +506,17 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="Next"/>
+        <Icon guid="ImageCatalogGuid" id="ClearCollection"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <ButtonText>Next Plot</ButtonText>
-          <MenuText>Ne&amp;xt Plot</MenuText>
-        </Strings>
-      </Button>
-
-      <Button guid="guidRToolsCmdSet" id="icmdCopyPlotAsBitmap" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="Copy"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
-        <Strings>
-          <ButtonText>Copy As Bitmap</ButtonText>
-          <MenuText>Copy As &amp;Bitmap</MenuText>
+          <ButtonText>Clear All Plots</ButtonText>
+          <MenuText>Clear &amp;All Plots</MenuText>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdCopyPlotAsMetafile" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="CopyItem"/>
+        <Icon guid="ImageCatalogGuid" id="Copy"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -535,13 +525,23 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdExportPlotAsPng" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="MultiScaleImage"/>
+      <Button guid="guidRToolsCmdSet" id="icmdCopyPlotAsBitmap" priority="0x0110" type="Button">
+        <Icon guid="ImageCatalogGuid" id="CopyItem"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Copy As Bitmap</ButtonText>
           <MenuText>Copy As &amp;Bitmap</MenuText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdExportPlotAsPng" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="ASPWebSite"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Save As PNG</ButtonText>
+          <MenuText>Save As PN&amp;G</MenuText>
         </Strings>
       </Button>
 
@@ -549,18 +549,18 @@
         <Icon guid="pdfIconGuid" id="pdfIcon"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <ButtonText>Copy As Metafile</ButtonText>
-          <MenuText>Copy As &amp;Metafile</MenuText>
+          <ButtonText>Save As PDF</ButtonText>
+          <MenuText>Save As P&amp;DF</MenuText>
         </Strings>
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdExportPlotAsBitmap" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="Image"/>
+        <Icon guid="ImageCatalogGuid" id="Windows"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <ButtonText>Copy As Metafile</ButtonText>
-          <MenuText>Copy As &amp;Metafile</MenuText>
+          <ButtonText>Save As Bitmap</ButtonText>
+          <MenuText>Save As B&amp;itmap</MenuText>
         </Strings>
       </Button>
 
@@ -1017,7 +1017,7 @@
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdCopyPlotAsBitmap" priority="0x0200">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdCopyPlotAsMetafile" priority="0x0200">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup"/>
     </CommandPlacement>
 

@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
             //Controller c = new Controller();
             //c.AddCommandSet(GetCommands());
-            this.ToolBarCommandTarget = new CommandTargetToOleShim(null, new PlotWindowCommandController(_plotWindowContainer.Value.Menu));
+            this.ToolBarCommandTarget = new CommandTargetToOleShim(null, new PlotWindowCommandController(this));
         }
 
         public override void OnToolWindowCreated() {

@@ -1,17 +1,21 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotWindowCommandController : ICommandTarget {
-        private PlotWindowMenu _menu;
+        private PlotWindowPane _pane;
 
-        public PlotWindowCommandController(PlotWindowMenu menu) {
-            _menu = menu;
+        public PlotWindowCommandController(PlotWindowPane pane) {
+            Debug.Assert(pane != null);
+            _pane = pane;
         }
 
         public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            _menu.Execute(id);
+            RPlotWindowContainer container = _pane.GetIVsWindowPane() as RPlotWindowContainer;
+            Debug.Assert(container != null);
+            container.Menu.Execute(id);
             return CommandResult.Executed;
         }
 
