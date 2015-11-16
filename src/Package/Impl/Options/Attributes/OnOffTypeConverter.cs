@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.R.Package.Options.Attributes {
     internal class OnOffTypeConverter : TypeConverter {
@@ -18,11 +19,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.Attributes {
                 return null;
             }
 
-            if (s.Equals(Resources.On, StringComparison.OrdinalIgnoreCase)) {
+            if (s.EqualsIgnoreCase(Resources.On)) {
                 return true;
             }
 
-            if (s.Equals(Resources.Off, StringComparison.OrdinalIgnoreCase)) {
+            if (s.EqualsIgnoreCase(Resources.Off)) {
                 return false;
             }
 

@@ -13,10 +13,8 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;
 
-namespace Microsoft.R.Editor.QuickInfo
-{
-    internal sealed class QuickInfoSource : IQuickInfoSource
-    {
+namespace Microsoft.R.Editor.QuickInfo {
+    internal sealed class QuickInfoSource : IQuickInfoSource {
         [Import]
         internal ITextStructureNavigatorSelectorService NavigatorService { get; set; }
 
@@ -26,22 +24,19 @@ namespace Microsoft.R.Editor.QuickInfo
         private ITextBuffer _subjectBuffer;
         private int _lastPosition = -1;
 
-        public QuickInfoSource(ITextBuffer subjectBuffer)
-        {
+        public QuickInfoSource(ITextBuffer subjectBuffer) {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             _subjectBuffer = subjectBuffer;
             _subjectBuffer.Changed += OnTextBufferChanged;
         }
 
-        void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
-        {
+        void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             _lastPosition = -1;
         }
 
         #region IQuickInfoSource
-        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
-        {
+        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
             applicableToSpan = null;
 
             SnapshotPoint? triggerPoint = session.GetTriggerPoint(_subjectBuffer.CurrentSnapshot);
@@ -57,8 +52,7 @@ namespace Microsoft.R.Editor.QuickInfo
             ITextSnapshot snapshot = triggerPoint.Value.Snapshot;
 
             IREditorDocument document = REditorDocument.TryFromTextBuffer(_subjectBuffer);
-            if (document != null)
-            {
+            if (document != null) {
                 // Document may be null in REPL window as projections are not
                 // getting set immediately or may change as user moves mouse over.
                 AugmentQuickInfoSession(document.EditorTree.AstRoot, position,
@@ -67,16 +61,14 @@ namespace Microsoft.R.Editor.QuickInfo
             }
         }
 
-        internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session, 
+        internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session,
                                               IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
-                                              Action<object> retriggerAction)
-        {
+                                              Action<object> retriggerAction) {
             int signatureEnd = position;
             applicableToSpan = null;
 
             string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
-            if (!string.IsNullOrEmpty(functionName))
-            {
+            if (!string.IsNullOrEmpty(functionName)) {
                 ITextSnapshot snapshot = session.TextView.TextBuffer.CurrentSnapshot;
 
                 position = Math.Min(signatureEnd, position);
@@ -87,28 +79,22 @@ namespace Microsoft.R.Editor.QuickInfo
 
                 IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName, retriggerAction, session);
 
-                if (functionInfo != null && functionInfo.Signatures != null)
-                {
-                    foreach (ISignatureInfo sig in functionInfo.Signatures)
-                    {
+                if (functionInfo != null && functionInfo.Signatures != null) {
+                    foreach (ISignatureInfo sig in functionInfo.Signatures) {
                         string signatureString = sig.GetSignatureString(functionInfo.Name);
                         int wrapLength = Math.Min(SignatureInfo.MaxSignatureLength, signatureString.Length);
                         string text;
 
-                        if (string.IsNullOrWhiteSpace(functionInfo.Description))
-                        {
+                        if (string.IsNullOrWhiteSpace(functionInfo.Description)) {
                             text = string.Empty;
-                        }
-                        else
-                        {
+                        } else {
                             /// VS may end showing very long tooltip so we need to keep 
                             /// description reasonably short: typically about
                             /// same length as the function signature.
                             text = signatureString + "\r\n" + functionInfo.Description.Wrap(wrapLength);
                         }
 
-                        if (text.Length > 0)
-                        {
+                        if (text.Length > 0) {
                             quickInfoContent.Add(text);
                             return true;
                         }
@@ -120,10 +106,8 @@ namespace Microsoft.R.Editor.QuickInfo
         }
         #endregion
 
-        private void RetriggerQuickInfoSession(IQuickInfoSession session)
-        {
-            if (session != null && !session.IsDismissed)
-            {
+        private void RetriggerQuickInfoSession(IQuickInfoSession session) {
+            if (session != null && !session.IsDismissed) {
                 session.Dismiss();
             }
 
@@ -133,8 +117,7 @@ namespace Microsoft.R.Editor.QuickInfo
         }
 
         #region IDisposable
-        public void Dispose()
-        {
+        public void Dispose() {
         }
         #endregion
     }

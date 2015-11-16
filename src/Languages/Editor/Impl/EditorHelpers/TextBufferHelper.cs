@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
@@ -179,7 +180,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers {
         }
 
         public static bool IsSignatureHelpBuffer(this ITextBuffer textBuffer) {
-            return textBuffer.ContentType.TypeName.EndsWith(" Signature Help", StringComparison.OrdinalIgnoreCase);
+            return textBuffer.ContentType.TypeName.EndsWithIgnoreCase(" Signature Help");
         }
 
         public static string GetLineBreakText(this ITextBuffer textBuffer) {

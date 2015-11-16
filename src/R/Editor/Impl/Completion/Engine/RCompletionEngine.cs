@@ -7,6 +7,8 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Functions;
+using Microsoft.R.Core.AST.Functions.Definitions;
+using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
@@ -37,27 +39,32 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
             IAstNode node = context.AstRoot.NodeFromPosition(context.Position);
             if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
-                // No completion in strings
+                string directory = node.Root.TextProvider.GetText(node);
+                // Bring file/folder completion when either string is empty or ends with /
+                // assuming that / specifies directory where files are.
+                if (directory.Length == 2 || directory.EndsWith("/\"", StringComparison.Ordinal) || directory.EndsWith("/\'", StringComparison.Ordinal)) {
+                    providers.Add(new FilesCompletionProvider(directory));
+                }
                 return providers;
             }
 
-            if (IsInFunctionDefinitionArgumentName(context.AstRoot, context.Position)) {
+            if (IsInFunctionArgumentName<FunctionDefinition>(context.AstRoot, context.Position)) {
                 // No completion in function definition argument names
                 return providers;
             }
 
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
-                // Only complete data member names in REPL
-                if (document != null && document.IsTransient) {
-                    providers.Add(new WorkspaceVaraibleCompletionProvider());
-                }
-
+                providers.Add(new WorkspaceVaraibleCompletionProvider());
                 return providers;
             }
 
             if (IsPackageListCompletion(context.TextBuffer, context.Position)) {
                 providers.Add(new PackagesCompletionProvider());
             } else {
+                if (IsInFunctionArgumentName<FunctionCall>(context.AstRoot, context.Position)) {
+                    providers.Add(new ParameterNameCompletionProvider());
+                }
+
                 foreach (var p in CompletionProviders) {
                     providers.Add(p.Value);
                 }
@@ -135,12 +142,14 @@ namespace Microsoft.R.Editor.Completion.Engine {
         }
 
         /// <summary>
-        /// Determines if position is in the argument name. Typically used
-        /// to suppress general intellisense when typing function arguments 
-        /// in a function/ definition such as in 'x &lt;- function(a|'
+        /// Determines if position is in the argument name. Typically used to
+        ///     a) suppress general intellisense when typing function arguments 
+        ///         in a function/ definition such as in 'x &lt;- function(a|'
+        ///     b) determine if completion list should contain argumet names
+        ///        when user types inside function call.
         /// </summary>
-        internal static bool IsInFunctionDefinitionArgumentName(AstRoot ast, int position) {
-            FunctionDefinition funcDef = ast.GetNodeOfTypeFromPosition<FunctionDefinition>(position);
+        internal static bool IsInFunctionArgumentName<T>(AstRoot ast, int position) where T : class, IFunction {
+            T funcDef = ast.GetNodeOfTypeFromPosition<T>(position);
             if (funcDef == null || funcDef.OpenBrace == null || funcDef.Arguments == null) {
                 return false;
             }
@@ -167,11 +176,11 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 end = csi.End;
                 if (position >= start && position <= end) {
                     if (na == null) {
-                        return true; // Suppress intellisense
+                        return true;
                     }
 
                     if (position <= na.EqualsSign.Start) {
-                        return true; // Suppress intellisense
+                        return true;
                     }
                 }
             }
@@ -179,7 +188,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             return false;
         }
 
-        /// <summary>
+         /// <summary>
         /// Determines if position is in object member. Typically used
         /// to suppress general intellisense when typing data member 
         /// name such as 'mtcars$|'

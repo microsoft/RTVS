@@ -18,7 +18,7 @@ namespace Microsoft.R.Host.Client {
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true);
         Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true);
         Task CancelAllAsync();
-        Task StartHostAsync();
+        Task StartHostAsync(IntPtr plotWindowHandle);
         Task StopHostAsync();
 
         void FlushLog();

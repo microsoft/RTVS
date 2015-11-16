@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.Html.Core.Tree;
 using Microsoft.Html.Core.Tree.Nodes;
 using Microsoft.R.Core.Tokens;
@@ -81,7 +82,7 @@ namespace Microsoft.R.Support.Help.Packages {
                             break;
                         }
 
-                        if (line.StartsWith("Description:", StringComparison.OrdinalIgnoreCase)) {
+                        if (line.StartsWithIgnoreCase("Description:")) {
                             line = line.Substring(12).Trim();
                             sb.Append(line.Trim());
                             sb.Append(' ');
@@ -187,11 +188,11 @@ namespace Microsoft.R.Support.Help.Packages {
             }
 
             public bool Visit(ElementNode element, object parameter) {
-                if (element.Name.Equals("tr", StringComparison.OrdinalIgnoreCase) && element.Children.Count == 2) {
+                if (element.Name.EqualsIgnoreCase("tr") && element.Children.Count == 2) {
                     ElementNode tdNode1 = element.Children[0];
                     ElementNode tdNode2 = element.Children[1];
 
-                    if (tdNode1.Children.Count == 1 && tdNode1.Children[0].Name.Equals("a", StringComparison.OrdinalIgnoreCase)) {
+                    if (tdNode1.Children.Count == 1 && tdNode1.Children[0].Name.EqualsIgnoreCase("a")) {
                         string functionName = element.Root.TextProvider.GetText(tdNode1.Children[0].InnerRange);
                         if (functionName.IndexOf('&') >= 0) {
                             functionName = WebUtility.HtmlDecode(functionName);
@@ -211,7 +212,7 @@ namespace Microsoft.R.Support.Help.Packages {
             }
 
             private static NamedItemType GetItemType(string name, ElementNode td) {
-                if (Constants.IsConstant(name) || Logicals.IsLogical(name) || name.StartsWith("R_", StringComparison.OrdinalIgnoreCase)) {
+                if (Constants.IsConstant(name) || Logicals.IsLogical(name) || name.StartsWithIgnoreCase("R_")) {
                     return NamedItemType.Constant;
                 }
 

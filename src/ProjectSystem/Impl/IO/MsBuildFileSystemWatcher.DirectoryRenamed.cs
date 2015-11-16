@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -23,7 +24,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
 
             public void Apply(Changeset changeset) {
-                if (!_fullPath.StartsWith(_rootDirectory, StringComparison.OrdinalIgnoreCase)) {
+                if (!_fullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     return;
                 }
 
@@ -51,7 +52,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 var previouslyRenamedRelativePath = changeset.RenamedDirectories.GetFirstKeyByValueIgnoreCase(oldRelativePath);
                 if (string.IsNullOrEmpty(previouslyRenamedRelativePath)) {
                     changeset.RenamedDirectories[oldRelativePath] = newRelativePath;
-                } else if (previouslyRenamedRelativePath.Equals(newRelativePath, StringComparison.OrdinalIgnoreCase)) {
+                } else if (previouslyRenamedRelativePath.EqualsIgnoreCase(newRelativePath)) {
                     changeset.RenamedDirectories.Remove(previouslyRenamedRelativePath);
                 } else {
                     changeset.RenamedDirectories[previouslyRenamedRelativePath] = newRelativePath;
@@ -59,7 +60,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
 
             private void UpdatePrefix(HashSet<string> items, string oldPrefix, string newPrefix) {
-                var itemsToUpdate = items.Where(a => a.StartsWith(oldPrefix, StringComparison.OrdinalIgnoreCase)).ToList();
+                var itemsToUpdate = items.Where(a => a.StartsWithIgnoreCase(oldPrefix)).ToList();
                 foreach (var item in itemsToUpdate) {
                     items.Remove(item);
                     items.Add(newPrefix + item.Substring(oldPrefix.Length));

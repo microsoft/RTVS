@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
@@ -66,7 +67,7 @@ namespace Microsoft.R.Support.Help.Packages {
             packageName = packageName.Replace("\'", string.Empty).Replace("\"", string.Empty).Trim();
             packageName = packageName.ToLowerInvariant();
 
-            package = BasePackages.FirstOrDefault((IPackageInfo p) => p.Name.Equals(packageName, StringComparison.OrdinalIgnoreCase));
+            package = BasePackages.FirstOrDefault((IPackageInfo p) => p.Name.EqualsIgnoreCase(packageName));
             if (package == null) {
                 _packages.TryGetValue(packageName, out package);
             }
@@ -80,7 +81,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private static IPackageInfo TryFindPackageNew(string packageName) {
             foreach (Lazy<IPackageCollection> collection in _collections) {
-                IPackageInfo package = collection.Value.Packages.FirstOrDefault((p) => p.Name.Equals(packageName, StringComparison.OrdinalIgnoreCase));
+                IPackageInfo package = collection.Value.Packages.FirstOrDefault((p) => p.Name.EqualsIgnoreCase(packageName));
                 if (package != null) {
                     _packages[package.Name.ToLowerInvariant()] = package;
 

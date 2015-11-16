@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.R.Package.Options.Attributes {
     internal class ReplShortcutTypeConverter : TypeConverter {
@@ -14,10 +15,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.Attributes {
 
             if (value.GetType() == typeof(string)) {
                 var s = value as string;
-                if (s.Equals(Resources.CtrlEnter, StringComparison.OrdinalIgnoreCase))
+                if (s.EqualsIgnoreCase(Resources.CtrlEnter))
                     return true;
 
-                if (s.Equals(Resources.CtrlECtrlE, StringComparison.OrdinalIgnoreCase))
+                if (s.EqualsIgnoreCase(Resources.CtrlECtrlE))
                     return false;
             }
 

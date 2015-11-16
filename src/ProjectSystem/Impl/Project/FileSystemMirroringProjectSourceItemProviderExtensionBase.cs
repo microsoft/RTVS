@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Build.Evaluation;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.ProjectSystem.Items;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.Threading;
@@ -106,7 +107,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
         #endregion
 
         private bool CheckProjectFileOwnership(string projectFilePath) {
-            return _unconfiguredProject.GetInMemoryTargetsFileFullPath().Equals(projectFilePath, StringComparison.OrdinalIgnoreCase);
+            return _unconfiguredProject.GetInMemoryTargetsFileFullPath().EqualsIgnoreCase(projectFilePath);
         }
 
         private async Task<ProjectItem> GetMsBuildItemByProjectItem(IProjectItem projectItem) {

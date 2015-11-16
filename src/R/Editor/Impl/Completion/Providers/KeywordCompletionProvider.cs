@@ -6,31 +6,27 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace Microsoft.R.Editor.Completion.Providers
-{
+namespace Microsoft.R.Editor.Completion.Providers {
     /// <summary>
     /// R language keyword completion provider.
     /// </summary>
     [Export(typeof(IRCompletionListProvider))]
-    public class KeywordCompletionProvider : IRCompletionListProvider
-    {
+    public class KeywordCompletionProvider : IRCompletionListProvider {
         #region IRCompletionListProvider
-        public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context)
-        {
+        public bool AllowSorting { get; } = true;
+
+        public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
 
-            if (!context.IsInNameSpace())
-            {
+            if (!context.IsInNameSpace()) {
                 ImageSource keyWordGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
-               
-                foreach (string keyword in Keywords.KeywordList)
-                {
+
+                foreach (string keyword in Keywords.KeywordList) {
                     completions.Add(new RCompletion(keyword, keyword, string.Empty, keyWordGlyph));
                 }
 
                 ImageSource buildInGlyth = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
-                foreach (string s in Builtins.BuiltinList)
-                {
+                foreach (string s in Builtins.BuiltinList) {
                     completions.Add(new RCompletion(s, s, string.Empty, buildInGlyth));
                 }
             }

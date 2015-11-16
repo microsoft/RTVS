@@ -451,6 +451,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Help on {0}.
+        /// </summary>
+        public static string OpenFunctionHelp {
+            get {
+                return ResourceManager.GetString("OpenFunctionHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open R Plot File.
         /// </summary>
         public static string OpenPlotDialogTitle {

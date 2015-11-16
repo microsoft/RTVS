@@ -7,8 +7,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Completion.Providers
-{
+namespace Microsoft.R.Editor.Completion.Providers {
     /// <summary>
     /// Completion controller provider for Visual Studio core editor
     /// </summary>
@@ -18,8 +17,7 @@ namespace Microsoft.R.Editor.Completion.Providers
     [Name("R Completion Controller")]
     [Order(Before = "Default Completion Controller")]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
-    internal class CompletionControllerProvider : IIntellisenseControllerProvider
-    {
+    internal class CompletionControllerProvider : IIntellisenseControllerProvider {
         [Import]
         public ICompletionBroker CompletionBroker { get; set; }
 
@@ -29,8 +27,7 @@ namespace Microsoft.R.Editor.Completion.Providers
         [Import]
         public ISignatureHelpBroker SignatureHelpBroker { get; set; }
 
-        public IIntellisenseController TryCreateIntellisenseController(ITextView view, IList<ITextBuffer> subjectBuffers)
-        {
+        public IIntellisenseController TryCreateIntellisenseController(ITextView view, IList<ITextBuffer> subjectBuffers) {
             return RCompletionController.Create(view, subjectBuffers, CompletionBroker, QuickInfoBroker, SignatureHelpBroker);
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Core.Test.Utility
@@ -19,14 +20,14 @@ namespace Microsoft.Languages.Core.Test.Utility
             string enlistmentRoot = null;
 
             // The IDE deploys to TestResults (either as a sibling of the solution file or individual project files)
-            int testResultsIndex = assemblyLoc.IndexOf(@"\TestResults\", StringComparison.OrdinalIgnoreCase);
+            int testResultsIndex = assemblyLoc.IndexOfIgnoreCase(@"\TestResults\");
 
             if (testResultsIndex >= 0)
             {
-                int srcIndex = assemblyLoc.LastIndexOf(@"\test\", testResultsIndex, StringComparison.OrdinalIgnoreCase);
+                int srcIndex = assemblyLoc.LastIndexOfIgnoreCase(@"\test\", testResultsIndex);
                 enlistmentRoot = assemblyLoc.Substring(0, (srcIndex >= 0) ? srcIndex : testResultsIndex);
             }
-            else if (assemblyLoc.ToLowerInvariant().IndexOf(@"\school\", StringComparison.OrdinalIgnoreCase) != -1)
+            else if (assemblyLoc.ToLowerInvariant().IndexOfIgnoreCase(@"\school\") != -1)
             {
                 // in this case, we're running from Maddog, so just take the current path
                 enlistmentRoot = assemblyLoc;
@@ -34,7 +35,7 @@ namespace Microsoft.Languages.Core.Test.Utility
             else
             {
                 // Running tests from the command line will deploy into the "bin" directory
-                int binIndex = assemblyLoc.IndexOf(@"\bin\", StringComparison.OrdinalIgnoreCase);
+                int binIndex = assemblyLoc.IndexOfIgnoreCase(@"\bin\");
                 Assert.AreNotEqual(-1, binIndex);
                 enlistmentRoot = assemblyLoc.Substring(0, binIndex) + "\\src"; // Git version
             }

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props" Condition="Exists('..\..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -15,41 +16,15 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
+  <Import Project="..\..\..\R.Settings.targets" />
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(RootDirectory)\obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(RootDirectory)\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>..\..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <DelaySign>true</DelaySign>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -77,18 +52,33 @@
     <Compile Include="IO\IFileSystemWatcher.cs" />
     <Compile Include="Lazy.cs" />
     <Compile Include="StackExtensions.cs" />
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="StringBuilderExtensions.cs" />
     <Compile Include="TaskExtensions.cs" />
     <Compile Include="TaskUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="35MSSharedLib1024.snk" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collections\" />
   </ItemGroup>
+  <ItemGroup>
+    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
+      <Authenticode>Microsoft</Authenticode>
+      <StrongName>StrongName</StrongName>
+    </FilesToSign>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props'))" />
+    <Error Condition="!Exists('..\..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets'))" />
+  </Target>
+  <Import Project="..\..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets" Condition="Exists('..\..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

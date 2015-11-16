@@ -62,5 +62,6 @@
         public const int icmdHelpNext = 1101;
         public const int icmdHelpHome = 1102;
         public const int icmdHelpRefresh = 1103;
+        public const int icmdHelpOnCurrent = 1104;
     }
 }

@@ -17,6 +17,13 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         protected virtual IEnumerable<MenuCommand> CreateMenuCommands() { return new MenuCommand[0]; }
 
         /// <summary>
+        /// Retrieve service local to the package such as IMenuService
+        /// </summary>
+        public T GetPackageService<T>(Type t = null) where T : class {
+            return GetService(t ?? typeof(T)) as T;
+        }
+
+        /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that relies on services provided by VisualStudio.
         /// </summary>

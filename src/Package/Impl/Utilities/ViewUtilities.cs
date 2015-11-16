@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
                 IVsTextManager2 textManager = AppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
 
-                if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)_VIEWFRAMETYPE.vftCodeWindow, out vsTextView))) {
+                if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)(_VIEWFRAMETYPE.vftCodeWindow | _VIEWFRAMETYPE.vftToolWindow), out vsTextView))) {
                     activeTextView = AdaptersFactoryService.GetWpfTextView(vsTextView);
                 }
 

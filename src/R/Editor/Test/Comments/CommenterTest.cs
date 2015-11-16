@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Threading;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;

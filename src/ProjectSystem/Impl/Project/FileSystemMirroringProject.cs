@@ -8,6 +8,7 @@ using System.Threading.Tasks.Dataflow;
 using System.Xml;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
+using Microsoft.Common.Core;
 using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
@@ -201,7 +202,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
         }
 
         private Task RemoveItems(ProjectItemGroupElement parent, Dictionary<string, ProjectItemElement> items, string directoryName, ProjectWriteLockReleaser access) {
-            return RemoveItems(parent, items, items.Keys.Where(f => f.StartsWith(directoryName, StringComparison.OrdinalIgnoreCase)).ToList(), access);
+            return RemoveItems(parent, items, items.Keys.Where(f => f.StartsWithIgnoreCase(directoryName)).ToList(), access);
         }
 
         private async Task RemoveItems(ProjectItemGroupElement parent, Dictionary<string, ProjectItemElement> items, IReadOnlyCollection<string> itemsToRemove, ProjectWriteLockReleaser access) {
@@ -234,7 +235,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
         private Task RenameItems(Dictionary<string, ProjectItemElement> items, string oldDirectoryName, string newDirectoryName, ProjectWriteLockReleaser access) {
             var itemsToRename = items.Keys
-                .Where(f => f.StartsWith(oldDirectoryName, StringComparison.OrdinalIgnoreCase))
+                .Where(f => f.StartsWithIgnoreCase(oldDirectoryName))
                 .ToDictionary(f => f, f => newDirectoryName + f.Substring(oldDirectoryName.Length));
 
             return RenameItems(items, itemsToRename, access);

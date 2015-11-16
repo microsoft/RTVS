@@ -103,12 +103,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             string userName = Environment.UserName;
 
             string myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            if (directory.StartsWith(myDocuments, StringComparison.OrdinalIgnoreCase)) {
+            if (directory.StartsWithIgnoreCase(myDocuments)) {
                 return ExtractFriendlyName(directory);
             }
 
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            if (directory.StartsWith(desktop, StringComparison.OrdinalIgnoreCase)) {
+            if (directory.StartsWithIgnoreCase(desktop)) {
                 return ExtractFriendlyName(directory);
             }
 
@@ -127,7 +127,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private string GetFullPathName(string friendlyName) {
             string folder = friendlyName;
             if (friendlyName != null) {
-                if (friendlyName.StartsWith("~/", StringComparison.OrdinalIgnoreCase)) {
+                if (friendlyName.StartsWithIgnoreCase("~/")) {
                     string userName = Environment.UserName;
                     string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                     int index = desktopPath.IndexOf("\\" + userName + "\\", StringComparison.OrdinalIgnoreCase);
