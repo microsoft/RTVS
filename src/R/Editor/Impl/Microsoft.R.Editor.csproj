@@ -141,6 +141,7 @@
     <Compile Include="Signatures\ParametersInfo.cs" />
     <Compile Include="Signatures\SignatureHelp.cs" />
     <Compile Include="Signatures\SignatureHelp2.cs" />
+    <Compile Include="Signatures\SignatureHelpContext.cs" />
     <Compile Include="Signatures\SignatureHelpProvider.cs" />
     <Compile Include="Signatures\SignatureHelpSource.cs" />
     <Compile Include="Signatures\SignatureParameter.cs" />

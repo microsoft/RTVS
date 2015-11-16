@@ -61,6 +61,15 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parsing document....
+        /// </summary>
+        internal static string AsyncIntellisense {
+            get {
+                return ResourceManager.GetString("AsyncIntellisense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Automatic formatting.
         /// </summary>
         internal static string AutoFormat {

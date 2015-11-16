@@ -48,6 +48,9 @@ namespace Microsoft.R.Editor.Test.Mocks
             return true;
         }
 
+        public void ProcessChangesAsync(Action completeCallback) {
+        }
+
 #pragma warning disable 67
         public event EventHandler<EventArgs> Closing;
         public event EventHandler<TreeNodesRemovedEventArgs> NodesRemoved;

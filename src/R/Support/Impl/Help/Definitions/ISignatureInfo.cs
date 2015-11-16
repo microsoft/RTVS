@@ -17,7 +17,7 @@ namespace Microsoft.R.Support.Help.Definitions {
 
         /// <summary>
         /// Given argument name returns index of the argument in the signature.
-        /// Performs full and then partial matching fof the argument name.
+        /// Performs full and then partial matching of the argument name.
         /// </summary>
         /// <param name="argumentName">Name of the argument</param>
         /// <param name="partialMatch">

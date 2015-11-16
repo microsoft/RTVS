@@ -1,12 +1,29 @@
-﻿using Microsoft.R.Core.AST;
+﻿using Microsoft.Languages.Editor.Completion;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Variables;
+using Microsoft.R.Editor.Completion;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures
 {
     public partial class SignatureHelp
     {
+        public static void TriggerSignatureHelp(ITextView textView) {
+            CompletionController.DismissSignatureSession(textView);
+            var rcc = RCompletionController.FromTextView(textView);
+            rcc.TriggerSignatureHelp();
+        }
+
+        public static void DismissSession(ITextView textView, bool retrigger = false) {
+            CompletionController.DismissSignatureSession(textView);
+            if (retrigger) {
+                var rcc = RCompletionController.FromTextView(textView);
+                rcc.TriggerSignatureHelp();
+            }
+        }
+
         /// <summary>
         /// Given position in a text buffer finds method name.
         /// </summary>
@@ -36,6 +53,7 @@ namespace Microsoft.R.Editor.Signatures
             Variable functionVariable;
             int parameterIndex = -1;
             string parameterName;
+            bool namedParameter = false;
 
             if (!GetFunction(astRoot, ref position, out functionCall, out functionVariable))
             {
@@ -43,11 +61,11 @@ namespace Microsoft.R.Editor.Signatures
             }
 
             parameterIndex = functionCall.GetParameterIndex(position);
-            parameterName = functionCall.GetParameterName(parameterIndex);
+            parameterName = functionCall.GetParameterName(parameterIndex, out namedParameter);
 
             if (!string.IsNullOrEmpty(functionVariable.Name) && functionCall != null && parameterIndex >= 0)
             {
-                return new ParameterInfo(functionVariable.Name, functionCall, parameterIndex, parameterName);
+                return new ParameterInfo(functionVariable.Name, functionCall, parameterIndex, parameterName, namedParameter);
             }
 
             return null;
@@ -60,10 +78,20 @@ namespace Microsoft.R.Editor.Signatures
 
             if (functionCall == null && position > 0)
             {
+                // Retry in case caret is at the very end of function signature
+                // that does not have final close brace yet.
                 functionCall = astRoot.GetNodeOfTypeFromPosition<FunctionCall>(position - 1, includeEnd: true);
-                if(functionCall != null && position > functionCall.SignatureEnd)
+                if(functionCall != null)
                 {
-                    position = functionCall.SignatureEnd;
+                    // But if signature does have closing brace and caret
+                    // is beyond it, we are really otuside of the signature.
+                    if(functionCall.CloseBrace != null && position >= functionCall.CloseBrace.End) {
+                        return false;
+                    }
+
+                    if (position > functionCall.SignatureEnd) {
+                        position = functionCall.SignatureEnd;
+                    }
                 }
             }
 

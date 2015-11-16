@@ -22,6 +22,11 @@ namespace Microsoft.R.Editor.Signatures {
         public string ParameterName { get; private set; }
 
         /// <summary>
+        /// If true then the parameter is a named parameter in a function call
+        /// </summary>
+        public bool NamedParameter { get; private set; }
+
+        /// <summary>
         /// Function name
         /// </summary>
         public string FunctionName { get; private set; }
@@ -33,7 +38,7 @@ namespace Microsoft.R.Editor.Signatures {
             get { return FunctionCall.SignatureEnd; }
         }
 
-        public ParameterInfo(string functionName, FunctionCall functionCall, int parameterIndex, string parameterName) {
+        public ParameterInfo(string functionName, FunctionCall functionCall, int parameterIndex, string parameterName, bool namedParameter) {
             if (functionName == null)
                 throw new ArgumentNullException("functionName");
 
@@ -44,6 +49,7 @@ namespace Microsoft.R.Editor.Signatures {
             FunctionCall = functionCall;
             ParameterIndex = parameterIndex;
             ParameterName = parameterName;
+            NamedParameter = namedParameter;
         }
     }
 }

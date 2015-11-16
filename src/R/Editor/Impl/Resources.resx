@@ -234,4 +234,7 @@
   <data name="ParseError_RightOperandExpected" xml:space="preserve">
     <value>Operand to the right expected</value>
   </data>
+  <data name="AsyncIntellisense" xml:space="preserve">
+    <value>Parsing document...</value>
+  </data>
 </root>

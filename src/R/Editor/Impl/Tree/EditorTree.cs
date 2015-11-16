@@ -229,7 +229,7 @@ namespace Microsoft.R.Editor.Tree
         /// completes, tree will invoke completion callback on UI thread. Useful when building 
         /// completion/intellisense list asynchronously.
         /// </summary>
-        internal void ProcessChangesAsync(Action treeUpdateCompleteCallback)
+        public void ProcessChangesAsync(Action treeUpdateCompleteCallback)
         {
             if (this.IsDirty)
             {

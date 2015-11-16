@@ -15,7 +15,6 @@ namespace Microsoft.Languages.Editor.Completion {
     /// </summary>
     public abstract class CompletionController : IIntellisenseController {
         public const string AutoShownCompletion = "AutoShownCompletion";
-        public const string AutoShownSignature = "AutoShownSignature";
 
         public IList<ITextBuffer> SubjectBuffers { get; private set; }
         public ITextView TextView { get; private set; }
@@ -403,18 +402,16 @@ namespace Microsoft.Languages.Editor.Completion {
         /// <summary>
         /// Shows the signature help tooltip if it isn't showing already
         /// </summary>
-        protected void ShowSignature(bool autoShown) {
-            if ((!autoShown || AutoSignatureHelpEnabled) &&
-                !HasActiveSignatureSession(TextView) &&
-                TextView.Selection.Mode != TextSelectionMode.Box &&
-                SignatureBroker != null) {
-                SignatureBroker.DismissAllSessions(TextView);
-
-                TextView.Properties.RemoveProperty(CompletionController.AutoShownSignature);
-                TextView.Properties.AddProperty(CompletionController.AutoShownSignature, autoShown);
-
-                SignatureBroker.TriggerSignatureHelp(TextView);
+        public void ShowSignature(bool autoShown) {
+            if ((!autoShown || AutoSignatureHelpEnabled) && !HasActiveSignatureSession(TextView) &&
+                TextView.Selection.Mode != TextSelectionMode.Box && SignatureBroker != null) {
+                TriggerSignatureHelp();
             }
+        }
+
+        public virtual void TriggerSignatureHelp() {
+            SignatureBroker.DismissAllSessions(TextView);
+            SignatureBroker.TriggerSignatureHelp(TextView);
         }
 
         /// <summary>
@@ -426,20 +423,6 @@ namespace Microsoft.Languages.Editor.Completion {
         protected bool IsAutoShownCompletion() {
             bool value = false;
             TextView.Properties.TryGetProperty(CompletionController.AutoShownCompletion, out value);
-
-            return value;
-        }
-
-        /// <summary>
-        /// Determines if current signature session is automatically invoked
-        /// such as when user types a trigger character. Oppisite is
-        /// when user explicitly invokes Edit > Intellisense > Parameter Info
-        /// or similar command such as Ctrl+Shift+Space.
-        /// </summary>
-        protected bool IsAutoShownSignature() {
-            bool value = false;
-            TextView.Properties.TryGetProperty(CompletionController.AutoShownSignature, out value);
-
             return value;
         }
 
