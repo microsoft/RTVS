@@ -143,7 +143,7 @@ namespace Microsoft.R.Editor.Signatures {
         }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
-            if (SignatureHelpContext.IsSameSignatureContext(TextView, SubjectBuffer)) {
+            if (SignatureHelper.IsSameSignatureContext(TextView, SubjectBuffer)) {
                 UpdateCurrentParameter();
             }
             else {

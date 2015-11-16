@@ -268,7 +268,7 @@ namespace Microsoft.R.Editor.Completion {
         /// </summary>
         public override void OnPostTypeChar(char typedCharacter) {
             if (typedCharacter == '(' || typedCharacter == ',') {
-                if (!SignatureHelpContext.IsSameSignatureContext(TextView, _textBuffer)) {
+                if (!SignatureHelper.IsSameSignatureContext(TextView, _textBuffer)) {
                     DismissAllSessions();
                     TriggerSignatureHelp();
                 }

@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures {
-    internal static class SignatureHelpContext {
+    internal static class SignatureHelper {
         /// <summary>
         /// Determines if current caret position is in the same function
         /// argument list as before or is it a different one and signature 
