@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -16,11 +17,13 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     /// <summary>
     /// Parent of x64 RPlot window
     /// </summary>
-    class RPlotWindowContainer : UserControl, IVsWindowPane {
+    internal sealed class RPlotWindowContainer : UserControl, IVsWindowPane {
 
         private DateTime _lastActivationMessageTime = DateTime.Now;
         private bool _connectedToIdle;
         private bool _sized;
+
+        public PlotWindowMenu Menu { get; private set; }
 
         #region IVsWindowPane
         public int ClosePane() {
@@ -49,10 +52,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             return VSConstants.S_OK;
         }
 
-        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) {
-            SetBgColor();
-        }
-
         public int GetDefaultSize(SIZE[] pSize) {
             return VSConstants.E_NOTIMPL;
         }
@@ -73,6 +72,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             return VSConstants.E_NOTIMPL;
         }
         #endregion
+
+        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) {
+            SetBgColor();
+        }
 
         private IntPtr _rPlotWindowHandle = IntPtr.Zero;
         public IntPtr RPlotWindowHandle {
@@ -105,6 +108,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         protected override void WndProc(ref Message m) {
             if (m.Msg == NativeMethods.WM_ACTIVATE_PLOT) {
                 if (!_sized) {
+                    Menu = new PlotWindowMenu(_rPlotWindowHandle, m.WParam);
                     SizeChildPlot();
                 }
                 _lastActivationMessageTime = DateTime.Now;

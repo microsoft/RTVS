@@ -336,17 +336,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         async Task IRCallbacks.PlotXaml(string xamlFilePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
-            var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);  // TODO: acquire plot content provider through service
-            if (frame != null) {
-                object docView;
-                ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
-                if (docView != null) {
-                    PlotWindowPane pane = (PlotWindowPane)docView;
-                    pane.PlotContentProvider.LoadFileOnIdle(xamlFilePath);
+            //var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);  // TODO: acquire plot content provider through service
+            //if (frame != null) {
+            //    object docView;
+            //    ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
+            //    if (docView != null) {
+            //        PlotWindowPane pane = (PlotWindowPane)docView;
+            //        pane.PlotContentProvider.LoadFileOnIdle(xamlFilePath);
 
-                    frame.ShowNoActivate();
-                }
-            }
+            //        frame.ShowNoActivate();
+            //    }
+            //}
         }
 
         /// <summary>
