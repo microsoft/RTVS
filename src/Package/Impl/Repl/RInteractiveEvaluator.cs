@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -175,24 +176,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private bool CheckConvertableToDefaultCodepage(string s) {
             // Convert to Windows CP and back and see if the result
             // of the conversion matches original text.
-            byte[] srcBytes = new byte[s.Length * sizeof(char)];
-            Buffer.BlockCopy(s.ToCharArray(), 0, srcBytes, 0, srcBytes.Length);
-
+            byte[] srcBytes = Encoding.Unicode.GetBytes(s);
             byte[] dstBytes = Encoding.Convert(Encoding.Unicode, Encoding.GetEncoding(0), srcBytes);
             byte[] resultBytes = Encoding.Convert(Encoding.GetEncoding(0), Encoding.Unicode, dstBytes);
 
-            bool same = resultBytes.Length == srcBytes.Length;
-            if (same) {
-
-                for (int i = 0; i < srcBytes.Length; i++) {
-                    if (srcBytes[i] != resultBytes[i]) {
-                        same = false;
-                        break;
-                    }
-                }
-            }
-
-            return same;
+            return srcBytes.SequenceEqual(resultBytes);
         }
     }
 }
