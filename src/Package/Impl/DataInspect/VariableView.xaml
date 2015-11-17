@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
@@ -88,7 +90,7 @@
                     <Button HorizontalAlignment="Right"
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
                             Command="{Binding Model.Content.ShowDetailCommand}">
-                        <TextBlock Text="detail" /> <!-- TODO: change to icon -->
+                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.GridDetailView}"/>
                     </Button>
                 </Grid>
             </DataTemplate>
