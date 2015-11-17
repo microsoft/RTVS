@@ -6,7 +6,6 @@
       <File Source="$(var.CpsRulesDir)\Folder.xaml" />
       <File Source="$(var.CpsRulesDir)\General.BrowseObject.xaml" />
       <File Source="$(var.CpsRulesDir)\None.xaml" />
-      <File Source="$(var.CpsRulesDir)\Scc.xaml" />
       <File Source="$(var.CpsRulesDir)\ProjectItemsSchema.xaml" />
       <File Source="$(var.CpsRulesDir)\rtvs.rules.props" />
     </Component>
