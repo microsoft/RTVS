@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -94,6 +96,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ExecutionResult.Failure;
             }
 
+            if (!CheckConvertableToDefaultCodepage(text)) {
+                CurrentWindow.WriteErrorLine(Resources.Error_ReplUnicodeCoversion);
+                request.Dispose();
+                return ExecutionResult.Failure;
+            }
+
             try {
                 await request.RespondAsync(text);
                 return ExecutionResult.Success;
@@ -157,6 +165,22 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private async Task WriteLine(string message) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             CurrentWindow.WriteLine(message);
+        }
+
+        /// <summary>
+        /// Check if given Unicode text is convertable without loss to the default
+        /// OS codepage. R is not Unicode so host process converts incoming UTF-8
+        /// to 8-bit characters via Windows CP. If locale for non-Unicode programs 
+        /// is set correctly, user can type in their language.
+        /// </summary>
+        private bool CheckConvertableToDefaultCodepage(string s) {
+            // Convert to Windows CP and back and see if the result
+            // of the conversion matches original text.
+            byte[] srcBytes = Encoding.Unicode.GetBytes(s);
+            byte[] dstBytes = Encoding.Convert(Encoding.Unicode, Encoding.GetEncoding(0), srcBytes);
+            byte[] resultBytes = Encoding.Convert(Encoding.GetEncoding(0), Encoding.Unicode, dstBytes);
+
+            return srcBytes.SequenceEqual(resultBytes);
         }
     }
 }

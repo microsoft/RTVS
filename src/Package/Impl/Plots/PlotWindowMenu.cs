@@ -134,7 +134,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
 
             public void Execute() {
-                NativeMethods.PostMessage(_hwndRPlotWindow, NativeMethods.WM_COMMAND, new IntPtr(Id), _hwndRPlotWindow);
+                if (_hwndRPlotWindow != IntPtr.Zero) {
+                    NativeMethods.PostMessage(_hwndRPlotWindow, NativeMethods.WM_COMMAND, new IntPtr(Id), _hwndRPlotWindow);
+                }
             }
 
             private int FindCommandByText(Dictionary<string, int> commands, string text) {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Threading;
@@ -100,26 +101,31 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             return true;
         }
 
-        protected override void OnClientSizeChanged(EventArgs e) {
-            SizeChildPlot();
-            base.OnClientSizeChanged(e);
-        }
-
         protected override void WndProc(ref Message m) {
             if (m.Msg == NativeMethods.WM_ACTIVATE_PLOT) {
                 if (!_sized) {
-                    Menu = new PlotWindowMenu(RPlotWindowHandle, m.WParam);
+                    Debug.Assert(m.WParam != IntPtr.Zero);
+                    if (m.WParam != IntPtr.Zero) {
+                        Menu = new PlotWindowMenu(RPlotWindowHandle, m.WParam);
+                    }
                     SizeChildPlot();
+                    DelayActivate();
                 }
-                _lastActivationMessageTime = DateTime.Now;
-                if (!_connectedToIdle) {
-                    _connectedToIdle = true;
-                    EditorShell.Current.Idle += OnIdle;
-                }
+            } else if (m.Msg == NativeMethods.WM_SIZE) {
+                IdleTimeAction.Cancel(typeof(RPlotWindowContainer));
+                IdleTimeAction.Create(() => SizeChildPlot(), 50, typeof(RPlotWindowContainer));
             } else if (m.Msg == NativeMethods.WM_CLOSE) {
                 DestroyChildPlot();
             }
             base.WndProc(ref m);
+        }
+
+        private void DelayActivate() {
+            _lastActivationMessageTime = DateTime.Now;
+            if (!_connectedToIdle) {
+                _connectedToIdle = true;
+                EditorShell.Current.Idle += OnIdle;
+            }
         }
 
         private void OnIdle(object sender, EventArgs e) {
@@ -141,7 +147,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private void SizeChildPlot() {
             IntPtr handle = RPlotWindowHandle;
             if (handle != IntPtr.Zero) {
-                NativeMethods.MoveWindow(handle, 0, 0, this.Width - 1, this.Height - 1, bRepaint: true);
                 NativeMethods.MoveWindow(handle, 0, 0, this.Width, this.Height, bRepaint: true);
                 _sized = true;
             }
