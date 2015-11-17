@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
+using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
@@ -94,6 +95,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ExecutionResult.Failure;
             }
 
+            if(!CheckConvertableToDefaultCodepage(text)) {
+                CurrentWindow.WriteErrorLine(Resources.Error_ReplUnicodeCoversion);
+                request.Dispose();
+                return ExecutionResult.Failure;
+            }
+
             try {
                 await request.RespondAsync(text);
                 return ExecutionResult.Success;
@@ -157,6 +164,35 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private async Task WriteLine(string message) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             CurrentWindow.WriteLine(message);
+        }
+
+        /// <summary>
+        /// Check if given Unicode text is convertable without loss to the default
+        /// OS codepage. R is not Unicode so host process converts incoming UTF-8
+        /// to 8-bit characters via Windows CP. If locale for non-Unicode programs 
+        /// is set correctly, user can type in their language.
+        /// </summary>
+        private bool CheckConvertableToDefaultCodepage(string s) {
+            // Convert to Windows CP and back and see if the result
+            // of the conversion matches original text.
+            byte[] srcBytes = new byte[s.Length * sizeof(char)];
+            Buffer.BlockCopy(s.ToCharArray(), 0, srcBytes, 0, srcBytes.Length);
+
+            byte[] dstBytes = Encoding.Convert(Encoding.Unicode, Encoding.GetEncoding(0), srcBytes);
+            byte[] resultBytes = Encoding.Convert(Encoding.GetEncoding(0), Encoding.Unicode, dstBytes);
+
+            bool same = resultBytes.Length == srcBytes.Length;
+            if (same) {
+
+                for (int i = 0; i < srcBytes.Length; i++) {
+                    if(srcBytes[i] != resultBytes[i]) {
+                        same = false;
+                        break;
+                    }
+                }
+            }
+
+            return same;
         }
     }
 }
