@@ -9,6 +9,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Packages.Markdown {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [Guid(MdGuidList.MdPackageGuidString)]
+    [ProvideLanguageExtension(MdGuidList.MdLanguageServiceGuidString, MdContentTypeDefinition.FileExtension1)]
+    [ProvideLanguageExtension(MdGuidList.MdLanguageServiceGuidString, MdContentTypeDefinition.FileExtension2)]
+    [ProvideLanguageExtension(MdGuidList.MdLanguageServiceGuidString, MdContentTypeDefinition.FileExtension3)]
     [ProvideEditorExtension(typeof(MdEditorFactory), ".md", 0x32, NameResourceID = 107)]
     [ProvideEditorExtension(typeof(MdEditorFactory), ".rmd", 0x32, NameResourceID = 107)]
     [ProvideEditorExtension(typeof(MdEditorFactory), ".markdown", 0x32, NameResourceID = 107)]

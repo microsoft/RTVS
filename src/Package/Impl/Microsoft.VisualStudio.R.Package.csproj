@@ -107,6 +107,8 @@
     <Compile Include="Plots\IPlotContentProvider.cs" />
     <Compile Include="Plots\NativeMethods.cs" />
     <Compile Include="Plots\PlotContentProvider.cs" />
+    <Compile Include="Plots\PlotWindowCommandController.cs" />
+    <Compile Include="Plots\PlotWindowMenu.cs" />
     <Compile Include="Plots\RPlotWindowContainer.cs">
       <SubType>UserControl</SubType>
     </Compile>

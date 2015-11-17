@@ -23,7 +23,7 @@
     <BaseOutputPath>..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Setup\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-    <DefineConstants>Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion)</DefineConstants>
+    <DefineConstants>Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion)</DefineConstants>
     <Chip>x86</Chip>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
     <SuppressPdbOutput>True</SuppressPdbOutput>
@@ -34,7 +34,7 @@
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Setup\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <Chip>x86</Chip>
-    <DefineConstants>LabBuild=1;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion)</DefineConstants>
+    <DefineConstants>LabBuild=1;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion)</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
   </PropertyGroup>
   <ItemGroup>
