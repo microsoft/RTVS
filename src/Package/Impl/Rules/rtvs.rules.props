@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\ProjectItemsSchema.xaml;"/>
-    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Scc.xaml">
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\Scc.xaml">
       <Context>Invisible</Context>
     </PropertyPageSchema>
 
