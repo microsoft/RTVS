@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -10,7 +11,6 @@ using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
-using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ExecutionResult.Failure;
             }
 
-            if(!CheckConvertableToDefaultCodepage(text)) {
+            if (!CheckConvertableToDefaultCodepage(text)) {
                 CurrentWindow.WriteErrorLine(Resources.Error_ReplUnicodeCoversion);
                 request.Dispose();
                 return ExecutionResult.Failure;
@@ -185,7 +185,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             if (same) {
 
                 for (int i = 0; i < srcBytes.Length; i++) {
-                    if(srcBytes[i] != resultBytes[i]) {
+                    if (srcBytes[i] != resultBytes[i]) {
                         same = false;
                         break;
                     }
