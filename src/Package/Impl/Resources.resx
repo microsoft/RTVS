@@ -468,6 +468,6 @@ After R is installed, please restart Visual Studio.</value>
     <value>Help on {0}</value>
   </data>
   <data name="Error_ReplUnicodeCoversion" xml:space="preserve">
-    <value>Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt;Region -&gt; Administrative to the locale you wish to use.</value>
+    <value>Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use.</value>
   </data>
 </root>
