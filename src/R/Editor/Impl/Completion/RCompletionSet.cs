@@ -1,30 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion {
-    using Core.Tokens;
     using Completion = VisualStudio.Language.Intellisense.Completion;
+    using CompletionList = Microsoft.Languages.Editor.Completion.CompletionList;
 
     internal sealed class RCompletionSet : CompletionSet {
         private ITextBuffer _textBuffer;
-        private List<Completion> _completions = new List<Completion>();
-        private IReadOnlyList<Completion> _filteredCompletions = new List<Completion>();
+        private CompletionList _completions;
+        private FilteredObservableCollection<Completion> _filteredCompletions;
 
         public RCompletionSet(ITextBuffer textBuffer, ITrackingSpan trackingSpan, List<RCompletion> completions) :
-            base("R Completion", "R Completion", trackingSpan, OrderList(completions), Enumerable.Empty<RCompletion>()) {
+            base("R Completion", "R Completion", trackingSpan, Enumerable.Empty<RCompletion>(), Enumerable.Empty<RCompletion>()) {
             _textBuffer = textBuffer;
-            _completions.AddRange(completions);
-            _filteredCompletions = OrderList(_completions);
+            _completions = OrderList(completions);
+            _filteredCompletions = new FilteredObservableCollection<Completion>(_completions);
+        }
+
+        public override IList<Completion> Completions {
+            get { return _filteredCompletions; }
         }
 
         public override void Filter() {
-            this.Filter(CompletionMatchType.MatchDisplayText, caseSensitive: true);
+            UpdateVisibility();
+            _filteredCompletions.Filter(x => ((RCompletion)x).IsVisible);
         }
 
-        private static IReadOnlyList<Completion> OrderList(IReadOnlyCollection<Completion> completions) {
+        private void UpdateVisibility() {
+            Dictionary<int, List<Completion>> matches = new Dictionary<int, List<Completion>>();
+            int maxKey = 0;
+
+            string typedText = GetTypedText();
+            if (typedText.Length == 0) {
+                return;
+            }
+
+            foreach (RCompletion c in _completions) {
+                int key = Match(typedText, c.DisplayText);
+                if (key > 0) {
+                    List<Completion> list;
+                    if (!matches.TryGetValue(key, out list)) {
+                        list = new List<Completion>();
+                        matches[key] = list;
+                        maxKey = Math.Max(maxKey, key);
+                    }
+                    list.Add(c);
+                }
+            }
+
+            if (maxKey > 0) {
+                _completions.ForEach(x => ((RCompletion)x).IsVisible = false);
+                matches[maxKey].ForEach(x => ((RCompletion)x).IsVisible = true);
+            }
+        }
+
+        private int Match(string typedText, string compText) {
+            // Match at least something
+            int i = 0;
+            for (i = 0; i < Math.Min(typedText.Length, compText.Length); i++) {
+                if (typedText[i] != compText[i]) {
+                    return i;
+                }
+            }
+
+            return i;
+        }
+
+        private string GetTypedText() {
+            ITextSnapshot snapshot = ApplicableTo.TextBuffer.CurrentSnapshot;
+            return ApplicableTo.GetText(snapshot);
+        }
+
+        private static CompletionList OrderList(IReadOnlyCollection<Completion> completions) {
             // Place 'name =' at the top prioritizing argument names
             // Place items starting with non-alpha characters like .Call and &&
             // at the end of the list.
@@ -38,7 +89,7 @@ namespace Microsoft.R.Editor.Completion {
             orderedCompletions.AddRange(generalEntries);
             orderedCompletions.AddRange(specialNames);
 
-            return orderedCompletions;
+            return new CompletionList(orderedCompletions);
         }
     }
 }

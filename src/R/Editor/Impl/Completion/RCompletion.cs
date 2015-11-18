@@ -18,6 +18,8 @@ namespace Microsoft.R.Editor.Completion {
             base(displayText, insertionText, description, iconSource, string.Empty) {
         }
 
+        public bool IsVisible { get; set; } = true;
+
         public static int Compare(Completion completion1, Completion completion2) {
             if (completion1 == null || completion2 == null)
                 return -1;
