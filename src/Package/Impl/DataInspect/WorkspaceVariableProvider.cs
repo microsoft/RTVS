@@ -108,8 +108,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task UpdateList(EvaluationWrapper e) {
+            _topLevelVariables.Clear();
             if (e == null) {
-                _topLevelVariables.Clear();
                 return;
             }
 
