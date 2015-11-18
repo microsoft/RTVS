@@ -74,6 +74,7 @@
     <Compile Include="BraceMatch\GotoBraceCommand.cs" />
     <Compile Include="BraceMatch\BraceTokenPair.cs" />
     <Compile Include="Classification\TokenBasedClassifier.cs" />
+    <Compile Include="Completion\CompletionList.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
     <Compile Include="EditorHelpers\TrackingHelper.cs" />
     <Compile Include="Imaging\GlyphService.cs" />

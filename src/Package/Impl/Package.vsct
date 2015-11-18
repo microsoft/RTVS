@@ -75,8 +75,7 @@
 
       <!-- Plots flyout -->
       <Menu guid="guidRToolsCmdSet" id="plotSubMenu" type="Menu" priority="0x0300">
-        <!-- Switched off until metafile plots are available -->
-        <!--<Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>-->
+        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
           <ButtonText>&amp;Plots</ButtonText>
         </Strings>
