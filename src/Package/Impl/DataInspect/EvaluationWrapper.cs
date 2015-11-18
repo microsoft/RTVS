@@ -153,7 +153,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool CanShowDetail { get; private set; }
 
         private bool ComputeDetailAvailability() {
-            return this.Class.Contains("matrix");
+            return false;
         }
 
         public ICommand ShowDetailCommand { get; }
