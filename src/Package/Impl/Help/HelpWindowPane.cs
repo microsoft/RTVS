@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 // When window is not visible and request comes for help,
                 // don't navigate to default page as it will be immediately
                 // replaced by the requested help page anyway.
-                NavigateTo(HelpHomeCommand.HomeUrl);
+                HelpHomeCommand.ShowDefaultHelpPage();
             }
 
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
@@ -81,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private static bool IsHelpUrl(string url) {
-            return url == HelpHomeCommand.HomeUrl || url == (HelpHomeCommand.HomeUrl + "/") || url.StartsWith("http://127.0.0.1");
+            return url.StartsWith("http://127.0.0.1");
         }
 
         private IEnumerable<ICommand> GetCommands() {
