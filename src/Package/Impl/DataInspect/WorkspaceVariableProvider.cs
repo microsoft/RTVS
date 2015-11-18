@@ -56,6 +56,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 string[] parts = variableName.Split(new char[] { '$', '@' });
 
                 if (parts.Length == 0 || parts[0].Length == 0) {
+                    if(variableName.Length > 0) {
+                        // Something odd like $$ or $@ so we got empty parts
+                        // and yet variable name is not empty. Don't show anything.
+                        return new INamedItemInfo[0];
+                    }
                     // Global scope
                     return _topLevelVariables.Values.Select((m, index) => {
                         return index < maxCount ? new VariableInfo(m) : null;
