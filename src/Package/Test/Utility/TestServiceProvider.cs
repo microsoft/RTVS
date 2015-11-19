@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
@@ -10,6 +11,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public sealed class TestServiceProvider
     {
         private Dictionary<Type, object> _services = new Dictionary<Type, object>();

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     internal sealed class TestRPackage : RPackage
     {
         TestServiceProvider _serviceProvider = new TestServiceProvider();

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class VsRegisterProjectGeneratorsMock : IVsRegisterProjectGenerators
     {
         public void RegisterProjectGenerator([In] ref Guid rguidProjGenerator, [In, MarshalAs(UnmanagedType.Interface)] IVsProjectGenerator pProjectGenerator, out uint pdwCookie)

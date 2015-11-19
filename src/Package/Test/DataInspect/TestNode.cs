@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -8,6 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     /// <summary>
     /// ITreeNode for unittest
     /// </summary>
+    [ExcludeFromCodeCoverage]
     class TestNode : ITreeNode {
         private readonly int _childCount;
         private readonly string _throwAt;
