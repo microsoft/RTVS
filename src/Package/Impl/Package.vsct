@@ -75,7 +75,7 @@
 
       <!-- Plots flyout -->
       <Menu guid="guidRToolsCmdSet" id="plotSubMenu" type="Menu" priority="0x0300">
-        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
+        <!--<Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>-->
         <Strings>
           <ButtonText>&amp;Plots</ButtonText>
         </Strings>
@@ -1024,9 +1024,9 @@
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuPrintGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0100">
+    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuClearGroup"/>
-    </CommandPlacement>
+    </CommandPlacement>-->
 
     <!-- Plot window toolbar -->
     <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdOpenPlot" priority="0x0100">
@@ -1089,9 +1089,9 @@
       <Parent guid="guidRToolsCmdSet" id="plotToolbarPrintGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0100">
+    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarClearGroup"/>
-    </CommandPlacement>
+    </CommandPlacement>-->
     <!-- End Plot Window toolbar -->
 
     <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x0400">

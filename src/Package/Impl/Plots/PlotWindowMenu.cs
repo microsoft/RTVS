@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.R.Package.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
@@ -38,10 +39,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _idToPlotCommandMap[RPackageCommandId.icmdClearPlots] = new PlotCommand(hWnd, _nameToWindowsIdMap, "clear");
             _idToPlotCommandMap[RPackageCommandId.icmdPrintPlot] = new PlotCommand(hWnd, _nameToWindowsIdMap, "print");
 
-            var recording = new PlotCommand(hWnd, _nameToWindowsIdMap, "recording");
-            recording.Execute();
-
-            _nameToWindowsIdMap.Clear();
+            IdleTimeAction.Create(() => {
+                var add = new PlotCommand(hWnd, _nameToWindowsIdMap, "add");
+                add.Execute();
+                var recording = new PlotCommand(hWnd, _nameToWindowsIdMap, "recording");
+                recording.Execute();
+            }, 500, typeof(PlotWindowMenu));
         }
 
         private void ProcessMenu(IntPtr hMenu) {
