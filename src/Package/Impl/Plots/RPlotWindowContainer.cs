@@ -103,11 +103,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         protected override void WndProc(ref Message m) {
             if (m.Msg == NativeMethods.WM_ACTIVATE_PLOT) {
-                if (!_sized) {
-                    Debug.Assert(m.WParam != IntPtr.Zero);
-                    if (m.WParam != IntPtr.Zero) {
-                        Menu = new PlotWindowMenu(RPlotWindowHandle, m.WParam);
-                    }
+                if (!_sized && m.WParam != IntPtr.Zero) {
+                    Menu = new PlotWindowMenu(RPlotWindowHandle, m.WParam);
                     SizeChildPlot();
                     DelayActivate();
                 }
