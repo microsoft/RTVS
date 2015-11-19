@@ -103,11 +103,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         protected override void WndProc(ref Message m) {
             if (m.Msg == NativeMethods.WM_ACTIVATE_PLOT) {
-                if (!_sized) {
-                    Debug.Assert(m.WParam != IntPtr.Zero);
-                    if (m.WParam != IntPtr.Zero) {
-                        Menu = new PlotWindowMenu(RPlotWindowHandle, m.WParam);
-                    }
+                if (!_sized && m.WParam != IntPtr.Zero) {
+                    Menu = new PlotWindowMenu(RPlotWindowHandle, m.WParam);
                     SizeChildPlot();
                     DelayActivate();
                 }
@@ -115,6 +112,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 IdleTimeAction.Cancel(typeof(RPlotWindowContainer));
                 IdleTimeAction.Create(() => SizeChildPlot(), 50, typeof(RPlotWindowContainer));
             } else if (m.Msg == NativeMethods.WM_CLOSE) {
+                DestroyChildPlot();
+            } else if(m.Msg == NativeMethods.WM_PARENTNOTIFY && (int)m.WParam == NativeMethods.WM_DESTROY) {
                 DestroyChildPlot();
             }
             base.WndProc(ref m);
@@ -156,6 +155,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (_rPlotWindowHandle != IntPtr.Zero) {
                 NativeMethods.PostMessage(_rPlotWindowHandle, NativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
                 _rPlotWindowHandle = IntPtr.Zero;
+                _sized = false;
             }
         }
 
