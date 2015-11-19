@@ -111,9 +111,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     ITextSnapshot snapshot = span.TextBuffer.CurrentSnapshot;
                     string spanText = snapshot.GetText(span.GetSpan(snapshot));
                     if (spanText != set.SelectionStatus.Completion.InsertionText) {
-                        controller.CommitCompletionSession();
-                        controller.DismissAllSessions();
-                        return CommandResult.Executed;
+                        if (set.SelectionStatus.IsSelected) {
+                            controller.CommitCompletionSession();
+                            controller.DismissAllSessions();
+                            return CommandResult.Executed;
+                        }
+                        else {
+                            controller.DismissAllSessions();
+                        }
                     }
                 } catch (Exception) { }
             }

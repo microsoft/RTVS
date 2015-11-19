@@ -80,8 +80,11 @@ namespace Microsoft.R.Editor.Completion {
             // Place items starting with non-alpha characters like .Call and &&
             // at the end of the list.
             var argumentNames = completions.Where(x => RTokenizer.IsIdentifierCharacter(x.DisplayText[0]) && x.DisplayText.EndsWith("=", StringComparison.Ordinal));
+
+            var rtvsNames = completions.Where(x => x.DisplayText.IndexOf(".rtvs") >= 0);
             var specialNames = completions.Where(x => !char.IsLetter(x.DisplayText[0]));
-            var rtvsNames = completions.Where(x => x.DisplayText.StartsWith(".rtvs", StringComparison.Ordinal));
+            specialNames = specialNames.Except(rtvsNames);
+
             var generalEntries = completions.Except(argumentNames);
             generalEntries = generalEntries.Except(rtvsNames);
             generalEntries = generalEntries.Except(specialNames);
