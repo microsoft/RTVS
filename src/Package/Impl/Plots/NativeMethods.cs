@@ -4,9 +4,11 @@ using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal static class NativeMethods {
+        public const int WM_DESTROY = 0x0002;
         public const int WM_SIZE = 0x0005;
         public const int WM_CLOSE = 0x0010;
         public const int WM_COMMAND = 0x0111;
+        public const int WM_PARENTNOTIFY = 0x0210;
         public const int WM_USER = 0x0400;
         public const int WM_ACTIVATE_PLOT = WM_USER + 100;
 

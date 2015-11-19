@@ -113,6 +113,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 IdleTimeAction.Create(() => SizeChildPlot(), 50, typeof(RPlotWindowContainer));
             } else if (m.Msg == NativeMethods.WM_CLOSE) {
                 DestroyChildPlot();
+            } else if(m.Msg == NativeMethods.WM_PARENTNOTIFY && (int)m.WParam == NativeMethods.WM_DESTROY) {
+                DestroyChildPlot();
             }
             base.WndProc(ref m);
         }
