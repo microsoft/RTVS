@@ -99,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                     }
                     Menu = new PlotWindowMenu(RPlotWindowHandle, m.WParam);
                     ActivatePlotWindow();
-                    SizeChildPlot();
+                    DelaySizePlot(100);
                     NativeMethods.ShowWindow(_rPlotWindowHandle, NativeMethods.ShowWindowCommands.Show);
                 }
             } else if (m.Msg == NativeMethods.WM_SIZE) {
