@@ -1,4 +1,5 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
@@ -8,6 +9,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public static class TextViewTest
     {
         public static ITextView MakeTextView(string content)

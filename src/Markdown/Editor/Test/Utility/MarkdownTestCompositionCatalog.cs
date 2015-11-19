@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.Editor.Mocks;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.Markdown.Editor.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public sealed class MarkdownTestCompositionCatalog : TestCompositionCatalog
     {
         private static MarkdownTestCompositionCatalog _instance;
