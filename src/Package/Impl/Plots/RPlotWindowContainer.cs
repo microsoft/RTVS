@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
-using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.PlatformUI;
@@ -19,11 +15,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     /// Parent of x64 RPlot window
     /// </summary>
     internal sealed class RPlotWindowContainer : UserControl, IVsWindowPane {
-
-        private DateTime _lastActivationMessageTime = DateTime.Now;
-        private bool _connectedToIdle;
-        private bool _sized;
-
         public PlotWindowMenu Menu { get; private set; }
 
         #region IVsWindowPane
@@ -32,7 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public int CreatePaneWindow(IntPtr hwndParent, int x, int y, int cx, int cy, out IntPtr hwnd) {
-
             this.Left = x;
             this.Top = y;
             this.Width = cx;
@@ -103,66 +93,60 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         protected override void WndProc(ref Message m) {
             if (m.Msg == NativeMethods.WM_ACTIVATE_PLOT) {
-                if (!_sized && m.WParam != IntPtr.Zero) {
+                if (m.WParam != IntPtr.Zero) {
+                    if (_rPlotWindowHandle != IntPtr.Zero && m.WParam != _rPlotWindowHandle) {
+                        DestroyChildPlot(IntPtr.Zero);
+                    }
                     Menu = new PlotWindowMenu(RPlotWindowHandle, m.WParam);
-                    SizeChildPlot();
-                    DelayActivate();
+                    ActivatePlotWindow();
+                    DelaySizePlot(100);
+                    NativeMethods.ShowWindow(_rPlotWindowHandle, NativeMethods.ShowWindowCommands.Show);
                 }
             } else if (m.Msg == NativeMethods.WM_SIZE) {
-                IdleTimeAction.Cancel(typeof(RPlotWindowContainer));
-                IdleTimeAction.Create(() => SizeChildPlot(), 50, typeof(RPlotWindowContainer));
+                DelaySizePlot(50);
             } else if (m.Msg == NativeMethods.WM_CLOSE) {
-                DestroyChildPlot();
-            } else if(m.Msg == NativeMethods.WM_PARENTNOTIFY && (int)m.WParam == NativeMethods.WM_DESTROY) {
-                DestroyChildPlot();
+                DestroyChildPlot(IntPtr.Zero);
+            } else if (m.Msg == NativeMethods.WM_PARENTNOTIFY && (int)m.WParam == NativeMethods.WM_DESTROY) {
+                DestroyChildPlot(m.LParam);
             }
             base.WndProc(ref m);
         }
 
-        private void DelayActivate() {
-            _lastActivationMessageTime = DateTime.Now;
-            if (!_connectedToIdle) {
-                _connectedToIdle = true;
-                EditorShell.Current.Idle += OnIdle;
+        private void ActivatePlotWindow() {
+            PlotWindowPane pane = ToolWindowUtilities.FindWindowPane<PlotWindowPane>(0);
+            IVsWindowFrame frame = pane.Frame as IVsWindowFrame;
+            int onScreen = 0;
+            frame.IsOnScreen(out onScreen);
+            if (onScreen == 0) {
+                ToolWindowUtilities.ShowWindowPane<PlotWindowPane>(0, focus: false);
             }
         }
 
-        private void OnIdle(object sender, EventArgs e) {
-            if ((DateTime.Now - _lastActivationMessageTime).TotalMilliseconds > 100) {
-                EditorShell.Current.Idle -= OnIdle;
-                _connectedToIdle = false;
-
-                PlotWindowPane pane = ToolWindowUtilities.FindWindowPane<PlotWindowPane>(0);
-                IVsWindowFrame frame = pane.Frame as IVsWindowFrame;
-                int onScreen = 0;
-                frame.IsOnScreen(out onScreen);
-                if (onScreen == 0) {
-                    ToolWindowUtilities.ShowWindowPane<PlotWindowPane>(0, focus: false);
-                    SizeChildPlot();
-                }
-            }
+        private void DelaySizePlot(int timeout) {
+            IdleTimeAction.Cancel(typeof(RPlotWindowContainer));
+            IdleTimeAction.Create(() => SizeChildPlot(), timeout, typeof(RPlotWindowContainer));
         }
 
         private void SizeChildPlot() {
             IntPtr handle = RPlotWindowHandle;
             if (handle != IntPtr.Zero) {
                 NativeMethods.MoveWindow(handle, 0, 0, this.Width, this.Height, bRepaint: true);
-                _sized = true;
             }
         }
 
-        private void DestroyChildPlot() {
-            if (_rPlotWindowHandle != IntPtr.Zero) {
-                NativeMethods.PostMessage(_rPlotWindowHandle, NativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+        private void DestroyChildPlot(IntPtr handle) {
+            if (handle == IntPtr.Zero || handle == _rPlotWindowHandle) {
+                if (_rPlotWindowHandle != IntPtr.Zero) {
+                    NativeMethods.PostMessage(_rPlotWindowHandle, NativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                }
                 _rPlotWindowHandle = IntPtr.Zero;
-                _sized = false;
             }
         }
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
                 VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
-                DestroyChildPlot();
+                DestroyChildPlot(IntPtr.Zero);
             }
             base.Dispose(disposing);
         }
