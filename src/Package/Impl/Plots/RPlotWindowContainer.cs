@@ -153,6 +153,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (_rPlotWindowHandle != IntPtr.Zero) {
                 NativeMethods.PostMessage(_rPlotWindowHandle, NativeMethods.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
                 _rPlotWindowHandle = IntPtr.Zero;
+                _sized = false;
             }
         }
 
