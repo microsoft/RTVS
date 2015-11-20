@@ -9,6 +9,7 @@ namespace Microsoft.R.Support.Help.Functions {
         private EngineSession _session;
         private string _currentFunctionName;
         private EngineResponse _pendingResponse;
+        private int _retryCount;
 
         public RdFunctionHelp() {
             _session = new EngineSession(Rd2FunctionInfoConverter);
@@ -16,13 +17,18 @@ namespace Microsoft.R.Support.Help.Functions {
 
         public void GetFunctionRdHelp(string functionName, string packageName, Action<object> dataReadyCallback) {
             try {
-                if (_pendingResponse != null) {
+                if (_pendingResponse != null && _retryCount < 3) {
                     if (_currentFunctionName == functionName) {
                         return;
                     }
-
                     _pendingResponse.Dispose();
                     _pendingResponse = null;
+
+                    _retryCount++;
+                    if (_retryCount > 3) {
+                        _session.Dispose();
+                        _session = new EngineSession(Rd2FunctionInfoConverter);
+                    }
                 }
 
                 string command = "x <- help(\"" + functionName;
@@ -55,6 +61,7 @@ namespace Microsoft.R.Support.Help.Functions {
         private object Rd2FunctionInfoConverter(string rdData, object parameter) {
             string functionName = parameter as string;
             IFunctionInfo info = null;
+            _retryCount = 0;
 
             try {
                 info = RdParser.GetFunctionInfo(functionName, rdData);
