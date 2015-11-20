@@ -9,6 +9,7 @@ namespace Microsoft.R.Support.Help.Functions {
         private EngineSession _session;
         private string _currentFunctionName;
         private EngineResponse _pendingResponse;
+        private int _retryCount;
 
         public RdFunctionHelp() {
             _session = new EngineSession(Rd2FunctionInfoConverter);
@@ -21,8 +22,18 @@ namespace Microsoft.R.Support.Help.Functions {
                         return;
                     }
 
+                    // Normally we don't have to cancel too often. Keep track
+                    // if this happens too often and if so, restart R engine.
                     _pendingResponse.Dispose();
                     _pendingResponse = null;
+
+                    // TODO: log this event
+                    _retryCount++;
+                    if (_retryCount > 5) {
+                        _retryCount = 0;
+                        _session.Dispose();
+                        _session = new EngineSession(Rd2FunctionInfoConverter);
+                    }
                 }
 
                 string command = "x <- help(\"" + functionName;
@@ -55,6 +66,7 @@ namespace Microsoft.R.Support.Help.Functions {
         private object Rd2FunctionInfoConverter(string rdData, object parameter) {
             string functionName = parameter as string;
             IFunctionInfo info = null;
+            _retryCount = 0;
 
             try {
                 info = RdParser.GetFunctionInfo(functionName, rdData);
