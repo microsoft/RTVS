@@ -17,10 +17,11 @@ namespace Microsoft.R.Support.Help.Functions {
 
         public void GetFunctionRdHelp(string functionName, string packageName, Action<object> dataReadyCallback) {
             try {
-                if (_pendingResponse != null && _retryCount < 3) {
-                    if (_currentFunctionName == functionName) {
+                if (_pendingResponse != null) {
+                    if (_currentFunctionName == functionName && _retryCount < 3) {
                         return;
                     }
+
                     _pendingResponse.Dispose();
                     _pendingResponse = null;
 
