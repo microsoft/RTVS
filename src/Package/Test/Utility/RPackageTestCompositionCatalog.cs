@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.Editor.Mocks;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public sealed class RPackageTestCompositionCatalog : TestCompositionCatalog
     {
         private static RPackageTestCompositionCatalog _instance;
