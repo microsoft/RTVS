@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
+    using Core.Tokens;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>
@@ -275,17 +276,18 @@ namespace Microsoft.R.Editor.Completion {
                 DismissAllSessions();
                 TriggerSignatureHelp();
             } else if (this.HasActiveCompletionSession) {
-                if (typedCharacter == ',') {
-                    DismissCompletionSession();
-                } else if (typedCharacter == '\'' || typedCharacter == '\"') {
+                if (typedCharacter == '\'' || typedCharacter == '\"') {
                     base.OnPostTypeChar(typedCharacter);
 
                     DismissAllSessions();
                     ShowCompletion(autoShownCompletion: true);
                     return;
+                } else {
+                    if (!RTokenizer.IsIdentifierCharacter(typedCharacter)) {
+                        DismissCompletionSession();
+                    }
                 }
             }
-
             base.OnPostTypeChar(typedCharacter);
         }
 
