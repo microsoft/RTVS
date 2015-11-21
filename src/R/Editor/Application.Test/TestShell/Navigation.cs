@@ -15,35 +15,43 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
         }
 
         /// <summary>
-        /// Move care up one line
+        /// Move care up a number of lines
         /// </summary>
-        public void MoveUp()
+        public void MoveUp(int count = 1)
         {
-            Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UP);
+            for (int i = 0; i < count; i++) {
+                Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UP);
+            }
         }
 
         /// <summary>
-        /// Move caret down one line
+        /// Move caret down a number of line
         /// </summary>
-        public void MoveDown()
+        public void MoveDown(int count = 1)
         {
-            Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.DOWN);
+            for (int i = 0; i < count; i++) {
+                Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.DOWN);
+            }
         }
 
         /// <summary>
-        /// Move caret left by one character
+        /// Move caret left by a number of characters
         /// </summary>
-        public void MoveLeft()
+        public void MoveLeft(int count = 1)
         {
-            Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.LEFT);
+            for (int i = 0; i < count; i++) {
+                Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.LEFT);
+            }
         }
 
         /// <summary>
-        /// Move caret right by one character
+        /// Move caret right by a number character
         /// </summary>
-        public void MoveRight()
+        public void MoveRight(int count = 1)
         {
-            Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.RIGHT);
+            for (int i = 0; i < count; i++) {
+                Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.RIGHT);
+            }
         }
     }
 }
