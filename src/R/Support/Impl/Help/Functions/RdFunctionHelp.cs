@@ -18,19 +18,15 @@ namespace Microsoft.R.Support.Help.Functions {
         public void GetFunctionRdHelp(string functionName, string packageName, Action<object> dataReadyCallback) {
             try {
                 if (_pendingResponse != null) {
-                    if (_currentFunctionName == functionName) {
+                    if (_currentFunctionName == functionName && _retryCount < 3) {
                         return;
                     }
 
-                    // Normally we don't have to cancel too often. Keep track
-                    // if this happens too often and if so, restart R engine.
                     _pendingResponse.Dispose();
                     _pendingResponse = null;
 
-                    // TODO: log this event
                     _retryCount++;
-                    if (_retryCount > 5) {
-                        _retryCount = 0;
+                    if (_retryCount > 3) {
                         _session.Dispose();
                         _session = new EngineSession(Rd2FunctionInfoConverter);
                     }
