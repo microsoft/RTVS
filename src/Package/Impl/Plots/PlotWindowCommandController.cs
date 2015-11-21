@@ -15,7 +15,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             RPlotWindowContainer container = _pane.GetIVsWindowPane() as RPlotWindowContainer;
             Debug.Assert(container != null);
-            container.Menu.Execute(id);
+            if (container.Menu != null) {
+                container.Menu.Execute(id);
+            }
             return CommandResult.Executed;
         }
 
@@ -23,7 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public CommandStatus Status(Guid group, int id) {
-            return CommandStatus.SupportedAndEnabled;
+            RPlotWindowContainer container = _pane.GetIVsWindowPane() as RPlotWindowContainer;
+            return (container != null && container.Menu != null) ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
         }
     }
 }
