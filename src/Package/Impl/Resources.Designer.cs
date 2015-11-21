@@ -351,6 +351,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R History Files (*.rhistory)|*.rhistory|All Files (*.*)|*.*.
+        /// </summary>
+        public static string HistoryFileFilter {
+            get {
+                return ResourceManager.GetString("HistoryFileFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R History.
+        /// </summary>
+        public static string HistoryWindowCaption {
+            get {
+                return ResourceManager.GetString("HistoryWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
         public static string InputIsTooLong {
@@ -365,6 +383,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string LanguageName {
             get {
                 return ResourceManager.GetString("LanguageName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load History.
+        /// </summary>
+        public static string LoadHistoryTitle {
+            get {
+                return ResourceManager.GetString("LoadHistoryTitle", resourceCulture);
             }
         }
         
@@ -595,6 +622,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SaveAsFilterR {
             get {
                 return ResourceManager.GetString("SaveAsFilterR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save History As.
+        /// </summary>
+        public static string SaveHistoryAsTitle {
+            get {
+                return ResourceManager.GetString("SaveHistoryAsTitle", resourceCulture);
             }
         }
         

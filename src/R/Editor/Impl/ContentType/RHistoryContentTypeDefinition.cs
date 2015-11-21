@@ -1,17 +1,14 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.ContentType
-{
+namespace Microsoft.R.Editor.ContentType {
     /// <summary>
-    /// Exports the R content type and file extension
+    /// Exports the R history content type and file extension
     /// </summary>
-    public sealed class RContentTypeDefinition
+    public sealed class RHistoryContentTypeDefinition
     {
-        public const string LanguageName = "R";
-        public const string ContentType = "R";
-        public const string FileExtension = ".r";
-        public const string RStudioProjectExtension = "rproj";
+        public const string ContentType = "RHistory";
+        public const string FileExtension = ".rhistory";
 
         /// <summary>
         /// Exports the R content type

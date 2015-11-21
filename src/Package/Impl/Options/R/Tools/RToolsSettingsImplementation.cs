@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,6 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             // settings (if any) when settings are loaded from storage
             _cranMirror = "0-Cloud [https]";
             RBasePath = RInstallation.GetLatestEnginePathFromRegistry();
+            WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
         private async Task SetMirrorToSession() {
@@ -91,7 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 if (list.Count > MaxDirectoryEntries) {
                     list.RemoveAt(list.Count - 1);
                 }
-                RToolsSettings.Current.WorkingDirectoryList = list.ToArray();
+                WorkingDirectoryList = list.ToArray();
             }
         }
     }

@@ -48,6 +48,18 @@
         </Strings>
       </Menu>
 
+      <!-- History window toolbar -->
+      <Menu guid="guidRToolsCmdSet" id="historyWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
+        <Parent guid="guidRToolsCmdSet" id="0" />
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <CommandFlag>NoToolbarClose</CommandFlag>
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <Strings>
+          <ButtonText>R History Window</ButtonText>
+          <CommandName>R History Window</CommandName>
+        </Strings>
+      </Menu>
+
       <!-- Top Level 'R Tools' menu -->
       <Menu guid="guidRToolsCmdSet" id="TopLevelMenu" priority="0x1000" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
@@ -254,6 +266,17 @@
       </Group>
       <Group guid="guidRToolsCmdSet" id="helpWindowGeneralGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="helpWindowToolBarId"/>
+      </Group>
+
+      <!-- History window -->
+      <Group guid="guidRToolsCmdSet" id="historyWindowLoadSaveGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowToolBarId"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="historyWindowSendToGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowToolBarId"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="historyWindowDeleteGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowToolBarId"/>
       </Group>
 
       <!-- InteractiveWindow -->
@@ -668,7 +691,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" priority="0x0400" type="Button">
-        <!--<Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>-->
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="ShowFullHistory"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
@@ -782,6 +805,66 @@
       </Button>
       <!-- End help window buttons -->
 
+      <!-- History window buttons -->
+      <Button guid="guidRToolsCmdSet" id="icmdLoadHistory" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowLoadSaveGroup"/>
+        <Icon guid="guidVsShellIcons" id="cmdidVsShellOpen"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Load History</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdSaveHistory" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowLoadSaveGroup"/>
+        <Icon guid="guidVsShellIcons" id="cmdidVsShellSave"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Save History</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidRToolsCmdSet" id="icmdSendHistoryToRepl" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowSendToGroup"/>
+        <Icon guid="ImageCatalogGuid" id="GoToNextInList"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Send selected to R Interactive Window</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdSendHistoryToSource" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowSendToGroup"/>
+        <Icon guid="ImageCatalogGuid" id="NextDocument"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Send selected to source file</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidRToolsCmdSet" id="icmdDeleteSelectedHistoryEntries" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowDeleteGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DeleteClause"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Delete selected history entries</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdDeleteAllHistoryEntries" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowDeleteGroup"/>
+        <Icon guid="ImageCatalogGuid" id="ClearWindowContent"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Delete all history entries</ButtonText>
+        </Strings>
+      </Button>
+      <!-- End history window buttons -->
+      
       <Button guid="guidRToolsCmdSet" id="icmdGoToFormattingOptions" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
         <Strings>
@@ -1178,6 +1261,8 @@
       <!-- Context menu ids. See Microsoft.R.Editor\Commands -->
       <!-- R code editor context menu. -->
       <IDSymbol name="rCodeEditorContextMenu" value="100" />
+      <!-- R history editor context menu. -->
+      <IDSymbol name="rCodeEditorContextMenu" value="102" />
       <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
       <IDSymbol name="groupRContextFormat" value="120" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
@@ -1266,6 +1351,14 @@
       <IDSymbol name="icmdHelpRefresh" value="1103" />
       <IDSymbol name="icmdHelpOnCurrent" value="1104"/>
 
+      <!-- History -->
+      <IDSymbol name="icmdLoadHistory" value="1200" />
+      <IDSymbol name="icmdSaveHistory" value="1201" />
+      <IDSymbol name="icmdSendHistoryToRepl" value="1202" />
+      <IDSymbol name="icmdSendHistoryToSource" value="1203" />
+      <IDSymbol name="icmdDeleteSelectedHistoryEntries" value="1204" />
+      <IDSymbol name="icmdDeleteAllHistoryEntries" value="1205" />
+
       <IDSymbol name="plotToolbarFileGroup" value="0x1000" />
       <IDSymbol name="plotToolbarPrintGroup" value="0x1100" />
       <IDSymbol name="plotToolbarCopyGroup" value="0x1200" />
@@ -1276,6 +1369,10 @@
       <IDSymbol name="helpWindowToolBarId" value="0x2010"/>
       <IDSymbol name="helpWindowNavGroup" value="0x2011"/>
       <IDSymbol name="helpWindowGeneralGroup" value="0x2012"/>
+      <IDSymbol name="historyWindowToolBarId" value="0x2020"/>
+      <IDSymbol name="historyWindowLoadSaveGroup" value="0x2021"/>
+      <IDSymbol name="historyWindowSendToGroup" value="0x2022"/>
+      <IDSymbol name="historyWindowDeleteGroup" value="0x2023"/>
 
       <!-- Submenus-->
       <IDSymbol name="mainMenuGroup" value="0x100"/>
@@ -1300,6 +1397,7 @@
     <GuidSymbol name="CMDUIGUID_R_EDITOR" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
     <!-- Markdown Editor Factory Guid -->
     <GuidSymbol name="CMDUIGUID_MD_EDITOR" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
+    
     <GuidSymbol name="CMDUIGUID_HELP_WINDOW" value="{9E909526-A616-43B2-A82B-FD639DCD40CB}" />
 
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">

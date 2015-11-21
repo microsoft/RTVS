@@ -2,6 +2,7 @@
     public static class RPackageCommandId {
         public const int plotWindowToolBarId = 0x2000;
         public const int helpWindowToolBarId = 0x2010;
+        public const int historyWindowToolBarId = 0x2020;
 
         // General
         public const int icmdGoToFormattingOptions = 400;
@@ -71,5 +72,11 @@
         public const int icmdHelpHome = 1102;
         public const int icmdHelpRefresh = 1103;
         public const int icmdHelpOnCurrent = 1104;
+
+        // History
+        public const int icmdLoadHistory = 1200;
+        public const int icmdSaveHistory = 1201;
+        public const int icmdSendHistoryToRepl = 1202;
+        public const int icmdSendHistoryToSource = 1203;
     }
 }

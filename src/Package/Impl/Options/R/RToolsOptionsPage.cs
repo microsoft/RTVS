@@ -86,6 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return RToolsSettings.Current.WorkingDirectory; }
             set { RToolsSettings.Current.WorkingDirectory = value; }
         }
+
         internal string[] WorkingDirectoryList {
             get { return RToolsSettings.Current.WorkingDirectoryList; }
             set { RToolsSettings.Current.WorkingDirectoryList = value; }

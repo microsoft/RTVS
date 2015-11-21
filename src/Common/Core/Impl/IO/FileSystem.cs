@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 
 namespace Microsoft.Common.Core.IO {
@@ -12,6 +13,14 @@ namespace Microsoft.Common.Core.IO {
 
         public bool FileExists(string path) {
             return File.Exists(path);
+        }
+
+        public string[] FileReadAllLines(string path) {
+            return File.ReadAllLines(path);
+        }
+
+        public void FileWriteAllLines(string path, params string[] contents) {
+            File.WriteAllLines(path, contents);
         }
 
         public bool DirectoryExists(string path) {
