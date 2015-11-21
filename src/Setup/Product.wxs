@@ -5,7 +5,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 
-  <Product Id="{83BA6F08-ACC3-4A57-9A2C-9DFBC0F03AD2}"
+  <Product Id="*"
            Name="$(var.ProductName)"
            Language="1033"
            Version="$(var.MsiVersion)"
