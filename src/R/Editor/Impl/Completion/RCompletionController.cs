@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
@@ -43,7 +42,6 @@ namespace Microsoft.R.Editor.Completion {
             base.Detach(textView);
         }
 
-        }
         /// <summary>
         /// Called when text buffer becomes visible in the text view.
         /// The buffer may not be a top-level buffer in the graph and
