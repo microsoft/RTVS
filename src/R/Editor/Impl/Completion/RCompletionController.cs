@@ -38,6 +38,11 @@ namespace Microsoft.R.Editor.Completion {
             ServiceManager.AddService<RCompletionController>(this, TextView);
         }
 
+        public override void Detach(ITextView textView) {
+            ServiceManager.RemoveService<RCompletionController>(TextView);
+            base.Detach(textView);
+        }
+
         /// <summary>
         /// Called when text buffer becomes visible in the text view.
         /// The buffer may not be a top-level buffer in the graph and
@@ -54,19 +59,6 @@ namespace Microsoft.R.Editor.Completion {
         /// is closed or buffer is removed from the view buffer graph.
         /// </summary>
         public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) {
-            if (_textBuffer == subjectBuffer) {
-                RCompletionController existingController = ServiceManager.GetService<RCompletionController>(TextView);
-
-                // This can get called multiple times without a ConnectSubjectBuffer call between
-                if (existingController != null) {
-                    Debug.Assert(existingController == this);
-                    if (existingController == this) {
-                        ServiceManager.RemoveService<RCompletionController>(TextView);
-                    }
-                }
-
-                _textBuffer = null;
-            }
         }
 
         public static RCompletionController Create(
