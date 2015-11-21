@@ -111,6 +111,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     ITextSnapshot snapshot = span.TextBuffer.CurrentSnapshot;
                     string spanText = snapshot.GetText(span.GetSpan(snapshot));
                     if (spanText != set.SelectionStatus.Completion.InsertionText) {
+                        // If selection is does not match typed text,
+                        // control completion depending on the editor setting.
                         if (set.SelectionStatus.IsSelected && REditorSettings.CommitOnEnter) {
                             controller.CommitCompletionSession();
                             controller.DismissAllSessions();
