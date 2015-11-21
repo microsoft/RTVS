@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
+    using Core.Tokens;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>
@@ -259,33 +260,46 @@ namespace Microsoft.R.Editor.Completion {
         /// </summary>
         public override void OnPostTypeChar(char typedCharacter) {
             if (typedCharacter == '(' || typedCharacter == ',') {
+                // Check if caret moved into a different functions such as when
+                // user types a sequence of nested function calls. If so,
+                // dismiss current signature session and start a new one.
                 if (!SignatureHelper.IsSameSignatureContext(TextView, _textBuffer)) {
                     DismissAllSessions();
                     TriggerSignatureHelp();
                 }
             } else if (HasActiveSignatureSession(TextView) && typedCharacter == ')') {
+                // Typing closing ) closes signature and completion sessions.
                 DismissAllSessions();
-
+                // However, when user types closing brace is an expression inside
+                // function argument like in x = y * (z + 1) we need to re-trigger
+                // signature session
                 AstRoot ast = REditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree.AstRoot;
                 FunctionCall f = ast.GetNodeOfTypeFromPosition<FunctionCall>(TextView.Caret.Position.BufferPosition);
                 if (f != null) {
                     TriggerSignatureHelp();
                 }
             } else if (HasActiveSignatureSession(TextView) && typedCharacter == '\n') {
+                // Upon ENTER we need to dismiss all sessions and re-trigger
+                // signature help. Triggering signature help outside of 
+                // a function definition or call is a no-op so it is safe.
                 DismissAllSessions();
                 TriggerSignatureHelp();
             } else if (this.HasActiveCompletionSession) {
-                if (typedCharacter == ',') {
-                    DismissCompletionSession();
-                } else if (typedCharacter == '\'' || typedCharacter == '\"') {
+                if (typedCharacter == '\'' || typedCharacter == '\"') {
+                    // First handle completion of a string.
                     base.OnPostTypeChar(typedCharacter);
-
+                    // Then re-trigger completion.
                     DismissAllSessions();
                     ShowCompletion(autoShownCompletion: true);
                     return;
+                } else {
+                    // Backspace does not dismiss completion. Characters that may be an identifier
+                    // name do not dismiss completion either allowing correction of typing.
+                    if (typedCharacter != '\b' && !RTokenizer.IsIdentifierCharacter(typedCharacter)) {
+                        DismissCompletionSession();
+                    }
                 }
             }
-
             base.OnPostTypeChar(typedCharacter);
         }
 
@@ -296,6 +310,13 @@ namespace Microsoft.R.Editor.Completion {
             } finally {
                 _commitChar = '\0';
             }
+        }
+
+        protected override bool CanDismissSignatureOnCommit() {
+            // Do not dismiss signature sessions by default.
+            // We handle signature dismiss when handling
+            // post type character
+            return false;
         }
 
         /// <summary>
