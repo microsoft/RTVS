@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Application.Test.TestShell
 {
@@ -167,6 +170,22 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
             }
 
             return sb.ToString();
+        }
+
+        public ISignatureHelpSession GetSignatureSession() {
+            ISignatureHelpBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+            var sessions = broker.GetSessions(EditorWindow.CoreEditor.View);
+            ISignatureHelpSession session = sessions.FirstOrDefault();
+
+            int retries = 0;
+            while (session == null && retries < 10) {
+                this.DoIdle(1000);
+                sessions = broker.GetSessions(EditorWindow.CoreEditor.View);
+                session = sessions.FirstOrDefault();
+                retries++;
+            }
+
+            return session;
         }
 
         public void Dispose() {

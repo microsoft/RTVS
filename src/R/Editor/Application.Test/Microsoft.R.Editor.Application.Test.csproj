@@ -76,6 +76,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
       <Private>False</Private>
     </Reference>
@@ -112,6 +113,7 @@
     <Compile Include="Formatting\FormatSelectionTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />
     <Compile Include="Formatting\AutoFormatTest.cs" />
+    <Compile Include="Signatures\SignatureTest.cs" />
     <Compile Include="TestShell\Editor.cs" />
     <Compile Include="Completion\IntellisenseTest.cs" />
     <Compile Include="IO\OpenFilesTest.cs" />

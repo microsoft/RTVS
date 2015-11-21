@@ -62,10 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (group == VSConstants.VSStd2K) {
                 RCompletionController controller = RCompletionController.FromTextView(TextView);
                 if (controller != null) {
-                    if (id == (int)VSConstants.VSStd2KCmdID.TAB) {
-                        return HandleTab(controller);
-                        // If completion is up, commit it
-                    } else if (id == (int)VSConstants.VSStd2KCmdID.RETURN) {
+                    if (id == (int)VSConstants.VSStd2KCmdID.RETURN) {
                         return HandleEnter(controller);
                     } else if (id == (int)VSConstants.VSStd2KCmdID.CANCEL) {
                         HandleCancel(controller);
@@ -84,17 +81,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             return base.Invoke(group, id, inputArg, ref outputArg);
-        }
-        private CommandResult HandleTab(RCompletionController controller) {
-            // If completion is up, commit it
-            if (controller.HasActiveCompletionSession) {
-                controller.CommitCompletionSession();
-                controller.DismissAllSessions();
-            } else {
-                controller.DismissAllSessions();
-                controller.ShowCompletion(autoShownCompletion: true);
-            }
-            return CommandResult.Executed;
         }
 
         private CommandResult HandleEnter(RCompletionController controller) {
