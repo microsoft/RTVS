@@ -14,7 +14,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
         [Name("HistorySelectionTextAdornment")]
         [Order(Before = PredefinedAdornmentLayers.Outlining)]
         [TextViewRole(PredefinedTextViewRoles.Document)]
-        [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "MEF")]
         public AdornmentLayerDefinition HistorySelectionTextAdornmentLayer { get; set; }
 
         private readonly IEditorFormatMapService _editorFormatMapService;

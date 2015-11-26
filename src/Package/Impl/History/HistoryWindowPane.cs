@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
+using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
@@ -83,6 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             TextView.Options.SetOptionValue(DefaultTextViewHostOptions.SelectionMarginId, false);
             TextView.Options.SetOptionValue(DefaultWpfViewOptions.EnableHighlightCurrentLineId, false);
+            TextView.Options.SetOptionValue(DefaultTextViewOptions.BraceCompletionEnabledOptionId, false);
             TextView.Options.SetOptionValue(DefaultTextViewOptions.DragDropEditingId, false);
             TextView.Caret.IsHidden = true;
             TextView.TextBuffer.ChangeContentType(contentType, null);

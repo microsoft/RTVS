@@ -1,8 +1,6 @@
 using System.ComponentModel.Composition;
 using Microsoft.R.Editor.ContentType;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.History {

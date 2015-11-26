@@ -56,6 +56,8 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
+    <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryTextViewConnectionListener.cs" />
     <Compile Include="Commands\ShowToolWindowCommand.cs" />
@@ -92,6 +94,9 @@
     <Compile Include="Help\ShowHelpOnCurrentCommand.cs" />
     <Compile Include="Help\ShowHelpWindowCommand.cs" />
     <Compile Include="Help\HelpPreviousCommand.cs" />
+    <Compile Include="History\Commands\CopySelectedHistoryCommand.cs" />
+    <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdReturnCommand.cs" />
+    <Compile Include="History\Commands\HistoryWindowVsStd97CmdIdSelectAllCommand.cs" />
     <Compile Include="History\Commands\LoadHistoryCommand.cs" />
     <Compile Include="History\Commands\SaveHistoryCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
@@ -104,8 +109,9 @@
     <Compile Include="History\IRHistory.cs" />
     <Compile Include="History\IRHistoryProvider.cs" />
     <Compile Include="History\RHistory.cs" />
+    <Compile Include="History\RHistoryEntries.cs" />
     <Compile Include="History\RHistoryProvider.cs" />
-    <Compile Include="History\RHistoryBlock.cs" />
+    <Compile Include="History\IRHistoryEntry.cs" />
     <Compile Include="History\ShowHistoryWindowCommand.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />
     <Compile Include="Interop\MailUtility.cs" />

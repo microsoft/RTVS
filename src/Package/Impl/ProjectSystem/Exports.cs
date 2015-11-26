@@ -5,6 +5,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
+using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -22,10 +23,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private IRHistoryProvider RHistoryProvider { get; }
 
         [ImportingConstructor]
-        public Export(Lazy<IEditorOperationsFactoryService> editorOperationsFactoryLazy) {
+        public Export(Lazy<IEditorOperationsFactoryService> editorOperationsFactoryLazy, IRtfBuilderService rtfBuilderService) {
             FileSystem = new FileSystem();
             RSessionProvider = new RSessionProvider();
-            RHistoryProvider = new RHistoryProvider(FileSystem, editorOperationsFactoryLazy);
+            RHistoryProvider = new RHistoryProvider(FileSystem, editorOperationsFactoryLazy, rtfBuilderService);
         }
     }
 }

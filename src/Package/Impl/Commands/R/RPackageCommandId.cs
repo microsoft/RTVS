@@ -78,5 +78,7 @@
         public const int icmdSaveHistory = 1201;
         public const int icmdSendHistoryToRepl = 1202;
         public const int icmdSendHistoryToSource = 1203;
+        public const int icmdDeleteSelectedHistoryEntries = 1204;
+        public const int icmdDeleteAllHistoryEntries = 1205;
     }
 }

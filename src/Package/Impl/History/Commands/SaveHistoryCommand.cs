@@ -14,19 +14,17 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         private readonly IRHistory _history;
 
         public SaveHistoryCommand(ITextView textView, IRHistoryProvider historyProvider)
-            : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdLoadHistory, false) {
+            : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveHistory, false) {
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 
         public override CommandStatus Status(Guid guid, int id) {
-            return ReplWindow.ReplWindowExists() ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
+            return ReplWindow.ReplWindowExists() && _history.HasEntries
+                ? CommandStatus.SupportedAndEnabled 
+                : CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            if (!ReplWindow.ReplWindowExists()) {
-                return CommandResult.NotSupported;
-            }
-
             var initialPath = RToolsSettings.Current.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(RToolsSettings.Current.WorkingDirectory) : null;
             var file = EditorShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.HistoryFileFilter, initialPath, Resources.SaveHistoryAsTitle);
             if (file != null) {

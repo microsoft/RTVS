@@ -22,6 +22,17 @@
         </Strings>
       </Menu>
       <!-- End R code editor context menu -->
+      
+      <!-- R code editor context menu -->
+      <Menu guid="guidRToolsCmdSet" id="rHistoryContextMenu" type="Context">
+        <CommandFlag>DontCache</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>R History Context</ButtonText>
+        </Strings>
+      </Menu>
+      <!-- End R code editor context menu -->
 
       <!-- Plot window toolbar -->
       <Menu guid="guidRToolsCmdSet" id="plotWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
@@ -277,6 +288,8 @@
       </Group>
       <Group guid="guidRToolsCmdSet" id="historyWindowDeleteGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="historyWindowToolBarId"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="historyCopySelectedGroup" priority="0x100">
       </Group>
 
       <!-- InteractiveWindow -->
@@ -1013,6 +1026,25 @@
     </CommandPlacement>
 
     <!-- End R code editor context menu -->
+    
+    <!-- R history context menu -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="historyCopySelectedGroup" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="rHistoryContextMenu"/>
+    </CommandPlacement>
+    
+    <CommandPlacement guid="guidRToolsCmdSet" id="historyWindowSendToGroup" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="rHistoryContextMenu"/>
+    </CommandPlacement>
+    
+    <CommandPlacement guid="guidRToolsCmdSet" id="historyWindowDeleteGroup" priority="0x300">
+      <Parent guid="guidRToolsCmdSet" id="rHistoryContextMenu"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidVSStd97" id="cmdidCopy" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="historyCopySelectedGroup"/>
+    </CommandPlacement>
+
+    <!-- End R history context menu -->
 
     <!-- RD/RDM code editor context menu -->
     <!-- Clipboard group -->
@@ -1262,7 +1294,7 @@
       <!-- R code editor context menu. -->
       <IDSymbol name="rCodeEditorContextMenu" value="100" />
       <!-- R history editor context menu. -->
-      <IDSymbol name="rCodeEditorContextMenu" value="102" />
+      <IDSymbol name="rHistoryContextMenu" value="102" />
       <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
       <IDSymbol name="groupRContextFormat" value="120" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
@@ -1373,6 +1405,7 @@
       <IDSymbol name="historyWindowLoadSaveGroup" value="0x2021"/>
       <IDSymbol name="historyWindowSendToGroup" value="0x2022"/>
       <IDSymbol name="historyWindowDeleteGroup" value="0x2023"/>
+      <IDSymbol name="historyCopySelectedGroup" value="0x2024"/>
 
       <!-- Submenus-->
       <IDSymbol name="mainMenuGroup" value="0x100"/>

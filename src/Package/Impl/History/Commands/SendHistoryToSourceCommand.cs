@@ -25,18 +25,17 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandStatus Status(Guid guid, int id) {
-            return ReplWindow.ReplWindowExists() ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
+            return ReplWindow.ReplWindowExists() && (_history.HasSelectedEntries || !TextView.Selection.IsEmpty)
+                ? CommandStatus.SupportedAndEnabled
+                : CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            if (!ReplWindow.ReplWindowExists()) {
-                return CommandResult.NotSupported;
-            }
-
             var textView = _textViewTracker.GetLastActiveTextView(_contentType);
-            if (textView != null && !textView.IsClosed) {
+            if (textView != null && !textView.IsClosed && textView.VisualElement.IsVisible) {
                 _history.SendSelectedToTextView(textView);
             }
+
             return CommandResult.Executed;
         }
     }

@@ -8,14 +8,7 @@ using Microsoft.VisualStudio.Text.Formatting;
 namespace Microsoft.VisualStudio.R.Package.History {
     internal class HistoryWindowPaneMouseProcessor : MouseProcessorBase, IMouseProcessor2 {
         private readonly IWpfTextView _textView;
-        //private readonly ITextStructureNavigatorSelectorService _textStructureNavigatorProvider;
-        //private readonly IEditorOperations _editorOperations;
         private readonly IRHistory _history;
-
-        //private ITrackingSpan _originalSelectedWord;
-        //private ITrackingSpan _originalSelectedLine;
-        //private bool _doingWordSelection;
-        //private bool _doingLineSelection;
 
         private TimeSpan _elapsedSinceLastTap;
         private Point _lastTapPosition;
@@ -24,20 +17,14 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private readonly Stopwatch _doubleTapStopWatch = new Stopwatch();
         private readonly TimeSpan _maximumElapsedDoubleTap = new TimeSpan(0, 0, 0, 0, 600);
         private readonly int _minimumPositionDelta = 30;
-        //private readonly CountdownDisposable _ignoreSelectionChangedEvents = new CountdownDisposable();
 
         public HistoryWindowPaneMouseProcessor(IWpfTextView wpfTextView, IRHistoryProvider historyProvider) {
 
             _textView = wpfTextView;
-            //_textStructureNavigatorProvider = textStructureNavigatorProvider;
             _history = historyProvider.GetAssociatedRHistory(_textView);
 
             _textView.Selection.SelectionChanged += SelectionChanged;
             _textView.Closed += TextViewClosed;
-
-            //_originalSelectedWord = null;
-            //_originalSelectedLine = null;
-            //_editorOperations = editorOperationsProvider.GetEditorOperations(wpfTextView);
         }
 
         private void TextViewClosed(object sender, EventArgs e) {
@@ -46,15 +33,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private void SelectionChanged(object sender, EventArgs args) {
-            //if (_ignoreSelectionChangedEvents.Count == 0) {
-            //    _doingWordSelection = false;
-            //    _doingLineSelection = false;
-            //    _originalSelectedWord = null;
-            //    _originalSelectedLine = null;
-
-                
-            //}
-
             if (_textView.Selection.Start != _textView.Selection.End) {
                 _history.ClearHistoryEntrySelection();
             }
@@ -67,25 +45,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         /// <summary>
-        /// Handles the Mouse Move event before the default handler 
-        /// </summary>
-        //public override void PreprocessMouseMove(MouseEventArgs e) {
-        //    if (e == null) {
-        //        throw new ArgumentNullException(nameof(e));
-        //    }
-
-        //    e.Handled = PreprocessMouseMoveByPosition(GetAdjustedPosition(e, _textView), e.LeftButton);
-        //}
-
-        /// <summary>
         /// Handles the Mouse up event
         /// </summary>
         public override void PostprocessMouseUp(MouseButtonEventArgs e) {
-            //_doingLineSelection = false;
-            //_doingWordSelection = false;
-            //_originalSelectedLine = null;
-            //_originalSelectedWord = null;
-
             _lastTapPosition = GetAdjustedPosition(e, _textView);
             _doubleTapStopWatch.Restart();
         }
@@ -104,12 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         public void PreprocessTouchUp(TouchEventArgs e) { }
 
-        public void PostprocessTouchUp(TouchEventArgs e) {
-            //_doingLineSelection = false;
-            //_doingWordSelection = false;
-            //_originalSelectedLine = null;
-            //_originalSelectedWord = null;
-        }
+        public void PostprocessTouchUp(TouchEventArgs e) { }
 
         public void PreprocessManipulationInertiaStarting(ManipulationInertiaStartingEventArgs e) { }
 
@@ -224,19 +181,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
                     _history.ToggleHistoryEntrySelection(lineNumber);
                     return true;
 
-                //case ModifierKeys.Shift:
-                //    return false;
-
-                //case ModifierKeys.Control | ModifierKeys.Shift:
-                //    SnapshotPoint? clickPosition = GetBufferPositionFromPoint(point);
-                //    if (!clickPosition.HasValue) {
-                //        return false;
-                //    }
-
-                //    ExtendWordSelection(point);
-                //    _doingWordSelection = true;
-                //    return true;
-
                 default:
                     return false;
             }
@@ -248,180 +192,10 @@ namespace Microsoft.VisualStudio.R.Package.History {
                     _history.SendSelectedToRepl();
                     return true;
 
-                //case ModifierKeys.Control:
-                //case ModifierKeys.Shift:
-                //case ModifierKeys.Control | ModifierKeys.Shift:
-                //    return HandleSingleClick(e, modifiers);
-
                 default:
                     return true;
             }
         }
-
-        //private bool HandleTripleClick(InputEventArgs e, ModifierKeys modifiers) {
-        //    switch (modifiers) {
-        //        case ModifierKeys.None:
-        //            var lineUnderPoint = GetTextViewLineUnderPoint(GetAdjustedPosition(e, _textView));
-        //            if (lineUnderPoint == null) {
-        //                return false;
-        //            }
-
-        //            SelectLine(lineUnderPoint);
-        //            _doingLineSelection = true;
-        //            return true;
-
-        //        case ModifierKeys.Control:
-        //        case ModifierKeys.Shift:
-        //        case ModifierKeys.Control | ModifierKeys.Shift:
-        //            return HandleSingleClick(e, modifiers);
-
-        //        default:
-        //            return true;
-        //    }
-        //}
-
-
-        //private SnapshotPoint? GetBufferPositionFromPoint(Point pt) {
-        //    ITextViewLine textLine = GetTextViewLineUnderPoint(pt);
-
-        //    VirtualSnapshotPoint? insertionPoint = textLine?.GetInsertionBufferPositionFromXCoordinate(pt.X);
-        //    return insertionPoint?.Position;
-        //}
-
-        //internal bool PreprocessMouseMoveByPosition(Point pt, MouseButtonState leftButtonState) {
-        //    // If the left button isn't down, we shouldn't handle the mouse move.
-        //    if (leftButtonState == MouseButtonState.Released) {
-        //        _doingWordSelection = false;
-        //        _doingLineSelection = false;
-        //    }
-
-        //    // If we're not doing a word selection or line selection then ignore it and let the default handler 
-        //    // deal with it.
-        //    if (!_doingWordSelection && !_doingLineSelection) {
-        //        return false;
-        //    }
-
-        //    // _doingLineSelection and _doingWordSelection should not be both true at the same time.
-        //    Debug.Assert(!_doingLineSelection || !_doingWordSelection);
-
-
-        //    return _doingLineSelection 
-        //        ? ExtendLineSelection(pt)
-        //        : ExtendWordSelection(pt);
-        //}
-
-        //private void SelectWordAtBufferPosition(SnapshotPoint clickPosition) {
-        //    using (_ignoreSelectionChangedEvents.Increment()) {
-        //        VirtualSnapshotPoint point = new VirtualSnapshotPoint(clickPosition);
-        //        _editorOperations.SelectAndMoveCaret(point, point);
-        //        SelectCurrentWord();
-        //    }
-        //}
-
-        /// <summary>
-        /// Extend the selection to include the clicked position and then grow the selection to 
-        /// include the entire word on either side of the selection.
-        /// </summary>
-        //private bool ExtendWordSelection(Point mousePosition) {
-        //    using (_ignoreSelectionChangedEvents.Increment()) {
-
-        //        SnapshotPoint? clickPosition = GetBufferPositionFromPoint(mousePosition);
-        //        if (!clickPosition.HasValue) {
-        //            return false;
-        //        }
-
-        //        // If we don't have an original selection, create one at the anchor point
-        //        if (_originalSelectedWord == null) {
-        //            SelectWordAtBufferPosition(_textView.Selection.AnchorPoint.Position);
-        //        }
-
-        //        if (_originalSelectedWord == null) {
-        //            return false;
-        //        }
-
-        //        var position = clickPosition.Value.Position;
-
-        //        SnapshotSpan selectionWord = _originalSelectedWord.GetSpan(_textView.TextSnapshot);
-        //        var start = Math.Min(selectionWord.Start.Position, position);
-        //        var end = Math.Max(selectionWord.End.Position, position);
-
-        //        if (start == selectionWord.Start.Position && end == selectionWord.End.Position) {
-        //            return true;
-        //        }
-
-        //        // Remember if the selection should be reversed
-        //        var isReversed = position == start;
-        //        var textStructureNavigator = _textStructureNavigatorProvider.GetTextStructureNavigator(_textView.TextBuffer);
-
-        //        if (position < selectionWord.Start) {
-        //            var startExtend = GetTextExtent(textStructureNavigator, start);
-        //            if (startExtend.IsSignificant && startExtend.Span.Start < start) {
-        //                start = startExtend.Span.Start;
-        //            }
-        //        }
-
-        //        if (position > selectionWord.End) {
-        //            var endExtend = GetTextExtent(textStructureNavigator, end);
-        //            if (endExtend.IsSignificant && endExtend.Span.End > end) {
-        //                end = endExtend.Span.End;
-        //            }
-        //        }
-
-        //        _textView.Selection.Mode = TextSelectionMode.Stream;
-        //        if (isReversed) {
-        //            SelectRange(end, start);
-        //        } else {
-        //            SelectRange(start, end);
-        //        }
-
-        //        return true;
-        //    }
-        //}
-
-        //private bool ExtendLineSelection(Point mousePosition) {
-        //    using (_ignoreSelectionChangedEvents.Increment()) {
-        //        if (_originalSelectedLine == null) {
-        //            _doingLineSelection = false;
-        //            return false;
-        //        }
-
-        //        var lineUnderMouse = GetTextViewLineUnderPoint(mousePosition);
-        //        if (lineUnderMouse == null) {
-        //            return false;
-        //        }
-
-        //        SnapshotSpan extentOfLineUnderMouse = lineUnderMouse.ExtentIncludingLineBreak;
-
-        //        var start = Math.Min(extentOfLineUnderMouse.Start, _originalSelectedLine.GetStartPoint(_textView.TextSnapshot));
-        //        var end = Math.Max(extentOfLineUnderMouse.End, _originalSelectedLine.GetEndPoint(_textView.TextSnapshot));
-        //        var isReversed = lineUnderMouse.Start.Position.Equals(start);
-
-        //        _textView.Selection.Mode = TextSelectionMode.Stream;
-        //        if (isReversed) {
-        //            SelectRange(end, start);
-        //        } else { 
-        //            SelectRange(start, end);
-        //        }
-
-        //        return true;
-        //    }
-        //}
-
-        //private void SelectCurrentWord() {
-        //    using (_ignoreSelectionChangedEvents.Increment()) {
-        //        _textView.Selection.Mode = TextSelectionMode.Stream;
-        //        _editorOperations.SelectCurrentWord();
-        //        _originalSelectedWord = GetCurrentSelection();
-        //    }
-        //}
-
-        //private void SelectLine(ITextViewLine line) {
-        //    using (_ignoreSelectionChangedEvents.Increment()) {
-        //        _textView.Selection.Mode = TextSelectionMode.Stream;
-        //        _editorOperations.SelectLine(line, false);
-        //        _originalSelectedLine = GetCurrentSelection();
-        //    }
-        //}
 
         private int GetLineNumberUnderPoint(Point point) {
             ITextViewLine textLine = GetTextViewLineUnderPoint(point);
@@ -431,31 +205,5 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private ITextViewLine GetTextViewLineUnderPoint(Point pt) {
             return _textView.TextViewLines.GetTextViewLineContainingYCoordinate(pt.Y);
         }
-
-        //private ITrackingSpan GetCurrentSelection() {
-        //    return _textView.TextSnapshot.CreateTrackingSpan(_textView.Selection.StreamSelectionSpan.SnapshotSpan, SpanTrackingMode.EdgeExclusive);
-        //}
-
-        //private TextExtent GetTextExtent(ITextStructureNavigator textStructureNavigator, int position) {
-        //    return textStructureNavigator.GetExtentOfWord(new SnapshotPoint(_textView.TextBuffer.CurrentSnapshot, position));
-        //}
-
-        //private void SelectRange(int start, int end) {
-        //    var startPoint = new SnapshotPoint(_textView.TextSnapshot, start);
-        //    var endPoint = new SnapshotPoint(_textView.TextSnapshot, end);
-        //    _textView.Selection.Select(new VirtualSnapshotPoint(startPoint), new VirtualSnapshotPoint(endPoint));
-
-        //    ITextViewLine textViewLine = _textView.GetTextViewLineContainingBufferPosition(endPoint);
-
-        //    var affinity = textViewLine.IsLastTextViewLineForSnapshotLine || endPoint != textViewLine.End
-        //        ? PositionAffinity.Successor
-        //        : PositionAffinity.Predecessor;
-        //    _textView.Caret.MoveTo(endPoint, affinity);
-
-        //    var ensureSpanVisibleOptions = start > end 
-        //        ? EnsureSpanVisibleOptions.MinimumScroll | EnsureSpanVisibleOptions.ShowStart
-        //        : EnsureSpanVisibleOptions.MinimumScroll;
-        //    _textView.ViewScroller.EnsureSpanVisible(_textView.Selection.StreamSelectionSpan.SnapshotSpan, ensureSpanVisibleOptions);
-        //}
     }
 }

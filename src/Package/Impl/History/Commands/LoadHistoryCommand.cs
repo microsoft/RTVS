@@ -23,10 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            if (!ReplWindow.ReplWindowExists()) {
-                return CommandResult.NotSupported;
-            }
-
             var initialPath = RToolsSettings.Current.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(RToolsSettings.Current.WorkingDirectory) : null;
             var file = EditorShell.Current.BrowseForFileOpen(IntPtr.Zero, Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
             if (file != null) {

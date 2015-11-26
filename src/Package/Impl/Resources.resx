@@ -305,6 +305,12 @@
   <data name="SaveHistoryAsTitle" xml:space="preserve">
     <value>Save History As</value>
   </data>
+  <data name="DeleteSelectedHistoryEntries" xml:space="preserve">
+    <value>Are you sure you want to remove the selected entries from the history?</value>
+  </data>
+  <data name="DeleteAllHistoryEntries" xml:space="preserve">
+    <value>Are you sure you want to remove all history entries?</value>
+  </data>
   <data name="HistoryFileFilter" xml:space="preserve">
     <value>R History Files (*.rhistory)|*.rhistory|All Files (*.*)|*.*</value>
   </data>
@@ -400,6 +406,12 @@
   </data>
   <data name="Settings_SaveRDataOnProjectUnload_Description" xml:space="preserve">
     <value>Save workspace from global environment to .RData when project is closed</value>
+  </data>
+  <data name="Settings_AlwaysSaveHistory" xml:space="preserve">
+    <value>Always save history</value>
+  </data>
+  <data name="Settings_AlwaysSaveHistory_Description" xml:space="preserve">
+    <value>Save history to .RHistory file when project is closed, even if workspace isn't saved</value>
   </data>
   <data name="Ask" xml:space="preserve">
     <value>Ask</value>

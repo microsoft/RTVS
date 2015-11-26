@@ -61,6 +61,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.SaveRDataOnProjectUnload = value; }
         }
 
+        [LocCategory("Settings_HistoryCategory")]
+        [CustomLocDisplayName("Settings_AlwaysSaveHistory")]
+        [LocDescription("Settings_AlwaysSaveHistory_Description")]
+        [DefaultValue(true)]
+        public bool AlwaysSaveHistory {
+            get { return RToolsSettings.Current.AlwaysSaveHistory; }
+            set { RToolsSettings.Current.AlwaysSaveHistory = value; }
+        }
+
         [LocCategory("Settings_GeneralCategory")]
         [CustomLocDisplayName("Settings_RBasePath")]
         [LocDescription("Settings_RBasePath_Description")]

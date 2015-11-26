@@ -12,18 +12,17 @@ using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
-        private readonly IRHistory _history;
         private readonly IntPtr _plotWindowHandle;
 
-        public IRSession Session { get; private set; }
+        public IRHistory History { get; }
+        public IRSession Session { get; }
 
         public RInteractiveEvaluator(IRSession session, IRHistory history) {
-            _history = history;
+            History = history;
             Session = session;
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
@@ -120,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 EditorShell.Current.ShowErrorMessage(ex.ToString());
                 return ExecutionResult.Failure;
             } finally {
-                _history.AddToHistory(text);
+                History.AddToHistory(text);
             }
         }
 
