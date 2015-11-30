@@ -26,36 +26,6 @@
       <PayloadGroupRef Id="rtvs_ux"/>
     </BootstrapperApplicationRef>
 
-    <!-- Detect if Professional is installed -->
-
-    <util:RegistrySearch
-       Win64="yes"
-       Id="R64_DetectKey" Variable="RInstallPath"
-       Root="HKLM" Key="SOFTWARE\R-core\R64"
-       Value="InstallPath"
-       Result="exists"/>
-
-    <util:RegistrySearch
-       Win64="yes"
-       Id="R64_DetectVersionKey" Variable="RVersion"
-       Root="HKLM" Key="SOFTWARE\R-core\R64"
-       Value="Current Version"
-       Result="value"/>
-
-    <dd:Blocker
-       ShortName="RNotInstalledStopBlock"
-       Type="Stop"
-       Condition="(not RInstallPath)"
-       DisplayText="R is not installed. Please install 64-bit R 3.2.2 or newer before installing R Tools for Visual Studio." />
-
-
-    <dd:Blocker
-       ShortName="RVersionStopBlock"
-       Type="Stop"
-       Condition="(RVersion &lt; &quot;3.2.2&quot;)"
-       DisplayText="R 3.2.2 or newer is required. Please install R 3.2.2 or newer before installing R Tools for Visual Studio." />
-
-
     <dd:UxConfiguration>
       <BundleInformation ShortName="R Tools For Visual Studio"
                          BuildBranch="Main"
