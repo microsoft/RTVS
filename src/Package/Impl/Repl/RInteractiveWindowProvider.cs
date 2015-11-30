@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Editor.ContentType;
@@ -7,8 +8,11 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
+using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -22,18 +26,23 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         [Import]
         private IRSessionProvider SessionProvider { get; set; }
 
+        [Import]
+        private IRHistoryProvider HistoryProvider { get; set; }
+
         public RInteractiveWindowProvider() {
             AppShell.Current.CompositionService.SatisfyImportsOnce(this);
         }
 
         public IVsInteractiveWindow Create(int instanceId) {
-
             IInteractiveEvaluator evaluator;
             EventHandler textViewOnClosed;
 
             if (RInstallation.VerifyRIsInstalled(RToolsSettings.Current.RBasePath)) {
                 var session = SessionProvider.Create(instanceId);
-                evaluator = new RInteractiveEvaluator(session);
+                var historyWindow = ToolWindowUtilities.FindWindowPane<HistoryWindowPane>(0);
+                var history = HistoryProvider.GetAssociatedRHistory(historyWindow.TextView);
+
+                evaluator = new RInteractiveEvaluator(session, history);
 
                 EventHandler<EventArgs> clearPendingInputsHandler = (sender, args) => ReplWindow.Current.ClearPendingInputs();
                 session.Disconnected += clearPendingInputsHandler;
@@ -53,9 +62,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             vsWindow.InteractiveWindow.TextView.Closed += textViewOnClosed;
 
             var window = vsWindow.InteractiveWindow;
-            window.InitializeAsync().DoNotWait();
+            InitializeWindowAsync(window).DoNotWait();
 
             return vsWindow;
+        }
+
+        private static async Task InitializeWindowAsync(IInteractiveWindow window) {
+            await window.InitializeAsync();
+            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            shell.UpdateCommandUI(1);
         }
 
         public void Open(int instanceId, bool focus) {

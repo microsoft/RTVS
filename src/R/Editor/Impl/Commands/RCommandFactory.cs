@@ -14,18 +14,16 @@ namespace Microsoft.R.Editor.Commands {
     [ContentType(RContentTypeDefinition.ContentType)]
     internal class RCommandFactory : ICommandFactory {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
-            List<ICommand> commands = new List<ICommand>();
-
-            commands.Add(new GotoBraceCommand(textView, textBuffer));
-            commands.Add(new CommentCommand(textView, textBuffer));
-            commands.Add(new UncommentCommand(textView, textBuffer));
-            commands.Add(new FormatDocumentCommand(textView, textBuffer));
-            commands.Add(new FormatSelectionCommand(textView, textBuffer));
-            commands.Add(new FormatOnPasteCommand(textView, textBuffer));
-            commands.Add(new RTypingCommandHandler(textView));
-            commands.Add(new RCompletionCommandHandler(textView));
-
-            return commands;
+            return new List<ICommand> {
+                new GotoBraceCommand(textView, textBuffer),
+                new CommentCommand(textView, textBuffer),
+                new UncommentCommand(textView, textBuffer),
+                new FormatDocumentCommand(textView, textBuffer),
+                new FormatSelectionCommand(textView, textBuffer),
+                new FormatOnPasteCommand(textView, textBuffer),
+                new RTypingCommandHandler(textView),
+                new RCompletionCommandHandler(textView)
+            };
         }
     }
 }

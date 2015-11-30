@@ -16,7 +16,10 @@ namespace Microsoft.R.Support.Settings.Definitions {
         string CranMirror { get; set; }
 
         YesNoAsk LoadRDataOnProjectLoad { get; set; }
+
         YesNoAsk SaveRDataOnProjectUnload { get; set; }
+
+        bool AlwaysSaveHistory { get; set; }
 
         /// <summary>
         /// Current working directory for REPL

@@ -82,6 +82,7 @@
     <Compile Include="IO\SubstituteFactories\FileInfoFactory.cs" />
     <Compile Include="StackExtensionsTest.cs" />
     <Compile Include="StringBuilderExtensionsTest.cs" />
+    <Compile Include="StringExtensionsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -23,12 +23,32 @@ namespace Microsoft.Languages.Core.Utility {
             }
         }
 
-        public static int BinarySearch<T>(this IList<T> list, T value) {
-            if (list == null) {
-                throw new ArgumentNullException("list");
+        public static bool AddSorted<T>(this IList<T> list, T value, IComparer<T> comparer = null) {
+            var index = list.BinarySearch(value, comparer);
+            if (index >= 0) {
+                return false;
             }
 
-            IComparer<T> comparer = Comparer<T>.Default;
+            list.Insert(~index, value);
+            return true;
+        }
+
+        public static bool RemoveSorted<T>(this IList<T> list, T value, IComparer<T> comparer = null) {
+            var index = list.BinarySearch(value, comparer);
+            if (index < 0) {
+                return false;
+            }
+
+            list.RemoveAt(index);
+            return true;
+        }
+
+        public static int BinarySearch<T>(this IList<T> list, T value, IComparer<T> comparer = null) {
+            if (list == null) {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            comparer = comparer ?? Comparer<T>.Default;
 
             int low = 0;
             int high = list.Count - 1;
@@ -46,7 +66,7 @@ namespace Microsoft.Languages.Core.Utility {
                 }
             }
 
-            return -1;
+            return ~low;
         }
     }
 }

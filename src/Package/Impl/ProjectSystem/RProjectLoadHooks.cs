@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 
@@ -20,6 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo("RTools")]
     internal sealed class RProjectLoadHooks {
         private const string DefaultRDataName = ".RData";
+        private const string DefaultRHistoryName = ".RHistory";
 
         [Export(typeof(IFileSystemMirroringProjectTemporaryItems))]
         private FileSystemMirroringProject Project { get; }
@@ -29,14 +31,16 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRToolsSettings _toolsSettings;
         private readonly IFileSystem _fileSystem;
+        private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
 
         [ImportingConstructor]
-        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRSessionProvider sessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem) {
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRSessionProvider sessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
             _unconfiguredProject = unconfiguredProject;
             _sessionProvider = sessionProvider;
             _toolsSettings = toolsSettings;
             _fileSystem = fileSystem;
+            _threadHandling = threadHandling;
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
@@ -54,64 +58,89 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await ReplWindow.EnsureReplWindow();
 
             var currentSession = _sessionProvider.Current;
-            if (currentSession != null) {
-                var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-                bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && GetLoadDefaultWorkspace(rdataPath);
+            if (currentSession == null) {
+                return;
+            }
 
-                using (var evaluation = await _sessionProvider.Current.BeginEvaluationAsync()) {
-                    if (loadDefaultWorkspace) {
-                        await evaluation.LoadWorkspace(rdataPath);
-                    }
-                    await evaluation.SetWorkingDirectory(_projectDirectory);
-                    RToolsSettings.Current.WorkingDirectory = _projectDirectory;
+            var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
+            bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
+
+            using (var evaluation = await _sessionProvider.Current.BeginEvaluationAsync()) {
+                if (loadDefaultWorkspace) {
+                    await evaluation.LoadWorkspace(rdataPath);
                 }
+
+                await evaluation.SetWorkingDirectory(_projectDirectory);
+            }
+
+            RToolsSettings.Current.WorkingDirectory = _projectDirectory;
+            var history = GetRHistory();
+            if (history != null) {
+                await _threadHandling.SwitchToUIThread();
+                history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
             }
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             var currentSession = _sessionProvider.Current;
-            if (currentSession != null) {
-                var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-                var saveDefaultWorkspace = GetSaveDefaultWorkspace(rdataPath);
+            if (currentSession == null) {
+                return;
+            }
 
-                using (var evaluation = await currentSession.BeginEvaluationAsync()) {
-                    if (saveDefaultWorkspace) {
-                        await evaluation.SaveWorkspace(rdataPath);
-                    }
-                    await evaluation.SetDefaultWorkingDirectory();
+            var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
+            var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
+
+            using (var evaluation = await currentSession.BeginEvaluationAsync()) {
+                if (saveDefaultWorkspace) {
+                    await evaluation.SaveWorkspace(rdataPath);
+                }
+                await evaluation.SetDefaultWorkingDirectory();
+            }
+
+            if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
+                var history = GetRHistory();
+                if (history != null) {
+                    await _threadHandling.SwitchToUIThread();
+                    history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
                 }
             }
         }
 
-        private bool GetLoadDefaultWorkspace(string rdataPath) {
+        private async Task<bool> GetLoadDefaultWorkspace(string rdataPath) {
             switch (_toolsSettings.LoadRDataOnProjectLoad) {
                 case YesNoAsk.Yes:
                     return true;
                 case YesNoAsk.Ask:
-                    return true;
-                //TODO: Find out when it is safe to show message box during project loading
-                //return EditorShell.Current.ShowYesNoMessage(
-                //    string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rdataPath),
-                //    Resources.LoadWorkspaceTitle);
-                case YesNoAsk.No:
+                    await _threadHandling.SwitchToUIThread();
+                    return EditorShell.Current.ShowYesNoMessage(
+                        string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rdataPath),
+                        Resources.LoadWorkspaceTitle);
                 default:
                     return false;
             }
         }
 
-        private bool GetSaveDefaultWorkspace(string rdataPath) {
+        private async Task<bool> GetSaveDefaultWorkspace(string rdataPath) {
             switch (_toolsSettings.SaveRDataOnProjectUnload) {
                 case YesNoAsk.Yes:
                     return true;
                 case YesNoAsk.Ask:
+                    await _threadHandling.SwitchToUIThread();
                     return EditorShell.Current.ShowYesNoMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceOnProjectUnload, rdataPath),
                         Resources.SaveWorkspaceOnProjectUnloadTitle);
-                case YesNoAsk.No:
                 default:
                     return false;
             }
+        }
+
+        private static IRHistory GetRHistory() {
+            return GetRInteractiveEvaluator()?.History;
+        }
+
+        private static RInteractiveEvaluator GetRInteractiveEvaluator() {
+            return ReplWindow.Current.GetInteractiveWindow()?.InteractiveWindow.Evaluator as RInteractiveEvaluator;
         }
     }
 }

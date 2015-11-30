@@ -4,59 +4,57 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Classification
-{
+namespace Microsoft.R.Editor.Classification {
     [ExcludeFromCodeCoverage]
-    internal sealed class ClassificationDefinitions
-    {
+    internal sealed class ClassificationDefinitions {
+        public const string TypeFunctionClassificationFormatName = "R Type Function";
+
         [Export]
-        [Name("R Type Function")]
+        [Name(TypeFunctionClassificationFormatName)]
         internal ClassificationTypeDefinition TypeFunctionClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "R Type Functions")]
-        [Name("R Type Function")]
-        internal sealed class TypeFunctionClassificationFormat : ClassificationFormatDefinition
-        {
-            public TypeFunctionClassificationFormat()
-            {
+        [ClassificationType(ClassificationTypeNames = TypeFunctionClassificationFormatName)]
+        [Name(TypeFunctionClassificationFormatName)]
+        internal sealed class TypeFunctionClassificationFormat : ClassificationFormatDefinition {
+            public TypeFunctionClassificationFormat() {
                 ForegroundColor = Colors.Teal;
-                this.DisplayName = Resources.ColorName_R_TypeFunction;
+                DisplayName = Resources.ColorName_R_TypeFunction;
             }
         }
 
+        public const string FunctionDefaultParameterClassificationFormatName = "R Function Default Parameter";
+
         [Export]
-        [Name("R Function Default Parameter")]
+        [Name(FunctionDefaultParameterClassificationFormatName)]
         internal ClassificationTypeDefinition FunctionDefaultParameterClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "R Function Default Parameter")]
-        [Name("R Function Default Parameter")]
-        internal sealed class FunctionDefaultParameterClassificationFormat : ClassificationFormatDefinition
-        {
-            public FunctionDefaultParameterClassificationFormat()
-            {
+        [ClassificationType(ClassificationTypeNames = FunctionDefaultParameterClassificationFormatName)]
+        [Name(FunctionDefaultParameterClassificationFormatName)]
+        internal sealed class FunctionDefaultParameterClassificationFormat : ClassificationFormatDefinition {
+            public FunctionDefaultParameterClassificationFormat() {
                 ForegroundColor = Colors.DarkGray;
-                this.DisplayName = Resources.ColorName_R_FunctionDefaultParameter;
+                DisplayName = Resources.ColorName_R_FunctionDefaultParameter;
             }
         }
 
+        public const string FunctionReferenceClassificationFormatName = "R Function Reference";
+
         [Export]
-        [Name("R Function Reference")]
+        [Name(FunctionReferenceClassificationFormatName)]
         internal ClassificationTypeDefinition FunctionReferenceClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "R Function Reference")]
-        [Name("R Function Reference")]
-        internal sealed class FunctionReferenceClassificationFormat : ClassificationFormatDefinition
-        {
-            public FunctionReferenceClassificationFormat()
-            {
+        [ClassificationType(ClassificationTypeNames = FunctionReferenceClassificationFormatName)]
+        [Name(FunctionReferenceClassificationFormatName)]
+        internal sealed class FunctionReferenceClassificationFormat : ClassificationFormatDefinition {
+            public FunctionReferenceClassificationFormat() {
                 ForegroundColor = Colors.Maroon;
-                this.DisplayName = Resources.ColorName_R_FunctionReference;
+                DisplayName = Resources.ColorName_R_FunctionReference;
             }
         }
     }

@@ -32,6 +32,11 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
+        public bool AlwaysSaveHistory {
+            get { return true; }
+            set { }
+        }
+
         public void LoadFromStorage() {
         }
 

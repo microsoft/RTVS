@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Commands
         public RMainController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer)
         {
-            ServiceManager.AddService<RMainController>(this, textView);
+            ServiceManager.AddService(this, textView);
         }
 
         /// <summary>

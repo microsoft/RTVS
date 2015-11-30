@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Editor.ContentType;
@@ -12,6 +13,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registrat
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Help;
+using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
@@ -22,6 +24,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -47,6 +50,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
     [ProvideToolWindow(typeof(PlotWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(HelpWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.PropertiesWindow)]
+    [ProvideToolWindow(typeof(HistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideDebugEngine(RContentTypeDefinition.LanguageName, null, typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
     [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, DebuggerGuids.LanguageGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString)]
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
@@ -58,6 +62,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
         private System.Threading.Tasks.Task _indexBuildingTask;
+        private IDisposable _activeTextViewTrackerToken;
 
         public static RPackage Current { get; private set; }
 
@@ -76,6 +81,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
+
+            InitializeActiveWpfTextViewTracker();
         }
 
         protected override void Dispose(bool disposing) {
@@ -83,6 +90,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 _indexBuildingTask.Wait(2000);
                 _indexBuildingTask = null;
             }
+
+            _activeTextViewTrackerToken?.Dispose();
 
             LogCleanup.Cancel();
             ReplShortcutSetting.Close();
@@ -122,6 +131,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             }
 
             return base.CreateToolWindow(ref toolWindowType, id);
+        }
+
+
+        private void InitializeActiveWpfTextViewTracker() {
+            var activeTextViewTracker = AppShell.Current.ExportProvider.GetExportedValue<ActiveWpfTextViewTracker>();
+            var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
+            var cookie = shell.AdviseWindowFrameEvents(activeTextViewTracker);
+            _activeTextViewTrackerToken = Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie));
         }
     }
 }
