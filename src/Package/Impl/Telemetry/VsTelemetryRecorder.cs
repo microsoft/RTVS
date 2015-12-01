@@ -10,37 +10,28 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// Implements telemetry recording in Visual Studio environment
     /// </summary>
     internal sealed class VsTelemetryRecorder : ITelemetryRecorder {
-        private TelemetrySession session;
+        private TelemetrySession _session;
         private static Lazy<VsTelemetryRecorder> _instance = Lazy.Create(() => new VsTelemetryRecorder());
 
         private VsTelemetryRecorder() {
-            this.session = TelemetryService.DefaultSession;
+            _session = TelemetryService.DefaultSession;
         }
 
-        public static ITelemetryRecorder Current {
-            get {
-                return _instance.Value;
-            }
-        }
+        public static ITelemetryRecorder Current => _instance.Value;
 
         #region ITelemetryRecorder
         /// <summary>
         /// True if telemetry is actually being recorder
         /// </summary>
-        public bool IsEnabled {
-            get { return this.session.IsOptedIn; }
-        }
-
-        public bool CanCollectPrivateInformation {
-            get { return this.session.CanCollectPrivateInformation; }
-        }
+        public bool IsEnabled  => _session.IsOptedIn;
+        public bool CanCollectPrivateInformation => _session.CanCollectPrivateInformation;
 
         /// <summary>
         /// Records a simple event without parameters.
         /// </summary>
         public void RecordEvent(string eventName) {
             if (this.IsEnabled) {
-                this.session.PostEvent(new TelemetryEvent(eventName));
+                _session.PostEvent(new TelemetryEvent(eventName));
             }
         }
 
@@ -51,8 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             if (this.IsEnabled) {
                 TelemetryEvent telemetryEvent = new TelemetryEvent(eventName);
                 telemetryEvent.Properties[parameterName] = parameterValue;
-
-                this.session.PostEvent(telemetryEvent);
+                _session.PostEvent(telemetryEvent);
             }
         }
 
@@ -65,8 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                 foreach (KeyValuePair<string, object> kvp in parameters) {
                     telemetryEvent.Properties[kvp.Key] = kvp.Value;
                 }
-
-                this.session.PostEvent(telemetryEvent);
+                _session.PostEvent(telemetryEvent);
             }
         }
 
@@ -76,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         /// <param name="telemetryEvent"></param>
         public void RecordEvent(TelemetryEvent telemetryEvent) {
             if (this.IsEnabled) {
-                this.session.PostEvent(telemetryEvent);
+                _session.PostEvent(telemetryEvent);
             }
         }
 
@@ -87,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         public void RecordActivity(object telemetryActivity) {
             Check.InvalidOperation(() => !(telemetryActivity is TelemetryActivity));
             if (this.IsEnabled) {
-                this.session.PostEvent(telemetryActivity as TelemetryActivity);
+                _session.PostEvent(telemetryActivity as TelemetryActivity);
             }
         }
         #endregion

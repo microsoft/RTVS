@@ -17,11 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             : base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, VsTelemetryRecorder.Current) {
         }
 
-        public static TelemetryServiceBase Current {
-            get {
-                return _instance.Value;
-            }
-        }
+        public static TelemetryServiceBase Current => _instance.Value;
 
         /// <summary>
         /// Start a telemetry activity, dispose of the return value when the activity is complete

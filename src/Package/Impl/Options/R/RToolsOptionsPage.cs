@@ -1,9 +1,5 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.ComponentModel;
 using System.Drawing.Design;
-using System.Globalization;
-using System.IO;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Actions.Utility;
@@ -103,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string ValidateRBasePath(string path) {
             // If path is null, folder selector dialog was canceled
             if (path != null) {
-                bool valid = IsValidRBasePath(path, showErrors: !_loadingFromStorage);
+                bool valid = SupportedRVersions.VerifyRIsInstalled(path, showErrors: !_loadingFromStorage);
                 if (!valid) {
                     if (_loadingFromStorage) {
                         // Bad data in the settings storage. Fix the value to default.
@@ -115,54 +111,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
 
             return path;
-        }
-
-        private bool IsValidRBasePath(string path, bool showErrors) {
-            string message = null;
-            try {
-                string rDirectory = Path.Combine(path, @"bin\x64");
-                string rDllPath = Path.Combine(rDirectory, "R.dll");
-                if (File.Exists(rDllPath)) {
-                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(rDllPath);
-                    int minor, revision;
-                    RVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
-                    if (fvi.FileMajorPart != 3 || minor != 2) {
-                        message = string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion, fvi.FileMajorPart, minor, revision);
-                    }
-                } else {
-                    message = string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, rDirectory);
-                }
-            } catch (ArgumentException aex) {
-                message = string.Format(CultureInfo.InvariantCulture, Resources.Error_InvalidPath, aex.Message);
-            } catch (IOException ioex) {
-                message = string.Format(CultureInfo.InvariantCulture, Resources.Error_InvalidPath, ioex.Message);
-            }
-
-            if (message != null) {
-                if (showErrors) {
-                    EditorShell.Current.ShowErrorMessage(message);
-                }
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Given R minor file version like 10 converts it to R engine minor version.
-        /// For example, file may have version 3.10 which means R 3.1.0. In turn,
-        /// file version 2.125 means R engine version is 2.12.5.
-        /// </summary>
-        /// <param name="minorVersion"></param>
-        /// <param name="minor"></param>
-        /// <param name="revision"></param>
-        private void RVersionPartsFromFileMinorVersion(int minorVersion, out int minor, out int revision) {
-            revision = minorVersion % 10;
-            if (minorVersion < 100) {
-                minor = minorVersion / 10;
-            } else {
-                minor = minorVersion / 100;
-            }
         }
     }
 }

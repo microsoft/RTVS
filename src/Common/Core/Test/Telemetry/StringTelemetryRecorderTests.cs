@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Telemetry;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
-namespace Microsoft.VisualStudio.MultiDeviceHybridApps.UnitTests.Common.Telemetry {
+namespace Microsoft.Common.Core.Test.Telemetry {
     [ExcludeFromCodeCoverage]
     public class StringTelemetryRecorderTests {
         [CompositeTest]

@@ -304,27 +304,17 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R for Windows is found. Please restart Visual Studio for changes to take effect..
+        ///   Looks up a localized string similar to Unable to determine location of R binaries. If R is not installed 
+        ///please navigate to https://cran.r-project.org, install R for Windows and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools..
         /// </summary>
-        public static string Error_RestartVsAfterRInstalled {
+        public static string Error_UnableToFindR {
             get {
-                return ResourceManager.GetString("Error_RestartVsAfterRInstalled", resourceCulture);
+                return ResourceManager.GetString("Error_UnableToFindR", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R for Windows is not found.
-        ///Please navigate to https://cran.r-project.org and install R language for Windows or change path in Tools | Options | R Tools to point to the location of the R language engine.
-        ///After R is installed, please restart Visual Studio..
-        /// </summary>
-        public static string Error_RNotInstalled {
-            get {
-                return ResourceManager.GetString("Error_RNotInstalled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are 3.2.*..
+        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}..
         /// </summary>
         public static string Error_UnsupportedRVersion {
             get {

@@ -129,6 +129,7 @@
     <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
+    <Compile Include="Options\R\SupportedRVersions.cs" />
     <Compile Include="Repl\Workspace\AttachDebuggerCommand.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
     <Compile Include="Repl\RSessionExtensions.cs" />

@@ -320,9 +320,6 @@
   <data name="Settings_PartialArgumentNameMatch_Description" xml:space="preserve">
     <value>When typing argument name in a function call, signature help shows description for the argument that is the best match</value>
   </data>
-  <data name="Error_RestartVsAfterRInstalled" xml:space="preserve">
-    <value>R for Windows is found. Please restart Visual Studio for changes to take effect.</value>
-  </data>
   <data name="CranMirrorListRequestCanceled" xml:space="preserve">
     <value>Unable to download CRAN mirror list. The request has been canceled.</value>
   </data>
@@ -451,12 +448,7 @@
     <value>You must restart Visual Studio after changing path to the R installation.</value>
   </data>
   <data name="Error_UnsupportedRVersion" xml:space="preserve">
-    <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are 3.2.*.</value>
-  </data>
-  <data name="Error_RNotInstalled" xml:space="preserve">
-    <value>R for Windows is not found.
-Please navigate to https://cran.r-project.org and install R language for Windows or change path in Tools | Options | R Tools to point to the location of the R language engine.
-After R is installed, please restart Visual Studio.</value>
+    <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.</value>
   </data>
   <data name="ChooseDirectory" xml:space="preserve">
     <value>Choose Directory</value>
@@ -469,5 +461,9 @@ After R is installed, please restart Visual Studio.</value>
   </data>
   <data name="Error_ReplUnicodeCoversion" xml:space="preserve">
     <value>Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use.</value>
+  </data>
+  <data name="Error_UnableToFindR" xml:space="preserve">
+    <value>Unable to determine location of R binaries. If R is not installed 
+please navigate to https://cran.r-project.org, install R for Windows and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools.</value>
   </data>
 </root>
