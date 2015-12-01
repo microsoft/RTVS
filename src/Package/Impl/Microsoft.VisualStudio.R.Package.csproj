@@ -770,10 +770,11 @@
     <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
     <WriteLinesToFile File="$(MSBuildProjectDirectory)\RTVS_Version.cs"
                       Overwrite="true"
-                      Lines ="namespace Microsoft.VisualStudio.R.Package {;
-                                  static class RTVS_Version {;
-                                      public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;
-                                  };
+                      Lines ="// Generated version file. Do not modify or check in.;
+                              namespace Microsoft.VisualStudio.R.Package {;
+                              %20%20%20%20static class RTVS_Version {;
+                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;
+                              %20%20%20%20};
                               };">
     </WriteLinesToFile>
   </Target>
