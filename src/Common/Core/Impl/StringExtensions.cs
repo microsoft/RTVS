@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Microsoft.Common.Core {
     public static class StringExtensions {
@@ -19,6 +20,28 @@ namespace Microsoft.Common.Core {
         }
         public static int LastIndexOfIgnoreCase(this string s, string searchFor, int startIndex) {
             return s.LastIndexOf(searchFor, startIndex, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string Replace(this string s, string oldValue, string newValue, int start, int length) {
+            if (string.IsNullOrEmpty(oldValue)) {
+                throw new ArgumentException("oldValue can't be null or empty string", nameof(oldValue));
+            }
+
+            if (string.IsNullOrEmpty(s)) {
+                return s;
+            }
+
+            if (start < 0) {
+                start = 0;
+            }
+
+            if (length < 0) {
+                length = 0;
+            }
+
+            return new StringBuilder(s)
+                .Replace(oldValue, newValue, start, length)
+                .ToString();
         }
     }
 }

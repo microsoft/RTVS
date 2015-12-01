@@ -7,5 +7,8 @@ namespace Microsoft.Common.Core.IO {
         bool FileExists(string fullPath);
         bool DirectoryExists(string fullPath);
         FileAttributes GetFileAttributes(string fullPath);
+
+        string[] FileReadAllLines(string path);
+        void FileWriteAllLines(string path, params string[] contents);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor;
@@ -8,6 +9,7 @@ using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -92,51 +94,40 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private string[] GetFriendlyDirectoryNames() {
-            List<string> friendlyNames = new List<string>();
-            foreach (var dir in RToolsSettings.Current.WorkingDirectoryList) {
-                friendlyNames.Add(GetFriendlyDirectoryName(dir));
-            }
-            return friendlyNames.ToArray();
+            return RToolsSettings.Current.WorkingDirectoryList
+                .Select(GetFriendlyDirectoryName)
+                .ToArray();
         }
 
         private string GetFriendlyDirectoryName(string directory) {
-            string userName = Environment.UserName;
-
             string myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             if (directory.StartsWithIgnoreCase(myDocuments)) {
-                return ExtractFriendlyName(directory);
-            }
-
-            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            if (directory.StartsWithIgnoreCase(desktop)) {
-                return ExtractFriendlyName(directory);
+                var relativePath = PathHelper.MakeRelative(myDocuments, directory);
+                if (relativePath.Length > 0) {
+                    return "~/" + relativePath.Replace('\\', '/');
+                } 
+                return "~";
             }
 
             return directory;
         }
 
-        private string ExtractFriendlyName(string folder) {
-            string userName = Environment.UserName;
-            int index = folder.IndexOf("\\" + userName + "\\");
-            if (index >= 0) {
-                return "~/" + folder.Substring(index + userName.Length + 2).Replace('\\', '/');
-            }
-            return folder;
-        }
-
         private string GetFullPathName(string friendlyName) {
             string folder = friendlyName;
-            if (friendlyName != null) {
-                if (friendlyName.StartsWithIgnoreCase("~/")) {
-                    string userName = Environment.UserName;
-                    string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                    int index = desktopPath.IndexOf("\\" + userName + "\\", StringComparison.OrdinalIgnoreCase);
-                    if (index >= 0) {
-                        folder = Path.Combine(desktopPath.Substring(0, index + userName.Length + 2), friendlyName.Substring(2).Replace('/', '\\'));
-                    }
-                }
+            if (friendlyName == null) {
+                return folder;
             }
-            return folder;
+
+            if (!friendlyName.StartsWithIgnoreCase("~")) {
+                return folder;
+            }
+
+            string myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (friendlyName.EqualsIgnoreCase("~")) {
+                return myDocuments;
+            }
+
+            return PathHelper.MakeRooted(PathHelper.EnsureTrailingSlash(myDocuments), friendlyName.Substring(2));
         }
     }
 }

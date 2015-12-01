@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
 using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.R.Package.Help;
+using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Data;
@@ -42,7 +43,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
-                new ShowHelpOnCurrentCommand()
+                new ShowHelpOnCurrentCommand(),
+                new ShowHistoryWindowCommand()
             };
         }
     }

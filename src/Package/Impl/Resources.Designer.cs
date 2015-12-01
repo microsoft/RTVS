@@ -196,6 +196,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove all history entries?.
+        /// </summary>
+        public static string DeleteAllHistoryEntries {
+            get {
+                return ResourceManager.GetString("DeleteAllHistoryEntries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove the selected entries from the history?.
+        /// </summary>
+        public static string DeleteSelectedHistoryEntries {
+            get {
+                return ResourceManager.GetString("DeleteSelectedHistoryEntries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Language Editor.
         /// </summary>
         public static string EditorName {
@@ -341,6 +359,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R History Files (*.rhistory)|*.rhistory|All Files (*.*)|*.*.
+        /// </summary>
+        public static string HistoryFileFilter {
+            get {
+                return ResourceManager.GetString("HistoryFileFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R History.
+        /// </summary>
+        public static string HistoryWindowCaption {
+            get {
+                return ResourceManager.GetString("HistoryWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
         public static string InputIsTooLong {
@@ -355,6 +391,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string LanguageName {
             get {
                 return ResourceManager.GetString("LanguageName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load History.
+        /// </summary>
+        public static string LoadHistoryTitle {
+            get {
+                return ResourceManager.GetString("LoadHistoryTitle", resourceCulture);
             }
         }
         
@@ -589,6 +634,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save History As.
+        /// </summary>
+        public static string SaveHistoryAsTitle {
+            get {
+                return ResourceManager.GetString("SaveHistoryAsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save R Plot File.
         /// </summary>
         public static string SavePlotDialogTitle {
@@ -631,6 +685,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SaveWorkspaceOnProjectUnloadTitle {
             get {
                 return ResourceManager.GetString("SaveWorkspaceOnProjectUnloadTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Always save history.
+        /// </summary>
+        public static string Settings_AlwaysSaveHistory {
+            get {
+                return ResourceManager.GetString("Settings_AlwaysSaveHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save history to .RHistory file when project is closed, even if workspace isn&apos;t saved.
+        /// </summary>
+        public static string Settings_AlwaysSaveHistory_Description {
+            get {
+                return ResourceManager.GetString("Settings_AlwaysSaveHistory_Description", resourceCulture);
             }
         }
         

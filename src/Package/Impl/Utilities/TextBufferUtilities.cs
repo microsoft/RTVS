@@ -8,14 +8,8 @@ using Microsoft.Languages.Editor.Shell;
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     public static class TextBufferUtilities {
         private static IVsEditorAdaptersFactoryService _adaptersFactoryService;
-        private static IVsEditorAdaptersFactoryService AdaptersFactoryService {
-            get {
-                if (_adaptersFactoryService == null)
-                    _adaptersFactoryService = EditorShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
-
-                return _adaptersFactoryService;
-            }
-        }
+        private static IVsEditorAdaptersFactoryService AdaptersFactoryService => 
+            _adaptersFactoryService ?? (_adaptersFactoryService = EditorShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>());
 
         public static T QueryInterface<T>(this ITextBuffer textBuffer) where T : class {
             var vsTextBuffer = AdaptersFactoryService.GetBufferAdapter(textBuffer);

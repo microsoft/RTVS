@@ -107,7 +107,7 @@ namespace Microsoft.Languages.Editor.Shell {
 
             // Need to find the settings using MEF (don't use MEF inside of other locks, that can lead to deadlock)
 
-            var contentTypeRegistry = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
+            var contentTypeRegistry = Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
 
             var contentType = contentTypeRegistry.GetContentType(contentTypeName);
             Debug.Assert(contentType != null, "Cannot find content type object for " + contentTypeName);

@@ -155,6 +155,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
         }
 
+        public void ReplaceCurrentExpression(string replaceWith) {
+            IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
+            if (current != null) {
+                var textBuffer = current.InteractiveWindow.CurrentLanguageBuffer;
+                var span = new Span(0, textBuffer.CurrentSnapshot.Length);
+                if (!textBuffer.IsReadOnly(span)) {
+                    textBuffer.Replace(span, replaceWith);
+                }
+            }
+        }
+
         public void ExecuteCurrentExpression(ITextView textView) {
             ICompletionBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
             broker.DismissAllSessions(textView);

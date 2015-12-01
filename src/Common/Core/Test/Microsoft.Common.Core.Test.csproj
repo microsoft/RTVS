@@ -89,6 +89,7 @@
     <Compile Include="IO\SubstituteFactories\FileInfoFactory.cs" />
     <Compile Include="StackExtensionsTest.cs" />
     <Compile Include="StringBuilderExtensionsTest.cs" />
+    <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="Telemetry\FileTelemetryRecorder.cs" />
     <Compile Include="Telemetry\ITelemetryTestSupport.cs" />
     <Compile Include="Telemetry\SimpleTelemetryEvent.cs" />

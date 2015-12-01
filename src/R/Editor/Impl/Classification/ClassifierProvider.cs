@@ -9,6 +9,7 @@ namespace Microsoft.R.Editor.Classification
 {
     [Export(typeof(IClassifierProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
+    [ContentType(RHistoryContentTypeDefinition.ContentType)]
     internal sealed class ClassifierProvider : IClassifierProvider
     {
         [Import]

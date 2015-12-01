@@ -17,7 +17,7 @@ namespace Microsoft.R.Editor.ContentType
         /// Exports the R content type
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
-        [Name(RContentTypeDefinition.ContentType)]
+        [Name(ContentType)]
         [BaseDefinition("code")]
         public ContentTypeDefinition IRContentType { get; set; }
 
@@ -25,8 +25,8 @@ namespace Microsoft.R.Editor.ContentType
         /// Exports the R file extension
         /// </summary>
         [Export(typeof(FileExtensionToContentTypeDefinition))]
-        [ContentType(RContentTypeDefinition.ContentType)]
-        [FileExtension(RContentTypeDefinition.FileExtension)]
+        [ContentType(ContentType)]
+        [FileExtension(FileExtension)]
         public FileExtensionToContentTypeDefinition IRFileExtension { get; set; }
     }
 }
