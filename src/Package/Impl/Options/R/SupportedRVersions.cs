@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                     Debug.Assert(!string.IsNullOrEmpty(data.Path));
                     return string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, data.Path);
 
-                case RInstallStatus.Undefined:
+                case RInstallStatus.PathNotSpecified:
                     return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToFindR);
             }
 

@@ -8,7 +8,7 @@
         /// <summary>
         /// No path to R can be found in Tools | Options
         /// </summary>
-        Undefined,
+        PathNotSpecified,
 
         /// <summary>
         /// R is installed but version does not match

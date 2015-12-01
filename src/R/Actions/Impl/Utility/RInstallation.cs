@@ -14,7 +14,7 @@ namespace Microsoft.R.Actions.Utility {
         public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion) {
             string path = RInstallation.GetRInstallPath(basePath);
             if (string.IsNullOrEmpty(path)) {
-                return new RInstallData() { Status = RInstallStatus.Undefined };
+                return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
             }
 
             RInstallData data = new RInstallData() { Status = RInstallStatus.OK, Path = path };

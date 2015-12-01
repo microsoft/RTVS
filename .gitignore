@@ -9,7 +9,7 @@
 # Assembly version information
 AssemblyVersionInfo.cs
 GeneratedVersion.h
-RTVS_Version.cs
+RTVS_ProductInfo.cs
 
 # Build results
 [Dd]ebug/
