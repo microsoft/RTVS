@@ -61,10 +61,10 @@ namespace Microsoft.Common.Core.Telemetry {
             Check.ArgumentStringNullOrEmpty("parameterName", parameterName);
             Check.ArgumentNull("parameterValue", parameterValue);
 
+            var dict = new Dictionary<string, object>();
+            dict[this.PropertyNamePrefix + area.ToString() + "." + parameterName] = parameterValue;
             this.TelemetryRecorder.RecordEvent(
-                this.EventNamePrefix + area.ToString() + "/" + eventName,
-                this.PropertyNamePrefix + area.ToString() + "." + parameterName,
-                parameterValue);
+                this.EventNamePrefix + area.ToString() + "/" + eventName, dict);
         }
 
         /// <summary>

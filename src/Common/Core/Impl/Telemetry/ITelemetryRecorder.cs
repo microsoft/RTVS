@@ -18,19 +18,10 @@ namespace Microsoft.Common.Core.Telemetry {
         bool CanCollectPrivateInformation { get; }
 
         /// <summary>
-        /// Records a simple event without parameters.
+        /// Records event with parameters. Perameters are
+        /// a collection of string/object pairs.
         /// </summary>
-        void RecordEvent(string eventName);
-
-        /// <summary>
-        /// Records event with a single parameter
-        /// </summary>
-        void RecordEvent(string eventName, string parameterName, object parameterValue);
-
-        /// <summary>
-        /// Records event with multiple parameters
-        /// </summary>
-        void RecordEvent(string eventName, IDictionary<string, object> parameters);
+        void RecordEvent(string eventName, object parameters = null);
 
         /// <summary>
         /// Records telemetry activity (typically VS TelemetryActivity object)

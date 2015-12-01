@@ -27,32 +27,13 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         public bool CanCollectPrivateInformation => _session.CanCollectPrivateInformation;
 
         /// <summary>
-        /// Records a simple event without parameters.
+        /// Records event with parameters
         /// </summary>
-        public void RecordEvent(string eventName) {
+        public void RecordEvent(string eventName, object parameters = null) {
             if (this.IsEnabled) {
-                _session.PostEvent(new TelemetryEvent(eventName));
-            }
-        }
-
-        /// <summary>
-        /// Records event with a single parameter
-        /// </summary>
-        public void RecordEvent(string eventName, string parameterName, object parameterValue) {
-            if (this.IsEnabled) {
+                IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
                 TelemetryEvent telemetryEvent = new TelemetryEvent(eventName);
-                telemetryEvent.Properties[parameterName] = parameterValue;
-                _session.PostEvent(telemetryEvent);
-            }
-        }
-
-        /// <summary>
-        /// Records event with multiple parameters
-        /// </summary>
-        public void RecordEvent(string eventName, IDictionary<string, object> parameters) {
-            if (this.IsEnabled) {
-                TelemetryEvent telemetryEvent = new TelemetryEvent(eventName);
-                foreach (KeyValuePair<string, object> kvp in parameters) {
+                foreach (KeyValuePair<string, object> kvp in dict) {
                     telemetryEvent.Properties[kvp.Key] = kvp.Value;
                 }
                 _session.PostEvent(telemetryEvent);

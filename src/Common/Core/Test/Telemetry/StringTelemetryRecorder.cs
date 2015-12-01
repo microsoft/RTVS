@@ -19,18 +19,11 @@ namespace Microsoft.Common.Core.Test.Telemetry {
             get { return true; }
         }
 
-        public void RecordEvent(string eventName) {
+        public void RecordEvent(string eventName, object parameters = null) {
             this.stringBuilder.AppendLine(eventName);
-        }
-
-        public void RecordEvent(string eventName, string parameterName, object parameterValue) {
-            this.stringBuilder.AppendLine(eventName);
-            WriteProperty(parameterName, parameterValue);
-        }
-
-        public void RecordEvent(string eventName, IDictionary<string, object> parameters) {
-            this.stringBuilder.AppendLine(eventName);
-            WriteDictionary(parameters);
+            if (parameters != null) {
+                WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
+            }
         }
 
         public void RecordActivity(object telemetryActivity) {

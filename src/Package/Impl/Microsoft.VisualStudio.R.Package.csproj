@@ -269,7 +269,7 @@
     <Compile Include="RPackages\Mirrors\CranMirrorEntry.cs" />
     <Compile Include="RPackages\Mirrors\CranMirrorList.cs" />
     <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
-    <Compile Include="RTVS_ProductInfo.cs" />
+    <Compile Include="RtvsProductInfo.cs" />
     <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\AppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
@@ -765,13 +765,13 @@
     <Copy SourceFiles="@(Rules)" DestinationFolder="$(MSBuildUserExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\RTVS\Rules\" />
   </Target>
   <Target Name="GenerateProductVersionFile" 
-          Outputs="$(MSBuildProjectDirectory)\RTVS_ProductInfo.cs">
+          Outputs="$(MSBuildProjectDirectory)\RtvsProductInfo.cs">
     <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
-    <WriteLinesToFile File="$(MSBuildProjectDirectory)\RTVS_ProductInfo.cs"
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs"
                       Overwrite="true"
                       Lines ="// Generated version file. Do not modify or check in.;
                               namespace Microsoft.VisualStudio.R.Package {;
-                              %20%20%20%20static partial class RTVS_ProductInfo {;
+                              %20%20%20%20static partial class RtvsProductInfo {;
                               %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;
                               %20%20%20%20};
                               };">

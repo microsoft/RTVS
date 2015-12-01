@@ -17,5 +17,6 @@ namespace Microsoft.Common.Core.Telemetry {
         Project,
         Repl,
         VariableExplorer,
+        DataGrid,
     }
 }

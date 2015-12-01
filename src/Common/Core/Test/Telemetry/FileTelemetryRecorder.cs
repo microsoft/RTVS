@@ -32,33 +32,10 @@ namespace Microsoft.Common.Core.Test.Telemetry {
 
         public bool CanCollectPrivateInformation => true;
 
-        public void RecordEvent(string eventName) {
-            using (StreamWriter sw = File.AppendText(FileTelemetryRecorder.TestLog)) {
-                string json = JsonConvert.SerializeObject(new SimpleTelemetryEvent(eventName));
-                sw.WriteLine(json);
-            }
-        }
-
-        public void RecordEvent(string eventName, string parameterName, object parameterValue) {
-            using (StreamWriter sw = File.AppendText(FileTelemetryRecorder.TestLog)) {
-                SimpleTelemetryEvent telementryEvent = new SimpleTelemetryEvent(eventName);
-                telementryEvent.Properties = new Dictionary<string, object>() { { parameterName, parameterValue } };
-
-                string json = JsonConvert.SerializeObject(telementryEvent);
-                sw.WriteLine(json);
-            }
-        }
-
-        public void RecordEvent(string eventName, IDictionary<string, object> parameters) {
+        public void RecordEvent(string eventName, object parameters = null) {
             using (StreamWriter sw = File.AppendText(FileTelemetryRecorder.TestLog)) {
                 SimpleTelemetryEvent telemetryEvent = new SimpleTelemetryEvent(eventName);
-                IDictionary<string, object> dictionary = new Dictionary<string, object>();
-
-                foreach (var pair in parameters) {
-                    dictionary.Add(pair.Key, pair.Value);
-                }
-
-                telemetryEvent.Properties = dictionary;
+                telemetryEvent.Properties = DictionaryExtension.FromAnonymousObject(parameters);
 
                 string json = JsonConvert.SerializeObject(telemetryEvent);
                 sw.WriteLine(json);
