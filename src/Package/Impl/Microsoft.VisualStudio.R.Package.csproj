@@ -153,6 +153,7 @@
     <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
+    <Compile Include="Options\R\SupportedRVersions.cs" />
     <Compile Include="Repl\Workspace\AttachDebuggerCommand.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
     <Compile Include="Repl\RSessionExtensions.cs" />
@@ -285,6 +286,11 @@
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
+    <Compile Include="Telemetry\TelemetryActvityWrapper.cs" />
+    <Compile Include="Telemetry\TelemetryEvents.cs" />
+    <Compile Include="Telemetry\TelemetryProperties.cs" />
+    <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
+    <Compile Include="Telemetry\VsTelemetryService.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />
     <Compile Include="Utilities\IActiveWpfTextViewTracker.cs" />
     <Compile Include="Utilities\LongOperationNotification.cs" />
@@ -342,6 +348,9 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <Private>False</Private>
     </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -516,9 +525,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Telemetry\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>

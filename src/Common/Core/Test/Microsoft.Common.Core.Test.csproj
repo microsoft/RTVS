@@ -29,12 +29,19 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="FluentAssertions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\FluentAssertions.4.0.0\lib\net45\FluentAssertions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentAssertions.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\FluentAssertions.4.0.0\lib\net45\FluentAssertions.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NSubstitute, Version=1.8.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
@@ -83,6 +90,13 @@
     <Compile Include="StackExtensionsTest.cs" />
     <Compile Include="StringBuilderExtensionsTest.cs" />
     <Compile Include="StringExtensionsTest.cs" />
+    <Compile Include="Telemetry\FileTelemetryRecorder.cs" />
+    <Compile Include="Telemetry\ITelemetryTestSupport.cs" />
+    <Compile Include="Telemetry\SimpleTelemetryEvent.cs" />
+    <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
+    <Compile Include="Telemetry\StringTelemetryRecorderTests.cs" />
+    <Compile Include="Telemetry\TelemetryTestService.cs" />
+    <Compile Include="Telemetry\TelemetryTestServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

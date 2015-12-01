@@ -1,8 +1,4 @@
-using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Actions.Utility;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -12,16 +8,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public Task<ExecutionResult> InitializeAsync() => ExecutionResult.Failed;
 
         public Task<ExecutionResult> ResetAsync(bool initialize = true) {
-            if (initialize) {
-                if (RInstallation.VerifyRIsInstalled(RToolsSettings.Current.RBasePath)) {
-                    EditorShell.Current.ShowErrorMessage(Resources.Error_RestartVsAfterRInstalled);
-                }
-                else {
-                    EditorShell.Current.ShowErrorMessage(Resources.Error_RNotInstalled);
-                    Process.Start("https://cran.r-project.org");
-                }
-            }
-
             return ExecutionResult.Failed;
         }
 
