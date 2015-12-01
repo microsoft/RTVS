@@ -39,56 +39,29 @@ namespace Microsoft.Common.Core.Telemetry {
         }
 
         /// <summary>
-        /// Records a simple event without parameters.
-        /// </summary>
-        /// <param name="area">Telemetry area name such as 'Toolbox'.</param>
-        /// <param name="eventName">Event name</param>
-        public void ReportEvent(TelemetryArea area, string eventName) {
-            Check.ArgumentStringNullOrEmpty("eventName", eventName);
-
-            string fullEventName = this.EventNamePrefix + area.ToString() + "/" + eventName;
-            this.TelemetryRecorder.RecordEvent(fullEventName);
-        }
-
-        /// Records event with a single parameter
+        /// Records event with parameters
         /// </summary>
         /// <param name="area">Telemetry area name such as 'Toolbox'.</param>
         /// <param name="eventName">Event name.</param>
-        /// <param name="parameterName">Event parameter name.</param>
-        /// <param name="parameterValue">Event parameter value.</param>
-        public void ReportEvent(TelemetryArea area, string eventName, string parameterName, object parameterValue) {
-            Check.ArgumentStringNullOrEmpty("eventName", eventName);
-            Check.ArgumentStringNullOrEmpty("parameterName", parameterName);
-            Check.ArgumentNull("parameterValue", parameterValue);
-
-            var dict = new Dictionary<string, object>();
-            dict[this.PropertyNamePrefix + area.ToString() + "." + parameterName] = parameterValue;
-            this.TelemetryRecorder.RecordEvent(
-                this.EventNamePrefix + area.ToString() + "/" + eventName, dict);
-        }
-
+        /// <param name="parameters">
+        /// Either string/object dictionary or anonymous
+        /// collection of string/object pairs.
+        /// </param>
         /// <summary>
-        /// Records event with multiple parameters
-        /// </summary>
-        /// <param name="area">Telemetry area name such as 'Toolbox'.</param>
-        /// <param name="eventName">Event name.</param>
-        /// <param name="parameters">Event parameters.</param>
-        /// <summary>
-        public void ReportEvent(TelemetryArea area, string eventName, IReadOnlyDictionary<string, object> parameters) {
+        public void ReportEvent(TelemetryArea area, string eventName, object parameters = null) {
             Check.ArgumentStringNullOrEmpty("eventName", eventName);
-            Check.ArgumentNull("parameters", parameters);
-            Check.ArgumentOutOfRange("parameters", () => parameters.Count <= 0);
 
-            Dictionary<string, object> dict = new Dictionary<string, object>(parameters.Count);
+            IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
+            IDictionary<string, object> dictWithPrefix = new Dictionary<string, object>();
 
-            foreach (KeyValuePair<string, object> kvp in parameters) {
+            foreach (KeyValuePair<string, object> kvp in dict) {
                 Check.ArgumentStringNullOrEmpty("parameterName", kvp.Key);
                 Check.ArgumentNull("parameterValue", kvp.Value);
 
-                dict[this.PropertyNamePrefix + area.ToString() + "." + kvp.Key] = kvp.Value;
+                dictWithPrefix[this.PropertyNamePrefix + area.ToString() + "." + kvp.Key] = kvp.Value;
             }
 
-            this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, dict);
+            this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, dictWithPrefix);
         }
 
         /// <summary>

@@ -32,13 +32,13 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         }
 
         [CompositeTest]
-        [InlineData(TelemetryArea.Options, "event", "parameter", "value")]
-        public void TelemetryTestService_EventWithParametersTest(TelemetryArea area, string eventName, string parameter, string value) {
+        [InlineData(TelemetryArea.Options, "event")]
+        public void TelemetryTestService_EventWithParametersTest(TelemetryArea area, string eventName) {
             var telemetryService = new TelemetryTestService();
-            telemetryService.ReportEvent(area, eventName, parameter, value);
+            telemetryService.ReportEvent(area, eventName, new { parameter = "value" });
             string log = telemetryService.SessionLog;
             log.Should().Be(TelemetryTestService.EventNamePrefixString + area.ToString() + "/" + eventName +
-                            "\r\n\t" + TelemetryTestService.PropertyNamePrefixString + area.ToString() + "." + parameter + " : " + value + "\r\n");
+                            "\r\n\t" + TelemetryTestService.PropertyNamePrefixString + area.ToString() + ".parameter : value\r\n");
         }
     }
 }

@@ -11,28 +11,15 @@ namespace Microsoft.Common.Core.Telemetry {
         bool IsEnabled { get; }
 
         /// <summary>
-        /// Records a simple event without parameters.
+        /// Records event with parameters
         /// </summary>
-        /// <param name="area">Telemetry area name such as 'Toolbox'.</param>
-        /// <param name="eventName">Event name</param>
-        void ReportEvent(TelemetryArea area, string eventName);
-
-        /// <summary>
-        /// Records event with a single parameter
-        /// </summary>
-        /// <param name="area">Telemetry area name such as 'Toolbox'.</param>
+        /// <param name="area">Telemetry area name such as 'Project'.</param>
         /// <param name="eventName">Event name.</param>
-        /// <param name="parameterName">Event parameter name.</param>
-        /// <param name="parameterValue">Event parameter value.</param>
-        void ReportEvent(TelemetryArea area, string eventName, string parameterName, object parameterValue);
-
-        /// <summary>
-        /// Records event with multiple parameters
-        /// </summary>
-        /// <param name="area">Telemetry area name such as 'Toolbox'.</param>
-        /// <param name="eventName">Event name.</param>
-        /// <param name="parameters">Event parameters.</param>
-        void ReportEvent(TelemetryArea area, string eventName, IReadOnlyDictionary<string, object> parameters);
+        /// <param name="parameters">
+        /// Either string/object dictionary or anonymous
+        /// collection of string/object pairs.
+        /// </param>
+        void ReportEvent(TelemetryArea area, string eventName, object parameters = null);
 
         /// <summary>
         /// Provides a way to create and start recording user activity.
