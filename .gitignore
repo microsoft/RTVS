@@ -9,6 +9,7 @@
 # Assembly version information
 AssemblyVersionInfo.cs
 GeneratedVersion.h
+RTVS_Version.cs
 
 # Build results
 [Dd]ebug/
@@ -83,6 +84,3 @@ src/R.sdf
 
 # R files
 .Rproj.user
-
-# Generated version files
-src/Package/Impl/RTVS_Version.cs
