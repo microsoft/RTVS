@@ -11,23 +11,43 @@ namespace Microsoft.R.Actions.Utility {
     /// settings try and find highest version.
     /// </summary>
     public static class RInstallation {
-        public static bool VerifyRIsInstalled(string basePath) {
-            string rPath = RInstallation.GetRInstallPath(basePath);
-            if (!string.IsNullOrEmpty(rPath)) {
-                bool rExeExists = File.Exists(Path.Combine(rPath, @"bin\R.exe"));
-                bool rTermExists = File.Exists(Path.Combine(rPath, @"bin\x64\RTerm.exe"));
-
-                if (rExeExists && rTermExists) {
-                    return true;
-                }
+        public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion) {
+            string path = RInstallation.GetRInstallPath(basePath);
+            if (string.IsNullOrEmpty(path)) {
+                return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
             }
 
-            //string message = string.Format(CultureInfo.InvariantCulture, Resources.Error_RNotInstalled);
-            //EditorShell.Current.ShowErrorMessage(message);
+            RInstallData data = new RInstallData() { Status = RInstallStatus.OK, Path = path };
 
-            //Process.Start("https://cran.r-project.org");
+            try {
+                string rDirectory = Path.Combine(path, @"bin\x64");
+                string rDllPath = Path.Combine(rDirectory, "R.dll");
+                if (File.Exists(rDllPath)) {
+                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(rDllPath);
+                    int minor, revision;
 
-            return false;
+                    GetRVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
+                    data.Version = new Version(fvi.FileMajorPart, minor, revision);
+
+                    if (fvi.FileMajorPart < minMajorVersion || fvi.FileMajorPart > maxMajorVersion) {
+                        data.Status = RInstallStatus.UnsupportedVersion;
+                    }
+                    else if (minor < minMinorVersion || minor > maxMinorVersion) {
+                        data.Status = RInstallStatus.UnsupportedVersion;
+                    }
+                }
+                else {
+                    data.Status = RInstallStatus.NoRBinaries;
+                }
+            } catch (ArgumentException aex) {
+                data.Status = RInstallStatus.ExceptionAccessingPath;
+                data.Exception = aex;
+            } catch (IOException ioex) {
+                data.Status = RInstallStatus.ExceptionAccessingPath;
+                data.Exception = ioex;
+            }
+
+            return data;
         }
 
         public static void GoToRInstallPage() {
@@ -60,6 +80,23 @@ namespace Microsoft.R.Actions.Utility {
             }
 
             return binFolder;
+        }
+
+        /// <summary>
+        /// Given R minor file version like 10 converts it to R engine minor version.
+        /// For example, file may have version 3.10 which means R 3.1.0. In turn,
+        /// file version 2.125 means R engine version is 2.12.5.
+        /// </summary>
+        /// <param name="minorVersion"></param>
+        /// <param name="minor"></param>
+        /// <param name="revision"></param>
+        private static void GetRVersionPartsFromFileMinorVersion(int minorVersion, out int minor, out int revision) {
+            revision = minorVersion % 10;
+            if (minorVersion < 100) {
+                minor = minorVersion / 10;
+            } else {
+                minor = minorVersion / 100;
+            }
         }
 
         /// <summary>

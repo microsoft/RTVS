@@ -90,6 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
                     if (File.Exists(file)) {
                         var sr = new StreamReader(file);
                         content = sr.ReadToEnd();
+                        File.Delete(_cranCsvFileTempPath);
                         File.Copy(file, _cranCsvFileTempPath);
                     }
                 } catch (IOException) { }

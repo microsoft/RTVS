@@ -2,13 +2,12 @@
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Actions.Utility;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.History;
+using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -37,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             IInteractiveEvaluator evaluator;
             EventHandler textViewOnClosed;
 
-            if (RInstallation.VerifyRIsInstalled(RToolsSettings.Current.RBasePath)) {
+            if (SupportedRVersions.VerifyRIsInstalled()) {
                 var session = SessionProvider.Create(instanceId);
                 var historyWindow = ToolWindowUtilities.FindWindowPane<HistoryWindowPane>(0);
                 var history = HistoryProvider.GetAssociatedRHistory(historyWindow.TextView);

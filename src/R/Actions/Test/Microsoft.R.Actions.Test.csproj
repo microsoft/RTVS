@@ -41,6 +41,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Installation\RInstallationTest.cs" />
     <Compile Include="Logging\LoggerTest.cs" />
     <Compile Include="Script\InstallPackagesTest.cs" />
   </ItemGroup>

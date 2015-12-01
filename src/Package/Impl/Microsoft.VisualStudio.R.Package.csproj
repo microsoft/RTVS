@@ -153,6 +153,7 @@
     <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
+    <Compile Include="Options\R\SupportedRVersions.cs" />
     <Compile Include="Repl\Workspace\AttachDebuggerCommand.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
     <Compile Include="Repl\RSessionExtensions.cs" />
@@ -268,6 +269,7 @@
     <Compile Include="RPackages\Mirrors\CranMirrorEntry.cs" />
     <Compile Include="RPackages\Mirrors\CranMirrorList.cs" />
     <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
+    <Compile Include="RtvsProductInfo.cs" />
     <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\AppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
@@ -285,6 +287,11 @@
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
+    <Compile Include="Telemetry\TelemetryActvityWrapper.cs" />
+    <Compile Include="Telemetry\TelemetryEvents.cs" />
+    <Compile Include="Telemetry\TelemetryProperties.cs" />
+    <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
+    <Compile Include="Telemetry\VsTelemetryService.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />
     <Compile Include="Utilities\IActiveWpfTextViewTracker.cs" />
     <Compile Include="Utilities\LongOperationNotification.cs" />
@@ -342,6 +349,9 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <Private>False</Private>
     </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -516,9 +526,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Telemetry\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
@@ -756,6 +764,22 @@
     </ItemGroup>
     <Copy SourceFiles="@(Rules)" DestinationFolder="$(MSBuildUserExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\RTVS\Rules\" />
   </Target>
+  <Target Name="GenerateProductVersionFile" 
+          Outputs="$(MSBuildProjectDirectory)\RtvsProductInfo.cs">
+    <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs"
+                      Overwrite="true"
+                      Lines ="// Generated version file. Do not modify or check in.;
+                              namespace Microsoft.VisualStudio.R.Package {;
+                              %20%20%20%20static partial class RtvsProductInfo {;
+                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;
+                              %20%20%20%20};
+                              };">
+    </WriteLinesToFile>
+  </Target>
+  <PropertyGroup>
+    <CompileDependsOn>GenerateProductVersionFile;$(CompileDependsOn)</CompileDependsOn>
+  </PropertyGroup>
   <Import Project="..\..\R.Build.Version.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -767,6 +791,7 @@
     <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets'))" />
     <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets'))" />
   </Target>
+ 
   <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets')" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets')" />

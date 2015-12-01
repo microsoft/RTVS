@@ -50,10 +50,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set {
                 _workingDirectory = value;
                 UpdateWorkingDirectoryList(_workingDirectory);
-                EditorShell.DispatchOnUIThread(() => {
-                    IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                    shell.UpdateCommandUI(1);
-                });
+
+                if (EditorShell.HasShell) {
+                    EditorShell.DispatchOnUIThread(() => {
+                        IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                        shell.UpdateCommandUI(1);
+                    });
+                }
             }
         }
 
