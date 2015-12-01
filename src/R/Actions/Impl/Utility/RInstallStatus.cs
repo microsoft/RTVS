@@ -22,7 +22,8 @@
 
         /// <summary>
         /// Specified path to R binaries does not exist
+        /// or is not accessible
         /// </summary>
-        InvalidInstallPath
+        ExceptionAccessingPath
     }
 }

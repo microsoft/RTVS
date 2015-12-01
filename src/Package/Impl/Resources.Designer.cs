@@ -277,11 +277,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid directory path. Exception: {0}..
+        ///   Looks up a localized string similar to Unable to access path {0}. Exception: {1}..
         /// </summary>
-        public static string Error_InvalidPath {
+        public static string Error_ExceptionAccessingPath {
             get {
-                return ResourceManager.GetString("Error_InvalidPath", resourceCulture);
+                return ResourceManager.GetString("Error_ExceptionAccessingPath", resourceCulture);
             }
         }
         

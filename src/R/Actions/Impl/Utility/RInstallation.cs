@@ -11,7 +11,7 @@ namespace Microsoft.R.Actions.Utility {
     /// settings try and find highest version.
     /// </summary>
     public static class RInstallation {
-        public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int maxMajorVersion, int minMinorVersion, int maxMinorVersion) {
+        public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion) {
             string path = RInstallation.GetRInstallPath(basePath);
             if (string.IsNullOrEmpty(path)) {
                 return new RInstallData() { Status = RInstallStatus.Undefined };
@@ -32,7 +32,7 @@ namespace Microsoft.R.Actions.Utility {
                     if (fvi.FileMajorPart < minMajorVersion || fvi.FileMajorPart > maxMajorVersion) {
                         data.Status = RInstallStatus.UnsupportedVersion;
                     }
-                    if (minor < minMinorVersion || minor > maxMinorVersion) {
+                    else if (minor < minMinorVersion || minor > maxMinorVersion) {
                         data.Status = RInstallStatus.UnsupportedVersion;
                     }
                 }
@@ -40,10 +40,10 @@ namespace Microsoft.R.Actions.Utility {
                     data.Status = RInstallStatus.NoRBinaries;
                 }
             } catch (ArgumentException aex) {
-                data.Status = RInstallStatus.InvalidInstallPath;
+                data.Status = RInstallStatus.ExceptionAccessingPath;
                 data.Exception = aex;
             } catch (IOException ioex) {
-                data.Status = RInstallStatus.InvalidInstallPath;
+                data.Status = RInstallStatus.ExceptionAccessingPath;
                 data.Exception = ioex;
             }
 

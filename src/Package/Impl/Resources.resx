@@ -462,8 +462,8 @@
   <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
     <value>Cannot find R binaries in {0}. Please specify valid path to 64-bit R installation.</value>
   </data>
-  <data name="Error_InvalidPath" xml:space="preserve">
-    <value>Invalid directory path. Exception: {0}.</value>
+  <data name="Error_ExceptionAccessingPath" xml:space="preserve">
+    <value>Unable to access path {0}. Exception: {1}.</value>
   </data>
   <data name="RPathChangedRestartVS" xml:space="preserve">
     <value>You must restart Visual Studio after changing path to the R installation.</value>

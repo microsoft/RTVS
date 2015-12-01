@@ -9,14 +9,14 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         // TODO: this probably needs configuration file
         // or another dynamic source of supported versions.
         private const int _minMajorVersion = 3;
-        private const int _maxMajorVersion = 3;
         private const int _minMinorVersion = 2;
+        private const int _maxMajorVersion = 3;
         private const int _maxMinorVersion = 2;
 
         public static bool VerifyRIsInstalled(string path, bool showErrors) {
 
             RInstallData data = RInstallation.GetInstallationData(path,
-                        _minMajorVersion, _maxMajorVersion, _minMinorVersion, _maxMinorVersion);
+                        _minMajorVersion, _minMinorVersion, _maxMajorVersion, _maxMinorVersion);
 
             if (data.Status != RInstallStatus.OK && showErrors) {
                 string message = FormatMessage(data);
@@ -37,19 +37,19 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             switch (data.Status) {
                 case RInstallStatus.UnsupportedVersion:
                     return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion, 
-                        data.Version.Major, data.Version.Minor, data.Version.Revision,
+                        data.Version.Major, data.Version.Minor, data.Version.Build,
                         _minMajorVersion, _minMinorVersion, "*",
                         _maxMajorVersion, _maxMinorVersion, "*");
 
-                case RInstallStatus.InvalidInstallPath:
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_InvalidPath, data.Exception.Message);
+                case RInstallStatus.ExceptionAccessingPath:
+                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, data.Path, data.Exception.Message);
 
                 case RInstallStatus.NoRBinaries:
                     Debug.Assert(!string.IsNullOrEmpty(data.Path));
                     return string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, data.Path);
 
                 case RInstallStatus.Undefined:
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, data.Path);
+                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToFindR);
             }
 
             return string.Empty;
