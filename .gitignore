@@ -83,3 +83,6 @@ src/R.sdf
 
 # R files
 .Rproj.user
+
+# Generated version files
+RTVS_Version.cs
