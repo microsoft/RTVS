@@ -680,15 +680,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save Workspace.
-        /// </summary>
-        public static string SaveWorkspaceOnProjectUnloadTitle {
-            get {
-                return ResourceManager.GetString("SaveWorkspaceOnProjectUnloadTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Always save history.
         /// </summary>
         public static string Settings_AlwaysSaveHistory {

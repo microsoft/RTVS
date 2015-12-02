@@ -5,6 +5,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
@@ -100,15 +101,15 @@ namespace Microsoft.Languages.Editor.Tests.Shell
             return true;
         }
 
-        public void ShowErrorMessage(string msg, string title = null)
+        public void ShowErrorMessage(string msg)
         {
         }
 
         /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
-        public bool ShowYesNoMessage(string message, string title = null) {
-            return true;
+        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
+            return MessageButtons.OK;
         }
 
         public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {

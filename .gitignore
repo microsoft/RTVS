@@ -84,3 +84,4 @@ src/R.sdf
 
 # R files
 .Rproj.user
+src/R.VC.opendb

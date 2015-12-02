@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Host.Client;
@@ -276,7 +277,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                     await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
                 } catch (OperationCanceledException) {
                     return;
-                } 
+                }
             }
         }
 
@@ -312,12 +313,36 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Displays error message
+        /// </summary>
         async Task IRCallbacks.ShowMessage(string message, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
             EditorShell.Current.ShowErrorMessage(message);
         }
 
-        async Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+        /// <summary>
+        /// Called as a result of R calling R API 'YesNoCancel' callback
+        /// </summary>
+        /// <returns>Codes that match constants in RApi.h</returns>
+        public async Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+
+            MessageButtons buttons = await ((IRCallbacks)this).ShowDialog(contexts, s, isEvaluationAllowed, MessageButtons.YesNoCancel, ct);
+            switch (buttons) {
+                case MessageButtons.No:
+                    return Microsoft.R.Host.Client.YesNoCancel.No;
+                case MessageButtons.Cancel:
+                    return Microsoft.R.Host.Client.YesNoCancel.Cancel;
+            }
+            return Microsoft.R.Host.Client.YesNoCancel.Yes;
+        }
+
+        /// <summary>
+        /// Called when R wants to display generic Windows MessageBox. 
+        /// Graph app may call Win32 API directly rather than going via R API callbacks.
+        /// </summary>
+        /// <returns>Pressed button code</returns>
+        async Task<MessageButtons> IRCallbacks.ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (isEvaluationAllowed) {
@@ -326,7 +351,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
 
-            return YesNoCancel.Yes;
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
+            return EditorShell.Current.ShowMessage(s, buttons);
         }
 
         Task IRCallbacks.Busy(bool which, CancellationToken ct) {

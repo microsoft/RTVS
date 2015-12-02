@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.VisualStudio.Text;
@@ -80,12 +81,12 @@ namespace Microsoft.Languages.Editor.Shell {
         /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
-        void ShowErrorMessage(string message, string title = null);
+        void ShowErrorMessage(string message);
 
         /// <summary>
-        /// Displays question in a host-specific UI
+        /// Displays message with specified buttons in a host-specific UI
         /// </summary>
-        bool ShowYesNoMessage(string message, string title = null);
+        MessageButtons ShowMessage(string message, MessageButtons buttons);
 
         string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null);
 

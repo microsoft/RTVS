@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
@@ -161,32 +162,34 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
-        public void ShowErrorMessage(string message, string title = null) {
+        public void ShowErrorMessage(string message) {
             var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
-            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0,
+            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
         /// <summary>
         /// Displays question in a host-specific UI
         /// </summary>
-        public bool ShowYesNoMessage(string message, string title = null) {
+        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
-            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0,
-                OLEMSGBUTTON.OLEMSGBUTTON_YESNO, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
+            var oleButtons = GetOleButtonFlags(buttons);
+            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
+                oleButtons, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
 
             switch (result) {
                 case NativeMethods.IDYES:
-                    return true;
+                    return MessageButtons.Yes;
                 case NativeMethods.IDNO:
-                    return false;
-                default:
-                    return false;
+                    return MessageButtons.No;
+                case NativeMethods.IDCANCEL:
+                    return MessageButtons.Cancel;
             }
+            return MessageButtons.OK;
         }
 
         public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
@@ -333,5 +336,17 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
         #endregion
+
+        private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
+            switch(buttons) {
+                case MessageButtons.YesNoCancel:
+                    return OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL;
+                case MessageButtons.YesNo:
+                    return OLEMSGBUTTON.OLEMSGBUTTON_YESNO;
+                case MessageButtons.OKCancel:
+                    return OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL;
+            }
+            return OLEMSGBUTTON.OLEMSGBUTTON_OK;
+        }
     }
 }

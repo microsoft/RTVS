@@ -81,19 +81,7 @@ namespace Microsoft.Languages.Editor.Shell {
         /// <param name="action">Delegate to execute</param>
         /// <param name="arguments">Arguments to pass to the delegate</param>
         public static void DispatchOnUIThread(Action action, DispatcherPriority priority) {
-            if (UIThread != null) {
-                var dispatcher = Dispatcher.FromThread(UIThread);
-
-                Debug.Assert(dispatcher != null);
-
-                if (dispatcher != null && !dispatcher.HasShutdownStarted)
-                    dispatcher.BeginInvoke(action, priority);
-            } else if (HasShell) // Can be null in unit tests
-              {
-                Current.DispatchOnUIThread(action, priority);
-            } else {
-                action();
-            }
+            Current.DispatchOnUIThread(action, priority);
         }
 
         public static ISettingsStorage GetSettings(string contentTypeName) {

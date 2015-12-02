@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Host.Client {
     class Program : IRCallbacks {
@@ -46,19 +47,39 @@ namespace Microsoft.R.Host.Client {
             await writer.WriteAsync(buf);
         }
 
+        /// <summary>
+        /// Called as a result of R calling R API 'YesNoCancel' callback
+        /// </summary>
+        /// <returns>Codes that match constants in RApi.h</returns>
         public async Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+            MessageButtons buttons = await ShowDialog(contexts, s, isEvaluationAllowed, MessageButtons.YesNoCancel, ct);
+            switch (buttons) {
+                case MessageButtons.No:
+                    return Client.YesNoCancel.No;
+                case MessageButtons.Cancel:
+                    return Client.YesNoCancel.Cancel;
+            }
+            return Client.YesNoCancel.Yes;
+        }
+
+        /// <summary>
+        /// Called when R wants to display generic Windows MessageBox. 
+        /// Graph app may call Win32 API directly rather than going via R API callbacks.
+        /// </summary>
+        /// <returns>Pressed button code</returns>
+        public async Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
             await Console.Error.WriteAsync(s);
             while (true) {
                 string r = await ReadLineAsync(" [yes/no/cancel]> ", isEvaluationAllowed, ct);
 
                 if (r.StartsWith("y", StringComparison.InvariantCultureIgnoreCase)) {
-                    return Client.YesNoCancel.Yes;
+                    return MessageButtons.Yes;
                 }
                 if (r.StartsWith("n", StringComparison.InvariantCultureIgnoreCase)) {
-                    return Client.YesNoCancel.No;
+                    return MessageButtons.No;
                 }
                 if (r.StartsWith("c", StringComparison.InvariantCultureIgnoreCase)) {
-                    return Client.YesNoCancel.Cancel;
+                    return MessageButtons.Cancel;
                 }
 
                 await Console.Error.WriteAsync("Invalid input, try again!");

@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Shell;
@@ -23,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            if (EditorShell.Current.ShowYesNoMessage(Resources.DeleteAllHistoryEntries)) {
+            if (EditorShell.Current.ShowMessage(Resources.DeleteAllHistoryEntries, MessageButtons.YesNo) == MessageButtons.Yes) {
                 _history.DeleteAllHistoryEntries();
             }
 
