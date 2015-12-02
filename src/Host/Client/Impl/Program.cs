@@ -47,6 +47,26 @@ namespace Microsoft.R.Host.Client {
             await writer.WriteAsync(buf);
         }
 
+        /// <summary>
+        /// Called as a result of R calling R API 'YesNoCancel' callback
+        /// </summary>
+        /// <returns>Codes that match constants in RApi.h</returns>
+        public async Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+            MessageButtons buttons = await ShowDialog(contexts, s, isEvaluationAllowed, MessageButtons.YesNoCancel, ct);
+            switch (buttons) {
+                case MessageButtons.No:
+                    return Client.YesNoCancel.No;
+                case MessageButtons.Cancel:
+                    return Client.YesNoCancel.Cancel;
+            }
+            return Client.YesNoCancel.Yes;
+        }
+
+        /// <summary>
+        /// Called when R wants to display generic Windows MessageBox. 
+        /// Graph app may call Win32 API directly rather than going via R API callbacks.
+        /// </summary>
+        /// <returns>Pressed button code</returns>
         public async Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
             await Console.Error.WriteAsync(s);
             while (true) {

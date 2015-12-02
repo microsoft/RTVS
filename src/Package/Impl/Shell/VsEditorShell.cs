@@ -338,16 +338,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
-            // Supports OK/Cancel, Yes/No and Yes/No/Cancel
-            if ((buttons & MessageButtons.Yes) == MessageButtons.Yes) {
-                if ((buttons & MessageButtons.Cancel) == MessageButtons.Cancel) {
+            switch(buttons) {
+                case MessageButtons.YesNoCancel:
                     return OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL;
-                } else {
+                case MessageButtons.YesNo:
                     return OLEMSGBUTTON.OLEMSGBUTTON_YESNO;
-                }
-            }
-            if ((buttons & MessageButtons.Cancel) == MessageButtons.Cancel) {
-                return OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL;
+                case MessageButtons.OKCancel:
+                    return OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL;
             }
             return OLEMSGBUTTON.OLEMSGBUTTON_OK;
         }

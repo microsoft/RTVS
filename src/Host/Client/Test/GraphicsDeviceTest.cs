@@ -273,6 +273,10 @@ grid.newpage()
                 await writer.WriteAsync(buf);
             }
 
+            public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+                return Task.FromResult<YesNoCancel>(Client.YesNoCancel.Yes);
+            }
+
             public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
                 return Task.FromResult<MessageButtons>(MessageButtons.Yes);
             }

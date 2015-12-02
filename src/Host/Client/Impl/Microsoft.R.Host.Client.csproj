@@ -82,6 +82,7 @@
     <Compile Include="RHost.cs" />
     <Compile Include="ROutputEventArgs.cs" />
     <Compile Include="WebSocketMessageTransport.cs" />
+    <Compile Include="YesNoCancel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
