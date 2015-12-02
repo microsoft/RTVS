@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
@@ -113,9 +114,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     return true;
                 case YesNoAsk.Ask:
                     await _threadHandling.SwitchToUIThread();
-                    return EditorShell.Current.ShowYesNoMessage(
+                    return EditorShell.Current.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rdataPath),
-                        Resources.LoadWorkspaceTitle);
+                        MessageButtons.YesNo) == MessageButtons.Yes;
                 default:
                     return false;
             }
@@ -127,9 +128,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     return true;
                 case YesNoAsk.Ask:
                     await _threadHandling.SwitchToUIThread();
-                    return EditorShell.Current.ShowYesNoMessage(
+                    return EditorShell.Current.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceOnProjectUnload, rdataPath),
-                        Resources.SaveWorkspaceOnProjectUnloadTitle);
+                        MessageButtons.YesNo) == MessageButtons.Yes;
                 default:
                     return false;
             }

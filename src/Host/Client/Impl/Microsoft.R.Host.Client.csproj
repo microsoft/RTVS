@@ -27,7 +27,6 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -83,7 +82,6 @@
     <Compile Include="RHost.cs" />
     <Compile Include="ROutputEventArgs.cs" />
     <Compile Include="WebSocketMessageTransport.cs" />
-    <Compile Include="YesNoCancel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

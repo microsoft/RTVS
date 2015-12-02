@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Host.Client;
@@ -317,7 +318,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             EditorShell.Current.ShowErrorMessage(message);
         }
 
-        async Task<YesNoCancel> IRCallbacks.YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+        async Task<MessageButtons> IRCallbacks.ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (isEvaluationAllowed) {
@@ -326,7 +327,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
 
-            return YesNoCancel.Yes;
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
+            return EditorShell.Current.ShowMessage(s, buttons);
         }
 
         Task IRCallbacks.Busy(bool which, CancellationToken ct) {

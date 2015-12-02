@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem;
@@ -67,8 +68,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         protected virtual async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode, IRSession session) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            var messageResult = EditorShell.Current.ShowYesNoMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath));
-            if (!messageResult) {
+            MessageButtons messageResult = EditorShell.Current.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath), MessageButtons.YesNo);
+            if (messageResult == MessageButtons.No) {
                 return true;
             }
 

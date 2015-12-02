@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -142,17 +143,17 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task YesNoCancel(Message request, bool allowEval, CancellationToken ct) {
+        private async Task ShowDialog(Message request, bool allowEval, MessageButtons buttons, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             request.ExpectArguments(2);
             var contexts = GetContexts(request);
             var s = request.GetString(1, "s", allowNull: true);
 
-            YesNoCancel input;
+            MessageButtons input;
             try {
                 _canEval = allowEval;
-                input = await _callbacks.YesNoCancel(contexts, s, _canEval, ct);
+                input = await _callbacks.ShowDialog(contexts, s, _canEval, buttons, ct);
             } finally {
                 _canEval = false;
             }
@@ -161,13 +162,13 @@ namespace Microsoft.R.Host.Client {
 
             string response;
             switch (input) {
-                case Client.YesNoCancel.No:
+                case MessageButtons.No:
                     response = "N";
                     break;
-                case Client.YesNoCancel.Cancel:
+                case MessageButtons.Cancel:
                     response = "C";
                     break;
-                case Client.YesNoCancel.Yes:
+                case MessageButtons.Yes:
                     response = "Y";
                     break;
                 default:
@@ -350,7 +351,15 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "?":
-                                await YesNoCancel(message, allowEval, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
+                                await ShowDialog(message, allowEval, MessageButtons.YesNoCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
+                                break;
+
+                            case "??":
+                                await ShowDialog(message, allowEval, MessageButtons.YesNo, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
+                                break;
+
+                            case "???":
+                                await ShowDialog(message, allowEval, MessageButtons.OKCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
                                 break;
 
                             case ">":

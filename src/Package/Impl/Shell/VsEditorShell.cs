@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
@@ -154,39 +155,42 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Provides access to the application main thread, so users can know if the task they are trying
         /// to execute is executing from the right thread.
         /// </summary>
-        public Thread MainThread {
+        public Thread MainThread
+        {
             get { return _creatorThread; }
         }
 
         /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
-        public void ShowErrorMessage(string message, string title = null) {
+        public void ShowErrorMessage(string message) {
             var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
-            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0,
+            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
         /// <summary>
         /// Displays question in a host-specific UI
         /// </summary>
-        public bool ShowYesNoMessage(string message, string title = null) {
+        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             int result;
 
-            shell.ShowMessageBox(0, Guid.Empty, title, message, null, 0,
-                OLEMSGBUTTON.OLEMSGBUTTON_YESNO, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
+            var oleButtons = GetOleButtonFlags(buttons);
+            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
+                oleButtons, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
 
             switch (result) {
                 case NativeMethods.IDYES:
-                    return true;
+                    return MessageButtons.Yes;
                 case NativeMethods.IDNO:
-                    return false;
-                default:
-                    return false;
+                    return MessageButtons.No;
+                case NativeMethods.IDCANCEL:
+                    return MessageButtons.Cancel;
             }
+            return MessageButtons.OK;
         }
 
         public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
@@ -274,8 +278,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Returns host locale ID
         /// </summary>
-        public int LocaleId {
-            get {
+        public int LocaleId
+        {
+            get
+            {
                 IUIHostLocale hostLocale = AppShell.Current.GetGlobalService<IUIHostLocale>();
                 uint lcid;
 
@@ -290,8 +296,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Returns path to application-specific user folder, such as VisualStudio\11.0
         /// </summary>
-        public string UserFolder {
-            get {
+        public string UserFolder
+        {
+            get
+            {
                 var settingsManager = new ShellSettingsManager(AppShell.Current.GlobalServiceProvider);
                 return settingsManager.GetApplicationDataFolder(ApplicationDataFolder.RoamingSettings);
             }
@@ -300,15 +308,18 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Host service provider (can be null).
         /// </summary>
-        public System.IServiceProvider ServiceProvider {
+        public System.IServiceProvider ServiceProvider
+        {
             get { return AppShell.Current.GlobalServiceProvider; }
         }
 
-        public bool IsUnitTestEnvironment {
+        public bool IsUnitTestEnvironment
+        {
             get { return false; }
         }
 
-        public bool IsUITestEnvironment {
+        public bool IsUITestEnvironment
+        {
             // TODO: test for UI-drive VS tests
             get { return false; }
         }
@@ -333,5 +344,20 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
         #endregion
+
+        private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
+            // Supports OK/Cancel and Yes/No/Cancel
+            if ((buttons & MessageButtons.Yes) == MessageButtons.Yes) {
+                if ((buttons & MessageButtons.Cancel) == MessageButtons.Cancel) {
+                    return OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL;
+                } else {
+                    return OLEMSGBUTTON.OLEMSGBUTTON_YESNO;
+                }
+            }
+            if ((buttons & MessageButtons.Cancel) == MessageButtons.Cancel) {
+                return OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL;
+            }
+            return OLEMSGBUTTON.OLEMSGBUTTON_OK;
+        }
     }
 }

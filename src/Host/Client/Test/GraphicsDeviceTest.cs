@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -272,8 +273,8 @@ grid.newpage()
                 await writer.WriteAsync(buf);
             }
 
-            public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
-                return Task.FromResult<YesNoCancel>(Microsoft.R.Host.Client.YesNoCancel.Yes);
+            public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
+                return Task.FromResult<MessageButtons>(MessageButtons.Yes);
             }
 
             public Task PlotXaml(string xamlFilePath, CancellationToken ct) {
