@@ -155,8 +155,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Provides access to the application main thread, so users can know if the task they are trying
         /// to execute is executing from the right thread.
         /// </summary>
-        public Thread MainThread
-        {
+        public Thread MainThread {
             get { return _creatorThread; }
         }
 
@@ -278,10 +277,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Returns host locale ID
         /// </summary>
-        public int LocaleId
-        {
-            get
-            {
+        public int LocaleId {
+            get {
                 IUIHostLocale hostLocale = AppShell.Current.GetGlobalService<IUIHostLocale>();
                 uint lcid;
 
@@ -296,10 +293,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Returns path to application-specific user folder, such as VisualStudio\11.0
         /// </summary>
-        public string UserFolder
-        {
-            get
-            {
+        public string UserFolder {
+            get {
                 var settingsManager = new ShellSettingsManager(AppShell.Current.GlobalServiceProvider);
                 return settingsManager.GetApplicationDataFolder(ApplicationDataFolder.RoamingSettings);
             }
@@ -308,18 +303,15 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Host service provider (can be null).
         /// </summary>
-        public System.IServiceProvider ServiceProvider
-        {
+        public System.IServiceProvider ServiceProvider {
             get { return AppShell.Current.GlobalServiceProvider; }
         }
 
-        public bool IsUnitTestEnvironment
-        {
+        public bool IsUnitTestEnvironment {
             get { return false; }
         }
 
-        public bool IsUITestEnvironment
-        {
+        public bool IsUITestEnvironment {
             // TODO: test for UI-drive VS tests
             get { return false; }
         }
@@ -346,7 +338,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
-            // Supports OK/Cancel and Yes/No/Cancel
+            // Supports OK/Cancel, Yes/No and Yes/No/Cancel
             if ((buttons & MessageButtons.Yes) == MessageButtons.Yes) {
                 if ((buttons & MessageButtons.Cancel) == MessageButtons.Cancel) {
                     return OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL;
