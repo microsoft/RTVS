@@ -5,7 +5,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -19,31 +22,100 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     [Guid(WindowGuid)]
     internal class HelpWindowPane : ToolWindowPane {
         internal const string WindowGuid = "9E909526-A616-43B2-A82B-FD639DCD40CB";
-        private static bool _dontNavigateToDefault;
+        private static bool _showDefaultPage;
 
+        /// <summary>
+        /// Holds browser control. When R session is restarted
+        /// it is necessary to re-create the browser control since
+        /// help server changes port and current links stop working.
+        /// However, VS tool window doesn't like its child root
+        /// control changing so instead we keed content control 
+        /// unchanged and only replace browser that is inside it.
+        /// </summary>
+        private ContentControl _windowContentControl;
+
+        /// <summary>
+        /// Browser that displays help content
+        /// </summary>
         private WebBrowser _browser;
+        private IRSessionProvider _sessionProvider;
+        private IRSession _session;
 
         public HelpWindowPane() {
+            _sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _session = _sessionProvider.Current;
+            ConnectToSessionChangeEvents();
+
             Caption = Resources.HelpWindowCaption;
             BitmapImageMoniker = KnownMonikers.StatusHelp;
 
-            _browser = new WebBrowser();
+            _windowContentControl = new ContentControl();
+            Content = _windowContentControl;
 
-            _browser.Navigating += OnNavigating;
-            _browser.Navigated += OnNavigated;
-
-            Content = _browser;
-            if (!_dontNavigateToDefault) {
-                // When window is not visible and request comes for help,
-                // don't navigate to default page as it will be immediately
-                // replaced by the requested help page anyway.
-                HelpHomeCommand.ShowDefaultHelpPage();
-            }
+            CreateBrowser(_showDefaultPage);
 
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
             Controller c = new Controller();
             c.AddCommandSet(GetCommands());
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
+        }
+
+        private void ConnectToSessionChangeEvents() {
+            _sessionProvider.CurrentSessionChanged += OnCurrentSessionChanged;
+            ConnectToSessionEvents();
+        }
+
+        private void DisconnectFromSessionChangeEvents() {
+            if (_sessionProvider != null) {
+                _sessionProvider.CurrentSessionChanged -= OnCurrentSessionChanged;
+                _sessionProvider = null;
+            }
+        }
+
+        private void ConnectToSessionEvents() {
+            if (_session != null) {
+                _session.Disconnected += OnRSessionDisconnected;
+                _session.Connected += OnRSessionConnected;
+            }
+        }
+
+        private void DisconnectFromSessionEvents() {
+            if (_session != null) {
+                _session.Disconnected -= OnRSessionDisconnected;
+                _session.Connected -= OnRSessionConnected;
+                _session = null;
+            }
+        }
+
+        private void OnCurrentSessionChanged(object sender, EventArgs e) {
+            DisconnectFromSessionEvents();
+            _session = _sessionProvider.Current;
+            ConnectToSessionEvents();
+        }
+
+        private void OnRSessionConnected(object sender, EventArgs e) {
+            // Event fires on a background thread
+            EditorShell.Current.DispatchOnUIThread(() => {
+                CreateBrowser(showDefaultPage: false);
+            }, DispatcherPriority.Normal);
+        }
+
+        private void OnRSessionDisconnected(object sender, EventArgs e) {
+            // Event fires on a background thread
+            EditorShell.Current.DispatchOnUIThread(() => {
+                CloseBrowser();
+            }, DispatcherPriority.Normal);
+        }
+
+        private void CreateBrowser(bool showDefaultPage = false) {
+            _browser = new WebBrowser();
+            _browser.Navigating += OnNavigating;
+            _browser.Navigated += OnNavigated;
+
+            _windowContentControl.Content = _browser;
+            if (showDefaultPage) {
+                HelpHomeCommand.ShowDefaultHelpPage();
+            }
         }
 
         private void OnNavigating(object sender, NavigatingCancelEventArgs e) {
@@ -68,9 +140,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         public static void Navigate(string url) {
-            // Filter our localhost help from absolute URLs except the landing page
+            // Filter out localhost help URL from absolute URLs
+            // except when the URL is the main landing page.
             if (IsHelpUrl(url)) {
-                _dontNavigateToDefault = true;
+                // When control is just being created don't navigate 
+                // to the default page since it will be replaced by
+                // the specific help page right away.
+                _showDefaultPage = false;
                 HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
                 if (pane != null) {
                     pane.NavigateTo(url);
@@ -95,13 +171,23 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         protected override void Dispose(bool disposing) {
-            if (disposing && _browser != null) {
+            if (disposing) {
+                DisconnectFromSessionEvents();
+                DisconnectFromSessionChangeEvents();
+                CloseBrowser();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void CloseBrowser() {
+            _windowContentControl.Content = null;
+
+            if (_browser != null) {
                 _browser.Navigating -= OnNavigating;
                 _browser.Navigated -= OnNavigated;
                 _browser.Dispose();
                 _browser = null;
             }
-            base.Dispose(disposing);
         }
     }
 }

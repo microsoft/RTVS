@@ -914,6 +914,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R command line arguments.
+        /// </summary>
+        public static string Settings_RCommandLineArguments {
+            get {
+                return ResourceManager.GetString("Settings_RCommandLineArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional arguments to pass to the R Host process.
+        /// </summary>
+        public static string Settings_RCommandLineArguments_Description {
+            get {
+                return ResourceManager.GetString("Settings_RCommandLineArguments_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Interactive window.
         /// </summary>
         public static string Settings_ReplCategory {
