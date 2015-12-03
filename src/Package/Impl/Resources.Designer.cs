@@ -851,6 +851,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to History.
+        /// </summary>
+        public static string Settings_HistoryCategory {
+            get {
+                return ResourceManager.GetString("Settings_HistoryCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IntelliSense.
         /// </summary>
         public static string Settings_IntellisenseCategory {
