@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
+using Microsoft.R.Support.Settings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -171,8 +172,7 @@ namespace Microsoft.R.Host.Client {
                 case MessageButtons.Yes:
                     response = "Y";
                     break;
-                default:
-                    {
+                default: {
                         FormattableString error = $"YesNoCancel: callback returned an invalid value: {input}";
                         Trace.Fail(Invariant(error));
                         throw new InvalidOperationException(Invariant(error));
@@ -469,7 +469,7 @@ namespace Microsoft.R.Host.Client {
                 if (_transport != null) {
                     throw new MessageTransportException("More than one incoming connection.");
                 }
-                
+
                 var transport = new WebSocketMessageTransport();
                 _transportTcs.SetResult(_transport = transport);
                 return transport;
@@ -527,6 +527,10 @@ namespace Microsoft.R.Host.Client {
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
             psi.Arguments = Invariant($"--rhost-connect ws://127.0.0.1:{server.Port} --rhost-reparent-plot-windows {plotWindowContainerHandle.ToInt64()}");
+
+            if (!string.IsNullOrWhiteSpace(RToolsSettings.Current.RCommandLineArguments)) {
+                psi.Arguments += Invariant($" {RToolsSettings.Current.RCommandLineArguments}");
+            }
 
             using (this)
             using (_process = Process.Start(psi)) {

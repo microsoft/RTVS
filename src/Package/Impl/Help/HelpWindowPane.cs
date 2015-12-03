@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
@@ -37,8 +38,14 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// Browser that displays help content
         /// </summary>
         private WebBrowser _browser;
+        private IRSessionProvider _sessionProvider;
+        private IRSession _session;
 
         public HelpWindowPane() {
+            _sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _session = _sessionProvider.Current;
+            ConnectToSessionChangeEvents();
+
             Caption = Resources.HelpWindowCaption;
             BitmapImageMoniker = KnownMonikers.StatusHelp;
 
@@ -51,21 +58,53 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             Controller c = new Controller();
             c.AddCommandSet(GetCommands());
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
-
-            IRSessionProvider sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            sessionProvider.Current.Disconnected += OnRSessionDisconnected;
-            sessionProvider.Current.Connected += OnRSessionConnected;
         }
 
-        private async void OnRSessionConnected(object sender, EventArgs e) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CreateBrowser(showDefaultPage: false);
+        private void ConnectToSessionChangeEvents() {
+            _sessionProvider.CurrentSessionChanged += OnCurrentSessionChanged;
+            ConnectToSessionEvents();
         }
 
-        private async void OnRSessionDisconnected(object sender, EventArgs e) {
+        private void DisconnectFromSessionChangeEvents() {
+            if (_sessionProvider != null) {
+                _sessionProvider.CurrentSessionChanged -= OnCurrentSessionChanged;
+                _sessionProvider = null;
+            }
+        }
+
+        private void ConnectToSessionEvents() {
+            if (_session != null) {
+                _session.Disconnected += OnRSessionDisconnected;
+                _session.Connected += OnRSessionConnected;
+            }
+        }
+
+        private void DisconnectFromSessionEvents() {
+            if (_session != null) {
+                _session.Disconnected -= OnRSessionDisconnected;
+                _session.Connected -= OnRSessionConnected;
+                _session = null;
+            }
+        }
+
+        private void OnCurrentSessionChanged(object sender, EventArgs e) {
+            DisconnectFromSessionEvents();
+            _session = _sessionProvider.Current;
+            ConnectToSessionEvents();
+        }
+
+        private void OnRSessionConnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CloseBrowser();
+            EditorShell.Current.DispatchOnUIThread(() => {
+                CreateBrowser(showDefaultPage: false);
+            }, DispatcherPriority.Normal);
+        }
+
+        private void OnRSessionDisconnected(object sender, EventArgs e) {
+            // Event fires on a background thread
+            EditorShell.Current.DispatchOnUIThread(() => {
+                CloseBrowser();
+            }, DispatcherPriority.Normal);
         }
 
         private void CreateBrowser(bool showDefaultPage = false) {
@@ -133,9 +172,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                IRSessionProvider sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                sessionProvider.Current.Connected -= OnRSessionConnected;
-                sessionProvider.Current.Disconnected -= OnRSessionDisconnected;
+                DisconnectFromSessionEvents();
+                DisconnectFromSessionChangeEvents();
                 CloseBrowser();
             }
             base.Dispose(disposing);

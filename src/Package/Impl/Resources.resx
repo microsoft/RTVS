@@ -487,4 +487,10 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   <data name="LoadWorkspaceTitle" xml:space="preserve">
     <value>Load Workspace</value>
   </data>
+  <data name="Settings_RCommandLineArguments" xml:space="preserve">
+    <value>R command line arguments</value>
+  </data>
+  <data name="Settings_RCommandLineArguments_Description" xml:space="preserve">
+    <value>Additional arguments to pass to the R Host process</value>
+  </data>
 </root>

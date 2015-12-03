@@ -30,5 +30,11 @@ namespace Microsoft.R.Support.Settings.Definitions {
         /// Most recently used directories in REPL
         /// </summary>
         string[] WorkingDirectoryList { get; set; }
+
+        /// <summary>
+        /// Additional command line arguments to pass
+        /// to the R Host process
+        /// </summary>
+        string RCommandLineArguments { get; set; }
     }
 }
