@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Enums;
 using Microsoft.R.Support.Settings.Definitions;
@@ -37,12 +38,16 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
+        public bool UseExperimentalGraphicsDevice {
+            get { return false; }
+            set { }
+        }
+
         public void LoadFromStorage() {
         }
 
         public string WorkingDirectory { get; set; } = string.Empty;
 
         public string[] WorkingDirectoryList { get; set; } = new string[0];
-
     }
 }

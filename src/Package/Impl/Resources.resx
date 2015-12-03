@@ -262,13 +262,16 @@
     <value>R Plot</value>
   </data>
   <data name="EmptyPlotWindowWatermark" xml:space="preserve">
-    <value>Run plotting command in R Interactive Window, or open file</value>
+    <value>Run plotting command in R Interactive Window</value>
   </data>
   <data name="OpenPlotDialogTitle" xml:space="preserve">
     <value>Open R Plot File</value>
   </data>
   <data name="PlotFileFilter" xml:space="preserve">
     <value>R Plot Files (*.vsplot)|*.vsplot|All Files (*.*)|*.*</value>
+  </data>
+  <data name="PlotExportFilter" xml:space="preserve">
+    <value>PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*</value>
   </data>
   <data name="CannotOpenPlotFile" xml:space="preserve">
     <value>Unable to open plot file. Exception: {0}</value>
@@ -278,6 +281,9 @@
   </data>
   <data name="SavePlotDialogTitle" xml:space="preserve">
     <value>Save R Plot File</value>
+  </data>
+  <data name="ExportPlotDialogTitle" xml:space="preserve">
+    <value>Export Plot As Image</value>
   </data>
   <data name="LoadWorkspaceIntoGlobalEnvironment" xml:space="preserve">
     <value>Do you want to load the R data file {0} into the global environment?</value>
@@ -407,6 +413,12 @@
   <data name="Settings_AlwaysSaveHistory_Description" xml:space="preserve">
     <value>Save history to .RHistory file when project is closed, even if workspace isn't saved</value>
   </data>
+  <data name="Settings_UseExperimentalGraphicsDevice" xml:space="preserve">
+    <value>Use exp. graphics device (requires restart)</value>
+  </data>
+  <data name="Settings_UseExperimentalGraphicsDevice_Description" xml:space="preserve">
+    <value>Use the new experimental graphics device for plotting.  Restart VS after changing this setting.</value>
+  </data>
   <data name="Ask" xml:space="preserve">
     <value>Ask</value>
   </data>
@@ -428,6 +440,12 @@
   </data>
   <data name="Settings_WorkspaceCategory" xml:space="preserve">
     <value>Workspace</value>
+  </data>
+  <data name="Settings_HistoryCategory" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="Settings_PlotCategory" xml:space="preserve">
+    <value>Plot</value>
   </data>
   <data name="RDataNode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>images\rdatanode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

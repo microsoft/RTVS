@@ -21,6 +21,8 @@ namespace Microsoft.R.Support.Settings.Definitions {
 
         bool AlwaysSaveHistory { get; set; }
 
+        bool UseExperimentalGraphicsDevice { get; set; }
+
         /// <summary>
         /// Current working directory for REPL
         /// </summary>

@@ -223,7 +223,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Run plotting command in R Interactive Window, or open file.
+        ///   Looks up a localized string similar to Run plotting command in R Interactive Window.
         /// </summary>
         public static string EmptyPlotWindowWatermark {
             get {
@@ -337,6 +337,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnsupportedRVersion {
             get {
                 return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Plot As Image.
+        /// </summary>
+        public static string ExportPlotDialogTitle {
+            get {
+                return ResourceManager.GetString("ExportPlotDialogTitle", resourceCulture);
             }
         }
         
@@ -527,6 +536,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string OutputWindowName_Publish {
             get {
                 return ResourceManager.GetString("OutputWindowName_Publish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*.
+        /// </summary>
+        public static string PlotExportFilter {
+            get {
+                return ResourceManager.GetString("PlotExportFilter", resourceCulture);
             }
         }
         
@@ -851,6 +869,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to History.
+        /// </summary>
+        public static string Settings_HistoryCategory {
+            get {
+                return ResourceManager.GetString("Settings_HistoryCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IntelliSense.
         /// </summary>
         public static string Settings_IntellisenseCategory {
@@ -892,6 +919,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_PartialArgumentNameMatch_Description {
             get {
                 return ResourceManager.GetString("Settings_PartialArgumentNameMatch_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plot.
+        /// </summary>
+        public static string Settings_PlotCategory {
+            get {
+                return ResourceManager.GetString("Settings_PlotCategory", resourceCulture);
             }
         }
         
@@ -1072,6 +1108,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_TriggerOnFirstChar_Description {
             get {
                 return ResourceManager.GetString("Settings_TriggerOnFirstChar_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use exp. graphics device (requires restart).
+        /// </summary>
+        public static string Settings_UseExperimentalGraphicsDevice {
+            get {
+                return ResourceManager.GetString("Settings_UseExperimentalGraphicsDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the new experimental graphics device for plotting.  Restart VS after changing this setting..
+        /// </summary>
+        public static string Settings_UseExperimentalGraphicsDevice_Description {
+            get {
+                return ResourceManager.GetString("Settings_UseExperimentalGraphicsDevice_Description", resourceCulture);
             }
         }
         

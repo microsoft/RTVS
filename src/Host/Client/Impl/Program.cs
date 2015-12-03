@@ -86,8 +86,8 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task PlotXaml(string xamlFilePath, CancellationToken ct) {
-            await Console.Error.WriteLineAsync(xamlFilePath);
+        public async Task Plot(string filePath, CancellationToken ct) {
+            await Console.Error.WriteLineAsync(filePath);
         }
 
         public async Task Browser(string url) {
