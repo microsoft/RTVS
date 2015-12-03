@@ -259,7 +259,7 @@ plot(5:15)
 Sys.sleep(1)
 .rtvs.vsgdpreviousplot()
 ";
-            // TODO: when this passes, we can make it validate against expected files
+            // TODO: Make this validate against a set of expected files to avoid any false positive
             var actualPlotFilePaths = GraphicsTest(code).ToArray();
             Assert.AreEqual(3, actualPlotFilePaths.Length);
             CollectionAssert.AreEqual(File.ReadAllBytes(actualPlotFilePaths[0]), File.ReadAllBytes(actualPlotFilePaths[2]));
