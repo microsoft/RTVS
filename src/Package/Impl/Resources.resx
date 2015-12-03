@@ -493,4 +493,7 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   <data name="Settings_RCommandLineArguments_Description" xml:space="preserve">
     <value>Additional arguments to pass to the R Host process</value>
   </data>
+  <data name="Settings_HistoryCategory" xml:space="preserve">
+    <value>History</value>
+  </data>
 </root>
