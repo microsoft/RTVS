@@ -280,7 +280,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void OnCollectionChanged(Func<NotifyCollectionChangedEventArgs> getArgs) {
             if (CollectionChanged != null) {
-                EditorShell.Current.DispatchOnUIThread(() => {
+                EditorShell.DispatchOnUIThread(() => {
                     CollectionChanged(
                         this,
                         getArgs());

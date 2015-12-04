@@ -27,9 +27,8 @@ namespace Microsoft.Markdown.Editor.Test.Classification
             string content = "```'{r}\n#R\n```";
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
-            IEditorShell shell = TestEditorShell.Create(MarkdownTestCompositionCatalog.Current);
+            EditorShell.SetShell(TestEditorShell.Create(MarkdownTestCompositionCatalog.Current));
             MdClassifierProvider classifierProvider = new MdClassifierProvider();
-            shell.CompositionService.SatisfyImportsOnce(classifierProvider);
             IClassifier cls = classifierProvider.GetClassifier(textBuffer);
 
             Typing.Type(textBuffer, 6, "\n");
