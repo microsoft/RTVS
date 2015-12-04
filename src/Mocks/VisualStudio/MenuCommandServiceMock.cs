@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.VisualStudio.Shell.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class MenuCommandServiceMock : IMenuCommandService
     {
         Dictionary<CommandID, MenuCommand> _commands = new Dictionary<CommandID, MenuCommand>();

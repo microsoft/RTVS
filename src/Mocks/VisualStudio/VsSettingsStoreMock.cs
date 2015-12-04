@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class VsSettingsStoreMock : IVsWritableSettingsStore {
         public int CollectionExists(string collectionPath, out int pfExists) {
             throw new NotImplementedException();

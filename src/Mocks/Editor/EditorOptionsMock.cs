@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.Editor.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class EditorOptionsMock : IEditorOptions {
         private EditorOptionsMock _globalOptions = new EditorOptionsMock();
         public IEditorOptions GlobalOptions => _globalOptions;

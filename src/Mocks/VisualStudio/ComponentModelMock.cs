@@ -2,11 +2,13 @@
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.VisualStudio.Shell.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ComponentModelMock : IComponentModel
     {
         private ITestCompositionCatalog _catalog;

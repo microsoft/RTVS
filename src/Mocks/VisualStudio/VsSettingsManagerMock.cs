@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class VsSettingsManagerMock : IVsSettingsManager {
         public int GetApplicationDataFolder(uint folder, out string folderPath) {
             folderPath = Path.GetTempPath();

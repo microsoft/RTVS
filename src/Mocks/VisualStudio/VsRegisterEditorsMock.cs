@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class VsRegisterEditorsMock : IVsRegisterEditors
     {
         public int RegisterEditor(ref Guid rguidEditor, IVsEditorFactory pVsPF, out uint pdwCookie)

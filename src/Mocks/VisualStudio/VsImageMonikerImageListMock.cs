@@ -1,8 +1,10 @@
-﻿using Microsoft.VisualStudio.Imaging;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class VsImageMonikerImageListMock : IVsImageMonikerImageList {
         public int ImageCount {
             get {
