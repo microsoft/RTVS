@@ -12,21 +12,17 @@ using Microsoft.R.Actions.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Host.Client.Test {
-    // [TestClass]
-    public class GraphicsDeviceTest {
+    [TestClass]
+    public class XamlGraphicsDeviceTest {
         private const string ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
-        private const string gridPrefixCode = @"
-vsgd <- function() { .External('C_vsgd', 5, 5)}
-options(device = 'vsgd')
-library(grid)
-grid.newpage()
+        private const string setupCode = @"
+xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graphicsdevice_new', filename, width, height)}
 ";
+        private const string gridPrefixCode = "xaml(\"{0}\", {1}, {2});library(grid);grid.newpage();\n";
+        private const string gridSuffixCode = "dev.off()\n";
 
-        private const int DPI = 72;
-        private const int DefaultWidthInInches = 5;
-        private const int DefaultHeightInInches = 5;
-        private const int DefaultWidth = DefaultWidthInInches * DPI;
-        private const int DefaultHeight = DefaultHeightInInches * DPI;
+        private const int DefaultWidth = 360;
+        private const int DefaultHeight = 360;
 
         private double X(double percentX) {
             return DefaultWidth * percentX;
@@ -44,7 +40,7 @@ grid.newpage()
             return DefaultHeight * percentY;
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void Line() {
             var code = @"grid.segments(.01, .1, .99, .1)";
             var doc = GridTest(code);
@@ -56,7 +52,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void LineCustomLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty='4812',lwd=5,col='Blue'))";
             var doc = GridTest(code);
@@ -68,7 +64,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], "4 8 1 2");
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void LineSolidLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=1))";
             var doc = GridTest(code);
@@ -80,7 +76,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void LineDashedLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=2))";
             var doc = GridTest(code);
@@ -92,7 +88,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], "4 4");
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void Polygon() {
             var code = @"grid.polygon(x=c(0,0.5,1,0.5),y=c(0.5,1,0.5,0))";
             var doc = GridTest(code);
@@ -104,7 +100,7 @@ grid.newpage()
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void Circle() {
             var code = @"grid.circle(0.5, 0.5, 0.2)";
             var doc = GridTest(code);
@@ -114,7 +110,7 @@ grid.newpage()
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.2), Y(0.5) - W(0.2));
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void Rectangle() {
             var code = @"grid.rect(0.5, 0.5, 0.3, 0.4)";
             var doc = GridTest(code);
@@ -124,7 +120,7 @@ grid.newpage()
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.15), Y(0.5) - W(0.2));
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void Path() {
             var code = @"grid.path(c(.1, .1, .9, .9, .2, .2, .8, .8), c(.1, .9, .9, .1, .2, .8, .8, .2), id=rep(1:2,each=4), rule='winding', gp=gpar(filled.contour='grey'))";
             var doc = GridTest(code);
@@ -142,7 +138,7 @@ grid.newpage()
             CheckStringAttr(shapes[0], "Data", expected);
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void TextXmlEscape() {
             var code = "grid.text('hello<>&\"', 0.1, 0.3)";
             var doc = GridTest(code);
@@ -152,7 +148,8 @@ grid.newpage()
         }
 
         private XDocument GridTest(string code) {
-            return RunGraphicsTest(gridPrefixCode + "\n" + code + "\n");
+            string outputFilePath = System.IO.Path.GetTempFileName();
+            return RunGraphicsTest(setupCode + "\n" + string.Format(gridPrefixCode, outputFilePath.Replace("\\", "/"), DefaultWidth, DefaultHeight) + "\n" + code + "\n" + gridSuffixCode + "\n", outputFilePath);
         }
 
         private void CheckX1Y1X2Y2(XElement element, double x1, double y1, double x2, double y2) {
@@ -210,20 +207,16 @@ grid.newpage()
             }
         }
 
-        private XDocument RunGraphicsTest(string code) {
+        private XDocument RunGraphicsTest(string code, string outputFilePath) {
             var callbacks = new Callbacks(code);
             var host = new RHost(callbacks);
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;
             host.CreateAndRun(rhome, IntPtr.Zero, psi).GetAwaiter().GetResult();
-            // Right now we may receive more than one xaml file, so just use the last one
-            // Later, we'll want to check that we got the expected count
-            Assert.IsTrue(callbacks.XamlFilePaths.Count > 0);
-            var filePath = callbacks.XamlFilePaths[callbacks.XamlFilePaths.Count - 1];
-            Assert.IsNotNull(filePath);
-            Assert.IsTrue(File.Exists(filePath));
-            var doc = XDocument.Load(filePath);
+
+            Assert.IsTrue(File.Exists(outputFilePath));
+            var doc = XDocument.Load(outputFilePath);
             var docXml = doc.ToString();
             Console.WriteLine(docXml);
             return doc;
@@ -231,13 +224,8 @@ grid.newpage()
 
         class Callbacks : IRCallbacks {
             private string _inputCode;
-            public List<string> XamlFilePaths {
-                get; private set;
-            }
-
             public Callbacks(string code) {
                 _inputCode = code;
-                XamlFilePaths = new List<string>();
             }
 
             public void Dispose() {
@@ -274,20 +262,19 @@ grid.newpage()
             }
 
             public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
-                return Task.FromResult<YesNoCancel>(Client.YesNoCancel.Yes);
+                return Task.FromResult<YesNoCancel>(Microsoft.R.Host.Client.YesNoCancel.Yes);
             }
 
-            public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
-                return Task.FromResult<MessageButtons>(MessageButtons.Yes);
-            }
-
-            public Task PlotXaml(string xamlFilePath, CancellationToken ct) {
-                XamlFilePaths.Add(xamlFilePath);
+            public Task Plot(string filePath, CancellationToken ct) {
                 return Task.CompletedTask;
             }
 
             public Task Browser(string url) {
-                return Task.CompletedTask;
+                throw new NotImplementedException();
+            }
+
+            public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
+                throw new NotImplementedException();
             }
         }
     }

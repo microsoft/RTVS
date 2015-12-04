@@ -5,8 +5,10 @@ using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -15,6 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
     internal class PlotWindowPane : ToolWindowPane, IVsWindowFrameNotify3 {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
+        private static bool useReparentPlot = !RToolsSettings.Current.UseExperimentalGraphicsDevice;
 
         //private SavePlotCommand _saveCommand;
         private Lazy<RPlotWindowContainer> _plotWindowContainer = Lazy.Create(() => new RPlotWindowContainer());
@@ -22,16 +25,33 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
 
-            // set content with presenter
-            //PlotContentProvider = new PlotContentProvider();
-            //PlotContentProvider.PlotChanged += ContentProvider_PlotChanged;
-            //Content = new XamlPresenter(PlotContentProvider);
+            if (!useReparentPlot) {
+                // set content with presenter
+                PlotContentProvider = new PlotContentProvider();
+                PlotContentProvider.PlotChanged += ContentProvider_PlotChanged;
+
+
+                var presenter = new XamlPresenter(PlotContentProvider);
+                presenter.SizeChanged += PlotWindowPane_SizeChanged;
+                Content = presenter;
+            }
 
             // initialize toolbar
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
-            //Controller c = new Controller();
-            //c.AddCommandSet(GetCommands());
-            this.ToolBarCommandTarget = new CommandTargetToOleShim(null, new PlotWindowCommandController(this));
+
+            if (!useReparentPlot) {
+                Controller c = new Controller();
+                c.AddCommandSet(GetCommands());
+                this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
+            } else {
+                this.ToolBarCommandTarget = new CommandTargetToOleShim(null, new PlotWindowCommandController(this));
+            }
+        }
+
+        private void PlotWindowPane_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
+            if (!useReparentPlot) {
+                PlotContentProvider.ResizePlot((int)e.NewSize.Width, (int)e.NewSize.Height);
+            }
         }
 
         public override void OnToolWindowCreated() {
@@ -42,10 +62,13 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public override object GetIVsWindowPane() {
+            if (!useReparentPlot) {
+                return base.GetIVsWindowPane();
+            }
             return _plotWindowContainer.Value;
         }
 
-        //public IPlotContentProvider PlotContentProvider { get; private set; }
+        public IPlotContentProvider PlotContentProvider { get; private set; }
 
         private IEnumerable<ICommand> GetCommands() {
             List<ICommand> commands = new List<ICommand>();
@@ -55,7 +78,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             //_saveCommand = new SavePlotCommand(this);
             //commands.Add(_saveCommand);
 
-            //commands.Add(new ExportPlotCommand(this));
+            commands.Add(new ExportPlotCommand(this));
+            commands.Add(new HistoryNextPlotCommand(this));
+            commands.Add(new HistoryPreviousPlotCommand(this));
             //commands.Add(new FixPlotCommand(this));
             //commands.Add(new CopyPlotCommand(this));
             //commands.Add(new PrintPlotCommand(this));
@@ -65,13 +90,13 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             return commands;
         }
 
-        //private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e) {
-        //    if (e.NewPlotElement == null) {
-        //        _saveCommand.Disable();
-        //    } else {
-        //        _saveCommand.Enable();
-        //    }
-        //}
+        private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e) {
+            //if (e.NewPlotElement == null) {
+            //    _saveCommand.Disable();
+            //} else {
+            //    _saveCommand.Enable();
+            //}
+        }
 
         //public void OpenPlot() {
         //    string filePath = GetLoadFilePath();
@@ -91,6 +116,20 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         //        PlotContentProvider.SaveFile(destinationFilePath);
         //    }
         //}
+        internal void ExportPlot() {
+            string destinationFilePath = GetExportFilePath();
+            if (!string.IsNullOrEmpty(destinationFilePath)) {
+                PlotContentProvider.ExportFile(destinationFilePath);
+            }
+        }
+
+        internal void NextPlot() {
+            PlotContentProvider.NextPlot();
+        }
+
+        internal void PreviousPlot() {
+            PlotContentProvider.PreviousPlot();
+        }
 
         private string GetLoadFilePath() {
             return EditorShell.Current.BrowseForFileOpen(IntPtr.Zero,
@@ -104,12 +143,16 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             return EditorShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotFileFilter, null, Resources.SavePlotDialogTitle);
         }
 
+        private string GetExportFilePath() {
+            return EditorShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportFilter, null, Resources.ExportPlotDialogTitle);
+        }
+
         protected override void Dispose(bool disposing) {
-            //if (PlotContentProvider != null) {
-            //    PlotContentProvider.PlotChanged -= ContentProvider_PlotChanged;
-            //    PlotContentProvider.Dispose();
-            //    PlotContentProvider = null;
-            //}
+            if (PlotContentProvider != null) {
+                PlotContentProvider.PlotChanged -= ContentProvider_PlotChanged;
+                PlotContentProvider.Dispose();
+                PlotContentProvider = null;
+            }
 
             base.Dispose(disposing);
         }

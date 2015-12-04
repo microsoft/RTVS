@@ -123,6 +123,8 @@
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
+    <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
+    <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
     <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
@@ -775,7 +777,6 @@
     <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets'))" />
     <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets'))" />
   </Target>
- 
   <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets')" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets')" />

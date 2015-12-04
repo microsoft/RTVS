@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         Task ShowMessage(string s, CancellationToken ct);
         Task Busy(bool which, CancellationToken ct);
-        Task PlotXaml(string xamlFilePath, CancellationToken ct);
+        Task Plot(string filePath, CancellationToken ct);
 
         /// <summary>
         /// Asks VS to open specified URL in the help window browser

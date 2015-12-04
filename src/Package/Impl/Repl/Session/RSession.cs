@@ -21,6 +21,7 @@ using Task = System.Threading.Tasks.Task;
 namespace Microsoft.VisualStudio.R.Package.Repl.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
         private static string DefaultPrompt = "> ";
+        private static bool useReparentPlot = !RToolsSettings.Current.UseExperimentalGraphicsDevice;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
@@ -88,9 +89,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
 
-            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), plotWindowHandle);
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), useReparentPlot ? plotWindowHandle : IntPtr.Zero);
             this.ScheduleEvaluation(async e => {
-                //await e.SetVsGraphicsDevice();
+                if (!useReparentPlot) {
+                    await e.SetVsGraphicsDevice();
+                }
                 await e.SetDefaultWorkingDirectory();
 
                 string mirrorName = RToolsSettings.Current.CranMirror;
@@ -359,20 +362,20 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.PlotXaml(string xamlFilePath, CancellationToken ct) {
+        async Task IRCallbacks.Plot(string filePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
-            //var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);  // TODO: acquire plot content provider through service
-            //if (frame != null) {
-            //    object docView;
-            //    ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
-            //    if (docView != null) {
-            //        PlotWindowPane pane = (PlotWindowPane)docView;
-            //        pane.PlotContentProvider.LoadFileOnIdle(xamlFilePath);
+            var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);  // TODO: acquire plot content provider through service
+            if (frame != null) {
+                object docView;
+                ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
+                if (docView != null) {
+                    PlotWindowPane pane = (PlotWindowPane)docView;
+                    pane.PlotContentProvider.LoadFileOnIdle(filePath);
 
-            //        frame.ShowNoActivate();
-            //    }
-            //}
+                    frame.ShowNoActivate();
+                }
+            }
         }
 
         /// <summary>
