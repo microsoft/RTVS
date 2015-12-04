@@ -5,9 +5,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.Editor.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class EditorOptionsMock : IEditorOptions {
-        private EditorOptionsMock _globalOptions = new EditorOptionsMock();
-        public IEditorOptions GlobalOptions => _globalOptions;
+    public class EditorOptionsMock : IEditorOptions {
+        public IEditorOptions GlobalOptions { get; set; }
 
         public IEditorOptions Parent { get; set; }
 

@@ -11,13 +11,15 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             get {
                 if (_handle == IntPtr.Zero) {
                     PlotWindowPane pane = ToolWindowUtilities.FindWindowPane<PlotWindowPane>(0);
-                    RPlotWindowContainer plotContainer = pane.GetIVsWindowPane() as RPlotWindowContainer;
-                    Debug.Assert(plotContainer != null);
+                    if (pane != null) {
+                        RPlotWindowContainer plotContainer = pane.GetIVsWindowPane() as RPlotWindowContainer;
+                        Debug.Assert(plotContainer != null);
 
-                    Control c = (Control)plotContainer;
-                    Debug.Assert(c.Handle != IntPtr.Zero);
+                        Control c = (Control)plotContainer;
+                        Debug.Assert(c.Handle != IntPtr.Zero);
 
-                    _handle = c.Handle;
+                        _handle = c.Handle;
+                    }
                 }
                 return _handle;
             }

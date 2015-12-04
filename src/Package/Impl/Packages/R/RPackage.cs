@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registrat
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.R.Package.DataInspect;
+using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Logging;
@@ -58,14 +59,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideDebugPortPicker(typeof(RDebugPortPicker))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
-    internal class RPackage : BasePackage<RLanguageService> {
+    internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 
         private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
         private System.Threading.Tasks.Task _indexBuildingTask;
         private IDisposable _activeTextViewTrackerToken;
 
-        public static RPackage Current { get; private set; }
+        public static IRPackage Current { get; private set; }
 
         public RInteractiveWindowProvider InteractiveWindowProvider => _interactiveWindowProvider.Value;
 
@@ -125,6 +126,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return base.GetAutomationObject(name);
         }
 
+        public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
+            return this.FindWindowPane(t, id, create) as T;
+        }
+
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
                 IVsInteractiveWindow result = _interactiveWindowProvider.Value.Create(id);
@@ -133,7 +138,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             return base.CreateToolWindow(ref toolWindowType, id);
         }
-
 
         private void InitializeActiveWpfTextViewTracker() {
             var activeTextViewTracker = AppShell.Current.ExportProvider.GetExportedValue<ActiveWpfTextViewTracker>();

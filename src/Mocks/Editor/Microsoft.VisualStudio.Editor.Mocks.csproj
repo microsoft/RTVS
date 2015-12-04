@@ -51,8 +51,11 @@
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Text.UI.Wpf.14.0.23205\lib\net45\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -70,6 +73,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdornmentLayerMock.cs" />
     <Compile Include="ClassificationTypeMock.cs" />
     <Compile Include="ClassificationTypeRegistryServiceMock.cs" />
     <Compile Include="CompletionSessionMock.cs" />
@@ -96,6 +100,7 @@
     <Compile Include="TextViewModelMock.cs" />
     <Compile Include="TrackingPointMock.cs" />
     <Compile Include="TrackingSpanMock.cs" />
+    <Compile Include="WpfTextViewMock.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
