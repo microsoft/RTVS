@@ -64,7 +64,13 @@ namespace Microsoft.Languages.Editor.Tests.Shell {
         }
 
         public void DispatchOnUIThread(Action action, DispatcherPriority p) {
-            Dispatcher.FromThread(_mainThread).BeginInvoke(action, p);
+            var disp = Dispatcher.FromThread(_mainThread);
+            if (disp != null) {
+                disp.BeginInvoke(action, p);
+            }
+            else {
+                action();
+            }
         }
 
         public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {

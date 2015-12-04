@@ -15,7 +15,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [TestClass]
     public class ReplWindowProviderTest {
         [TestMethod]
-        [TestCategory("Repl")]
         public void ReplWindowProvider_ConstructionTest() {
             AppShell.Current = TestAppShell.Current;
             RInteractiveWindowProvider provider = new RInteractiveWindowProvider();

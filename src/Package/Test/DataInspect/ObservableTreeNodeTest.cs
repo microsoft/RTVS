@@ -5,6 +5,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.VisualStudio.R.Package.DataInspect;
+using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
@@ -67,6 +68,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [TestMethod]
         public void AddLeafChildTest() {
+            EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
+
             var target = _rootNode;
             target.AddChild(new ObservableTreeNode(new TestNode(10)));
             target.AddChild(new ObservableTreeNode(new TestNode(11)));
@@ -78,6 +81,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [TestMethod]
         public void AddChildTest() {
+            EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
+
             var target = _rootNode;
             target.AddChild(new ObservableTreeNode(new TestNode(10)));
 
