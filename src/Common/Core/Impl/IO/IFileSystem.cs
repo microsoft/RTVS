@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Microsoft.Common.Core.IO {
     public interface IFileSystem {
@@ -8,7 +9,7 @@ namespace Microsoft.Common.Core.IO {
         bool DirectoryExists(string fullPath);
         FileAttributes GetFileAttributes(string fullPath);
 
-        string[] FileReadAllLines(string path);
-        void FileWriteAllLines(string path, params string[] contents);
+        IEnumerable<string> FileReadAllLines(string path);
+        void FileWriteAllLines(string path, IEnumerable<string> contents);
     }
 }

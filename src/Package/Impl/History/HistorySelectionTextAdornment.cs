@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private VisualToolset _activeVisualToolset;
         private VisualToolset _inactiveVisualToolset;
-        private IList<SnapshotSpan> _selectedSpans;
+        private IReadOnlyList<SnapshotSpan> _selectedSpans;
         private bool _isTextViewActive;
 
         public HistorySelectionTextAdornment(IWpfTextView textView, IEditorFormatMapService editorFormatMapService, IRHistoryProvider historyProvider) {
@@ -40,6 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _textView.VisualElement.LostKeyboardFocus += OnLostKeyboardFocus;
             _textView.LayoutChanged += OnLayoutChanged;
             _textView.Closed += OnClosed;
+            _history.HistoryChanged += OnHistoryChanged;
             _history.SelectionChanged += OnSelectionChanged;
 
             _activeVisualToolset = CreateVisualToolset(ActiveSelectionPropertiesName, SystemColors.HighlightColor);
@@ -87,6 +88,10 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _textView.LayoutChanged -= OnLayoutChanged;
             _textView.Closed -= OnClosed;
             _history.SelectionChanged -= OnSelectionChanged;
+        }
+
+        private void OnHistoryChanged(object sender, EventArgs e) {
+            _selectedSpans = _history.GetSelectedHistoryEntrySpans();
         }
 
         private void OnSelectionChanged(object sender, EventArgs e) {

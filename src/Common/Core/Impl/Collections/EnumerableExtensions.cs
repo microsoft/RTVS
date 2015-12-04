@@ -20,6 +20,30 @@ namespace Microsoft.Common.Core {
             yield return item;
         }
 
+        public static void Split<T>(this IEnumerable<T> source, Func<T, bool> predicate, out IList<T> first, out IList<T> second) {
+            first = new List<T>();
+            second = new List<T>();
+            foreach (var item in source) {
+                if (predicate(item)) {
+                    first.Add(item);
+                } else {
+                    second.Add(item);
+                }
+            }
+        }
+
+        public static void Split<TIn, TOut>(this IEnumerable<TIn> source, Func<TIn, bool> predicate, Func<TIn, TOut> converter, out IList<TOut> first, out IList<TOut> second) {
+            first = new List<TOut>();
+            second = new List<TOut>();
+            foreach (var item in source) {
+                if (predicate(item)) {
+                    first.Add(converter(item));
+                } else {
+                    second.Add(converter(item));
+                }
+            }
+        }
+
         public static IEnumerable<IReadOnlyCollection<T>> Split<T>(this IEnumerable<T> source, int chunkSize) {
             var index = 0;
             var items = new T[chunkSize];

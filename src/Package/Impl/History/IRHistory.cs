@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.VisualStudio.R.Package.History {
     public interface IRHistory {
         event EventHandler<EventArgs> SelectionChanged;
+        event EventHandler<EventArgs> HistoryChanged;
         bool HasSelectedEntries { get; }
         bool HasEntries { get; }
 
@@ -15,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         void SendSelectedToTextView(IWpfTextView textView);
         void CopySelection();
 
-        IList<SnapshotSpan> GetSelectedHistoryEntrySpans();
+        IReadOnlyList<SnapshotSpan> GetSelectedHistoryEntrySpans();
         string GetSelectedText();
         SnapshotSpan SelectHistoryEntry(int lineNumber);
         SnapshotSpan DeselectHistoryEntry(int lineNumber);
@@ -24,6 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         void ClearHistoryEntrySelection();
         void DeleteSelectedHistoryEntries();
         void DeleteAllHistoryEntries();
+        void Filter(string searchPattern);
+        void ClearFilter();
 
         void AddToHistory(string text);
     }

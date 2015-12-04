@@ -1,10 +1,13 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -13,7 +16,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
@@ -23,8 +25,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public const string WindowGuid = "62ACEA29-91C7-4BFC-B76F-550E7B3DE234";
 
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
-        private readonly IServiceProvider _oleServiceProvider;
         private readonly IComponentModel _componentModel;
+        private readonly Lazy<IRHistoryProvider> _historyProviderExport;
+        private IServiceProvider _oleServiceProvider;
         private IWpfTextViewHost _wpfTextViewHost;
         private IVsTextView _vsTextViewAdapter;
         private IOleCommandTarget _commandTarget;
@@ -34,6 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public HistoryWindowPane() {
             Caption = Resources.HistoryWindowCaption;
             _contentTypeRegistryService = AppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+            _historyProviderExport = AppShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
             _componentModel = AppShell.Current.GetGlobalService<IComponentModel>(typeof(SComponentModel));
             _oleServiceProvider = AppShell.Current.GetGlobalService<IServiceProvider>();
 
@@ -96,6 +100,48 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
             return _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
+        }
+
+        public override bool SearchEnabled => true;
+
+        public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
+            var settings = (SearchSettingsDataSource)pSearchSettings;
+            settings.SearchStartType = VSSEARCHSTARTTYPE.SST_INSTANT;
+            base.ProvideSearchSettings(pSearchSettings);
+        }
+
+        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
+            var history = _historyProviderExport.Value.GetAssociatedRHistory(TextView);
+            return new HistorySearchTask(dwCookie, history, pSearchQuery, pSearchCallback);
+        }
+
+        public override void ClearSearch() {
+            var history = _historyProviderExport.Value.GetAssociatedRHistory(TextView);
+            EditorShell.Current.DispatchOnUIThread(() => history.ClearFilter(), DispatcherPriority.Normal);
+            base.ClearSearch();
+        }
+
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+                _vsTextViewAdapter = null;
+                _oleServiceProvider = null;
+                _commandTarget = null;
+            }
+            base.Dispose(disposing);
+        }
+
+        private sealed class HistorySearchTask : VsSearchTask {
+            private readonly IRHistory _history;
+
+            public HistorySearchTask(uint dwCookie, IRHistory history, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
+                : base(dwCookie, pSearchQuery, pSearchCallback) {
+                _history = history;
+            }
+
+            protected override void OnStartSearch() {
+                base.OnStartSearch();
+                EditorShell.Current.DispatchOnUIThread(() => _history.Filter(SearchQuery.SearchString), DispatcherPriority.Normal);
+            }
         }
     }
 }

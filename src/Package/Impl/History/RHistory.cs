@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     internal sealed class RHistory : IRHistory {
@@ -20,24 +23,29 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private readonly ITextView _textView;
         private readonly IFileSystem _fileSystem;
         private readonly IEditorOperationsFactoryService _editorOperationsFactory;
+        private readonly IElisionBuffer _elisionBuffer;
         private readonly ITextBuffer _historyTextBuffer;
         private readonly CountdownDisposable _textBufferIsEditable;
         private readonly IEditorOperations _editorOperations;
         private readonly IRtfBuilderService _rtfBuilderService;
+        private readonly ITextSearchService2 _textSearchService;
         private readonly IVsUIShell _vsUiShell;
 
         private IReadOnlyRegion _readOnlyRegion;
 
+        public event EventHandler<EventArgs> HistoryChanged;
         public event EventHandler<EventArgs> SelectionChanged;
 
-        public RHistory(ITextView textView, IFileSystem fileSystem, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, IVsUIShell vsShell) {
+        public RHistory(ITextView textView, IFileSystem fileSystem, IEditorOperationsFactoryService editorOperationsFactory, IElisionBuffer elisionBuffer, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService, IVsUIShell vsShell) {
             _textView = textView;
-            _historyTextBuffer = textView.TextBuffer;
+            _historyTextBuffer = textView.TextDataModel.DataBuffer;
             _fileSystem = fileSystem;
             _editorOperationsFactory = editorOperationsFactory;
+            _elisionBuffer = elisionBuffer;
             _rtfBuilderService = rtfBuilderService;
             _vsUiShell = vsShell;
             _editorOperations = _editorOperationsFactory.GetEditorOperations(_textView);
+            _textSearchService = textSearchService;
 
             _textBufferIsEditable = new CountdownDisposable(MakeTextBufferReadOnly);
             MakeTextBufferReadOnly();
@@ -49,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public bool TryLoadFromFile(string path) {
             string[] historyLines;
             try {
-                historyLines = _fileSystem.FileReadAllLines(path);
+                historyLines = _fileSystem.FileReadAllLines(path).ToArray();
             } catch (Exception) {
                 // .RHistory file isn't mandatory for r session, so if it can't be loaded, just exit
                 return false;
@@ -59,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             _entries.RemoveAll();
 
-            foreach (var historyLine in historyLines) {
+            foreach (var historyLine in historyLines.Where(l => !string.IsNullOrWhiteSpace(l))) {
                 _entries.Add(historyLine.Replace(LineSeparator, BlockSeparator));
             }
 
@@ -114,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             Clipboard.SetDataObject(data, false);
         }
 
-        public IList<SnapshotSpan> GetSelectedHistoryEntrySpans() {
+        public IReadOnlyList<SnapshotSpan> GetSelectedHistoryEntrySpans() {
             var snapshotSpans = new List<SnapshotSpan>();
             if (!HasSelectedEntries) {
                 return snapshotSpans;
@@ -212,18 +220,104 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
         }
 
+        public void Filter(string searchPattern) {
+            if (!_entries.HasEntries) {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(searchPattern)) {
+                ClearFilter();
+                return;
+            }
+
+            var snapshot = _historyTextBuffer.CurrentSnapshot;
+            var entries = _entries.GetEntries();
+            var startPoints = entries.Select(e => e.TrackingSpan.GetStartPoint(snapshot)).ToList();
+            var endPoints = startPoints.Skip(1).Append(entries[entries.Count - 1].TrackingSpan.GetEndPoint(snapshot));
+            var spans = startPoints.Zip(endPoints, (start, end) => new SnapshotSpan(start, end));
+
+            IList<Span> spansToShow;
+            IList<Span> spansToHide;
+            spans.Split(s => _textSearchService.Find(s, s.Start, searchPattern, FindOptions.Multiline).HasValue, s => new Span(s.Start, s.Length), out spansToShow, out spansToHide);
+
+            if (spansToShow.Count == 0) {
+                if (_elisionBuffer.CurrentSnapshot.Length == 0) {
+                    return;
+                }
+
+                Workaround169159();
+                //Uncomment lines when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
+                //_textView.Caret.MoveTo(new SnapshotPoint(snapshot, 0));
+                //_elisionBuffer.ElideSpans(new NormalizedSpanCollection(new Span(0, snapshot.Length)));
+                return;
+            }
+
+            MoveCaretToVisiblePoint(spansToShow, snapshot);
+
+            if (spansToHide.Count == 0) {
+                _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(new Span(0, snapshot.Length)));
+            } else {
+                _elisionBuffer.ModifySpans(new NormalizedSpanCollection(spansToHide), new NormalizedSpanCollection(spansToShow));
+            }
+
+            _textView.Caret.EnsureVisible();
+        }
+
+        private void MoveCaretToVisiblePoint(IList<Span> spansToShow, ITextSnapshot snapshot) {
+            var caretPosition = _textView.Caret.Position.BufferPosition.Position;
+
+            Span? previousSpan = null;
+            foreach (var span in spansToShow) {
+                if (span.Contains(caretPosition)) {
+                    return;
+                }
+
+                if (span.Start > caretPosition) {
+                    var newCaretPosition = previousSpan?.End ?? span.Start;
+                    _textView.Caret.MoveTo(new SnapshotPoint(snapshot, newCaretPosition));
+                    return;
+                }
+
+                previousSpan = span;
+            }
+        }
+
+        //Remove this method when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
+        private void Workaround169159() {
+            using (EditTextBuffer()) {
+                _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(new Span(0, _historyTextBuffer.CurrentSnapshot.Length)));
+                _historyTextBuffer.Insert(0, "\u200B");
+                _textView.Caret.MoveTo(new SnapshotPoint(_historyTextBuffer.CurrentSnapshot, 0));
+                _elisionBuffer.ElideSpans(new NormalizedSpanCollection(new Span(1, _historyTextBuffer.CurrentSnapshot.Length - 1)));
+                _historyTextBuffer.Delete(new Span(0, 1));
+            }
+        }
+
+        public void ClearFilter() {
+            if (!_entries.HasEntries) {
+                return;
+            }
+
+            var span = new Span(0, _historyTextBuffer.CurrentSnapshot.Length);
+            _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(span));
+            _textView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_textView.TextSnapshot, new Span(0, 0)));
+        }
+
         public void AddToHistory(string text) {
+            if (RToolsSettings.Current)
+            ClearFilter();
+
             text = text.TrimEnd('\r', '\n');
             if (string.IsNullOrWhiteSpace(text)) {
                 return;
             }
 
-            var isFirstEntry = _entries.HasEntries;
+            var hasEntries = _entries.HasEntries;
             var entry = _entries.Add(text);
             var snapshot = _historyTextBuffer.CurrentSnapshot;
 
             using (EditTextBuffer()) {
-                if (isFirstEntry) {
+                if (hasEntries) {
                     snapshot = _historyTextBuffer.Insert(snapshot.Length, BlockSeparator);
                 }
 
@@ -297,6 +391,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 _readOnlyRegion = edit.CreateReadOnlyRegion(span, SpanTrackingMode.EdgeInclusive, EdgeInsertionMode.Deny);
                 edit.Apply();
             }
+
+            HistoryChanged?.Invoke(this, new EventArgs());
         }
 
         private void OnSelectionChanged() {
