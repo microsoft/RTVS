@@ -13,7 +13,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [TestClass]
     public class ExportsTest {
         [TestMethod]
-        [TestCategory("Exports")]
         public void FileSystem_ExportTest() {
             AppShell.Current = TestAppShell.Current;
             Lazy<IFileSystem> lazy = AppShell.Current.ExportProvider.GetExport<IFileSystem>();
@@ -21,7 +20,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         }
 
         [TestMethod]
-        [TestCategory("Exports")]
         public void RSessionProvider_ExportTest() {
             AppShell.Current = TestAppShell.Current;
             Lazy<IRSessionProvider> lazy = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>();
@@ -29,7 +27,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         }
 
         [TestMethod]
-        [TestCategory("Exports")]
         public void ReplHistoryProvider_ExportTest() {
             AppShell.Current = TestAppShell.Current;
             Lazy<IRHistoryProvider> provider = AppShell.Current.ExportProvider.GetExport<IRHistoryProvider>();

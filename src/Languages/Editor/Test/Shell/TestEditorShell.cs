@@ -13,22 +13,17 @@ using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Tests.Shell
-{
+namespace Microsoft.Languages.Editor.Tests.Shell {
     [ExcludeFromCodeCoverage]
-    public class TestEditorShell : IEditorShell
-    {
+    public class TestEditorShell : IEditorShell {
         private Thread _mainThread;
 
         private static IEditorShell _instance;
         private static object _lock = new object();
 
-        public static IEditorShell Create(ITestCompositionCatalog catalog)
-        {
-            lock (_lock)
-            {
-                if (_instance == null)
-                {
+        public static IEditorShell Create(ITestCompositionCatalog catalog) {
+            lock (_lock) {
+                if (_instance == null) {
                     var compositionService = catalog.CompositionService;
                     var exportProvider = catalog.ExportProvider;
 
@@ -39,13 +34,11 @@ namespace Microsoft.Languages.Editor.Tests.Shell
             }
         }
 
-        public static IEditorShell Create(object current)
-        {
+        public static IEditorShell Create(object current) {
             throw new NotImplementedException();
         }
 
-        private TestEditorShell(ICompositionService compositionService, ExportProvider exportProvider)
-        {
+        private TestEditorShell(ICompositionService compositionService, ExportProvider exportProvider) {
             CompositionService = compositionService;
             ExportProvider = exportProvider;
 
@@ -62,33 +55,27 @@ namespace Microsoft.Languages.Editor.Tests.Shell
         public ICompositionService CompositionService { get; private set; }
         public ExportProvider ExportProvider { get; private set; }
 
-        public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget)
-        {
+        public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
             return commandTarget as ICommandTarget;
         }
 
-        public object TranslateToHostCommandTarget(ITextView textView, object commandTarget)
-        {
+        public object TranslateToHostCommandTarget(ITextView textView, object commandTarget) {
             return commandTarget;
         }
 
-        public void DispatchOnUIThread(Action action, DispatcherPriority p)
-        {
-            action();
+        public void DispatchOnUIThread(Action action, DispatcherPriority p) {
+            Dispatcher.FromThread(_mainThread).BeginInvoke(action, p);
         }
 
-        public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer)
-        {
+        public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
             return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: false);
         }
 
-        public int LocaleId
-        {
+        public int LocaleId {
             get { return 1033; }
         }
 
-        public string UserFolder
-        {
+        public string UserFolder {
             get { return "."; }
         }
 
@@ -96,13 +83,11 @@ namespace Microsoft.Languages.Editor.Tests.Shell
 
         public Thread MainThread => Thread.CurrentThread;
 
-        public bool ShowHelp(string topic)
-        {
+        public bool ShowHelp(string topic) {
             return true;
         }
 
-        public void ShowErrorMessage(string msg)
-        {
+        public void ShowErrorMessage(string msg) {
         }
 
         /// <summary>
@@ -122,8 +107,7 @@ namespace Microsoft.Languages.Editor.Tests.Shell
 
         public bool IsUnitTestEnvironment => true;
 
-        public bool IsUITestEnvironment
-        {
+        public bool IsUITestEnvironment {
             get { return false; }
         }
         #endregion

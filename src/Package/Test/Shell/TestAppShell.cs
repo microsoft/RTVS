@@ -3,6 +3,8 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 
@@ -20,6 +22,8 @@ namespace Microsoft.Languages.Editor.Tests.Shell {
             var sp = new TestServiceProvider();
             GlobalServiceProvider = sp;
             OleServiceProvider = sp;
+
+            EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
         }
 
         public ICompositionService CompositionService { get; private set; }

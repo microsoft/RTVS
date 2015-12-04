@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
                 throw new NotImplementedException();
             }
         }
-
+#pragma warning disable 67
         public event EventHandler<EditorOptionChangedEventArgs> OptionChanged;
 
         public bool ClearOptionValue(string optionId) {
