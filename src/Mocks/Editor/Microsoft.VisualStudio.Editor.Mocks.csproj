@@ -75,6 +75,9 @@
     <Compile Include="CompletionSessionMock.cs" />
     <Compile Include="ContentTypeMock.cs" />
     <Compile Include="ContentTypeRegistryMock.cs" />
+    <Compile Include="EditorOperationsFactoryServiceMock.cs" />
+    <Compile Include="EditorOperationsMock.cs" />
+    <Compile Include="EditorOptionsMock.cs" />
     <Compile Include="ITestCompositionCatalog.cs" />
     <Compile Include="MappingPointMock.cs" />
     <Compile Include="QuickInfoSessionMock.cs" />

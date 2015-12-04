@@ -100,6 +100,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
@@ -160,6 +168,9 @@
     <Compile Include="DataInspect\TestNode.cs" />
     <Compile Include="Mocks\VsRegisterProjectGeneratorsMock.cs" />
     <Compile Include="Package\RPackageTest.cs" />
+    <Compile Include="Repl\ExportsTest.cs" />
+    <Compile Include="Repl\ReplWindowProviderTest.cs" />
+    <Compile Include="Shell\TestAppShell.cs" />
     <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\RPackageTestCompositionCatalog.cs" />
     <Compile Include="Utility\TestInstanceFactory.cs" />
