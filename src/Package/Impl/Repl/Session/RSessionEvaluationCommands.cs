@@ -32,10 +32,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
             var script = @"
 .rtvs.vsgdresize <- function(width, height) {
-   .External('rtvs::External.visualstudio_graphicsdevice_resize', width, height)
+   .External('rtvs::External.ide_graphicsdevice_resize', width, height)
 }
 .rtvs.vsgd <- function() {
-   .External('rtvs::External.visualstudio_graphicsdevice_new')
+   .External('rtvs::External.ide_graphicsdevice_new')
 }
 .rtvs.vsgdexportimage <- function(filename, device) {
     dev.copy(device=device,filename=filename)
@@ -46,10 +46,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session
     dev.off()
 }
 .rtvs.vsgdnextplot <- function() {
-   .External('rtvs::External.visualstudio_graphicsdevice_next_plot')
+   .External('rtvs::External.ide_graphicsdevice_next_plot')
 }
 .rtvs.vsgdpreviousplot <- function() {
-   .External('rtvs::External.visualstudio_graphicsdevice_previous_plot')
+   .External('rtvs::External.ide_graphicsdevice_previous_plot')
 }
 xaml <- function(filename, width, height) {
    .External('rtvs::External.xaml_graphicsdevice_new', filename, width, height)

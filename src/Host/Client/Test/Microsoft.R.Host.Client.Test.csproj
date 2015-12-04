@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="GraphicsDeviceTestFilesSetup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VisualStudioGraphicsDeviceTest.cs" />
+    <Compile Include="IdeGraphicsDeviceTest.cs" />
     <Compile Include="XamlGraphicsDeviceTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -87,7 +87,7 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Files\Microsoft.R.Host.Client.Test.VisualStudioGraphicsDeviceTest-PlotCars-0.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-PlotCars-0.png" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -13,17 +13,17 @@ using System.Drawing;
 
 namespace Microsoft.R.Host.Client.Test {
     [TestClass]
-    public class VisualStudioGraphicsDeviceTest {
+    public class IdeGraphicsDeviceTest {
         private const string ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
 
         // Copied from RSessionEvaluationCommands.cs
         // TODO: need to merge into a single location
         private const string setupCode = @"
 .rtvs.vsgdresize <- function(width, height) {
-   .External('rtvs::External.visualstudio_graphicsdevice_resize', width, height)
+   .External('rtvs::External.ide_graphicsdevice_resize', width, height)
 }
 .rtvs.vsgd <- function() {
-   .External('rtvs::External.visualstudio_graphicsdevice_new')
+   .External('rtvs::External.ide_graphicsdevice_new')
 }
 .rtvs.vsgdexportimage <- function(filename, device) {
     dev.copy(device=device,filename=filename)
@@ -34,10 +34,10 @@ namespace Microsoft.R.Host.Client.Test {
     dev.off()
 }
 .rtvs.vsgdnextplot <- function() {
-   .External('rtvs::External.visualstudio_graphicsdevice_next_plot')
+   .External('rtvs::External.ide_graphicsdevice_next_plot')
 }
 .rtvs.vsgdpreviousplot <- function() {
-   .External('rtvs::External.visualstudio_graphicsdevice_previous_plot')
+   .External('rtvs::External.ide_graphicsdevice_previous_plot')
 }
 options(device = '.rtvs.vsgd')
 ";
