@@ -37,6 +37,14 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.CranMirror = value; }
         }
 
+        [LocCategory("Settings_GeneralCategory")]
+        [CustomLocDisplayName("Settings_RCommandLineArguments")]
+        [LocDescription("Settings_RCommandLineArguments_Description")]
+        public string RCommandLineArguments {
+            get { return RToolsSettings.Current.RCommandLineArguments; }
+            set { RToolsSettings.Current.RCommandLineArguments = value; }
+        }
+
         [LocCategory("Settings_WorkspaceCategory")]
         [CustomLocDisplayName("Settings_LoadRDataOnProjectLoad")]
         [LocDescription("Settings_LoadRDataOnProjectLoad_Description")]

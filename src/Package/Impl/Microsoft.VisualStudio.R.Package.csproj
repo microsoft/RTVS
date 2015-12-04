@@ -766,14 +766,6 @@
     </ItemGroup>
     <Copy SourceFiles="@(Rules)" DestinationFolder="$(MSBuildUserExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\RTVS\Rules\" />
   </Target>
-  <Target Name="GenerateProductVersionFile" Outputs="$(MSBuildProjectDirectory)\RtvsProductInfo.cs">
-    <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
-    <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs" Overwrite="true" Lines="// Generated version file. Do not modify or check in.;&#xD;&#xA;                              namespace Microsoft.VisualStudio.R.Package {;&#xD;&#xA;                              %20%20%20%20static partial class RtvsProductInfo {;&#xD;&#xA;                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;&#xD;&#xA;                              %20%20%20%20};&#xD;&#xA;                              };">
-    </WriteLinesToFile>
-  </Target>
-  <PropertyGroup>
-    <CompileDependsOn>GenerateProductVersionFile;$(CompileDependsOn)</CompileDependsOn>
-  </PropertyGroup>
   <Import Project="..\..\R.Build.Version.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -788,10 +780,20 @@
   <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\build\Microsoft.VSSDK.BuildTools.targets')" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets')" />
+  <Target Name="BeforeBuild">
+    <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs"
+                      Overwrite="true"
+                      Lines ="// Generated version file. Do not modify or check in.;
+                              namespace Microsoft.VisualStudio.R.Package {;
+                              %20%20%20%20static partial class RtvsProductInfo {;
+                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;
+                              %20%20%20%20};
+                              };">
+    </WriteLinesToFile>
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
   <Target Name="AfterBuild">
   </Target>
   -->

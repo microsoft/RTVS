@@ -441,9 +441,6 @@
   <data name="Settings_WorkspaceCategory" xml:space="preserve">
     <value>Workspace</value>
   </data>
-  <data name="Settings_HistoryCategory" xml:space="preserve">
-    <value>History</value>
-  </data>
   <data name="Settings_PlotCategory" xml:space="preserve">
     <value>Plot</value>
   </data>
@@ -504,5 +501,14 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   </data>
   <data name="LoadWorkspaceTitle" xml:space="preserve">
     <value>Load Workspace</value>
+  </data>
+  <data name="Settings_RCommandLineArguments" xml:space="preserve">
+    <value>R command line arguments</value>
+  </data>
+  <data name="Settings_RCommandLineArguments_Description" xml:space="preserve">
+    <value>Additional arguments to pass to the R Host process</value>
+  </data>
+  <data name="Settings_HistoryCategory" xml:space="preserve">
+    <value>History</value>
   </data>
 </root>
