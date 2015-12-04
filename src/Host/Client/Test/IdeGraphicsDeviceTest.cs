@@ -291,7 +291,7 @@ Sys.sleep(1)
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;
-            host.CreateAndRun(rhome, IntPtr.Zero, psi).GetAwaiter().GetResult();
+            host.CreateAndRun(rhome, IntPtr.Zero, new MockRToolsSettings(), psi).GetAwaiter().GetResult();
 
             var images = new List<Image>();
             for (int i = 0; i < callbacks.PlotFilePaths.Count; i++) {

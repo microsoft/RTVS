@@ -213,7 +213,7 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;
-            host.CreateAndRun(rhome, IntPtr.Zero, psi).GetAwaiter().GetResult();
+            host.CreateAndRun(rhome, IntPtr.Zero, new MockRToolsSettings(), psi).GetAwaiter().GetResult();
 
             Assert.IsTrue(File.Exists(outputFilePath));
             var doc = XDocument.Load(outputFilePath);
