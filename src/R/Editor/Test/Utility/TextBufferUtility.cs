@@ -1,10 +1,12 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public static class TextBufferUtility
     {
         public static void ApplyTextChange(ITextBuffer textBuffer, int start, int oldLength, int newLength, string newText)

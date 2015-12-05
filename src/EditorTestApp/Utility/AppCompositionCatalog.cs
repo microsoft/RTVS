@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.Editor.Mocks;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.Languages.Editor.Application.Utility
 {
+    [ExcludeFromCodeCoverage]
     public sealed class AppCompositionCatalog : TestCompositionCatalog
     {
         private static AppCompositionCatalog _instance;
