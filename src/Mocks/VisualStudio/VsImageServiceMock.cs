@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public IVsUIObject GetImage(ImageMoniker moniker, ImageAttributes attributes) {
-            throw new NotImplementedException();
+            return new VsUiObjectMock();
         }
 
         public IVsImageMonikerImageList GetImageListImageMonikers(ImageMoniker moniker) {
