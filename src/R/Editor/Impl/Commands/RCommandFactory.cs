@@ -14,7 +14,7 @@ namespace Microsoft.R.Editor.Commands {
     [ContentType(RContentTypeDefinition.ContentType)]
     internal class RCommandFactory : ICommandFactory {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
-            return new List<ICommand> {
+            return new ICommand[] {
                 new GotoBraceCommand(textView, textBuffer),
                 new CommentCommand(textView, textBuffer),
                 new UncommentCommand(textView, textBuffer),

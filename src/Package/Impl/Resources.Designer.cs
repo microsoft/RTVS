@@ -752,6 +752,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset search filter.
+        /// </summary>
+        public static string Settings_ClearFilterOnAddHistory {
+            get {
+                return ResourceManager.GetString("Settings_ClearFilterOnAddHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset search filter in history window when new entry is added or .RHistory file is loaded.
+        /// </summary>
+        public static string Settings_ClearFilterOnAddHistory_Description {
+            get {
+                return ResourceManager.GetString("Settings_ClearFilterOnAddHistory_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Commit on Enter key.
         /// </summary>
         public static string Settings_CommitOnEnter {

@@ -23,10 +23,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private IRHistoryProvider RHistoryProvider { get; }
 
         [ImportingConstructor]
-        public Export(Lazy<IEditorOperationsFactoryService> editorOperationsFactoryLazy, IRtfBuilderService rtfBuilderService) {
+        public Export(Lazy<IEditorOperationsFactoryService> editorOperationsFactoryLazy, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService) {
             FileSystem = new FileSystem();
             RSessionProvider = new RSessionProvider();
-            RHistoryProvider = new RHistoryProvider(FileSystem, editorOperationsFactoryLazy, rtfBuilderService);
+            RHistoryProvider = new RHistoryProvider(FileSystem, editorOperationsFactoryLazy, rtfBuilderService, textSearchService);
         }
     }
 }

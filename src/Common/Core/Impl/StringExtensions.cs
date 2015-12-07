@@ -3,8 +3,11 @@ using System.Text;
 
 namespace Microsoft.Common.Core {
     public static class StringExtensions {
+        public static bool EqualsOrdinal(this string s, string other) {
+            return string.Equals(s, other, StringComparison.Ordinal);
+        }
         public static bool EqualsIgnoreCase(this string s, string other) {
-            return string.Compare(s, other, StringComparison.OrdinalIgnoreCase) == 0;
+            return string.Equals(s, other, StringComparison.OrdinalIgnoreCase);
         }
         public static bool StartsWithIgnoreCase(this string s, string prefix) {
             return s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);

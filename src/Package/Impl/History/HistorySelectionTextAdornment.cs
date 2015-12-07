@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -23,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private VisualToolset _activeVisualToolset;
         private VisualToolset _inactiveVisualToolset;
-        private IList<SnapshotSpan> _selectedSpans;
+        private IReadOnlyList<SnapshotSpan> _selectedSpans;
         private bool _isTextViewActive;
 
         public HistorySelectionTextAdornment(IWpfTextView textView, IEditorFormatMapService editorFormatMapService, IRHistoryProvider historyProvider) {
@@ -40,6 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _textView.VisualElement.LostKeyboardFocus += OnLostKeyboardFocus;
             _textView.LayoutChanged += OnLayoutChanged;
             _textView.Closed += OnClosed;
+            _history.HistoryChanged += OnHistoryChanged;
             _history.SelectionChanged += OnSelectionChanged;
 
             _activeVisualToolset = CreateVisualToolset(ActiveSelectionPropertiesName, SystemColors.HighlightColor);
@@ -89,6 +91,10 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _history.SelectionChanged -= OnSelectionChanged;
         }
 
+        private void OnHistoryChanged(object sender, EventArgs e) {
+            _selectedSpans = _history.GetSelectedHistoryEntrySpans();
+        }
+
         private void OnSelectionChanged(object sender, EventArgs e) {
             _selectedSpans = _history.GetSelectedHistoryEntrySpans();
             Redraw();
@@ -97,6 +103,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
             if (_layer.TextView.ViewportRight > _lastWidth) {
                 _lastWidth = _layer.TextView.ViewportRight + 100;
+                Redraw();
+            } else if (e.NewOrReformattedLines.Any()) {
                 Redraw();
             }
         }
@@ -119,17 +127,18 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private void DrawHighlight(Geometry g, VisualToolset visualTools, SnapshotSpan span) {
-            if (g != null) {
-
-                var dv = new DrawingVisual();
-                DrawingContext dContext = dv.RenderOpen();
-                dContext.DrawGeometry(visualTools.Brush, visualTools.Pen, g);
-                dContext.Close();
-
-                var uiElement = new DrawingVisualHost(dv);
-
-                _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, new object(), uiElement, null);
+            if (g.CanFreeze) {
+                g.Freeze();
             }
+
+            var dv = new DrawingVisual();
+            DrawingContext dContext = dv.RenderOpen();
+            dContext.DrawGeometry(visualTools.Brush, visualTools.Pen, g);
+            dContext.Close();
+
+            var uiElement = new DrawingVisualHost(dv);
+
+            _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, new object(), uiElement, null);
         }
 
         private VisualToolset CreateVisualToolset(string category, Color defaultColor) {

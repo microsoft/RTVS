@@ -124,6 +124,7 @@
     <Compile Include="History\HistoryWindowPaneMouseProcessor.cs" />
     <Compile Include="History\HistoryWindowPaneMouseProcessorProvider.cs" />
     <Compile Include="History\IRHistory.cs" />
+    <Compile Include="History\IRHistoryEntries.cs" />
     <Compile Include="History\IRHistoryProvider.cs" />
     <Compile Include="History\RHistory.cs" />
     <Compile Include="History\RHistoryEntries.cs" />

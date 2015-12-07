@@ -37,6 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public bool UseExperimentalGraphicsDevice { get; set; } = false;
 
+        public bool ClearFilterOnAddHistory { get; set; } = true;
+
         public string CranMirror {
             get { return _cranMirror; }
             set {

@@ -1,10 +1,15 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -13,7 +18,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
@@ -23,8 +27,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public const string WindowGuid = "62ACEA29-91C7-4BFC-B76F-550E7B3DE234";
 
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
-        private readonly IServiceProvider _oleServiceProvider;
         private readonly IComponentModel _componentModel;
+        private readonly Lazy<IRHistory> _historyProvider;
+        private IServiceProvider _oleServiceProvider;
         private IWpfTextViewHost _wpfTextViewHost;
         private IVsTextView _vsTextViewAdapter;
         private IOleCommandTarget _commandTarget;
@@ -38,6 +43,15 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _oleServiceProvider = AppShell.Current.GetGlobalService<IServiceProvider>();
 
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.historyWindowToolBarId);
+
+            var historyProviderExport = EditorShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
+            Debug.Assert(historyProviderExport != null);
+
+            _historyProvider = new Lazy<IRHistory>(() => {
+                var history = historyProviderExport.Value.GetAssociatedRHistory(TextView);
+                history.HistoryChanged += OnHistoryChanged;
+                return history;
+            });
         }
 
         protected override void OnCreate() {
@@ -83,6 +97,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
             TextView = _wpfTextViewHost.TextView;
 
             TextView.Options.SetOptionValue(DefaultTextViewHostOptions.SelectionMarginId, false);
+            TextView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
+            TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ZoomControlId, false);
+            TextView.Options.SetOptionValue(DefaultWpfViewOptions.EnableMouseWheelZoomId, false);
             TextView.Options.SetOptionValue(DefaultWpfViewOptions.EnableHighlightCurrentLineId, false);
             TextView.Options.SetOptionValue(DefaultTextViewOptions.BraceCompletionEnabledOptionId, false);
             TextView.Options.SetOptionValue(DefaultTextViewOptions.DragDropEditingId, false);
@@ -96,6 +113,53 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
             return _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
+        }
+
+        public override bool SearchEnabled => true;
+
+        public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
+            var settings = (SearchSettingsDataSource)pSearchSettings;
+            settings.SearchStartType = VSSEARCHSTARTTYPE.SST_INSTANT;
+            base.ProvideSearchSettings(pSearchSettings);
+        }
+
+        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
+            return new HistorySearchTask(dwCookie, _historyProvider.Value, pSearchQuery, pSearchCallback);
+        }
+
+        public override void ClearSearch() {
+            EditorShell.Current.DispatchOnUIThread(() => _historyProvider.Value.ClearFilter(), DispatcherPriority.Normal);
+            base.ClearSearch();
+        }
+
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+                _vsTextViewAdapter = null;
+                _oleServiceProvider = null;
+                _commandTarget = null;
+                _historyProvider.Value.HistoryChanged -= OnHistoryChanged;
+            }
+            base.Dispose(disposing);
+        }
+
+        private void OnHistoryChanged(object sender, EventArgs e) {
+            if (RToolsSettings.Current.ClearFilterOnAddHistory) {
+                SearchHost.SearchAsync(null);
+            }
+        }
+
+        private sealed class HistorySearchTask : VsSearchTask {
+            private readonly IRHistory _history;
+
+            public HistorySearchTask(uint dwCookie, IRHistory history, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
+                : base(dwCookie, pSearchQuery, pSearchCallback) {
+                _history = history;
+            }
+
+            protected override void OnStartSearch() {
+                base.OnStartSearch();
+                EditorShell.Current.DispatchOnUIThread(() => _history.Filter(SearchQuery.SearchString), DispatcherPriority.Normal);
+            }
         }
     }
 }
