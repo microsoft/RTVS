@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
+using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Host.Client.Test {
@@ -213,7 +214,7 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;
-            host.CreateAndRun(rhome, IntPtr.Zero, new MockRToolsSettings(), psi).GetAwaiter().GetResult();
+            host.CreateAndRun(rhome, IntPtr.Zero, new TestRToolsSettings(), psi).GetAwaiter().GetResult();
 
             Assert.IsTrue(File.Exists(outputFilePath));
             var doc = XDocument.Load(outputFilePath);

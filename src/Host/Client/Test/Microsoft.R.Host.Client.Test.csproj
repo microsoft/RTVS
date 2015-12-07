@@ -51,7 +51,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="GraphicsDeviceTestFilesSetup.cs" />
-    <Compile Include="MockRToolsSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdeGraphicsDeviceTest.cs" />
     <Compile Include="XamlGraphicsDeviceTest.cs" />
@@ -72,6 +71,10 @@
     <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Support\Test\Microsoft.R.Support.Test.csproj">
+      <Project>{5504f3d6-08d3-401f-8214-409a60735185}</Project>
+      <Name>Microsoft.R.Support.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>

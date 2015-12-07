@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Actions.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Languages.Core.Test.Utility;
-using System.Drawing;
+using Microsoft.R.Actions.Utility;
+using Microsoft.R.Support.Test.Utility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Host.Client.Test {
     [TestClass]
@@ -291,7 +292,7 @@ Sys.sleep(1)
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;
-            host.CreateAndRun(rhome, IntPtr.Zero, new MockRToolsSettings(), psi).GetAwaiter().GetResult();
+            host.CreateAndRun(rhome, IntPtr.Zero, new TestRToolsSettings(), psi).GetAwaiter().GetResult();
 
             var images = new List<Image>();
             for (int i = 0; i < callbacks.PlotFilePaths.Count; i++) {
