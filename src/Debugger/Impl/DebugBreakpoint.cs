@@ -16,7 +16,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override int GetHashCode() {
-            return (FileName?.GetHashCode() ?? 0) ^ LineNumber.GetHashCode();
+            return new { FileName, LineNumber }.GetHashCode();
         }
 
         public override bool Equals(object obj) {
