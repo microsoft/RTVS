@@ -107,6 +107,7 @@
     <Compile Include="History\HistoryWindowPaneMouseProcessor.cs" />
     <Compile Include="History\HistoryWindowPaneMouseProcessorProvider.cs" />
     <Compile Include="History\IRHistory.cs" />
+    <Compile Include="History\IRHistoryEntries.cs" />
     <Compile Include="History\IRHistoryProvider.cs" />
     <Compile Include="History\RHistory.cs" />
     <Compile Include="History\RHistoryEntries.cs" />
@@ -782,14 +783,7 @@
   <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.0.23205\tools\vssdk\Microsoft.VsSDK.targets')" />
   <Target Name="BeforeBuild">
     <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
-    <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs"
-                      Overwrite="true"
-                      Lines ="// Generated version file. Do not modify or check in.;
-                              namespace Microsoft.VisualStudio.R.Package {;
-                              %20%20%20%20static partial class RtvsProductInfo {;
-                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;
-                              %20%20%20%20};
-                              };">
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs" Overwrite="true" Lines="// Generated version file. Do not modify or check in.;&#xD;&#xA;                              namespace Microsoft.VisualStudio.R.Package {;&#xD;&#xA;                              %20%20%20%20static partial class RtvsProductInfo {;&#xD;&#xA;                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;&#xD;&#xA;                              %20%20%20%20};&#xD;&#xA;                              };">
     </WriteLinesToFile>
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

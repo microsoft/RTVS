@@ -15,11 +15,11 @@ namespace Microsoft.Common.Core.IO {
             return File.Exists(path);
         }
 
-        public string[] FileReadAllLines(string path) {
-            return File.ReadAllLines(path);
+        public IEnumerable<string> FileReadAllLines(string path) {
+            return File.ReadLines(path);
         }
 
-        public void FileWriteAllLines(string path, params string[] contents) {
+        public void FileWriteAllLines(string path, IEnumerable<string> contents) {
             File.WriteAllLines(path, contents);
         }
 

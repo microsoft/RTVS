@@ -43,6 +43,11 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
+        public bool ClearFilterOnAddHistory {
+            get { return true; }
+            set { }
+        }
+
         public void LoadFromStorage() {
         }
 

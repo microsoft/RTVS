@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.VisualStudio.Text.Editor;
@@ -13,6 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private TimeSpan _elapsedSinceLastTap;
         private Point _lastTapPosition;
         private Point _currentTapPosition;
+        private int? _lastSelectedLineNumber;
 
         private readonly Stopwatch _doubleTapStopWatch = new Stopwatch();
         private readonly TimeSpan _maximumElapsedDoubleTap = new TimeSpan(0, 0, 0, 0, 600);
@@ -162,12 +164,14 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private bool HandleSingleClick(InputEventArgs e, ModifierKeys modifiers) {
             // Don't do anything if there is no history
             if (_textView.TextBuffer.CurrentSnapshot.Length == 0) {
+                _lastSelectedLineNumber = null;
                 return true;
             }
 
             var point = GetAdjustedPosition(e, _textView);
             var lineNumber = GetLineNumberUnderPoint(point);
             if (lineNumber == -1) {
+                _lastSelectedLineNumber = null;
                 return false;
             }
 
@@ -175,13 +179,37 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 case ModifierKeys.None:
                     _history.ClearHistoryEntrySelection();
                     _history.SelectHistoryEntry(lineNumber);
+                    _lastSelectedLineNumber = lineNumber;
                     return false;
 
                 case ModifierKeys.Control:
                     _history.ToggleHistoryEntrySelection(lineNumber);
+                    _lastSelectedLineNumber = lineNumber;
                     return true;
 
+                case ModifierKeys.Shift:
+                    if (!_lastSelectedLineNumber.HasValue) {
+                        _history.ClearHistoryEntrySelection();
+                        _history.SelectHistoryEntry(lineNumber);
+                        _lastSelectedLineNumber = lineNumber;
+                        return false;
+                    }
+
+                    if (_history.HasSelectedEntries) {
+                        if (lineNumber > _lastSelectedLineNumber.Value) {
+                            _history.ClearHistoryEntrySelection();
+                            _history.SelectHistoryEntries(Enumerable.Range(_lastSelectedLineNumber.Value, lineNumber - _lastSelectedLineNumber.Value + 1));
+                        } else if (lineNumber < _lastSelectedLineNumber.Value) {
+                            _history.ClearHistoryEntrySelection();
+                            _history.SelectHistoryEntries(Enumerable.Range(lineNumber, _lastSelectedLineNumber.Value - lineNumber + 1));
+                        }
+                        
+                        return true;
+                    }
+
+                    return false;
                 default:
+                    _lastSelectedLineNumber = null;
                     return false;
             }
         }

@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var sendToReplCommand = new SendHistoryToReplCommand(textView, _historyProvider);
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, _contentTypeRegistry, _textViewTracker);
 
-            return new List<ICommand> {
+            return new ICommand[] {
                 new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int)RContextMenuId.RHistory),
                 new LoadHistoryCommand(textView, _historyProvider),
                 new SaveHistoryCommand(textView, _historyProvider),
