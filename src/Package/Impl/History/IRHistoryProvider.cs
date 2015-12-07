@@ -2,6 +2,6 @@
 
 namespace Microsoft.VisualStudio.R.Package.History {
     public interface IRHistoryProvider {
-        IRHistory GetAssociatedRHistory(ITextView textBuffer);
+        IRHistory GetAssociatedRHistory(ITextView textView);
     }
 }

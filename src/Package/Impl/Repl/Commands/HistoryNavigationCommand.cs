@@ -6,19 +6,20 @@ using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.R.Package.History;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class HistoryNavigationCommand : ViewCommand {
-        [Import]
-        private ICompletionBroker _completionBroker { get; set; }
-        [Import]
-        private IEditorOperationsFactoryService _editorFactory { get; set; }
+        private readonly ICompletionBroker _completionBroker;
+        private readonly IEditorOperationsFactoryService _editorFactory;
+        private readonly Lazy<IRHistory> _historyProvider;
 
         public HistoryNavigationCommand(ITextView textView) :
-            base(textView, new CommandId[] {
+            base(textView, new[] {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UP),
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.DOWN),
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.LEFT),
@@ -28,7 +29,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.LEFT_EXT),
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.RIGHT_EXT)
             }, false) {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+
+            var exportProvider = EditorShell.Current.ExportProvider;
+            _completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
+            _editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
+            _historyProvider = new Lazy<IRHistory>(() => {
+                var historyWindow = ToolWindowUtilities.FindWindowPane<HistoryWindowPane>(0);
+                return exportProvider.GetExportedValue<IRHistoryProvider>().GetAssociatedRHistory(historyWindow.TextView);
+            });
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -62,13 +70,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     case VSConstants.VSStd2KCmdID.UP:
                         if (curLine.LineNumber == 0) {
                             // this leaves the caret at the end which is what we want for up/down to work nicely
-                            window.Operations.HistoryPrevious();
+                            _historyProvider.Value.PreviousEntry();
                             return CommandResult.Executed;
                         }
                         break;
                     case VSConstants.VSStd2KCmdID.DOWN:
                         if (curLine.LineNumber == curPoint.Value.Snapshot.LineCount - 1) {
-                            window.Operations.HistoryNext();
+                            _historyProvider.Value.NextEntry();
 
                             // move the caret to the 1st line in history so down/up works nicely
                             var firstLine = window.CurrentLanguageBuffer.CurrentSnapshot.GetLineFromLineNumber(0);

@@ -5,7 +5,7 @@ using Microsoft.Languages.Core.Utility;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.VisualStudio.R.Package.History {
-    internal sealed class RHistoryEntries {
+    internal sealed class RHistoryEntries : IRHistoryEntries {
         private static readonly IComparer<Entry> EntryComparer = Comparer<Entry>.Create((e1, e2) => e1.Index.CompareTo(e2.Index));
 
         private long _index;
@@ -17,6 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public IEnumerable<string> GetEntriesText() => _entries.Select(e => e.Text);
         public IEnumerable<string> GetSelectedEntriesText() => _selectedEntries.Select(e => e.Text);
         public IRHistoryEntry Find(Func<IRHistoryEntry, bool> predicate) => _entries.First(predicate);
+        public IRHistoryEntry FirstOrDefault() => _entries.FirstOrDefault();
+        public IRHistoryEntry LastOrDefault() => _entries.LastOrDefault();
         public bool HasEntries => _entries.Count > 0;
         public bool HasSelectedEntries => _selectedEntries.Count > 0;
 

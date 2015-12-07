@@ -419,6 +419,12 @@
   <data name="Settings_UseExperimentalGraphicsDevice_Description" xml:space="preserve">
     <value>Use the new experimental graphics device for plotting.  Restart VS after changing this setting.</value>
   </data>
+  <data name="Settings_ClearFilterOnAddHistory" xml:space="preserve">
+    <value>Reset search filter</value>
+  </data>
+  <data name="Settings_ClearFilterOnAddHistory_Description" xml:space="preserve">
+    <value>Reset search filter in history window when new entry is added or .RHistory file is loaded</value>
+  </data>
   <data name="Ask" xml:space="preserve">
     <value>Ask</value>
   </data>
