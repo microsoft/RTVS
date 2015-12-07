@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,14 +19,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Interaction logic for VariableGridHost.xaml
     /// </summary>
     public partial class VariableGridHost : UserControl {
-
-        private static int RowCount = 100;
-        private static int ColumnCount = 100;
-
         public VariableGridHost() {
             InitializeComponent();
-
-            this.VGrid.ItemsSource = new VariableGridDataSource(RowCount, ColumnCount);
         }
+
+        private IList _gridItemsSource;
+        public IList GridItemsSource
+        {
+            get { return _gridItemsSource; }
+            set
+            {
+                _gridItemsSource = value;
+
+                // refresh source sources
+                // TODO: change more robust to setting order. for now... well fine.
+                this.VariableGrid.RowHeaderSource = RowHeaderSource;
+                this.VariableGrid.ColumnHeaderSource = ColumnHeaderSource;
+                this.VariableGrid.ItemsSource = GridItemsSource;
+            }
+        }
+
+        public IList RowHeaderSource { get; set; }
+
+        public IList ColumnHeaderSource { get; set; }
     }
 }

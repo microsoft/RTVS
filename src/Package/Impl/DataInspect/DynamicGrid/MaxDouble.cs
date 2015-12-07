@@ -6,34 +6,38 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// double that updates only when bigger value is assigned
     /// </summary>
     public class MaxDouble {
-        public MaxDouble() { }
+        public MaxDouble() : this(double.NegativeInfinity) { }
+
         public MaxDouble(double initialValue) {
             _max = initialValue;
         }
 
-        /// <summary>
-        /// bool 
-        /// </summary>
-        [DefaultValue(false)]
-        public bool Frozen { get; set; }
-
-
-        double? _max;
+        private double _max;
         /// <summary>
         /// Maximum value
         /// </summary>
-        public double? Max {
-            get {
+        public double Max
+        {
+            get
+            {
                 return _max;
             }
-            set {
-                if (!Frozen) {
-                    if (_max.HasValue && value.HasValue) {
-                        _max = Math.Max(_max.Value, value.Value);
-                    } else {
-                        _max = value;
-                    }
+            set
+            {
+                SetValue(value);
+            }
+        }
+
+        public event EventHandler MaxChanged;
+
+        private void SetValue(double value) {
+            if (MaxChanged != null) {
+                if (value > _max) {
+                    _max = value;
+                    MaxChanged(this, EventArgs.Empty);
                 }
+            } else {
+                _max = Math.Max(_max, value);
             }
         }
     }
