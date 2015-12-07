@@ -13,7 +13,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
         bool TryLoadFromFile(string path);
         bool TrySaveToFile(string path);
         void SendSelectedToRepl();
-        void SendSelectedToTextView(IWpfTextView textView);
+        void SendSelectedToTextView(ITextView textView);
+        void PreviousEntry();
+        void NextEntry();
         void CopySelection();
 
         IReadOnlyList<SnapshotSpan> GetSelectedHistoryEntrySpans();
@@ -21,6 +23,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         SnapshotSpan SelectHistoryEntry(int lineNumber);
         SnapshotSpan DeselectHistoryEntry(int lineNumber);
         SnapshotSpan ToggleHistoryEntrySelection(int lineNumber);
+
+        void SelectHistoryEntries(IEnumerable<int> lineNumbers);
         void SelectAllEntries();
         void ClearHistoryEntrySelection();
         void DeleteSelectedHistoryEntries();

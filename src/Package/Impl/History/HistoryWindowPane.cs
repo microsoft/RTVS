@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -26,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private readonly IComponentModel _componentModel;
-        private readonly Lazy<IRHistoryProvider> _historyProviderExport;
+        private readonly Lazy<IRHistory> _historyProvider;
         private IServiceProvider _oleServiceProvider;
         private IWpfTextViewHost _wpfTextViewHost;
         private IVsTextView _vsTextViewAdapter;
@@ -37,11 +39,19 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public HistoryWindowPane() {
             Caption = Resources.HistoryWindowCaption;
             _contentTypeRegistryService = AppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-            _historyProviderExport = AppShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
             _componentModel = AppShell.Current.GetGlobalService<IComponentModel>(typeof(SComponentModel));
             _oleServiceProvider = AppShell.Current.GetGlobalService<IServiceProvider>();
 
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.historyWindowToolBarId);
+
+            var historyProviderExport = EditorShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
+            Debug.Assert(historyProviderExport != null);
+
+            _historyProvider = new Lazy<IRHistory>(() => {
+                var history = historyProviderExport.Value.GetAssociatedRHistory(TextView);
+                history.HistoryChanged += OnHistoryChanged;
+                return history;
+            });
         }
 
         protected override void OnCreate() {
@@ -87,6 +97,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
             TextView = _wpfTextViewHost.TextView;
 
             TextView.Options.SetOptionValue(DefaultTextViewHostOptions.SelectionMarginId, false);
+            TextView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
+            TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ZoomControlId, false);
+            TextView.Options.SetOptionValue(DefaultWpfViewOptions.EnableMouseWheelZoomId, false);
             TextView.Options.SetOptionValue(DefaultWpfViewOptions.EnableHighlightCurrentLineId, false);
             TextView.Options.SetOptionValue(DefaultTextViewOptions.BraceCompletionEnabledOptionId, false);
             TextView.Options.SetOptionValue(DefaultTextViewOptions.DragDropEditingId, false);
@@ -111,13 +124,11 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
-            var history = _historyProviderExport.Value.GetAssociatedRHistory(TextView);
-            return new HistorySearchTask(dwCookie, history, pSearchQuery, pSearchCallback);
+            return new HistorySearchTask(dwCookie, _historyProvider.Value, pSearchQuery, pSearchCallback);
         }
 
         public override void ClearSearch() {
-            var history = _historyProviderExport.Value.GetAssociatedRHistory(TextView);
-            EditorShell.Current.DispatchOnUIThread(() => history.ClearFilter(), DispatcherPriority.Normal);
+            EditorShell.Current.DispatchOnUIThread(() => _historyProvider.Value.ClearFilter(), DispatcherPriority.Normal);
             base.ClearSearch();
         }
 
@@ -126,8 +137,15 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 _vsTextViewAdapter = null;
                 _oleServiceProvider = null;
                 _commandTarget = null;
+                _historyProvider.Value.HistoryChanged -= OnHistoryChanged;
             }
             base.Dispose(disposing);
+        }
+
+        private void OnHistoryChanged(object sender, EventArgs e) {
+            if (RToolsSettings.Current.ClearFilterOnAddHistory) {
+                SearchHost.SearchAsync(null);
+            }
         }
 
         private sealed class HistorySearchTask : VsSearchTask {

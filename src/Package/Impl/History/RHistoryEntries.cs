@@ -17,6 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public IEnumerable<string> GetEntriesText() => _entries.Select(e => e.Text);
         public IEnumerable<string> GetSelectedEntriesText() => _selectedEntries.Select(e => e.Text);
         public IRHistoryEntry Find(Func<IRHistoryEntry, bool> predicate) => _entries.First(predicate);
+        public IRHistoryEntry FirstOrDefault() => _entries.FirstOrDefault();
+        public IRHistoryEntry LastOrDefault() => _entries.LastOrDefault();
         public bool HasEntries => _entries.Count > 0;
         public bool HasSelectedEntries => _selectedEntries.Count > 0;
 

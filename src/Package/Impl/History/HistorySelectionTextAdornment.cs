@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -103,6 +104,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
             if (_layer.TextView.ViewportRight > _lastWidth) {
                 _lastWidth = _layer.TextView.ViewportRight + 100;
                 Redraw();
+            } else if (e.NewOrReformattedLines.Any()) {
+                Redraw();
             }
         }
 
@@ -124,17 +127,18 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private void DrawHighlight(Geometry g, VisualToolset visualTools, SnapshotSpan span) {
-            if (g != null) {
-
-                var dv = new DrawingVisual();
-                DrawingContext dContext = dv.RenderOpen();
-                dContext.DrawGeometry(visualTools.Brush, visualTools.Pen, g);
-                dContext.Close();
-
-                var uiElement = new DrawingVisualHost(dv);
-
-                _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, new object(), uiElement, null);
+            if (g.CanFreeze) {
+                g.Freeze();
             }
+
+            var dv = new DrawingVisual();
+            DrawingContext dContext = dv.RenderOpen();
+            dContext.DrawGeometry(visualTools.Brush, visualTools.Pen, g);
+            dContext.Close();
+
+            var uiElement = new DrawingVisualHost(dv);
+
+            _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, new object(), uiElement, null);
         }
 
         private VisualToolset CreateVisualToolset(string category, Color defaultColor) {

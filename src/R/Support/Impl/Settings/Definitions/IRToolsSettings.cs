@@ -19,6 +19,7 @@ namespace Microsoft.R.Support.Settings.Definitions {
         YesNoAsk SaveRDataOnProjectUnload { get; set; }
 
         bool AlwaysSaveHistory { get; set; }
+        bool ClearFilterOnAddHistory { get; set; }
 
         bool UseExperimentalGraphicsDevice { get; set; }
 

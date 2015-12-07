@@ -83,6 +83,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.UseExperimentalGraphicsDevice = value; }
         }
 
+        [LocCategory("Settings_HistoryCategory")]
+        [CustomLocDisplayName("Settings_ClearFilterOnAddHistory")]
+        [LocDescription("Settings_ClearFilterOnAddHistory_Description")]
+        [DefaultValue(true)]
+        public bool ClearFilterOnAddHistory {
+            get { return RToolsSettings.Current.ClearFilterOnAddHistory; }
+            set { RToolsSettings.Current.ClearFilterOnAddHistory = value; }
+        }
+
         [LocCategory("Settings_GeneralCategory")]
         [CustomLocDisplayName("Settings_RBasePath")]
         [LocDescription("Settings_RBasePath_Description")]
