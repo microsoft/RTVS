@@ -5,7 +5,7 @@ using Microsoft.Languages.Core.Utility;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.VisualStudio.R.Package.History {
-    internal sealed class RHistoryEntries {
+    internal sealed class RHistoryEntries : IRHistoryEntries {
         private static readonly IComparer<Entry> EntryComparer = Comparer<Entry>.Create((e1, e2) => e1.Index.CompareTo(e2.Index));
 
         private long _index;

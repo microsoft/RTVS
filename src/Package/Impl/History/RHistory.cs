@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private const string BlockSeparator = "\r\n";
         private const string LineSeparator = "\u00a0";
 
-        private readonly RHistoryEntries _entries = new RHistoryEntries();
+        private readonly IRHistoryEntries _entries = new RHistoryEntries();
         private readonly ITextView _textView;
         private readonly IFileSystem _fileSystem;
         private readonly IEditorOperationsFactoryService _editorOperationsFactory;
