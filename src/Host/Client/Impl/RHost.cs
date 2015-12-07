@@ -387,8 +387,8 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.Busy(false, ct);
                                 break;
 
-                            case "PlotXaml":
-                                await _callbacks.PlotXaml(message.GetString(0, "xaml_file_path"), ct);
+                            case "Plot":
+                                await _callbacks.Plot(message.GetString(0, "xaml_file_path"), ct);
                                 // TODO: delete temporary xaml and bitmap files
                                 break;
 

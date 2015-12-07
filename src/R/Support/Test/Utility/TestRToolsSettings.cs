@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Enums;
 using Microsoft.R.Support.Settings.Definitions;
@@ -34,6 +35,11 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public bool AlwaysSaveHistory {
             get { return true; }
+            set { }
+        }
+
+        public bool UseExperimentalGraphicsDevice {
+            get { return false; }
             set { }
         }
 

@@ -30,6 +30,21 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         /// </summary>
         /// <param name="fileName">the destination filepath</param>
         void SaveFile(string fileName);
+
+        /// <summary>
+        /// Export plot as an image
+        /// </summary>
+        /// <param name="fileName">the destination filepath</param>
+        void ExportFile(string fileName);
+
+        /// <summary>
+        /// Resize the current plot or set the default size for future plots.
+        /// </summary>
+        /// <param name="width">Width in pixels.</param>
+        /// <param name="height">Height in pixels.</param>
+        void ResizePlot(int width, int height);
+        void NextPlot();
+        void PreviousPlot();
     }
 
     /// <summary>

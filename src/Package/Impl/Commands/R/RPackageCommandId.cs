@@ -33,7 +33,7 @@
         //public const int icmdOpenPlot = 701;
         //public const int icmdSavePlot = 702;
         //public const int icmdFixPlot = 703;
-        //public const int icmdExportPlot = 704;
+        public const int icmdExportPlot = 704;
         public const int icmdPrintPlot = 705;
         //public const int icmdCopyPlot = 707;
         //public const int icmdZoomInPlot = 708;

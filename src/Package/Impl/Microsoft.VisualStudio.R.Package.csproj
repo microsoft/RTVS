@@ -125,6 +125,8 @@
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
     <Compile Include="Packages\Definitions\IRPackage.cs" />
+    <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
+    <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
     <Compile Include="Plots\Commands\ZoomOutPlotCommand.cs" />
