@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Host.Client {
     class Program : IRCallbacks {
@@ -12,7 +13,7 @@ namespace Microsoft.R.Host.Client {
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
             var host = new RHost(new Program());
-            host.CreateAndRun(args[0], IntPtr.Zero).GetAwaiter().GetResult();
+            host.CreateAndRun(args[0], IntPtr.Zero, RToolsSettings.Current).GetAwaiter().GetResult();
             _evaluator = host;
         }
 
