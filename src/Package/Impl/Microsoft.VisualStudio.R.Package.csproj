@@ -739,6 +739,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DataInspect\DynamicGrid\DynamicGridStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DataInspect\VariableGridHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
