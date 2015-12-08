@@ -65,8 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             using (generator.StartAt(position, GeneratorDirection.Forward, true)) {
                 for (int i = 0; i < viewportCount; i++, childIndex++) {
                     bool newlyRealized;
-                    DynamicGridCell child = generator.GenerateNext(out newlyRealized) as DynamicGridCell;
-                    Debug.Assert(child != null);
+                    DynamicGridCell child = (DynamicGridCell) generator.GenerateNext(out newlyRealized);
 
                     if (newlyRealized) {
                         if (childIndex >= InternalChildren.Count) {

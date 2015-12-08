@@ -149,7 +149,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 if (page != null) {
-                    await LoadAsync(page);
+                    IGrid<T> data = await _itemsProvider.GetRangeAsync(page.Range);
+
+                    page.PopulateData(data);
                 } else {
                     CleanOldPages();
                     cleanHasRun = true;
@@ -175,14 +177,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                 }
             }
-        }
-
-        private async Task LoadAsync(Page2D<T> page) {
-            var task = Task.Run(() => _itemsProvider.GetRangeAsync(page.Range));
-
-            IGrid<T> data = await task;
-
-            page.PopulateData(data);
         }
     }
 }

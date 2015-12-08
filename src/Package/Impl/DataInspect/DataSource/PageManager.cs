@@ -119,7 +119,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 if (page != null) {
-                    await LoadAsync(page);
+                    IList<T> data = await _itemsProvider.GetRangeAsync(page.Range);
+
+                    page.PopulateData(data);
                 } else {
                     CleanOldPages();
                     cleanHasRun = true;
@@ -143,14 +145,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     // TODO: release hint
                 }
             }
-        }
-
-        private async Task LoadAsync(Page<T> page) {
-            var task = Task.Run(() => _itemsProvider.GetRangeAsync(page.Range));
-
-            IList<T> data = await task;
-
-            page.PopulateData(data);
         }
     }
 }

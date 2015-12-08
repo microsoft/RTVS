@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.R.Package.Wpf;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -52,7 +53,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public override void OnApplyTemplate() {
             base.OnApplyTemplate();
 
-            EnsureHorizontalScrollbar();
+            var scrollbar = GetTemplateChild("HorizontalScrollBar") as ScrollBar;
+            if (scrollbar != null) {
+                scrollbar.Scroll += Scrollbar_Scroll;
+            }
         }
 
         protected override DependencyObject GetContainerForItemOverride() {
@@ -87,11 +91,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public double RowHeaderActualWidth {
             get { return (double)GetValue(RowHeaderActualWidthProperty); }
-            internal set { SetValue(RowHeaderActualWidthPropertyKey, value); }
+            set { SetValue(RowHeaderActualWidthPropertyKey, value); }
         }
 
         private static readonly DependencyPropertyKey RowHeaderActualWidthPropertyKey =
-            DependencyProperty.RegisterReadOnly("RowHeaderActualWidth", typeof(double), typeof(DynamicGrid), new FrameworkPropertyMetadata(0.0, new PropertyChangedCallback(OnNotifyRowHeaderPropertyChanged)));
+            DependencyProperty.RegisterReadOnly(nameof(RowHeaderActualWidth), typeof(double), typeof(DynamicGrid), new FrameworkPropertyMetadata(0.0, new PropertyChangedCallback(OnNotifyRowHeaderPropertyChanged)));
 
         public static readonly DependencyProperty RowHeaderActualWidthProperty = RowHeaderActualWidthPropertyKey.DependencyProperty;
 
@@ -192,10 +196,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 // TODO: move to background(?)
-                var toRemove = _columns.Where(c => c.Key < _layoutInfo.FirstItemIndex || c.Key >= (_layoutInfo.FirstItemIndex + _layoutInfo.MaxItemInViewport)).ToList();
-                foreach (var item in toRemove) {
-                    _columns.Remove(item.Key);
-                }
+                _columns.RemoveWhere(
+                    c => c.Key < _layoutInfo.FirstItemIndex
+                    || c.Key >= (_layoutInfo.FirstItemIndex + _layoutInfo.MaxItemInViewport));
 
                 foreach (var row in _realizedRows) {
                     row.ScrollChanged();
@@ -213,7 +216,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public static readonly DependencyProperty ScrollableWidthProperty =
                 DependencyProperty.Register(
-                        "ScrollableWidth",
+                        nameof(ScrollableWidth),
                         typeof(double),
                         typeof(DynamicGrid),
                         new FrameworkPropertyMetadata(0d));
@@ -229,7 +232,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public static readonly DependencyProperty ExtentWidthProperty =
                 DependencyProperty.Register(
-                        "ExtentWidth",
+                        nameof(ExtentWidth),
                         typeof(double),
                         typeof(DynamicGrid),
                         new FrameworkPropertyMetadata(0d));
@@ -245,7 +248,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public static readonly DependencyProperty HorizontalOffsetProperty =
                 DependencyProperty.Register(
-                        "HorizontalOffset",
+                        nameof(HorizontalOffset),
                         typeof(double),
                         typeof(DynamicGrid),
                         new FrameworkPropertyMetadata(0d));
@@ -261,7 +264,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public static readonly DependencyProperty ViewportWidthProperty =
                 DependencyProperty.Register(
-                        "ViewportWidth",
+                        nameof(ViewportWidth),
                         typeof(double),
                         typeof(DynamicGrid),
                         new FrameworkPropertyMetadata(0d));
@@ -272,19 +275,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             set {
                 SetValue(ViewportWidthProperty, value);
-            }
-        }
-
-        private bool _scrollbar = false;
-        private void EnsureHorizontalScrollbar() {
-            if (!_scrollbar) {
-
-                var scrollbar = WpfHelper.FindChild<ScrollBar>(this, (bar) => bar.Name == "HorizontalScrollBar");
-                if (scrollbar != null) {
-                    scrollbar.Scroll += Scrollbar_Scroll; ;
-                }
-
-                _scrollbar = true;
             }
         }
 

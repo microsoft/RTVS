@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Microsoft.Common.Core {
@@ -21,6 +23,13 @@ namespace Microsoft.Common.Core {
                 dict = new Dictionary<string, object>();
             }
             return dict;
+        }
+
+        public static void RemoveWhere<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Func<KeyValuePair<TKey, TValue>, bool> predicate) {
+            var toRemove = dictionary.Where(predicate).ToList();
+            foreach (var item in toRemove) {
+                dictionary.Remove(item.Key);
+            }
         }
     }
 }

@@ -1,162 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Media;
+﻿using System.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.Wpf {
     public static class WpfHelper {
         /// <summary>
-        /// Tries its best to return the specified element's parent. It will 
-        /// try to find, in this order, the VisualParent, LogicalParent, LogicalTemplatedParent.
-        /// It only works for Visual, FrameworkElement or FrameworkContentElement.
+        ///     Walks up the templated parent tree looking for a parent type.
         /// </summary>
-        /// <param name="element">The element to which to return the parent. It will only 
-        /// work if element is a Visual, a FrameworkElement or a FrameworkContentElement.</param>
-        /// <remarks>If the logical parent is not found (Parent), we check the TemplatedParent
-        /// (see FrameworkElement.Parent documentation). But, we never actually witnessed
-        /// this situation.</remarks>
-        public static DependencyObject GetParent(DependencyObject element) {
-            return WpfHelper.GetParent(element, true);
-        }
-
-        private static DependencyObject GetParent(DependencyObject element, bool recurseIntoPopup) {
-            if (recurseIntoPopup) {
-                // Case 126732 : To correctly detect parent of a popup we must do that exception case
-                Popup popup = element as Popup;
-
-                if ((popup != null) && (popup.PlacementTarget != null))
-                    return popup.PlacementTarget;
-            }
-
-            Visual visual = element as Visual;
-            DependencyObject parent = (visual == null) ? null : VisualTreeHelper.GetParent(visual);
-
-            if (parent == null) {
-                // No Visual parent. Check in the logical tree.
-                FrameworkElement fe = element as FrameworkElement;
-
-                if (fe != null) {
-                    parent = fe.Parent;
-
-                    if (parent == null) {
-                        parent = fe.TemplatedParent;
-                    }
-                } else {
-                    FrameworkContentElement fce = element as FrameworkContentElement;
-
-                    if (fce != null) {
-                        parent = fce.Parent;
-
-                        if (parent == null) {
-                            parent = fce.TemplatedParent;
-                        }
-                    }
-                }
-            }
-
-            return parent;
-        }
-
-        /// <summary>
-        /// This will search for a parent of the specified type.
-        /// </summary>
-        /// <typeparam name="T">The type of the element to find</typeparam>
-        /// <param name="startingObject">The node where the search begins. This element is not checked.</param>
-        /// <returns>Returns the found element. Null if nothing is found.</returns>
-        public static T FindParent<T>(DependencyObject startingObject) where T : DependencyObject {
-            return WpfHelper.FindParent<T>(startingObject, false, null);
-        }
-
-        /// <summary>
-        /// This will search for a parent of the specified type.
-        /// </summary>
-        /// <typeparam name="T">The type of the element to find</typeparam>
-        /// <param name="startingObject">The node where the search begins.</param>
-        /// <param name="checkStartingObject">Should the specified startingObject be checked first.</param>
-        /// <returns>Returns the found element. Null if nothing is found.</returns>
-        public static T FindParent<T>(DependencyObject startingObject, bool checkStartingObject) where T : DependencyObject {
-            return WpfHelper.FindParent<T>(startingObject, checkStartingObject, null);
-        }
-
-        /// <summary>
-        /// This will search for a parent of the specified type.
-        /// </summary>
-        /// <typeparam name="T">The type of the element to find</typeparam>
-        /// <param name="startingObject">The node where the search begins.</param>
-        /// <param name="checkStartingObject">Should the specified startingObject be checked first.</param>
-        /// <param name="additionalCheck">Provide a callback to check additional properties 
-        /// of the found elements. Can be left Null if no additional criteria are needed.</param>
-        /// <returns>Returns the found element. Null if nothing is found.</returns>
-        /// <example>Button button = WpfHelper.FindParent&lt;Button&gt;( this, foundChild => foundChild.Focusable );</example>
-        public static T FindParent<T>(DependencyObject startingObject, bool checkStartingObject, Func<T, bool> additionalCheck) where T : DependencyObject {
-            T foundElement;
-            DependencyObject parent = (checkStartingObject ? startingObject : WpfHelper.GetParent(startingObject, true));
+        /// <remarks>
+        /// Original code is from DataGridHelper
+        /// </remarks>
+        public static T FindParent<T>(FrameworkElement element) where T : FrameworkElement {
+            FrameworkElement parent = element.TemplatedParent as FrameworkElement;
 
             while (parent != null) {
-                foundElement = parent as T;
-
-                if (foundElement != null) {
-                    if (additionalCheck == null) {
-                        return foundElement;
-                    } else {
-                        if (additionalCheck(foundElement))
-                            return foundElement;
-                    }
+                T correctlyTyped = parent as T;
+                if (correctlyTyped != null) {
+                    return correctlyTyped;
                 }
 
-                parent = WpfHelper.GetParent(parent, true);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// This will search for a child of the specified type. The search is performed 
-        /// hierarchically, breadth first (as opposed to depth first).
-        /// </summary>
-        /// <typeparam name="T">The type of the element to find</typeparam>
-        /// <param name="parent">The root of the tree to search for. This element itself is not checked.</param>
-        /// <returns>Returns the found element. Null if nothing is found.</returns>
-        public static T FindChild<T>(DependencyObject parent) where T : DependencyObject {
-            return WpfHelper.FindChild<T>(parent, null);
-        }
-
-        /// <summary>
-        /// This will search for a child of the specified type. The search is performed 
-        /// hierarchically, breadth first (as opposed to depth first).
-        /// </summary>
-        /// <typeparam name="T">The type of the element to find</typeparam>
-        /// <param name="parent">The root of the tree to search for. This element itself is not checked.</param>
-        /// <param name="additionalCheck">Provide a callback to check additional properties 
-        /// of the found elements. Can be left Null if no additional criteria are needed.</param>
-        /// <returns>Returns the found element. Null if nothing is found.</returns>
-        /// <example>Button button = WpfHelper.FindChild{Button}( this, foundChild => foundChild.Focusable );</example>
-        public static T FindChild<T>(DependencyObject parent, Func<T, bool> additionalCheck) where T : DependencyObject {
-            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-            T child;
-
-            for (int index = 0; index < childrenCount; index++) {
-                child = VisualTreeHelper.GetChild(parent, index) as T;
-
-                if (child != null) {
-                    if (additionalCheck == null) {
-                        return child;
-                    } else {
-                        if (additionalCheck(child))
-                            return child;
-                    }
-                }
-            }
-
-            for (int index = 0; index < childrenCount; index++) {
-                child = WpfHelper.FindChild<T>(VisualTreeHelper.GetChild(parent, index), additionalCheck);
-
-                if (child != null)
-                    return child;
+                parent = parent.TemplatedParent as FrameworkElement;
             }
 
             return null;
