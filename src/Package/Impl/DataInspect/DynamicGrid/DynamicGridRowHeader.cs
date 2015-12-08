@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.R.Package.Wpf;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    /// <summary>
+    /// A control that contains row header content
+    /// Width is synched with other row's header width through owning grid's property
+    /// </summary>
     internal class DynamicGridRowHeader : ContentControl {
         public override void OnApplyTemplate() {
             base.OnApplyTemplate();

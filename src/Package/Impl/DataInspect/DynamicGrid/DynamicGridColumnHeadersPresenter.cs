@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.R.Package.Wpf;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal class DynamicGridColumnHeadersPresenter : ItemsControl, SharedScrollInfo {
+    /// <summary>
+    /// an items control that hosts column headers
+    /// </summary>
+    internal class DynamicGridColumnHeadersPresenter : ItemsControl, IScrollInfoGiver {
         static DynamicGridColumnHeadersPresenter() {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DynamicGridColumnHeadersPresenter), new FrameworkPropertyMetadata(typeof(DynamicGridColumnHeadersPresenter)));
         }
@@ -32,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (column == -1) {
                 throw new InvalidOperationException("Item is not found in collection");
             }
-            cell.Prepare(ParentGrid.GetColumn(column));
+            cell.Prepare(ParentGrid.GetColumnWidth(column));
         }
 
         protected override void ClearContainerForItemOverride(DependencyObject element, object item) {

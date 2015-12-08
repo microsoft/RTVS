@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public class Page<T> {
+    internal class Page<T> {
         private List<PageItem<T>> _list;
 
         public Page(int pageNumber, Range range) {

@@ -20,17 +20,11 @@ namespace Microsoft.VisualStudio.R.TestApp {
             return Task.Run(async () => {
                 await Task.Delay(1000);
 
-                List<GridItem> data = new List<GridItem>(gridRange.Rows.Count * gridRange.Columns.Count);
-                for (int c = 0; c < gridRange.Columns.Count; c++) {
-                    for (int r = 0; r < gridRange.Rows.Count; r++) {
-                        data.Add(
-                            new GridItem(
-                                r + gridRange.Rows.Start,
-                                c + gridRange.Columns.Start));
-                    }
-                }
+                var grid = new Grid<GridItem>(
+                    gridRange.Rows.Count,
+                    gridRange.Columns.Count,
+                    (r, c) => new GridItem(r + gridRange.Rows.Start, c + gridRange.Columns.Start));
 
-                var grid = new Grid<GridItem>(gridRange.Rows.Count, gridRange.Columns.Count, data);
                 return (IGrid<GridItem>)grid;
             });
         }

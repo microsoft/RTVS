@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Microsoft.VisualStudio.R.Package.DataInspect {
+﻿namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Range of integers
     /// </summary>

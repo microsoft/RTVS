@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    /// <summary>
+    /// Simple <see cref="IGrid{T}"/> implementation with linearized grid <see cref="List{T}"/>
+    /// </summary>
+    /// <typeparam name="T">type of item value</typeparam>
     public class Grid<T> : IGrid<T> {
-
         private IList<T> _list;
 
+        /// <summary>
+        /// Constructs and fill grid with generated items
+        /// </summary>
+        /// <param name="CreateNew">function to generate item</param>
         public Grid(int rowCount, int columnCount, Func<int, int, T> CreateNew) {
             RowCount = rowCount;
             ColumnCount = columnCount;
@@ -18,17 +22,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 for (int r = 0; r < rowCount; r++) {
                     list.Add(CreateNew(r, c));
                 }
-            }
-
-            _list = list;
-        }
-
-        public Grid(int rowCount, int columnCount, IList<T> list) {
-            RowCount = rowCount;
-            ColumnCount = columnCount;
-
-            if (list.Count < (RowCount * ColumnCount)) {
-                throw new ArgumentException("list doesn't contain enough data");
             }
 
             _list = list;

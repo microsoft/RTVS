@@ -1,19 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
-    /// <see cref="IGrid{T}"/> provider
+    /// Two dimensional data provider
     /// </summary>
-    /// <typeparam name="TData">the type of grid item</typeparam>
+    /// <typeparam name="TData">data type</typeparam>
     public interface IGridProvider<TData> {
+        /// <summary>
+        /// total number of items in row
+        /// </summary>
         int RowCount { get; }
 
+        /// <summary>
+        /// total number of items in column
+        /// </summary>
         int ColumnCount { get; }
 
+        /// <summary>
+        /// Returns portion of data
+        /// </summary>
         Task<IGrid<TData>> GetRangeAsync(GridRange gridRange);
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public class Page2D<T> {
+    internal class Page2D<T> {
         private Grid<PageItem<T>> _grid;
 
         public Page2D(PageNumber pageNumber, GridRange range) {

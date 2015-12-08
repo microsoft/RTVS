@@ -7,55 +7,45 @@ using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
-    internal struct LayoutInfo {
+    public struct LayoutInfo {
         public int FirstItemIndex { get; set; }
         public double FirstItemOffset { get; set; }
         public int ItemCountInViewport { get; set; }
     }
 
-    internal interface SharedScrollInfo {
+    public interface IScrollInfoGiver {
         LayoutInfo GetLayoutInfo(Size size);
 
         event EventHandler SharedScrollChanged;
     }
 
-
     internal class DynamicGridCellsPanel : VirtualizingPanel {
-        private const double ItemMinWidth = 20;
-        private SharedScrollInfo _sharedScrollInfo;
-
-        #region Layout
-
-        private bool sharedscrollinit = false;
-        private void EnsurePrerequisite() {
-            var children = Children;
-
-            if (!sharedscrollinit) {
-                _sharedScrollInfo = ItemsControl.GetItemsOwner(this) as SharedScrollInfo;
+        private IScrollInfoGiver _sharedScrollInfo;
+        internal IScrollInfoGiver SharedScroll {
+            get {
                 if (_sharedScrollInfo == null) {
-                    throw new NotSupportedException($"{typeof(DynamicGridCellsPanel)} supports only ItemsControl that implements {typeof(SharedScrollInfo)}");
+                    _sharedScrollInfo = ItemsControl.GetItemsOwner(this) as IScrollInfoGiver;
+                    if (_sharedScrollInfo == null) {
+                        throw new NotSupportedException($"{typeof(DynamicGridCellsPanel)} supports only ItemsControl that implements {typeof(IScrollInfoGiver)}");
+                    }
+                    _sharedScrollInfo.SharedScrollChanged += SharedScrollChanged;
                 }
-                _sharedScrollInfo.SharedScrollChanged += SharedScrollChanged;
 
-                // TODO: doesn't support panel change on the fly yet.
-                sharedscrollinit = true;
-
-                VirtualizingStackPanel.AddCleanUpVirtualizedItemHandler(this, CleanUpVirtualizedItem);
+                return _sharedScrollInfo;
             }
         }
 
-        private static void CleanUpVirtualizedItem(object sender, CleanUpVirtualizedItemEventArgs e) {
-            var me = (DynamicGridCellsPanel)sender;
-        }
+        #region Layout
 
         private void SharedScrollChanged(object sender, EventArgs e) {
             InvalidateMeasure();
         }
 
         protected override Size MeasureOverride(Size availableSize) {
-            EnsurePrerequisite();
+            // work around to make sure ItemContainerGenerator non-null
+            var children = Children;
 
-            var layoutInfo = _sharedScrollInfo.GetLayoutInfo(availableSize);
+            var layoutInfo = SharedScroll.GetLayoutInfo(availableSize);
 
             int startIndex = layoutInfo.FirstItemIndex;
             int viewportCount = layoutInfo.ItemCountInViewport;
@@ -63,9 +53,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             IItemContainerGenerator generator = this.ItemContainerGenerator;
             GeneratorPosition position = generator.GeneratorPositionFromIndex(startIndex);
 
-            // Get index where we'd insert the child for this position. If the item is realized
-            // (position.Offset == 0), it's just position.Index, otherwise we have to add one to
-            // insert after the corresponding child
+            // if realized, position.Offset ==0, use just position's index
+            // otherwise, add one to insert after it.
             int childIndex = (position.Offset == 0) ? position.Index : position.Index + 1;
 
             double height = this.ActualHeight;
@@ -78,7 +67,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     Debug.Assert(child != null);
 
                     if (newlyRealized) {
-                        // Figure out if we need to insert the child at the end or somewhere in the middle
                         if (childIndex >= InternalChildren.Count) {
                             AddInternalChild(child);
                         } else {
@@ -89,16 +77,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         Debug.Assert(child == InternalChildren[childIndex]);
                     }
 
-                    double availableWidth = child.ColumnStripe.GetSizeConstraint();
-
                     if (newlyRealized) {
-                        child.Measure(new Size(availableWidth, double.PositiveInfinity));
+                        child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                     }
                     if (child.DesiredSize.Height > height) {
                         height = child.DesiredSize.Height;
                     }
 
-                    child.ColumnStripe.LayoutSize.Max = child.DesiredSize.Width;
+                    child.ColumnWidth.Max = child.DesiredSize.Width;
 
                     width += child.DesiredSize.Width;
                     finalCount++;
@@ -129,8 +115,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var child = InternalChildren[i] as DynamicGridCell;
                 Debug.Assert(child != null);
 
-                child.Arrange(new Rect(x, 0, child.ColumnStripe.LayoutSize.Max, finalSize.Height));
-                x += child.ColumnStripe.LayoutSize.Max;
+                child.Arrange(new Rect(x, 0, child.ColumnWidth.Max, finalSize.Height));
+                x += child.ColumnWidth.Max;
             }
 
             return finalSize;

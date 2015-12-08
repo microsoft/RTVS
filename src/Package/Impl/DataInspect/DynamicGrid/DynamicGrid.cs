@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +8,14 @@ using System.Windows.Controls.Primitives;
 using Microsoft.VisualStudio.R.Package.Wpf;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    /// <summary>
+    /// A grid control that populates columns dynamically just like DataGrid's rows are loaded in stack panel
+    /// 
+    /// This stacks rows vertically, and each row stacks cells horizontally.
+    /// Vertical scroll is handled by this controls's panel.
+    /// Horizontal scroll is handled by propagating horizontal scroll event to each row.
+    /// The source of horitonal scroll event comes from a scrollbar, named as HorizontalScrollBar in template. The scrollbar should stand alone outside scrollviewer.
+    /// </summary>
     public class DynamicGrid : MultiSelector {
         private LinkedList<DynamicGridRow> _realizedRows = new LinkedList<DynamicGridRow>();
 
@@ -16,7 +23,37 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DynamicGrid), new FrameworkPropertyMetadata(typeof(DynamicGrid)));
         }
 
+        #region DataSource
+
+        public IList RowHeaderSource { get; set; }
+
+        public IList ColumnHeaderSource { get; set; }
+
+        protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue) {
+            base.OnItemsSourceChanged(oldValue, newValue);
+
+            foreach (var item in newValue) {
+                var rowSource = item as IList;
+                if (rowSource != null) {
+                    if (rowSource.Count > 0) {
+                        _layoutInfo = new LayoutInfo() { FirstItemIndex = 0, FirstItemOffset = 0.0, ItemCountInViewport = 1 };
+                    }
+                } else {
+                    throw new NotSupportedException($"{nameof(DynamicGrid)} supports only nested collection for ItemsSource");
+                }
+                break;
+            }
+        }
+
+        #endregion
+
         #region override
+
+        public override void OnApplyTemplate() {
+            base.OnApplyTemplate();
+
+            EnsureHorizontalScrollbar();
+        }
 
         protected override DependencyObject GetContainerForItemOverride() {
             return new DynamicGridRow();
@@ -26,11 +63,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             base.PrepareContainerForItemOverride(element, item);
 
             DynamicGridRow row = (DynamicGridRow)element;
-            if (!_realizedRows.Equals(row.Track.List)) {
-                _realizedRows.AddFirst(row.Track);
-            } else {
-                Debug.Fail("hey");
-            }
+
+            _realizedRows.AddFirst(row.Track);  // ObservableCollection.Replace cause this fail, as it has been added already. That's fine for now.
+
             row.Header = RowHeaderSource[Items.IndexOf(item)];
             row.Prepare(this, item);
         }
@@ -44,12 +79,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             _realizedRows.Remove(row.Track);
             row.CleanUp(this, item);
-        }
-
-        protected override Size MeasureOverride(Size constraint) {
-            EnsureHorizontalScrollbar();
-
-            return base.MeasureOverride(constraint);
         }
 
         #endregion override
@@ -94,16 +123,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
-        #region Column
+        #region Columns and Horizontal scroll
 
-        private SortedList<int, DynamicGridStripe> _columns = new SortedList<int, DynamicGridStripe>();
-        internal DynamicGridStripe GetColumn(int index) {
-            DynamicGridStripe stack;
+        private SortedList<int, MaxDouble> _columns = new SortedList<int, MaxDouble>();
+        internal MaxDouble GetColumnWidth(int index) {
+            MaxDouble stack;
             if (_columns.TryGetValue(index, out stack)) {
                 return stack;
             }
 
-            stack = new DynamicGridStripe(Orientation.Vertical, index);
+            stack = new MaxDouble(0.0);
             _columns.Add(index, stack);
 
             return stack;
@@ -113,21 +142,48 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         Size _panelSize;
         LayoutInfo _layoutInfo;
-        internal void OnReportPanelSize(Size size) {
-            _panelSize = size;
 
+        private LayoutInfo ComputeHorizontalScroll(Size size) {
             int horizontalOffset = (int)HorizontalOffset;
+            int startIndex = (int)Math.Floor(horizontalOffset / EstimatedWidth);
+            double width = _layoutInfo.FirstItemOffset;
+            int count = 0;
 
-            double viewportWidth = Math.Ceiling(size.Width / EstimatedWidth);
+            int currentIndex = startIndex;
+            while (currentIndex < Items.Count) {
+                MaxDouble columnWidth;
+                if (_columns.TryGetValue(currentIndex, out columnWidth)) {
+                    width += columnWidth.Max;
+                    count++;
+                } else {
+                    width += EstimatedWidth;
+                    count++;
+                }
 
-            ViewportWidth = viewportWidth;
-            ScrollableWidth = ExtentWidth - viewportWidth;
+                if (width > size.Width) {
+                    break;
+                }
 
-            var newLayoutInfo = new LayoutInfo() {
-                FirstItemIndex = horizontalOffset,
-                FirstItemOffset = 0.0,
-                ItemCountInViewport = (int)viewportWidth,
+                currentIndex++;
+            }
+
+            count = currentIndex - startIndex;
+
+            ExtentWidth = width + (Items.Count - count) * EstimatedWidth;
+            ViewportWidth = width;
+            ScrollableWidth = ExtentWidth - ViewportWidth;
+
+            return new LayoutInfo() {
+                FirstItemIndex = startIndex,
+                FirstItemOffset = _layoutInfo.FirstItemOffset,
+                ItemCountInViewport = count,
             };
+        }
+
+        internal void OnViewportSizeChanged(Size newSize) {
+            _panelSize = newSize;
+
+            var newLayoutInfo = ComputeHorizontalScroll(newSize);
 
             if (!_layoutInfo.Equals(newLayoutInfo)) {
                 _layoutInfo = newLayoutInfo;
@@ -140,6 +196,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var toRemove = _columns.Where(c => c.Key < _layoutInfo.FirstItemIndex || c.Key >= (_layoutInfo.FirstItemIndex + _layoutInfo.ItemCountInViewport)).ToList();
                 foreach (var item in toRemove) {
                     _columns.Remove(item.Key);
+                }
+
+                foreach (var row in _realizedRows) {
+                    row.ScrollChanged();
                 }
             }
         }
@@ -226,26 +286,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void Scrollbar_Scroll(object sender, ScrollEventArgs e) {
-            if (e.ScrollEventType == ScrollEventType.EndScroll) {
-                OnReportPanelSize(_panelSize);  // refresh viewport
-
-                HorizontalOffset = e.NewValue;
-
-                // same calls in OnReportPanelSize
-                //if (_columnHeadersPresenter != null) {
-                //    _columnHeadersPresenter.ScrollChanged();
-                //}
-
-                foreach (var row in _realizedRows) {
-                    row.ScrollChanged();
-                }
+            switch (e.ScrollEventType) {
+                case ScrollEventType.EndScroll:
+                case ScrollEventType.First:
+                case ScrollEventType.LargeDecrement:
+                case ScrollEventType.LargeIncrement:
+                case ScrollEventType.Last:
+                case ScrollEventType.SmallDecrement:
+                case ScrollEventType.SmallIncrement:
+                    OnViewportSizeChanged(_panelSize);
+                    break;
+                case ScrollEventType.ThumbPosition:
+                case ScrollEventType.ThumbTrack:
+                default:
+                    break;
             }
         }
 
         #endregion
-
-        public IList RowHeaderSource { get; set; }
-
-        public IList ColumnHeaderSource { get; set; }
     }
 }

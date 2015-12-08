@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,27 +10,24 @@ using System.Windows.Controls;
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class DynamicGridRowsPanel : VirtualizingStackPanel {
         private DynamicGrid _owningGrid;
+        internal DynamicGrid OwningGrid {
+            get {
+                if (_owningGrid == null) {
+                    _owningGrid = ItemsControl.GetItemsOwner(this) as DynamicGrid;
 
-        internal void HookOwner() {
-            if (_owningGrid == null) {
-                DynamicGrid owner = ItemsControl.GetItemsOwner(this) as DynamicGrid;
-                if (owner == null) {
-                    throw new NotSupportedException("hey!");
+                    Debug.Assert(_owningGrid != null, "DynamicGridRowsPanel supports only DynamicGrid");
                 }
-                _owningGrid = owner;
+                return _owningGrid;
             }
         }
 
-        internal void ReportSize(Size availableSize) {
-            HookOwner();
+        protected override void OnViewportSizeChanged(Size oldViewportSize, Size newViewportSize) {
+            base.OnViewportSizeChanged(oldViewportSize, newViewportSize);
 
-            _owningGrid.OnReportPanelSize(availableSize);
-        }
-
-        protected override Size MeasureOverride(Size constraint) {
-            ReportSize(constraint);
-
-            return base.MeasureOverride(constraint);
+            DynamicGrid grid = OwningGrid;
+            if (grid != null) {
+                grid.OnViewportSizeChanged(newViewportSize);
+            }
         }
     }
 }

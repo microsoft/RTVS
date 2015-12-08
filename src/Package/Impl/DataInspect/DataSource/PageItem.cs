@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    /// <summary>
+    /// Item in Page. It implements <see cref="INotifyPropertyChanged"/> for <see cref="Data"/>, which will fire when realized
+    /// </summary>
     public class PageItem<TData> : IIndexedItem, INotifyPropertyChanged {
         public PageItem(int index = -1) {
             Index = index;

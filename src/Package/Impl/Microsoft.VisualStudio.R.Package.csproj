@@ -60,7 +60,6 @@
     <Compile Include="DataInspect\DataSource\Grid.cs" />
     <Compile Include="DataInspect\DataSource\IGrid.cs" />
     <Compile Include="DataInspect\DataSource\IGridProvider.cs" />
-    <Compile Include="DataInspect\DataSource\IItemsProvider.cs" />
     <Compile Include="DataInspect\DataSource\IListProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
     <Compile Include="DataInspect\DataSource\Page.cs" />
@@ -71,14 +70,12 @@
     <Compile Include="DataInspect\DataSource\PageNumber.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGrid.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCell.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridCellData.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCellsPanel.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridColumnHeadersPresenter.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRow.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowHeader.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowsPanel.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridStripe.cs" />
-    <Compile Include="DataInspect\DynamicGrid\GridRange.cs" />
+    <Compile Include="DataInspect\DataSource\GridRange.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
@@ -88,7 +85,7 @@
     <Compile Include="DataInspect\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\DynamicGrid\MaxDouble.cs" />
-    <Compile Include="DataInspect\DynamicGrid\Range.cs" />
+    <Compile Include="DataInspect\DataSource\Range.cs" />
     <Compile Include="DataInspect\EvaluationWrapper.cs" />
     <Compile Include="DataInspect\MultiplyConverter.cs" />
     <Compile Include="DataInspect\VariableGridHost.xaml.cs">

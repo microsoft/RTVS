@@ -2,15 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal class DynamicGridRow : ItemsControl, SharedScrollInfo {
+    /// <summary>
+    /// Item container in <see cref="DynamicGrid"/>, and also ItemsControl for cells in a row
+    /// </summary>
+    internal class DynamicGridRow : ItemsControl, IScrollInfoGiver {
         private LinkedList<DynamicGridCell> _realizedCells = new LinkedList<DynamicGridCell>();
 
         static DynamicGridRow() {
@@ -37,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         internal DynamicGrid ParentGrid { get; private set; }
 
-        #region SharedScrollInfo support
+        #region IScrollInfoGiver support
 
         public LayoutInfo GetLayoutInfo(Size size) {
             Debug.Assert(ParentGrid != null);
@@ -60,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (column == -1) {
                 throw new InvalidOperationException("Item is not found in collection");
             }
-            cell.Prepare(ParentGrid.GetColumn(column));
+            cell.Prepare(ParentGrid.GetColumnWidth(column));
 
             _realizedCells.AddFirst(cell.Track);
         }

@@ -57,6 +57,7 @@
 
     <Style x:Key="{x:Type local:DynamicGrid}" TargetType="{x:Type local:DynamicGrid}">
         <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="True"/>
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
         <Setter Property="VirtualizingPanel.CacheLength" Value="1"/>
         <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Pixel"/>
