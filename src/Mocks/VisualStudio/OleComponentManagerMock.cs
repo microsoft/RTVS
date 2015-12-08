@@ -11,10 +11,10 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
             uint value;
 
             cm.FContinueIdle().ReturnsForAnyArgs(VSConstants.S_OK);
-            cm.FOnComponentActivate(Arg.Any<uint>()).ReturnsForAnyArgs(VSConstants.S_OK);
-            cm.FOnComponentExitState(Arg.Any<uint>(), Arg.Any<uint>(), Arg.Any<uint>(), Arg.Any<uint>(), Arg.Any<IOleComponentManager[]>()).ReturnsForAnyArgs(VSConstants.S_OK);
-            cm.FPushMessageLoop(Arg.Any<uint>(), Arg.Any<uint>(), Arg.Any<IntPtr>()).ReturnsForAnyArgs(VSConstants.S_OK);
-            cm.FRegisterComponent(Arg.Any<IOleComponent>(), Arg.Any<OLECRINFO[]>(), out value).ReturnsForAnyArgs(x => {
+            cm.FOnComponentActivate(0u).ReturnsForAnyArgs(VSConstants.S_OK);
+            cm.FOnComponentExitState(0u, 0, 0u, 0u, null).ReturnsForAnyArgs(VSConstants.S_OK);
+            cm.FPushMessageLoop(0u, 0u, IntPtr.Zero).ReturnsForAnyArgs(VSConstants.S_OK);
+            cm.FRegisterComponent(null, null, out value).ReturnsForAnyArgs(x => {
                 x[2] = 1;
                 return VSConstants.S_OK;
             });

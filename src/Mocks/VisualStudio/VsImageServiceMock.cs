@@ -10,15 +10,21 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
     public static class VsImageServiceMock {
         public static IVsImageService2 Create() {
             IVsImageService2 svc = Substitute.For<IVsImageService2>();
-            svc.AddCustomImage(null).ReturnsForAnyArgs(ImageHandleMock.Create());
-            svc.AddCustomImageList(null).ReturnsForAnyArgs(ImageHandleMock.Create());
-            svc.GetImage(KnownMonikers.AboutBox, new ImageAttributes()).ReturnsForAnyArgs(VsUiObjectMock.Create());
+
+            IImageHandle h = ImageHandleMock.Create();
+            svc.AddCustomImage(null).ReturnsForAnyArgs(h);
+            svc.AddCustomImageList(null).ReturnsForAnyArgs(h);
+
+            IVsUIObject uiObj = VsUiObjectMock.Create();
+            svc.GetImage(Arg.Any<ImageMoniker>(), Arg.Any<ImageAttributes>()).ReturnsForAnyArgs(uiObj);
             svc.GetImageMonikerForFile(null).ReturnsForAnyArgs(KnownMonikers.AboutBox);
             svc.GetImageMonikerForHierarchyItem(null, 0u, 0).ReturnsForAnyArgs(KnownMonikers.AboutBox);
             svc.GetImageMonikerForName(null).ReturnsForAnyArgs(KnownMonikers.AboutBox);
-            svc.GetImageMonikerType(KnownMonikers.AboutBox).ReturnsForAnyArgs(0u);
-            svc.CreateMonikerImageListFromHIMAGELIST(IntPtr.Zero).ReturnsForAnyArgs(VsImageMonikerImageListMock.Create());
-            svc.GetImageListImageMonikers(KnownMonikers.AboutBox).ReturnsForAnyArgs(VsImageMonikerImageListMock.Create());
+            svc.GetImageMonikerType(Arg.Any<ImageMoniker>()).ReturnsForAnyArgs(0u);
+
+            IVsImageMonikerImageList mock = VsImageMonikerImageListMock.Create();
+            svc.CreateMonikerImageListFromHIMAGELIST(IntPtr.Zero).ReturnsForAnyArgs(mock);
+            svc.GetImageListImageMonikers(Arg.Any<ImageMoniker>()).ReturnsForAnyArgs(mock);
             return svc;
         }
     }
