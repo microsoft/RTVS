@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class VariableChangedArgs : EventArgs {
@@ -45,6 +46,33 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public event EventHandler<VariableChangedArgs> VariableChanged;
 
         public EvaluationWrapper LastEvaluation { get; private set; }
+
+        public async Task<JToken> EvaluateGridDataAsync(string expression, string rows, string columns) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            using (var evaluation = await _debugSession.RSession.BeginEvaluationAsync(false)) {
+                var result = await evaluation.EvaluateAsync($"rtvs:::toJSON(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Json);
+
+                if (result.ParseStatus != RParseStatus.OK || result.Error != null || result.JsonResult == null) {
+                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
+                }
+
+                return result.JsonResult;
+            }
+        }
+
+        public async Task<GridHeader> EvaluateGridHeaderAsync(string expression, string range, bool isRow) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            using (var evaluation = await _debugSession.RSession.BeginEvaluationAsync(false)) {
+                var result = await evaluation.EvaluateAsync($"rtvs:::toJSON(rtvs:::grid.header({expression}, {range}, {isRow.ToString().ToUpperInvariant()}))", REvaluationKind.Normal);
+                if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
+                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
+                }
+                Debug.Assert(result.StringResult != null);
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<GridHeader>(result.StringResult);
+            }
+        }
 
         #endregion
 

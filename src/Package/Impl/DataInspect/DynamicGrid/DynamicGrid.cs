@@ -33,6 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue) {
             base.OnItemsSourceChanged(oldValue, newValue);
 
+            _columnHeadersPresenter.ItemsSource = ColumnHeaderSource;
+
             foreach (var item in newValue) {
                 var rowSource = item as IList;
                 if (rowSource != null) {

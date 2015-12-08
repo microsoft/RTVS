@@ -27,6 +27,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _list = list;
         }
 
+        public Grid(int rowCount, int columnCount, IList<T> list) {
+            RowCount = rowCount;
+            ColumnCount = columnCount;
+            _list = list;
+        }
+
         public T this[int rowIndex, int columnIndex]
         {
             get

@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.TestApp {
 
             this.GridHost.RowHeaderSource = new DelegateList<PageItem<string>>(0, (i) => rowPageManager.GetItem(i), rowPageManager.Count);
             this.GridHost.ColumnHeaderSource = new DelegateList<PageItem<string>>(0, (i) => columnPageManager.GetItem(i), columnPageManager.Count);
-            this.GridHost.GridItemsSource = gridSource;
+            this.GridHost.ItemsSource = gridSource;
         }
 
         private static DelegateList<PageItem<GridItem>> GetItem(Page2DManager<GridItem> pm, int rowIndex, int itemCount) {

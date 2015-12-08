@@ -48,11 +48,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 Class = string.Join(", ", escaped); // TODO: escape ',' in class names
                 HasChildren = valueEvaluation.HasChildren;
 
-                CanShowDetail = ComputeDetailAvailability();
+                CanShowDetail = ComputeDetailAvailability(valueEvaluation);
                 if (CanShowDetail) {
                     ShowDetailCommand = new DelegateCommand(
-                        (o) => ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true),
+                        ShowVariableGridWindowPane,
                         (o) => CanShowDetail);
+                    Dimensions = valueEvaluation.Dim;
+                } else {
+                    Dimensions = new List<int>();
                 }
             }
         }
@@ -112,6 +115,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public bool HasChildren { get; private set; }
 
+        public IReadOnlyList<int> Dimensions { get; private set; }
+
         public bool IsHidden {
             get { return Name.StartsWith(HiddenVariablePrefix); }
         }
@@ -152,11 +157,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public bool CanShowDetail { get; private set; }
 
-        private bool ComputeDetailAvailability() {
+        private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
+        private bool ComputeDetailAvailability(DebugValueEvaluationResult evaluation) {
+            if (evaluation.Classes.Any(t => detailClasses.Contains(t))) {
+                if (evaluation.Dim != null && evaluation.Dim.Count == 2) {
+                    return true;
+                }
+            }
             return false;
         }
 
         public ICommand ShowDetailCommand { get; }
+
+        private void ShowVariableGridWindowPane(object parameter) {
+            VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);
+            pane.SetEvaluation(this);
+        }
 
         #endregion
     }
