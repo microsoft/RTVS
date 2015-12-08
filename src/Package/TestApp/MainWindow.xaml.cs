@@ -15,8 +15,6 @@ namespace Microsoft.VisualStudio.R.TestApp {
 
         public MainWindow() {
             InitializeComponent();
-
-            SetDataSources();
         }
 
         private void SetDataSources() {
@@ -54,6 +52,10 @@ namespace Microsoft.VisualStudio.R.TestApp {
                 rowIndex,
                 (columnIndex) => pm.GetItem(rowIndex, columnIndex),
                 itemCount);
+        }
+
+        private void LoadItemsSource_Click(object sender, RoutedEventArgs e) {
+            SetDataSources();
         }
     }
 }
