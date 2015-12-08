@@ -38,9 +38,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region IScrollInfoGiver support
 
-        public LayoutInfo GetLayoutInfo(Size size) {
+        public SharedScrollInfo GetScrollInfo(Size size) {
             Debug.Assert(ParentGrid != null);
             return ParentGrid.GetLayoutInfo(size);
+        }
+
+        public void InvalidateScrollInfo() {
+            // do nothing
         }
 
         public event EventHandler SharedScrollChanged;

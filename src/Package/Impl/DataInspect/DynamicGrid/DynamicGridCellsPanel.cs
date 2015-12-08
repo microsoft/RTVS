@@ -7,14 +7,16 @@ using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
-    public struct LayoutInfo {
+    public struct SharedScrollInfo {
         public int FirstItemIndex { get; set; }
         public double FirstItemOffset { get; set; }
-        public int ItemCountInViewport { get; set; }
+        public int MaxItemInViewport { get; set; }
     }
 
     public interface IScrollInfoGiver {
-        LayoutInfo GetLayoutInfo(Size size);
+        SharedScrollInfo GetScrollInfo(Size size);
+
+        void InvalidateScrollInfo();
 
         event EventHandler SharedScrollChanged;
     }
@@ -45,10 +47,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // work around to make sure ItemContainerGenerator non-null
             var children = Children;
 
-            var layoutInfo = SharedScroll.GetLayoutInfo(availableSize);
+            var layoutInfo = SharedScroll.GetScrollInfo(availableSize);
 
             int startIndex = layoutInfo.FirstItemIndex;
-            int viewportCount = layoutInfo.ItemCountInViewport;
+            int viewportCount = layoutInfo.MaxItemInViewport;
 
             IItemContainerGenerator generator = this.ItemContainerGenerator;
             GeneratorPosition position = generator.GeneratorPositionFromIndex(startIndex);
@@ -84,9 +86,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         height = child.DesiredSize.Height;
                     }
 
-                    child.ColumnWidth.Max = child.DesiredSize.Width;
+                    child.ColumnWidth.Max = Math.Max(20.0, child.DesiredSize.Width);
 
-                    width += child.DesiredSize.Width;
+                    width += child.ColumnWidth.Max;
                     finalCount++;
 
                     if (width > availableSize.Width) {
@@ -103,6 +105,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     DispatcherPriority.Background,
                     new Action(() => { CleanUpItems(startIndex, startIndex + finalCount - 1); }));
             }
+
+            SharedScroll.InvalidateScrollInfo();
 
             return desired;
         }

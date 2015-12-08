@@ -51,8 +51,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public event EventHandler SharedScrollChanged;
 
-        public LayoutInfo GetLayoutInfo(Size size) {
+        public SharedScrollInfo GetScrollInfo(Size size) {
             return ParentGrid.GetLayoutInfo(size);
+        }
+
+        public void InvalidateScrollInfo() {
+            ParentGrid.OnHorizontalMeasureEnd();
         }
 
         #endregion

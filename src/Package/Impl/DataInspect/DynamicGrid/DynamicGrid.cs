@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var rowSource = item as IList;
                 if (rowSource != null) {
                     if (rowSource.Count > 0) {
-                        _layoutInfo = new LayoutInfo() { FirstItemIndex = 0, FirstItemOffset = 0.0, ItemCountInViewport = 1 };
+                        _layoutInfo = new SharedScrollInfo() { FirstItemIndex = 0, FirstItemOffset = 0.0, MaxItemInViewport = 1 };
                     }
                 } else {
                     throw new NotSupportedException($"{nameof(DynamicGrid)} supports only nested collection for ItemsSource");
@@ -141,42 +141,41 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private const double EstimatedWidth = 20.0; // TODO: configurable
 
         Size _panelSize;
-        LayoutInfo _layoutInfo;
+        SharedScrollInfo _layoutInfo;
 
-        private LayoutInfo ComputeHorizontalScroll(Size size) {
-            int horizontalOffset = (int)HorizontalOffset;
-            int startIndex = (int)Math.Floor(horizontalOffset / EstimatedWidth);
-            double width = _layoutInfo.FirstItemOffset;
-            int count = 0;
+        private SharedScrollInfo ComputeHorizontalScroll(Size size) {
+            double horizontalOffset = HorizontalOffset;
 
-            int currentIndex = startIndex;
-            while (currentIndex < Items.Count) {
+            int? firstItemIndex = null;
+            double firstItemOffset = 0;
+            double extentWidth = 0.0;
+            for (int i = 0; i < Items.Count; i++) {
+                double currentWidth;
+
                 MaxDouble columnWidth;
-                if (_columns.TryGetValue(currentIndex, out columnWidth)) {
-                    width += columnWidth.Max;
-                    count++;
+                if (_columns.TryGetValue(i, out columnWidth)) {
+                    currentWidth = columnWidth.Max;
                 } else {
-                    width += EstimatedWidth;
-                    count++;
+                    currentWidth = EstimatedWidth;
                 }
 
-                if (width > size.Width) {
-                    break;
+                if (firstItemIndex == null && horizontalOffset <= extentWidth) {
+                    firstItemIndex = i;
+                    firstItemOffset = extentWidth;
                 }
 
-                currentIndex++;
+                extentWidth += currentWidth;
             }
 
-            count = currentIndex - startIndex;
+            ExtentWidth = extentWidth;
+            ViewportWidth = size.Width;
+            ScrollableWidth = extentWidth - size.Width;
 
-            ExtentWidth = width + (Items.Count - count) * EstimatedWidth;
-            ViewportWidth = width;
-            ScrollableWidth = ExtentWidth - ViewportWidth;
-
-            return new LayoutInfo() {
-                FirstItemIndex = startIndex,
-                FirstItemOffset = _layoutInfo.FirstItemOffset,
-                ItemCountInViewport = count,
+            int firstIndex = firstItemIndex.HasValue ? firstItemIndex.Value : 0;
+            return new SharedScrollInfo() {
+                FirstItemIndex = firstItemIndex.HasValue ? firstItemIndex.Value : 0,
+                FirstItemOffset = firstItemOffset,
+                MaxItemInViewport = Items.Count - firstIndex,
             };
         }
 
@@ -193,7 +192,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 // TODO: move to background(?)
-                var toRemove = _columns.Where(c => c.Key < _layoutInfo.FirstItemIndex || c.Key >= (_layoutInfo.FirstItemIndex + _layoutInfo.ItemCountInViewport)).ToList();
+                var toRemove = _columns.Where(c => c.Key < _layoutInfo.FirstItemIndex || c.Key >= (_layoutInfo.FirstItemIndex + _layoutInfo.MaxItemInViewport)).ToList();
                 foreach (var item in toRemove) {
                     _columns.Remove(item.Key);
                 }
@@ -204,7 +203,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        internal LayoutInfo GetLayoutInfo(Size size) {
+        internal void OnHorizontalMeasureEnd() {
+            ComputeHorizontalScroll(_panelSize);
+        }
+
+        internal SharedScrollInfo GetLayoutInfo(Size size) {
             return _layoutInfo;
         }
 
