@@ -30,6 +30,7 @@ namespace Microsoft.R.Support.Settings {
         public static void Init(ExportProvider exportProvider) {
             _exportProvider = exportProvider;
             _instance = _exportProvider != null ? _exportProvider.GetExport<IRToolsSettings>().Value : null;
+            Debug.Assert(_instance != null);
             _instance?.LoadFromStorage();
         }
     }

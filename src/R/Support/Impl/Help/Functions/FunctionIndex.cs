@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Engine;
 using Microsoft.R.Support.Help.Definitions;
 
@@ -117,9 +118,11 @@ namespace Microsoft.R.Support.Help.Functions {
                     if (o != null) {
                         OnFunctionInfoReady(o);
 
-                        if (infoReadyCallback != null) {
-                            infoReadyCallback(parameter);
-                        }
+                        EditorShell.DispatchOnUIThread(() => {
+                            if (infoReadyCallback != null) {
+                                infoReadyCallback(parameter);
+                            }
+                        });
                     }
                 });
         }

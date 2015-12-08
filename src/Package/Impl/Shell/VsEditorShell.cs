@@ -58,7 +58,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #endregion
 
-        #region IWebEditorHost
         /// <summary>
         /// Application composition service
         /// </summary>
@@ -315,7 +314,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             // TODO: test for UI-drive VS tests
             get { return false; }
         }
-        #endregion
 
         #region IDisposable
         public void Dispose() {

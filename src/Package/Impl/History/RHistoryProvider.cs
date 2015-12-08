@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -8,20 +9,21 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.VisualStudio.R.Package.History {
+    [Export(typeof(IRHistoryProvider))]
     internal class RHistoryProvider : IRHistoryProvider {
         private const string IntraTextAdornmentBufferKey = "IntraTextAdornmentBuffer";
 
-        private readonly IFileSystem _fileSystem;
-        private readonly Lazy<IEditorOperationsFactoryService> _editorOperationsFactoryLazy;
-        private readonly IRtfBuilderService _rtfBuilderService;
-        private readonly ITextSearchService2 _textSearchService;
+        [Import]
+        private IEditorOperationsFactoryService EditorOperationsFactory { get; set; }
 
-        public RHistoryProvider(IFileSystem fileSystem, Lazy<IEditorOperationsFactoryService> editorOperationsFactoryLazy, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService) {
-            _fileSystem = fileSystem;
-            _editorOperationsFactoryLazy = editorOperationsFactoryLazy;
-            _rtfBuilderService = rtfBuilderService;
-            _textSearchService = textSearchService;
-        }
+        [Import]
+        private IRtfBuilderService RtfBuilderService { get; set; }
+
+        [Import]
+        private IFileSystem FileSystem { get; set; }
+
+        [Import]
+        private ITextSearchService2 TextSearchService { get; set; }
 
         public IRHistory GetAssociatedRHistory(ITextView textView) {
             return textView.Properties.GetOrCreateSingletonProperty(typeof(RHistory), () => CreateRHistory(textView));
@@ -30,11 +32,13 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private RHistory CreateRHistory(ITextView textView) {
             IElisionBuffer elisionBuffer;
             if (!textView.TextViewModel.Properties.TryGetProperty(IntraTextAdornmentBufferKey, out elisionBuffer)) {
-                throw new InvalidOperationException("TextView should have PredefinedTextViewRoles.Structured view role");
+                if (!AppShell.Current.IsTestEnvironment) {
+                    throw new InvalidOperationException("TextView should have PredefinedTextViewRoles.Structured view role");
+                }
             }
 
             var vsUiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            return new RHistory(textView, _fileSystem, _editorOperationsFactoryLazy.Value, elisionBuffer, _rtfBuilderService, _textSearchService, vsUiShell);
+            return new RHistory(textView, FileSystem, EditorOperationsFactory, elisionBuffer, RtfBuilderService, TextSearchService, vsUiShell);
         }
     }
 }

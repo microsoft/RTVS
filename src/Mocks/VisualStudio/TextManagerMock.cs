@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class TextManagerMock : IConnectionPointContainer, IVsTextManager3, IVsTextManager4 // IVsTextManager, IVsTextManager2
     {
         #region IVsTextManager3

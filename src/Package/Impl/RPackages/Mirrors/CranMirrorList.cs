@@ -17,6 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
         private static string _cranCsvFileTempPath;
         private static CranMirrorEntry[] _mirrors = new CranMirrorEntry[0];
 
+        public static EventHandler DownloadComplete;
+
         /// <summary>
         /// Returns list of mirror names such as [Cloud 0] or 'Brazil'
         /// </summary>
@@ -47,6 +49,9 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
         /// </summary>
         public static void Download() {
             if (_mirrors.Length > 0) {
+                if (DownloadComplete != null) {
+                    DownloadComplete(null, EventArgs.Empty);
+                }
                 return;
             }
 
@@ -85,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
             string file = e.UserState as string;
             string content = null;
 
-            if (!e.Cancelled && e.Error != null) {
+            if (!e.Cancelled && e.Error == null) {
                 try {
                     if (File.Exists(file)) {
                         var sr = new StreamReader(file);
@@ -98,6 +103,10 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
 
             if (content != null) {
                 ReadCsv(content);
+            }
+
+            if(DownloadComplete != null) {
+                DownloadComplete(null, EventArgs.Empty);
             }
         }
 

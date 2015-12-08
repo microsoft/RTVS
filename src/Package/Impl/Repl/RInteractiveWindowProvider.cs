@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -33,13 +34,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public IVsInteractiveWindow Create(int instanceId) {
+            var historyWindow = ToolWindowUtilities.FindWindowPane<HistoryWindowPane>(0);
+            return Create(instanceId, historyWindow.TextView);
+        }
+
+        public IVsInteractiveWindow Create(int instanceId, ITextView textView) {
             IInteractiveEvaluator evaluator;
             EventHandler textViewOnClosed;
 
             if (SupportedRVersions.VerifyRIsInstalled()) {
                 var session = SessionProvider.Create(instanceId);
-                var historyWindow = ToolWindowUtilities.FindWindowPane<HistoryWindowPane>(0);
-                var history = HistoryProvider.GetAssociatedRHistory(historyWindow.TextView);
+                var history = HistoryProvider.GetAssociatedRHistory(textView);
 
                 evaluator = new RInteractiveEvaluator(session, history);
 

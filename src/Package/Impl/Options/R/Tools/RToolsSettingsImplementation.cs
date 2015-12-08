@@ -94,7 +94,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             // Page retrieval from package sets site which yields
             // settings loaded. Just calling LoadSettingsFromStorage()
             // does not work.
-            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) { }
+            // Package can be null in test environment
+            if (RPackage.Current != null) {
+                using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) { }
+            }
         }
 
         private void UpdateWorkingDirectoryList(string newDirectory) {

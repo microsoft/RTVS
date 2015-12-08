@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
@@ -7,6 +8,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Shell.Mocks
 {
+    [ExcludeFromCodeCoverage]
     public class VsTextBufferMock : IVsTextBuffer
     {
         private Guid _guidLangService = Guid.Empty;

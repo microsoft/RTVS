@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+
+    [Export(typeof(IRSessionProvider))]
     public class RSessionProvider : IRSessionProvider {
         private readonly ConcurrentDictionary<int, IRSession> _sessions = new ConcurrentDictionary<int, IRSession>();
 

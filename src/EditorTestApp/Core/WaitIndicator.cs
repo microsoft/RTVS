@@ -21,6 +21,7 @@ namespace Microsoft.Languages.Editor.Application.Core
         }
     }
 
+    [ExcludeFromCodeCoverage]
     class WaitContext : IWaitContext
     {
         public bool AllowCancel { get; set; }

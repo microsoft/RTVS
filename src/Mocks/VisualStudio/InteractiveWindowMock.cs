@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
@@ -9,12 +9,14 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class InteractiveWindowMock : IInteractiveWindow {
 
         private ITextBuffer _textBuffer;
 
-        public InteractiveWindowMock() {
-            _textBuffer = new TextBufferMock(string.Empty, "text");
+        public InteractiveWindowMock(IWpfTextView textView) {
+            TextView = textView;
+            _textBuffer = textView.TextBuffer;
         }
 
         public ITextBuffer CurrentLanguageBuffer {
@@ -77,11 +79,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
             }
         }
 
-        public IWpfTextView TextView {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public IWpfTextView TextView { get; private set; }
 
 #pragma warning disable 67
         public event Action ReadyForInput;
@@ -103,20 +101,20 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
             throw new NotImplementedException();
         }
 
-        public Task<ExecutionResult> InitializeAsync() {
-            throw new NotImplementedException();
+        public System.Threading.Tasks.Task<ExecutionResult> InitializeAsync() {
+            return System.Threading.Tasks.Task.FromResult(ExecutionResult.Success);
         }
 
         public void InsertCode(string text) {
-            throw new NotImplementedException();
+            _textBuffer.Insert(_textBuffer.CurrentSnapshot.Length, text);
         }
 
         public TextReader ReadStandardInput() {
             throw new NotImplementedException();
         }
 
-        public Task SubmitAsync(IEnumerable<string> inputs) {
-            throw new NotImplementedException();
+        public System.Threading.Tasks.Task SubmitAsync(IEnumerable<string> inputs) {
+            return System.Threading.Tasks.Task.CompletedTask;
         }
 
         public void Write(System.Windows.UIElement element) {
