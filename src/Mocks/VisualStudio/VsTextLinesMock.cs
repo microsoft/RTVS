@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class VsTextLinesMock : VsTextBufferMock, IVsTextLines, IObjectWithSite, IConnectionPointContainer
     {
         public int AdviseTextLinesEvents(IVsTextLinesEvents pSink, out uint pdwCookie)

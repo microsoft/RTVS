@@ -1,28 +1,21 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Editor.Mocks;
 
-namespace Microsoft.VisualStudio.R.Package.Test.Utility
-{
+namespace Microsoft.VisualStudio.R.Package.Test.Utility {
     [ExcludeFromCodeCoverage]
-    public sealed class RPackageTestCompositionCatalog : TestCompositionCatalog
-    {
+    public sealed class RPackageTestCompositionCatalog : TestCompositionCatalog {
         private static RPackageTestCompositionCatalog _instance;
 
-        public static ITestCompositionCatalog Current
-        {
-            get
-            {
-                if (_instance == null)
-                {
+        public static ITestCompositionCatalog Current {
+            get {
+                if (_instance == null) {
                     _instance = new RPackageTestCompositionCatalog();
                 }
-
                 return _instance;
             }
         }
 
-        private static string[] _rPackageAssemblies = new string[]
-        {
+        private static string[] _rPackageAssemblies = new string[] {
             "Microsoft.Markdown.Editor.dll",
             "Microsoft.Languages.Editor.dll",
             "Microsoft.R.Editor.dll",
@@ -34,8 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility
         };
 
         private RPackageTestCompositionCatalog() :
-            base(_rPackageAssemblies)
-        {
+            base(_rPackageAssemblies) {
         }
     }
 }

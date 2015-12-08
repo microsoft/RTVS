@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class VsWindowFrameMock : IVsWindowFrame, IVsWindowFrame2 {
         #region IVsWindowFrame
         public int CloseFrame(uint grfSaveOptions) {

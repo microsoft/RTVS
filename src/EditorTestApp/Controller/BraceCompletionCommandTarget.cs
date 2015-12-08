@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Controller.Constants;
@@ -11,6 +12,7 @@ namespace Microsoft.Languages.Editor.Application.Controller {
     /// <summary>
     /// Lifted off core IDE editor
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal sealed class BraceCompletionCommandTarget : ICommandTarget {
         private IBraceCompletionManager _manager;
         private ITextView _textView;

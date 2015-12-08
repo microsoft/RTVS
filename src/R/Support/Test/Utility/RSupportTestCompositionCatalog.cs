@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.Editor.Mocks;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.R.Support.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public sealed class RSupportTestCompositionCatalog : TestCompositionCatalog
     {
         private static RSupportTestCompositionCatalog _instance;

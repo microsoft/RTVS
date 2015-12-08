@@ -81,7 +81,12 @@ namespace Microsoft.Languages.Editor.Shell {
         /// <param name="action">Delegate to execute</param>
         /// <param name="arguments">Arguments to pass to the delegate</param>
         public static void DispatchOnUIThread(Action action, DispatcherPriority priority) {
-            Current.DispatchOnUIThread(action, priority);
+            if (HasShell) {
+                Current.DispatchOnUIThread(action, priority);
+            }
+            else {
+                action();
+            }
         }
 
         public static ISettingsStorage GetSettings(string contentTypeName) {

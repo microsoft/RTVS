@@ -10,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
 using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -476,7 +477,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task CreateAndRun(string rHome, IntPtr plotWindowContainerHandle, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
+        public async Task CreateAndRun(string rHome, IntPtr plotWindowContainerHandle, IRToolsSettings settings, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
@@ -528,8 +529,8 @@ namespace Microsoft.R.Host.Client {
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
             psi.Arguments = Invariant($"--rhost-connect ws://127.0.0.1:{server.Port} --rhost-reparent-plot-windows {plotWindowContainerHandle.ToInt64()}");
 
-            if (!string.IsNullOrWhiteSpace(RToolsSettings.Current.RCommandLineArguments)) {
-                psi.Arguments += Invariant($" {RToolsSettings.Current.RCommandLineArguments}");
+            if (!string.IsNullOrWhiteSpace(settings.RCommandLineArguments)) {
+                psi.Arguments += Invariant($" {settings.RCommandLineArguments}");
             }
 
             using (this)
