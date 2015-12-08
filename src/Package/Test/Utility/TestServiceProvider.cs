@@ -17,14 +17,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
 
         public TestServiceProvider() {
             _services.Add(typeof(SVsRegisterProjectTypes), new VsRegisterProjectGeneratorsMock());
-            _services.Add(typeof(SVsRegisterEditors), new VsRegisterEditorsMock());
+            _services.Add(typeof(SVsRegisterEditors), VsRegisterEditorsMock.Create());
             _services.Add(typeof(IMenuCommandService), new MenuCommandServiceMock());
             _services.Add(typeof(SComponentModel), new ComponentModelMock(RPackageTestCompositionCatalog.Current));
             _services.Add(typeof(SVsTextManager), new TextManagerMock());
-            _services.Add(typeof(SVsImageService), new VsImageServiceMock());
+            _services.Add(typeof(SVsImageService), VsImageServiceMock.Create());
             _services.Add(typeof(SVsUIShell), new VsUiShellMock());
-            _services.Add(typeof(SOleComponentManager), new OleComponentManagerMock());
-            _services.Add(typeof(SVsSettingsManager), new VsSettingsManagerMock());
+            _services.Add(typeof(SOleComponentManager), OleComponentManagerMock.Create());
+            _services.Add(typeof(SVsSettingsManager), VsSettingsManagerMock.Create());
         }
 
         public object GetService(Type serviceType) {

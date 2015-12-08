@@ -2,35 +2,33 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.Shell.Interop;
+using NSubstitute;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class VsSettingsManagerMock : IVsSettingsManager {
-        public int GetApplicationDataFolder(uint folder, out string folderPath) {
-            folderPath = Path.GetTempPath();
-            return VSConstants.S_OK;
-        }
+    public static class VsSettingsManagerMock {
+        public static IVsSettingsManager Create() {
+            IVsSettingsManager sm = Substitute.For<IVsSettingsManager>();
 
-        public int GetCollectionScopes(string collectionPath, out uint scopes) {
-            throw new NotImplementedException();
-        }
+            string s;
+            sm.GetApplicationDataFolder(Arg.Any<uint>(), out s).ReturnsForAnyArgs(x => {
+                x[1] = Path.GetTempPath();
+                return VSConstants.S_OK;
+            });
 
-        public int GetCommonExtensionsSearchPaths(uint paths, string[] commonExtensionsPaths, out uint actualPaths) {
-            throw new NotImplementedException();
-        }
+            IVsSettingsStore store;
+            sm.GetReadOnlySettingsStore(Arg.Any<uint>(), out store).ReturnsForAnyArgs(x => {
+                x[1] = VsSettingsStoreMock.Create();
+                return VSConstants.S_OK;
+            });
 
-        public int GetPropertyScopes(string collectionPath, string propertyName, out uint scopes) {
-            throw new NotImplementedException();
-        }
+            IVsWritableSettingsStore writable;
+            sm.GetWritableSettingsStore(Arg.Any<uint>(), out writable).ReturnsForAnyArgs(x => {
+                x[1] = VsSettingsStoreMock.Create();
+                return VSConstants.S_OK;
+            });
 
-        public int GetReadOnlySettingsStore(uint scope, out IVsSettingsStore store) {
-            store = new VsSettingsStoreMock();
-            return VSConstants.S_OK;
-        }
-
-        public int GetWritableSettingsStore(uint scope, out IVsWritableSettingsStore writableStore) {
-            writableStore = new VsSettingsStoreMock();
-            return VSConstants.S_OK;
+            return sm;
         }
     }
 }
