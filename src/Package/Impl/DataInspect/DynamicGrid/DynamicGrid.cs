@@ -50,12 +50,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region override
 
+        private ScrollBar _horizontalScrollbar;
         public override void OnApplyTemplate() {
             base.OnApplyTemplate();
 
             var scrollbar = GetTemplateChild("HorizontalScrollBar") as ScrollBar;
             if (scrollbar != null) {
+                if (_horizontalScrollbar != null) {
+                    _horizontalScrollbar.Scroll -= Scrollbar_Scroll;
+                }
+
                 scrollbar.Scroll += Scrollbar_Scroll;
+                _horizontalScrollbar = scrollbar;
             }
         }
 
