@@ -16,17 +16,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         [Export(typeof(IFileSystem))]
         private IFileSystem FileSystem { get; }
 
-        [Export(typeof(IRSessionProvider))]
-        private IRSessionProvider RSessionProvider { get; }
-
-        [Export(typeof(IRHistoryProvider))]
-        private IRHistoryProvider RHistoryProvider { get; }
-
-        [ImportingConstructor]
-        public Export(Lazy<IEditorOperationsFactoryService> editorOperationsFactoryLazy, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService) {
+        public Export() {
             FileSystem = new FileSystem();
-            RSessionProvider = new RSessionProvider();
-            RHistoryProvider = new RHistoryProvider(FileSystem, editorOperationsFactoryLazy, rtfBuilderService, textSearchService);
         }
     }
 }

@@ -14,38 +14,38 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [TestClass]
     public class RPackageTest : UnitTestBase {
        // [TestMethod]
-        public void RPackage_ConstructionTest() {
-            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
-                var package = new TestRPackage();
-                package.Init();
-                package.Close();
+        //public void RPackage_ConstructionTest() {
+        //    SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
+        //        var package = new TestRPackage();
+        //        package.Init();
+        //        package.Close();
 
-                evt.Set();
-            }, RPackageTestCompositionCatalog.Current);
-        }
+        //        evt.Set();
+        //    }, RPackageTestCompositionCatalog.Current);
+        //}
 
         //[TestMethod]
-        public void RPackage_EditorFactoryTest() {
-            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
-                var package = new TestRPackage();
-                package.Init();
+        //public void RPackage_EditorFactoryTest() {
+        //    SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
+        //        var package = new TestRPackage();
+        //        package.Init();
 
-                IntPtr docView;
-                IntPtr docData;
-                string caption;
-                Guid commandUiGuid;
-                int flags;
+        //        IntPtr docView;
+        //        IntPtr docData;
+        //        string caption;
+        //        Guid commandUiGuid;
+        //        int flags;
 
-                var editorFactory = new REditorFactory(package);
-                editorFactory.InstanceFactory = new TestInstanceFactory();
+        //        var editorFactory = new REditorFactory(package);
+        //        editorFactory.InstanceFactory = new TestInstanceFactory();
 
-                editorFactory.CreateEditorInstance(VSConstants.CEF_OPENFILE, "file.r", string.Empty, null, 0, IntPtr.Zero,
-                    out docView, out docData, out caption, out commandUiGuid, out flags);
+        //        editorFactory.CreateEditorInstance(VSConstants.CEF_OPENFILE, "file.r", string.Empty, null, 0, IntPtr.Zero,
+        //            out docView, out docData, out caption, out commandUiGuid, out flags);
 
-                package.Close();
+        //        package.Close();
 
-                evt.Set();
-            }, RPackageTestCompositionCatalog.Current);
-        }
+        //        evt.Set();
+        //    }, RPackageTestCompositionCatalog.Current);
+        //}
     }
 }

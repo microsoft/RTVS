@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.R.Support.Utility;
 
 namespace Microsoft.R.Support.Engine {
@@ -15,15 +17,6 @@ namespace Microsoft.R.Support.Engine {
         private Process _process;
 
         /// <summary>
-        /// Timestamp of the lst received data from the R engine process.
-        /// Events are fired line by line and we need to collect all lines
-        /// before passing data the converter. Thus there is a heardbeat
-        /// task that determines if we haven't been receiving data for 
-        /// a while so we can consider that all output was collected.
-        /// </summary>
-        private DateTime? _lastOutputReceived;
-
-        /// <summary>
         /// Optional data converter that can transform data
         /// (such as parse RD response into a FunctionInfo)
         /// before setting data on the async object.
@@ -36,8 +29,9 @@ namespace Microsoft.R.Support.Engine {
         private object _parameter;
 
         private StringBuilder _sb = new StringBuilder();
-
         private object _objectLock = new object();
+        private Task _heartBeatTask;
+        private DateTime _lastResponseTime;
 
         /// <summary>
         /// Request creation time
@@ -65,37 +59,23 @@ namespace Microsoft.R.Support.Engine {
             lock (_objectLock) {
                 // We want to collect full output, not just one line
                 if (e != null && e.Data != null) {
-                    if (_lastOutputReceived == null) {
-                        _lastOutputReceived = DateTime.Now;
-                        //Task.Run(() => HeartbeatThread());
-                    }
-
                     _sb.AppendLine(e.Data);
+                    _lastResponseTime = DateTime.Now;
+                }
+
+                if (_heartBeatTask == null) {
+                    _heartBeatTask = Task.Run(async () => {
+                        while ((DateTime.Now - _lastResponseTime).TotalMilliseconds < 200) {
+                            await Task.Delay(50);
+                        }
+                        Disconnect();
+                    });
                 }
             }
         }
 
         private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e) {
-            Disconnect();
         }
-
-        //private void HeartbeatThread()
-        //{
-        //    lock (_objectLock)
-        //    {
-        //        while (_process != null)
-        //        {
-        //            TimeSpan ts = DateTime.Now - _lastOutputReceived.Value;
-        //            if (ts.Milliseconds > 5000)
-        //            {
-        //                Disconnect();
-        //                break;
-        //            }
-
-        //            Task.Delay(20).Wait();
-        //        }
-        //    }
-        //}
 
         private void Disconnect() {
             DisconnectFromEvents();

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class VsToolWindowToolbarHostMock : IVsToolWindowToolbarHost3 {
         public int AddToolbar(VSTWT_LOCATION dwLoc, ref Guid pguid, uint dwId) {
             return VSConstants.S_OK;

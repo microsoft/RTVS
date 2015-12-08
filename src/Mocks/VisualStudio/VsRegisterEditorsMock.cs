@@ -1,19 +1,24 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Shell.Interop;
+using NSubstitute;
 
 namespace Microsoft.VisualStudio.Shell.Mocks
 {
-    public sealed class VsRegisterEditorsMock : IVsRegisterEditors
+    [ExcludeFromCodeCoverage]
+    public static class VsRegisterEditorsMock 
     {
-        public int RegisterEditor(ref Guid rguidEditor, IVsEditorFactory pVsPF, out uint pdwCookie)
-        {
-            pdwCookie = 1;
-            return VSConstants.S_OK;
-        }
+        public static IVsRegisterEditors Create() {
+            IVsRegisterEditors re = Substitute.For<IVsRegisterEditors>();
 
-        public int UnregisterEditor(uint dwCookie)
-        {
-            return VSConstants.S_OK;
+            uint cookie;
+            re.RegisterEditor(Arg.Any<Guid>(), Arg.Any<IVsEditorFactory>(), out cookie).ReturnsForAnyArgs(x => {
+                cookie = 1;
+                return VSConstants.S_OK;
+            });
+
+            re.UnregisterEditor(Arg.Any<uint>()).ReturnsForAnyArgs(VSConstants.S_OK);
+            return re;
         }
     }
 }

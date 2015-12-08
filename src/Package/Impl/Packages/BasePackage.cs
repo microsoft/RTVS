@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
+using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Packages {
-    public abstract class BasePackage<TLanguageService> : VisualStudio.Shell.Package
+    public abstract class BasePackage<TLanguageService> : VisualStudio.Shell.Package, IPackage
         where TLanguageService : class, new() {
         private Dictionary<IVsProjectGenerator, uint> _projectFileGenerators;
         protected abstract IEnumerable<IVsEditorFactory> CreateEditorFactories();
@@ -16,12 +17,14 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         protected virtual IEnumerable<IVsProjectFactory> CreateProjectFactories() { return new IVsProjectFactory[0]; }
         protected virtual IEnumerable<MenuCommand> CreateMenuCommands() { return new MenuCommand[0]; }
 
+        #region IPackage
         /// <summary>
         /// Retrieve service local to the package such as IMenuService
         /// </summary>
         public T GetPackageService<T>(Type t = null) where T : class {
             return GetService(t ?? typeof(T)) as T;
         }
+        #endregion
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place

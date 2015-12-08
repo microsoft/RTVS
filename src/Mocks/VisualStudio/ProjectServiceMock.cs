@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.ProjectSystem;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class ProjectServiceMock : ProjectService {
         public IEnumerable<UnconfiguredProject> LoadedUnconfiguredProjects {
             get {
@@ -37,15 +38,15 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
             throw new NotImplementedException();
         }
 
-        public Task<UnconfiguredProject> LoadProjectAsync(System.Xml.XmlReader reader, System.Collections.Immutable.IImmutableSet<string> projectCapabilities = null) {
+        public System.Threading.Tasks.Task<UnconfiguredProject> LoadProjectAsync(System.Xml.XmlReader reader, System.Collections.Immutable.IImmutableSet<string> projectCapabilities = null) {
             throw new NotImplementedException();
         }
 
-        public Task<UnconfiguredProject> LoadProjectAsync(string projectLocation, System.Collections.Immutable.IImmutableSet<string> projectCapabilities = null) {
+        public System.Threading.Tasks.Task<UnconfiguredProject> LoadProjectAsync(string projectLocation, System.Collections.Immutable.IImmutableSet<string> projectCapabilities = null) {
             throw new NotImplementedException();
         }
 
-        public Task UnloadProjectAsync(UnconfiguredProject project) {
+        public System.Threading.Tasks.Task UnloadProjectAsync(UnconfiguredProject project) {
             throw new NotImplementedException();
         }
     }

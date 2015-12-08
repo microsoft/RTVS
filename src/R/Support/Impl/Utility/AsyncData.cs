@@ -32,10 +32,8 @@ namespace Microsoft.R.Support.Utility {
         /// </summary>
         /// <param name="data"></param>
         protected virtual void SetData(T data) {
-            EditorShell.DispatchOnUIThread(() => {
-                _data = data;
-                _dataReadyCallBack(_data);
-            });
+            _data = data;
+            _dataReadyCallBack(_data);
         }
 
         /// <summary>
