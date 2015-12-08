@@ -24,7 +24,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private VisualToolset _activeVisualToolset;
         private VisualToolset _inactiveVisualToolset;
-        private IReadOnlyList<SnapshotSpan> _selectedSpans;
         private bool _isTextViewActive;
 
         public HistorySelectionTextAdornment(IWpfTextView textView, IEditorFormatMapService editorFormatMapService, IRHistoryProvider historyProvider) {
@@ -41,12 +40,10 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _textView.VisualElement.LostKeyboardFocus += OnLostKeyboardFocus;
             _textView.LayoutChanged += OnLayoutChanged;
             _textView.Closed += OnClosed;
-            _history.HistoryChanged += OnHistoryChanged;
             _history.SelectionChanged += OnSelectionChanged;
 
             _activeVisualToolset = CreateVisualToolset(ActiveSelectionPropertiesName, SystemColors.HighlightColor);
             _inactiveVisualToolset = CreateVisualToolset(InactiveSelectionPropertiesName, SystemColors.GrayTextColor);
-            _selectedSpans = _history.GetSelectedHistoryEntrySpans();
             Redraw();
         }
 
@@ -91,12 +88,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _history.SelectionChanged -= OnSelectionChanged;
         }
 
-        private void OnHistoryChanged(object sender, EventArgs e) {
-            _selectedSpans = _history.GetSelectedHistoryEntrySpans();
-        }
-
         private void OnSelectionChanged(object sender, EventArgs e) {
-            _selectedSpans = _history.GetSelectedHistoryEntrySpans();
             Redraw();
         }
 
@@ -112,7 +104,12 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private void Redraw() {
             _layer.RemoveAllAdornments();
 
-            foreach (var span in _selectedSpans) {
+            if (!_history.HasSelectedEntries) {
+                return;
+            }
+
+            var selectedSpans = _history.GetSelectedHistoryEntrySpans();
+            foreach (var span in selectedSpans) {
                 ProcessLine(span);
             }
         }

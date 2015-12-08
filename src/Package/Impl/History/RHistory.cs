@@ -169,6 +169,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             var snapshot = _historyTextBuffer.CurrentSnapshot;
             var start = new SnapshotPoint(snapshot, 0);
+
             foreach (var entry in _entries.GetSelectedEntries()) {
                 if (entry.Previous == null || !entry.Previous.IsSelected) {
                     start = entry.TrackingSpan.GetStartPoint(snapshot);
@@ -176,7 +177,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
                 if (entry.Next == null || !entry.Next.IsSelected) {
                     var end = entry.TrackingSpan.GetEndPoint(snapshot);
-                    snapshotSpans.Add(new SnapshotSpan(start, end));
+                    if (start != end) {
+                        snapshotSpans.Add(new SnapshotSpan(start, end));
+                    }
                 }
             }
 
