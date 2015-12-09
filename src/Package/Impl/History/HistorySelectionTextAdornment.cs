@@ -115,7 +115,12 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private void ProcessLine(SnapshotSpan span) {
-            var bounds = _textView.TextViewLines.GetTextMarkerGeometry(span).Bounds;
+            var textMarkerGeometry = _textView.TextViewLines.GetTextMarkerGeometry(span);
+            if (textMarkerGeometry == null) {
+                return;
+            }
+
+            var bounds = textMarkerGeometry.Bounds;
 
             VisualToolset visualTools = _isTextViewActive ? _activeVisualToolset : _inactiveVisualToolset;
             var geometry = new RectangleGeometry(new Rect(0, bounds.Top, _lastWidth, (int) (bounds.Height + 0.5)));
