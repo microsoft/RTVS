@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help.Definitions;
-using Microsoft.VisualStudio.R.Package.DataInspect;
 
 namespace Microsoft.VisualStudio.R.Package.Signatures {
     /// <summary>
@@ -31,8 +30,8 @@ namespace Microsoft.VisualStudio.R.Package.Signatures {
         /// </summary>
         public void GetFunctionRdData(string functionName, string packageName, Action<string> rdDataAvailableCallback) {
             Task.Run(async () => {
-                DebugSession session = await DebugSessionProvider.GetDebugSessionAsync(SessionProvider.Current);
-                var stackFrames = await session.GetStackFramesAsync();
+                await CreateSessionAsync();
+                var stackFrames = await _debugSession.GetStackFramesAsync();
                 var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
                 if (globalStackFrame != null) {
                     string command = GetCommandText(functionName, packageName);
@@ -53,10 +52,11 @@ namespace Microsoft.VisualStudio.R.Package.Signatures {
         }
 
         private async Task CreateSessionAsync() {
-            _session = SessionProvider.Create(_sessionId);
-            _session.Disposed += OnSessionDisposed;
-
-            _debugSession = await DebugSessionProvider.GetDebugSessionAsync(SessionProvider.Current);
+            if (_session == null) {
+                _session = SessionProvider.Create(_sessionId);
+                _session.Disposed += OnSessionDisposed;
+                _debugSession = await DebugSessionProvider.GetDebugSessionAsync(SessionProvider.Current);
+            }
         }
 
         private void OnSessionDisposed(object sender, EventArgs e) {

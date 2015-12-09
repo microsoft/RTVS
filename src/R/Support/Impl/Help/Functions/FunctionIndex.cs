@@ -52,6 +52,10 @@ namespace Microsoft.R.Support.Help.Functions {
         }
 
         public static void Terminate() {
+            if(_functionRdDataProvider != null) {
+                _functionRdDataProvider.Dispose();
+                _functionRdDataProvider = null;
+            }
         }
 
         /// <summary>
