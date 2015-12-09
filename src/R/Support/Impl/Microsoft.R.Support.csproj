@@ -77,11 +77,9 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Engine\EngineSession.cs" />
-    <Compile Include="Engine\EngineResponse.cs" />
+    <Compile Include="Help\Definitions\IFunctionRdDataProvider.cs" />
     <Compile Include="Help\Definitions\NamedItemType.cs" />
     <Compile Include="Help\Functions\FunctionIndexBuild.cs" />
-    <Compile Include="Help\Functions\RdFunctionHelp.cs" />
     <Compile Include="Help\Packages\BasePackagesCollection.cs" />
     <Compile Include="Help\Packages\PackageIndex.cs" />
     <Compile Include="Help\Packages\PackagesCollection.cs" />

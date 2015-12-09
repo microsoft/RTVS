@@ -100,6 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
                 await e.SetVsCranSelection(mirrorUrl);
                 await e.SetVsHelpRedirection();
+                await e.SetRdHelpExtraction();
             });
 
             var initializationTask = _initializationTcs.Task;

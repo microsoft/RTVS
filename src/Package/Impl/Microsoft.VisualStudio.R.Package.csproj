@@ -290,6 +290,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell\IdleTimeSource.cs" />
     <Compile Include="Shell\VsEditorShell.cs" />
+    <Compile Include="Signatures\FunctionRdDataProvider.cs" />
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
