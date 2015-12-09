@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // otherwise, add one to insert after it.
             int childIndex = (position.Offset == 0) ? position.Index : position.Index + 1;
 
-            double height = this.ActualHeight;
+            double height = 10.0;
             double width = 0;
             int finalCount = 0;
             using (generator.StartAt(position, GeneratorDirection.Forward, true)) {

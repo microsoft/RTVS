@@ -49,21 +49,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 4);
 
 
-            var gridSource = new DelegateList<DelegateList<PageItem<string>>>(
-                0,
-                (i) => GetItem(pageManager, i, pageManager.ColumnCount),
-                pageManager.RowCount);
-
             this.VariableGrid.RowHeaderSource = new DelegateList<PageItem<string>>(0, (i) => rowPageManager.GetItem(i), rowPageManager.Count);
             this.VariableGrid.ColumnHeaderSource = new DelegateList<PageItem<string>>(0, (i) => columnPageManager.GetItem(i), columnPageManager.Count);
-            this.VariableGrid.ItemsSource = gridSource;
-        }
-
-        private static DelegateList<PageItem<string>> GetItem(Page2DManager<string> pm, int rowIndex, int itemCount) {
-            return new DelegateList<PageItem<string>>(
-                rowIndex,
-                (columnIndex) => pm.GetItem(rowIndex, columnIndex),
-                itemCount);
+            this.VariableGrid.ItemsSource = pageManager.GetItemsSource();
         }
     }
 

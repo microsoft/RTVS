@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.TestApp {
         public int Count { get; }
 
         public async Task<IList<string>> GetRangeAsync(Range range) {
-            await Task.Delay(1);
+            await Task.Delay(3000);
 
             List<string> list = new List<string>();
 

@@ -122,7 +122,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:DynamicGridCell}">
-                    <Border SnapsToDevicePixels="true" BorderBrush="Black" BorderThickness="1" Padding="{TemplateBinding Padding}" >
+                    <Border SnapsToDevicePixels="true" BorderBrush="Black" BorderThickness="1" Padding="{TemplateBinding Padding}" MinHeight="10" >
                         <ContentPresenter Content="{Binding Data}" />
                     </Border>
                 </ControlTemplate>
