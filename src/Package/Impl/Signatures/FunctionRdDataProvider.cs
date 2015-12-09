@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Debugger;
@@ -21,7 +22,6 @@ namespace Microsoft.VisualStudio.R.Package.Signatures {
         private IRSessionProvider SessionProvider { get; set; }
 
         private IRSession _session;
-        private DebugSession _debugSession;
 
         /// <summary>
         /// Asynchronously fetches RD data on the function from R.
@@ -31,20 +31,18 @@ namespace Microsoft.VisualStudio.R.Package.Signatures {
         public void GetFunctionRdData(string functionName, string packageName, Action<string> rdDataAvailableCallback) {
             Task.Run(async () => {
                 await CreateSessionAsync();
-                var stackFrames = await _debugSession.GetStackFramesAsync();
-                var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
-                if (globalStackFrame != null) {
+                using (var eval = await _session.BeginEvaluationAsync()) {
                     string command = GetCommandText(functionName, packageName);
-                    DebugEvaluationResult result = await globalStackFrame.EvaluateAsync(command, ".rtvs.signature", DebugEvaluationResultFields.ReprToString);
-                    if (result is DebugValueEvaluationResult) {
-                        rdDataAvailableCallback(((DebugValueEvaluationResult)result).Representation.Str);
+                    REvaluationResult result = await eval.EvaluateAsync(command);
+                    if (result.ParseStatus == RParseStatus.OK && result.StringResult != null && result.StringResult.Length > 2) {
+                        rdDataAvailableCallback(result.StringResult);
                     }
                 }
             });
         }
 
         public void Dispose() {
-            if(_session != null) {
+            if (_session != null) {
                 _session.Disposed -= OnSessionDisposed;
                 _session.Dispose();
                 _session = null;
@@ -55,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Signatures {
             if (_session == null) {
                 _session = SessionProvider.Create(_sessionId);
                 _session.Disposed += OnSessionDisposed;
-                _debugSession = await DebugSessionProvider.GetDebugSessionAsync(SessionProvider.Current);
+                await _session.StartHostAsync(IntPtr.Zero);
             }
         }
 
@@ -64,7 +62,6 @@ namespace Microsoft.VisualStudio.R.Package.Signatures {
                 _session.Disposed -= OnSessionDisposed;
                 _session = null;
             }
-            _debugSession = null;
         }
 
         private string GetCommandText(string functionName, string packageName) {

@@ -113,15 +113,13 @@ options(device='.rtvs.vsgd')
 @" .rtvs.signature.help2 <- function(f, p) {
         x <- help(paste(f), paste(p))
         y <- utils:::.getHelpFile(x)
-        z <- rtvs:::describe_object(y)
-        z
+        paste0(y, collapse = '')
     }
 
     .rtvs.signature.help1 <- function(f) {
         x <- help(paste(f))
         y <- utils:::.getHelpFile(x)
-        z <- rtvs:::describe_object(y)
-        z
+        paste0(y, collapse = '')
     }";
             return evaluation.EvaluateAsync(script);
         }

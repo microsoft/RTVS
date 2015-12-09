@@ -136,9 +136,8 @@ namespace Microsoft.R.Support.Help.Functions {
                 });
         }
 
-        private static IFunctionInfo GetFunctionInfoFromRd(string rdData, string functionName) {
+        private static IFunctionInfo GetFunctionInfoFromRd(string functionName, string rdData) {
             IFunctionInfo info = null;
-
             try {
                 info = RdParser.GetFunctionInfo(functionName, rdData);
             } catch (Exception ex) {
