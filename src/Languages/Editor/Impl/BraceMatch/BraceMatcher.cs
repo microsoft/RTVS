@@ -9,7 +9,6 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.Languages.Editor.BraceMatch {
     public abstract class BraceMatcher<TokenClassT, TokenTypeT> : IBraceMatcher
         where TokenClassT : IToken<TokenTypeT> {
-
         public enum BraceType {
             Curly,
             Square,
