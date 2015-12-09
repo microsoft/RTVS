@@ -72,7 +72,6 @@
     <Compile Include="DataInspect\DynamicGrid\DynamicGrid.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCell.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCellsPanel.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridColumnHeadersPresenter.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRow.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowHeader.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowsPanel.cs" />

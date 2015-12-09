@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.VisualStudio.R.Package.Wpf;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -18,7 +19,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public DynamicGridRow() {
             Track = new LinkedListNode<DynamicGridRow>(this);
+            ColumnHeader = false;
         }
+
+        public bool ColumnHeader { get; set; }
 
         internal LinkedListNode<DynamicGridRow> Track { get; }
 
@@ -44,12 +48,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void InvalidateScrollInfo() {
-            // do nothing
+            if (ColumnHeader) {
+                ParentGrid.OnInvalidateScrollInfo();
+            }
         }
 
         public event EventHandler SharedScrollChanged;
 
         #endregion
+
+        public override void OnApplyTemplate() {
+            base.OnApplyTemplate();
+
+            if (ColumnHeader) {
+                ParentGrid = WpfHelper.FindParent<DynamicGrid>(this);
+                ParentGrid.ColumnHeadersPresenter = this;
+            }
+        }
 
         protected override DependencyObject GetContainerForItemOverride() {
             return new DynamicGridCell();
@@ -63,16 +78,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (column == -1) {
                 throw new InvalidOperationException("Item is not found in collection");
             }
-            cell.Prepare(ParentGrid.GetColumnWidth(column));
 
-            _realizedCells.AddFirst(cell.Track);
+            if (cell.Owner != this) {
+                _realizedCells.AddFirst(cell.Track);
+            }
+
+            cell.Prepare(this, ParentGrid.GetColumnWidth(column));
+
         }
 
         protected override void ClearContainerForItemOverride(DependencyObject element, object item) {
             base.ClearContainerForItemOverride(element, item);
 
             var cell = (DynamicGridCell)element;
-            _realizedCells.Remove(cell.Track);
+            if (cell.Owner == this) {
+                _realizedCells.Remove(cell.Track);
+            }
             cell.CleanUp();
         }
 

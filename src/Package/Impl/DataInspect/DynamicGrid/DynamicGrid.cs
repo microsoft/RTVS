@@ -77,8 +77,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             base.PrepareContainerForItemOverride(element, item);
 
             DynamicGridRow row = (DynamicGridRow)element;
-
-            _realizedRows.AddFirst(row.Track);  // ObservableCollection.Replace cause this fail, as it has been added already. That's fine for now.
+            if (row.ParentGrid != this) {
+                _realizedRows.AddFirst(row.Track);  // ObservableCollection.Replace cause this fail, as it has been added already. That's fine for now.
+            }
 
             row.Header = RowHeaderSource[Items.IndexOf(item)];
             row.Prepare(this, item);
@@ -90,8 +91,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             DynamicGridRow row = (DynamicGridRow)element;
 
             row.Header = null;
-
-            _realizedRows.Remove(row.Track);
+            if (row.ParentGrid == this) {
+                _realizedRows.Remove(row.Track);
+            }
             row.CleanUp(this, item);
         }
 
@@ -123,9 +125,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region ColumnHeader
 
-        private DynamicGridColumnHeadersPresenter _columnHeadersPresenter;
+        private DynamicGridRow _columnHeadersPresenter;
 
-        internal DynamicGridColumnHeadersPresenter ColumnHeadersPresenter {
+        internal DynamicGridRow ColumnHeadersPresenter {
             get {
                 return _columnHeadersPresenter;
             }
@@ -216,7 +218,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        internal void OnHorizontalMeasureEnd() {
+        internal void OnInvalidateScrollInfo() {
             ComputeHorizontalScroll(_panelSize);
         }
 

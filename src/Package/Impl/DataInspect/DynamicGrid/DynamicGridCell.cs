@@ -12,19 +12,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(DynamicGridCell), new FrameworkPropertyMetadata(typeof(DynamicGridCell)));
         }
 
+        public DynamicGridCell() {
+            Track = new LinkedListNode<DynamicGridCell>(this);
+        }
+
+        internal DynamicGridRow Owner { get; private set; }
+
         internal LinkedListNode<DynamicGridCell> Track { get; private set; }
 
         internal MaxDouble ColumnWidth { get; set; }
 
-        internal virtual void Prepare(MaxDouble columnWidth) {
+        internal virtual void Prepare(DynamicGridRow owner, MaxDouble columnWidth) {
+            Owner = owner;
+
             if (ColumnWidth != null) {
                 ColumnWidth.MaxChanged -= LayoutSize_MaxChanged;
             }
 
             ColumnWidth = columnWidth;
             ColumnWidth.MaxChanged += LayoutSize_MaxChanged;
-
-            Track = new LinkedListNode<DynamicGridCell>(this);
         }
 
         private void LayoutSize_MaxChanged(object sender, EventArgs e) {
