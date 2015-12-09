@@ -148,7 +148,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
 
             relativePath = PathHelper.MakeRelative(rootDirectory, fullPath);
-            return fileSystem.FileExists(fullPath) && filter.IsFileAllowed(relativePath, fileSystem.GetFileAttributes(fullPath));
+            try {
+                return filter.IsFileAllowed(relativePath, fileSystem.GetFileAttributes(fullPath));
+            } catch (IOException) {
+                // File isn't allowed if it isn't accessable
+                return false;
+            }
         }
 
         private interface IFileSystemChange {

@@ -149,7 +149,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public void ExecuteCode(string code) {
             IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
-            if (current != null && !string.IsNullOrWhiteSpace(code)) {
+            if (current != null && !current.InteractiveWindow.IsInitializing && !string.IsNullOrWhiteSpace(code)) {
                 current.InteractiveWindow.AddInput(code);
                 current.InteractiveWindow.Operations.ExecuteInput();
             }
@@ -157,7 +157,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public void ReplaceCurrentExpression(string replaceWith) {
             IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
-            if (current != null) {
+            if (current != null && !current.InteractiveWindow.IsInitializing) {
                 var textBuffer = current.InteractiveWindow.CurrentLanguageBuffer;
                 var span = new Span(0, textBuffer.CurrentSnapshot.Length);
                 if (!textBuffer.IsReadOnly(span)) {
