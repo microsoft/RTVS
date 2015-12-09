@@ -120,6 +120,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BraceMatch\BraceMatchTest.cs" />
     <Compile Include="Comments\CommenterTest.cs" />
     <Compile Include="Completions\RCompletionSourceTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />

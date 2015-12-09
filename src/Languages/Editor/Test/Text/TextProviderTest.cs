@@ -5,29 +5,24 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Languages.Editor.Test.Text
-{
+namespace Microsoft.Languages.Editor.Test.Text {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TextProviderTest
-    {
+    public class TextProviderTest {
         [TestMethod]
-        public void TexProvider_GetCharAt()
-        {
+        public void TexProvider_GetCharAt() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
             var textProvider = new TextProvider(textBuffer.CurrentSnapshot, 10);
 
-            for (int i = 0; i < text.Length; i++)
-            {
+            for (int i = 0; i < text.Length; i++) {
                 Assert.AreEqual(text[i], textProvider[i]);
             }
         }
 
         [TestMethod()]
-        public void TexProvider_GetText()
-        {
+        public void TexProvider_GetText() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -37,8 +32,7 @@ namespace Microsoft.Languages.Editor.Test.Text
         }
 
         [TestMethod()]
-        public void TexProvider_IndexOf1()
-        {
+        public void TexProvider_IndexOf1() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -48,8 +42,7 @@ namespace Microsoft.Languages.Editor.Test.Text
         }
 
         [TestMethod()]
-        public void TexProvider_IndexOf2()
-        {
+        public void TexProvider_IndexOf2() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -59,8 +52,7 @@ namespace Microsoft.Languages.Editor.Test.Text
         }
 
         [TestMethod()]
-        public void TexProvider_IndexOf_Range1()
-        {
+        public void TexProvider_IndexOf_Range1() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -73,8 +65,7 @@ namespace Microsoft.Languages.Editor.Test.Text
         }
 
         [TestMethod()]
-        public void TexProvider_CompareTo()
-        {
+        public void TexProvider_CompareTo() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -89,8 +80,7 @@ namespace Microsoft.Languages.Editor.Test.Text
         }
 
         [TestMethod()]
-        public void TexProvider_Boundary1()
-        {
+        public void TexProvider_Boundary1() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -105,8 +95,7 @@ namespace Microsoft.Languages.Editor.Test.Text
         }
 
         [TestMethod()]
-        public void TexProvider_Boundary2()
-        {
+        public void TexProvider_Boundary2() {
             var text = String.Empty;
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -119,8 +108,7 @@ namespace Microsoft.Languages.Editor.Test.Text
         }
 
         [TestMethod()]
-        public void TexProvider_Boundary3()
-        {
+        public void TexProvider_Boundary3() {
             var text = "ab";
             var textBuffer = new TextBufferMock(text, "text");
 
