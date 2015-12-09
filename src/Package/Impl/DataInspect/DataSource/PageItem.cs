@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Threading;
+using Microsoft.Common.Core;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>

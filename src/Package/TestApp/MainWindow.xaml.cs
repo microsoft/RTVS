@@ -10,8 +10,8 @@ namespace Microsoft.VisualStudio.R.TestApp {
     /// </summary>
     public partial class MainWindow : Window {
 
-        private static int RowCount = 1000;
-        private static int ColumnCount = 1000;
+        private static int RowCount = 2;
+        private static int ColumnCount = 2;
 
         public MainWindow() {
             InitializeComponent();

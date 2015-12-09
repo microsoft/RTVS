@@ -47,6 +47,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 ColumnWidth.MaxChanged -= LayoutSize_MaxChanged;
             }
             ColumnWidth = null;
+
+            this.Owner = null;
         }
 
         protected override Size MeasureOverride(Size constraint) {

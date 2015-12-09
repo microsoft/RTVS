@@ -117,6 +117,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
                 _realizedCells.Clear();
             }
+
+            ParentGrid = null;
         }
 
         internal void ScrollChanged() {
