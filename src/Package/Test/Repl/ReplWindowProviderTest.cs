@@ -1,15 +1,9 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.Shell;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Editor.ContentType;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.InteractiveWindow.Shell;
-using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
@@ -33,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             IContentTypeRegistryService r = AppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
             ITextBuffer buffer = svc.CreateTextBuffer(r.GetContentType(RContentTypeDefinition.ContentType));
 
-            IVsInteractiveWindow window = provider.Create(0, new TextViewMock(buffer));
+            var window = provider.Create(0, new TextViewMock(buffer));
             Assert.IsNotNull(window);
         }
     }

@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {

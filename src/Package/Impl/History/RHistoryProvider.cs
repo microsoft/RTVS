@@ -32,7 +32,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private RHistory CreateRHistory(ITextView textView) {
             IElisionBuffer elisionBuffer;
             if (!textView.TextViewModel.Properties.TryGetProperty(IntraTextAdornmentBufferKey, out elisionBuffer)) {
-                throw new InvalidOperationException("TextView should have PredefinedTextViewRoles.Structured view role");
+                if (!AppShell.Current.IsTestEnvironment) {
+                    throw new InvalidOperationException("TextView should have PredefinedTextViewRoles.Structured view role");
+                }
             }
 
             var vsUiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));

@@ -89,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
             _host = new RHost(this);
             _initializationTcs = new TaskCompletionSource<object>();
 
-            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), useReparentPlot ? plotWindowHandle : IntPtr.Zero);
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), useReparentPlot ? plotWindowHandle : IntPtr.Zero, RToolsSettings.Current);
             this.ScheduleEvaluation(async e => {
                 if (!useReparentPlot) {
                     await e.SetVsGraphicsDevice();
@@ -100,6 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
                 await e.SetVsCranSelection(mirrorUrl);
                 await e.SetVsHelpRedirection();
+                await e.SetRdHelpExtraction();
             });
 
             var initializationTask = _initializationTcs.Task;

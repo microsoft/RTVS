@@ -3,84 +3,29 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
+using NSubstitute;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class VsImageServiceMock : IVsImageService2 {
-        public void Add(string Name, IVsUIObject pIconObject) {
-            throw new NotImplementedException();
-        }
+    public static class VsImageServiceMock {
+        public static IVsImageService2 Create() {
+            IVsImageService2 svc = Substitute.For<IVsImageService2>();
 
-        public IImageHandle AddCustomCompositeImage(int virtualWidth, int virtualHeight, int layerCount, ImageCompositionLayer[] layers) {
-            throw new NotImplementedException();
-        }
+            IImageHandle h = ImageHandleMock.Create();
+            svc.AddCustomImage(null).ReturnsForAnyArgs(h);
+            svc.AddCustomImageList(null).ReturnsForAnyArgs(h);
 
-        public IImageHandle AddCustomImage(IVsUIObject imageObject) {
-            return new ImageHandleMock();
-        }
+            IVsUIObject uiObj = VsUiObjectMock.Create();
+            svc.GetImage(Arg.Any<ImageMoniker>(), Arg.Any<ImageAttributes>()).ReturnsForAnyArgs(uiObj);
+            svc.GetImageMonikerForFile(null).ReturnsForAnyArgs(KnownMonikers.AboutBox);
+            svc.GetImageMonikerForHierarchyItem(null, 0u, 0).ReturnsForAnyArgs(KnownMonikers.AboutBox);
+            svc.GetImageMonikerForName(null).ReturnsForAnyArgs(KnownMonikers.AboutBox);
+            svc.GetImageMonikerType(Arg.Any<ImageMoniker>()).ReturnsForAnyArgs(0u);
 
-        public IImageHandle AddCustomImageList(IVsImageMonikerImageList imageList) {
-            return new ImageHandleMock();
-        }
-
-        public IVsImageMonikerImageList CreateMonikerImageListFromHIMAGELIST(IntPtr hImageList) {
-            return new VsImageMonikerImageListMock();
-        }
-
-        public IVsUIObject Get(string Name) {
-            throw new NotImplementedException();
-        }
-
-        public IVsUIObject GetIconForFile(string filename, __VSUIDATAFORMAT desiredFormat) {
-            throw new NotImplementedException();
-        }
-
-        public IVsUIObject GetIconForFileEx(string filename, __VSUIDATAFORMAT desiredFormat, out uint iconSource) {
-            throw new NotImplementedException();
-        }
-
-        public IVsUIObject GetImage(ImageMoniker moniker, ImageAttributes attributes) {
-            return new VsUiObjectMock();
-        }
-
-        public IVsImageMonikerImageList GetImageListImageMonikers(ImageMoniker moniker) {
-            return new VsImageMonikerImageListMock();
-        }
-
-        public ImageMoniker GetImageMonikerForFile(string filename) {
-            return KnownMonikers.AboutBox;
-        }
-
-        public ImageMoniker GetImageMonikerForHierarchyItem(IVsHierarchy hierarchy, uint hierarchyItemID, int hierarchyImageAspect) {
-            return KnownMonikers.AboutBox;
-        }
-
-        public ImageMoniker GetImageMonikerForName(string imageName) {
-            return KnownMonikers.AboutBox;
-        }
-
-        public uint GetImageMonikerType(ImageMoniker moniker) {
-            return 0;
-        }
-
-        public void RemoveCustomImage(IImageHandle handle) {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveCustomImageList(IImageHandle handle) {
-            throw new NotImplementedException();
-        }
-
-        public bool ThemeDIBits(int pixelCount, byte[] pixels, int width, int height, bool isTopDownBitmap, uint backgroundColor) {
-            throw new NotImplementedException();
-        }
-
-        public bool TryAssociateNameWithMoniker(string imageName, ImageMoniker moniker) {
-            throw new NotImplementedException();
-        }
-
-        public bool TryParseImageMoniker(string monikerAsString, out ImageMoniker moniker) {
-            throw new NotImplementedException();
+            IVsImageMonikerImageList mock = VsImageMonikerImageListMock.Create();
+            svc.CreateMonikerImageListFromHIMAGELIST(IntPtr.Zero).ReturnsForAnyArgs(mock);
+            svc.GetImageListImageMonikers(Arg.Any<ImageMoniker>()).ReturnsForAnyArgs(mock);
+            return svc;
         }
     }
 }

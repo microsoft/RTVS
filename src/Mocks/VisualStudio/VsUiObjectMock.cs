@@ -1,26 +1,18 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Shell.Interop;
+using NSubstitute;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class VsUiObjectMock : IVsUIObject {
-        public int Equals(IVsUIObject pOtherObject, out bool pfAreEqual) {
-            pfAreEqual = pOtherObject == this;
-            return VSConstants.S_OK;
-        }
-
-        public int get_Data(out object pVar) {
-            pVar = Resources.SampleImage;
-            return VSConstants.S_OK;
-        }
-
-        public int get_Format(out uint pdwDataFormat) {
-            throw new NotImplementedException();
-        }
-
-        public int get_Type(out string pTypeName) {
-            throw new NotImplementedException();
+    public static class VsUiObjectMock {
+        public static IVsUIObject Create() {
+            object outValue = null;
+            IVsUIObject obj = Substitute.For<IVsUIObject>();
+            obj.get_Data(out outValue).ReturnsForAnyArgs(x => {
+                x[0] = Resources.SampleImage;
+                return VSConstants.S_OK;
+            });
+            return obj;
         }
     }
 }

@@ -2,10 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Engine;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.RD.Parser;
 
 namespace Microsoft.R.Support.Help.Functions {
     /// <summary>
@@ -37,25 +36,25 @@ namespace Microsoft.R.Support.Help.Functions {
         private static ConcurrentDictionary<string, IFunctionInfo> _functionToInfoMap = new ConcurrentDictionary<string, IFunctionInfo>();
 
         /// <summary>
-        /// R engine session that extracts functions RD documentation
-        /// by function and package names.
+        /// Provides RD data (help) on a function from the specified R package.
+        /// Typically exported via MEF from the host that runs R.dll.
         /// </summary>
-        private static RdFunctionHelp _rdFunctionHelp;
+        private static IFunctionRdDataProvider _functionRdDataProvider;
 
         /// <summary>
-        /// Initialized function index and starts R engine session
+        /// Initialized function index and starts R data help session
         /// that is used to get RD documentation on functions.
         /// </summary>
         public static void Initialize() {
-            if (_rdFunctionHelp == null) {
-                _rdFunctionHelp = new RdFunctionHelp();
+            if (_functionRdDataProvider == null) {
+                _functionRdDataProvider = EditorShell.Current.ExportProvider.GetExportedValue<IFunctionRdDataProvider>();
             }
         }
 
         public static void Terminate() {
-            if (_rdFunctionHelp != null) {
-                _rdFunctionHelp.Dispose();
-                _rdFunctionHelp = null;
+            if(_functionRdDataProvider != null) {
+                _functionRdDataProvider.Dispose();
+                _functionRdDataProvider = null;
             }
         }
 
@@ -88,7 +87,11 @@ namespace Microsoft.R.Support.Help.Functions {
         }
 
         /// <summary>
-        /// Retrieves function information by name
+        /// Retrieves function information by name. If informaton is not
+        /// available, starts asynchronous retrieval of the function info
+        /// from R and when the data becomes available invokes specified
+        /// callback passing the parameter. This is used for async
+        /// intellisense or function signature/parameter help.
         /// </summary>
         public static IFunctionInfo GetFunctionInfo(string functionName,
                                   Action<object> infoReadyCallback = null, object parameter = null) {
@@ -100,8 +103,6 @@ namespace Microsoft.R.Support.Help.Functions {
                     string packageName;
                     if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
                         GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter);
-                    } else {
-                        //Debug.Assert(false, "Function without package: " + functionName);
                     }
                 }
             }
@@ -109,26 +110,45 @@ namespace Microsoft.R.Support.Help.Functions {
             return null;
         }
 
+        /// <summary>
+        /// Fetches help on the function from R asynchronously.
+        /// When function data is obtained, parsed and the function
+        /// index is updated, method invokes <see cref="infoReadyCallback"/>
+        /// callback passing the specified parameter. Callback method can now
+        /// fetch function information from the index.
+        /// </summary>
         private static void GetFunctionInfoFromEngineAsync(string functionName, string packageName,
                                          Action<object> infoReadyCallback = null, object parameter = null) {
-            _rdFunctionHelp.GetFunctionRdHelp(
+            _functionRdDataProvider.GetFunctionRdData(
                 functionName,
                 packageName,
-                (object o) => {
-                    if (o != null) {
-                        OnFunctionInfoReady(o);
+                (string rdData) => {
+                    IFunctionInfo info = GetFunctionInfoFromRd(functionName, rdData);
+                    if (info != null) {
+                        UpdateFunctionIndex(info);
+                    }
 
+                    if (infoReadyCallback != null && parameter != null) {
                         EditorShell.DispatchOnUIThread(() => {
-                            if (infoReadyCallback != null) {
-                                infoReadyCallback(parameter);
-                            }
+                            infoReadyCallback(parameter);
                         });
                     }
                 });
         }
 
-        private static void OnFunctionInfoReady(object obj) {
-            IFunctionInfo functionInfo = obj as IFunctionInfo;
+        private static IFunctionInfo GetFunctionInfoFromRd(string rdData, string functionName) {
+            IFunctionInfo info = null;
+
+            try {
+                info = RdParser.GetFunctionInfo(functionName, rdData);
+            } catch (Exception ex) {
+                Debug.WriteLine("Exception in parsing R engine RD response: {0}", ex.Message);
+            }
+
+            return info;
+        }
+
+        private static void UpdateFunctionIndex(IFunctionInfo functionInfo) {
             if (functionInfo != null) {
                 if (functionInfo.Aliases != null) {
                     foreach (string alias in functionInfo.Aliases) {

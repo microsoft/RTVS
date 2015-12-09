@@ -108,6 +108,24 @@ options(device='.rtvs.vsgd')
             return evaluation.EvaluateAsync(script);
         }
 
+        public static Task<REvaluationResult> SetRdHelpExtraction(this IRSessionEvaluation evaluation) {
+            var script =
+@" .rtvs.signature.help2 <- function(f, p) {
+        x <- help(paste(f), paste(p))
+        y <- utils:::.getHelpFile(x)
+        z <- rtvs:::describe_object(y)
+        z
+    }
+
+    .rtvs.signature.help1 <- function(f) {
+        x <- help(paste(f))
+        y <- utils:::.getHelpFile(x)
+        z <- rtvs:::describe_object(y)
+        z
+    }";
+            return evaluation.EvaluateAsync(script);
+        }
+
         private static Task<REvaluationResult> EvaluateNonReentrantAsync(this IRSessionEvaluation evaluation, FormattableString commandText) {
             return evaluation.EvaluateAsync(FormattableString.Invariant(commandText));
         }
