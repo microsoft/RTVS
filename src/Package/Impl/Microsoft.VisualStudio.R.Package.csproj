@@ -157,7 +157,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Plots\RPlotWindowHost.cs" />
+    <Compile Include="ProjectSystem\ExcludeFromProjectCommand.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
+    <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\ProjectIconProvider.cs" />
     <Compile Include="ProjectSystem\ProjectTreeModifier.cs" />
