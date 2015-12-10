@@ -2,17 +2,13 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Support.Test.Functions
-{
+namespace Microsoft.R.Support.Test.Functions {
     [ExcludeFromCodeCoverage]
     [TestClass]
     public class FunctionIndexTest : UnitTestBase
@@ -31,7 +27,7 @@ namespace Microsoft.R.Support.Test.Functions
                 {
                     FunctionInfoTest1_TestBody(evt);
                 }
-            }, EditorTestCompositionCatalog.Current);
+            }, RSupportTestCompositionCatalog.Current);
         }
 
         [TestMethod]
@@ -48,7 +44,7 @@ namespace Microsoft.R.Support.Test.Functions
                 {
                     FunctionInfoTest2_TestBody(evt);
                 }
-            }, EditorTestCompositionCatalog.Current);
+            }, RSupportTestCompositionCatalog.Current);
         }
 
         private void FunctionInfoTest1_TestBody(ManualResetEventSlim completed)

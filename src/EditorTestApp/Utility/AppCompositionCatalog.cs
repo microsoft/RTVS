@@ -27,6 +27,8 @@ namespace Microsoft.Languages.Editor.Application.Utility
             "Microsoft.R.Editor.dll",
             "Microsoft.R.Support.dll",
             "Microsoft.R.Support.Test.dll",
+            "Microsoft.R.Host.Client.dll",
+            "Microsoft.R.Common.Core.dll",
             "Microsoft.Languages.Editor.dll",
             "Microsoft.Languages.Editor.Application.dll"
         };

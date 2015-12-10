@@ -20,6 +20,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
             "Microsoft.Languages.Editor.dll",
             "Microsoft.R.Editor.dll",
             "Microsoft.R.Support.dll",
+            "Microsoft.R.Common.Core.dll",
+            "Microsoft.R.Host.Client.dll",
             "Microsoft.VisualStudio.Shell.Mocks.dll",
             "Microsoft.VisualStudio.R.Package.dll",
             "Microsoft.VisualStudio.R.Package.Test.dll",
