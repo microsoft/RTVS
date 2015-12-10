@@ -1,19 +1,14 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Utility {
     [ExcludeFromCodeCoverage]
     public sealed class RPackageTestCompositionCatalog : TestCompositionCatalog {
-        private static RPackageTestCompositionCatalog _instance;
+        private static Lazy<RPackageTestCompositionCatalog> _instance = Lazy.Create(() => new RPackageTestCompositionCatalog());
 
-        public static ITestCompositionCatalog Current {
-            get {
-                if (_instance == null) {
-                    _instance = new RPackageTestCompositionCatalog();
-                }
-                return _instance;
-            }
-        }
+        public static ITestCompositionCatalog Current => _instance.Value;
 
         private static string[] _rPackageAssemblies = new string[] {
             "Microsoft.Markdown.Editor.dll",
