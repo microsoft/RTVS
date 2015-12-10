@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseInlineIfElseTest : UnitTestBase
-    {
+    public class ParseInlineIfElseTest : UnitTestBase {
         [TestMethod]
-        public void ParseInlineIfElseTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseInlineIfElseTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- b + if(x > 1) 1 else 2]
@@ -46,8 +44,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseInlineIfElseTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseInlineIfElseTest02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- b + if(x > 1) {1+3} else {4-5}]
@@ -92,8 +90,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseInlineIfElseTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseInlineIfElseTest03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- b + if(x > 1) { function(a) { return(x) }}]
@@ -142,8 +140,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseInlineIfElseTest04()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseInlineIfElseTest04() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- b(c, if(TRUE) 1 else 2, d = if(x) 3 else 4)]

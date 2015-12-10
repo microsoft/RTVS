@@ -5,15 +5,13 @@ using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseIfElseTest : UnitTestBase
-    {
+    public class ParseIfElseTest : UnitTestBase {
         [TestMethod]
-        public void ParseIfElseTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest01() {
             string expected =
 @"GlobalScope  [Global]
     If  []
@@ -41,8 +39,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIfElseTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest02() {
             string expected =
 @"GlobalScope  [Global]
     If  []
@@ -72,8 +70,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIfElseTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest03() {
             string expected =
 @"GlobalScope  [Global]
     If  []
@@ -117,8 +115,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIfElseTest04()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest04() {
             string expected =
 @"GlobalScope  [Global]
     If  []
@@ -160,8 +158,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIfElseTest05()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest05() {
             string expected =
 @"GlobalScope  [Global]
     If  []
@@ -201,8 +199,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIfElseTest06()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest06() {
             string expected =
 @"GlobalScope  [Global]
     If  []
@@ -244,8 +242,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIfElseTest07()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest07() {
             string expected =
 @"GlobalScope  [Global]
     If  []
@@ -287,8 +285,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIfElseTest08()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest08() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [func(if(x < y) 1 \n else \n 2, a)]
@@ -329,8 +327,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIfElseTest09()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest09() {
             string expected =
 @"GlobalScope  [Global]
     If  []
@@ -356,8 +354,8 @@ UnexpectedToken Token [14...18)
         }
 
         [TestMethod]
-        public void ParseIfElseTest10()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest10() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- if(x < y) 1]
@@ -389,8 +387,8 @@ UnexpectedToken Token [19...23)
         }
 
         [TestMethod]
-        public void ParseIfElseTest12()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest12() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- func(a = if(x < y) 1 \n else 2)]
@@ -432,8 +430,8 @@ UnexpectedToken Token [19...23)
         }
 
         [TestMethod]
-        public void ParseIfElseTest13()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIfElseTest13() {
             string expected =
 @"GlobalScope  [Global]
     Scope  []

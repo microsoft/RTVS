@@ -1,46 +1,41 @@
 ﻿using System;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 
-namespace Microsoft.Languages.Editor.Tests.Shell {
+namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     [ExcludeFromCodeCoverage]
-    public sealed class TestAppShell : IApplicationShell {
+    public sealed class TestAppShell : TestEditorShell, IVsApplicationShell {
         private static Lazy<TestAppShell> _instance = Lazy.Create(() => new TestAppShell());
+        public static IVsApplicationShell Current => _instance.Value;
 
-        public static IApplicationShell Current { get; } = _instance.Value;
-
+        private IServiceProvider _sp;
         private TestAppShell() {
             CompositionService = RPackageTestCompositionCatalog.Current.CompositionService;
             ExportProvider = RPackageTestCompositionCatalog.Current.ExportProvider;
+            _sp = new TestServiceProvider();
 
-            var sp = new TestServiceProvider();
-            GlobalServiceProvider = sp;
-            OleServiceProvider = sp;
-
-            EditorShell.SetShell(TestEditorShell.Create(RPackageTestCompositionCatalog.Current));
+            EditorShell.SetShell(this);
+            AppShell.SetShell(this);
         }
 
-        public ICompositionService CompositionService { get; private set; }
-
-        public ExportProvider ExportProvider { get; private set; }
-
-        public System.IServiceProvider GlobalServiceProvider { get; private set; }
-
-        public bool IsTestEnvironment { get; } = true;
-
-        public VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; private set; }
-
-        public void Dispose() {
+        #region IApplicationShell
+        public override T GetGlobalService<T>(Type type = null) {
+            return _sp.GetService(type ?? typeof(T)) as T;
         }
+        #endregion
 
-        public T GetGlobalService<T>(Type type = null) where T : class {
-            return GlobalServiceProvider.GetService(type ?? typeof(T)) as T;
+        #region IVsApplicationShell
+        public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            return null;
         }
+        public string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            return null;
+        }
+        #endregion
     }
 }

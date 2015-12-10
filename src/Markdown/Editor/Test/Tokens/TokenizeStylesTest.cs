@@ -4,15 +4,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Markdown.Editor.Test.Tokens
-{
+namespace Microsoft.Markdown.Editor.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeStylesTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType>
-    {
+    public class TokenizeStylesTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
         [TestMethod]
-        public void TokenizeMd_Bold01()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Bold01() {
             var actualTokens = this.Tokenize(@"**bold** text **a**b**c**", new MdTokenizer());
             var expectedTokens = new TokenData<MarkdownTokenType>[]
             {
@@ -25,22 +23,22 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeMd_Bold02()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Bold02() {
             var actualTokens = this.Tokenize(@"**bold*", new MdTokenizer());
             Assert.AreEqual(0, actualTokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Bold03()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Bold03() {
             var actualTokens = this.Tokenize(@"** bold**", new MdTokenizer());
             Assert.AreEqual(0, actualTokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Italic01()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Italic01() {
             var actualTokens = this.Tokenize(@"*italic* text *a*b*c*", new MdTokenizer());
             var expectedTokens = new TokenData<MarkdownTokenType>[]
             {
@@ -53,22 +51,22 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeMd_Italic02()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Italic02() {
             var actualTokens = this.Tokenize(@"*italic", new MdTokenizer());
             Assert.AreEqual(0, actualTokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Italic03()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Italic03() {
             var actualTokens = this.Tokenize(@"_ italic_", new MdTokenizer());
             Assert.AreEqual(0, actualTokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Italic04()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Italic04() {
             var actualTokens = this.Tokenize(@"_italic_ text _a_b_c_", new MdTokenizer());
             var expectedTokens = new TokenData<MarkdownTokenType>[]
             {
@@ -81,22 +79,22 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeMd_Italic05()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Italic05() {
             var actualTokens = this.Tokenize(@"_italic", new MdTokenizer());
             Assert.AreEqual(0, actualTokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Italic06()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Italic06() {
             var actualTokens = this.Tokenize(@"_ italic_", new MdTokenizer());
             Assert.AreEqual(0, actualTokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Monospace01()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Monospace01() {
             var actualTokens = this.Tokenize(@"`italic` text `a`b`c`", new MdTokenizer());
             var expectedTokens = new TokenData<MarkdownTokenType>[]
             {
@@ -109,22 +107,22 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeMd_Monospace02()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Monospace02() {
             var actualTokens = this.Tokenize(@"`italic", new MdTokenizer());
             Assert.AreEqual(0, actualTokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Monospace03()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Monospace03() {
             var actualTokens = this.Tokenize(@"` italic_", new MdTokenizer());
             Assert.AreEqual(0, actualTokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Mixed01()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Mixed01() {
             var actualTokens = this.Tokenize(@"**bold _text_ *a*b_c_**", new MdTokenizer());
             var expectedTokens = new TokenData<MarkdownTokenType>[]
             {
@@ -141,8 +139,8 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeMd_Mixed02()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Mixed02() {
             var actualTokens = this.Tokenize(@"_italic **text** **a**b**c**_", new MdTokenizer());
             var expectedTokens = new TokenData<MarkdownTokenType>[]
             {

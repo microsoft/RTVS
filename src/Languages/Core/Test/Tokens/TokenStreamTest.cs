@@ -3,14 +3,11 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Languages.Core.Test.Text
-{
+namespace Microsoft.Languages.Core.Test.Text {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenStreamTest
-    {
-        enum TestTokenType
-        {
+    public class TokenStreamTest {
+        enum TestTokenType {
             Token1,
             Token2,
             Token3,
@@ -18,17 +15,15 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [ExcludeFromCodeCoverage]
-        class TestToken : Token<TestTokenType>
-        {
-            public TestToken(TestTokenType tokenType, ITextRange range):
-                base(tokenType, range)
-            {
+        class TestToken : Token<TestTokenType> {
+            public TestToken(TestTokenType tokenType, ITextRange range) :
+                base(tokenType, range) {
             }
         }
 
         [TestMethod]
-        public void EmptyTokenStreamTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void EmptyTokenStreamTest() {
             var tokens = new TestToken[] { };
             var ts = CreateTokenStream(tokens);
 
@@ -63,9 +58,9 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TokenStreamTest1()
-        {
-            var tokens = new TestToken[] 
+        [TestCategory("Languages.Core")]
+        public void TokenStreamTest1() {
+            var tokens = new TestToken[]
             {
                 new TestToken(TestTokenType.Token1, TextRange.FromBounds(0,1)),
                 new TestToken(TestTokenType.Token2, TextRange.FromBounds(3,4)),
@@ -129,8 +124,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TokenStreamLineBreakTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TokenStreamLineBreakTest() {
             var tokens = new TestToken[]
             {
                 new TestToken(TestTokenType.Token1, TextRange.FromBounds(0,1)),
@@ -159,8 +154,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TokenStreamEnumerationTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TokenStreamEnumerationTest() {
             var tokens = new TestToken[]
             {
                 new TestToken(TestTokenType.Token1, TextRange.FromBounds(0,1)),
@@ -172,18 +167,16 @@ namespace Microsoft.Languages.Core.Test.Text
 
             var ts = CreateTokenStream(tokens);
             int i = 0;
-            foreach(var token in ts)
-            {
+            foreach (var token in ts) {
                 Assert.AreEqual(tokens[i], token);
                 i++;
             }
         }
 
-        private TokenStream<TestToken> CreateTokenStream(TestToken[] tokens)
-        {
-           return new TokenStream<TestToken>(
-                new TextRangeCollection<TestToken>(tokens), 
-                new TestToken(TestTokenType.EndOfStream, TextRange.EmptyRange));
+        private TokenStream<TestToken> CreateTokenStream(TestToken[] tokens) {
+            return new TokenStream<TestToken>(
+                 new TextRangeCollection<TestToken>(tokens),
+                 new TestToken(TestTokenType.EndOfStream, TextRange.EmptyRange));
         }
     }
 }

@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseStringContstantsTest : UnitTestBase
-    {
+    public class ParseStringContstantsTest : UnitTestBase {
         [TestMethod]
-        public void ParseStringContstantsTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseStringContstantsTest1() {
             string expected =
 "GlobalScope  [Global]\r\n" +
 "    ExpressionStatement  [\"str\" + 'abc']\r\n" +

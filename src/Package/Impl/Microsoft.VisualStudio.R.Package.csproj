@@ -176,9 +176,9 @@
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
     <Compile Include="Options\R\SupportedRVersions.cs" />
+    <Compile Include="Repl\RHostClientApp.cs" />
     <Compile Include="Repl\Workspace\AttachDebuggerCommand.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
-    <Compile Include="Repl\RSessionExtensions.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
@@ -269,18 +269,10 @@
     <Compile Include="Repl\Data\ImportDataSetTextFileCommand.cs" />
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
-    <Compile Include="Repl\Session\RSession.cs" />
-    <Compile Include="Repl\Session\RSessionInteractionCommands.cs" />
-    <Compile Include="Repl\Session\RSessionEvaluation.cs" />
-    <Compile Include="Repl\Session\RSessionEvaluationCommands.cs" />
-    <Compile Include="Repl\Session\RSessionEvaluationSource.cs" />
-    <Compile Include="Repl\Session\RSessionInteraction.cs" />
-    <Compile Include="Repl\Session\RSessionRequestSource.cs" />
     <Compile Include="Repl\Commands\SendToReplCommand.cs" />
     <Compile Include="Repl\IVsInteractiveWindowProvider.cs" />
     <Compile Include="Repl\RInteractiveEvaluator.cs" />
     <Compile Include="Repl\RInteractiveWindowProvider.cs" />
-    <Compile Include="Repl\Session\RSessionProvider.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -293,9 +285,9 @@
     <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
     <Compile Include="RtvsProductInfo.cs" />
     <Compile Include="Shell\AppEventsSource.cs" />
-    <Compile Include="Shell\AppShell.cs" />
+    <Compile Include="Shell\VsAppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
-    <Compile Include="Shell\IApplicationShell.cs" />
+    <Compile Include="Shell\IVsApplicationShell.cs" />
     <Compile Include="Packages\R\RGuidList.cs" />
     <Compile Include="Packages\R\RLanguageService.cs" />
     <Compile Include="Editors\TextBufferInitializationTracker.cs" />

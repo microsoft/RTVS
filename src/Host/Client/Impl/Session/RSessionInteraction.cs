@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionInteraction : IRSessionInteraction {
         private readonly TaskCompletionSource<string> _requestTcs;
         private readonly TaskCompletionSource<object> _responseTcs;

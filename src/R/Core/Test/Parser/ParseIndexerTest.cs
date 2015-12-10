@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseIndexerTest : UnitTestBase
-    {
+    public class ParseIndexerTest : UnitTestBase {
         [TestMethod]
-        public void ParseIndexerTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest1() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a[1]]
@@ -29,8 +27,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest2()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest2() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x[1,2]]
@@ -52,8 +50,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest3()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest3() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x(a)[1]]
@@ -78,8 +76,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest4()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest4() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x[[a+(b*c)]]]
@@ -107,8 +105,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest5()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest5() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x[1](c)]
@@ -133,8 +131,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest6()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest6() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x[, 1]]
@@ -154,8 +152,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest7()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest7() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x[2,]]
@@ -175,8 +173,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest8()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest8() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x[,,]]
@@ -196,8 +194,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest9()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest9() {
             string expected =
 @"GlobalScope  [Global]
 ";
@@ -205,11 +203,11 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest10()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest10() {
             string expected =
 "GlobalScope  [Global]\r\n" +
-"    ExpressionStatement  [colnames(data)[colnames(data)==\"old_name\"] <- \"new_name\"]\r\n"+
+"    ExpressionStatement  [colnames(data)[colnames(data)==\"old_name\"] <- \"new_name\"]\r\n" +
 "        Expression  [colnames(data)[colnames(data)==\"old_name\"] <- \"new_name\"]\r\n" +
 "            TokenOperator  [<- [43...45)]\r\n" +
 "                Indexer  [0...42)\r\n" +
@@ -244,8 +242,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseIndexerTest11()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest11() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [append(LETTERS[)]
@@ -267,8 +265,8 @@ CloseSquareBracketExpected AfterToken [14...15)
         }
 
         [TestMethod]
-        public void ParseIndexerTest12()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest12() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [(a())[x]]
@@ -293,8 +291,8 @@ CloseSquareBracketExpected AfterToken [14...15)
         }
 
         [TestMethod]
-        public void ParseIndexerTest13()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIndexerTest13() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [topfiles <- topfiles[file.info(topfiles, extra_cols = FALSE)$ctime\r\n <= .unpack.time]]

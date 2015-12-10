@@ -77,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             base.Initialize();
 
-            RToolsSettings.Init(AppShell.Current.ExportProvider);
+            RToolsSettings.Init(VsAppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
@@ -114,7 +114,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override IEnumerable<MenuCommand> CreateMenuCommands() {
-            return PackageCommands.GetCommands(AppShell.Current.ExportProvider);
+            return PackageCommands.GetCommands(VsAppShell.Current.ExportProvider);
         }
 
         protected override object GetAutomationObject(string name) {
@@ -140,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private void InitializeActiveWpfTextViewTracker() {
-            var activeTextViewTracker = AppShell.Current.ExportProvider.GetExportedValue<ActiveWpfTextViewTracker>();
+            var activeTextViewTracker = VsAppShell.Current.ExportProvider.GetExportedValue<ActiveWpfTextViewTracker>();
             var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
             var cookie = shell.AdviseWindowFrameEvents(activeTextViewTracker);
             _activeTextViewTrackerToken = Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie));

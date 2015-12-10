@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
@@ -14,6 +13,7 @@ using Microsoft.Languages.Editor.Undo;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -22,15 +22,15 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    public sealed class VsEditorShell : IEditorShell, IDisposable, IIdleTimeService {
+    public class VsEditorShell : IEditorShell, IDisposable, IIdleTimeService {
+        [ImportMany]
+        private IEnumerable<Lazy<IAppShellInitialization>> ShellInitializers { get; set; }
         private IdleTimeSource _idleTimeSource;
-        private Thread _creatorThread;
 
         public VsEditorShell() {
-            _creatorThread = Thread.CurrentThread;
+            MainThread = Thread.CurrentThread;
 
-            var componentModel = AppShell.Current.GetGlobalService<IComponentModel>(typeof(SComponentModel));
-
+            IComponentModel componentModel = RPackage.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
             CompositionService = componentModel.DefaultCompositionService;
             ExportProvider = componentModel.DefaultExportProvider;
 
@@ -38,25 +38,29 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource.OnIdle += OnIdle;
             _idleTimeSource.OnTerminateApp += OnTerminateApp;
 
-            EditorShell.UIThread = MainThread;
+            CompositionService.SatisfyImportsOnce(this);
+
+            foreach (var init in ShellInitializers) {
+                init.Value.SetShell(this);
+            }
         }
 
-        void OnIdle(object sender, EventArgs args) {
-            DoIdle();
+        #region IApplicationShell
+        /// <summary>
+        /// Retrieves Visual Studio global service from global VS service provider.
+        /// This method is not thread safe and should not be called from async methods.
+        /// </summary>
+        /// <typeparam name="T">Service interface type such as IVsUiShell</typeparam>
+        /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
+        /// <returns>Service instance of null if not found.</returns>
+        public T GetGlobalService<T>(Type type = null) where T : class {
+            if (IsUnitTestEnvironment) {
+                System.IServiceProvider sp = RPackage.Current;
+                return sp.GetService(type ?? typeof(T)) as T;
+            }
+
+            return RPackage.GetGlobalService(type ?? typeof(T)) as T;
         }
-
-        private void OnTerminateApp(object sender, EventArgs args) {
-            Dispose();
-        }
-
-        #region IIdleTimeService
-
-        public void DoIdle() {
-            if (Idle != null)
-                Idle(this, EventArgs.Empty);
-        }
-
-        #endregion
 
         /// <summary>
         /// Application composition service
@@ -68,6 +72,85 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public ExportProvider ExportProvider { get; private set; }
 
+        /// <summary>
+        /// Provides a way to execute action on UI thread while
+        /// UI thread is waiting for the completion of the action.
+        /// May be implemented using ThreadHelper in VS or via
+        /// SynchronizationContext in all-managed application.
+        /// 
+        /// This can be blocking or non blocking dispatch, preferrably
+        /// non blocking
+        /// </summary>
+        /// <param name="action">Action to execute</param>
+        public void DispatchOnUIThread(Action action) {
+            if (MainThread != null) {
+                var dispatcher = Dispatcher.FromThread(MainThread);
+                Debug.Assert(dispatcher != null);
+
+                if (dispatcher != null && !dispatcher.HasShutdownStarted) {
+                    dispatcher.BeginInvoke(action, DispatcherPriority.Normal);
+                }
+            } else {
+                Debug.Assert(false);
+                ThreadHelper.Generic.BeginInvoke(DispatcherPriority.Normal, () => action());
+            }
+        }
+
+        /// <summary>
+        /// Provides access to the application main thread, so users can know if the task they are trying
+        /// to execute is executing from the right thread.
+        /// </summary>
+        public Thread MainThread { get; set; }
+
+        /// <summary>
+        /// Fires when host application enters idle state.
+        /// </summary>
+        public event EventHandler<EventArgs> Idle;
+
+        /// <summary>
+        /// Fires when host application is terminating
+        /// </summary>
+        public event EventHandler<EventArgs> Terminating;
+
+        /// <summary>
+        /// Displays error message in a host-specific UI
+        /// </summary>
+        public void ShowErrorMessage(string message) {
+            var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            int result;
+
+            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
+        }
+
+        /// <summary>
+        /// Displays question in a host-specific UI
+        /// </summary>
+        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
+            var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            int result;
+
+            var oleButtons = GetOleButtonFlags(buttons);
+            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
+                oleButtons, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
+
+            switch (result) {
+                case NativeMethods.IDYES:
+                    return MessageButtons.Yes;
+                case NativeMethods.IDNO:
+                    return MessageButtons.No;
+                case NativeMethods.IDCANCEL:
+                    return MessageButtons.Cancel;
+            }
+            return MessageButtons.OK;
+        }
+
+        public bool IsUnitTestEnvironment { get; set; }
+
+        public bool IsUITestEnvironment { get; set; }
+        #endregion
+
+        #region IEditorShell 
         /// <summary>
         /// Provides shim that implements ICommandTarget over 
         /// application-specific command target. For example, 
@@ -107,40 +190,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         /// <summary>
-        /// Provides a way to execute action on UI thread while
-        /// UI thread is waiting for the completion of the action.
-        /// May be implemented using ThreadHelper in VS or via
-        /// SynchronizationContext in all-managed application.
-        /// 
-        /// This can be blocking or non blocking dispatch, preferrably
-        /// non blocking
-        /// </summary>
-        /// <param name="action">Action to execute</param>
-        public void DispatchOnUIThread(Action action, DispatcherPriority priority) {
-            if (MainThread != null) {
-                var dispatcher = Dispatcher.FromThread(MainThread);
-
-                Debug.Assert(dispatcher != null);
-
-                if (dispatcher != null && !dispatcher.HasShutdownStarted)
-                    dispatcher.BeginInvoke(action, priority);
-            } else {
-                Debug.Assert(false);
-                ThreadHelper.Generic.BeginInvoke(priority, () => action());
-            }
-        }
-
-        /// <summary>
-        /// Fires when host application enters idle state.
-        /// </summary>
-        public event EventHandler<EventArgs> Idle;
-
-        /// <summary>
-        /// Fires when host application is terminating
-        /// </summary>
-        public event EventHandler<EventArgs> Terminating;
-
-        /// <summary>
         /// Creates compound undo action
         /// </summary>
         /// <param name="textView">Text view</param>
@@ -149,122 +198,22 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
             return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: true);
         }
+        #endregion
 
-        /// <summary>
-        /// Provides access to the application main thread, so users can know if the task they are trying
-        /// to execute is executing from the right thread.
-        /// </summary>
-        public Thread MainThread {
-            get { return _creatorThread; }
+        void OnIdle(object sender, EventArgs args) {
+            DoIdle();
         }
 
-        /// <summary>
-        /// Displays error message in a host-specific UI
-        /// </summary>
-        public void ShowErrorMessage(string message) {
-            var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            int result;
-
-            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
+        private void OnTerminateApp(object sender, EventArgs args) {
+            Dispose();
         }
 
-        /// <summary>
-        /// Displays question in a host-specific UI
-        /// </summary>
-        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
-            var shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            int result;
-
-            var oleButtons = GetOleButtonFlags(buttons);
-            shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
-                oleButtons, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
-
-            switch (result) {
-                case NativeMethods.IDYES:
-                    return MessageButtons.Yes;
-                case NativeMethods.IDNO:
-                    return MessageButtons.No;
-                case NativeMethods.IDCANCEL:
-                    return MessageButtons.Cancel;
-            }
-            return MessageButtons.OK;
+        #region IIdleTimeService
+        public void DoIdle() {
+            if (Idle != null)
+                Idle(this, EventArgs.Empty);
         }
-
-        public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            if (uiShell == null) {
-                return null;
-            }
-
-            if (owner == IntPtr.Zero) {
-                ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
-            }
-
-            VSOPENFILENAMEW[] openInfo = new VSOPENFILENAMEW[1];
-            openInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSOPENFILENAMEW));
-            openInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
-            openInfo[0].hwndOwner = owner;
-            openInfo[0].pwzDlgTitle = title;
-            openInfo[0].nMaxFileName = 260;
-            var pFileName = Marshal.AllocCoTaskMem(520);
-            openInfo[0].pwzFileName = pFileName;
-            openInfo[0].pwzInitialDir = Path.GetDirectoryName(initialPath);
-            var nameArray = (Path.GetFileName(initialPath) + "\0").ToCharArray();
-            Marshal.Copy(nameArray, 0, pFileName, nameArray.Length);
-
-            try {
-                int hr = uiShell.GetOpenFileNameViaDlg(openInfo);
-                if (hr == VSConstants.OLE_E_PROMPTSAVECANCELLED) {
-                    return null;
-                }
-                ErrorHandler.ThrowOnFailure(hr);
-                return Marshal.PtrToStringAuto(openInfo[0].pwzFileName);
-            } finally {
-                if (pFileName != IntPtr.Zero) {
-                    Marshal.FreeCoTaskMem(pFileName);
-                }
-            }
-        }
-
-        public string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            if (string.IsNullOrEmpty(initialPath)) {
-                initialPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar;
-            }
-
-            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            if (null == uiShell) {
-                return null;
-            }
-
-            if (owner == IntPtr.Zero) {
-                ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
-            }
-
-            VSSAVEFILENAMEW[] saveInfo = new VSSAVEFILENAMEW[1];
-            saveInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
-            saveInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
-            saveInfo[0].hwndOwner = owner;
-            saveInfo[0].pwzDlgTitle = title;
-            saveInfo[0].nMaxFileName = 260;
-            var pFileName = Marshal.AllocCoTaskMem(520);
-            saveInfo[0].pwzFileName = pFileName;
-            saveInfo[0].pwzInitialDir = Path.GetDirectoryName(initialPath);
-            var nameArray = (Path.GetFileName(initialPath) + "\0").ToCharArray();
-            Marshal.Copy(nameArray, 0, pFileName, nameArray.Length);
-            try {
-                int hr = uiShell.GetSaveFileNameViaDlg(saveInfo);
-                if (hr == VSConstants.OLE_E_PROMPTSAVECANCELLED) {
-                    return null;
-                }
-                ErrorHandler.ThrowOnFailure(hr);
-                return Marshal.PtrToStringAuto(saveInfo[0].pwzFileName);
-            } finally {
-                if (pFileName != IntPtr.Zero) {
-                    Marshal.FreeCoTaskMem(pFileName);
-                }
-            }
-        }
+        #endregion
 
         /// <summary>
         /// Displays help on the specified topic
@@ -278,13 +227,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public int LocaleId {
             get {
-                IUIHostLocale hostLocale = AppShell.Current.GetGlobalService<IUIHostLocale>();
+                IUIHostLocale hostLocale = GetGlobalService<IUIHostLocale>();
                 uint lcid;
 
                 if (hostLocale != null && hostLocale.GetUILocale(out lcid) == VSConstants.S_OK) {
                     return (int)lcid;
                 }
-
                 return 0;
             }
         }
@@ -294,49 +242,35 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public string UserFolder {
             get {
-                var settingsManager = new ShellSettingsManager(AppShell.Current.GlobalServiceProvider);
+                var settingsManager = new ShellSettingsManager(RPackage.Current);
                 return settingsManager.GetApplicationDataFolder(ApplicationDataFolder.RoamingSettings);
             }
         }
 
-        /// <summary>
-        /// Host service provider (can be null).
-        /// </summary>
-        public System.IServiceProvider ServiceProvider {
-            get { return AppShell.Current.GlobalServiceProvider; }
-        }
-
-        public bool IsUnitTestEnvironment {
-            get { return false; }
-        }
-
-        public bool IsUITestEnvironment {
-            // TODO: test for UI-drive VS tests
-            get { return false; }
-        }
-
         #region IDisposable
         public void Dispose() {
-            // This function could be called twice (if globals are released after OnTerminateApp is called),
-            // but only trigger Terminating once
-            if (_idleTimeSource != null) {
-                _idleTimeSource.OnIdle -= OnIdle;
-                _idleTimeSource.OnTerminateApp -= OnTerminateApp;
-                _idleTimeSource.Dispose();
-                _idleTimeSource = null;
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-                if (Terminating != null) {
-                    Terminating(this, EventArgs.Empty);
+        protected virtual void Dispose(bool disposing) {
+            if (disposing) {
+                if (_idleTimeSource != null) {
+                    _idleTimeSource.OnIdle -= OnIdle;
+                    _idleTimeSource.OnTerminateApp -= OnTerminateApp;
+                    _idleTimeSource.Dispose();
+                    _idleTimeSource = null;
+
+                    if (Terminating != null) {
+                        Terminating(this, EventArgs.Empty);
+                    }
                 }
-
-                // Clean up the globals AFTER all the Terminating listeners were called
-                AppShell.OnTerminateApp();
             }
         }
         #endregion
 
         private OLEMSGBUTTON GetOleButtonFlags(MessageButtons buttons) {
-            switch(buttons) {
+            switch (buttons) {
                 case MessageButtons.YesNoCancel:
                     return OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL;
                 case MessageButtons.YesNo:

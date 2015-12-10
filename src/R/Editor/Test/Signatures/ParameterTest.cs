@@ -20,15 +20,13 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Test.Signatures
-{
+namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParameterTest : UnitTestBase
-    {
+    public class ParameterTest : UnitTestBase {
         [TestMethod]
-        public void ParameterTest01()
-        {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest01() {
             string content = @"x <- foo(a,b,c,d)";
             AstRoot ast = RParser.Parse(content);
 
@@ -58,8 +56,8 @@ namespace Microsoft.R.Editor.Test.Signatures
         }
 
         [TestMethod]
-        public void ParameterTest02()
-        {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest02() {
             string content = @"x <- foo(,,,)";
             AstRoot ast = RParser.Parse(content);
 
@@ -80,8 +78,8 @@ namespace Microsoft.R.Editor.Test.Signatures
         }
 
         [TestMethod]
-        public void ParameterTest03()
-        {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest03() {
             string content = @"x <- foo(,,";
             ParameterInfo parametersInfo;
 
@@ -93,8 +91,8 @@ namespace Microsoft.R.Editor.Test.Signatures
         }
 
         [TestMethod]
-        public void ParameterTest04()
-        {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest04() {
             string content =
 @"x <- foo(,, 
 
@@ -111,8 +109,8 @@ if(x > 1) {";
         }
 
         [TestMethod]
-        public void ParameterTest05()
-        {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest05() {
             string content =
 @"x <- abs(cos(
 
@@ -131,8 +129,8 @@ while";
         }
 
         [TestMethod]
-        public void ParameterTest06()
-        {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest06() {
             string content =
 @"x <- abs(
 
@@ -151,8 +149,8 @@ function(a) {
         }
 
         [TestMethod]
-        public void ParameterTest_ComputeCurrentParameter01()
-        {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest_ComputeCurrentParameter01() {
             ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
             SignatureHelpSource source = new SignatureHelpSource(textBuffer);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
@@ -164,23 +162,19 @@ function(a) {
             var document = new EditorDocumentMock(tree);
 
             session.TrackingPoint = new TrackingPointMock(textBuffer, 4, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) =>
-            {
-                object result = FunctionIndex.GetFunctionInfo("aov", (object o) =>
-                {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) => {
+                object result = FunctionIndex.GetFunctionInfo("aov", (object o) => {
                     ComputeCurrentParameter01_Body(completed);
                 });
 
-                if (result != null && !completed.IsSet)
-                {
+                if (result != null && !completed.IsSet) {
                     ComputeCurrentParameter01_Body(completed);
                 }
 
             }, REditorTestCompositionCatalog.Current);
         }
 
-        private void ComputeCurrentParameter01_Body(ManualResetEventSlim completed)
-        {
+        private void ComputeCurrentParameter01_Body(ManualResetEventSlim completed) {
             ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
             SignatureHelpSource source = new SignatureHelpSource(textBuffer);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
@@ -219,12 +213,9 @@ function(a) {
             completed.Set();
         }
 
-        private int GetCurrentParameterIndex(SignatureHelp sh, IParameter parameter)
-        {
-            for (int i = 0; i < sh.Parameters.Count; i++)
-            {
-                if (sh.Parameters[i] == parameter)
-                {
+        private int GetCurrentParameterIndex(SignatureHelp sh, IParameter parameter) {
+            for (int i = 0; i < sh.Parameters.Count; i++) {
+                if (sh.Parameters[i] == parameter) {
                     return i;
                 }
             }
@@ -233,24 +224,20 @@ function(a) {
         }
 
         [TestMethod]
-        public void ParameterTest_ComputeCurrentParameter02()
-        {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) =>
-            {
-                object result = FunctionIndex.GetFunctionInfo("legend", (object o) =>
-                {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest_ComputeCurrentParameter02() {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) => {
+                object result = FunctionIndex.GetFunctionInfo("legend", (object o) => {
                     ComputeCurrentParameter02_Body(completed);
                 });
 
-                if (result != null && !completed.IsSet)
-                {
+                if (result != null && !completed.IsSet) {
                     ComputeCurrentParameter02_Body(completed);
                 }
             }, REditorTestCompositionCatalog.Current);
         }
 
-        private void ComputeCurrentParameter02_Body(ManualResetEventSlim completed)
-        {
+        private void ComputeCurrentParameter02_Body(ManualResetEventSlim completed) {
             REditorSettings.PartialArgumentNameMatch = true;
 
             ITextBuffer textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
@@ -283,24 +270,20 @@ function(a) {
         }
 
         [TestMethod]
-        public void ParameterTest_ComputeCurrentParameter03()
-        {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) =>
-            {
-                object result = FunctionIndex.GetFunctionInfo("legend", (object o) =>
-                {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest_ComputeCurrentParameter03() {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) => {
+                object result = FunctionIndex.GetFunctionInfo("legend", (object o) => {
                     ComputeCurrentParameter03_Body(completed);
                 });
 
-                if (result != null && !completed.IsSet)
-                {
+                if (result != null && !completed.IsSet) {
                     ComputeCurrentParameter03_Body(completed);
                 }
             }, REditorTestCompositionCatalog.Current);
         }
 
-        private void ComputeCurrentParameter03_Body(ManualResetEventSlim completed)
-        {
+        private void ComputeCurrentParameter03_Body(ManualResetEventSlim completed) {
             REditorSettings.PartialArgumentNameMatch = false;
 
             ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
@@ -329,24 +312,20 @@ function(a) {
         }
 
         [TestMethod]
-        public void ParameterTest_ComputeCurrentParameter04()
-        {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) =>
-            {
-                object result = FunctionIndex.GetFunctionInfo("legend", (object o) =>
-                {
+        [TestCategory("R.Signatures")]
+        public void ParameterTest_ComputeCurrentParameter04() {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) => {
+                object result = FunctionIndex.GetFunctionInfo("legend", (object o) => {
                     ComputeCurrentParameter04_Body(completed);
                 });
 
-                if (result != null && !completed.IsSet)
-                {
+                if (result != null && !completed.IsSet) {
                     ComputeCurrentParameter04_Body(completed);
                 }
             }, REditorTestCompositionCatalog.Current);
         }
 
-        private void ComputeCurrentParameter04_Body(ManualResetEventSlim completed)
-        {
+        private void ComputeCurrentParameter04_Body(ManualResetEventSlim completed) {
             REditorSettings.PartialArgumentNameMatch = true;
 
             ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);

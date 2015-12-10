@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseExpressionsTest : UnitTestBase
-    {
+    public class ParseExpressionsTest : UnitTestBase {
         [TestMethod]
-        public void ParseExpressions01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseExpressions01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <-(grepl('^check', install) || R_check_use_install_log)]
@@ -43,8 +41,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseListExpression01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseListExpression01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [fitted.zeros <- xzero * z$coefficients]
@@ -64,8 +62,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseExpressionSequence01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseExpressionSequence01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- 1*b]
@@ -96,8 +94,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseExpressionSequence02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseExpressionSequence02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- 1*b[1]]
@@ -135,8 +133,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseExpressionSequence03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseExpressionSequence03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- 1*b[[1]]]

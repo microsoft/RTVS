@@ -83,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
 
         protected override void OnNavigate(EventArgs e) {
             if (_source.TextBuffer != null) {
-                var textManager = AppShell.Current.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
+                var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
                 var textLines = _source.TextBuffer.QueryInterface<IVsTextLines>();
 
                 if (_item.Line > 0 && _item.Column > 0) {

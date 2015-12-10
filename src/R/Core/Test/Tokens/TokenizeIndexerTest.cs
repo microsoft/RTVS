@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
-{
+namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeIndexerTest : TokenizeTestBase<RToken, RTokenType>
-    {
+    public class TokenizeIndexerTest : TokenizeTestBase<RToken, RTokenType> {
         [TestMethod]
-        public void TokenizeIndexerTest01()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIndexerTest01() {
             var tokens = this.Tokenize("a[b[c]]", new RTokenizer());
 
             Assert.AreEqual(7, tokens.Count);
@@ -25,8 +23,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeIndexerTest02()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIndexerTest02() {
             var tokens = this.Tokenize("a[[b[c]]]", new RTokenizer());
 
             Assert.AreEqual(7, tokens.Count);
@@ -40,8 +38,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeIndexerTest03()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIndexerTest03() {
             var tokens = this.Tokenize("a[[b]][x]", new RTokenizer());
 
             Assert.AreEqual(7, tokens.Count);
@@ -55,8 +53,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeIndexerTest04()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIndexerTest04() {
             var tokens = this.Tokenize("a[[b][x]]", new RTokenizer());
 
             Assert.AreEqual(8, tokens.Count);

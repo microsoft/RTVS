@@ -4,15 +4,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Support.RD.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Support.Test.RD.Tokens
-{
+namespace Microsoft.R.Support.Test.RD.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeRdTest : TokenizeTestBase<RdToken, RdTokenType>
-    {
+    public class TokenizeRdTest : TokenizeTestBase<RdToken, RdTokenType> {
         [TestMethod]
-        public void TokenizeRdKeywords1()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdKeywords1() {
             var tokens = this.Tokenize(@" \title", new RdTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -23,8 +21,8 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         }
 
         [TestMethod]
-        public void TokenizeRdKeywords2()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdKeywords2() {
             var tokens = this.Tokenize(@" \title{}", new RdTokenizer());
 
             Assert.AreEqual(3, tokens.Count);
@@ -43,8 +41,8 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         }
 
         [TestMethod]
-        public void TokenizeRdPragmas1()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdPragmas1() {
             var tokens = this.Tokenize("#ifdef\ntext\n#endif", new RdTokenizer());
 
             Assert.AreEqual(2, tokens.Count);
@@ -59,16 +57,16 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         }
 
         [TestMethod]
-        public void TokenizeRdPragmas2()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdPragmas2() {
             var tokens = this.Tokenize(" #if\ntext\n #endif", new RdTokenizer());
 
             Assert.AreEqual(0, tokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeRdArguments01()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdArguments01() {
             var actualTokens = this.Tokenize(@"\a1{arg[text \a1[=a2]] text}", new RdTokenizer());
             var expectedTokens = new TokenData<RdTokenType>[]
             {
@@ -87,8 +85,8 @@ namespace Microsoft.R.Support.Test.RD.Tokens
 
 
         [TestMethod]
-        public void TokenizeRdArguments02()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdArguments02() {
             var actualTokens = this.Tokenize(@"\method{as.matrix}{data.frame}(x)", new RdTokenizer());
             var expectedTokens = new TokenData<RdTokenType>[]
             {
@@ -103,8 +101,8 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         }
 
         [TestMethod]
-        public void TokenizeRdArguments03()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdArguments03() {
             var actualTokens = this.Tokenize(@"\usage{\method{as.matrix}{data.frame}(x)}", new RdTokenizer());
             var expectedTokens = new TokenData<RdTokenType>[]
             {
@@ -122,8 +120,8 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         }
 
         [TestMethod]
-        public void TokenizeRdArguments04()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdArguments04() {
             var actualTokens = this.Tokenize(@"\ifelse{{latex}{\out[x]{~}}{ }}{}", new RdTokenizer());
             var expectedTokens = new TokenData<RdTokenType>[]
             {
@@ -149,8 +147,8 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         }
 
         [TestMethod]
-        public void TokenizeRdArguments05()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdArguments05() {
             var actualTokens = this.Tokenize(@"\item{\dots}{ A }", new RdTokenizer());
             var expectedTokens = new TokenData<RdTokenType>[]
             {
@@ -166,8 +164,8 @@ namespace Microsoft.R.Support.Test.RD.Tokens
         }
 
         [TestMethod]
-        public void TokenizeRdVerbationContent()
-        {
+        [TestCategory("Rd.Tokenizer")]
+        public void TokenizeRdVerbationContent() {
             var actualTokens = this.Tokenize(
 @"\alias{\% \dots %foo}
 #ifdef

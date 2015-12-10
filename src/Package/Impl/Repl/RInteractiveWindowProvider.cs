@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private IRHistoryProvider HistoryProvider { get; set; }
 
         public RInteractiveWindowProvider() {
-            AppShell.Current.CompositionService.SatisfyImportsOnce(this);
+            VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
         }
 
         public IVsInteractiveWindow Create(int instanceId) {
@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             EventHandler textViewOnClosed;
 
             if (SupportedRVersions.VerifyRIsInstalled()) {
-                var session = SessionProvider.Create(instanceId);
+                var session = SessionProvider.Create(instanceId, new RHostClientApp());
                 var history = HistoryProvider.GetAssociatedRHistory(textView);
 
                 evaluator = new RInteractiveEvaluator(session, history);
@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private static async Task InitializeWindowAsync(IInteractiveWindow window) {
             await window.InitializeAsync();
-            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(1);
         }
 

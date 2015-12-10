@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSessionProvider : IDisposable {
-        IRSession Create(int sessionId);
+        IRSession Create(int sessionId, IRHostClientApp hostClientApp);
 
         IRSession Current { get; }
 

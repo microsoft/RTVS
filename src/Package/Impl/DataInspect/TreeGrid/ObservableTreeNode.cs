@@ -284,7 +284,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     CollectionChanged(
                         this,
                         getArgs());
-                }, DispatcherPriority.Normal);
+                });
             }
         }
 

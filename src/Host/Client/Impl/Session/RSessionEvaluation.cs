@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionEvaluation : IRSessionEvaluation {
         private readonly IRExpressionEvaluator _evaluator;
         private readonly TaskCompletionSource<object> _tcs;

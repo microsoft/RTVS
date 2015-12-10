@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             crinfo[0].grfcadvf = (uint)_OLECADVF.olecadvfModal | (uint)_OLECADVF.olecadvfRedrawOff | (uint)_OLECADVF.olecadvfWarningsOff;
             crinfo[0].uIdleTimeInterval = 200;
 
-            IOleComponentManager oleComponentManager = AppShell.Current.GetGlobalService<IOleComponentManager>(typeof(SOleComponentManager));
+            IOleComponentManager oleComponentManager = VsAppShell.Current.GetGlobalService<IOleComponentManager>(typeof(SOleComponentManager));
             int hr = oleComponentManager.FRegisterComponent(this, crinfo, out _componentID);
             Debug.Assert(ErrorHandler.Succeeded(hr));
         }
@@ -74,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #region IDisposable Members
         public void Dispose() {
             if (_componentID != 0) {
-                var oleComponentManager = AppShell.Current.GetGlobalService<IOleComponentManager>(typeof(SOleComponentManager));
+                var oleComponentManager = VsAppShell.Current.GetGlobalService<IOleComponentManager>(typeof(SOleComponentManager));
 
                 if (oleComponentManager != null) {
                     int hr = oleComponentManager.FRevokeComponent(_componentID);

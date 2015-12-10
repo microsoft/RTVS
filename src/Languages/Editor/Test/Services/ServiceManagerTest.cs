@@ -4,48 +4,40 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Languages.Editor.Test.Services
-{
+namespace Microsoft.Languages.Editor.Test.Services {
     /// <summary>
     /// Summary description for UnitTest1
     /// </summary>
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ServiceManagerTest
-    {
+    public class ServiceManagerTest {
         #region Mock Services
-        interface IService1
-        {
+        interface IService1 {
             void DoSomething();
         }
 
         [ExcludeFromCodeCoverage]
-        class Service1 : IService1
-        {
+        class Service1 : IService1 {
             public void DoSomething() { }
         }
 
-        interface IService2
-        {
+        interface IService2 {
             void DoSomethingElse();
         }
 
         [ExcludeFromCodeCoverage]
-        class Service2 : IService2
-        {
+        class Service2 : IService2 {
             public void DoSomethingElse() { }
         }
         #endregion
 
         #region Mock Property Owner
         [ExcludeFromCodeCoverage]
-        class PropertyOwner : IPropertyOwner
-        {
+        class PropertyOwner : IPropertyOwner {
             PropertyCollection _collection = new PropertyCollection();
 
             #region IPropertyOwner Members
-            public PropertyCollection Properties
-            {
+            public PropertyCollection Properties {
                 get { return _collection; }
             }
 
@@ -54,8 +46,8 @@ namespace Microsoft.Languages.Editor.Test.Services
         #endregion
 
         [TestMethod]
-        public void ServiceManager_Test01()
-        {
+        [TestCategory("Languages.Core")]
+        public void ServiceManager_Test01() {
             PropertyOwner propertyOwner = new PropertyOwner();
             Service1 s1 = new Service1();
             bool added = false;
@@ -95,8 +87,8 @@ namespace Microsoft.Languages.Editor.Test.Services
         }
 
         [TestMethod]
-        public void ServiceManager_Test02()
-        {
+        [TestCategory("Languages.Core")]
+        public void ServiceManager_Test02() {
             PropertyOwner propertyOwner = new PropertyOwner();
             int servicesAdded = 0;
             int servicesRemoved = 0;
@@ -116,32 +108,24 @@ namespace Microsoft.Languages.Editor.Test.Services
             ServiceManager sm = ServiceManager.FromPropertyOwner(propertyOwner);
             Assert.IsNotNull(sm);
 
-            EventHandler<ServiceManagerEventArgs> onServiceAdded = (object sender, ServiceManagerEventArgs e) =>
-            {
+            EventHandler<ServiceManagerEventArgs> onServiceAdded = (object sender, ServiceManagerEventArgs e) => {
                 servicesAdded++;
 
-                if (servicesAdded == 1)
-                {
+                if (servicesAdded == 1) {
                     Assert.AreEqual(s1, e.Service);
                     Assert.AreEqual(typeof(IService1), e.ServiceType);
-                }
-                else if (servicesAdded == 2)
-                {
+                } else if (servicesAdded == 2) {
                     Assert.AreEqual(s2, e.Service);
                     Assert.AreEqual(typeof(IService2), e.ServiceType);
                 }
             };
 
-            EventHandler<ServiceManagerEventArgs> onServiceRemoved = (object sender, ServiceManagerEventArgs e) =>
-            {
+            EventHandler<ServiceManagerEventArgs> onServiceRemoved = (object sender, ServiceManagerEventArgs e) => {
                 servicesRemoved++;
 
-                if (servicesRemoved == 1)
-                {
+                if (servicesRemoved == 1) {
                     Assert.AreEqual(typeof(IService1), e.ServiceType);
-                }
-                else if (servicesRemoved == 2)
-                {
+                } else if (servicesRemoved == 2) {
                     Assert.AreEqual(typeof(IService2), e.ServiceType);
                 }
             };

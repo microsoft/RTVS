@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
-{
+namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeIdentifierTest : TokenizeTestBase<RToken, RTokenType>
-    {
+    public class TokenizeIdentifierTest : TokenizeTestBase<RToken, RTokenType> {
         [TestMethod]
-        public void TokenizeIdentifierTest01()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIdentifierTest01() {
             var tokens = this.Tokenize("`_data_`", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -21,8 +19,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeIdentifierTest02()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIdentifierTest02() {
             var tokens = this.Tokenize("\"odd name\" <- 1", new RTokenizer());
 
             Assert.AreEqual(3, tokens.Count);
@@ -32,8 +30,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeIdentifierTest03()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIdentifierTest03() {
             var tokens = this.Tokenize("1 -> \"odd name\"", new RTokenizer());
 
             Assert.AreEqual(3, tokens.Count);
@@ -43,6 +41,7 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
+        [TestCategory("R.Tokenizer")]
         public void TokenizeIdentifierLogicalTest01() {
             var tokens = this.Tokenize("1 <- F(~x)", new RTokenizer());
 
@@ -57,6 +56,7 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
+        [TestCategory("R.Tokenizer")]
         public void TokenizeIdentifierLogicalTest02() {
             var tokens = this.Tokenize("1 <- F", new RTokenizer());
 
@@ -67,8 +67,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void Tokenize_IdentifiersFile()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void Tokenize_IdentifiersFile() {
             TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Identifiers.r");
         }
     }

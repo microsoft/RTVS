@@ -90,7 +90,7 @@ namespace Microsoft.Languages.Editor.Tasks {
         private static void ConnectToIdle() {
             if (!_connectedToIdle) {
                 _connectedToIdle = true;
-                EditorShell.OnIdle += OnIdle;
+                EditorShell.Current.Idle += OnIdle;
             }
         }
 
@@ -105,7 +105,7 @@ namespace Microsoft.Languages.Editor.Tasks {
                     _workerTasks[i] = new IdleTimeAsyncTask();
                 }
 
-                EditorShell.OnIdle -= OnIdle;
+                EditorShell.Current.Idle -= OnIdle;
             }
         }
 

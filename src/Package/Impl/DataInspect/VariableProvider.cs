@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private DebugSession _debugSession;
 
         public VariableProvider() {
-            var sessionProvider = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
             IdleTimeAction.Create(() => {
@@ -69,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #endregion
 
         private async Task InitializeData() {
-            var debugSessionProvider = AppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
+            var debugSessionProvider = VsAppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
 
             _debugSession = await debugSessionProvider.GetDebugSessionAsync(_rSession);
 

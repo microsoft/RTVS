@@ -11,6 +11,7 @@ namespace Microsoft.R.Core.Test.Parser
     public class ParseCommentsTest : UnitTestBase
     {
         [TestMethod]
+        [TestCategory("R.Parser")]
         public void ParseCommentsTest01()
         {
             AstRoot ast = RParser.Parse("#Not");

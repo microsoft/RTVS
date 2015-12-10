@@ -33,8 +33,6 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         protected override void Initialize() {
             base.Initialize();
 
-            AppShell.AddRef();
-
             IServiceContainer container = this;
             container.AddService(typeof(TLanguageService), new TLanguageService(), true);
 
@@ -89,8 +87,6 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
 
             // Base still needs shell to save settings
             base.Dispose(disposing);
-
-            AppShell.Release();
         }
 
         private void UnregisterProjectFileGenerators(Dictionary<IVsProjectGenerator, uint> projectFileGenerators) {

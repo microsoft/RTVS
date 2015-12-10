@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseExpressionErrorsTest : UnitTestBase
-    {
+    public class ParseExpressionErrorsTest : UnitTestBase {
         [TestMethod]
-        public void ParseIncompleteExpressionTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIncompleteExpressionTest01() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -21,8 +19,8 @@ RightOperandExpected Token [0...1)
         }
 
         [TestMethod]
-        public void ParseIncompleteExpressionTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIncompleteExpressionTest02() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -32,8 +30,8 @@ RightOperandExpected Token [1...2)
         }
 
         [TestMethod]
-        public void ParseIncompleteExpressionTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIncompleteExpressionTest03() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -43,8 +41,8 @@ OperatorExpected Token [2...3)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMismatchBracesTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [(]
@@ -58,8 +56,8 @@ CloseBraceExpected AfterToken [0...1)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMismatchBracesTest02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [((x)]
@@ -79,8 +77,8 @@ CloseBraceExpected AfterToken [3...4)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMismatchBracesTest03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [(]
@@ -95,8 +93,8 @@ CloseBraceExpected AfterToken [2...3)
         }
 
         [TestMethod]
-        public void ParseMismatchBracesTest04()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMismatchBracesTest04() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -106,8 +104,8 @@ RightOperandExpected Token [6...7)
         }
 
         [TestMethod]
-        public void ParseMissingAssignmentTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMissingAssignmentTest01() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -118,8 +116,8 @@ FunctionBodyExpected Token [12...13)
         }
 
         [TestMethod]
-        public void ParseIncompleteOperatorTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseIncompleteOperatorTest01() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -129,8 +127,8 @@ RightOperandExpected Token [8...9)
         }
 
         [TestMethod]
-        public void ParseMissingOperatorTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMissingOperatorTest01() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -140,8 +138,8 @@ OperatorExpected Token [3...4)
         }
 
         [TestMethod]
-        public void ParseMissingOperatorTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMissingOperatorTest02() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -151,8 +149,8 @@ OperatorExpected Token [2...3)
         }
 
         [TestMethod]
-        public void ParseMissingListOperand01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMissingListOperand01() {
             string content =
 @"
     fitted.zeros <- xzero * z$ }
@@ -164,6 +162,5 @@ RightOperandExpected Token [33...34)";
 
             ParserTest.VerifyParse(expected, content);
         }
-
     }
 }

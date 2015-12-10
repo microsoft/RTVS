@@ -157,7 +157,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         private void SetBgColor() {
-            IVsUIShell2 uiShell = AppShell.Current.GetGlobalService<IVsUIShell2>(typeof(SVsUIShell));
+            IVsUIShell2 uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell2>(typeof(SVsUIShell));
             uint color;
             uiShell.GetVSSysColorEx((int)__VSSYSCOLOREX.VSCOLOR_TOOLWINDOW_BACKGROUND, out color);
             this.BackColor = ColorTranslator.FromWin32((int)color);

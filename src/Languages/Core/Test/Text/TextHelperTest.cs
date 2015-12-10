@@ -3,15 +3,13 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Languages.Core.Test.Text
-{
+namespace Microsoft.Languages.Core.Test.Text {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TextHelperTest
-    {
+    public class TextHelperTest {
         [TestMethod]
-        public void TextHelperTest_IsNewLineBeforePositionTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextHelperTest_IsNewLineBeforePositionTest() {
             ITextProvider tp = new TextStream("01\n34\r678\r\nBC");
 
             Assert.IsFalse(tp.IsNewLineBeforePosition(0));
@@ -30,8 +28,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextHelperTest_IsNewLineAfterPositionTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextHelperTest_IsNewLineAfterPositionTest() {
             ITextProvider tp = new TextStream("0 \n3 \r 7 \r\n  ");
 
             Assert.IsFalse(TextHelper.IsNewLineAfterPosition(tp, 0));
@@ -50,15 +48,15 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextHelperTest_IsWhitespaceOnlyBetweenPositionsTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextHelperTest_IsWhitespaceOnlyBetweenPositionsTest() {
             ITextProvider tp = new TextStream("0 \n3 \r 7 \r\n    AB ");
 
             Assert.IsFalse(TextHelper.IsWhitespaceOnlyBetweenPositions(tp, 0, 1));
             Assert.IsTrue(TextHelper.IsWhitespaceOnlyBetweenPositions(tp, 1, 2));
             Assert.IsFalse(TextHelper.IsWhitespaceOnlyBetweenPositions(tp, 2, 5));
             Assert.IsFalse(TextHelper.IsWhitespaceOnlyBetweenPositions(tp, 5, 10));
-            Assert.IsTrue(TextHelper.IsWhitespaceOnlyBetweenPositions(tp, tp.Length-1, tp.Length));
+            Assert.IsTrue(TextHelper.IsWhitespaceOnlyBetweenPositions(tp, tp.Length - 1, tp.Length));
             Assert.IsTrue(TextHelper.IsWhitespaceOnlyBetweenPositions(tp, 100, 200));
         }
     }

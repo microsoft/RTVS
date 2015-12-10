@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text.Editor;
@@ -10,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static IVsExpansionManager GetExpansionManager() {
             IVsExpansionManager expansionManager = null;
 
-            IVsTextManager2 textManager2 = AppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
+            IVsTextManager2 textManager2 = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
 
             Debug.Assert(textManager2 != null, "Null text manager in ExpansionClient");
             if (textManager2 != null) {
@@ -27,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
             Debug.Assert(textView != null, "Null Text View");
             if (textView != null) {
-                ICompletionBroker completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
+                ICompletionBroker completionBroker = VsAppShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
                 Debug.Assert(completionBroker != null, "Null completion broker.");
                 if (completionBroker != null) {
                     result = completionBroker.IsCompletionActive(textView);
@@ -42,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
             Debug.Assert(textView != null, "Null Text View");
             if (textView != null) {
-                ICompletionBroker completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
+                ICompletionBroker completionBroker = VsAppShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
                 Debug.Assert(completionBroker != null, "Null completion broker.");
                 if (completionBroker != null && completionBroker.IsCompletionActive(textView)) {
                     var completionSessions = completionBroker.GetSessions(textView);

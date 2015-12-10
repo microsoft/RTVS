@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseKeywordStatement : UnitTestBase
-    {
+    public class ParseKeywordStatement : UnitTestBase {
         [TestMethod]
-        public void ParseBreakTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseBreakTest1() {
             string expected =
 @"GlobalScope  [Global]
     KeywordStatement  []
@@ -21,8 +19,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseBreakTest2()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseBreakTest2() {
             string expected =
 @"GlobalScope  [Global]
     KeywordStatement  [;]
@@ -33,8 +31,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseNextTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseNextTest1() {
             string expected =
 @"GlobalScope  [Global]
     KeywordStatement  []
@@ -44,8 +42,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseNextTest2()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseNextTest2() {
             string expected =
 @"GlobalScope  [Global]
     KeywordStatement  [;]
@@ -56,8 +54,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseLibraryTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseLibraryTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [library(abind)]
@@ -75,8 +73,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseLibraryTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseLibraryTest02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [library('abind')]
@@ -94,8 +92,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseLibraryTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseLibraryTest03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [library()]
@@ -109,8 +107,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseReturnTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseReturnTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [return()]
@@ -124,8 +122,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseTypeofTest()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseTypeofTest() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [typeof(1)]
@@ -143,8 +141,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseSwitchTest()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseSwitchTest() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [switch(1,2)]

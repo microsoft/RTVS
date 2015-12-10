@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseEmptyStatementTest : UnitTestBase
-    {
+    public class ParseEmptyStatementTest : UnitTestBase {
         [TestMethod]
-        public void ParseEmptyStatementTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseEmptyStatementTest1() {
             string expected =
 @"GlobalScope  [Global]
     EmptyStatement  [0...1)

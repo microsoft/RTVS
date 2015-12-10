@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             crinfo[0].grfcadvf = (uint)_OLECADVF.olecadvfModal | (uint)_OLECADVF.olecadvfRedrawOff | (uint)_OLECADVF.olecadvfWarningsOff;
             crinfo[0].uIdleTimeInterval = 200;
 
-            var oleComponentManager = AppShell.Current.GetGlobalService<IOleComponentManager>(typeof(SOleComponentManager));
+            var oleComponentManager = RPackage.GetGlobalService(typeof(SOleComponentManager)) as IOleComponentManager;
             oleComponentManager.FRegisterComponent(this, crinfo, out _componentID);
         }
 

@@ -2,8 +2,6 @@
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows.Threading;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -38,13 +36,13 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         public HistoryWindowPane() {
             Caption = Resources.HistoryWindowCaption;
-            _contentTypeRegistryService = AppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-            _componentModel = AppShell.Current.GetGlobalService<IComponentModel>(typeof(SComponentModel));
-            _oleServiceProvider = AppShell.Current.GetGlobalService<IServiceProvider>();
+            _contentTypeRegistryService = VsAppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+            _componentModel = VsAppShell.Current.GetGlobalService<IComponentModel>(typeof(SComponentModel));
+            _oleServiceProvider = VsAppShell.Current.GetGlobalService<IServiceProvider>();
 
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.historyWindowToolBarId);
 
-            var historyProviderExport = EditorShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
+            var historyProviderExport = VsAppShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
             Debug.Assert(historyProviderExport != null);
 
             _historyProvider = new Lazy<IRHistory>(() => {
@@ -128,7 +126,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override void ClearSearch() {
-            EditorShell.Current.DispatchOnUIThread(() => _historyProvider.Value.ClearFilter(), DispatcherPriority.Normal);
+            VsAppShell.Current.DispatchOnUIThread(() => _historyProvider.Value.ClearFilter());
             base.ClearSearch();
         }
 
@@ -158,7 +156,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             protected override void OnStartSearch() {
                 base.OnStartSearch();
-                EditorShell.Current.DispatchOnUIThread(() => _history.Filter(SearchQuery.SearchString), DispatcherPriority.Normal);
+                VsAppShell.Current.DispatchOnUIThread(() => _history.Filter(SearchQuery.SearchString));
             }
         }
     }

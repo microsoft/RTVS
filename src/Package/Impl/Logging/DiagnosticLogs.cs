@@ -7,10 +7,10 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Logging {
@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
             try {
                 zipPath = Path.Combine(Path.GetTempPath(), RtvsLogZipFile);
-                var rSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var rSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var sessions = rSessionProvider.GetSessions();
                 foreach (var s in sessions) {
                     s.Value?.FlushLog();

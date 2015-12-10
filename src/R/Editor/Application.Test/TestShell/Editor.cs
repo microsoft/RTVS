@@ -215,7 +215,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
 
                  while (time < ms)
                  {
-                     EditorShell.DoIdle(null, EventArgs.Empty);
+                     EditorShell.Current.DoIdle();
 
                      Thread.Sleep(20);
                      time += 20;

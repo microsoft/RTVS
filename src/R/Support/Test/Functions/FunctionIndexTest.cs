@@ -2,57 +2,44 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Support.Test.Functions
-{
+namespace Microsoft.R.Support.Test.Functions {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class FunctionIndexTest : UnitTestBase
-    {
+    public class FunctionIndexTest : UnitTestBase {
         [TestMethod]
-        public void FunctionInfoTest1()
-        {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) =>
-            {
-                object result = FunctionIndex.GetFunctionInfo("abs", (object o) =>
-                {
+        [TestCategory("R.Signatures")]
+        public void FunctionInfoTest1() {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
+                object result = FunctionIndex.GetFunctionInfo("abs", (object o) => {
                     FunctionInfoTest1_TestBody(evt);
                 });
 
-                if (result != null && !evt.IsSet)
-                {
+                if (result != null && !evt.IsSet) {
                     FunctionInfoTest1_TestBody(evt);
                 }
-            }, EditorTestCompositionCatalog.Current);
+            }, RSupportTestCompositionCatalog.Current);
         }
 
         [TestMethod]
-        public void FunctionInfoTest2()
-        {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) =>
-            {
-                object result = FunctionIndex.GetFunctionInfo("eval", (object o) =>
-                {
+        [TestCategory("R.Signatures")]
+        public void FunctionInfoTest2() {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
+                object result = FunctionIndex.GetFunctionInfo("eval", (object o) => {
                     FunctionInfoTest2_TestBody(evt);
                 });
 
-                if (result != null && !evt.IsSet)
-                {
+                if (result != null && !evt.IsSet) {
                     FunctionInfoTest2_TestBody(evt);
                 }
-            }, EditorTestCompositionCatalog.Current);
+            }, RSupportTestCompositionCatalog.Current);
         }
 
-        private void FunctionInfoTest1_TestBody(ManualResetEventSlim completed)
-        {
+        private void FunctionInfoTest1_TestBody(ManualResetEventSlim completed) {
             IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo("abs");
             Assert.IsNotNull(functionInfo);
 
@@ -76,8 +63,7 @@ namespace Microsoft.R.Support.Test.Functions
             completed.Set();
         }
 
-        private void FunctionInfoTest2_TestBody(ManualResetEventSlim completed)
-        {
+        private void FunctionInfoTest2_TestBody(ManualResetEventSlim completed) {
             IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo("eval");
             Assert.IsNotNull(functionInfo);
 

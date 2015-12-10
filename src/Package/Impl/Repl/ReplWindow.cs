@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
@@ -16,10 +18,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Task = System.Threading.Tasks.Task;
-using Microsoft.R.Core.Tokens;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Text;
-using Microsoft.R.Core.AST.Statements.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     /// <summary>
@@ -37,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public ReplWindow() {
-            IVsUIShell7 shell = AppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
+            IVsUIShell7 shell = VsAppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
             _windowFrameEventsCookie = shell.AdviseWindowFrameEvents(this);
         }
 
@@ -57,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public IVsWindowFrame GetToolWindow() {
             IVsWindowFrame frame;
-            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
 
             // First just find. If it exists, use it. 
@@ -167,7 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void ExecuteCurrentExpression(ITextView textView) {
-            ICompletionBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+            ICompletionBroker broker = VsAppShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
             broker.DismissAllSessions(textView);
 
             IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
@@ -231,7 +229,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IVsInteractiveWindow GetInteractiveWindow() {
             if (_lastUsedReplWindow == null) {
                 IVsWindowFrame frame;
-                IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
                 Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
 
@@ -274,7 +272,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public static IVsWindowFrame FindReplWindowFrame(__VSFINDTOOLWIN flags) {
             IVsWindowFrame frame;
-            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
             Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
 
@@ -309,7 +307,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         #region IDisposable
         public void Dispose() {
             if (_windowFrameEventsCookie != 0) {
-                IVsUIShell7 shell = AppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
+                IVsUIShell7 shell = VsAppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
                 shell.UnadviseWindowFrameEvents(_windowFrameEventsCookie);
                 _windowFrameEventsCookie = 0;
             }
@@ -330,7 +328,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                     }
                     _lastUsedReplWindow = docView as IVsInteractiveWindow;
                     if (_lastUsedReplWindow != null) {
-                        IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                        IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
                         shell.UpdateCommandUI(1);
                         _lastUsedReplWindow.InteractiveWindow.ReadyForInput += ProcessQueuedInput;
                     }

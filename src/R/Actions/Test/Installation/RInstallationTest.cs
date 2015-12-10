@@ -8,6 +8,7 @@ namespace Microsoft.R.Actions.Test.Installation {
     [TestClass]
     public class RInstallationTest {
         [TestMethod]
+        [TestCategory("R.Install")]
         public void RInstallation_Test01() {
             RInstallData data = RInstallation.GetInstallationData(null, 0, 0, 0, 0);
             Assert.AreEqual(RInstallStatus.UnsupportedVersion, data.Status);
@@ -15,6 +16,7 @@ namespace Microsoft.R.Actions.Test.Installation {
         }
 
         [TestMethod]
+        [TestCategory("R.Install")]
         public void RInstallation_Test02() {
             RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2);
             Assert.AreEqual(RInstallStatus.OK, data.Status);

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -121,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
 
         private void UpdateRunningDocumentInfo() {
             if (!string.IsNullOrEmpty(FilePath)) {
-                RunningDocumentTable rdt = new RunningDocumentTable(AppShell.Current.GlobalServiceProvider);
+                RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
                 RunningDocumentInfo docInfo = rdt.GetDocumentInfo(FilePath);
                 RunningDocumentItemCookie = docInfo.DocCookie;
                 if (docInfo.IsHierarchyInitialized) {

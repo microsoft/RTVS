@@ -1,13 +1,7 @@
 using System;
-using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session
-{
+namespace Microsoft.R.Host.Client.Session {
     public static class RSessionEvaluationCommands {
         public static Task OptionsSetWidth(this IRSessionEvaluation evaluation, int width) {
             return evaluation.EvaluateNonReentrantAsync($"options(width=as.integer({width}))\n");
@@ -89,9 +83,8 @@ options(device='.rtvs.vsgd')
             return evaluation.EvaluateAsync(script);
         }
 
-        public static Task<REvaluationResult> SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl)
-        {
-            var script = 
+        public static Task<REvaluationResult> SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl) {
+            var script =
 @"    local({
         r <- getOption('repos')
         r['CRAN'] <- '" + mirrorUrl + @"'
@@ -105,6 +98,22 @@ options(device='.rtvs.vsgd')
 @"options(browser = function(url) { 
       .Call('rtvs::Call.send_message', 'Browser', rtvs:::toJSON(url)) 
   })";
+            return evaluation.EvaluateAsync(script);
+        }
+
+        public static Task<REvaluationResult> SetRdHelpExtraction(this IRSessionEvaluation evaluation) {
+            var script =
+@" .rtvs.signature.help2 <- function(f, p) {
+        x <- help(paste(f), paste(p))
+        y <- utils:::.getHelpFile(x)
+        paste0(y, collapse = '')
+    }
+
+    .rtvs.signature.help1 <- function(f) {
+        x <- help(paste(f))
+        y <- utils:::.getHelpFile(x)
+        paste0(y, collapse = '')
+    }";
             return evaluation.EvaluateAsync(script);
         }
 

@@ -3,7 +3,6 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -54,7 +53,6 @@ namespace Microsoft.Languages.Editor.Application.Core {
         IEditorOptionsFactoryService EditorOptionsFactoryService { get; set; }
 
         static private object _lock = new object();
-        private static IEditorShell _editorShell;
 
         private IWpfTextViewHost _wpftextViewHost;
         private IContentType _contentType;
@@ -66,12 +64,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private IWorkspaceItem _workspaceItem;
 
         public CoreEditor(string text, string filePath, string contentTypeName) {
-            if (_editorShell == null) {
-                _editorShell = TestEditorShell.Create(AppCompositionCatalog.Current);
-                EditorShell.SetShell(_editorShell);
-
-                EditorShell.UIThread = Thread.CurrentThread;
-            }
+            TestEditorShell.Create(AppCompositionCatalog.Current);
 
             _compositionService = EditorShell.Current.CompositionService;
             _compositionService.SatisfyImportsOnce(this);

@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
-{
+namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeExpressionsTest : TokenizeTestBase<RToken, RTokenType>
-    {
+    public class TokenizeExpressionsTest : TokenizeTestBase<RToken, RTokenType> {
         [TestMethod]
-        public void TokenizeFile_ExpressionsFile()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeFile_ExpressionsFile() {
             TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Expressions.r");
         }
     }

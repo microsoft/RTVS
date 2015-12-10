@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionRequestSource {
         private readonly TaskCompletionSource<IRSessionInteraction> _createRequestTcs;
         private readonly TaskCompletionSource<object> _responseTcs;

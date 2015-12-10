@@ -54,10 +54,13 @@ namespace Microsoft.R.Editor.Formatting {
         public static void FormatScope(ITextView textView, ITextBuffer textBuffer, int position, bool indentCaret) {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
             if (document != null) {
+                document.EditorTree.EnsureTreeReady();
+
                 int baseIndentPosition = -1;
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
                 AstRoot ast = document.EditorTree.AstRoot;
                 IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
+
                 // Scope indentation is defined by its parent statement.
                 IAstNodeWithScope parentStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(position);
                 if (parentStatement != null && parentStatement.Scope == scope) {
@@ -128,7 +131,7 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
 
             SnapshotPoint? positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
-            if (!positionInBuffer.HasValue || scope == null) {
+            if (!positionInBuffer.HasValue || scope == null || scope.OpenCurlyBrace == null) {
                 return;
             }
 

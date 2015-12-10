@@ -8,16 +8,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using TextChange = Microsoft.R.Editor.Tree.TextChange;
 
-namespace Microsoft.R.Editor.Test.Tree
-{
-
+namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TextChangesTest
-    {
-        [TestMethod()]
-        public void TextChange_Test()
-        {
+    public class TextChangesTest {
+        [TestMethod]
+        [TestCategory("R.EditorTree")]
+        public void TextChange_Test() {
             TextChange tc = new TextChange();
             Assert.IsTrue(tc.IsEmpty);
             Assert.AreEqual(TextChangeType.Trivial, tc.TextChangeType);

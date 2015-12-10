@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
-using Microsoft.VisualStudio.R.Package.Repl.Session;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -54,13 +53,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set {
                 _workingDirectory = value;
                 UpdateWorkingDirectoryList(_workingDirectory);
-
-                if (EditorShell.HasShell) {
-                    EditorShell.DispatchOnUIThread(() => {
-                        IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                        shell.UpdateCommandUI(1);
-                    });
-                }
+                EditorShell.DispatchOnUIThread(() => {
+                    IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                    shell.UpdateCommandUI(1);
+                });
             }
         }
 
@@ -77,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         private async Task SetMirrorToSession() {
-            IRSessionProvider sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var sessions = sessionProvider.GetSessions();
 
             foreach (var s in sessions) {

@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseAssignmentsTest : UnitTestBase
-    {
+    public class ParseAssignmentsTest : UnitTestBase {
         [TestMethod]
-        public void ParseAssignmentsTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseAssignmentsTest1() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- as.matrix(x)]
@@ -32,8 +30,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseAssignmentsTest2()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseAssignmentsTest2() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [as.matrix(x) -> x]
@@ -54,8 +52,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseAssignmentsTest3()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseAssignmentsTest3() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- b <- c <- 0]
@@ -75,8 +73,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseAssignmentsTest4()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseAssignmentsTest4() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [0 -> a -> b]
@@ -93,8 +91,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseAssignmentsTest5()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseAssignmentsTest5() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [z <- .Call(x)]
@@ -115,8 +113,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseAssignmentsTest6()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseAssignmentsTest6() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -126,8 +124,8 @@ UnexpectedToken Token [0...2)
         }
 
         [TestMethod]
-        public void ParseAssignmentsTest7()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseAssignmentsTest7() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [StudentData$ScoreRounded<-round(StudentData$Score)]

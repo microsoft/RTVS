@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 return;
             }
 
-            var debugger = AppShell.Current.GetGlobalService<IVsDebugger>(typeof(SVsShellDebugger));
+            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(SVsShellDebugger));
             if (debugger == null) {
                 return;
             }
@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 return;
             }
 
-            var debugger = AppShell.Current.GetGlobalService<IVsDebugger2>(typeof(SVsShellDebugger));
+            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger2>(typeof(SVsShellDebugger));
             if (debugger == null) {
                 return;
             }

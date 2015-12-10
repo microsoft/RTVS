@@ -1,75 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using System.Windows.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Shell {
     /// <summary>
-    /// A static class that provides common services to all Web Editing components
+    /// Provides abstraction of application services to editor components
     /// </summary>
-    public static class EditorShell {
-        // Cached properties that can be accessed after the IEditorShell goes away
-        public static string HostUserFolder { get; private set; }
-        public static int HostLocaleId { get; private set; }
-
+    [Export(typeof(IAppShellInitialization))]
+    public sealed class EditorShell: IAppShellInitialization {
         private static Dictionary<string, ISettingsStorage> _settingStorageMap = new Dictionary<string, ISettingsStorage>(StringComparer.OrdinalIgnoreCase);
         private static object _lock = new object();
-        private static IEditorShell _shell;
 
-        private static List<EventHandler<EventArgs>> _onIdleHandlers = new List<EventHandler<EventArgs>>();
-
-        // Used for cyclic OnIdle notifications
-        private static int _currentIdleHandlerIndex = 0;
-
-        /// <summary>
-        /// Fires when application goes idle
-        /// </summary>
-        public static event EventHandler<EventArgs> OnIdle {
-            add {
-                _onIdleHandlers.Add(value);
-            }
-
-            remove {
-                int foundIndex = _onIdleHandlers.IndexOf(value);
-                if (foundIndex >= 0) {
-                    _onIdleHandlers.RemoveAt(foundIndex);
-                    if (_currentIdleHandlerIndex > foundIndex) {
-                        _currentIdleHandlerIndex--;
-                    }
-                }
-            }
+        public void SetShell(object shell) {
+            Current = shell as IEditorShell;
+            Debug.Assert(shell != null);
         }
 
-        /// <summary>
-        /// Fires when application terminates
-        /// </summary>
-        public static event EventHandler<EventArgs> OnTerminate;
+        public static IEditorShell Current { get; private set; }
 
-        /// <summary>
-        /// Web editor host application
-        /// </summary>
-        public static IEditorShell Current {
-            get { return _shell; }
+        public static void SetShell(IEditorShell shell) {
+            Current = shell;
         }
-
-        public static bool HasShell {
-            get { return _shell != null; }
-        }
-
-        public static Thread UIThread { get; set; }
 
         public static bool IsUIThread {
-            get { return UIThread == Thread.CurrentThread; }
-        }
-
-        public static void DispatchOnUIThread(Action action) {
-            DispatchOnUIThread(action, DispatcherPriority.Normal);
+            get { return Current != null ? Current.MainThread == Thread.CurrentThread : true; }
         }
 
         /// <summary>
@@ -80,9 +42,9 @@ namespace Microsoft.Languages.Editor.Shell {
         /// </summary>
         /// <param name="action">Delegate to execute</param>
         /// <param name="arguments">Arguments to pass to the delegate</param>
-        public static void DispatchOnUIThread(Action action, DispatcherPriority priority) {
-            if (HasShell) {
-                Current.DispatchOnUIThread(action, priority);
+        public static void DispatchOnUIThread(Action action) {
+            if (Current != null) {
+                Current.DispatchOnUIThread(action);
             }
             else {
                 action();
@@ -137,97 +99,6 @@ namespace Microsoft.Languages.Editor.Shell {
             }
 
             return settingsStorage;
-        }
-
-        public static void SetShell(IEditorShell shell) {
-            lock (_lock) {
-                if (shell == null) {
-                    throw new ArgumentNullException("shell");
-                }
-
-                if (_shell != null && _shell != shell) {
-                    RemoveShell(_shell);
-                }
-
-                if (_shell == null) {
-                    _shell = shell;
-
-                    _shell.Idle += host_OnIdle;
-                    _shell.Terminating += host_OnTerminate;
-
-                    CacheHostProperties();
-                }
-            }
-        }
-
-        public static void RemoveShell(IEditorShell shell) {
-            lock (_lock) {
-                Debug.Assert(_shell != null && _shell == shell, "Trying to remove wrong editor shell");
-                if (_shell == shell) {
-                    DisposeSettings();
-
-                    _shell.Idle -= host_OnIdle;
-                    _shell.Terminating -= host_OnTerminate;
-                    _shell = null;
-                }
-            }
-        }
-
-        private static void CacheHostProperties() {
-            // Dev12 bug 786618 - Cache some host properties so that they can be accessed from background
-            // threads even after the host has been cleaned up.
-            DispatchOnUIThread(() => {
-                HostUserFolder = Current.UserFolder;
-                HostLocaleId = Current.LocaleId;
-            });
-        }
-
-        private static void DisposeSettings() {
-            List<ISettingsStorage> settings = new List<ISettingsStorage>();
-            lock (_lock) {
-                settings.AddRange(_settingStorageMap.Values);
-                _settingStorageMap.Clear();
-            }
-
-            foreach (ISettingsStorage setting in settings) {
-                if (setting is IDisposable) {
-                    ((IDisposable)setting).Dispose();
-                }
-            }
-        }
-
-        static void host_OnIdle(object sender, EventArgs eventArgs) {
-            DoIdle(sender, eventArgs);
-        }
-
-        internal static void DoIdle(object sender, EventArgs eventArgs) {
-            if (_onIdleHandlers.Count > 0) {
-                Stopwatch sw = Stopwatch.StartNew();
-                int initialIndex = _currentIdleHandlerIndex;
-                while (sw.ElapsedMilliseconds < 200) {
-                    try {
-                        _onIdleHandlers[_currentIdleHandlerIndex++](sender, eventArgs);
-                    } catch {
-                        // silently eat any exceptions thrown by idle handlers
-                    }
-
-                    if (_currentIdleHandlerIndex >= _onIdleHandlers.Count) {
-                        _currentIdleHandlerIndex = 0;
-                    }
-
-                    if (_currentIdleHandlerIndex == initialIndex) {
-                        // We've cycled through all idle handlers
-                        break;
-                    }
-                }
-                sw.Stop();
-            }
-        }
-
-        static void host_OnTerminate(object sender, EventArgs eventArgs) {
-            if (OnTerminate != null) {
-                OnTerminate(sender, eventArgs);
-            }
         }
     }
 }

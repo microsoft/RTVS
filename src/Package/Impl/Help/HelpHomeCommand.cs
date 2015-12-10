@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private static async Task ShowDefaultHelpPageAsync() {
-            var rSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var rSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             IRSession session = rSessionProvider.Current;
             if (session != null) {
                 try {

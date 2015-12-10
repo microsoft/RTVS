@@ -1,22 +1,19 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Test.Signatures
-{
+namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class SettingsTest : UnitTestBase
-    {
+    public class SettingsTest : UnitTestBase {
         [TestMethod]
-        public void Settings_TestDefaults()
-        {
-            EditorShell.SetShell(TestEditorShell.Create(REditorTestCompositionCatalog.Current));
+        [TestCategory("R.Settings")]
+        public void Settings_TestDefaults() {
+            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
             Assert.AreEqual(false, REditorSettings.CommitOnSpace);
             Assert.AreEqual(true, REditorSettings.CompletionEnabled);

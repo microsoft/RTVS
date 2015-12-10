@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Workspace {
             _hierarchy = hierarchy;
             _itemId = itemId;
 
-            _rdt = AppShell.Current.GetGlobalService<IVsRunningDocumentTable>();
+            _rdt = VsAppShell.Current.GetGlobalService<IVsRunningDocumentTable>();
             _rdt.AdviseRunningDocTableEvents(this, out _rdtCookie);
         }
 

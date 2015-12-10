@@ -14,17 +14,14 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Editor.Mocks;
 
-namespace Microsoft.R.Editor.Test.Signatures
-{
+namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class CommenterTest : UnitTestBase
-    {
+    public class CommenterTest : UnitTestBase {
         [TestMethod]
-        public void Commenter_CommentTest01()
-        {
-            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) =>
-            {
+        [TestCategory("R.Commenting")]
+        public void Commenter_CommentTest01() {
+            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
                 string original =
     @"
     x <- 1
@@ -54,10 +51,9 @@ x <- 2
         }
 
         [TestMethod]
-        public void Commenter_CommentTest02()
-        {
-            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) =>
-            {
+        [TestCategory("R.Commenting")]
+        public void Commenter_CommentTest02() {
+            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
                 string original =
 @"
     x <- 1
@@ -87,10 +83,9 @@ x <- 2
         }
 
         [TestMethod]
-        public void Commenter_UncommentTest01()
-        {
-            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) =>
-            {
+        [TestCategory("R.Commenting")]
+        public void Commenter_UncommentTest01() {
+            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
                 string original =
 @"
     #x <- 1
@@ -120,10 +115,9 @@ x <- 2
         }
 
         [TestMethod]
-        public void Commenter_UncommentTest02()
-        {
-            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) =>
-            {
+        [TestCategory("R.Commenting")]
+        public void Commenter_UncommentTest02() {
+            SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
                 string original =
 @"
     #x <- 1

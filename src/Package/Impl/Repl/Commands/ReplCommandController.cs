@@ -1,13 +1,10 @@
 ﻿using System;
 using Microsoft.Languages.Editor;
-using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -42,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         public override void BuildCommandSet() {
-            if (EditorShell.Current.CompositionService != null) {
+            if (VsAppShell.Current.CompositionService != null) {
                 var factory = new ReplCommandFactory();
                 var commands = factory.GetCommands(TextView, TextBuffer);
                 AddCommandSet(commands);
@@ -114,7 +111,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private void HandleCancel(RCompletionController controller) {
-            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             Guid gmdSet = RGuidList.RCmdSetGuid;
             object o = new object();
             // Post interrupt command which knows if it can interrupt R or not
@@ -122,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private void HandleF1Help(RCompletionController controller) {
-            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             Guid gmdSet = RGuidList.RCmdSetGuid;
             object o = new object();
             // Post interrupt command which knows if it can interrupt R or not
@@ -140,7 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private ICompletionBroker CompletionBroker {
             get {
                 if (_completionBroker == null) {
-                    _completionBroker = EditorShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
+                    _completionBroker = VsAppShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
                 }
 
                 return _completionBroker;

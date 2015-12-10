@@ -22,6 +22,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [TestClass]
     public class AutoFormatTest : UnitTestBase {
         [TestMethod]
+        [TestCategory("R.Autoformat")]
         public void AutoFormat_TypeOneLineTest() {
             ITextView textView = TestAutoFormat(0, "x<-1\n");
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -31,6 +32,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("R.Autoformat")]
         public void AutoFormat_FunctionDefinitionTest01() {
             ITextView textView = TestAutoFormat(16, "\n", "x<-function(x,y,");
 
@@ -41,6 +43,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [TestMethod]
+        [TestCategory("R.Autoformat")]
         public void AutoFormat_SmartIndentTest05() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);

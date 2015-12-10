@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseBuiltInsTest : UnitTestBase
-    {
+    public class ParseBuiltInsTest : UnitTestBase {
         [TestMethod]
-        public void ParseBuiltInsTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseBuiltInsTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [return <- as.matrix(x)]
@@ -32,8 +30,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseBuiltInsTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseBuiltInsTest02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [require <- 1]
@@ -47,8 +45,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseBuiltInsTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseBuiltInsTest03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [switch <- as.matrix(x)]
@@ -69,8 +67,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseBuiltInsTest04()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseBuiltInsTest04() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x[require] <- y[library]]
