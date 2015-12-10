@@ -40,7 +40,9 @@
         <Setter Property="VirtualizingPanel.CacheLength" Value="1"/>
         <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Pixel"/>
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
-        <!--<Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />-->
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="GridLinesBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}" />
+        <Setter Property="HeaderLinesBrush" Value="{DynamicResource {x:Static vsui:HeaderColors.SeparatorLineBrushKey}}" />
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
@@ -100,7 +102,7 @@
                                 <ItemsPresenter />
                             </ScrollViewer>
                             <ScrollBar x:Name="HorizontalScrollBar"
-                                       Grid.Row="2" Grid.Column="1"
+                                       Grid.Row="2" Grid.Column="0"
                                        Orientation="Horizontal" Visibility="Visible"
                                        Minimum="0"
                                        Maximum="{Binding ScrollableWidth, RelativeSource={RelativeSource AncestorType={x:Type local:DynamicGrid}}}"

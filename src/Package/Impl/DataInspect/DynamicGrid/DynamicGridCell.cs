@@ -88,12 +88,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnRender(DrawingContext drawingContext) {
             base.OnRender(drawingContext);
 
+            Brush brush = ParentRow.ColumnHeader ? ParentGrid.HeaderLinesBrush : ParentGrid.GridLinesBrush;
+
             // vertical line
             {
                 Rect rect = new Rect(new Size(LineThickness, RenderSize.Height));
                 rect.X = RenderSize.Width - LineThickness;
 
-                drawingContext.DrawRectangle(ParentGrid.GridLinesBrush, null, rect);
+                drawingContext.DrawRectangle(brush, null, rect);
             }
 
             // horizontal line
@@ -101,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 Rect rect = new Rect(new Size(RenderSize.Width, LineThickness));
                 rect.Y = RenderSize.Height - LineThickness;
 
-                drawingContext.DrawRectangle(ParentGrid.GridLinesBrush, null, rect);
+                drawingContext.DrawRectangle(brush, null, rect);
             }
         }
     }

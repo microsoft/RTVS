@@ -15,6 +15,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         internal void SetEvaluation(EvaluationWrapper evaluation) {
+            Caption = string.Format("{0}: {1}", Caption, evaluation.Name);
+
             _gridHost.SetEvaluation(evaluation);
         }
     }

@@ -158,6 +158,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             set { SetValue(GridLinesBrushProperty, value); }
         }
 
+        public static readonly DependencyProperty HeaderLinesBrushProperty =
+            DependencyProperty.Register(
+                nameof(HeaderLinesBrush),
+                typeof(Brush),
+                typeof(DynamicGrid),
+                new FrameworkPropertyMetadata(Brushes.Black));
+
+        public Brush HeaderLinesBrush
+        {
+            get { return (Brush)GetValue(HeaderLinesBrushProperty); }
+            set { SetValue(HeaderLinesBrushProperty, value); }
+        }
+
         #endregion
 
         #region Columns and Horizontal scroll
