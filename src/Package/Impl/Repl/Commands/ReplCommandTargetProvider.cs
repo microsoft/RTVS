@@ -4,7 +4,6 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
@@ -12,6 +11,7 @@ using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
@@ -29,14 +29,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 ReplCommandController controller = ReplCommandController.Attach(textView, textView.TextBuffer);
 
                 // Wrap controller into OLE command target
-                target = EditorShell.Current.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
+                target = VsAppShell.Current.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
                 Debug.Assert(target != null);
 
                 ServiceManager.AddService<IOleCommandTarget>(target, textView);
 
                 // Wrap next OLE target in the chain into ICommandTarget so we can have 
                 // chain like: OLE Target -> Shim -> ICommandTarget -> Shim -> Next OLE target
-                ICommandTarget nextCommandTarget = EditorShell.Current.TranslateCommandTarget(textView, nextTarget);
+                ICommandTarget nextCommandTarget = VsAppShell.Current.TranslateCommandTarget(textView, nextTarget);
                 controller.ChainedController = nextCommandTarget;
 
                 // We need to listed when R projected buffer is attached and 

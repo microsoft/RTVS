@@ -32,12 +32,12 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private RHistory CreateRHistory(ITextView textView) {
             IElisionBuffer elisionBuffer;
             if (!textView.TextViewModel.Properties.TryGetProperty(IntraTextAdornmentBufferKey, out elisionBuffer)) {
-                if (!AppShell.Current.IsTestEnvironment) {
+                if (!VsAppShell.Current.IsUnitTestEnvironment) {
                     throw new InvalidOperationException("TextView should have PredefinedTextViewRoles.Structured view role");
                 }
             }
 
-            var vsUiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var vsUiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             return new RHistory(textView, FileSystem, EditorOperationsFactory, elisionBuffer, RtfBuilderService, TextSearchService, vsUiShell);
         }
     }

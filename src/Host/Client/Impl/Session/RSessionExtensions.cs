@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl {
+namespace Microsoft.R.Host.Client.Session {
     public static class RSessionExtensions {
 
         /// <summary>

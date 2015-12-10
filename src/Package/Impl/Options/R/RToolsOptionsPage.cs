@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
@@ -102,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 value = ValidateRBasePath(value);
                 if (value != null) {
                     if (RToolsSettings.Current.RBasePath != value && !_loadingFromStorage) {
-                        EditorShell.Current.ShowErrorMessage(Resources.RPathChangedRestartVS);
+                        VsAppShell.Current.ShowErrorMessage(Resources.RPathChangedRestartVS);
                     }
                     RToolsSettings.Current.RBasePath = value;
                 }

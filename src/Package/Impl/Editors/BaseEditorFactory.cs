@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using IVsServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
+    using Shell;
     using Package = Microsoft.VisualStudio.Shell.Package;
 
     /// <summary>
@@ -29,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         private bool _encoding;
 
         public BaseEditorFactory(Package package, Guid editorFactoryId, Guid languageServiceId, bool encoding = false) {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+            VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
             Package = package;
             InitializationTrackers = new List<TextBufferInitializationTracker>();
             _editorFactoryId = editorFactoryId;

@@ -1,13 +1,7 @@
 using System;
-using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session
-{
+namespace Microsoft.R.Host.Client.Session {
     public static class RSessionEvaluationCommands {
         public static Task OptionsSetWidth(this IRSessionEvaluation evaluation, int width) {
             return evaluation.EvaluateNonReentrantAsync($"options(width=as.integer({width}))\n");
@@ -89,9 +83,8 @@ options(device='.rtvs.vsgd')
             return evaluation.EvaluateAsync(script);
         }
 
-        public static Task<REvaluationResult> SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl)
-        {
-            var script = 
+        public static Task<REvaluationResult> SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl) {
+            var script =
 @"    local({
         r <- getOption('repos')
         r['CRAN'] <- '" + mirrorUrl + @"'

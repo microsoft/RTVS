@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
@@ -72,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             // Take focus back if REPL window has stolen it
             if (!TextView.HasAggregateFocus)
             {
-                IVsEditorAdaptersFactoryService adapterService = EditorShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
+                IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
                 IVsTextView tv = adapterService.GetViewAdapter(TextView);
                 tv.SendExplicitFocus();
             }

@@ -8,7 +8,7 @@ using System.Windows.Media.Imaging;
 using System.Xaml;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Repl.Session;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 
@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _lastWidth = -1;
             _lastHeight = -1;
 
-            var sessionProvider = AppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
             IdleTimeAction.Create(() => {

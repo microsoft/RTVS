@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.Common {
         /// Loads settings via language (editor) tools options page
         /// </summary>
         public override void LoadFromStorage() {
-            IVsShell shell = AppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
+            IVsShell shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
                 IVsPackage package;
                 shell.LoadPackage(ref _packageGuid, out package);

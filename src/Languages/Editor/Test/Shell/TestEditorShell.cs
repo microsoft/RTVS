@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
@@ -16,8 +15,6 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.Languages.Editor.Tests.Shell {
     [ExcludeFromCodeCoverage]
     public class TestEditorShell : IEditorShell {
-        private Thread _mainThread;
-
         private static IEditorShell _instance;
         private static object _lock = new object();
 
@@ -28,32 +25,30 @@ namespace Microsoft.Languages.Editor.Tests.Shell {
                     var exportProvider = catalog.ExportProvider;
 
                     _instance = new TestEditorShell(compositionService, exportProvider);
+                    EditorShell.SetShell(_instance);
                 }
 
                 return _instance;
             }
         }
 
-        public static IEditorShell Create(object current) {
-            throw new NotImplementedException();
-        }
-
-        private TestEditorShell(ICompositionService compositionService, ExportProvider exportProvider) {
+        private TestEditorShell(ICompositionService compositionService, ExportProvider exportProvider) : this() {
             CompositionService = compositionService;
             ExportProvider = exportProvider;
-
-            _mainThread = Thread.CurrentThread;
+        }
+        protected TestEditorShell() {
+            MainThread = Thread.CurrentThread;
         }
 
         #region IEditorShell
+        public event EventHandler<EventArgs> Idle;
 
 #pragma warning disable 0067
-        public event EventHandler<EventArgs> Idle;
         public event EventHandler<EventArgs> Terminating;
 #pragma warning restore 0067
 
-        public ICompositionService CompositionService { get; private set; }
-        public ExportProvider ExportProvider { get; private set; }
+        public ICompositionService CompositionService { get; protected set; }
+        public ExportProvider ExportProvider { get; protected set; }
 
         public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
             return commandTarget as ICommandTarget;
@@ -63,39 +58,13 @@ namespace Microsoft.Languages.Editor.Tests.Shell {
             return commandTarget;
         }
 
-        public void DispatchOnUIThread(Action action, DispatcherPriority p) {
-            if (!_mainThread.IsBackground) {
-                var disp = Dispatcher.FromThread(_mainThread);
-                if (disp != null) {
-                    disp.BeginInvoke(action, p);
-                    return;
-                }
-            }
-            action();
-        }
-
         public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
             return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: false);
         }
 
-        public int LocaleId {
-            get { return 1033; }
-        }
+        public Thread MainThread { get; set; }
 
-        public string UserFolder {
-            get { return "."; }
-        }
-
-        public IServiceProvider ServiceProvider => null;
-
-        public Thread MainThread => Thread.CurrentThread;
-
-        public bool ShowHelp(string topic) {
-            return true;
-        }
-
-        public void ShowErrorMessage(string msg) {
-        }
+        public void ShowErrorMessage(string msg) { }
 
         /// <summary>
         /// Displays error message in a host-specific UI
@@ -104,19 +73,32 @@ namespace Microsoft.Languages.Editor.Tests.Shell {
             return MessageButtons.OK;
         }
 
-        public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            return null;
+        public virtual T GetGlobalService<T>(Type type = null) where T : class {
+            throw new NotImplementedException();
         }
 
-        public string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            return null;
+        public void DoIdle() {
+            if (Idle != null) {
+                Idle(null, EventArgs.Empty);
+            }
         }
 
-        public bool IsUnitTestEnvironment => true;
-
-        public bool IsUITestEnvironment {
-            get { return false; }
+        public void DispatchOnUIThread(Action action) {
+            if (!MainThread.IsBackground) {
+                var disp = Dispatcher.FromThread(MainThread);
+                if (disp != null) {
+                    disp.BeginInvoke(action, DispatcherPriority.Normal);
+                    return;
+                }
+            }
+            action();
         }
+
+        public int LocaleId => 1033;
+
+        public bool IsUnitTestEnvironment { get; set; } = true;
+
+        public bool IsUITestEnvironment { get; set; } = false;
         #endregion
     }
 }

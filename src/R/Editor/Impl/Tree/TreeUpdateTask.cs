@@ -7,7 +7,6 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
-using Microsoft.Languages.Editor.Diagnostics;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
@@ -83,7 +82,10 @@ namespace Microsoft.R.Editor.Tree {
         #region Constructors
         public TreeUpdateTask(EditorTree editorTree) {
             _editorTree = editorTree;
-            EditorShell.OnIdle += OnIdle;
+            if (EditorShell.Current != null) {
+                // Can be null in test cases
+                EditorShell.Current.Idle += OnIdle;
+            }
         }
         #endregion
 
@@ -626,7 +628,9 @@ namespace Microsoft.R.Editor.Tree {
                     Cancel();
 
                     _disposed = true;
-                    EditorShell.OnIdle -= OnIdle;
+                    if (EditorShell.Current != null) {
+                        EditorShell.Current.Idle -= OnIdle;
+                    }
                 }
                 base.Dispose(disposing);
             }

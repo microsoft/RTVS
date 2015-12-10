@@ -16,7 +16,6 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         [TestMethod]
         public void TokenizeSampleMdFile01()
         {
-            EditorShell.SetShell(TestEditorShell.Create(MarkdownTestCompositionCatalog.Current));
             TokenizeFiles.TokenizeFile<MarkdownToken, MarkdownTokenType, MdTokenizer>(this.TestContext, @"Tokenization\01.md", "Markdown");
         }
     }

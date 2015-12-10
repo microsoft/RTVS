@@ -63,7 +63,7 @@ namespace Microsoft.Languages.Editor.Tasks {
 
         void ConnectToIdle() {
             if (!_connectedToIdle) {
-                EditorShell.OnIdle += OnIdle;
+                EditorShell.Current.Idle += OnIdle;
 
                 _idleConnectTime = DateTime.UtcNow;
                 _connectedToIdle = true;
@@ -72,7 +72,7 @@ namespace Microsoft.Languages.Editor.Tasks {
 
         void DisconnectFromIdle() {
             if (_connectedToIdle) {
-                EditorShell.OnIdle -= OnIdle;
+                EditorShell.Current.Idle -= OnIdle;
                 _connectedToIdle = false;
             }
         }

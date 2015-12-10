@@ -70,7 +70,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
             validator.Cleared += OnCleared;
             ResultsQueue = validator.ValidationResults;
-            EditorShell.OnIdle += OnIdle;
+            EditorShell.Current.Idle += OnIdle;
 
             ServiceManager.AddService<EditorErrorTagger>(this, textBuffer);
         }
@@ -160,7 +160,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         {
             if (_textBuffer != null)
             {
-                EditorShell.OnIdle -= OnIdle;
+                EditorShell.Current.Idle -= OnIdle;
 
                 _document.EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
                 _document.EditorTree.NodesRemoved -= OnNodesRemoved;

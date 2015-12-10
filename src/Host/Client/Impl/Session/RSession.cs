@@ -6,19 +6,11 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Actions.Utility;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Help;
-using Microsoft.VisualStudio.R.Package.Plots;
-using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
-using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
         private static string DefaultPrompt = "> ";
         private static bool useReparentPlot = !RToolsSettings.Current.UseExperimentalGraphicsDevice;
@@ -42,14 +34,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         private Task _hostRunTask;
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
+        private IRHostClientApp _hostClientApp;
 
         public int Id { get; }
         public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _hostRunTask != null && !_hostRunTask.IsCompleted;
 
-        public RSession(int id) {
+        public RSession(int id, IRHostClientApp hostClientApp) {
             Id = id;
+            _hostClientApp = hostClientApp;
         }
 
         public void Dispose() {
@@ -91,16 +85,20 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
 
             _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), useReparentPlot ? plotWindowHandle : IntPtr.Zero, RToolsSettings.Current);
             this.ScheduleEvaluation(async e => {
-                if (!useReparentPlot) {
-                    await e.SetVsGraphicsDevice();
-                }
                 await e.SetDefaultWorkingDirectory();
-
-                string mirrorName = RToolsSettings.Current.CranMirror;
-                string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
-                await e.SetVsCranSelection(mirrorUrl);
-                await e.SetVsHelpRedirection();
                 await e.SetRdHelpExtraction();
+
+                if (_hostClientApp != null) {
+                    if (!useReparentPlot) {
+                        await e.SetVsGraphicsDevice();
+                    }
+
+                    string mirrorName = RToolsSettings.Current.CranMirror;
+                    string mirrorUrl = _hostClientApp.CranUrlFromName(mirrorName);
+                    await e.SetVsCranSelection(mirrorUrl);
+
+                    await e.SetVsHelpRedirection();
+                }
             });
 
             var initializationTask = _initializationTcs.Task;
@@ -320,9 +318,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         /// <summary>
         /// Displays error message
         /// </summary>
-        async Task IRCallbacks.ShowMessage(string message, CancellationToken ct) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-            EditorShell.Current.ShowErrorMessage(message);
+        Task IRCallbacks.ShowMessage(string message, CancellationToken ct) {
+            return _hostClientApp?.ShowErrorMessage(message);
         }
 
         /// <summary>
@@ -355,28 +352,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
 
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-            return EditorShell.Current.ShowMessage(s, buttons);
+            return await _hostClientApp?.ShowMessage(s, buttons);
         }
 
         Task IRCallbacks.Busy(bool which, CancellationToken ct) {
             return Task.CompletedTask;
         }
 
-        async Task IRCallbacks.Plot(string filePath, CancellationToken ct) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-
-            var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);  // TODO: acquire plot content provider through service
-            if (frame != null) {
-                object docView;
-                ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
-                if (docView != null) {
-                    PlotWindowPane pane = (PlotWindowPane)docView;
-                    pane.PlotContentProvider.LoadFileOnIdle(filePath);
-
-                    frame.ShowNoActivate();
-                }
-            }
+        Task IRCallbacks.Plot(string filePath, CancellationToken ct) {
+            return _hostClientApp?.Plot(filePath, ct);
         }
 
         /// <summary>
@@ -384,19 +368,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Session {
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        async Task IRCallbacks.Browser(string url) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            HelpWindowPane.Navigate(url);
-        }
-
-        private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags) {
-            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-
-            // First just find. If it exists, use it. 
-            IVsWindowFrame frame;
-            Guid persistenceSlot = typeof(PlotWindowPane).GUID;
-            shell.FindToolWindow((uint)flags, ref persistenceSlot, out frame);
-            return frame;
+        Task IRCallbacks.Browser(string url) {
+            return _hostClientApp?.ShowHelp(url);
         }
 
         private void OnBeforeRequest(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {

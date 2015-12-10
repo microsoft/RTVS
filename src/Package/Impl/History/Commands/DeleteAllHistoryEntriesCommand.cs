@@ -2,9 +2,9 @@ using System;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            if (EditorShell.Current.ShowMessage(Resources.DeleteAllHistoryEntries, MessageButtons.YesNo) == MessageButtons.Yes) {
+            if (VsAppShell.Current.ShowMessage(Resources.DeleteAllHistoryEntries, MessageButtons.YesNo) == MessageButtons.Yes) {
                 _history.DeleteAllHistoryEntries();
             }
 

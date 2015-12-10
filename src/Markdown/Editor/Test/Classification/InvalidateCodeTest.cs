@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
-using Microsoft.Markdown.Editor.Classification;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Test.Utility;
@@ -15,8 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace Microsoft.Markdown.Editor.Test.Classification
-{
+namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
     [TestClass]
     public class InvalidateCodeTest : UnitTestBase
@@ -27,7 +23,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification
             string content = "```'{r}\n#R\n```";
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
-            EditorShell.SetShell(TestEditorShell.Create(MarkdownTestCompositionCatalog.Current));
+            TestEditorShell.Create(MarkdownTestCompositionCatalog.Current);
             MdClassifierProvider classifierProvider = new MdClassifierProvider();
             IClassifier cls = classifierProvider.GetClassifier(textBuffer);
 

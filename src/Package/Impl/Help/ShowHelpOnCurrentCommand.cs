@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
@@ -41,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override async void Handle() {
             try {
-                var rSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var rSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 IRSession session = rSessionProvider.Current;
                 if (session != null) {
                     // Fetch identifier under the cursor

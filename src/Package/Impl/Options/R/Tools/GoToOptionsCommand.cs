@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
 
         class Handler {
             public void OnCommand() {
-                IVsShell shell = AppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
+                IVsShell shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
                 IVsPackage package;
 
                 if (VSConstants.S_OK == shell.LoadPackage(RGuidList.RPackageGuid, out package)) {

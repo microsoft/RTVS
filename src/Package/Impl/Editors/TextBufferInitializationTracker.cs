@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.VisualStudio.R.Package.Workspace;
+using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Workspace;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
     public sealed class TextBufferInitializationTracker : IVsTextBufferDataEvents {
@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             IVsTextLines textLines,
             Guid languageServiceId,
             List<TextBufferInitializationTracker> trackers) {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+            VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             _documentName = documentName;
             _hierarchy = hierarchy;
@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         }
 
         public int OnLoadCompleted(int fReload) {
-            var adapterService = EditorShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
+            var adapterService = VsAppShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
 
             // Set language service ID as early as possible, since it may change content type of the buffer,
             // e.g. in a weird scenario when someone does "Open With X Editor" on an Y file. Calling this
@@ -67,10 +67,10 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             Debug.Assert(diskBuffer != null);
 
             try {
-                var importComposer = new ContentTypeImportComposer<IEditorFactory>(EditorShell.Current.CompositionService);
+                var importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
                 var factory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
 
-                var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(EditorShell.Current.CompositionService);
+                var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(VsAppShell.Current.CompositionService);
                 var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
 
                 IEditorInstance editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);

@@ -28,6 +28,8 @@ namespace Microsoft.R.Editor.Test.Utility
             "Microsoft.R.Editor.Test.dll",
             "Microsoft.R.Support.dll",
             "Microsoft.R.Support.Test.dll",
+            "Microsoft.R.Host.Client.dll",
+            "Microsoft.R.Common.Core.dll",
         };
 
         private REditorTestCompositionCatalog() :

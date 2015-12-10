@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     internal static class SupportedRVersions {
@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
             if (data.Status != RInstallStatus.OK && showErrors) {
                 string message = FormatMessage(data);
-                EditorShell.Current.ShowErrorMessage(message);
+                VsAppShell.Current.ShowErrorMessage(message);
                 return false;
             }
 

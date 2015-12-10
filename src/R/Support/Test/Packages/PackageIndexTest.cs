@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
@@ -13,17 +12,14 @@ using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Support.Test.Packages
-{
+namespace Microsoft.R.Support.Test.Packages {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class PackageIndexTest : UnitTestBase
-    {
+    public class PackageIndexTest : UnitTestBase {
         [TestMethod]
-        public void BuildPackageIndexTest()
-        {
+        public void BuildPackageIndexTest() {
             RToolsSettings.Current = new TestRToolsSettings();
-            EditorShell.SetShell(TestEditorShell.Create(RSupportTestCompositionCatalog.Current));
+            TestEditorShell.Create(RSupportTestCompositionCatalog.Current);
 
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
             string[] packageNames = new string[]
@@ -65,8 +61,7 @@ namespace Microsoft.R.Support.Test.Packages
                 @"R\R-3.2.2\library");
 
             int i = 0;
-            foreach (string name in packageNames)
-            {
+            foreach (string name in packageNames) {
                 IPackageInfo info = basePackages.FirstOrDefault((x) => x.Name == name);
                 Assert.IsNotNull(info);
 
@@ -80,10 +75,9 @@ namespace Microsoft.R.Support.Test.Packages
         }
 
         [TestMethod]
-        public void PackageDescriptionTest()
-        {
+        public void PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
-            EditorShell.SetShell(TestEditorShell.Create(RSupportTestCompositionCatalog.Current));
+            TestEditorShell.Create(RSupportTestCompositionCatalog.Current);
 
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
 
@@ -92,8 +86,7 @@ namespace Microsoft.R.Support.Test.Packages
         }
 
         [TestMethod]
-        public void UserPackagesIndex_Test01()
-        {
+        public void UserPackagesIndex_Test01() {
             RToolsSettings.Current = new TestRToolsSettings();
 
             // make it broken and check that index doesn't throw

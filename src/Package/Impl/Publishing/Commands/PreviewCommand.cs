@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Flavor;
@@ -17,6 +16,7 @@ using Microsoft.R.Actions.Script;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
         public PreviewCommand(ITextView textView, int id)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
-            IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = EditorShell.Current.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
+            IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = VsAppShell.Current.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
             foreach (var h in handlers) {
                 _flavorHandlers[h.Value.Flavor] = h.Value;
             }
@@ -58,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
 
             if (!InstallPackages.IsInstalled(flavorHandler.RequiredPackageName, 5000, RToolsSettings.Current.RBasePath)) {
-                EditorShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
+                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
                 return CommandResult.Disabled;
             }
 

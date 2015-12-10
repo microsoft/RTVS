@@ -5,16 +5,15 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Session {
+namespace Microsoft.R.Host.Client.Session {
 
     [Export(typeof(IRSessionProvider))]
     public class RSessionProvider : IRSessionProvider {
         private readonly ConcurrentDictionary<int, IRSession> _sessions = new ConcurrentDictionary<int, IRSession>();
 
-        public IRSession Create(int sessionId) {
-            IRSession session = new RSession(sessionId);
+        public IRSession Create(int sessionId, IRHostClientApp hostClientApp) {
+            IRSession session = new RSession(sessionId, hostClientApp);
             IRSession currentSession = this.Current;
 
             if (!_sessions.TryAdd(sessionId, session)) {

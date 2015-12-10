@@ -1,22 +1,15 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.R.Debugger;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help.Definitions;
 
-namespace Microsoft.VisualStudio.R.Package.Signatures {
+namespace Microsoft.R.Host.Client.Signatures {
     /// <summary>
     /// Provides RD data (help) on a function from the specified package.
     /// </summary>
     [Export(typeof(IFunctionRdDataProvider))]
     internal sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
         private const int _sessionId = 73425;
-
-        [Import]
-        private IDebugSessionProvider DebugSessionProvider { get; set; }
 
         [Import]
         private IRSessionProvider SessionProvider { get; set; }
@@ -51,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Signatures {
 
         private async Task CreateSessionAsync() {
             if (_session == null) {
-                _session = SessionProvider.Create(_sessionId);
+                _session = SessionProvider.Create(_sessionId, null);
                 _session.Disposed += OnSessionDisposed;
                 await _session.StartHostAsync(IntPtr.Zero);
             }

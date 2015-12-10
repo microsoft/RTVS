@@ -46,7 +46,7 @@ namespace Microsoft.Languages.Editor.Controller {
             if (TextBufferToViewData == null) {
                 TextBufferToViewData = new Dictionary<ITextBuffer, TextViewData>();
 
-                EditorShell.OnTerminate += OnTerminateApp;
+                EditorShell.Current.Terminating += OnTerminateApp;
                 TextBufferListeners = Orderer.Order(TextBufferListeners);
                 _bufferToOriginalContentType = new Dictionary<ITextBuffer, IContentType>();
             }
@@ -101,7 +101,7 @@ namespace Microsoft.Languages.Editor.Controller {
                                 // The buffer could be temporarily removed from the view, so don't
                                 // immediately check if it's unused - do that after posting a message.
                                 _pendingCheckForViewlessTextBuffers = CheckForViewlessTextBuffers;
-                                EditorShell.OnIdle += OnIdle;
+                                EditorShell.Current.Idle += OnIdle;
                             } else {
                                 CheckForViewlessTextBuffers();
                             }
@@ -119,7 +119,7 @@ namespace Microsoft.Languages.Editor.Controller {
 
         private void OnIdle(object sender, EventArgs e) {
             FlushPendingAction();
-            EditorShell.OnIdle -= OnIdle;
+            EditorShell.Current.Idle -= OnIdle;
         }
         #endregion
 

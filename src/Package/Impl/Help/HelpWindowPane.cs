@@ -5,9 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Navigation;
-using System.Windows.Threading;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -42,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private IRSession _session;
 
         public HelpWindowPane() {
-            _sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             _session = _sessionProvider.Current;
             ConnectToSessionChangeEvents();
 
@@ -95,16 +93,16 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionConnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            EditorShell.Current.DispatchOnUIThread(() => {
+            VsAppShell.Current.DispatchOnUIThread(() => {
                 CreateBrowser(showDefaultPage: false);
-            }, DispatcherPriority.Normal);
+            });
         }
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            EditorShell.Current.DispatchOnUIThread(() => {
+            VsAppShell.Current.DispatchOnUIThread(() => {
                 CloseBrowser();
-            }, DispatcherPriority.Normal);
+            });
         }
 
         private void CreateBrowser(bool showDefaultPage = false) {
@@ -129,7 +127,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void OnNavigated(object sender, NavigationEventArgs e) {
             // Upon vavigation we need to ask VS to update UI so 
             // Back /Forward buttons become properly enabled or disabled.
-            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(1);
         }
 
