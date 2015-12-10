@@ -26,6 +26,7 @@ namespace Microsoft.Languages.Editor.Tests.Shell {
 
                     _instance = new TestEditorShell(compositionService, exportProvider);
                     EditorShell.SetShell(_instance);
+                    AppShell.SetShell(_instance);
                 }
 
                 return _instance;

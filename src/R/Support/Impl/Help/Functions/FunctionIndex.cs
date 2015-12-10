@@ -128,7 +128,7 @@ namespace Microsoft.R.Support.Help.Functions {
                         UpdateFunctionIndex(info);
                     }
 
-                    if (infoReadyCallback != null && parameter != null) {
+                    if (infoReadyCallback != null) {
                         EditorShell.DispatchOnUIThread(() => {
                             infoReadyCallback(parameter);
                         });

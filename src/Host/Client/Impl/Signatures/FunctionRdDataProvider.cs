@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Support.Help.Definitions;
 
 namespace Microsoft.R.Host.Client.Signatures {
@@ -10,10 +11,6 @@ namespace Microsoft.R.Host.Client.Signatures {
     [Export(typeof(IFunctionRdDataProvider))]
     internal sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
         private const int _sessionId = 73425;
-
-        [Import]
-        private IRSessionProvider SessionProvider { get; set; }
-
         private IRSession _session;
 
         /// <summary>
@@ -44,7 +41,8 @@ namespace Microsoft.R.Host.Client.Signatures {
 
         private async Task CreateSessionAsync() {
             if (_session == null) {
-                _session = SessionProvider.Create(_sessionId, null);
+                var provider = AppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                _session = provider.Create(_sessionId, null);
                 _session.Disposed += OnSessionDisposed;
                 await _session.StartHostAsync(IntPtr.Zero);
             }

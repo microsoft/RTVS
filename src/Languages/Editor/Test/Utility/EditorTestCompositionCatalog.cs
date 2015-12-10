@@ -1,19 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Editor.Mocks;
 
-namespace Microsoft.Languages.Editor.Test.Utility
-{
+namespace Microsoft.Languages.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
-    public sealed class EditorTestCompositionCatalog: TestCompositionCatalog
-    {
+    public sealed class EditorTestCompositionCatalog : TestCompositionCatalog {
         private static EditorTestCompositionCatalog _instance;
 
-        public static ITestCompositionCatalog Current
-        {
-            get
-            {
-                if(_instance == null)
-                {
+        public static ITestCompositionCatalog Current {
+            get {
+                if (_instance == null) {
                     _instance = new EditorTestCompositionCatalog();
                 }
 
@@ -21,9 +16,8 @@ namespace Microsoft.Languages.Editor.Test.Utility
             }
         }
 
-        private EditorTestCompositionCatalog():
-            base(new string[0])
-        {
+        private EditorTestCompositionCatalog() :
+            base(new string[0]) {
         }
     }
 }

@@ -10,5 +10,9 @@ namespace Microsoft.Common.Core.Shell {
         }
 
         public static IApplicationShell Current { get; private set; }
+
+        public static void SetShell(IApplicationShell shell) {
+            Current = shell;
+        }
     }
 }
