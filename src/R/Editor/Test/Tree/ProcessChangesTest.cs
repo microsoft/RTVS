@@ -3,15 +3,13 @@ using Microsoft.R.Core.Test.Utility;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Test.Tree
-{
+namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ProcessChangesTest
-    {
+    public class ProcessChangesTest {
         [TestMethod]
-        public void ProcessChange_EditExpression01()
-        {
+        [TestCategory("R.EditorTree")]
+        public void ProcessChange_EditExpression01() {
             string expression = "if(true) x <- 1";
             string expected1 =
 @"GlobalScope  [Global]
@@ -55,8 +53,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void ProcessChange_EditIfElse01()
-        {
+        [TestCategory("R.EditorTree")]
+        public void ProcessChange_EditIfElse01() {
             string expression = "if(true) x <- 1 else x <- 2";
             string expected1 =
 @"GlobalScope  [Global]
@@ -117,8 +115,8 @@ UnexpectedToken Token [17...21)
         }
 
         [TestMethod]
-        public void ProcessChange_EditIfElse02()
-        {
+        [TestCategory("R.EditorTree")]
+        public void ProcessChange_EditIfElse02() {
             string expression = "if(true) {x <- 1} else x <- 2";
             string expected1 =
 @"GlobalScope  [Global]

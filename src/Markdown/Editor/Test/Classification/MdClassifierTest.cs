@@ -25,6 +25,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         private static bool _regenerateBaselineFiles = false;
 
         [TestMethod]
+        [TestCategory("Md.Classifier")]
         public void ClassifyMarkdownFileTest01()
         {
             TestEditorShell.Create(MarkdownTestCompositionCatalog.Current);

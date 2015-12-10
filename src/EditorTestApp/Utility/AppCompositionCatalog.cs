@@ -1,19 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Editor.Mocks;
 
-namespace Microsoft.Languages.Editor.Application.Utility
-{
+namespace Microsoft.Languages.Editor.Application.Utility {
     [ExcludeFromCodeCoverage]
-    public sealed class AppCompositionCatalog : TestCompositionCatalog
-    {
+    public sealed class AppCompositionCatalog : TestCompositionCatalog {
         private static AppCompositionCatalog _instance;
 
-        public static ITestCompositionCatalog Current
-        {
-            get
-            {
-                if (_instance == null)
-                {
+        public static ITestCompositionCatalog Current {
+            get {
+                if (_instance == null) {
                     _instance = new AppCompositionCatalog();
                 }
 
@@ -34,8 +29,7 @@ namespace Microsoft.Languages.Editor.Application.Utility
         };
 
         private AppCompositionCatalog() :
-            base(_rEditorAssemblies)
-        {
+            base(_rEditorAssemblies) {
         }
     }
 }

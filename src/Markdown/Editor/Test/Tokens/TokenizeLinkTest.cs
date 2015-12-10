@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Markdown.Editor.Test.Tokens
-{
+namespace Microsoft.Markdown.Editor.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeLinkTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType>
-    {
+    public class TokenizeLinkTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
         [TestMethod]
-        public void TokenizeMd_Link01()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Link01() {
             var tokens = this.Tokenize(@"[text]()", new MdTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -23,15 +21,15 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
 
 
         [TestMethod]
-        public void TokenizeMd_Link02()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Link02() {
             var tokens = this.Tokenize(@"[text] (", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Link03()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Link03() {
             var tokens = this.Tokenize(@"[text] ()", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }

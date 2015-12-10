@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseMultilineExpressionsTest : UnitTestBase
-    {
+    public class ParseMultilineExpressionsTest : UnitTestBase {
         [TestMethod]
-        public void ParseMultilineExpressionsTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMultilineExpressionsTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x+ \n 1 * ( \r\n a + b)]
@@ -35,8 +33,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseMultilineExpressionsTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMultilineExpressionsTest02() {
             string expected =
 @"GlobalScope  [Global]
     KeywordStatement  []
@@ -48,8 +46,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseMultilineExpressionsTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMultilineExpressionsTest03() {
             string expected =
 @"GlobalScope  [Global]
     For  []
@@ -69,8 +67,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseMultilineExpressionsTest04()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMultilineExpressionsTest04() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x + 1]
@@ -89,8 +87,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseMultilineExpressionsTest05()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMultilineExpressionsTest05() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [(x\n || y)]
@@ -108,8 +106,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseMultilineExpressionsTest06()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMultilineExpressionsTest06() {
             string expected =
 @"GlobalScope  [Global]
     If  []
@@ -126,8 +124,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseMultilineExpressionsTest07()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseMultilineExpressionsTest07() {
             string expected =
 @"GlobalScope  [Global]
     KeywordExpressionScopeStatement  []

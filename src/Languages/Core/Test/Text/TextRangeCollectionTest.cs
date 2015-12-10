@@ -4,24 +4,19 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Languages.Core.Test.Text
-{
+namespace Microsoft.Languages.Core.Test.Text {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TextRangeCollectionTest
-    {
-        private void AssertEquals(TextRangeCollection<TextRange> target, params int[] values)
-        {
+    public class TextRangeCollectionTest {
+        private void AssertEquals(TextRangeCollection<TextRange> target, params int[] values) {
             Assert.AreEqual(target.Count, values.Length / 2);
-            for(int i = 0; i < values.Length; i += 2)
-            {
+            for (int i = 0; i < values.Length; i += 2) {
                 Assert.AreEqual(values[i], target[i / 2].Start);
                 Assert.AreEqual(values[i + 1], target[i / 2].End);
             }
         }
 
-        TextRangeCollection<TextRange> MakeCollection()
-        {
+        TextRangeCollection<TextRange> MakeCollection() {
             TextRange[] ranges = new TextRange[3];
 
             ranges[0] = TextRange.FromBounds(1, 2);
@@ -31,12 +26,10 @@ namespace Microsoft.Languages.Core.Test.Text
             return new TextRangeCollection<TextRange>(ranges);
         }
 
-        TextRangeCollection<TextRange> MakeCollection(params int [] positions)
-        {
+        TextRangeCollection<TextRange> MakeCollection(params int[] positions) {
             TextRange[] ranges = new TextRange[positions.Length / 2];
 
-            for (int i = 0; i < ranges.Length; i++)
-            {
+            for (int i = 0; i < ranges.Length; i++) {
                 int start = positions[2 * i];
                 int end = positions[2 * i + 1];
                 ranges[i] = TextRange.FromBounds(start, end);
@@ -46,8 +39,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ConstructorTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ConstructorTest() {
             TextRangeCollection<TextRange> target = new TextRangeCollection<TextRange>();
 
             Assert.AreEqual(0, target.Count);
@@ -57,8 +50,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ConstructorTest1()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ConstructorTest1() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             Assert.AreEqual(3, target.Count);
@@ -72,8 +65,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_AddTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_AddTest() {
             TextRange[] ranges = new TextRange[3];
 
             ranges[0] = TextRange.FromBounds(1, 2);
@@ -110,8 +103,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_AddTest1()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_AddTest1() {
             TextRange[] ranges = new TextRange[3];
 
             ranges[0] = TextRange.FromBounds(1, 2);
@@ -133,8 +126,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ClearTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ClearTest() {
             TextRange[] ranges = new TextRange[3];
 
             ranges[0] = TextRange.FromBounds(1, 2);
@@ -171,8 +164,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ContainsTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ContainsTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             Assert.IsTrue(target.Contains(1));
@@ -189,8 +182,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_GetFirstItemAfterOrAtPositionTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_GetFirstItemAfterOrAtPositionTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             Assert.AreEqual(0, target.GetFirstItemAfterOrAtPosition(0));
@@ -208,8 +201,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_GetFirstItemBeforePositionTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_GetFirstItemBeforePositionTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             // 1-2, 3-5, 5-7
@@ -235,8 +228,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_GetItemAtPositionTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_GetItemAtPositionTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             Assert.AreEqual(-1, target.GetItemAtPosition(0));
@@ -254,8 +247,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_GetItemContainingTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_GetItemContainingTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             Assert.AreEqual(-1, target.GetItemContaining(0));
@@ -275,8 +268,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_GetItemsContainingInclusiveEndTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_GetItemsContainingInclusiveEndTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             IReadOnlyList<int> list = target.GetItemsContainingInclusiveEnd(0);
@@ -325,8 +318,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ItemsInRangeTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ItemsInRangeTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             IReadOnlyList<TextRange> list = target.ItemsInRange(TextRange.EmptyRange);
@@ -361,8 +354,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveAtTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveAtTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
             AssertEquals(target, 1, 2, 3, 5, 5, 7);
 
@@ -377,8 +370,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ShiftTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ShiftTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
             AssertEquals(target, 1, 2, 3, 5, 5, 7);
 
@@ -390,8 +383,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveInRangeTest1()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveInRangeTest1() {
             TextRangeCollection<TextRange> target = MakeCollection();
             AssertEquals(target, 1, 2, 3, 5, 5, 7);
 
@@ -411,8 +404,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveInRangeTest2()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveInRangeTest2() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.RemoveInRange(TextRange.FromBounds(Int32.MinValue / 2, Int32.MaxValue / 2));
@@ -423,8 +416,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveInRangeTest3()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveInRangeTest3() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.RemoveInRange(TextRange.FromBounds(1, 7));
@@ -435,8 +428,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveInRangeTest4()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveInRangeTest4() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.RemoveInRange(TextRange.FromBounds(1, 6));
@@ -444,8 +437,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveInRangeTest5()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveInRangeTest5() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.RemoveInRange(TextRange.FromBounds(0, 6));
@@ -453,8 +446,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveInRangeTest6()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveInRangeTest6() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.RemoveInRange(TextRange.FromBounds(0, 5));
@@ -465,8 +458,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveInRangeTest7()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveInRangeTest7() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.RemoveInRange(TextRange.FromBounds(0, 1));
@@ -486,8 +479,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveInRangeTest8()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveInRangeTest8() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.RemoveInRange(TextRange.FromBounds(0, 0), inclusiveEnds: true);
@@ -504,8 +497,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ReflectTextChangeTest1()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ReflectTextChangeTest1() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.ReflectTextChange(0, 0, 1);
@@ -519,8 +512,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ReflectTextChangeTest2()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ReflectTextChangeTest2() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.ReflectTextChange(3, 0, 3);
@@ -540,8 +533,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ReflectTextChangeTest3()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ReflectTextChangeTest3() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.ReflectTextChange(3, 1, 4);
@@ -556,8 +549,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ReflectTextChangeTest4()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ReflectTextChangeTest4() {
             TextRangeCollection<TextRange> target = MakeCollection();
             AssertEquals(target, 1, 2, 3, 5, 5, 7);
 
@@ -569,8 +562,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_ShiftStartingFromTest()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_ShiftStartingFromTest() {
             TextRangeCollection<TextRange> target = MakeCollection();
 
             target.ShiftStartingFrom(3, 4);
@@ -587,8 +580,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_RemoveLastItemZeroLength()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_RemoveLastItemZeroLength() {
             TextRangeCollection<TextRange> target;
 
             target = MakeCollection(1, 1);
@@ -602,8 +595,8 @@ namespace Microsoft.Languages.Core.Test.Text
         }
 
         [TestMethod]
-        public void TextRangeCollection_AddSorted()
-        {
+        [TestCategory("Languages.Core")]
+        public void TextRangeCollection_AddSorted() {
             ITextRange[] ranges = new ITextRange[3];
 
             ranges[0] = TextRange.FromBounds(1, 2);

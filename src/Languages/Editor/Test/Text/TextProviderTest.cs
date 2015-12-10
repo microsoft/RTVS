@@ -10,7 +10,8 @@ namespace Microsoft.Languages.Editor.Test.Text {
     [TestClass]
     public class TextProviderTest {
         [TestMethod]
-        public void TexProvider_GetCharAt() {
+        [TestCategory("Languages.Core")]
+        public void TextProvider_GetCharAt() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -21,8 +22,9 @@ namespace Microsoft.Languages.Editor.Test.Text {
             }
         }
 
-        [TestMethod()]
-        public void TexProvider_GetText() {
+        [TestMethod]
+        [TestCategory("Languages.Core")]
+        public void TextProvider_GetText() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -31,8 +33,9 @@ namespace Microsoft.Languages.Editor.Test.Text {
             Assert.AreEqual("wn fo", textProvider.GetText(9, 5));
         }
 
-        [TestMethod()]
-        public void TexProvider_IndexOf1() {
+        [TestMethod]
+        [TestCategory("Languages.Core")]
+        public void TextProvider_IndexOf1() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -41,8 +44,9 @@ namespace Microsoft.Languages.Editor.Test.Text {
             Assert.AreEqual(12, textProvider.IndexOf("fox", 0, true));
         }
 
-        [TestMethod()]
-        public void TexProvider_IndexOf2() {
+        [TestMethod]
+        [TestCategory("Languages.Core")]
+        public void TextProvider_IndexOf2() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -51,8 +55,9 @@ namespace Microsoft.Languages.Editor.Test.Text {
             Assert.AreEqual(8, textProvider.IndexOf("o", new TextRange(3, 7), true));
         }
 
-        [TestMethod()]
-        public void TexProvider_IndexOf_Range1() {
+        [TestMethod]
+        [TestCategory("Languages.Core")]
+        public void TextProvider_IndexOf_Range1() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -64,8 +69,9 @@ namespace Microsoft.Languages.Editor.Test.Text {
             Assert.AreEqual(-1, textProvider.IndexOf("uick", new TextRange(1, 0), false));
         }
 
-        [TestMethod()]
-        public void TexProvider_CompareTo() {
+        [TestMethod]
+        [TestCategory("Languages.Core")]
+        public void TextProvider_CompareTo() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -79,8 +85,9 @@ namespace Microsoft.Languages.Editor.Test.Text {
             Assert.IsFalse(textProvider.CompareTo(text.Length - 2, 3, "dog", true));
         }
 
-        [TestMethod()]
-        public void TexProvider_Boundary1() {
+        [TestMethod]
+        [TestCategory("Languages.Core")]
+        public void TextProvider_Boundary1() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -94,8 +101,9 @@ namespace Microsoft.Languages.Editor.Test.Text {
             Assert.IsFalse(textProvider.CompareTo(text.Length - 2, 3, "dog", true));
         }
 
-        [TestMethod()]
-        public void TexProvider_Boundary2() {
+        [TestMethod]
+        [TestCategory("Languages.Core")]
+        public void TextProvider_Boundary2() {
             var text = String.Empty;
             var textBuffer = new TextBufferMock(text, "text");
 
@@ -107,8 +115,9 @@ namespace Microsoft.Languages.Editor.Test.Text {
             Assert.IsFalse(textProvider.CompareTo(0, 2, String.Empty, true));
         }
 
-        [TestMethod()]
-        public void TexProvider_Boundary3() {
+        [TestMethod]
+        [TestCategory("Languages.Core")]
+        public void TextProvider_Boundary3() {
             var text = "ab";
             var textBuffer = new TextBufferMock(text, "text");
 

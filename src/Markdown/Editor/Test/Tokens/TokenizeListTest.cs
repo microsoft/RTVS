@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Markdown.Editor.Test.Tokens
-{
+namespace Microsoft.Markdown.Editor.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeListTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType>
-    {
+    public class TokenizeListTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
         [TestMethod]
-        public void TokenizeMd_List01()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_List01() {
             var tokens = this.Tokenize(@"- item", new MdTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -22,8 +20,8 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeMd_List02()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_List02() {
             var tokens = this.Tokenize(@"* item", new MdTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -34,8 +32,8 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeMd_List03()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_List03() {
             var tokens = this.Tokenize(@"12. item", new MdTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -46,22 +44,22 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeMd_List04()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_List04() {
             var tokens = this.Tokenize(@"-item", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_List05()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_List05() {
             var tokens = this.Tokenize(@"*item", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_List06()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_List06() {
             var tokens = this.Tokenize(@"1.item", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }

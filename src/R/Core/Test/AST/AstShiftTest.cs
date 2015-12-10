@@ -10,15 +10,13 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.AST
-{
+namespace Microsoft.R.Core.Test.AST {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class AstShiftTest : UnitTestBase
-    {
+    public class AstShiftTest : UnitTestBase {
         [TestMethod]
-        public void AstShiftTest1()
-        {
+        [TestCategory("AST")]
+        public void AstShiftTest1() {
             AstRoot ast = RParser.Parse(new TextStream(" a()"));
             IScope scope = ast.Children[0] as IScope;
 
@@ -28,8 +26,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void AstShiftTest2()
-        {
+        [TestCategory("AST")]
+        public void AstShiftTest2() {
             AstRoot ast = RParser.Parse(new TextStream(" a()"));
             IScope scope = ast.Children[0] as IScope;
 

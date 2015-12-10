@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseFunctionDefinitionTest : UnitTestBase
-    {
+    public class ParseFunctionDefinitionTest : UnitTestBase {
         [TestMethod]
-        public void ParseFunctionDefinitionTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionDefinitionTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a) { return(1) }]
@@ -45,8 +43,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionDefinitionTest02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a) return(1)]
@@ -78,8 +76,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionDefinitionTest03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a b, c d, e) { }]
@@ -114,8 +112,8 @@ OperatorExpected Token [21...22)
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest04()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionDefinitionTest04() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a b) { }]
@@ -141,8 +139,8 @@ OperatorExpected Token [16...17)
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest05()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionDefinitionTest05() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a, b) a + b]
@@ -174,8 +172,8 @@ OperatorExpected Token [16...17)
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest06()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionDefinitionTest06() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a) -a]
@@ -202,8 +200,8 @@ OperatorExpected Token [16...17)
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest07()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionDefinitionTest07() {
             string expected =
 @"GlobalScope  [Global]
     FunctionStatement  [0...14)
@@ -222,8 +220,8 @@ OperatorExpected Token [16...17)
         }
 
         [TestMethod]
-        public void ParseFunctionDefinitionTest08()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionDefinitionTest08() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a((function(x) vector(length = x))(x), 1)]

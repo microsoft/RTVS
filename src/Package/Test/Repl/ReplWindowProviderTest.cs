@@ -13,12 +13,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [TestClass]
     public class ReplWindowProviderTest {
         [TestMethod]
+        [TestCategory("Repl")]
         public void ReplWindowProvider_ConstructionTest() {
             VsAppShell.Current = TestAppShell.Current;
             RInteractiveWindowProvider provider = new RInteractiveWindowProvider();
         }
 
         [TestMethod]
+        [TestCategory("Repl")]
         public void ReplWindowProvider_InteractiveWindowCreateTest() {
             VsAppShell.Current = TestAppShell.Current;
 

@@ -9,11 +9,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class SettingsTest : UnitTestBase
-    {
+    public class SettingsTest : UnitTestBase {
         [TestMethod]
-        public void Settings_TestDefaults()
-        {
+        [TestCategory("R.Settings")]
+        public void Settings_TestDefaults() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
             Assert.AreEqual(false, REditorSettings.CommitOnSpace);

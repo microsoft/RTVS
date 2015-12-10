@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseKnownConstantsTest : UnitTestBase
-    {
+    public class ParseKnownConstantsTest : UnitTestBase {
         [TestMethod]
-        public void ParseKnownContstantsTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseKnownContstantsTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [NULL + NA]
@@ -26,8 +24,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseKnownContstantsTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseKnownContstantsTest02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [Inf + NaN]

@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
-{
+namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeIntegersTest: TokenizeTestBase<RToken, RTokenType>
-    {
+    public class TokenizeIntegersTest : TokenizeTestBase<RToken, RTokenType> {
         [TestMethod]
-        public void TokenizeIntegers1()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIntegers1() {
             var tokens = this.Tokenize("+1 ", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -21,8 +19,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeIntegers2()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIntegers2() {
             var tokens = this.Tokenize("-12 +1", new RTokenizer());
 
             Assert.AreEqual(3, tokens.Count);
@@ -40,8 +38,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeIntegers3()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeIntegers3() {
             var tokens = this.Tokenize("-12+-1", new RTokenizer());
 
             Assert.AreEqual(3, tokens.Count);
@@ -59,14 +57,14 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeFile_IntegerFile()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeFile_IntegerFile() {
             TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Integers.r");
         }
 
         [TestMethod]
-        public void TokenizeFile_HexFile()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeFile_HexFile() {
             TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Hex.r");
         }
     }

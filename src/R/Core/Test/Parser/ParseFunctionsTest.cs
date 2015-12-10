@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseFunctionsTest : UnitTestBase
-    {
+    public class ParseFunctionsTest : UnitTestBase {
         [TestMethod]
-        public void ParseFunctionsTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionsTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a()]
@@ -25,8 +23,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionsTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionsTest02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a(1)]
@@ -44,8 +42,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionsTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionsTest03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a(1,2)]
@@ -67,8 +65,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionsTest04()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionsTest04() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x(a, b=NA, c=NULL, ...)]
@@ -101,8 +99,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseFunctionsTest05()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionsTest05() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x(,, ]
@@ -123,8 +121,8 @@ CloseBraceExpected AfterToken [3...4)
         }
 
         [TestMethod]
-        public void ParseFunctionsTest06()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionsTest06() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x(,, ]
@@ -147,8 +145,8 @@ OpenBraceExpected AfterToken [5...8)";
         }
 
         [TestMethod]
-        public void ParseFunctionsTest07()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionsTest07() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x(a=,b=)]
@@ -173,8 +171,8 @@ ExpressionExpected Token [6...7)
         }
 
         [TestMethod]
-        public void ParseFunctionsTest08()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionsTest08() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x(a=,)]
@@ -196,8 +194,8 @@ ExpressionExpected Token [3...4)
         }
 
         [TestMethod]
-        public void ParseFunctionsTest09()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseFunctionsTest09() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x('s'=, 1.0='z')]

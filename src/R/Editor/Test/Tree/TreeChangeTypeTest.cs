@@ -7,15 +7,13 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Test.Tree
-{
+namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TreeChangeTypeTest
-    {
+    public class TreeChangeTypeTest {
         [TestMethod]
-        public void TextChange_EditWhitespaceTest01()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditWhitespaceTest01() {
             string expression = "x <- a + b";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 0, 0, 1, " ");
@@ -23,8 +21,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditWhitespaceTest02()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditWhitespaceTest02() {
             string expression = " x <- a + b";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 0, 1, 0, string.Empty);
@@ -32,8 +30,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditWhitespaceTest03()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditWhitespaceTest03() {
             string expression = "x <- a + b";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "\n");
@@ -41,8 +39,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditString01()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditString01() {
             string expression = "x <- a + \"boo\"";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 10, 1, 0, string.Empty);
@@ -50,8 +48,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditString02()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditString02() {
             string expression = "x <- a + \"boo\"";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 10, 1, 2, "a");
@@ -59,8 +57,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditString03()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditString03() {
             string expression = "x <- a + \"boo\"";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 10, 1, 2, "\"");
@@ -68,8 +66,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditString04()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditString04() {
             string expression = "\"boo\"";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "a");
@@ -91,8 +89,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditComment01()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditComment01() {
             string expression = "x <- a + b # comment";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 12, 1, 0, string.Empty);
@@ -100,8 +98,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditComment02()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditComment02() {
             string expression = "x <- a + b # comment";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 12, 1, 1, "a");
@@ -109,8 +107,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditComment03()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditComment03() {
             string expression = "x <- a + b # comment";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 12, 1, 2, "\n");
@@ -118,8 +116,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditComment04()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditComment04() {
             string expression = "# comment\n a <- b + c";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 9, 1, 0, string.Empty);
@@ -127,8 +125,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_EditComment05()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_EditComment05() {
             string expression = "#";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "a");
@@ -140,8 +138,8 @@ namespace Microsoft.R.Editor.Test.Tree
         }
 
         [TestMethod]
-        public void TextChange_CurlyBrace()
-        {
+        [TestCategory("R.EditorTree")]
+        public void TextChange_CurlyBrace() {
             string expression = "if(true) {x <- 1} else ";
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, expression.Length, 0, 1, "{");

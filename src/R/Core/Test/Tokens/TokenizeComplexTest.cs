@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
-{
+namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeComplexTest : TokenizeTestBase<RToken, RTokenType>
-    {
+    public class TokenizeComplexTest : TokenizeTestBase<RToken, RTokenType> {
         [TestMethod]
-        public void TokenizeComplexTest1()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeComplexTest1() {
             var tokens = this.Tokenize("+1i", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -21,8 +19,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeComplexTest2()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeComplexTest2() {
             var tokens = this.Tokenize("-.0+1i", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -32,8 +30,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeComplexTest3()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeComplexTest3() {
             var tokens = this.Tokenize("0.e1-+1i", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -43,8 +41,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeComplexTest4()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeComplexTest4() {
             var tokens = this.Tokenize(".0e-5+-1.e23i", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -54,8 +52,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeComplexTest5()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeComplexTest5() {
             var tokens = this.Tokenize("-0.e2i", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -65,8 +63,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeComplexTest6()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeComplexTest6() {
             var tokens = this.Tokenize("1i", new RTokenizer());
 
             Assert.AreEqual(1, tokens.Count);

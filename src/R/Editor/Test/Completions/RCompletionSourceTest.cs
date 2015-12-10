@@ -21,6 +21,7 @@ namespace Microsoft.R.Editor.Test.Completions {
     [TestClass]
     public class RCompletionSourceTest : UnitTestBase {
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_BaseFunctionsTest01() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -37,6 +38,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_BaseFunctionsTest02() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -52,6 +54,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_KeywordsTest01() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -66,6 +69,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_PackagesTest01() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -80,6 +84,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_SpecificPackageTest01() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -94,6 +99,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_CommentsTest01() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -105,6 +111,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_CommentsTest02() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -116,6 +123,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_FunctionDefinitionTest01() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -127,6 +135,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_FunctionDefinitionTest02() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -140,6 +149,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_FunctionDefinitionTest03() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 
@@ -161,6 +171,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void RCompletionSource_CaseSentivityTest() {
             TestEditorShell.Create(REditorTestCompositionCatalog.Current);
 

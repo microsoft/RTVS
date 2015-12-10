@@ -1,19 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Editor.Mocks;
 
-namespace Microsoft.R.Editor.Test.Utility
-{
+namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
-    public sealed class REditorTestCompositionCatalog : TestCompositionCatalog
-    {
+    public sealed class REditorTestCompositionCatalog : TestCompositionCatalog {
         private static REditorTestCompositionCatalog _instance;
 
-        public static ITestCompositionCatalog Current
-        {
-            get
-            {
-                if (_instance == null)
-                {
+        public static ITestCompositionCatalog Current {
+            get {
+                if (_instance == null) {
                     _instance = new REditorTestCompositionCatalog();
                 }
 
@@ -33,8 +28,7 @@ namespace Microsoft.R.Editor.Test.Utility
         };
 
         private REditorTestCompositionCatalog() :
-            base(_rEditorAssemblies)
-        {
+            base(_rEditorAssemblies) {
         }
     }
 }

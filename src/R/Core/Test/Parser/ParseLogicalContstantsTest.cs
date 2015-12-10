@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseLogicalConstantsTest : UnitTestBase
-    {
+    public class ParseLogicalConstantsTest : UnitTestBase {
         [TestMethod]
-        public void ParseLogicalConstantsTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseLogicalConstantsTest1() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [FALSE + T + F]

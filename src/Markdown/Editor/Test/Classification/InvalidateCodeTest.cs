@@ -15,11 +15,10 @@ using Microsoft.VisualStudio.Text.Classification;
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class InvalidateCodeTest : UnitTestBase
-    {
+    public class InvalidateCodeTest : UnitTestBase {
         [TestMethod]
-        public void Markdown_InvalidateCodeTest()
-        {
+        [TestCategory("Md.Classifier")]
+        public void Markdown_InvalidateCodeTest() {
             string content = "```'{r}\n#R\n```";
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 

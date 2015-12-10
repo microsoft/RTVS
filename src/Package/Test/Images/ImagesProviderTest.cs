@@ -10,6 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [TestClass]
     public class ImagesProviderTest {
         [TestMethod]
+        [TestCategory("Project.Services")]
         public void ImagesProvider_Test() {
             VsAppShell.Current = TestAppShell.Current;
 

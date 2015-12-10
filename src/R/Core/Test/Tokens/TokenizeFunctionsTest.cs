@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
-{
+namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeFunctionsTest : TokenizeTestBase<RToken, RTokenType>
-    {
+    public class TokenizeFunctionsTest : TokenizeTestBase<RToken, RTokenType> {
         [TestMethod]
-        public void TokenizeFunctionsTest1()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeFunctionsTest1() {
             var tokens = this.Tokenize("x <- function( ", new RTokenizer());
 
             Assert.AreEqual(4, tokens.Count);
@@ -34,8 +32,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeFile_FunctionsFile()
-        {
+        [TestCategory("R.Tokenizer")]
+        public void TokenizeFile_FunctionsFile() {
             TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Functions.r");
         }
     }

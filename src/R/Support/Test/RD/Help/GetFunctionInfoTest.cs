@@ -4,15 +4,13 @@ using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Support.Test.RD.Help
-{
+namespace Microsoft.R.Support.Test.RD.Help {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class GetFunctionInfoTest : UnitTestBase
-    {
+    public class GetFunctionInfoTest : UnitTestBase {
         [TestMethod]
-        public void GetRdFunctionAliasesTest()
-        {
+        [TestCategory("R.Signatures")]
+        public void GetRdFunctionAliasesTest() {
             string rdData = @"\alias{abs}\alias{sqrt}";
             IFunctionInfo functionInfo = RdParser.GetFunctionInfo("abs", rdData);
 
@@ -25,8 +23,8 @@ namespace Microsoft.R.Support.Test.RD.Help
         }
 
         [TestMethod]
-        public void GetRdFunctionDescriptionTest()
-        {
+        [TestCategory("R.Signatures")]
+        public void GetRdFunctionDescriptionTest() {
             string rdData = "\\description{\rA.  BC\r\n\t  EF}";
             IFunctionInfo functionInfo = RdParser.GetFunctionInfo("abs", rdData);
 
@@ -35,8 +33,8 @@ namespace Microsoft.R.Support.Test.RD.Help
         }
 
         [TestMethod]
-        public void GetRdFunctionArgumentsTest01()
-        {
+        [TestCategory("R.Signatures")]
+        public void GetRdFunctionArgumentsTest01() {
             string rdData = @"
 \usage{
     abind(..., along=N, rev.along=NULL, new.names='abc', force.array=TRUE,
@@ -81,8 +79,8 @@ namespace Microsoft.R.Support.Test.RD.Help
         }
 
         [TestMethod]
-        public void GetRdFunctionArgumentsDescriptionsTest01()
-        {
+        [TestCategory("R.Signatures")]
+        public void GetRdFunctionArgumentsDescriptionsTest01() {
             string rdData = @"
 \usage {
     abind(..., along=N, rev.along=NULL, new.names='abc')
@@ -114,8 +112,8 @@ namespace Microsoft.R.Support.Test.RD.Help
         }
 
         [TestMethod]
-        public void GetRdFunctionInfoTest01()
-        {
+        [TestCategory("R.Signatures")]
+        public void GetRdFunctionInfoTest01() {
             string rdData = TestFiles.LoadFile(this.TestContext, @"Help\01.rd");
             IFunctionInfo functionInfo = RdParser.GetFunctionInfo("abs", rdData);
 

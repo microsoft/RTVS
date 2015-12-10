@@ -14,20 +14,17 @@ using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Test.Signatures
-{
+namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class QuickInfoSourceTest : UnitTestBase
-    {
+    public class QuickInfoSourceTest : UnitTestBase {
         [TestMethod]
-        public void QuickInfoSourceTest01()
-        {
+        [TestCategory("R.Signatures")]
+        public void QuickInfoSourceTest01() {
             string content = @"x <- as.matrix(x)";
             AstRoot ast = RParser.Parse(content);
 
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) =>
-            {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
                 int caretPosition = 6;
                 ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
                 QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer);
@@ -37,23 +34,20 @@ namespace Microsoft.R.Editor.Test.Signatures
 
                 quickInfoSession.TriggerPoint = new SnapshotPoint(textBuffer.CurrentSnapshot, caretPosition);
                 bool ready = quickInfoSource.AugmentQuickInfoSession(ast, caretPosition, quickInfoSession, quickInfoContent, out applicableSpan,
-                    (object o) =>
-                    {
+                    (object o) => {
                         quickInfoSource.AugmentQuickInfoSession(ast, caretPosition, quickInfoSession,
                                                                 quickInfoContent, out applicableSpan, null);
 
                         QuickInfoSourceTest01_TestBody(applicableSpan, quickInfoContent, ast, textBuffer, evt);
                     });
 
-                if (ready && !evt.IsSet)
-                {
+                if (ready && !evt.IsSet) {
                     QuickInfoSourceTest01_TestBody(applicableSpan, quickInfoContent, ast, textBuffer, evt);
                 }
             }, REditorTestCompositionCatalog.Current);
         }
 
-        private void QuickInfoSourceTest01_TestBody(ITrackingSpan applicableSpan, List<object> quickInfoContent, AstRoot ast, ITextBuffer textBuffer, ManualResetEventSlim completedEvent)
-        {
+        private void QuickInfoSourceTest01_TestBody(ITrackingSpan applicableSpan, List<object> quickInfoContent, AstRoot ast, ITextBuffer textBuffer, ManualResetEventSlim completedEvent) {
             ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 10);
 
             Assert.IsNotNull(applicableSpan);

@@ -17,6 +17,7 @@ namespace Microsoft.R.Support.Test.Packages {
     [TestClass]
     public class PackageIndexTest : UnitTestBase {
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void BuildPackageIndexTest() {
             RToolsSettings.Current = new TestRToolsSettings();
             TestEditorShell.Create(RSupportTestCompositionCatalog.Current);
@@ -75,6 +76,7 @@ namespace Microsoft.R.Support.Test.Packages {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
             TestEditorShell.Create(RSupportTestCompositionCatalog.Current);
@@ -86,6 +88,7 @@ namespace Microsoft.R.Support.Test.Packages {
         }
 
         [TestMethod]
+        [TestCategory("R.Completion")]
         public void UserPackagesIndex_Test01() {
             RToolsSettings.Current = new TestRToolsSettings();
 
