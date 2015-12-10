@@ -107,4 +107,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
     }
+
+    /// <summary>
+    /// This class exists for simple templating
+    /// </summary>
+    /// <remarks>
+    /// Styling and property transfer could be also an answer, but this is much simpler irresistibly
+    /// </remarks>
+    public class DynamicGridColumnHeaderCell : DynamicGridCell {
+        static DynamicGridColumnHeaderCell() {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(DynamicGridColumnHeaderCell), new FrameworkPropertyMetadata(typeof(DynamicGridColumnHeaderCell)));
+        }
+
+        public DynamicGridColumnHeaderCell() : base() { }
+    }
 }

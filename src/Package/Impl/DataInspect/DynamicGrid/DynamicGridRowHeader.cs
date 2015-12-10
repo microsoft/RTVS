@@ -9,6 +9,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Width is synched with other row's header width through owning grid's property
     /// </summary>
     internal class DynamicGridRowHeader : ContentControl {
+        static DynamicGridRowHeader() {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(DynamicGridRowHeader), new FrameworkPropertyMetadata(typeof(DynamicGridRowHeader)));
+        }
+
         public override void OnApplyTemplate() {
             base.OnApplyTemplate();
 

@@ -67,7 +67,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         protected override DependencyObject GetContainerForItemOverride() {
-            return new DynamicGridCell();
+            if (ColumnHeader) {
+                return new DynamicGridColumnHeaderCell();
+            } else {
+                return new DynamicGridCell();
+            }
         }
 
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item) {

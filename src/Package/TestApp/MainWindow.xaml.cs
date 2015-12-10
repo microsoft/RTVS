@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.TestApp {
                 4);
 
             var columnPageManager = new PageManager<string>(
-                new HeaderProvider(ColumnCount, true),
+                new HeaderProvider(ColumnCount, false),
                 64,
                 TimeSpan.FromMinutes(1.0),
                 4);

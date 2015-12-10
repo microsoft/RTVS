@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 4);
 
             var columnPageManager = new PageManager<string>(
-                new HeaderProvider(evaluation, true),
+                new HeaderProvider(evaluation, false),
                 64,
                 TimeSpan.FromMinutes(1.0),
                 4);
