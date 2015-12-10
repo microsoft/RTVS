@@ -4,15 +4,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Formatting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Formatting
-{
+namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class FormatFunctionTest : UnitTestBase
-    {
+    public class FormatFunctionTest : UnitTestBase {
         [TestMethod]
-        public void Formatter_FormatFunction()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunction() {
             RFormatter f = new RFormatter();
             string actual = f.Format("function(a,b) {return(a+b)}");
             string expected =
@@ -23,8 +21,8 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
-        public void Formatter_FormatInlineFunction()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatInlineFunction() {
             RFormatter f = new RFormatter();
             string actual = f.Format("function(a,b) a+b");
             string expected = @"function(a, b) a + b";
@@ -32,8 +30,8 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionAlignArguments()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionAlignArguments() {
             RFormatOptions options = new RFormatOptions();
             options.IndentType = IndentType.Tabs;
             options.TabSize = 2;
@@ -54,11 +52,11 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionInlineScope01()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionInlineScope01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x <- func(a,{return(b)})");
-            string expected = 
+            string expected =
 @"x <- func(a, {
   return(b)
 })";
@@ -66,8 +64,8 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionInlineScope02()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionInlineScope02() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x <- func({return(b)})");
             string expected =
@@ -78,11 +76,11 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionInlineIf01()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionInlineIf01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x <- func(a,{if(TRUE) {x} else {y}})");
-            string expected = 
+            string expected =
 @"x <- func(a, {
   if (TRUE) {
     x
@@ -94,11 +92,11 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionInlineIf02()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionInlineIf02() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x <- func(a,{if(TRUE) 1 else 2})");
-            string expected = 
+            string expected =
 @"x <- func(a, {
   if (TRUE) 1 else 2
 })";
@@ -106,15 +104,15 @@ namespace Microsoft.R.Core.Test.Formatting
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionInlineIf03()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionInlineIf03() {
             RFormatter f = new RFormatter();
             string original =
 @"x <- func(a,{
 if(TRUE) 1 else 2})";
 
             string actual = f.Format(original);
-            string expected = 
+            string expected =
 @"x <- func(a, {
   if (TRUE) 1 else 2
 })";
@@ -123,8 +121,8 @@ if(TRUE) 1 else 2})";
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionInlineIf04()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionInlineIf04() {
             RFormatter f = new RFormatter();
             string original =
 @"x <- func(a,{
@@ -144,8 +142,8 @@ if(TRUE) {1} else {2}})";
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionInlineIf05()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionInlineIf05() {
             RFormatter f = new RFormatter();
             string original =
 @"x <- func(a,{
@@ -166,13 +164,13 @@ if(TRUE) {1} else {2}})";
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionInlineIf06()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionInlineIf06() {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
 
             RFormatter f = new RFormatter(options);
-            
+
             string original =
 @"x <- func(a,
    {
@@ -190,8 +188,8 @@ if(TRUE) {1} else {2}})";
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionInlineIf07()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionInlineIf07() {
             RFormatter f = new RFormatter();
 
             string original =
@@ -221,8 +219,8 @@ else
         }
 
         [TestMethod]
-        public void Formatter_FormatFunctionNoSpaceAfterComma()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFunctionNoSpaceAfterComma() {
             RFormatOptions options = new RFormatOptions();
             options.SpaceAfterComma = false;
 

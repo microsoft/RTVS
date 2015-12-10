@@ -8,6 +8,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [TestClass]
     public class CranMirrorListTest {
         [TestMethod]
+        [TestCategory("R.Packages")]
         public void CranMirrorList_DownloadTest() {
             ManualResetEventSlim evt = new ManualResetEventSlim();
             int eventCount = 0;

@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         }
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) {
-            IVsUIShell uiShell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             IntPtr dialogOwner;
             uiShell.GetDialogOwnerHwnd(out dialogOwner);
 

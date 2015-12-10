@@ -3,22 +3,24 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Outline;
+using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
+using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Test.Outline
-{
+namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class OutlineBuilderTest : UnitTestBase
-    {
-        [TestMethod()]
-        public void RRegionBuilder_ConstructionTest()
-        {
+    public class OutlineBuilderTest : UnitTestBase {
+        [TestMethod]
+        [TestCategory("R.Outlining")]
+        public void RRegionBuilder_ConstructionTest() {
+            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
+
             TextBufferMock textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
             EditorTree tree = new EditorTree(textBuffer);
             EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
@@ -45,9 +47,10 @@ namespace Microsoft.R.Editor.Test.Outline
             Assert.IsNull(d);
         }
 
-        [TestMethod()]
-        public void RRegionBuilder_Test01()
-        {
+        [TestMethod]
+        [TestCategory("R.Outlining")]
+        public void RRegionBuilder_Test01() {
+            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
             OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions("");
 
             Assert.AreEqual(0, rc.Count);
@@ -55,9 +58,9 @@ namespace Microsoft.R.Editor.Test.Outline
             Assert.AreEqual(0, rc.Length);
         }
 
-        [TestMethod()]
-        public void RRegionBuilder_Test02()
-        {
+        [TestMethod]
+        [TestCategory("R.Outlining")]
+        public void RRegionBuilder_Test02() {
             string content =
 @"if (ncol(x) == 1L) {
     xnames < -1
@@ -70,6 +73,7 @@ else {
     xnames<- c(0, xnames)
   }
 ";
+            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
             OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(content);
 
             // [0][0...165), Length = 165
@@ -89,9 +93,10 @@ else {
             Assert.AreEqual("if...", rc[2].DisplayText);
         }
 
-        [TestMethod()]
-        public void RRegionBuilder_OutlineFile01()
-        {
+        [TestMethod]
+        [TestCategory("R.Outlining")]
+        public void RRegionBuilder_OutlineFile01() {
+            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
             OutlineTest.OutlineFile(this.TestContext, "01.r");
         }
     }

@@ -8,7 +8,6 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
-using Microsoft.Markdown.Editor.Classification;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Test.Utility;
@@ -17,8 +16,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace Microsoft.Markdown.Editor.Test.Classification
-{
+namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
     [TestClass]
     public class MarkdownClassifierTest : UnitTestBase
@@ -27,9 +25,10 @@ namespace Microsoft.Markdown.Editor.Test.Classification
         private static bool _regenerateBaselineFiles = false;
 
         [TestMethod]
+        [TestCategory("Md.Classifier")]
         public void ClassifyMarkdownFileTest01()
         {
-            EditorShell.SetShell(TestEditorShell.Create(MarkdownTestCompositionCatalog.Current));
+            TestEditorShell.Create(MarkdownTestCompositionCatalog.Current);
             ClassifyFile(TestContext, @"Classification\01.md");
         }
 

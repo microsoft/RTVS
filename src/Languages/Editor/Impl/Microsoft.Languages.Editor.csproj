@@ -126,10 +126,10 @@
     <Compile Include="Selection\SelectionUndo.cs" />
     <Compile Include="Services\ServiceManager.cs" />
     <Compile Include="Services\ServiceManagerEventArgs.cs" />
-    <Compile Include="Shell\IIdleTimeService.cs" />
     <Compile Include="Shell\IEditorShell.cs" />
     <Compile Include="Shell\EditorShell.cs" />
     <Compile Include="Settings\CommonSettings.cs" />
+    <Compile Include="Shell\IEditorShellProvider.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskList.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskListItem.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskListItemSource.cs" />

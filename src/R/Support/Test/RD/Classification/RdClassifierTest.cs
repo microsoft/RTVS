@@ -9,15 +9,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace Microsoft.R.Support.Test.RD.Classification
-{
+namespace Microsoft.R.Support.Test.RD.Classification {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class RdClassifierTest: UnitTestBase
-    {
+    public class RdClassifierTest : UnitTestBase {
         [TestMethod]
-        public void ClassifyRContent()
-        {
+        [TestCategory("R.Classifier")]
+        public void ClassifyRContent() {
             string expected1 =
 @"[0:9] keyword
 [9:1] RD Braces

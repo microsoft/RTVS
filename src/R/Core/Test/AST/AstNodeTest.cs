@@ -4,24 +4,20 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions.Definitions;
-using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.AST
-{
+namespace Microsoft.R.Core.Test.AST {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class AstNodeTest : UnitTestBase
-    {
+    public class AstNodeTest : UnitTestBase {
         [TestMethod]
-        public void AstNode_RemoveChildrenTest()
-        {
+        [TestCategory("AST")]
+        public void AstNode_RemoveChildrenTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a+b"));
             IScope scope = ast.Children[0] as IScope;
             IStatement statement = scope.Children[0] as IStatement;
@@ -44,8 +40,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void AstNode_GetPositionNodeTest()
-        {
+        [TestCategory("AST")]
+        public void AstNode_GetPositionNodeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a+b"));
 
             IAstNode scope;
@@ -61,8 +57,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void AstNode_GetElementsEnclosingRangeTest()
-        {
+        [TestCategory("AST")]
+        public void AstNode_GetElementsEnclosingRangeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a123+b"));
 
             IAstNode startNode, endNode;
@@ -83,8 +79,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void AstNode_NodeFromRangeTest()
-        {
+        [TestCategory("AST")]
+        public void AstNode_NodeFromRangeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a123+b"));
 
             IAstNode node = ast.NodeFromRange(new TextRange(2, 5));
@@ -97,8 +93,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void AstNode_PropertiesTest()
-        {
+        [TestCategory("AST")]
+        public void AstNode_PropertiesTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a+b"));
 
             ast.Properties.AddProperty("a", "b");

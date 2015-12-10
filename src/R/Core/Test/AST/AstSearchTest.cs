@@ -10,15 +10,13 @@ using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.AST
-{
+namespace Microsoft.R.Core.Test.AST {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class AstSearchTes : UnitTestBase
-    {
+    public class AstSearchTes : UnitTestBase {
         [TestMethod]
-        public void AstSearch_GetPackageNamesTest()
-        {
+        [TestCategory("AST")]
+        public void AstSearch_GetPackageNamesTest() {
             AstRoot ast = RParser.Parse(new TextStream("library(a); library(b); while(T) { library(c) }"));
             string[] names = ast.GetFilePackageNames().ToArray();
 
@@ -29,8 +27,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void AstNode_GetPositionNodeTest()
-        {
+        [TestCategory("AST")]
+        public void AstNode_GetPositionNodeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a+b"));
 
             IAstNode scope;
@@ -46,8 +44,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void AstNode_GetElementsEnclosingRangeTest()
-        {
+        [TestCategory("AST")]
+        public void AstNode_GetElementsEnclosingRangeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a123+b"));
 
             IAstNode startNode, endNode;
@@ -68,8 +66,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void AstNode_NodeFromRangeTest()
-        {
+        [TestCategory("AST")]
+        public void AstNode_NodeFromRangeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a123+b"));
 
             IAstNode node = ast.NodeFromRange(new TextRange(2, 5));
@@ -82,8 +80,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void AstNode_PropertiesTest()
-        {
+        [TestCategory("AST")]
+        public void AstNode_PropertiesTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a+b"));
 
             ast.Properties.AddProperty("a", "b");

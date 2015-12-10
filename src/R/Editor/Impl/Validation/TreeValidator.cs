@@ -143,7 +143,7 @@ namespace Microsoft.R.Editor.Validation
             {
                 _idleRequestTime = DateTime.UtcNow;
 
-                EditorShell.OnIdle += OnIdle;
+                EditorShell.Current.Idle += OnIdle;
                 _advisedToIdleTime = true;
             }
         }
@@ -152,7 +152,7 @@ namespace Microsoft.R.Editor.Validation
         {
             if (_advisedToIdleTime)
             {
-                EditorShell.OnIdle -= OnIdle;
+                EditorShell.Current.Idle -= OnIdle;
                 _advisedToIdleTime = false;
             }
         }

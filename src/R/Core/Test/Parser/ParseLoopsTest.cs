@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseLoopsTest : UnitTestBase
-    {
+    public class ParseLoopsTest : UnitTestBase {
         [TestMethod]
-        public void ParseRepeatTest()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseRepeatTest() {
             string expected =
 @"GlobalScope  [Global]
     KeywordScopeStatement  []
@@ -33,8 +31,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseWhileTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseWhileTest1() {
             string expected =
 @"GlobalScope  [Global]
     KeywordExpressionScopeStatement  []
@@ -69,8 +67,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseWhileTest2()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseWhileTest2() {
             string expected =
 @"GlobalScope  [Global]
     KeywordExpressionScopeStatement  []
@@ -96,8 +94,8 @@ RightOperandExpected Token [12...13)
         }
 
         [TestMethod]
-        public void ParseForTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseForTest1() {
             string expected =
 @"GlobalScope  [Global]
     For  []

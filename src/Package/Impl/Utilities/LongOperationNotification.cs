@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
@@ -46,9 +46,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 try {
                     task.Wait();
                 } catch (AggregateException aex) {
-                    EditorShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotCollectLogs, aex.InnerException.Message));
+                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotCollectLogs, aex.InnerException.Message));
                 } catch (Exception ex) {
-                    EditorShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotCollectLogs, ex.Message));
+                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotCollectLogs, ex.Message));
                 }
             }
         }

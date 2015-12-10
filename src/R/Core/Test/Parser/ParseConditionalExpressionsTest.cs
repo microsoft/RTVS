@@ -10,6 +10,7 @@ namespace Microsoft.R.Core.Test.Parser
     public class ParseConditionalExpressionsTest : UnitTestBase
     {
         [TestMethod]
+        [TestCategory("R.Parser")]
         public void ParseConditionalExpressionsTest1()
         {
             string expected =

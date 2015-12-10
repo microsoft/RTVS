@@ -33,6 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         #region manual Add/Removal Test
 
         [TestMethod]
+        [TestCategory("Variable.Explorer")]
         public void ObservableTreeNodeConstructorTest() {
             var target = new ObservableTreeNode(new TestNode(1234));
             Assert.AreEqual(false, target.HasChildren, "Default HasChildren value");
@@ -42,6 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [TestMethod]
+        [TestCategory("Variable.Explorer")]
         public void ObservableTreeNodeAddChildTest() {
             var target = _rootNode;
             target.InsertChildAt(0, GetTestTree());
@@ -51,6 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [TestMethod]
+        [TestCategory("Variable.Explorer")]
         public void ObservableTreeNodeRemoveChildTest() {
             var target = _rootNode;
             target.InsertChildAt(0, GetTestTree());
@@ -61,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [TestMethod]
+        [TestCategory("Variable.Explorer")]
         public void AddLeafChildTest() {
             var target = _rootNode;
             target.AddChild(new ObservableTreeNode(new TestNode(10)));
@@ -72,6 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [TestMethod]
+        [TestCategory("Variable.Explorer")]
         public void AddChildTest() {
             var target = _rootNode;
             target.AddChild(new ObservableTreeNode(new TestNode(10)));
@@ -89,6 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [TestMethod]
+        [TestCategory("Variable.Explorer")]
         public void InsertChildOrderTest() {
             var target = _rootNode;
             target.InsertChildAt(0, new ObservableTreeNode(new TestNode(12)));
@@ -100,6 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [TestMethod]
+        [TestCategory("Variable.Explorer")]
         public void InsertAnoterTreeTest() {
             var target = _rootNode;
             target.InsertChildAt(0, new ObservableTreeNode(new TestNode(12)));
@@ -117,6 +124,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [TestMethod]
+        [TestCategory("Variable.Explorer")]
         public void InsertChildTest() {
             var target = _rootNode;
             target.InsertChildAt(0, new ObservableTreeNode(new TestNode(10)));
@@ -130,6 +138,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [TestMethod]
+        [TestCategory("Variable.Explorer")]
         public void RemoveLeafChildTest() {
             var target = _rootNode;
             target.InsertChildAt(0, new ObservableTreeNode(new TestNode(10)));

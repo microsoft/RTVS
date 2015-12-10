@@ -9,6 +9,7 @@ namespace Microsoft.R.Actions.Test.Logging
     public class LoggerTest
     {
         [TestMethod]
+        [TestCategory("Logging")]
         public void Logging_NullLogTest()
         {
             IActionLinesLog log = new NullLog();
@@ -21,6 +22,7 @@ namespace Microsoft.R.Actions.Test.Logging
         }
 
         [TestMethod]
+        [TestCategory("Logging")]
         public void Logging_LinesLogTest()
         {
             IActionLinesLog log = new LinesLog(NullLogWriter.Instance);

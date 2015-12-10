@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private static void SetBinding() {
-            DTE dte = AppShell.Current.GetGlobalService<DTE>();
+            DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
             string binding;
 
             if (dte == null) {

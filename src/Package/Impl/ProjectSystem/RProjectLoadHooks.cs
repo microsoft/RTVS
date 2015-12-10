@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.ProjectSystem;
@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Repl;
-using Microsoft.VisualStudio.R.Package.Repl.Session;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo("RTools")]
@@ -114,7 +114,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     return true;
                 case YesNoAsk.Ask:
                     await _threadHandling.SwitchToUIThread();
-                    return EditorShell.Current.ShowMessage(
+                    return VsAppShell.Current.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rdataPath),
                         MessageButtons.YesNo) == MessageButtons.Yes;
                 default:
@@ -128,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     return true;
                 case YesNoAsk.Ask:
                     await _threadHandling.SwitchToUIThread();
-                    return EditorShell.Current.ShowMessage(
+                    return VsAppShell.Current.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceOnProjectUnload, rdataPath),
                         MessageButtons.YesNo) == MessageButtons.Yes;
                 default:

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Settings;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Settings;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     public static class ViewUtilities {
@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         private static IVsEditorAdaptersFactoryService AdaptersFactoryService {
             get {
                 if (_adaptersFactoryService == null)
-                    _adaptersFactoryService = EditorShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
+                    _adaptersFactoryService = VsAppShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
 
                 return _adaptersFactoryService;
             }
@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 IVsTextView vsTextView = null;
                 ITextView activeTextView = null;
 
-                IVsTextManager2 textManager = AppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
+                IVsTextManager2 textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
 
                 if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)(_VIEWFRAMETYPE.vftCodeWindow | _VIEWFRAMETYPE.vftToolWindow), out vsTextView))) {
                     activeTextView = AdaptersFactoryService.GetWpfTextView(vsTextView);

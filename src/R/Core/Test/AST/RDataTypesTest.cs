@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.DataTypes.Definitions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.AST
-{
+namespace Microsoft.R.Core.Test.AST {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class RDataTypesTest : UnitTestBase
-    {
+    public class RDataTypesTest : UnitTestBase {
         [TestMethod]
-        public void RObjectTest()
-        {
+        [TestCategory("AST")]
+        public void RObjectTest() {
             RNumber rn = new RNumber(1);
             RLogical rl = new RLogical(false);
             RString rs = new RString("abc");
@@ -46,8 +43,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void RLogicalTest()
-        {
+        [TestCategory("AST")]
+        public void RLogicalTest() {
             RLogical rlTrue1 = new RLogical(true);
             RLogical rlTrue2 = new RLogical(true);
             RLogical rlFalse1 = new RLogical(false);
@@ -82,8 +79,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void RNumberTest()
-        {
+        [TestCategory("AST")]
+        public void RNumberTest() {
             RNumber rn1 = new RNumber(1);
             RNumber rn2 = new RNumber(1.0);
             RNumber rn3 = new RNumber(2.1);
@@ -104,8 +101,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void RIntegerTest()
-        {
+        [TestCategory("AST")]
+        public void RIntegerTest() {
             RInteger rn1 = new RInteger(1);
             RInteger rn2 = new RInteger(1);
             RInteger rn3 = new RInteger(2);
@@ -121,8 +118,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void RVectorTest()
-        {
+        [TestCategory("AST")]
+        public void RVectorTest() {
             var rv = new RVector<RLogical>(RMode.Logical, 2);
             Assert.AreEqual(2, rv.Length);
             Assert.AreEqual(RMode.Logical, rv.Mode);
@@ -139,8 +136,8 @@ namespace Microsoft.R.Core.Test.AST
         }
 
         [TestMethod]
-        public void RListTest()
-        {
+        [TestCategory("AST")]
+        public void RListTest() {
             RList rl = new RList();
 
             Assert.AreEqual(RMode.List, rl.Mode);

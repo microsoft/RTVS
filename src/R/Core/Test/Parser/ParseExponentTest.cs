@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseExponentTest : UnitTestBase
-    {
+    public class ParseExponentTest : UnitTestBase {
         [TestMethod]
-        public void ParseExponentTest1()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseExponentTest1() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a^b]
@@ -25,8 +23,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseExponentTest2()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseExponentTest2() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a^b^c]
@@ -43,8 +41,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseExponentTest3()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseExponentTest3() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a^(b+c)]
@@ -65,8 +63,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseExponentTest4()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseExponentTest4() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a^b::c]

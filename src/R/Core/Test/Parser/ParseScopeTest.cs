@@ -3,16 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseScopeTest : UnitTestBase
-    {
-        [ExcludeFromCodeCoverage]
+    public class ParseScopeTest : UnitTestBase {
         [TestMethod]
-        public void ParseScopeTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseScopeTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- as.matrix(x)]
@@ -46,8 +43,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseScopeTest02()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseScopeTest02() {
             string expected =
 @"GlobalScope  [Global]
     Scope  []
@@ -62,8 +59,8 @@ CloseCurlyBraceExpected AfterToken [2...3)
         }
 
         [TestMethod]
-        public void ParseScopeTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseScopeTest03() {
             string expected =
 @"GlobalScope  [Global]
     Scope  []
@@ -75,8 +72,8 @@ CloseCurlyBraceExpected AfterToken [0...1)
         }
 
         [TestMethod]
-        public void ParseScopeTest04()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseScopeTest04() {
             string expected =
 @"GlobalScope  [Global]
     Scope  []

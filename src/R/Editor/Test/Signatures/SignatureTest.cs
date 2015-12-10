@@ -5,15 +5,13 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Test.Signatures
-{
+namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class SignatureTest : UnitTestBase
-    {
+    public class SignatureTest : UnitTestBase {
         [TestMethod]
-        public void SignatureTest1()
-        {
+        [TestCategory("R.Signatures")]
+        public void SignatureTest1() {
             string content = @"x <- as.matrix(x); break;";
             AstRoot ast = RParser.Parse(content);
 
@@ -26,8 +24,8 @@ namespace Microsoft.R.Editor.Test.Signatures
         }
 
         [TestMethod]
-        public void SignatureTest2()
-        {
+        [TestCategory("R.Signatures")]
+        public void SignatureTest2() {
             string content = @"x <- as.matrix(x; break;";
             AstRoot ast = RParser.Parse(content);
 
@@ -40,8 +38,8 @@ namespace Microsoft.R.Editor.Test.Signatures
         }
 
         [TestMethod]
-        public void SignatureTest3()
-        {
+        [TestCategory("R.Signatures")]
+        public void SignatureTest3() {
             string content = @"x <- as.matrix(x  ; break;";
             AstRoot ast = RParser.Parse(content);
 

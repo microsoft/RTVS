@@ -1,15 +1,15 @@
-﻿using Microsoft.VisualStudio.Editor;
+﻿using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.EditorHelpers;
-using Microsoft.Languages.Editor.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     public static class TextBufferUtilities {
         private static IVsEditorAdaptersFactoryService _adaptersFactoryService;
         private static IVsEditorAdaptersFactoryService AdaptersFactoryService => 
-            _adaptersFactoryService ?? (_adaptersFactoryService = EditorShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>());
+            _adaptersFactoryService ?? (_adaptersFactoryService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>());
 
         public static T QueryInterface<T>(this ITextBuffer textBuffer) where T : class {
             var vsTextBuffer = AdaptersFactoryService.GetBufferAdapter(textBuffer);

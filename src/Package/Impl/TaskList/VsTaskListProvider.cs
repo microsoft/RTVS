@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.TaskList {
@@ -17,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
         private bool _dirty;
 
         public VsTaskListProvider(IEditorTaskListItemSource source)
-            : base(AppShell.Current.GlobalServiceProvider) {
+            : base(RPackage.Current) {
             // Registration of the provider in VS is done by the base class.
 
             _source = source;
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
             _source.BeginUpdatingTasks += OnBeginUpdatingTasks;
             _source.EndUpdatingTasks += OnEndUpdatingTasks;
 
-            EditorShell.OnIdle += OnIdle;
+            VsAppShell.Current.Idle += OnIdle;
 
             ProviderName = "R Language Service";
             ProviderGuid = _taskListProviderGuid;
@@ -85,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
 
         protected override void Dispose(bool disposing) {
             if (_source != null) {
-                EditorShell.OnIdle -= OnIdle;
+                VsAppShell.Current.Idle -= OnIdle;
 
                 _source.TasksAdded -= OnTasksAdded;
                 _source.TasksRemoved -= OnTasksRemoved;

@@ -9,6 +9,7 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -132,7 +133,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         private string GetLoadFilePath() {
-            return EditorShell.Current.BrowseForFileOpen(IntPtr.Zero,
+            return VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero,
                 Resources.PlotFileFilter,
                 // TODO: open in current project folder if one is active
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\",
@@ -140,11 +141,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         private string GetSaveFilePath() {
-            return EditorShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotFileFilter, null, Resources.SavePlotDialogTitle);
+            return VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotFileFilter, null, Resources.SavePlotDialogTitle);
         }
 
         private string GetExportFilePath() {
-            return EditorShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportFilter, null, Resources.ExportPlotDialogTitle);
+            return VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportFilter, null, Resources.ExportPlotDialogTitle);
         }
 
         protected override void Dispose(bool disposing) {

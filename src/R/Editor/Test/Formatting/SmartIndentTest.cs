@@ -7,15 +7,13 @@ using Microsoft.R.Editor.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Test.Formatting
-{
+namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class SmartIndentTest : UnitTestBase
-    {
+    public class SmartIndentTest : UnitTestBase {
         [TestMethod]
-        public void SmartIndent_NoScopeTest01()
-        {
+        [TestCategory("R.SmartIndent")]
+        public void SmartIndent_NoScopeTest01() {
             int? indent = GetSmartIndent("if (x > 1)\n", 1);
 
             Assert.IsTrue(indent.HasValue);
@@ -23,8 +21,8 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void SmartIndent_UnclosedScopeTest01()
-        {
+        [TestCategory("R.SmartIndent")]
+        public void SmartIndent_UnclosedScopeTest01() {
             int? indent = GetSmartIndent("{if (x > 1)\r\n    x <- 1\r\nelse\n", 3);
 
             Assert.IsTrue(indent.HasValue);
@@ -32,8 +30,8 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void SmartIndent_UnclosedScopeTest02()
-        {
+        [TestCategory("R.SmartIndent")]
+        public void SmartIndent_UnclosedScopeTest02() {
             int? indent = GetSmartIndent("repeat\r\n    if (x > 1)\r\n", 2);
 
             Assert.IsTrue(indent.HasValue);
@@ -41,16 +39,15 @@ namespace Microsoft.R.Editor.Test.Formatting
         }
 
         [TestMethod]
-        public void SmartIndent_ScopedIfTest01()
-        {
+        [TestCategory("R.SmartIndent")]
+        public void SmartIndent_ScopedIfTest01() {
             int? indent = GetSmartIndent("if (x > 1) {\r\n\r\n}", 1);
 
             Assert.IsTrue(indent.HasValue);
             Assert.AreEqual(4, indent);
         }
 
-        private int? GetSmartIndent(string content, int lineNumber)
-        {
+        private int? GetSmartIndent(string content, int lineNumber) {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(content, 0, out ast);
             var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));

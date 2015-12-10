@@ -4,22 +4,20 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Markdown.Editor.Test.Tokens
-{
+namespace Microsoft.Markdown.Editor.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeBlockTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType>
-    {
+    public class TokenizeBlockTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
         [TestMethod]
-        public void TokenizeMd_Block01()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Block01() {
             var tokens = this.Tokenize(@"```block```", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Block02()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Block02() {
             string content =
 @"```
 block
@@ -37,22 +35,22 @@ block
         }
 
         [TestMethod]
-        public void TokenizeMd_Block03()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Block03() {
             var tokens = this.Tokenize(@"```block", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Block04()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Block04() {
             var tokens = this.Tokenize(@"```block` ```", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Block05()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Block05() {
             string content =
 @"```
 block```
@@ -69,8 +67,8 @@ block
         }
 
         [TestMethod]
-        public void TokenizeMd_Block06()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Block06() {
             var tokens = this.Tokenize(@"`r x <- 1`", new MdTokenizer());
             Assert.AreEqual(3, tokens.Count);
             Assert.AreEqual(MarkdownTokenType.Code, tokens[0].TokenType);

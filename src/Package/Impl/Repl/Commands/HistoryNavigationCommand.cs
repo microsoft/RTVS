@@ -1,12 +1,11 @@
 ﻿using System;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.History;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -30,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.RIGHT_EXT)
             }, false) {
 
-            var exportProvider = EditorShell.Current.ExportProvider;
+            var exportProvider = VsAppShell.Current.ExportProvider;
             _completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
             _editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
             _historyProvider = new Lazy<IRHistory>(() => {

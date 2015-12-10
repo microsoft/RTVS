@@ -1,30 +1,20 @@
 ﻿using System;
 using System.Collections.Immutable;
-using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using Microsoft.VisualStudio.R.Package.Repl.Session;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
-    [ExportCommandGroup("5EFC7975-14BC-11CF-9B2B-00AA00573819")]
-    [AppliesTo("RTools")]
-    [OrderPrecedence(100)]
-    internal sealed class OpenRDataVsStd97CommandGroupHandler : OpenRDataCommandGroupHandler {
-        [ImportingConstructor]
-        public OpenRDataVsStd97CommandGroupHandler(UnconfiguredProject unconfiguredProject, IRSessionProvider sessionProvider)
-            : base(unconfiguredProject, sessionProvider, (long)VSConstants.VSStd97CmdID.Open) {}
-    }
-
     internal class OpenRDataCommandGroupHandler : IAsyncCommandGroupHandler {
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IRSessionProvider _sessionProvider;
@@ -68,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         protected virtual async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode, IRSession session) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            MessageButtons messageResult = EditorShell.Current.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath), MessageButtons.YesNo);
+            MessageButtons messageResult = VsAppShell.Current.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath), MessageButtons.YesNo);
             if (messageResult == MessageButtons.No) {
                 return true;
             }
@@ -79,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 if (result.Error != null) {
                     var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat,
                         rDataNode.FilePath, result.Error);
-                    EditorShell.Current.ShowErrorMessage(message);
+                    VsAppShell.Current.ShowErrorMessage(message);
                 }
             }
 

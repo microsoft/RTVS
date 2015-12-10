@@ -13,20 +13,17 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Test.Signatures
-{
+namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class SignatureHelpSourceTest : UnitTestBase
-    {
+    public class SignatureHelpSourceTest : UnitTestBase {
         [TestMethod]
-        public void SignatureHelpSourceTest01()
-        {
+        [TestCategory("R.Signatures")]
+        public void SignatureHelpSourceTest01() {
             string content = @"x <- as.matrix(x)";
             AstRoot ast = RParser.Parse(content);
 
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) =>
-            {
+            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
                 int caretPosition = 15;
                 ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
                 SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer);
@@ -34,21 +31,18 @@ namespace Microsoft.R.Editor.Test.Signatures
                 List<ISignature> signatures = new List<ISignature>();
 
                 signatureHelpSession.TrackingPoint = new TrackingPointMock(textBuffer, caretPosition, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
-                bool ready = signatureHelpSource.AugmentSignatureHelpSession(signatureHelpSession, signatures, ast, (object o) =>
-                    {
-                        signatureHelpSource.AugmentSignatureHelpSession(signatureHelpSession, signatures, ast, null);
-                        SignatureHelpSourceTest01_TestBody(signatures, evt);
-                    });
+                bool ready = signatureHelpSource.AugmentSignatureHelpSession(signatureHelpSession, signatures, ast, (object o) => {
+                    signatureHelpSource.AugmentSignatureHelpSession(signatureHelpSession, signatures, ast, null);
+                    SignatureHelpSourceTest01_TestBody(signatures, evt);
+                });
 
-                if (ready && !evt.IsSet)
-                {
+                if (ready && !evt.IsSet) {
                     SignatureHelpSourceTest01_TestBody(signatures, evt);
                 }
             }, REditorTestCompositionCatalog.Current);
         }
 
-        private void SignatureHelpSourceTest01_TestBody(List<ISignature> signatures, ManualResetEventSlim completedEvent)
-        {
+        private void SignatureHelpSourceTest01_TestBody(List<ISignature> signatures, ManualResetEventSlim completedEvent) {
             Assert.AreEqual(2, signatures.Count);
             Assert.AreEqual(5, signatures[0].Parameters.Count);
             Assert.AreEqual(3, signatures[1].Parameters.Count);

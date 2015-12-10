@@ -203,8 +203,8 @@ namespace Microsoft.Languages.Editor.Tasks {
                 _connectedToIdle = true;
                 _idleConnectTime = DateTime.UtcNow;
 
-                EditorShell.OnIdle += OnIdle;
-                EditorShell.OnTerminate += OnTerminate;
+                EditorShell.Current.Idle += OnIdle;
+                EditorShell.Current.Terminating += OnTerminate;
             }
         }
 
@@ -214,8 +214,8 @@ namespace Microsoft.Languages.Editor.Tasks {
             if (_connectedToIdle) {
                 _connectedToIdle = false;
 
-                EditorShell.OnIdle -= OnIdle;
-                EditorShell.OnTerminate -= OnTerminate;
+                EditorShell.Current.Idle -= OnIdle;
+                EditorShell.Current.Terminating -= OnTerminate;
             }
         }
 

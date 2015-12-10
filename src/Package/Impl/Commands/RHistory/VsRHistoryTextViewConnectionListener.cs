@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Editor;
@@ -35,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
 
-                    IVsEditorAdaptersFactoryService adapterService = EditorShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
+                    IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
                     IVsTextView viewAdapter = adapterService.GetViewAdapter(textView);
 
                     if (viewAdapter != null) {
@@ -49,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                         // nextOleTarget is typically a core editor wrapped into OLE layer.
                         // Create a wrapper that will present OLE target as ICommandTarget to
                         // HTML main controller so controller can operate in platform-agnostic way.
-                        ICommandTarget nextCommandTarget = EditorShell.Current.TranslateCommandTarget(textView, nextOleTarget);
+                        ICommandTarget nextCommandTarget = VsAppShell.Current.TranslateCommandTarget(textView, nextOleTarget);
 
                         mainController.ChainedController = nextCommandTarget;
                     }
@@ -57,18 +56,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             }
 
             base.OnTextViewGotAggregateFocus(textView, textBuffer);
-        }
-
-        protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
-            AppShell.AddRef();
-
-            base.OnTextBufferCreated(textBuffer);
-        }
-
-        protected override void OnTextBufferDisposing(ITextBuffer textBuffer) {
-            base.OnTextBufferDisposing(textBuffer);
-
-            AppShell.Release();
         }
     }
 }

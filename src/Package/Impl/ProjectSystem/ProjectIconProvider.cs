@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// </summary>
         public static void LoadProjectImages() {
             if (_monikerImageList == null) {
-                IVsImageService2 imageService = AppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
+                IVsImageService2 imageService = VsAppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
 
                 if(_imageList == null) {
                     _imageList = new ImageList();

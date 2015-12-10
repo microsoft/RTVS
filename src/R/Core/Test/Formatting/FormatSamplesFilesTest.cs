@@ -6,15 +6,13 @@ using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Tokens
-{
+namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class FormatSamplesFilesTest : UnitTestBase
-    {
+    public class FormatSamplesFilesTest : UnitTestBase {
         [TestMethod]
-        public void Formatter_FormatFile_LeastSquares()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFile_LeastSquares() {
             RFormatOptions options = new RFormatOptions();
             options.IndentType = IndentType.Tabs;
 
@@ -22,8 +20,8 @@ namespace Microsoft.R.Core.Test.Tokens
         }
 
         [TestMethod]
-        public void Formatter_FormatFile_IfElse()
-        {
+        [TestCategory("R.Formatting")]
+        public void Formatter_FormatFile_IfElse() {
             RFormatOptions options = new RFormatOptions();
             options.IndentSize = 2;
 

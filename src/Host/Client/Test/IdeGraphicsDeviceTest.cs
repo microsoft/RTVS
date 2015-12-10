@@ -68,6 +68,7 @@ options(device = '.rtvs.vsgd')
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void GridLine() {
             var code = @"
 library(grid)
@@ -100,6 +101,7 @@ grid.segments(.01, .1, .99, .1)
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void MultiplePagesWithSleep() {
             var code = @"
 library(grid)
@@ -119,6 +121,7 @@ grid.raster(redGradient, interpolate = FALSE)
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void MultiplePlotsWithSleep() {
             var code = @"
 plot(0:10)
@@ -130,6 +133,7 @@ plot(5:15)
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void MultiplePlotsNoSleep() {
             var code = @"
 plot(0:10)
@@ -140,11 +144,13 @@ plot(5:15)
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void PlotCars() {
             GraphicsTestAgainstExpectedFiles(@"plot(cars)");
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void SetInitialSize() {
             var code = @"
 .rtvs.vsgdresize(600, 600)
@@ -158,6 +164,7 @@ plot(0:10)
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void ResizeImmediately() {
             var code = @"
 plot(0:10)
@@ -171,6 +178,7 @@ plot(0:10)
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void ResizeAfterDelay() {
             var code = @"
 plot(0:10)
@@ -188,6 +196,7 @@ Sys.sleep(1)
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void ExportToImage() {
             var exportedBmpFilePath = Path.Combine(TestContext.TestRunDirectory, "ExportToBmpResult.bmp");
             var exportedPngFilePath = Path.Combine(TestContext.TestRunDirectory, "ExportToPngResult.png");
@@ -232,6 +241,7 @@ Sys.sleep(1)
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void ExportToPdf() {
             var exportedFilePath = Path.Combine(TestContext.TestRunDirectory, "ExportToPdfResult.pdf");
 
@@ -252,6 +262,7 @@ Sys.sleep(1)
         }
 
         [TestMethod]
+        [TestCategory("Plots")]
         public void History() {
             var code = @"
 plot(0:10)

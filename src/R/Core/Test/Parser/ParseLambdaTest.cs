@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Parser
-{
+namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class ParseLambdaTest : UnitTestBase
-    {
+    public class ParseLambdaTest : UnitTestBase {
         [TestMethod]
-        public void ParseLambdaTest01()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseLambdaTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- { 1 }]
@@ -29,9 +27,9 @@ namespace Microsoft.R.Core.Test.Parser
             ParserTest.VerifyParse(expected, "a <- { 1 }");
         }
 
-         [TestMethod]
-        public void ParseLambdaTest02()
-        {
+        [TestMethod]
+        [TestCategory("R.Parser")]
+        public void ParseLambdaTest02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- b + { x <- c + d; x}]
@@ -64,8 +62,8 @@ namespace Microsoft.R.Core.Test.Parser
         }
 
         [TestMethod]
-        public void ParseLambdaTest03()
-        {
+        [TestCategory("R.Parser")]
+        public void ParseLambdaTest03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a({x <- 1; x})]

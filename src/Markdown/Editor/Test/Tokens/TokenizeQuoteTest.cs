@@ -3,15 +3,13 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Markdown.Editor.Test.Tokens
-{
+namespace Microsoft.Markdown.Editor.Test.Tokens {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class TokenizeQuoteTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType>
-    {
+    public class TokenizeQuoteTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
         [TestMethod]
-        public void TokenizeMd_Quote01()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Quote01() {
             var tokens = this.Tokenize(@"> quote", new MdTokenizer());
 
             Assert.AreEqual(1, tokens.Count);
@@ -22,22 +20,22 @@ namespace Microsoft.Markdown.Editor.Test.Tokens
         }
 
         [TestMethod]
-        public void TokenizeMd_Quote02()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Quote02() {
             var tokens = this.Tokenize(@">quote", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Quote03()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Quote03() {
             var tokens = this.Tokenize(@" > quote", new MdTokenizer());
             Assert.AreEqual(0, tokens.Count);
         }
 
         [TestMethod]
-        public void TokenizeMd_Quote04()
-        {
+        [TestCategory("Md.Tokenizer")]
+        public void TokenizeMd_Quote04() {
             string content =
 @"> quote
   quote

@@ -10,6 +10,7 @@ namespace Microsoft.R.Core.Test.Parser
     public class ParseComplexNumbersTest : UnitTestBase
     {
         [TestMethod]
+        [TestCategory("R.Parser")]
         public void ParseComplexNumbersTest1()
         {
             string expected =

@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Plots;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-                EditorShell.Current.ShowErrorMessage(Resources.Error_Microsoft_R_Host_Missing);
+                VsAppShell.Current.ShowErrorMessage(Resources.Error_Microsoft_R_Host_Missing);
                 return ExecutionResult.Failure;
             } catch (Exception) {
                 return ExecutionResult.Failure;
@@ -116,7 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ExecutionResult.Failure;
             } catch (Exception ex) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-                EditorShell.Current.ShowErrorMessage(ex.ToString());
+                VsAppShell.Current.ShowErrorMessage(ex.ToString());
                 return ExecutionResult.Failure;
             } finally {
                 History.AddToHistory(text);
