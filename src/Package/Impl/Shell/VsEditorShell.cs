@@ -28,6 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private IdleTimeSource _idleTimeSource;
 
         public VsEditorShell() {
+            ThreadHelper.ThrowIfNotOnUIThread("VsEditorShell.Current");
             MainThread = Thread.CurrentThread;
 
             IComponentModel componentModel = RPackage.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
