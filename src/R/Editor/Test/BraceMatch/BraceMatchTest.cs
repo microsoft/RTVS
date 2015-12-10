@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.EditorHelpers;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Editor.BraceMatch;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

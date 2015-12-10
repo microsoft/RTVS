@@ -43,6 +43,8 @@
       <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.Logic.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
@@ -80,6 +82,7 @@
   <ItemGroup>
     <Compile Include="Functions\FunctionIndexTest.cs" />
     <Compile Include="Packages\PackageIndexTest.cs" />
+    <Compile Include="RD\BraceMatch\BraceMatchTest.cs" />
     <Compile Include="RD\Classification\RdClassifierTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
     <Compile Include="Utility\RSupportTestCompositionCatalog.cs" />

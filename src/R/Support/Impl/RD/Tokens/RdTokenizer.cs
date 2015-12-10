@@ -53,7 +53,7 @@ namespace Microsoft.R.Support.RD.Tokens {
         }
 
         private void HandleLatexContent(bool block) {
-            BraceCounter<char> braceCounter = block ? new BraceCounter<char>('{', '}', '[', ']') : null;
+            BraceCounter<char> braceCounter = block ? new BraceCounter<char>(new char[] { '{', '}', '[', ']' }) : null;
 
             while (!_cs.IsEndOfStream()) {
                 bool handled = false;
@@ -175,7 +175,7 @@ namespace Microsoft.R.Support.RD.Tokens {
         /// </summary>
         /// <param name="closeBrace"></param>
         private void HandleRContent(char closeBrace) {
-            BraceCounter<char> braceCounter = new BraceCounter<char>('{', '}', '[', ']');
+            BraceCounter<char> braceCounter = new BraceCounter<char>(new char[] { '{', '}', '[', ']' });
             int start = _cs.Position;
 
             while (!_cs.IsEndOfStream()) {
@@ -286,7 +286,7 @@ namespace Microsoft.R.Support.RD.Tokens {
         /// as escapes must themselves be escaped. 
         /// </summary>
         private void HandleVerbatimContent(char closeBrace) {
-            BraceCounter<char> braceCounter = new BraceCounter<char>('{', '}', '[', ']');
+            BraceCounter<char> braceCounter = new BraceCounter<char>(new char[] { '{', '}', '[', ']' });
 
             while (!_cs.IsEndOfStream()) {
                 bool handled = false;

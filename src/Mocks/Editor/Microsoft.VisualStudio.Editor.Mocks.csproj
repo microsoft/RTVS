@@ -98,6 +98,7 @@
     <Compile Include="TextVersionMock.cs" />
     <Compile Include="TextViewMock.cs" />
     <Compile Include="TextViewModelMock.cs" />
+    <Compile Include="Helpers\TextViewTestHelper.cs" />
     <Compile Include="TrackingPointMock.cs" />
     <Compile Include="TrackingSpanMock.cs" />
     <Compile Include="WpfTextViewMock.cs" />
