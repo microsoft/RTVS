@@ -19,7 +19,7 @@ namespace Microsoft.R.Host.Client {
         Task<MessageButtons> ShowMessage(string message, MessageButtons buttons);
 
         /// <summary>
-        /// Displays R help URL in a browser on in the host app-provided window
+        /// Displays R help URL in a browser or in the host provided window
         /// </summary>
         Task ShowHelp(string url);
 
@@ -29,7 +29,7 @@ namespace Microsoft.R.Host.Client {
         Task Plot(string filePath, CancellationToken ct);
 
         /// <summary>
-        /// Given CRAN mirror name returns URL
+        /// Given CRAN mirror name returns server URL
         /// </summary>
         string CranUrlFromName(string name);
     }

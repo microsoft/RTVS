@@ -62,8 +62,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Definitions\IRHostClientApp.cs" />
-    <Compile Include="Definitions\PlotEventArgs.cs" />
-    <Compile Include="Definitions\ShowHelpEventArgs.cs" />
     <Compile Include="MessageTransportException.cs" />
     <Compile Include="Definitions\IMessageTransport.cs" />
     <Compile Include="Definitions\IRContext.cs" />
