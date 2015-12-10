@@ -5,6 +5,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using Microsoft.Common.Core;
 using Microsoft.VisualStudio.R.Package.Wpf;
 
@@ -116,6 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OnNotifyRowHeaderPropertyChanged() {
+            ColumnHeadersPresenter?.NotifyRowHeader();
             foreach (var row in _realizedRows) {
                 row.NotifyRowHeader();
             }
@@ -135,6 +139,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 _columnHeadersPresenter = value;
                 _columnHeadersPresenter.ItemsSource = ColumnHeaderSource;
             }
+        }
+
+        #endregion
+
+        #region Grid line
+
+        public static readonly DependencyProperty GridLinesBrushProperty =
+            DependencyProperty.Register(
+                nameof(GridLinesBrush),
+                typeof(Brush),
+                typeof(DynamicGrid),
+                new FrameworkPropertyMetadata(Brushes.Black));
+
+        public Brush GridLinesBrush
+        {
+            get { return (Brush)GetValue(GridLinesBrushProperty); }
+            set { SetValue(GridLinesBrushProperty, value); }
         }
 
         #endregion

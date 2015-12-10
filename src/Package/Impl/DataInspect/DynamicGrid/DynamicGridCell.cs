@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -16,14 +17,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Track = new LinkedListNode<DynamicGridCell>(this);
         }
 
-        internal DynamicGridRow Owner { get; private set; }
+        internal DynamicGridRow ParentRow { get; private set; }
+
+        internal DynamicGrid ParentGrid { get { return ParentRow?.ParentGrid; } }
 
         internal LinkedListNode<DynamicGridCell> Track { get; private set; }
 
         internal MaxDouble ColumnWidth { get; set; }
 
         internal virtual void Prepare(DynamicGridRow owner, MaxDouble columnWidth) {
-            Owner = owner;
+            ParentRow = owner;
 
             if (ColumnWidth != null) {
                 ColumnWidth.MaxChanged -= LayoutSize_MaxChanged;
@@ -34,7 +37,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void LayoutSize_MaxChanged(object sender, EventArgs e) {
-            InvalidateMeasure();
+            if (!object.Equals(sender, ColumnWidth)) {
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
@@ -48,13 +53,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             ColumnWidth = null;
 
-            this.Owner = null;
+            this.ParentRow = null;
         }
 
+        private double LineThickness = 1.0; // TODO: configurable
         protected override Size MeasureOverride(Size constraint) {
-            constraint.Width = constraint.Width;
 
-            Size desired = base.MeasureOverride(constraint);
+            Size adjustedConstraint = DynamicGridUtilities.DecreaseSize(constraint, LineThickness);
+
+            Size desired = base.MeasureOverride(adjustedConstraint);
+
+            desired.Height += LineThickness;
+            desired.Width += LineThickness;
 
             ColumnWidth.Max = desired.Width;
             desired.Width = ColumnWidth.Max;
@@ -63,9 +73,36 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         protected override Size ArrangeOverride(Size arrangeBounds) {
-            arrangeBounds.Width = ColumnWidth.Max;
+            Size adjustedBounds = DynamicGridUtilities.DecreaseSize(arrangeBounds, LineThickness);
 
-            return base.ArrangeOverride(arrangeBounds);
+            Size arrangedSize = base.ArrangeOverride(adjustedBounds);
+
+            arrangedSize.Height += LineThickness;
+            arrangedSize.Width += LineThickness;
+
+            return arrangedSize;
+        }
+
+
+
+        protected override void OnRender(DrawingContext drawingContext) {
+            base.OnRender(drawingContext);
+
+            // vertical line
+            {
+                Rect rect = new Rect(new Size(LineThickness, RenderSize.Height));
+                rect.X = RenderSize.Width - LineThickness;
+
+                drawingContext.DrawRectangle(ParentGrid.GridLinesBrush, null, rect);
+            }
+
+            // horizontal line
+            {
+                Rect rect = new Rect(new Size(RenderSize.Width, LineThickness));
+                rect.Y = RenderSize.Height - LineThickness;
+
+                drawingContext.DrawRectangle(ParentGrid.GridLinesBrush, null, rect);
+            }
         }
     }
 }

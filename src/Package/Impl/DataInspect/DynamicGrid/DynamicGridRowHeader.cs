@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Microsoft.VisualStudio.R.Package.Wpf;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -18,7 +19,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         protected override Size MeasureOverride(Size constraint) {
-            Size baseSize = base.MeasureOverride(constraint);
+            Size adjusted = DynamicGridUtilities.DecreaseSize(constraint, LineThickness);
+
+            Size baseSize = base.MeasureOverride(adjusted);
+
+            baseSize.Width += LineThickness;
+            baseSize.Height += LineThickness;
 
             var grid = ParentGrid;
             if (grid == null) {
@@ -32,15 +38,51 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return new Size(grid.RowHeaderActualWidth, baseSize.Height);
         }
 
+        private double LineThickness = 1.0;
+        protected override Size ArrangeOverride(Size arrangeBounds) {
+            Size adjustedBounds = DynamicGridUtilities.DecreaseSize(arrangeBounds, LineThickness);
+            
+            Size arranged = base.ArrangeOverride(adjustedBounds);
+
+            arranged.Width += LineThickness;
+            arranged.Height += LineThickness;
+
+            return arranged;
+        }
+
+        protected override void OnRender(DrawingContext drawingContext) {
+            base.OnRender(drawingContext);
+
+            // vertical line
+            {
+                Rect rect = new Rect(new Size(LineThickness, RenderSize.Height));
+                rect.X = RenderSize.Width - LineThickness;
+
+                drawingContext.DrawRectangle(ParentGrid.GridLinesBrush, null, rect);
+            }
+
+            // horizontal line
+            {
+                Rect rect = new Rect(new Size(RenderSize.Width, LineThickness));
+                rect.Y = RenderSize.Height - LineThickness;
+
+                drawingContext.DrawRectangle(ParentGrid.GridLinesBrush, null, rect);
+            }
+        }
+
+        private DynamicGridRow _parentRow;
         internal DynamicGridRow ParentRow {
             get {
-                return WpfHelper.FindParent<DynamicGridRow>(this);
+                if (_parentRow == null) {
+                    _parentRow = WpfHelper.FindParent<DynamicGridRow>(this);
+                }
+                return _parentRow;
             }
         }
 
         internal DynamicGrid ParentGrid {
             get {
-                return ParentRow.ParentGrid;
+                return ParentRow?.ParentGrid;
             }
         }
     }

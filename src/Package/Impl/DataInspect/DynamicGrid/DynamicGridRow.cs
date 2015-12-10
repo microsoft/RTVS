@@ -79,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 throw new InvalidOperationException("Item is not found in collection");
             }
 
-            if (cell.Owner != this) {
+            if (cell.ParentRow != this) {
                 _realizedCells.AddFirst(cell.Track);
             }
 
@@ -91,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             base.ClearContainerForItemOverride(element, item);
 
             var cell = (DynamicGridCell)element;
-            if (cell.Owner == this) {
+            if (cell.ParentRow == this) {
                 _realizedCells.Remove(cell.Track);
             }
             cell.CleanUp();

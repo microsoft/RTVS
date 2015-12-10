@@ -76,6 +76,7 @@
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowHeader.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowsPanel.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGridUtilities.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
