@@ -2,9 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.ContentType;
