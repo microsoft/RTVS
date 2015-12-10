@@ -57,6 +57,26 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\DataSource\DelegateList.cs" />
+    <Compile Include="DataInspect\DataSource\Grid.cs" />
+    <Compile Include="DataInspect\DataSource\IGrid.cs" />
+    <Compile Include="DataInspect\DataSource\IGridProvider.cs" />
+    <Compile Include="DataInspect\DataSource\IListProvider.cs" />
+    <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
+    <Compile Include="DataInspect\DataSource\Page.cs" />
+    <Compile Include="DataInspect\DataSource\Page2D.cs" />
+    <Compile Include="DataInspect\DataSource\Page2DManager.cs" />
+    <Compile Include="DataInspect\DataSource\PageItem.cs" />
+    <Compile Include="DataInspect\DataSource\PageManager.cs" />
+    <Compile Include="DataInspect\DataSource\PageNumber.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGrid.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGridCell.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGridCellsPanel.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGridColumnHeadersPresenter.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGridRow.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGridRowHeader.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGridRowsPanel.cs" />
+    <Compile Include="DataInspect\DataSource\GridRange.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
@@ -65,14 +85,8 @@
     <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
-    <Compile Include="DataInspect\DynamicGrid\ConstantCountList.cs" />
     <Compile Include="DataInspect\DynamicGrid\MaxDouble.cs" />
-    <Compile Include="DataInspect\DynamicGrid\Range.cs" />
-    <Compile Include="DataInspect\DynamicGrid\VariableGrid.cs" />
-    <Compile Include="DataInspect\DynamicGrid\VariableGridCell.cs" />
-    <Compile Include="DataInspect\DynamicGrid\VariableGridDataSource.cs" />
-    <Compile Include="DataInspect\DynamicGrid\VariableGridPanel.cs" />
-    <Compile Include="DataInspect\DynamicGrid\VariableGridStack.cs" />
+    <Compile Include="DataInspect\DataSource\Range.cs" />
     <Compile Include="DataInspect\EvaluationWrapper.cs" />
     <Compile Include="DataInspect\MultiplyConverter.cs" />
     <Compile Include="DataInspect\VariableGridHost.xaml.cs">
@@ -143,7 +157,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Plots\RPlotWindowHost.cs" />
+    <Compile Include="ProjectSystem\ExcludeFromProjectCommand.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
+    <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\ProjectIconProvider.cs" />
     <Compile Include="ProjectSystem\ProjectTreeModifier.cs" />
@@ -313,6 +329,7 @@
     <Compile Include="Wpf\LabelledButton.cs" />
     <Compile Include="Wpf\LabelledControl.cs" />
     <Compile Include="Wpf\NativeMethods.cs" />
+    <Compile Include="Wpf\WpfHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -730,6 +747,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DataInspect\DynamicGrid\DynamicGridStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DataInspect\VariableGridHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

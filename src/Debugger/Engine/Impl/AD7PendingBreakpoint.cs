@@ -24,10 +24,6 @@ namespace Microsoft.R.Debugger.Engine {
             var requestInfo = new BP_REQUEST_INFO[1];
             Marshal.ThrowExceptionForHR(request.GetRequestInfo(enum_BPREQI_FIELDS.BPREQI_BPLOCATION | enum_BPREQI_FIELDS.BPREQI_CONDITION | enum_BPREQI_FIELDS.BPREQI_ALLFIELDS, requestInfo));
             _requestInfo = requestInfo[0];
-
-            if (_requestInfo.guidLanguage != DebuggerGuids.LanguageGuid) {
-                throw new ArgumentException("Breakpoint request is not for R language", "request");
-            }
         }
 
         private bool CanBind() {
@@ -68,7 +64,11 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugPendingBreakpoint2.Delete() {
-            _boundBreakpoint = null;
+            if (_boundBreakpoint != null) {
+                Marshal.ThrowExceptionForHR(((IDebugBoundBreakpoint2)_boundBreakpoint).Delete());
+                _boundBreakpoint = null;
+            }
+
             _state = enum_PENDING_BP_STATE.PBPS_DELETED;
             return VSConstants.S_OK;
         }

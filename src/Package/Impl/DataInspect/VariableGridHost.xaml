@@ -10,82 +10,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <Style x:Key="{x:Type local:VariableGrid}" TargetType="{x:Type local:VariableGrid}">
-            <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Visible" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible" />
-            <Setter Property="VirtualizingPanel.ScrollUnit" Value="Item" />
-            <Setter Property="VirtualizingPanel.CacheLength" Value="10"/>
-            <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Pixel"/>
-            <Setter Property="VirtualizingPanel.IsVirtualizing" Value="true"/>
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <local:VariableGridPanel />
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type local:VariableGrid}">
-                        <Border SnapsToDevicePixels="True">
-                            <ScrollViewer x:Name="VG_ScrollViewer" Focusable="False" >
-                                <ScrollViewer.Template>
-                                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
-                                        <Grid Background="{TemplateBinding Background}">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="*"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            <Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
-                                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
-                                            <ScrollBar x:Name="PART_VerticalScrollBar"
-                                                   AutomationProperties.AutomationId="VerticalScrollBar"
-                                                   Cursor="Arrow"
-                                                   Grid.Row="0" Grid.Column="1"
-                                                   Maximum="{TemplateBinding ScrollableHeight}"
-                                                   Minimum="0"
-                                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
-                                                   Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                                   ViewportSize="{TemplateBinding ViewportHeight}"/>
-                                            <ScrollBar x:Name="PART_HorizontalScrollBar"
-                                                   AutomationProperties.AutomationId="HorizontalScrollBar"
-                                                   Cursor="Arrow"
-                                                   Grid.Row="1" Grid.Column="0"
-                                                   Maximum="{TemplateBinding ScrollableWidth}"
-                                                   Minimum="0"
-                                                   Orientation="Horizontal"
-                                                   Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
-                                                   Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                                   ViewportSize="{TemplateBinding ViewportWidth}"/>
-                                        </Grid>
-                                    </ControlTemplate>
-                                </ScrollViewer.Template>
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="{x:Type local:VariableGridCell}" TargetType="{x:Type local:VariableGridCell}">
-            <Setter Property="Padding" Value="1" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type local:VariableGridCell}">
-                        <Border SnapsToDevicePixels="true" BorderBrush="Black" BorderThickness="1" Padding="{TemplateBinding Padding}" >
-                            <ContentPresenter />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="DynamicGrid\DynamicGridStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
 
-    <local:VariableGrid x:Name="VGrid" />
+    <local:DynamicGrid x:Name="VariableGrid" />
 </UserControl>

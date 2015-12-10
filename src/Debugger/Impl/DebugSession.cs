@@ -31,9 +31,12 @@ namespace Microsoft.R.Debugger {
         private volatile EventHandler<DebugBrowseEventArgs> _browse;
         private readonly object _browseLock = new object();
 
-        // Key is filename + line number.
         private Dictionary<DebugBreakpointLocation, DebugBreakpoint> _breakpoints = new Dictionary<DebugBreakpointLocation, DebugBreakpoint>();
+
+        public IReadOnlyCollection<DebugBreakpoint> Breakpoints => _breakpoints.Values;
+
         public IRSession RSession { get; private set; }
+
         public bool IsBrowsing { get; private set; }
 
         public event EventHandler<DebugBrowseEventArgs> Browse {
@@ -89,14 +92,21 @@ namespace Microsoft.R.Debugger {
 
             var libPath = Path.GetDirectoryName(typeof(DebugSession).Assembly.Location);
 
-            REvaluationResult res;
             using (var eval = await RSession.BeginEvaluationAsync()) {
-                res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
-            }
-            if (res.ParseStatus != RParseStatus.OK) {
-                throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);
-            } else if (res.Error != null) {
-                throw new InvalidDataException("Failed to execute loadNamespace('rtvs'): " + res.Error);
+                var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
+
+                if (res.ParseStatus != RParseStatus.OK) {
+                    throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);
+                } else if (res.Error != null) {
+                    throw new InvalidDataException("Failed to execute loadNamespace('rtvs'): " + res.Error);
+                }
+
+                // Re-initialize the breakpoint table.
+                foreach (var bp in _breakpoints.Values) {
+                    await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false)); // TODO: mark breakpoint as invalid if this fails.
+                }
+
+                await eval.EvaluateAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
             }
 
             // Attach might happen when session is already at the Browse prompt, in which case we have
@@ -127,20 +137,26 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        internal async Task<TToken> InvokeDebugHelperAsync<TToken>(string expression)
-            where TToken : JToken {
-
+        internal async Task<REvaluationResult> InvokeDebugHelperAsync(string expression, bool json = false) {
             TaskUtilities.AssertIsOnBackgroundThread();
             ThrowIfDisposed();
 
             REvaluationResult res;
             using (var eval = await RSession.BeginEvaluationAsync(false)) {
-                res = await eval.EvaluateAsync(expression, REvaluationKind.Json);
-                if (res.ParseStatus != RParseStatus.OK || res.Error != null || res.JsonResult == null) {
+                res = await eval.EvaluateAsync(expression, json ? REvaluationKind.Json : REvaluationKind.Normal);
+                if (res.ParseStatus != RParseStatus.OK || res.Error != null || (json && res.JsonResult == null)) {
                     Trace.Fail(Invariant($"Internal debugger evaluation {expression} failed: {res}"));
                     throw new REvaluationException(res);
                 }
             }
+
+            return res;
+        }
+
+        internal async Task<TToken> InvokeDebugHelperAsync<TToken>(string expression)
+            where TToken : JToken {
+
+            var res = await InvokeDebugHelperAsync(expression, json: true);
 
             var token = res.JsonResult as TToken;
             if (token == null) {
@@ -237,6 +253,12 @@ namespace Microsoft.R.Debugger {
             return stackFrames;
         }
 
+        public async Task EnableBreakpoints(bool enable) {
+            ThrowIfDisposed();
+            await TaskUtilities.SwitchToBackgroundThread();
+            await InvokeDebugHelperAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"));
+        }
+
         public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location) {
             ThrowIfDisposed();
 
@@ -316,10 +338,12 @@ namespace Microsoft.R.Debugger {
                                 ++n;
                             }
 
-                            // Set the destination for the next "c", which we will issue on the following prompt.
-                            await inter.RespondAsync(Invariant($"browserSetDebug({n})\n"));
-                            _bpHitProcState = BreakpointHitProcessingState.BrowserSetDebug;
-                            return;
+                            if (_bpHitFrame != null) {
+                                // Set the destination for the next "c", which we will issue on the following prompt.
+                                await inter.RespondAsync(Invariant($"browserSetDebug({n})\n"));
+                                _bpHitProcState = BreakpointHitProcessingState.BrowserSetDebug;
+                                return;
+                            }
                         } else {
                             _bpHitFrame = null;
                         }
