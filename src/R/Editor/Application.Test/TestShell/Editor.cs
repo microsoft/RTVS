@@ -25,8 +25,10 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
     /// <summary>
     /// Visual Studio Editor window
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class EditorWindow
     {
+        [ExcludeFromCodeCoverage]
         class Request
         {
             public string FileName;
