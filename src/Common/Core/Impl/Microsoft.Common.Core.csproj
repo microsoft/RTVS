@@ -57,7 +57,6 @@
     <Compile Include="Shell\CoreShell.cs" />
     <Compile Include="Shell\ICompositionCatalog.cs" />
     <Compile Include="Shell\ICoreShell.cs" />
-    <Compile Include="Shell\IShellInitialization.cs" />
     <Compile Include="Shell\IIdleTimeService.cs" />
     <Compile Include="Shell\MessageButtons.cs" />
     <Compile Include="StackExtensions.cs" />

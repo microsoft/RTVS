@@ -207,8 +207,7 @@
     <Compile Include="Package\RPackageTest.cs" />
     <Compile Include="Repl\ExportsTest.cs" />
     <Compile Include="Repl\ReplWindowProviderTest.cs" />
-    <Compile Include="Shell\TestAppShell.cs" />
-    <Compile Include="Shell\TestEditorShell.cs" />
+    <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\TestInstanceFactory.cs" />
     <Compile Include="Utility\TestPackage.cs" />

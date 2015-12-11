@@ -77,7 +77,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             base.Initialize();
 
-            RToolsSettings.Init(VsAppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);

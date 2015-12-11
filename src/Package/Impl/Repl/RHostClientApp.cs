@@ -5,6 +5,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
@@ -16,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async Task ShowErrorMessage(string message) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CoreShell.Current.ShowErrorMessage(message);
+            VsAppShell.Current.ShowErrorMessage(message);
         }
 
         /// <summary>
@@ -24,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async System.Threading.Tasks.Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            return CoreShell.Current.ShowMessage(message, buttons);
+            return VsAppShell.Current.ShowMessage(message, buttons);
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags) {
-            IVsUIShell shell = CoreShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
             // First just find. If it exists, use it. 
             IVsWindowFrame frame;

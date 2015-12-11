@@ -191,7 +191,6 @@
   <ItemGroup>
     <Compile Include="ComponentModelMock.cs" />
     <Compile Include="ConnectionPointMock.cs" />
-    <Compile Include="EditorOperationsFactoryServiceMock.cs" />
     <Compile Include="ImageHandleMock.cs" />
     <Compile Include="InteractiveWindowMock.cs" />
     <Compile Include="MenuCommandServiceMock.cs" />

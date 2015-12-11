@@ -14,8 +14,7 @@ namespace Microsoft.Languages.Editor.Shell {
     /// <summary>
     /// Provides abstraction of application services to editor components
     /// </summary>
-    [Export(typeof(IShellInitialization))]
-    public sealed class EditorShell : IShellInitialization {
+    public sealed class EditorShell {
         private static Dictionary<string, ISettingsStorage> _settingStorageMap = new Dictionary<string, ISettingsStorage>(StringComparer.OrdinalIgnoreCase);
         private static object _shell;
         private static object _lock = new object();
@@ -28,12 +27,15 @@ namespace Microsoft.Languages.Editor.Shell {
             get {
                 lock (_lock) {
                     if (_shell == null) {
-                        CoreShell.TryCreateTestInstance();
+                        CoreShell.TryCreateTestInstance("Microsoft.Languages.Editor.Test.dll", "TestEditorShell");
                         Debug.Assert(_shell != null);
                     }
 
                     return _shell as IEditorShell;
                 }
+            }
+            internal set {
+                _shell = value;
             }
         }
 

@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Help.Definitions;
 
 namespace Microsoft.R.Host.Client.Signatures {
@@ -41,7 +42,7 @@ namespace Microsoft.R.Host.Client.Signatures {
 
         private async Task CreateSessionAsync() {
             if (_session == null) {
-                var provider = CoreShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 _session = provider.Create(_sessionId, null);
                 _session.Disposed += OnSessionDisposed;
                 await _session.StartHostAsync(IntPtr.Zero);
