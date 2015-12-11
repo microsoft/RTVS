@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Support.RD.BraceMatch;
 using Microsoft.R.Support.RD.ContentTypes;
 using Microsoft.VisualStudio.Editor.Mocks.Helpers;
@@ -84,7 +83,6 @@ namespace Microsoft.R.Support.Test.RD.BraceMatch {
         }
 
         private RdBraceMatcher CreateBraceMatcher(string content, out ITextBuffer textBuffer) {
-            TestAppShell.Create();
             ITextView tv = TextViewTestHelper.MakeTextView(content, RdContentTypeDefinition.ContentType, TextRange.EmptyRange);
             textBuffer = tv.TextBuffer;
             return new RdBraceMatcher(tv, tv.TextBuffer);

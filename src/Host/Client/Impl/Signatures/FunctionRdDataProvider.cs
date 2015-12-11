@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Client.Signatures {
 
         private async Task CreateSessionAsync() {
             if (_session == null) {
-                var provider = AppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var provider = CoreShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 _session = provider.Create(_sessionId, null);
                 _session.Disposed += OnSessionDisposed;
                 await _session.StartHostAsync(IntPtr.Zero);

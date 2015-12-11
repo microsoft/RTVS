@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using Microsoft.Common.Core.Test.Composition;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Tests.Shell;
-using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.Languages.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
@@ -20,7 +17,6 @@ namespace Microsoft.Languages.Editor.Test.Utility {
             }
         }
 
-        private static IEditorShell _shell;
         private static object _creatorLock = new object();
         private static Action _disposeAction;
 
@@ -31,8 +27,7 @@ namespace Microsoft.Languages.Editor.Test.Utility {
         public static void ExecuteTest(Action<ManualResetEventSlim> action, Action initAction, Action disposeAction) {
             lock (_creatorLock) {
                 _disposeAction = disposeAction;
-
-                PrepareShell();
+                AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 
                 if (initAction != null) {
                     initAction();
@@ -49,22 +44,6 @@ namespace Microsoft.Languages.Editor.Test.Utility {
             if (_disposeAction != null) {
                 _disposeAction();
                 _disposeAction = null;
-
-                AppDomain.CurrentDomain.DomainUnload -= CurrentDomain_DomainUnload;
-
-                _shell = null;
-            }
-        }
-
-        private static void PrepareShell() {
-            lock (_creatorLock) {
-                if (_shell == null) {
-                    AppDomain.CurrentDomain.DomainUnload -= CurrentDomain_DomainUnload;
-                    AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
-
-                    _shell = TestAppShell.Create();
-                    EditorShell.SetShell(_shell);
-                }
             }
         }
     }

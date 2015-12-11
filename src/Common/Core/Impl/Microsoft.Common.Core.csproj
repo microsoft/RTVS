@@ -54,11 +54,10 @@
     <Compile Include="IO\IFileSystemInfo.cs" />
     <Compile Include="IO\IFileSystemWatcher.cs" />
     <Compile Include="Lazy.cs" />
-    <Compile Include="Shell\AppShell.cs" />
-    <Compile Include="Shell\IAppCompositionCatalog.cs" />
-    <Compile Include="Shell\IApplicationShellProvider.cs" />
-    <Compile Include="Shell\IApplicationShell.cs" />
-    <Compile Include="Shell\IAppShellInitialization.cs" />
+    <Compile Include="Shell\CoreShell.cs" />
+    <Compile Include="Shell\ICompositionCatalog.cs" />
+    <Compile Include="Shell\ICoreShell.cs" />
+    <Compile Include="Shell\IShellInitialization.cs" />
     <Compile Include="Shell\IIdleTimeService.cs" />
     <Compile Include="Shell\MessageButtons.cs" />
     <Compile Include="StackExtensions.cs" />

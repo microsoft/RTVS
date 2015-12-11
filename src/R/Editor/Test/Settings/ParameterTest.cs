@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,8 +11,6 @@ namespace Microsoft.R.Editor.Test.Signatures {
         [TestMethod]
         [TestCategory("R.Settings")]
         public void Settings_TestDefaults() {
-            TestAppShell.Create();
-
             Assert.AreEqual(false, REditorSettings.CommitOnSpace);
             Assert.AreEqual(true, REditorSettings.CompletionEnabled);
             Assert.AreEqual(true, REditorSettings.FormatOnPaste);

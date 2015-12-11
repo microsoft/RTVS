@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.Composition;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 
@@ -12,17 +11,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// Created via reflection by test code.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal sealed class TestAppShell : TestEditorShell, IPackageShell {
-        public static IApplicationShell Current { get; private set; }
-
+    sealed class TestAppShell : TestEditorShell, IApplicationShell {
         private IServiceProvider _sp;
-        public TestAppShell() {
+        private static TestAppShell _instance;
+
+        private TestAppShell() {
             CompositionService = TestCompositionCatalog.Current.CompositionService;
             ExportProvider = TestCompositionCatalog.Current.ExportProvider;
             _sp = new TestServiceProvider();
+        }
 
-            Current = this;
-            EditorShell.SetShell(this);
+        public static void Create() {
+            _instance = new TestAppShell();
+            VsAppShell.Current = _instance;
+            RToolsSettings.Current = new TestRToolsSettings();
         }
 
         #region IApplicationShell
@@ -31,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
         }
         #endregion
 
-        #region IVsApplicationShell
+        #region IPackageShell
         public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
             return null;
         }

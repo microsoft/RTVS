@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Outline;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
@@ -18,8 +17,6 @@ namespace Microsoft.R.Editor.Test.Outline {
         [TestMethod]
         [TestCategory("R.Outlining")]
         public void RRegionBuilder_ConstructionTest() {
-            TestAppShell.Create();
-
             TextBufferMock textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
             EditorTree tree = new EditorTree(textBuffer);
             EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
@@ -49,7 +46,6 @@ namespace Microsoft.R.Editor.Test.Outline {
         [TestMethod]
         [TestCategory("R.Outlining")]
         public void RRegionBuilder_Test01() {
-            TestAppShell.Create();
             OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions("");
 
             Assert.AreEqual(0, rc.Count);
@@ -72,7 +68,6 @@ else {
     xnames<- c(0, xnames)
   }
 ";
-            TestAppShell.Create();
             OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(content);
 
             // [0][0...165), Length = 165
@@ -95,7 +90,6 @@ else {
         [TestMethod]
         [TestCategory("R.Outlining")]
         public void RRegionBuilder_OutlineFile01() {
-            TestAppShell.Create();
             OutlineTest.OutlineFile(this.TestContext, "01.r");
         }
     }

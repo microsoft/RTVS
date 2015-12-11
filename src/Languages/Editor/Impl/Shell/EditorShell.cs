@@ -14,20 +14,27 @@ namespace Microsoft.Languages.Editor.Shell {
     /// <summary>
     /// Provides abstraction of application services to editor components
     /// </summary>
-    [Export(typeof(IAppShellInitialization))]
-    public sealed class EditorShell: IAppShellInitialization {
+    [Export(typeof(IShellInitialization))]
+    public sealed class EditorShell : IShellInitialization {
         private static Dictionary<string, ISettingsStorage> _settingStorageMap = new Dictionary<string, ISettingsStorage>(StringComparer.OrdinalIgnoreCase);
+        private static object _shell;
         private static object _lock = new object();
 
         public void SetShell(object shell) {
-            Current = shell as IEditorShell;
-            Debug.Assert(shell != null);
-        }
+            _shell = shell;
+         }
 
-        public static IEditorShell Current { get; private set; }
+        public static IEditorShell Current {
+            get {
+                lock (_lock) {
+                    if (_shell == null) {
+                        CoreShell.TryCreateTestInstance();
+                        Debug.Assert(_shell != null);
+                    }
 
-        public static void SetShell(IEditorShell shell) {
-            Current = shell;
+                    return _shell as IEditorShell;
+                }
+            }
         }
 
         public static bool IsUIThread {
@@ -45,8 +52,7 @@ namespace Microsoft.Languages.Editor.Shell {
         public static void DispatchOnUIThread(Action action) {
             if (Current != null) {
                 Current.DispatchOnUIThread(action);
-            }
-            else {
+            } else {
                 action();
             }
         }

@@ -2,7 +2,7 @@
 using System.ComponentModel.Composition.Hosting;
 
 namespace Microsoft.Common.Core.Shell {
-    public interface IAppCompositionCatalog {
+    public interface ICompositionCatalog {
         /// <summary>
         /// Host application MEF composition service.
         /// </summary>

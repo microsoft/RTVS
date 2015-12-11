@@ -7,7 +7,6 @@ using System.IO;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -27,7 +26,6 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         [TestCategory("Md.Classifier")]
         public void ClassifyMarkdownFileTest01()
         {
-            TestAppShell.Create();
             ClassifyFile(TestContext, @"Classification\01.md");
         }
 
@@ -40,9 +38,8 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
                 TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
-                IEditorShell shell = TestAppShell.Create();
-                MdClassifierProvider classifierProvider = new MdClassifierProvider();
-                shell.CompositionService.SatisfyImportsOnce(classifierProvider);
+                 MdClassifierProvider classifierProvider = new MdClassifierProvider();
+                EditorShell.Current.CompositionService.SatisfyImportsOnce(classifierProvider);
 
                 IClassifier cls = classifierProvider.GetClassifier(textBuffer);
 

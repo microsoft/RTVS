@@ -13,8 +13,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     [ExcludeFromCodeCoverage]
-    public class TestEditorShell : IEditorShell {
-        private static IEditorShell _instance;
+    class TestEditorShell : IEditorShell {
         private static object _lock = new object();
 
         private TestEditorShell(ICompositionService compositionService, ExportProvider exportProvider) : this() {

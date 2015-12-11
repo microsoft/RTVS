@@ -13,21 +13,29 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// such as composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    [Export(typeof(IPackageShell))]
-    public class VsAppShell : VsEditorShell, IPackageShell {
+    [Export(typeof(IApplicationShell))]
+    public class VsAppShell : VsEditorShell, IApplicationShell {
         private static Lazy<VsAppShell> _instance = Lazy.Create(() => new VsAppShell());
 
-        [Import]
-        private static IPackageShell _testShell;
+        private static IApplicationShell _testShell;
         /// <summary>
         /// Current application shell instance. Provides access to services
         /// such as composition container, export provider, global VS IDE
         /// services and so on.
         /// </summary>
-        public static IPackageShell Current {
+        public static IApplicationShell Current {
             get { return _testShell ?? _instance.Value; }
             // Only used in tests
-            internal set { _testShell = value; }
+            internal set {
+                if(_instance.IsValueCreated) {
+                    throw new InvalidOperationException("Cannot set test shell when real one is already there.");
+                }
+
+                if (_testShell == null) {
+                    _testShell = value;
+                    InitShellObjects(_testShell, _testShell.ExportProvider);
+                }
+            }
         }
 
         public VsAppShell() {

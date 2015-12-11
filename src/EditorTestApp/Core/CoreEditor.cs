@@ -13,7 +13,6 @@ using Microsoft.Languages.Editor.Application.Host;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -63,8 +62,6 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private IWorkspaceItem _workspaceItem;
 
         public CoreEditor(string text, string filePath, string contentTypeName) {
-            TestAppShell.Create();
-
             _compositionService = EditorShell.Current.CompositionService;
             _compositionService.SatisfyImportsOnce(this);
             _filePath = filePath;

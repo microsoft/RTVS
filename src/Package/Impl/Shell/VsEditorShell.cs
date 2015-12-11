@@ -23,8 +23,6 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public class VsEditorShell : IEditorShell, IDisposable, IIdleTimeService {
-        [ImportMany]
-        private IEnumerable<Lazy<IAppShellInitialization>> ShellInitializers { get; set; }
         private IdleTimeSource _idleTimeSource;
 
         public VsEditorShell() {
@@ -39,11 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _idleTimeSource.OnIdle += OnIdle;
             _idleTimeSource.OnTerminateApp += OnTerminateApp;
 
-            CompositionService.SatisfyImportsOnce(this);
-
-            foreach (var init in ShellInitializers) {
-                init.Value.SetShell(this);
-            }
+            InitShellObjects(this, ExportProvider);
         }
 
         #region IApplicationShell
@@ -280,6 +274,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     return OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL;
             }
             return OLEMSGBUTTON.OLEMSGBUTTON_OK;
+        }
+
+        protected static void InitShellObjects(object shell, ExportProvider ep) {
+            IEnumerable<Lazy<IShellInitialization>> shellInitializers = ep.GetExports<IShellInitialization>();
+            foreach (var init in shellInitializers) {
+                init.Value.SetShell(shell);
+            }
         }
     }
 }

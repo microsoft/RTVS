@@ -3,11 +3,11 @@ using System.Threading;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
-    /// Application shell provides access to services such as 
+    /// Basic shell provides access to services such as 
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface IApplicationShell: IAppCompositionCatalog {
+    public interface ICoreShell: ICompositionCatalog {
         /// <summary>
         /// Retrieves global service from the host application.
         /// This method is not thread safe and should not be called 

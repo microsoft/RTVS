@@ -9,11 +9,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Win32;
 
-namespace Microsoft.Common.Core.Test.Composition {
+namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     [ExcludeFromCodeCoverage]
-    public sealed class TestCompositionCatalog {
+    public sealed class TestCompositionCatalog: ICompositionCatalog {
         private static CompositionContainer _container;
         private static object _containerLock = new object();
 
@@ -66,7 +68,7 @@ namespace Microsoft.Common.Core.Test.Composition {
 
         private static Lazy<TestCompositionCatalog> _instance = Lazy.Create(() => new TestCompositionCatalog());
 
-        public static ITestCompositionCatalog Current => _instance.Value;
+        public static TestCompositionCatalog Current => _instance.Value;
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
             string name = args.Name.Substring(0, args.Name.IndexOf(',')) + ".dll";
