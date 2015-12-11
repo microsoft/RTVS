@@ -20,8 +20,7 @@ grid.data <- function(x, rows, cols) {
     stop('gridata requires two dimensional object');
   }
   
-  x0 <- as.data.frame(x);
-  x0 <- x0[rows, cols];
+  x0 <- as.data.frame(x[rows, cols]);
   x <- lapply(x0, as.character);
 
   vp<-list();

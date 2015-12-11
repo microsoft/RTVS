@@ -44,7 +44,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var rowSource = item as IList;
                 if (rowSource != null) {
                     if (rowSource.Count > 0) {
-                        _layoutInfo = new SharedScrollInfo() { FirstItemIndex = 0, FirstItemOffset = 0.0, MaxItemInViewport = 1 };
+                        _layoutInfo = new SharedScrollInfo() { FirstItemIndex = 0, FirstItemOffset = 0.0, MaxItemInViewport = 0 };
+                        HorizontalOffset = 0;
+                        _columns.Clear();
                     }
                 } else {
                     throw new NotSupportedException($"{nameof(DynamicGrid)} supports only nested collection for ItemsSource");

@@ -128,22 +128,37 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             var result = await VariableProvider.Current.EvaluateGridDataAsync(_evaluation.Name, rows, cols);
 
-            JArray rowNames = result.Value<JArray>("row.names");
-            JArray columnNames = result.Value<JArray>("col.names");
+            JToken columnNames = result.Value<JToken>("col.names");
             JToken dataToken = result["data"];
 
             List<string> list = new List<string>();
-            for (int i = 0; i < columnNames.Count; i++) {
-                var column = dataToken.Value<JArray>(columnNames[i].Value<string>());
-                if (column == null) {
-                    throw new InvalidOperationException($"Can't find column array type JSON '{columnNames[i]}' in data");
+            if (columnNames is JValue) {   // single column
+                Debug.Assert(gridRange.Columns.Count == 1);
+
+                var key = columnNames.Value<string>();
+                AddColumn(dataToken, list, key);
+            } else {
+                foreach (var columnName in columnNames) {
+                    var key = columnName.Value<string>();
+
+                    AddColumn(dataToken, list, key);
                 }
+            }
+            return new Grid<string>(gridRange.Rows.Count, gridRange.Columns.Count, list);
+        }
+
+        private static void AddColumn(JToken dataToken, List<string> list, string key) {
+            var column = dataToken[key];
+            if (column == null) {
+                throw new InvalidOperationException($"Can't find column array type JSON '{key}' in data");
+            }
+            if (column is JValue) { // single row
+                list.Add(column.Value<string>());
+            } else {
                 foreach (var item in column) {
                     list.Add(item.Value<string>());
                 }
             }
-
-            return new Grid<string>(gridRange.Rows.Count, gridRange.Columns.Count, list);
         }
 
         private static string RangeToRString(Range range) {
