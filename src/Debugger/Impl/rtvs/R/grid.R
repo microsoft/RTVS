@@ -14,27 +14,20 @@ grid.header <- function(obj, range, isRow) {
   vp;
 }
 
-grid.data <- function(obj, rows, cols) {
-  d <- dim(obj);
+grid.data <- function(x, rows, cols) {
+  d <- dim(x);
   if (is.null(d) || (length(d) != 2)) {
     stop('gridata requires two dimensional object');
   }
   
-  vp<-list();
-  if (is.matrix(obj)) {
-    vp$matrix<-obj[rows, cols];
-  } else if (is.data.frame(obj)) {
-    df<-obj[rows, cols];attributes(df)$names<-cols
-    vp$dataframe<-df;
-  } else {
-    # error
-  }
+  x0 <- as.data.frame(x);
+  x0 <- x0[rows, cols];
+  x <- lapply(x0, as.character);
 
-#  dn <- dimnames(obj);
-#  if (!is.null(dn) && (length(dn) == 2)) {
-#    vp$rownames<-handle.vector(dn[[1]][rows]);
-#    vp$colnames<-handle.vector(dn[[2]][cols]);
-#  }
+  vp<-list();
+  vp$row.names <- row.names(x0);
+  vp$col.names <- colnames(x0);
+  vp$data<-x;
 
   vp;
 }

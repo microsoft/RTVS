@@ -225,7 +225,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return new SharedScrollInfo() {
                 FirstItemIndex = firstItemIndex.HasValue ? firstItemIndex.Value : 0,
                 FirstItemOffset = firstItemOffset,
-                MaxItemInViewport = Items.Count - firstIndex,
+                MaxItemInViewport = ColumnHeaderSource == null ? 0 : ColumnHeaderSource.Count - firstIndex,
             };
         }
 

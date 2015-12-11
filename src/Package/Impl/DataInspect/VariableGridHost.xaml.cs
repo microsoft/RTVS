@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -127,31 +128,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             var result = await VariableProvider.Current.EvaluateGridDataAsync(_evaluation.Name, rows, cols);
 
-            if (result["matrix"] != null) {
-                JArray array = result["matrix"] as JArray;
+            JArray rowNames = result.Value<JArray>("row.names");
+            JArray columnNames = result.Value<JArray>("col.names");
+            JToken dataToken = result["data"];
 
-                List<string> list = new List<string>();
-                foreach (var token in array) {
-                    list.Add(token.Value<string>());
+            List<string> list = new List<string>();
+            for (int i = 0; i < columnNames.Count; i++) {
+                var column = dataToken.Value<JArray>(columnNames[i].Value<string>());
+                if (column == null) {
+                    throw new InvalidOperationException($"Can't find column array type JSON '{columnNames[i]}' in data");
                 }
-
-                return new Grid<string>(gridRange.Rows.Count, gridRange.Columns.Count, list);
-            } else if (result["dataframe"] != null) {
-                JObject obj = result["dataframe"] as JObject;
-
-                List<string> list = new List<string>();
-                foreach (var token in obj.Values()) {
-                    JArray array = token.Value<JArray>();
-
-                    foreach (var arrayToken in array) {
-                        list.Add(arrayToken.Value<string>());
-                    }
+                foreach (var item in column) {
+                    list.Add(item.Value<string>());
                 }
-
-                return new Grid<string>(gridRange.Rows.Count, gridRange.Columns.Count, list);
-            } else {
-                throw new NotSupportedException("Evaluation result is not understood");
             }
+
+            return new Grid<string>(gridRange.Rows.Count, gridRange.Columns.Count, list);
         }
 
         private static string RangeToRString(Range range) {
