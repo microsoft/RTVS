@@ -12,7 +12,7 @@ namespace Microsoft.R.Editor.Test.Settings
     [Export(typeof(IWritableSettingsStorage))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Test Editor settings")]
-    [Order(Before = "Default")]
+    [Order(Before = "Visual Studio R Editor settings")]
     public class TestSettingsStorage : IWritableSettingsStorage
     {
         Dictionary<string, object> _settings = new Dictionary<string, object>();

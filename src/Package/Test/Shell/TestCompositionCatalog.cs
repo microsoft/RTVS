@@ -32,6 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             "Microsoft.Markdown.Editor.dll",
             "Microsoft.Languages.Editor.dll",
             "Microsoft.R.Editor.dll",
+            "Microsoft.R.Editor.Test.dll",
             "Microsoft.R.Support.dll",
             "Microsoft.R.Common.Core.dll",
             "Microsoft.R.Host.Client.dll",
@@ -69,6 +70,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
         private static Lazy<TestCompositionCatalog> _instance = Lazy.Create(() => new TestCompositionCatalog());
 
         public static TestCompositionCatalog Current => _instance.Value;
+
+        public TestCompositionCatalog() {
+            _container = CreateContainer();
+        }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
             string name = args.Name.Substring(0, args.Name.IndexOf(',')) + ".dll";
@@ -169,7 +174,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
             aggregateCatalog.Catalogs.Add(thisAssemblyCatalog);
 
-            return BuildCatalog(aggregateCatalog);
+
+            var container = BuildCatalog(aggregateCatalog);
+            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+
+            return container;
         }
 
         private static void AddAssemblyToCatalog(string assemblyLoc, string assemblyName, AggregateCatalog aggregateCatalog) {
@@ -267,28 +276,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             return container;
         }
 
-        #region ITestCompositionCatalog
-        public ICompositionService CompositionService {
-            get {
-                lock (_containerLock) {
-                    if (_container == null) {
-                        _container = CreateContainer();
-                    }
+        #region ICompositionCatalog
+        public ICompositionService CompositionService => _container;
 
-                    return _container;
-                }
-            }
-        }
-
-        public ExportProvider ExportProvider {
-            get {
-                return CompositionService as ExportProvider;
-            }
-        }
-
-        public CompositionContainer Container {
-            get { return _container; }
-        }
+        public ExportProvider ExportProvider => _container;
+ 
+        public CompositionContainer Container => _container;
         #endregion
     }
 }
