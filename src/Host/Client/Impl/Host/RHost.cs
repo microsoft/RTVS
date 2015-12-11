@@ -542,13 +542,18 @@ namespace Microsoft.R.Host.Client {
                 try {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
 
-                    await Task.WhenAny(_transportTcs.Task, Task.Delay(3000)).Unwrap();
+                    // Timeout increased to allow more time in test and code coverage runs.
+                    await Task.WhenAny(_transportTcs.Task, Task.Delay(10000)).Unwrap();
                     if (!_transportTcs.Task.IsCompleted) {
                         _log.FailedToConnectToRHost();
                         throw new RHostTimeoutException("Timed out waiting for R host process to connect");
                     }
 
                     await Run(null, ct);
+                } catch (Exception ex) {
+                    // TODO: delete when we figure out why host occasionally times out in code coverage runs.
+                    //await _log.WriteFormatAsync(MessageCategory.Error, "Exception running R Host: {0}", ex.Message);
+                    throw ex;
                 } finally {
                     if (!_process.HasExited) {
                         try {

@@ -16,7 +16,6 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 PrepareFunctionIndex();
 
                 script.Type("x <- lm(");
-                script.DoIdle(1000);
 
                 ISignatureHelpSession session = script.GetSignatureSession();
                 Assert.IsNotNull(session);
