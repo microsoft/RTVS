@@ -74,14 +74,21 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         private static string[] _additionalAssemblies = new string[0];
 
-        public static EditorTestCompositionCatalog Current { get; } = new EditorTestCompositionCatalog();
+        public static ICompositionCatalog Current { get; private set; }
 
-        public EditorTestCompositionCatalog(string[] additionalAssemblies = null) {
+        public EditorTestCompositionCatalog(string[] additionalAssemblies) {
+            _additionalAssemblies = additionalAssemblies;
+            TryCreateContainer();
+        }
+
+        private EditorTestCompositionCatalog() {
+            Current = this;
+            TryCreateContainer();
+        }
+
+        private void TryCreateContainer() {
             lock (_containerLock) {
                 if (_container == null) {
-                    if (additionalAssemblies != null) {
-                        _additionalAssemblies = additionalAssemblies;
-                    }
                     _container = CreateContainer();
                 }
             }

@@ -26,8 +26,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
 
         private TestVsAppShell() {
             MainThread = Thread.CurrentThread;
-            CompositionService = TestCompositionCatalog.Current.CompositionService;
-            ExportProvider = TestCompositionCatalog.Current.ExportProvider;
+            CompositionService = VsTestCompositionCatalog.Current.CompositionService;
+            ExportProvider = VsTestCompositionCatalog.Current.ExportProvider;
             _sp = new TestServiceProvider();
         }
 
@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
 
         #region ICoreShell
         public T GetGlobalService<T>(Type type = null) where T : class {
-            throw new NotImplementedException();
+            return _sp.GetService(type ?? typeof(T)) as T;
         }
 
         public event EventHandler<EventArgs> Idle;

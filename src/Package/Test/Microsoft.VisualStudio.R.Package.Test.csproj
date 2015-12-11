@@ -198,7 +198,7 @@
   <ItemGroup>
     <Compile Include="Commands\CommandFactoryTest.cs" />
     <Compile Include="Commands\ReplCommandTest.cs" />
-    <Compile Include="Shell\TestCompositionCatalog.cs" />
+    <Compile Include="Shell\VsTestCompositionCatalog.cs" />
     <Compile Include="Cran\CranMirrorListTest.cs" />
     <Compile Include="DataInspect\ObservableTreeNodeTest.cs" />
     <Compile Include="DataInspect\TestNode.cs" />

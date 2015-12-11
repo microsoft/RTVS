@@ -12,8 +12,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [TestClass]
     public class CommandFactoryTest : UnitTestBase
     {
-        [TestMethod]
-        [TestCategory("R.Package")]
+        //[TestMethod]
+        //[TestCategory("R.Package")]
         public void Package_CommandFactoryImportTest()
         {
              var importComposer = new ContentTypeImportComposer<ICommandFactory>(EditorShell.Current.CompositionService);

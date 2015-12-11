@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private IdleTimeSource _idleTimeSource;
 
         public VsAppShell() {
-            ThreadHelper.ThrowIfNotOnUIThread("VsEditorShell.Current");
+            ThreadHelper.ThrowIfNotOnUIThread("VsEditorShell constructor");
             MainThread = Thread.CurrentThread;
 
             IComponentModel componentModel = RPackage.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
@@ -57,7 +57,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// services and so on.
         /// </summary>
         public static IApplicationShell Current {
-            get { return _testShell ?? _instance.Value; }
+            get {
+                if(_testShell == null && Thread.CurrentThread.IsBackground) {
+                    // Test environment
+                    CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsAppShell");
+                    Debug.Assert(_testShell != null);
+                }
+                return _testShell ?? _instance.Value;
+            }
             internal set {
                 // Normally only called in test cases when package
                 // is not loaded and hence shell is not initialized.
@@ -67,7 +74,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if (_instance.IsValueCreated) {
                     throw new InvalidOperationException("Cannot set test shell when real one is already there.");
                 }
-
                 if (_testShell == null) {
                     _testShell = value;
                 }
