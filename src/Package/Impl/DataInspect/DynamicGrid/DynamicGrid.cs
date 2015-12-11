@@ -44,7 +44,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var rowSource = item as IList;
                 if (rowSource != null) {
                     if (rowSource.Count > 0) {
-                        _layoutInfo = new SharedScrollInfo() { FirstItemIndex = 0, FirstItemOffset = 0.0, MaxItemInViewport = 0 };
+                        _layoutInfo = new SharedScrollInfo() {
+                            FirstItemIndex = 0,
+                            FirstItemOffset = 0.0,
+                            MaxItemInViewport = ColumnHeaderSource == null ? 0 : ColumnHeaderSource.Count
+                        };
                         HorizontalOffset = 0;
                         _columns.Clear();
                     }
