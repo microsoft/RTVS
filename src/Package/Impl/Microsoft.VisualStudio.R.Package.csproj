@@ -287,7 +287,7 @@
     <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\VsAppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
-    <Compile Include="Shell\IVsApplicationShell.cs" />
+    <Compile Include="Shell\IPackageShell.cs" />
     <Compile Include="Packages\R\RGuidList.cs" />
     <Compile Include="Packages\R\RLanguageService.cs" />
     <Compile Include="Editors\TextBufferInitializationTracker.cs" />

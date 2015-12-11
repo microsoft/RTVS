@@ -55,6 +55,8 @@
     <Compile Include="IO\IFileSystemWatcher.cs" />
     <Compile Include="Lazy.cs" />
     <Compile Include="Shell\AppShell.cs" />
+    <Compile Include="Shell\IAppCompositionCatalog.cs" />
+    <Compile Include="Shell\IApplicationShellProvider.cs" />
     <Compile Include="Shell\IApplicationShell.cs" />
     <Compile Include="Shell\IAppShellInitialization.cs" />
     <Compile Include="Shell\IIdleTimeService.cs" />

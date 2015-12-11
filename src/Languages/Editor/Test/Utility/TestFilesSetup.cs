@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Editor.Test.Utility {
                 if (!_deployed)
                 {
                     _deployed = true;
-                    TestEditorShell.Create(EditorTestCompositionCatalog.Current);
+                    TestAppShell.Create();
 
                     string srcFilesFolder;
                     string testFilesDir;

@@ -7,7 +7,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface IVsApplicationShell : IEditorShell {
+    public interface IPackageShell : IEditorShell {
         string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null);
 
         string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null);

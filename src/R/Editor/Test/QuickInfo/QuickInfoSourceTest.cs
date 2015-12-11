@@ -8,7 +8,6 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.QuickInfo;
 using Microsoft.R.Editor.Signatures;
-using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -44,7 +43,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
                 if (ready && !evt.IsSet) {
                     QuickInfoSourceTest01_TestBody(applicableSpan, quickInfoContent, ast, textBuffer, evt);
                 }
-            }, REditorTestCompositionCatalog.Current);
+            });
         }
 
         private void QuickInfoSourceTest01_TestBody(ITrackingSpan applicableSpan, List<object> quickInfoContent, AstRoot ast, ITextBuffer textBuffer, ManualResetEventSlim completedEvent) {

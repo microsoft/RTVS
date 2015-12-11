@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Test.Utility {
         }
 
         public static ITextView MakeTextViewRealTextBuffer(string content) {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
+            TestAppShell.Create();
 
             ITextBufferFactoryService svc = EditorShell.Current.ExportProvider.GetExportedValue<ITextBufferFactoryService>();
             IContentTypeRegistryService rg = EditorShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Test.Utility {
         }
 
         public static ITextView MakeTextView(string content, int caretPosition, out AstRoot ast) {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
+            TestAppShell.Create();
 
             ast = RParser.Parse(content);
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);

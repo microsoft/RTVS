@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
             _services.Add(typeof(SVsRegisterProjectTypes), new VsRegisterProjectGeneratorsMock());
             _services.Add(typeof(SVsRegisterEditors), VsRegisterEditorsMock.Create());
             _services.Add(typeof(IMenuCommandService), new MenuCommandServiceMock());
-            _services.Add(typeof(SComponentModel), new ComponentModelMock(RPackageTestCompositionCatalog.Current));
+            _services.Add(typeof(SComponentModel), new ComponentModelMock());
             _services.Add(typeof(SVsTextManager), new TextManagerMock());
             _services.Add(typeof(SVsImageService), VsImageServiceMock.Create());
             _services.Add(typeof(SVsUIShell), new VsUiShellMock());

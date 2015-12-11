@@ -134,6 +134,10 @@
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
+      <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
+      <Name>Microsoft.Common.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client</Name>
@@ -194,6 +198,7 @@
   <ItemGroup>
     <Compile Include="Commands\CommandFactoryTest.cs" />
     <Compile Include="Commands\ReplCommandTest.cs" />
+    <Compile Include="Composition\TestCompositionCatalog.cs" />
     <Compile Include="Cran\CranMirrorListTest.cs" />
     <Compile Include="DataInspect\ObservableTreeNodeTest.cs" />
     <Compile Include="DataInspect\TestNode.cs" />
@@ -203,8 +208,8 @@
     <Compile Include="Repl\ExportsTest.cs" />
     <Compile Include="Repl\ReplWindowProviderTest.cs" />
     <Compile Include="Shell\TestAppShell.cs" />
+    <Compile Include="Shell\TestEditorShell.cs" />
     <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
-    <Compile Include="Utility\RPackageTestCompositionCatalog.cs" />
     <Compile Include="Utility\TestInstanceFactory.cs" />
     <Compile Include="Utility\TestPackage.cs" />
     <Compile Include="Utility\TestServiceProvider.cs" />

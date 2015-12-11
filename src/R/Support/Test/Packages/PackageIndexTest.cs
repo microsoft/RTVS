@@ -20,7 +20,7 @@ namespace Microsoft.R.Support.Test.Packages {
         [TestCategory("R.Completion")]
         public void BuildPackageIndexTest() {
             RToolsSettings.Current = new TestRToolsSettings();
-            TestEditorShell.Create(RSupportTestCompositionCatalog.Current);
+            TestAppShell.Create();
 
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
             string[] packageNames = new string[]
@@ -79,7 +79,7 @@ namespace Microsoft.R.Support.Test.Packages {
         [TestCategory("R.Completion")]
         public void PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
-            TestEditorShell.Create(RSupportTestCompositionCatalog.Current);
+            TestAppShell.Create();
 
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
 

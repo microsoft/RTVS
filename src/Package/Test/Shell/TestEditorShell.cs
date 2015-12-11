@@ -5,40 +5,23 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.Composition;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Tests.Shell {
+namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     [ExcludeFromCodeCoverage]
-    public class TestAppShell : IEditorShell {
+    public class TestEditorShell : IEditorShell {
         private static IEditorShell _instance;
         private static object _lock = new object();
 
-        public static IEditorShell Create() {
-            lock (_lock) {
-                if (_instance == null) {
-                    var catalog = TestCompositionCatalog.Current;
-                    var compositionService = catalog.CompositionService;
-                    var exportProvider = catalog.ExportProvider;
-
-                    _instance = new TestAppShell(compositionService, exportProvider);
-                    EditorShell.SetShell(_instance);
-                    AppShell.SetShell(_instance);
-                }
-
-                return _instance;
-            }
-        }
-
-        private TestAppShell(ICompositionService compositionService, ExportProvider exportProvider) : this() {
+        private TestEditorShell(ICompositionService compositionService, ExportProvider exportProvider) : this() {
             CompositionService = compositionService;
             ExportProvider = exportProvider;
         }
-        protected TestAppShell() {
+        protected TestEditorShell() {
             MainThread = Thread.CurrentThread;
         }
 

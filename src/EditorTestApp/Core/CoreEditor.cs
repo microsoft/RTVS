@@ -10,7 +10,6 @@ using Microsoft.Languager.Editor.Application;
 using Microsoft.Languages.Editor.Application.Composition;
 using Microsoft.Languages.Editor.Application.Controller;
 using Microsoft.Languages.Editor.Application.Host;
-using Microsoft.Languages.Editor.Application.Utility;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
@@ -64,7 +63,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private IWorkspaceItem _workspaceItem;
 
         public CoreEditor(string text, string filePath, string contentTypeName) {
-            TestEditorShell.Create(AppCompositionCatalog.Current);
+            TestAppShell.Create();
 
             _compositionService = EditorShell.Current.CompositionService;
             _compositionService.SatisfyImportsOnce(this);

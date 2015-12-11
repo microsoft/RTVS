@@ -4,7 +4,6 @@ using Microsoft.Common.Core.IO;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Test.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
@@ -14,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [TestMethod]
         [TestCategory("Repl")]
         public void FileSystem_ExportTest() {
-            VsAppShell.Current = TestAppShell.Current;
+            TestAppShell.Create();
             Lazy<IFileSystem> lazy = VsAppShell.Current.ExportProvider.GetExport<IFileSystem>();
             Assert.IsNotNull(lazy.Value);
         }

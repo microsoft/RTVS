@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Settings.Definitions;
 
@@ -12,9 +13,10 @@ namespace Microsoft.R.Support.Settings {
         public static IRToolsSettings Current {
             get {
                 if (_instance == null) {
-                    Debug.Assert(EditorShell.Current != null);
-                    if (EditorShell.Current != null) {
-                        Init(EditorShell.Current.ExportProvider);
+                    if (AppShell.Current.IsUnitTestEnvironment) {
+                        _instance = new TestRToolsSettings();
+                    } else {
+                        Init(AppShell.Current.ExportProvider);
                     }
                 }
 

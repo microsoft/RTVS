@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,16 +13,18 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// such as composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public class VsAppShell : VsEditorShell, IVsApplicationShell {
+    [Export(typeof(IPackageShell))]
+    public class VsAppShell : VsEditorShell, IPackageShell {
         private static Lazy<VsAppShell> _instance = Lazy.Create(() => new VsAppShell());
-        private static IVsApplicationShell _testShell;
 
+        [Import]
+        private static IPackageShell _testShell;
         /// <summary>
         /// Current application shell instance. Provides access to services
         /// such as composition container, export provider, global VS IDE
         /// services and so on.
         /// </summary>
-        public static IVsApplicationShell Current {
+        public static IPackageShell Current {
             get { return _testShell ?? _instance.Value; }
             // Only used in tests
             internal set { _testShell = value; }
@@ -32,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             this.DetemineTestEnvironment();
         }
 
-        #region IVSApplicationShell
+        #region IApplicationShell
         public string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
             IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             if (uiShell == null) {
@@ -111,16 +114,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         // Check if test assemblies are loaded into the VS process
         private void DetemineTestEnvironment() {
-            AppDomain ad = AppDomain.CurrentDomain;
-            Assembly[] loadedAssemblies = ad.GetAssemblies();
-
-            Assembly testAssembly = loadedAssemblies.FirstOrDefault((asm) => {
-                AssemblyName assemblyName = asm.GetName();
-                string name = assemblyName.Name;
-                return name.IndexOf("apex", StringComparison.OrdinalIgnoreCase) >= 0 || name.IndexOf(".mocks", StringComparison.OrdinalIgnoreCase) >= 0;
-            });
-
-            this.IsUITestEnvironment = testAssembly != null;
+            //TODO: check for VS Test host
+            this.IsUITestEnvironment = false;
         }
     }
 }

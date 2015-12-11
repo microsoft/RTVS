@@ -14,7 +14,7 @@ namespace Microsoft.Markdown.Editor.Test.Utility {
         }
 
         public static ITextView MakeTextView(string content, int caretPosition) {
-            TestEditorShell.Create(MarkdownTestCompositionCatalog.Current);
+            TestAppShell.Create();
             ITextBuffer textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
             return new TextViewMock(textBuffer, caretPosition);
         }

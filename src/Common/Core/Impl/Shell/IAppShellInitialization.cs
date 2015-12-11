@@ -1,5 +1,5 @@
 ﻿namespace Microsoft.Common.Core.Shell {
     public interface IAppShellInitialization {
-        void SetShell(object shell);
+        void SetCompositionCatalog(IAppCompositionCatalog catalog);
     }
 }

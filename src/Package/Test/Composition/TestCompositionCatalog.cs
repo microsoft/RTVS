@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 
-namespace Microsoft.VisualStudio.Editor.Mocks {
+namespace Microsoft.Common.Core.Test.Composition {
     [ExcludeFromCodeCoverage]
-    public class TestCompositionCatalog : ITestCompositionCatalog {
+    public sealed class TestCompositionCatalog {
         private static CompositionContainer _container;
         private static object _containerLock = new object();
 
@@ -25,6 +25,19 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
 
         private static string _partsData;
         private static string _exportsData;
+
+        private static string[] _rPackageAssemblies = new string[] {
+            "Microsoft.Markdown.Editor.dll",
+            "Microsoft.Languages.Editor.dll",
+            "Microsoft.R.Editor.dll",
+            "Microsoft.R.Support.dll",
+            "Microsoft.R.Common.Core.dll",
+            "Microsoft.R.Host.Client.dll",
+            "Microsoft.VisualStudio.Shell.Mocks.dll",
+            "Microsoft.VisualStudio.R.Package.dll",
+            "Microsoft.VisualStudio.R.Package.Test.dll",
+            "Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll",
+        };
 
         private static string[] _editorAssemblies = new string[]
         {
@@ -51,11 +64,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             "Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll",
          };
 
-        private static IEnumerable<string> _customMefAssemblies = new string[0];
+        private static Lazy<TestCompositionCatalog> _instance = Lazy.Create(() => new TestCompositionCatalog());
 
-        protected TestCompositionCatalog(IEnumerable<string> customMefAssemblies) {
-            _customMefAssemblies = customMefAssemblies;
-        }
+        public static ITestCompositionCatalog Current => _instance.Value;
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
             string name = args.Name.Substring(0, args.Name.IndexOf(',')) + ".dll";
@@ -109,7 +120,6 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
 
         private static string GetHostExePath() {
             string path = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\" + GetHostVersion(), "InstallDir", string.Empty) as string;
-            Assert.IsTrue(!string.IsNullOrEmpty(path) && Directory.Exists(path));
             return path;
         }
 
@@ -150,10 +160,8 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
                 aggregateCatalog.Catalogs.Add(editorCatalog);
             }
 
-            if (_customMefAssemblies != null) {
-                foreach (string assemblyName in _customMefAssemblies) {
-                    AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
-                }
+            foreach (string assemblyName in _rPackageAssemblies) {
+                AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
             }
 
             AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
@@ -185,7 +193,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
                 AssemblyCatalog editorCatalog = new AssemblyCatalog(assembly);
                 aggregateCatalog.Catalogs.Add(editorCatalog);
             } catch (Exception) {
-                Assert.Fail("Can't find editor assembly: " + assemblyName);
+                Debug.Assert(false, "Can't find editor assembly: " + assemblyName);
             }
         }
 

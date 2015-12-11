@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Support.RD.BraceMatch;
 using Microsoft.R.Support.RD.ContentTypes;
@@ -9,7 +7,6 @@ using Microsoft.VisualStudio.Editor.Mocks.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Support.Test.RD.BraceMatch {
     [ExcludeFromCodeCoverage]
@@ -87,7 +84,7 @@ namespace Microsoft.R.Support.Test.RD.BraceMatch {
         }
 
         private RdBraceMatcher CreateBraceMatcher(string content, out ITextBuffer textBuffer) {
-            TestEditorShell.Create(EditorTestCompositionCatalog.Current);
+            TestAppShell.Create();
             ITextView tv = TextViewTestHelper.MakeTextView(content, RdContentTypeDefinition.ContentType, TextRange.EmptyRange);
             textBuffer = tv.TextBuffer;
             return new RdBraceMatcher(tv, tv.TextBuffer);

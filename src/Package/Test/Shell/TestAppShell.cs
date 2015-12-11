@@ -1,26 +1,28 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Composition;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
+    /// <summary>
+    /// Replacement for VsAppShell in unit tests.
+    /// Created via reflection by test code.
+    /// </summary>
     [ExcludeFromCodeCoverage]
-    public sealed class TestAppShell : TestEditorShell, IVsApplicationShell {
-        private static Lazy<TestAppShell> _instance = Lazy.Create(() => new TestAppShell());
-        public static IVsApplicationShell Current => _instance.Value;
+    internal sealed class TestAppShell : TestEditorShell, IPackageShell {
+        public static IApplicationShell Current { get; private set; }
 
         private IServiceProvider _sp;
-        private TestAppShell() {
-            CompositionService = RPackageTestCompositionCatalog.Current.CompositionService;
-            ExportProvider = RPackageTestCompositionCatalog.Current.ExportProvider;
+        public TestAppShell() {
+            CompositionService = TestCompositionCatalog.Current.CompositionService;
+            ExportProvider = TestCompositionCatalog.Current.ExportProvider;
             _sp = new TestServiceProvider();
 
+            Current = this;
             EditorShell.SetShell(this);
-            AppShell.SetShell(this);
         }
 
         #region IApplicationShell
