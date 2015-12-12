@@ -3,57 +3,45 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor.Mocks;
 
-namespace Microsoft.VisualStudio.Shell.Mocks
-{
+namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class ComponentModelMock : IComponentModel
-    {
-        private ITestCompositionCatalog _catalog;
+    public sealed class ComponentModelMock : IComponentModel {
+        private ICompositionCatalog _catalog;
 
-        public ComponentModelMock(ITestCompositionCatalog catalog)
-        {
+        public ComponentModelMock(ICompositionCatalog catalog) {
             _catalog = catalog;
         }
 
-        public ComposablePartCatalog DefaultCatalog
-        {
-            get
-            {
-                return _catalog.Container.Catalog;
+        public ComposablePartCatalog DefaultCatalog {
+            get {
+                return _catalog as ComposablePartCatalog;
             }
         }
 
-        public ICompositionService DefaultCompositionService
-        {
-            get
-            {
+        public ICompositionService DefaultCompositionService {
+            get {
                 return _catalog.CompositionService;
             }
         }
 
-        public ExportProvider DefaultExportProvider
-        {
-            get
-            {
+        public ExportProvider DefaultExportProvider {
+            get {
                 return _catalog.ExportProvider;
             }
         }
 
-        public ComposablePartCatalog GetCatalog(string catalogName)
-        {
-            return _catalog.Container.Catalog;
+        public ComposablePartCatalog GetCatalog(string catalogName) {
+            return _catalog as ComposablePartCatalog;
         }
 
-        public IEnumerable<T> GetExtensions<T>() where T : class
-        {
+        public IEnumerable<T> GetExtensions<T>() where T : class {
             return _catalog.ExportProvider.GetExportedValues<T>();
         }
 
-        public T GetService<T>() where T : class
-        {
+        public T GetService<T>() where T : class {
             return _catalog.ExportProvider.GetExport<T>().Value;
         }
     }

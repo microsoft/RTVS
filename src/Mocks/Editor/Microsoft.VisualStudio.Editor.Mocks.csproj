@@ -81,11 +81,9 @@
     <Compile Include="ContentTypeRegistryMock.cs" />
     <Compile Include="EditorOperationsMock.cs" />
     <Compile Include="EditorOptionsMock.cs" />
-    <Compile Include="ITestCompositionCatalog.cs" />
     <Compile Include="MappingPointMock.cs" />
     <Compile Include="QuickInfoSessionMock.cs" />
     <Compile Include="SignatureHelpSessionMock.cs" />
-    <Compile Include="TestCompositionCatalog.cs" />
     <Compile Include="TextBufferMock.cs" />
     <Compile Include="TextCaretMock.cs" />
     <Compile Include="TextChangeCollectionMock.cs" />
@@ -98,6 +96,7 @@
     <Compile Include="TextVersionMock.cs" />
     <Compile Include="TextViewMock.cs" />
     <Compile Include="TextViewModelMock.cs" />
+    <Compile Include="Helpers\TextViewTestHelper.cs" />
     <Compile Include="TrackingPointMock.cs" />
     <Compile Include="TrackingSpanMock.cs" />
     <Compile Include="WpfTextViewMock.cs" />

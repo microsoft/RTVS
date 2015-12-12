@@ -168,7 +168,7 @@ function(a) {
                     ComputeCurrentParameter01_Body(completed);
                 }
 
-            }, REditorTestCompositionCatalog.Current);
+            });
         }
 
         private void ComputeCurrentParameter01_Body(ManualResetEventSlim completed) {
@@ -231,7 +231,7 @@ function(a) {
                 if (result != null && !completed.IsSet) {
                     ComputeCurrentParameter02_Body(completed);
                 }
-            }, REditorTestCompositionCatalog.Current);
+            });
         }
 
         private void ComputeCurrentParameter02_Body(ManualResetEventSlim completed) {
@@ -277,7 +277,7 @@ function(a) {
                 if (result != null && !completed.IsSet) {
                     ComputeCurrentParameter03_Body(completed);
                 }
-            }, REditorTestCompositionCatalog.Current);
+            });
         }
 
         private void ComputeCurrentParameter03_Body(ManualResetEventSlim completed) {
@@ -319,7 +319,7 @@ function(a) {
                 if (result != null && !completed.IsSet) {
                     ComputeCurrentParameter04_Body(completed);
                 }
-            }, REditorTestCompositionCatalog.Current);
+            });
         }
 
         private void ComputeCurrentParameter04_Body(ManualResetEventSlim completed) {

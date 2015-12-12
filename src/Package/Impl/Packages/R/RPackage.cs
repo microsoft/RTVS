@@ -7,7 +7,6 @@ using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
@@ -77,7 +76,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             base.Initialize();
 
-            RToolsSettings.Init(VsAppShell.Current.ExportProvider);
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);

@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class Page2DManager<T> {
         #region synchronized by _syncObj
 
-        private object _syncObj = new object();
+        private readonly object _syncObj = new object();
         private Dictionary<int, Dictionary<int, Page2D<T>>> _banks = new Dictionary<int, Dictionary<int, Page2D<T>>>();
         private Queue<Page2D<T>> _requests = new Queue<Page2D<T>>();
         private Task _loadTask = null;

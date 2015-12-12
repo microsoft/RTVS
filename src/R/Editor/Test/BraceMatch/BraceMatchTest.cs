@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.EditorHelpers;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Editor.BraceMatch;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -60,10 +57,10 @@ namespace Microsoft.R.Editor.Test.Text {
             Assert.IsFalse(result);
         }
 
-        //[TestMethod]
+        [TestMethod]
         [TestCategory("R.BraceMatch")]
         public void RBraceMatch_MixedBraces() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("[[{()}]]");
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{a[[b()]]}");
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
 
             int startPosition, endPosition;
@@ -72,47 +69,42 @@ namespace Microsoft.R.Editor.Test.Text {
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 0, false, out startPosition, out endPosition);
             Assert.IsTrue(result);
             Assert.AreEqual(0, startPosition);
-            Assert.AreEqual(7, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 1, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(1, startPosition);
-            Assert.AreEqual(6, endPosition);
+            Assert.AreEqual(9, endPosition);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 2, false, out startPosition, out endPosition);
             Assert.IsTrue(result);
             Assert.AreEqual(2, startPosition);
-            Assert.AreEqual(5, endPosition);
+            Assert.AreEqual(8, endPosition);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 3, false, out startPosition, out endPosition);
             Assert.IsTrue(result);
             Assert.AreEqual(3, startPosition);
-            Assert.AreEqual(4, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 4, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(3, startPosition);
-            Assert.AreEqual(4, endPosition);
+            Assert.AreEqual(7, endPosition);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 5, false, out startPosition, out endPosition);
             Assert.IsTrue(result);
-            Assert.AreEqual(2, startPosition);
-            Assert.AreEqual(5, endPosition);
+            Assert.AreEqual(5, startPosition);
+            Assert.AreEqual(6, endPosition);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 6, false, out startPosition, out endPosition);
             Assert.IsTrue(result);
-            Assert.AreEqual(1, startPosition);
+            Assert.AreEqual(5, startPosition);
             Assert.AreEqual(6, endPosition);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 7, false, out startPosition, out endPosition);
             Assert.IsTrue(result);
-            Assert.AreEqual(0, startPosition);
+            Assert.AreEqual(3, startPosition);
             Assert.AreEqual(7, endPosition);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 8, false, out startPosition, out endPosition);
             Assert.IsTrue(result);
+            Assert.AreEqual(2, startPosition);
+            Assert.AreEqual(8, endPosition);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 9, false, out startPosition, out endPosition);
+            Assert.IsTrue(result);
             Assert.AreEqual(0, startPosition);
-            Assert.AreEqual(7, endPosition);
+            Assert.AreEqual(9, endPosition);
         }
 
         [TestMethod]

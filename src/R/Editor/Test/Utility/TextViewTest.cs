@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.ContentType;
@@ -18,8 +17,6 @@ namespace Microsoft.R.Editor.Test.Utility {
         }
 
         public static ITextView MakeTextViewRealTextBuffer(string content) {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             ITextBufferFactoryService svc = EditorShell.Current.ExportProvider.GetExportedValue<ITextBufferFactoryService>();
             IContentTypeRegistryService rg = EditorShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
             ITextBuffer textBuffer = svc.CreateTextBuffer(content, rg.GetContentType(RContentTypeDefinition.ContentType));
@@ -27,8 +24,6 @@ namespace Microsoft.R.Editor.Test.Utility {
         }
 
         public static ITextView MakeTextView(string content, int caretPosition, out AstRoot ast) {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             ast = RParser.Parse(content);
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             return new TextViewMock(textBuffer, caretPosition);

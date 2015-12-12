@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Text;

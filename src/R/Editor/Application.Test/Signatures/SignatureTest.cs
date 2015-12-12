@@ -18,7 +18,10 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 script.Type("x <- lm(");
 
                 ISignatureHelpSession session = script.GetSignatureSession();
+                Assert.IsNotNull(session);
                 IParameter parameter = session.SelectedSignature.CurrentParameter;
+                Assert.IsNotNull(parameter);
+
                 Assert.AreEqual("formula", parameter.Name);
 
                 script.Type("sub");
@@ -46,9 +49,13 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 script.Type("x <- lm(subset = a, sing");
                 script.DoIdle(100);
                 script.Type("{TAB}");
+                script.DoIdle(1000);
 
                 ISignatureHelpSession session = script.GetSignatureSession();
+                Assert.IsNotNull(session);
                 IParameter parameter = session.SelectedSignature.CurrentParameter;
+                Assert.IsNotNull(parameter);
+
                 Assert.AreEqual("singular.ok", parameter.Name);
 
                 script.MoveLeft(17);

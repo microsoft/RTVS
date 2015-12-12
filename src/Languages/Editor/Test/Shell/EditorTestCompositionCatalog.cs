@@ -3,19 +3,41 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Win32;
 
-namespace Microsoft.VisualStudio.Editor.Mocks {
+namespace Microsoft.Languages.Editor.Test.Shell {
+    /// <summary>
+    /// Composition catalog that is primarily used in interactive tests.
+    /// It is assigned to EditorShell.Current.CompositionService.
+    /// In interactive tests catalog that also includes host application
+    /// objects such as VS components is not suitable as it may be exporting
+    /// objects that cannot be instantiated in a limited test environment.
+    /// </summary>
     [ExcludeFromCodeCoverage]
-    public class TestCompositionCatalog : ITestCompositionCatalog {
-        private static CompositionContainer _container;
-        private static object _containerLock = new object();
+    public class EditorTestCompositionCatalog : ICompositionCatalog {
+        /// <summary>
+        /// Instance of the compostion catalog to use in editor tests.
+        /// It should not be used in the app/package level tests.
+        /// </summary>
+        private static Lazy<EditorTestCompositionCatalog> _instance = Lazy.Create(() => new EditorTestCompositionCatalog());
+        private static readonly object _containerLock = new object();
+
+        /// <summary>
+        /// MEF container of this instance. Note that there may be more
+        /// than one container in test runs. For example, editor tests
+        /// just the editor-levle container that does not have objects
+        /// exported from the package. Package tests use bigger container
+        /// that also includes objects exported from package-level assemblies.
+        /// </summary>
+        private CompositionContainer _container;
 
         private string _idePath;
         private string _editorPath;
@@ -26,8 +48,25 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
         private static string _partsData;
         private static string _exportsData;
 
-        private static string[] _editorAssemblies = new string[]
-        {
+        /// <summary>
+        /// Assemblies used at the R editor level
+        /// </summary>
+        private static string[] _rtvsEditorAssemblies = {
+            "Microsoft.Markdown.Editor.dll",
+            "Microsoft.Languages.Editor.dll",
+            "Microsoft.Languages.Editor.Application.dll",
+            "Microsoft.R.Editor.dll",
+            "Microsoft.R.Editor.Test.dll",
+            "Microsoft.R.Support.dll",
+            "Microsoft.R.Support.Test.dll",
+            "Microsoft.R.Common.Core.dll",
+            "Microsoft.R.Host.Client.dll",
+        };
+
+        /// <summary>
+        /// Assemblies of the VS core text editor
+        /// </summary>
+        private static string[] _coreEditorAssemblies = {
             "Microsoft.VisualStudio.CoreUtility.dll",
             "Microsoft.VisualStudio.Editor.dll",
             "Microsoft.VisualStudio.Language.Intellisense.dll",
@@ -38,23 +77,46 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             "Microsoft.VisualStudio.Text.UI.Wpf.dll",
         };
 
-        private static string[] _cpsAssemblies = new string[]
-        {
+        /// <summary>
+        /// VS CPS assemblies
+        /// </summary>
+        private static string[] _cpsAssemblies = {
             "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
         };
 
-        private static string[] _projectAssemblies = new string[]
-         {
+        /// <summary>
+        /// VS project system assemblies
+        /// </summary>
+        private static string[] _projectAssemblies = {
             "Microsoft.VisualStudio.ProjectSystem.Utilities.v14.0.dll",
             "Microsoft.VisualStudio.ProjectSystem.V14Only.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll",
          };
 
-        private static IEnumerable<string> _customMefAssemblies = new string[0];
+        /// <summary>
+        /// Additional assemblies supplied by the creator class
+        /// </summary>
+        private static string[] _additionalAssemblies = new string[0];
 
-        protected TestCompositionCatalog(IEnumerable<string> customMefAssemblies) {
-            _customMefAssemblies = customMefAssemblies;
+        /// <summary>
+        /// Instance of the compostion catalog to use in editor tests.
+        /// It should not be used in the app/package level tests.
+        /// </summary>
+        public static ICompositionCatalog Current => _instance.Value;
+
+        /// <summary>
+        /// Only used if catalog is created as part of a bigger catalog
+        /// such as when package-level tests supply additional assemblies.
+        /// </summary>
+        /// <param name="additionalAssemblies"></param>
+        public EditorTestCompositionCatalog(string[] additionalAssemblies) {
+            _additionalAssemblies = additionalAssemblies;
+            _container = CreateContainer();
+        }
+
+        private EditorTestCompositionCatalog() {
+            _container = CreateContainer();
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
@@ -109,11 +171,12 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
 
         private static string GetHostExePath() {
             string path = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\" + GetHostVersion(), "InstallDir", string.Empty) as string;
-            Assert.IsTrue(!string.IsNullOrEmpty(path) && Directory.Exists(path));
             return path;
         }
 
         private CompositionContainer CreateContainer() {
+            CompositionContainer container = null;
+
             string thisAssembly = Assembly.GetExecutingAssembly().Location;
             string assemblyLoc = Path.GetDirectoryName(thisAssembly);
 
@@ -123,43 +186,52 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             _cpsPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Project");
             _sharedPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Common Files\Microsoft Shared\MsEnv\PublicAssemblies");
 
-            AggregateCatalog aggregateCatalog = new AggregateCatalog();
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            try {
+                AggregateCatalog aggregateCatalog = new AggregateCatalog();
 
-            foreach (string asmName in _editorAssemblies) {
-                string asmPath = Path.Combine(_editorPath, asmName);
-                Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
+                foreach (string asmName in _coreEditorAssemblies) {
+                    string asmPath = Path.Combine(_editorPath, asmName);
+                    Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
 
-                AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
-                aggregateCatalog.Catalogs.Add(editorCatalog);
-            }
+                    AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
+                    aggregateCatalog.Catalogs.Add(editorCatalog);
+                }
 
-            foreach (string asmName in _cpsAssemblies) {
-                string asmPath = Path.Combine(_cpsPath, asmName);
-                Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
+                foreach (string asmName in _cpsAssemblies) {
+                    string asmPath = Path.Combine(_cpsPath, asmName);
+                    Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
 
-                AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
-                aggregateCatalog.Catalogs.Add(editorCatalog);
-            }
+                    AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
+                    aggregateCatalog.Catalogs.Add(editorCatalog);
+                }
 
-            foreach (string asmName in _projectAssemblies) {
-                string asmPath = Path.Combine(_privatePath, asmName);
-                Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
+                foreach (string asmName in _projectAssemblies) {
+                    string asmPath = Path.Combine(_privatePath, asmName);
+                    Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
 
-                AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
-                aggregateCatalog.Catalogs.Add(editorCatalog);
-            }
+                    AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
+                    aggregateCatalog.Catalogs.Add(editorCatalog);
+                }
 
-            if (_customMefAssemblies != null) {
-                foreach (string assemblyName in _customMefAssemblies) {
+                foreach (string assemblyName in _rtvsEditorAssemblies) {
                     AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
                 }
+
+                foreach (string assemblyName in _additionalAssemblies) {
+                    AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
+                }
+
+                AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
+                aggregateCatalog.Catalogs.Add(thisAssemblyCatalog);
+
+
+                container = BuildCatalog(aggregateCatalog);
+            } finally {
+                AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
             }
 
-            AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
-            aggregateCatalog.Catalogs.Add(thisAssemblyCatalog);
-
-            return BuildCatalog(aggregateCatalog);
+            return container;
         }
 
         private static void AddAssemblyToCatalog(string assemblyLoc, string assemblyName, AggregateCatalog aggregateCatalog) {
@@ -185,7 +257,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
                 AssemblyCatalog editorCatalog = new AssemblyCatalog(assembly);
                 aggregateCatalog.Catalogs.Add(editorCatalog);
             } catch (Exception) {
-                Assert.Fail("Can't find editor assembly: " + assemblyName);
+                Debug.Assert(false, "Can't find editor assembly: " + assemblyName);
             }
         }
 
@@ -257,28 +329,12 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             return container;
         }
 
-        #region ITestCompositionCatalog
-        public ICompositionService CompositionService {
-            get {
-                lock (_containerLock) {
-                    if (_container == null) {
-                        _container = CreateContainer();
-                    }
+        #region ICompositionCatalog
+        public ICompositionService CompositionService => _container;
 
-                    return _container;
-                }
-            }
-        }
+        public ExportProvider ExportProvider => _container;
 
-        public ExportProvider ExportProvider {
-            get {
-                return CompositionService as ExportProvider;
-            }
-        }
-
-        public CompositionContainer Container {
-            get { return _container; }
-        }
+        public CompositionContainer Container => _container;
         #endregion
     }
 }

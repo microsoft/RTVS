@@ -10,11 +10,9 @@ using Microsoft.Languager.Editor.Application;
 using Microsoft.Languages.Editor.Application.Composition;
 using Microsoft.Languages.Editor.Application.Controller;
 using Microsoft.Languages.Editor.Application.Host;
-using Microsoft.Languages.Editor.Application.Utility;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -52,7 +50,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
         [Import]
         IEditorOptionsFactoryService EditorOptionsFactoryService { get; set; }
 
-        static private object _lock = new object();
+        private static readonly object _lock = new object();
 
         private IWpfTextViewHost _wpftextViewHost;
         private IContentType _contentType;
@@ -64,8 +62,6 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private IWorkspaceItem _workspaceItem;
 
         public CoreEditor(string text, string filePath, string contentTypeName) {
-            TestEditorShell.Create(AppCompositionCatalog.Current);
-
             _compositionService = EditorShell.Current.CompositionService;
             _compositionService.SatisfyImportsOnce(this);
             _filePath = filePath;

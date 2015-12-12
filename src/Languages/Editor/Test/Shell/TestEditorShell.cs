@@ -8,63 +8,42 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
-using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Tests.Shell {
+namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
-    public class TestEditorShell : IEditorShell {
-        private static IEditorShell _instance;
-        private static object _lock = new object();
+    sealed class TestEditorShell : IEditorShell {
+        private static TestEditorShell _instance;
+        private static readonly object _lock = new object();
 
-        public static IEditorShell Create(ITestCompositionCatalog catalog) {
-            lock (_lock) {
-                if (_instance == null) {
-                    var compositionService = catalog.CompositionService;
-                    var exportProvider = catalog.ExportProvider;
-
-                    _instance = new TestEditorShell(compositionService, exportProvider);
-                    EditorShell.SetShell(_instance);
-                    AppShell.SetShell(_instance);
-                }
-
-                return _instance;
-            }
-        }
-
-        private TestEditorShell(ICompositionService compositionService, ExportProvider exportProvider) : this() {
-            CompositionService = compositionService;
-            ExportProvider = exportProvider;
-        }
-        protected TestEditorShell() {
+        public TestEditorShell(ICompositionCatalog catalog) {
+            CompositionService = catalog.CompositionService;
+            ExportProvider = catalog.ExportProvider;
             MainThread = Thread.CurrentThread;
         }
 
-        #region IEditorShell
-        public event EventHandler<EventArgs> Idle;
-
-#pragma warning disable 0067
-        public event EventHandler<EventArgs> Terminating;
-#pragma warning restore 0067
-
-        public ICompositionService CompositionService { get; protected set; }
-        public ExportProvider ExportProvider { get; protected set; }
-
-        public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
-            return commandTarget as ICommandTarget;
+        /// <summary>
+        /// Called via reflection from CoreShell.TryCreateTestInstance
+        /// in test scenarios
+        /// </summary>
+        public static void Create() {
+            lock (_lock) {
+                // Called via reflection in test cases. Creates instance
+                // of the test shell that editor code can access during
+                // test run.
+                _instance = new TestEditorShell(EditorTestCompositionCatalog.Current);
+                EditorShell.Current = _instance;
+            }
         }
 
-        public object TranslateToHostCommandTarget(ITextView textView, object commandTarget) {
-            return commandTarget;
-        }
+        #region ICompositionCatalog
+        public ICompositionService CompositionService { get; private set; }
+        public ExportProvider ExportProvider { get; private set; }
+        #endregion
 
-        public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
-            return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: false);
-        }
-
+        #region ICoreShell
         public Thread MainThread { get; set; }
-
         public void ShowErrorMessage(string msg) { }
 
         /// <summary>
@@ -73,8 +52,7 @@ namespace Microsoft.Languages.Editor.Tests.Shell {
         public MessageButtons ShowMessage(string message, MessageButtons buttons) {
             return MessageButtons.OK;
         }
-
-        public virtual T GetGlobalService<T>(Type type = null) where T : class {
+        public T GetGlobalService<T>(Type type = null) where T : class {
             throw new NotImplementedException();
         }
 
@@ -96,10 +74,27 @@ namespace Microsoft.Languages.Editor.Tests.Shell {
         }
 
         public int LocaleId => 1033;
-
         public bool IsUnitTestEnvironment { get; set; } = true;
-
         public bool IsUITestEnvironment { get; set; } = false;
+
+        public event EventHandler<EventArgs> Idle;
+#pragma warning disable 0067
+        public event EventHandler<EventArgs> Terminating;
+#pragma warning restore 0067
+        #endregion
+
+        #region IEditorShell
+        public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
+            return commandTarget as ICommandTarget;
+        }
+
+        public object TranslateToHostCommandTarget(ITextView textView, object commandTarget) {
+            return commandTarget;
+        }
+
+        public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
+            return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: false);
+        }
         #endregion
     }
 }

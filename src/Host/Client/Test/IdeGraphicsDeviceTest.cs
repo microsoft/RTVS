@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -13,6 +14,7 @@ using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Host.Client.Test {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class IdeGraphicsDeviceTest {
         private const string ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
@@ -143,7 +145,7 @@ plot(5:15)
             Assert.AreEqual(1, actualPlotFilePaths.Length);
         }
 
-        [TestMethod]
+        //[TestMethod]
         [TestCategory("Plots")]
         public void PlotCars() {
             GraphicsTestAgainstExpectedFiles(@"plot(cars)");

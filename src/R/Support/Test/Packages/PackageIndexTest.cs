@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.R.Support.Settings;
@@ -19,9 +18,6 @@ namespace Microsoft.R.Support.Test.Packages {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void BuildPackageIndexTest() {
-            RToolsSettings.Current = new TestRToolsSettings();
-            TestEditorShell.Create(RSupportTestCompositionCatalog.Current);
-
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
             string[] packageNames = new string[]
             {
@@ -79,7 +75,6 @@ namespace Microsoft.R.Support.Test.Packages {
         [TestCategory("R.Completion")]
         public void PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
-            TestEditorShell.Create(RSupportTestCompositionCatalog.Current);
 
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
 

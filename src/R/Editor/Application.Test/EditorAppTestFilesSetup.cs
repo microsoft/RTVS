@@ -11,7 +11,7 @@ namespace Microsoft.R.Editor.Application.Test
     [TestClass]
     public class EditorAppTestFilesSetup
     {
-        static object _deploymentLock = new object();
+        static readonly object _deploymentLock = new object();
         static bool _deployed = false;
 
         [AssemblyInitialize]

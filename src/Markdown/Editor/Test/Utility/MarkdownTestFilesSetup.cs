@@ -8,7 +8,7 @@ namespace Microsoft.Markdown.Editor.Test.Utility
     [TestClass]
     public class MarkdownTestFilesSetup
     {
-        static object _deploymentLock = new object();
+        static readonly object _deploymentLock = new object();
         static bool _deployed = false;
 
         [AssemblyInitialize]

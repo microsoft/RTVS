@@ -66,7 +66,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Prevents disposing when background task is running
         /// </summary>
-        object _disposeLock = new object();
+        private readonly object _disposeLock = new object();
 
         /// <summary>
         /// List of tree update completion callbacks supplied called once

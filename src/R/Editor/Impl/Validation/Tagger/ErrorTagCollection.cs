@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// <summary>
         /// Collection lock. Collection does permin access from multiple threads.
         /// </summary>
-        private object _lockObj = new object();
+        private readonly object _lockObj = new object();
 
         /// <summary>
         /// Collection of error tags. Each tag is also a text range in the document.
