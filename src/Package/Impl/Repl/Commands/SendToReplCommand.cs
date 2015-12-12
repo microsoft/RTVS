@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class SendToReplCommand : ViewCommand {
         private ReplWindow _replWindow;
-        private static object _executedToEnd = new object();
+        private static readonly object _executedToEnd = new object();
 
         public SendToReplCommand(ITextView textView, ITextBuffer textBuffer) :
             base(textView, new[]

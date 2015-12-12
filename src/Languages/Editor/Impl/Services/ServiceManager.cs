@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.Languages.Editor.Services {
     public sealed class ServiceManager : IDisposable {
         private IPropertyOwner _propertyOwner;
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
         /// <summary>
         /// Fire when service is added

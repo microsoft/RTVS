@@ -15,7 +15,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
     sealed class TestEditorShell : IEditorShell {
         private static TestEditorShell _instance;
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         public TestEditorShell(ICompositionCatalog catalog) {
             CompositionService = catalog.CompositionService;

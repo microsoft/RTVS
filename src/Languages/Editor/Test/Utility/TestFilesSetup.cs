@@ -7,7 +7,7 @@ namespace Microsoft.Languages.Editor.Test.Utility {
     [TestClass]
     public class TestFilesSetup
     {
-        static object _deploymentLock = new object();
+        static readonly object _deploymentLock = new object();
         static bool _deployed = false;
 
         [AssemblyInitialize]

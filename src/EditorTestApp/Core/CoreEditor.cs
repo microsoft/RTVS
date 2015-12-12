@@ -50,7 +50,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
         [Import]
         IEditorOptionsFactoryService EditorOptionsFactoryService { get; set; }
 
-        static private object _lock = new object();
+        private static readonly object _lock = new object();
 
         private IWpfTextViewHost _wpftextViewHost;
         private IContentType _contentType;

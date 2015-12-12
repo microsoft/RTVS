@@ -17,7 +17,7 @@ namespace Microsoft.Languages.Editor.Test.Utility {
             }
         }
 
-        private static object _creatorLock = new object();
+        private static readonly object _creatorLock = new object();
         private static Action _disposeAction;
 
         public static void ExecuteTest(Action<ManualResetEventSlim> action) {

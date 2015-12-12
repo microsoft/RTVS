@@ -17,7 +17,7 @@ namespace Microsoft.Languages.Editor.Shell {
     public sealed class EditorShell {
         private static Dictionary<string, ISettingsStorage> _settingStorageMap = new Dictionary<string, ISettingsStorage>(StringComparer.OrdinalIgnoreCase);
         private static object _shell;
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         public void SetShell(object shell) {
             _shell = shell;

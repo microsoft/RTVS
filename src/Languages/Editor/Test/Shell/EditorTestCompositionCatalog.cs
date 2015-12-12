@@ -28,7 +28,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// It should not be used in the app/package level tests.
         /// </summary>
         private static Lazy<EditorTestCompositionCatalog> _instance = Lazy.Create(() => new EditorTestCompositionCatalog());
-         private static object _containerLock = new object();
+        private static readonly object _containerLock = new object();
 
         /// <summary>
         /// MEF container of this instance. Note that there may be more
@@ -51,7 +51,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// <summary>
         /// Assemblies used at the R editor level
         /// </summary>
-        private static string[] _rtvsEditorAssemblies = new string[] {
+        private static string[] _rtvsEditorAssemblies = {
             "Microsoft.Markdown.Editor.dll",
             "Microsoft.Languages.Editor.dll",
             "Microsoft.Languages.Editor.Application.dll",
@@ -66,8 +66,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// <summary>
         /// Assemblies of the VS core text editor
         /// </summary>
-        private static string[] _coreEditorAssemblies = new string[]
-        {
+        private static string[] _coreEditorAssemblies = {
             "Microsoft.VisualStudio.CoreUtility.dll",
             "Microsoft.VisualStudio.Editor.dll",
             "Microsoft.VisualStudio.Language.Intellisense.dll",
@@ -81,8 +80,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// <summary>
         /// VS CPS assemblies
         /// </summary>
-        private static string[] _cpsAssemblies = new string[]
-        {
+        private static string[] _cpsAssemblies = {
             "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
         };
@@ -90,8 +88,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// <summary>
         /// VS project system assemblies
         /// </summary>
-        private static string[] _projectAssemblies = new string[]
-         {
+        private static string[] _projectAssemblies = {
             "Microsoft.VisualStudio.ProjectSystem.Utilities.v14.0.dll",
             "Microsoft.VisualStudio.ProjectSystem.V14Only.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll",
