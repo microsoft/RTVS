@@ -71,7 +71,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         protected override void Initialize() {
             Current = this;
-
             CranMirrorList.Download();
 
             base.Initialize();

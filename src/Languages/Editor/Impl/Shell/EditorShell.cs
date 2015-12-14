@@ -27,6 +27,9 @@ namespace Microsoft.Languages.Editor.Shell {
             get { return _shell != null; }
         }
 
+        public static void Init() {
+        }
+
         public static IEditorShell Current {
             get {
                 lock (_lock) {
