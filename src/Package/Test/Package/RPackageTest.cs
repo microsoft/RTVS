@@ -1,12 +1,5 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
-using Microsoft.VisualStudio.R.Package.Test.Utility;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Commands {

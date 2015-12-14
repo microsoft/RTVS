@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     [Export(typeof(IWritableSettingsStorage))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    [Name("R Editor settings")]
+    [Name("Visual Studio R Editor settings")]
     [Order(Before = "Default")]
     internal sealed class VsRSettingsStorage : LanguageSettingsStorageWithDialog {
         public VsRSettingsStorage()

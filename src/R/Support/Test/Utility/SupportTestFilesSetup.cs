@@ -8,7 +8,7 @@ namespace Microsoft.R.Support.Test.Utility
     [TestClass]
     public class SupportTestFilesSetup
     {
-        static object _deploymentLock = new object();
+        static readonly object _deploymentLock = new object();
         static bool _deployed = false;
 
         [AssemblyInitialize]

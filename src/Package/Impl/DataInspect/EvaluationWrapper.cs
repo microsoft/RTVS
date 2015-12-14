@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private object syncObj = new object();
+        private readonly object syncObj = new object();
         private Task<IReadOnlyList<EvaluationWrapper>> _getChildrenTask = null;
         public Task<IReadOnlyList<EvaluationWrapper>> GetChildrenAsync() {
             if (_getChildrenTask == null) {

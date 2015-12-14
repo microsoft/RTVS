@@ -113,7 +113,6 @@
     <Compile Include="Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="Tokens\TokenizeStylesTest.cs" />
     <Compile Include="Utility\MarkdownTestFilesSetup.cs" />
-    <Compile Include="Utility\MarkdownTestCompositionCatalog.cs" />
     <Compile Include="Utility\TextViewTest.cs" />
     <Compile Include="Utility\TokenizeFiles.cs" />
   </ItemGroup>

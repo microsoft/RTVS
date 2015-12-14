@@ -22,7 +22,7 @@ namespace Microsoft.R.Support.Test.Functions {
                 if (result != null && !evt.IsSet) {
                     FunctionInfoTest1_TestBody(evt);
                 }
-            }, RSupportTestCompositionCatalog.Current);
+            });
         }
 
         [TestMethod]
@@ -36,7 +36,7 @@ namespace Microsoft.R.Support.Test.Functions {
                 if (result != null && !evt.IsSet) {
                     FunctionInfoTest2_TestBody(evt);
                 }
-            }, RSupportTestCompositionCatalog.Current);
+            });
         }
 
         private void FunctionInfoTest1_TestBody(ManualResetEventSlim completed) {

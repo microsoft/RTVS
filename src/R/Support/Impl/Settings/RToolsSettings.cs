@@ -1,37 +1,20 @@
-﻿using System.ComponentModel.Composition.Hosting;
-using System.Diagnostics;
-using Microsoft.Languages.Editor.Shell;
+﻿using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.R.Support.Settings {
     public static class RToolsSettings {
-
-        private static IRToolsSettings _instance;
-        private static ExportProvider _exportProvider;
-
+        private static IRToolsSettings _settings;
         public static IRToolsSettings Current {
             get {
-                if (_instance == null) {
-                    Debug.Assert(EditorShell.Current != null);
-                    if (EditorShell.Current != null) {
-                        Init(EditorShell.Current.ExportProvider);
-                    }
+                if (_settings == null) {
+                    _settings = EditorShell.Current.ExportProvider.GetExport<IRToolsSettings>().Value;
+                    _settings?.LoadFromStorage();
                 }
-
-                Debug.Assert(_instance != null);
-                return _instance;
+                return _settings;
             }
-            internal set {
-                // Tests only
-                _instance = value;
+            set {
+                _settings = value;
             }
-        }
-
-        public static void Init(ExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _instance = _exportProvider != null ? _exportProvider.GetExport<IRToolsSettings>().Value : null;
-            Debug.Assert(_instance != null);
-            _instance?.LoadFromStorage();
         }
     }
 }

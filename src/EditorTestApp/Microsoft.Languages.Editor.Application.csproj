@@ -48,7 +48,6 @@
     <Compile Include="Undo\UndoHistoryRegistryImpl.cs" />
     <Compile Include="Undo\UndoTransactionImpl.cs" />
     <Compile Include="Undo\WeakReferenceForKey.cs" />
-    <Compile Include="Utility\AppCompositionCatalog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Core\Impl\Microsoft.Common.Core.csproj">
@@ -125,6 +124,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utility\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />

@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Editor.Test.Utility {
@@ -8,7 +7,7 @@ namespace Microsoft.Languages.Editor.Test.Utility {
     [TestClass]
     public class TestFilesSetup
     {
-        static object _deploymentLock = new object();
+        static readonly object _deploymentLock = new object();
         static bool _deployed = false;
 
         [AssemblyInitialize]
@@ -19,7 +18,6 @@ namespace Microsoft.Languages.Editor.Test.Utility {
                 if (!_deployed)
                 {
                     _deployed = true;
-                    TestEditorShell.Create(EditorTestCompositionCatalog.Current);
 
                     string srcFilesFolder;
                     string testFilesDir;

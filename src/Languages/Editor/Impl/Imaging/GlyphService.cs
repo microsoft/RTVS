@@ -8,7 +8,7 @@ namespace Microsoft.Languages.Editor.Imaging {
     /// from multiple threads which is normal in unit test environment.
     /// </summary>
     public static class GlyphService {
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         public static ImageSource GetGlyph(StandardGlyphGroup group, StandardGlyphItem item) {
             lock (_lock) {

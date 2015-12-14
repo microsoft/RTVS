@@ -6,10 +6,8 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.ContentType;
 
-namespace Microsoft.R.Editor.Settings
-{
-    public static class REditorSettings
-    {
+namespace Microsoft.R.Editor.Settings {
+    public static class REditorSettings {
         public const string AutoFormatKey = "AutoFormat";
         public const string FormatOnPasteKey = "FormatOnPaste";
         public const string CommitOnSpaceKey = "CommitOnSpace";
@@ -22,14 +20,11 @@ namespace Microsoft.R.Editor.Settings
         private static bool _initialized = false;
         private static RFormatOptions _formatOptions = new RFormatOptions();
 
-        private static ISettingsStorage Storage
-        {
-            get
-            {
+        private static ISettingsStorage Storage {
+            get {
                 var storage = (ISettingsStorage)EditorShell.GetSettings(RContentTypeDefinition.LanguageName);
 
-                if (!_initialized)
-                {
+                if (!_initialized) {
                     storage.SettingsChanged += OnSettingsChanged;
                     _initialized = true;
                 }
@@ -38,229 +33,183 @@ namespace Microsoft.R.Editor.Settings
             }
         }
 
-        public static IWritableSettingsStorage WritableStorage
-        {
+        public static IWritableSettingsStorage WritableStorage {
             get { return Storage as IWritableSettingsStorage; }
         }
 
-        private static bool IsWritable
-        {
+        private static bool IsWritable {
             get { return Storage is IWritableSettingsStorage; }
         }
 
         public static event EventHandler<EventArgs> Changed;
 
-        public static void BeginBatchChange()
-        {
+        public static void BeginBatchChange() {
             if (IsWritable)
                 WritableStorage.BeginBatchChange();
         }
 
-        public static void EndBatchChange()
-        {
+        public static void EndBatchChange() {
             if (IsWritable)
                 WritableStorage.EndBatchChange();
         }
 
-        public static void ResetSettings()
-        {
+        public static void ResetSettings() {
             if (IsWritable)
                 WritableStorage.ResetSettings();
 
             _formatOptions = new RFormatOptions();
         }
 
-        private static void OnSettingsChanged(object sender, EventArgs e)
-        {
+        private static void OnSettingsChanged(object sender, EventArgs e) {
             if (Changed != null)
                 Changed(null, EventArgs.Empty);
         }
 
-        public static bool CompletionEnabled
-        {
-            get
-            {
+        public static bool CompletionEnabled {
+            get {
                 return CommonSettings.GetCompletionEnabled(Storage);
             }
         }
 
-        public static bool SignatureHelpEnabled
-        {
-            get
-            {
+        public static bool SignatureHelpEnabled {
+            get {
                 return CommonSettings.GetSignatureHelpEnabled(Storage);
             }
         }
 
-        public static bool SyntaxCheck
-        {
-            get
-            {
+        public static bool SyntaxCheck {
+            get {
                 return CommonSettings.GetValidationEnabled(Storage);
             }
 
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(CommonSettings.ValidationEnabledKey, value);
             }
         }
 
-        public static bool InsertMatchingBraces
-        {
-            get
-            {
+        public static bool InsertMatchingBraces {
+            get {
                 return Storage.GetBoolean(CommonSettings.InsertMatchingBracesKey, true);
             }
 
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(CommonSettings.InsertMatchingBracesKey, value);
             }
         }
 
-        public static bool FormatOnPaste
-        {
-            get
-            {
+        public static bool FormatOnPaste {
+            get {
                 return Storage.GetBoolean(FormatOnPasteKey, true);
             }
 
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(FormatOnPasteKey, value);
             }
         }
 
-        public static bool AutoFormat
-        {
-            get
-            {
+        public static bool AutoFormat {
+            get {
                 return Storage.GetBoolean(AutoFormatKey, true);
             }
 
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(AutoFormatKey, value);
             }
         }
 
-        public static bool CommitOnSpace
-        {
-            get
-            {
+        public static bool CommitOnSpace {
+            get {
                 return Storage.GetBoolean(CommitOnSpaceKey, false);
             }
 
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(CommitOnSpaceKey, value);
             }
         }
 
-        public static bool CommitOnEnter
-        {
+        public static bool CommitOnEnter {
             get { return Storage.GetBoolean(CommitOnEnterKey, false); }
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(CommitOnEnterKey, value);
             }
         }
 
 
-        public static bool ShowCompletionOnFirstChar
-        {
+        public static bool ShowCompletionOnFirstChar {
             get { return Storage.GetBoolean(CompletionOnFirstCharKey, true); }
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(CompletionOnFirstCharKey, value);
             }
         }
 
-        public static IndentType IndentType
-        {
+        public static IndentType IndentType {
             get { return (IndentType)Storage.GetInteger(CommonSettings.FormatterIndentTypeKey, (int)IndentType.Spaces); }
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetInteger(CommonSettings.FormatterIndentTypeKey, (int)value);
             }
         }
 
-        public static int IndentSize
-        {
+        public static int IndentSize {
             get { return Storage.GetInteger(CommonSettings.FormatterIndentSizeKey, 4); }
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetInteger(CommonSettings.FormatterIndentSizeKey, value);
             }
         }
 
-        public static IndentStyle IndentStyle
-        {
+        public static IndentStyle IndentStyle {
             get { return (IndentStyle)Storage.GetInteger(CommonSettings.IndentStyleKey, (int)IndentStyle.Smart); }
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetInteger(CommonSettings.IndentStyleKey, (int)value);
             }
         }
 
-        public static int TabSize
-        {
+        public static int TabSize {
             get { return Storage.GetInteger(CommonSettings.FormatterTabSizeKey, 4); }
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetInteger(CommonSettings.FormatterTabSizeKey, value);
             }
         }
 
-        public static bool SendToReplOnCtrlEnter
-        {
-            get
-            {
+        public static bool SendToReplOnCtrlEnter {
+            get {
                 return Storage.GetBoolean(REditorSettings.SendToReplOnCtrlEnterKey, true);
             }
 
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(REditorSettings.SendToReplOnCtrlEnterKey, value);
             }
         }
 
-        public static bool SyntaxCheckInRepl
-        {
+        public static bool SyntaxCheckInRepl {
             get { return Storage.GetBoolean(REditorSettings.SyntaxCheckInReplKey, false); }
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(REditorSettings.SyntaxCheckInReplKey, false);
             }
         }
 
-        public static bool PartialArgumentNameMatch
-        {
+        public static bool PartialArgumentNameMatch {
             get { return Storage.GetBoolean(REditorSettings.PartialArgumentNameMatchKey, false); }
-            set
-            {
+            set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(REditorSettings.PartialArgumentNameMatchKey, value);
             }
         }
 
-        public static RFormatOptions FormatOptions
-        {
-            get
-            {
+        public static RFormatOptions FormatOptions {
+            get {
                 _formatOptions.IndentSize = REditorSettings.IndentSize;
                 _formatOptions.IndentType = REditorSettings.IndentType;
                 _formatOptions.TabSize = REditorSettings.TabSize;

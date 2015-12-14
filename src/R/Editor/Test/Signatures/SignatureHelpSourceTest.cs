@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
                 if (ready && !evt.IsSet) {
                     SignatureHelpSourceTest01_TestBody(signatures, evt);
                 }
-            }, REditorTestCompositionCatalog.Current);
+            });
         }
 
         private void SignatureHelpSourceTest01_TestBody(List<ISignature> signatures, ManualResetEventSlim completedEvent) {

@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Completion;
@@ -12,7 +11,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Test.Completions {
     using Languages.Core.Text;
-    using Utility;
     using VisualStudio.Editor.Mocks;
     using VisualStudio.Text;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
@@ -23,8 +21,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_BaseFunctionsTest01() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("", 0, completionSets);
 
@@ -40,13 +36,10 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_BaseFunctionsTest02() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("f", 1, completionSets, new TextRange(0, 1));
 
             Assert.AreEqual(1, completionSets.Count);
-
             completionSets[0].Filter();
 
             Assert.AreEqual("factanal", completionSets[0].Completions[0].DisplayText);
@@ -56,8 +49,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_KeywordsTest01() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("f", 1, completionSets, new TextRange(0, 1));
 
@@ -71,8 +62,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_PackagesTest01() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("library(", 8, completionSets);
 
@@ -86,8 +75,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_SpecificPackageTest01() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("utils::", 7, completionSets);
 
@@ -101,8 +88,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_CommentsTest01() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("#No", 3, completionSets);
 
@@ -113,8 +98,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_CommentsTest02() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("#No", 0, completionSets);
 
@@ -125,8 +108,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_FunctionDefinitionTest01() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("x <- function()", 14, completionSets);
 
@@ -137,8 +118,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_FunctionDefinitionTest02() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             for (int i = 14; i <= 18; i++) {
                 List<CompletionSet> completionSets = new List<CompletionSet>();
                 GetCompletions("x <- function(a, b)", i, completionSets);
@@ -151,8 +130,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_FunctionDefinitionTest03() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             for (int i = 14; i <= 19; i++) {
                 List<CompletionSet> completionSets = new List<CompletionSet>();
                 GetCompletions("x <- function(a, b = x+y)", i, completionSets);
@@ -173,8 +150,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [TestMethod]
         [TestCategory("R.Completion")]
         public void RCompletionSource_CaseSentivityTest() {
-            TestEditorShell.Create(REditorTestCompositionCatalog.Current);
-
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("x <- T", 6, completionSets);
 

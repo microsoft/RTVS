@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
+using Microsoft.VisualStudio.R.Package.Test.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Mocks;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -19,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
             _services.Add(typeof(SVsRegisterProjectTypes), new VsRegisterProjectGeneratorsMock());
             _services.Add(typeof(SVsRegisterEditors), VsRegisterEditorsMock.Create());
             _services.Add(typeof(IMenuCommandService), new MenuCommandServiceMock());
-            _services.Add(typeof(SComponentModel), new ComponentModelMock(RPackageTestCompositionCatalog.Current));
+            _services.Add(typeof(SComponentModel), new ComponentModelMock(VsTestCompositionCatalog.Current));
             _services.Add(typeof(SVsTextManager), new TextManagerMock());
             _services.Add(typeof(SVsImageService), VsImageServiceMock.Create());
             _services.Add(typeof(SVsUIShell), new VsUiShellMock());
