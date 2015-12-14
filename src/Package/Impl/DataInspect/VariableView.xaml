@@ -105,16 +105,16 @@
 
         <TextBlock x:Name="EnvironmentName" Text="{x:Static pkg:Resources.VariableExplorer_EnvironmentName}" Margin="4" />
 
-        <DataGrid x:Name="RootTreeGrid" Grid.Row="1"
+        <local:TreeGrid x:Name="RootTreeGrid" Grid.Row="1"
                   AutoGenerateColumns="False"
                   ScrollViewer.VerticalScrollBarVisibility="Visible"
                   IsReadOnly="True">
-        <DataGrid.Columns>
+            <DataGrid.Columns>
                 <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}" Width="2*" CanUserSort="False" />
                 <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}" Width="3*" CanUserSort="False" />
                 <DataGridTextColumn x:Name="ClassColumn" Header="{x:Static pkg:Resources.VariableExplorer_ClassHeader}" Binding="{Binding Model.Content.Class}" Width="*" CanUserSort="False" />
                 <DataGridTextColumn x:Name="TypeColumn" Header="{x:Static pkg:Resources.VariableExplorer_TypeHeader}" Binding="{Binding Model.Content.TypeName}" Width="*" CanUserSort="False" />
-        </DataGrid.Columns>
-    </DataGrid>
+            </DataGrid.Columns>
+        </local:TreeGrid>
     </Grid>
 </UserControl>

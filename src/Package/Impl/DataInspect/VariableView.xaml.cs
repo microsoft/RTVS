@@ -10,13 +10,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableView() {
             InitializeComponent();
 
-            VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
             if (VariableProvider.Current.LastEvaluation == null) {
                 SetRootNode(EvaluationWrapper.Ellipsis);
             } else {
                 SetRootNode(VariableProvider.Current.LastEvaluation);
                 EnvironmentName.Text = VariableProvider.Current.LastEvaluation.Name;
             }
+            VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
         }
 
         private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
@@ -33,9 +33,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void SetRootNode(EvaluationWrapper evaluation) {
-            _rootNode = ObservableTreeNode.CreateAsRoot(new VariableNode(evaluation), false);
-            var items = new TreeNodeCollection(_rootNode);
-            RootTreeGrid.ItemsSource = items.View;
+            _rootNode = new ObservableTreeNode(new VariableNode(evaluation));
+            _rootNode.IsExpanded = true;
+            RootTreeGrid.ItemsSource = new TreeNodeCollection(_rootNode).ItemList;
         }
     }
 }
