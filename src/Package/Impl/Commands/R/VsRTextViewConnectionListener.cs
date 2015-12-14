@@ -65,6 +65,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
         }
 
         protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
+            // Force creations
+            var  appShell = VsAppShell.Current;
             InitEditorInstance(textBuffer);
             base.OnTextBufferCreated(textBuffer);
         }

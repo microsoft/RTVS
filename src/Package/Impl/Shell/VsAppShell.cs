@@ -57,10 +57,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public static IApplicationShell Current {
             get {
-                if(_testShell == null && Thread.CurrentThread.IsBackground) {
-                    // Test environment
+                if(_testShell == null) {
+                    // Try test environment
                     CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsAppShell");
-                    Debug.Assert(_testShell != null);
                 }
                 return _testShell ?? _instance.Value;
             }
