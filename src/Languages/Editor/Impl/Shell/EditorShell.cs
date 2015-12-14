@@ -23,6 +23,10 @@ namespace Microsoft.Languages.Editor.Shell {
             _shell = shell;
          }
 
+        public static bool HasShell {
+            get { return _shell != null; }
+        }
+
         public static IEditorShell Current {
             get {
                 lock (_lock) {

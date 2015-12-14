@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set {
                 _workingDirectory = value;
                 UpdateWorkingDirectoryList(_workingDirectory);
-                if (EditorShell.Current != null) {
+                if (EditorShell.HasShell) {
                     EditorShell.DispatchOnUIThread(() => {
                         IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
                         shell.UpdateCommandUI(1);

@@ -10,7 +10,7 @@ namespace Microsoft.Common.Core.Shell {
         // Normally shell object is set by the package or other top-level
         // application object that implements services needed by various 
         // modules such as MEF composition container and so on. However, 
-        // in tests the application is not and objectsoften are instantiated
+        // in tests the application is not and objects often are instantiated
         // in isolation. In this case code uses reflection to instatiate 
         // service provider with a specific name.
         public static void TryCreateTestInstance(string assemblyName, string className) {
