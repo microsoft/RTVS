@@ -72,11 +72,13 @@
     <Compile Include="DataInspect\DynamicGrid\DynamicGrid.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCell.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCellsPanel.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridColumnHeadersPresenter.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRow.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowHeader.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowsPanel.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGridUtilities.cs" />
+    <Compile Include="DataInspect\GridHeader.cs" />
+    <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />

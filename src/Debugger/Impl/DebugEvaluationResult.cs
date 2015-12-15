@@ -147,6 +147,7 @@ namespace Microsoft.R.Debugger {
         public int? AttributeCount { get; }
         public int? SlotCount { get; }
         public int? NameCount { get; }
+        public IReadOnlyList<int> Dim { get; }
         public DebugValueEvaluationResultFlags Flags { get; }
 
         public bool IsAtomic => Flags.HasFlag(DebugValueEvaluationResultFlags.Atomic);
@@ -176,6 +177,11 @@ namespace Microsoft.R.Debugger {
             var classes = json.Value<JArray>("classes");
             if (classes != null) {
                 Classes = classes.Select(t => t.Value<string>()).ToArray();
+            }
+
+            var dim = json.Value<JArray>("dim");
+            if (dim != null) {
+                Dim = dim.Select(t => t.Value<int>()).ToArray();
             }
 
             var kind = json.Value<string>("kind");

@@ -26,10 +26,10 @@ namespace Microsoft.R.Host.Client.Session {
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
             var script = @"
 .rtvs.vsgdresize <- function(width, height) {
-   .External('rtvs::External.ide_graphicsdevice_resize', width, height)
+   invisible(.External('rtvs::External.ide_graphicsdevice_resize', width, height))
 }
 .rtvs.vsgd <- function() {
-   .External('rtvs::External.ide_graphicsdevice_new')
+   invisible(.External('rtvs::External.ide_graphicsdevice_new'))
 }
 .rtvs.vsgdexportimage <- function(filename, device) {
     dev.copy(device=device,filename=filename)
@@ -40,13 +40,16 @@ namespace Microsoft.R.Host.Client.Session {
     dev.off()
 }
 .rtvs.vsgdnextplot <- function() {
-   .External('rtvs::External.ide_graphicsdevice_next_plot')
+   invisible(.External('rtvs::External.ide_graphicsdevice_next_plot'))
 }
 .rtvs.vsgdpreviousplot <- function() {
-   .External('rtvs::External.ide_graphicsdevice_previous_plot')
+   invisible(.External('rtvs::External.ide_graphicsdevice_previous_plot'))
+}
+.rtvs.vsgdhistoryinfo <- function() {
+   .External('rtvs::External.ide_graphicsdevice_history_info')
 }
 xaml <- function(filename, width, height) {
-   .External('rtvs::External.xaml_graphicsdevice_new', filename, width, height)
+   invisible(.External('rtvs::External.xaml_graphicsdevice_new', filename, width, height))
 }
 options(device='.rtvs.vsgd')
 ";
@@ -54,19 +57,24 @@ options(device='.rtvs.vsgd')
             return evaluation.EvaluateAsync(script);
         }
 
-        public static Task<REvaluationResult> ResizePlot(this IRSessionEvaluation evaluation, int width, int height) {
-            var script = string.Format(".rtvs.vsgdresize({0}, {1})", width, height);
-            return evaluation.EvaluateAsync(script);
+        public static Task ResizePlot(this IRSessionInteraction evaluation, int width, int height) {
+            var script = string.Format(".rtvs.vsgdresize({0}, {1})\n", width, height);
+            return evaluation.RespondAsync(script);
         }
 
-        public static Task<REvaluationResult> NextPlot(this IRSessionEvaluation evaluation) {
-            var script = @".rtvs.vsgdnextplot()";
-            return evaluation.EvaluateAsync(script);
+        public static Task NextPlot(this IRSessionInteraction evaluation) {
+            var script = ".rtvs.vsgdnextplot()\n";
+            return evaluation.RespondAsync(script);
         }
 
-        public static Task<REvaluationResult> PreviousPlot(this IRSessionEvaluation evaluation) {
-            var script = @".rtvs.vsgdpreviousplot()";
-            return evaluation.EvaluateAsync(script);
+        public static Task PreviousPlot(this IRSessionInteraction evaluation) {
+            var script = ".rtvs.vsgdpreviousplot()\n";
+            return evaluation.RespondAsync(script);
+        }
+
+        public static Task<REvaluationResult> PlotHistoryInfo(this IRSessionEvaluation evaluation) {
+            var script = @"rtvs:::toJSON(.rtvs.vsgdhistoryinfo())";
+            return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
         public static Task<REvaluationResult> CopyToDevice(this IRSessionEvaluation evaluation, string deviceName, string outputFilePath) {

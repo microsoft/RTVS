@@ -941,15 +941,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Plot.
-        /// </summary>
-        public static string Settings_PlotCategory {
-            get {
-                return ResourceManager.GetString("Settings_PlotCategory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Engine (64-bit).
         /// </summary>
         public static string Settings_RBasePath {
@@ -1144,24 +1135,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_TriggerOnFirstChar_Description {
             get {
                 return ResourceManager.GetString("Settings_TriggerOnFirstChar_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use exp. graphics device (requires restart).
-        /// </summary>
-        public static string Settings_UseExperimentalGraphicsDevice {
-            get {
-                return ResourceManager.GetString("Settings_UseExperimentalGraphicsDevice", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use the new experimental graphics device for plotting.  Restart VS after changing this setting..
-        /// </summary>
-        public static string Settings_UseExperimentalGraphicsDevice_Description {
-            get {
-                return ResourceManager.GetString("Settings_UseExperimentalGraphicsDevice_Description", resourceCulture);
             }
         }
         

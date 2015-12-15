@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -13,12 +14,15 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
     public sealed class DebugSession : IDisposable {
-        // State machine that processes breakpoints hit. We need to issue several commands in response
-        // in succession; this keeps track of where we were on the last interaction.
-        private enum BreakpointHitProcessingState {
+        // State machine that processes Browse> prompts. When hitting a breakpoint or performing a step,
+        // we need to issue several commands in response in succession; this keeps track of where we were
+        // on the last interaction.
+        private enum BrowseProcessingState {
             None,
             BrowserSetDebug,
-            Continue
+            Continue,
+            StepIn,
+            StepInBrowser,
         }
 
         private Task _initializeTask;
@@ -26,7 +30,7 @@ namespace Microsoft.R.Debugger {
 
         private CancellationTokenSource _initialPromptCts = new CancellationTokenSource();
         private TaskCompletionSource<object> _stepTcs;
-        private BreakpointHitProcessingState _bpHitProcState;
+        private BrowseProcessingState _browseProcState;
         private DebugStackFrame _bpHitFrame;
         private volatile EventHandler<DebugBrowseEventArgs> _browse;
         private readonly object _browseLock = new object();
@@ -192,6 +196,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task StepIntoAsync() {
+            _browseProcState = BrowseProcessingState.StepIn;
             return StepAsync("s");
         }
 
@@ -287,8 +292,8 @@ namespace Microsoft.R.Debugger {
 
         private void InterruptBreakpointHitProcessing() {
             _bpHitFrame = null;
-            if (_bpHitProcState != BreakpointHitProcessingState.None) {
-                _bpHitProcState = BreakpointHitProcessingState.None;
+            if (_browseProcState != BrowseProcessingState.None) {
+                _browseProcState = BrowseProcessingState.None;
                 // If we were in the middle of processing a breakpoint hit, we need to make sure that
                 // any pending stepping is canceled, since we can no longer handle it at this point.
                 CancelStep();
@@ -319,8 +324,8 @@ namespace Microsoft.R.Debugger {
         private async Task ProcessBrowsePromptWorker(IRSessionInteraction inter) {
             DebugStackFrame lastFrame = null;
 
-            switch (_bpHitProcState) {
-                case BreakpointHitProcessingState.None:
+            switch (_browseProcState) {
+                case BrowseProcessingState.None:
                     {
                         lastFrame = (await GetStackFramesAsync()).LastOrDefault();
                         if (lastFrame?.FrameKind == DebugStackFrameKind.TracebackAfterBreakpoint) {
@@ -341,7 +346,7 @@ namespace Microsoft.R.Debugger {
                             if (_bpHitFrame != null) {
                                 // Set the destination for the next "c", which we will issue on the following prompt.
                                 await inter.RespondAsync(Invariant($"browserSetDebug({n})\n"));
-                                _bpHitProcState = BreakpointHitProcessingState.BrowserSetDebug;
+                                _browseProcState = BrowseProcessingState.BrowserSetDebug;
                                 return;
                             }
                         } else {
@@ -350,18 +355,32 @@ namespace Microsoft.R.Debugger {
                         break;
                     }
 
-                case BreakpointHitProcessingState.BrowserSetDebug:
+                case BrowseProcessingState.BrowserSetDebug:
                     // We have issued a browserSetDebug() on the previous interaction prompt to set destination
                     // for the "c" command. Issue that command now, and move to the next step.
                     await inter.RespondAsync("c\n");
-                    _bpHitProcState = BreakpointHitProcessingState.Continue;
+                    _browseProcState = BrowseProcessingState.Continue;
                     return;
 
-                case BreakpointHitProcessingState.Continue:
-                    // We have issued a "c" command on the previous interaction prompt to unwind the stack back
-                    // to the function in which the breakpoint was set. We are in the proper context now, and
-                    // can report step completion and raise Browse below.
-                    _bpHitProcState = BreakpointHitProcessingState.None;
+                case BrowseProcessingState.StepIn:
+                    // If we just did a step-in, R will be in a weird state where any eval at the current prompt
+                    // will be considered a step-in target, and will cause another Browse> prompt. To avoid this,
+                    // manually trigger a nested browser, and then immediately step out of it.
+                    await inter.RespondAsync("browser()\n");
+                    _browseProcState = BrowseProcessingState.StepInBrowser;
+                    return;
+
+                case BrowseProcessingState.StepInBrowser:
+                    // We have invoked browser() in response to a step-in; now we need to step out of it. Note
+                    // that this must use "n" rather than "c", so as to overwrite "s" as last browse command.
+                    await inter.RespondAsync("n\n");
+                    _browseProcState = BrowseProcessingState.Continue;
+                    return;
+
+                case BrowseProcessingState.Continue:
+                    // We have issued a "c" or "n" command on the previous interaction prompt, ending the sequence.
+                    // We are in the proper context now, and can report step completion and raise Browse below.
+                    _browseProcState = BrowseProcessingState.None;
                     break;
             }
 

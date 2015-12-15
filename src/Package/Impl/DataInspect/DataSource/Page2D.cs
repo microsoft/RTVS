@@ -6,6 +6,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class Page2D<T> {
         private Grid<PageItem<T>> _grid;
 
+        private List<DelegateList<PageItem<T>>> _list;
+
         public Page2D(PageNumber pageNumber, GridRange range) {
             PageNumber = pageNumber;
             Range = range;
@@ -16,6 +18,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 range.Rows.Count,
                 range.Columns.Count,
                 (r, c) => new PageItem<T>(range.Columns.Start + c));
+
+            _list = new List<DelegateList<PageItem<T>>>(range.Rows.Count);
+            for (int r = 0; r < range.Rows.Count; r++) {
+                var row = new DelegateList<PageItem<T>>(
+                    range.Rows.Start + r,
+                    (c) => _grid[r, c],
+                    range.Columns.Count);
+
+                _list.Add(row);
+            }
         }
 
         public PageNumber PageNumber { get; }
@@ -30,6 +42,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Debug.Assert(Range.Contains(row, column));
 
             return _grid[row - Range.Rows.Start, column - Range.Columns.Start];
+        }
+
+        public DelegateList<PageItem<T>> GetItem(int row) {
+            return _list[row - Range.Rows.Start];
         }
 
         internal void PopulateData(IGrid<T> data) {

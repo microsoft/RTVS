@@ -13,7 +13,7 @@ using Task = System.Threading.Tasks.Task;
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
         private static string DefaultPrompt = "> ";
-        private static bool useReparentPlot = !RToolsSettings.Current.UseExperimentalGraphicsDevice;
+        private static bool useReparentPlot = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_NEW_GFX"));
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();

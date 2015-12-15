@@ -69,6 +69,7 @@ namespace Microsoft.R.Debugger {
         public async Task DeleteAsync() {
             Trace.Assert(UseCount > 0);
             await TaskUtilities.SwitchToBackgroundThread();
+            await Session.InitializeAsync();
 
             string fileName = null;
             try {

@@ -90,6 +90,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>True</IncludeInVSIX>
     </None>
+    <EmbeddedResource Include="rtvs\R\grid.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="rtvs\R\rtvs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>True</IncludeInVSIX>

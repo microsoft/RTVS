@@ -14,6 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private Queue<Page2D<T>> _requests = new Queue<Page2D<T>>();
         private Task _loadTask = null;
 
+        private Dictionary<int, DelegateList<PageItem<T>>> _rows = new Dictionary<int, DelegateList<PageItem<T>>>();
+
         #endregion
 
         private IGridProvider<T> _itemsProvider;
@@ -67,6 +69,30 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 return foundPage.GetItem(row, column);
+            }
+        }
+
+        public DelegateList<DelegateList<PageItem<T>>> GetItemsSource() {
+            var itemsSource = new DelegateList<DelegateList<PageItem<T>>>(
+                0,
+                (row) => GetRow(row),
+                RowCount);
+
+            return itemsSource;
+        }
+
+        public DelegateList<PageItem<T>> GetRow(int row) {
+            DelegateList<PageItem<T>> list;
+            lock (_syncObj) {
+                if (_rows.TryGetValue(row, out list)) {
+                    return list;
+                }
+                list = new DelegateList<PageItem<T>>(
+                    row,
+                    (column) => GetItem(row, column),
+                    ColumnCount);
+                _rows.Add(row, list);
+                return list;
             }
         }
 

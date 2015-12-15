@@ -1,0 +1,95 @@
+﻿<Window x:Class="Microsoft.VisualStudio.R.TestApp.TreeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Microsoft.VisualStudio.R.TestApp"
+        xmlns:core="clr-namespace:System;assembly=mscorlib"
+        xmlns:rtvs="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect;assembly=Microsoft.VisualStudio.R.Package"
+        mc:Ignorable="d"
+        Title="TreeWindow" Height="300" Width="300">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/DataInspect/DataGridStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <rtvs:MultiplyConverter x:Key="MultiplyConverter" />
+            <rtvs:BooleanToVisibilityConverter x:Key="HidingBoolToVisibilityConverter" ValueForTrue="Visible" ValueForFalse="Hidden" />
+            <rtvs:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" ValueForTrue="Visible" ValueForFalse="Collapsed" />
+            <core:Double x:Key="ExpanderToggleSize">16</core:Double>
+
+            <Style x:Key="ExpanderToggleStyle" TargetType="{x:Type ToggleButton}">
+                <Setter Property="Focusable" Value="False"/>
+                <Setter Property="Width" Value="{StaticResource ExpanderToggleSize}"/>
+                <Setter Property="Height" Value="{StaticResource ExpanderToggleSize}"/>
+                <Setter Property="Visibility" Value="{Binding HasChildren, Converter={StaticResource HidingBoolToVisibilityConverter}}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <Border Background="Transparent" Height="{TemplateBinding Height}" Padding="5" Width="{TemplateBinding Width}">
+                                <Path x:Name="ExpandPath" Data="M0,0 L0,6 L6,0 z" Stroke="Red">
+                                    <Path.RenderTransform>
+                                        <RotateTransform Angle="135" CenterY="3" CenterX="3"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="RenderTransform" TargetName="ExpandPath">
+                                        <Setter.Value>
+                                            <RotateTransform Angle="180" CenterY="3" CenterX="3"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Fill" TargetName="ExpandPath" Value="Red"/>
+                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="Red"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Fill" TargetName="ExpandPath" Value="Blue"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                        <Condition Property="IsChecked" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Stroke" TargetName="ExpandPath" Value="Blue"/>
+                                    <Setter Property="Fill" TargetName="ExpandPath" Value="Blue"/>
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="NameCellTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Rectangle x:Name="Indentation" Grid.Column="0"
+                                   Width="{Binding Depth, Converter={StaticResource MultiplyConverter}, ConverterParameter={StaticResource ExpanderToggleSize}}" />
+                    <ToggleButton x:Name="Expander"
+                              Grid.Column="1"
+                              Style="{StaticResource ExpanderToggleStyle}"
+                              ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Grid.Column="2" Text="{Binding Model.Content.Id}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="ValueCellTemplate">
+                <TextBlock Text="{Binding Model.Content.Path}" />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+    <rtvs:TreeGrid x:Name="RootTreeGrid" Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                  IsReadOnly="True">
+        <DataGrid.Columns>
+            <DataGridTemplateColumn x:Name="NameColumn" Header="Id" CellTemplate="{StaticResource NameCellTemplate}" Width="2*" CanUserSort="True" SortMemberPath="Id" />
+            <DataGridTemplateColumn x:Name="ValueColumn" Header="Path" CellTemplate="{StaticResource ValueCellTemplate}" Width="3*" CanUserSort="False" />
+        </DataGrid.Columns>
+    </rtvs:TreeGrid>
+</Window>

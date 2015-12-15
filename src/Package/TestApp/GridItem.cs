@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 
 namespace Microsoft.VisualStudio.R.TestApp {
-    public struct GridItem : IIndexedItem {
+    public class GridItem : IIndexedItem {
         public GridItem(int row, int column, bool isDefault = false) {
             Row = row;
             Column = column;

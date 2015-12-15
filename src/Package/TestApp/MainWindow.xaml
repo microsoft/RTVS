@@ -7,5 +7,20 @@
         xmlns:rtvs="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect;assembly=Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
         Title="MainWindow" Height="900" Width="525">
-    <rtvs:VariableGridHost x:Name="GridHost" />
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/DataInspect/DynamicGrid/DynamicGridStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Button x:Name="LoadItemsSource" Content="Load ItemsSource" Click="LoadItemsSource_Click" />
+        <rtvs:DynamicGrid x:Name="GridHost"
+                          Grid.Row="1"/>
+    </Grid>
 </Window>
