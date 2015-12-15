@@ -9,7 +9,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            return CommandStatus.Supported;
+            return CommandStatus.NotSupported; // implementation not completed yet
+            //return CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {

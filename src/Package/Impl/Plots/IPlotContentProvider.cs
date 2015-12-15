@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
@@ -12,24 +13,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         event EventHandler<PlotChangedEventArgs> PlotChanged;
 
         /// <summary>
-        /// Loads file on next idle time. Typically used
-        /// in R plotting where several files may get produced
-        /// in a fast succession. Eliminates multiple file loads.
-        /// </summary>
-        /// <param name="filePath"></param>
-        void LoadFileOnIdle(string filePath);
-
-        /// <summary>
         /// Load a file to create plot UIElement
         /// </summary>
         /// <param name="filePath">path to a file</param>
         void LoadFile(string filePath);
-
-        /// <summary>
-        /// Copy last loaded file to destination
-        /// </summary>
-        /// <param name="fileName">the destination filepath</param>
-        void SaveFile(string fileName);
 
         /// <summary>
         /// Export plot as an image
@@ -43,8 +30,22 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         /// <param name="width">Width in pixels.</param>
         /// <param name="height">Height in pixels.</param>
         void ResizePlot(int width, int height);
+
+        /// <summary>
+        /// Navigate to the next plot in the plot history.
+        /// </summary>
         void NextPlot();
+
+        /// <summary>
+        /// Navigate to the previous plot in the plot history.
+        /// </summary>
         void PreviousPlot();
+
+        /// <summary>
+        /// Get the plot history information.
+        /// </summary>
+        /// <returns>Tuple of active index (0-based, -1 for none) and number of plots.</returns>
+        Task<Tuple<int, int>> GetHistoryInfo();
     }
 
     /// <summary>

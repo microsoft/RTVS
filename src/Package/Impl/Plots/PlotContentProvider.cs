@@ -2,11 +2,13 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xaml;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -15,6 +17,7 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotContentProvider : IPlotContentProvider {
         private IRSession _rSession;
+        private DebugSession _debugSession;
         private string _lastLoadFile;
         private string _lastIdleLoadFile;
         private int _lastWidth;
@@ -37,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }, 10, typeof(PlotContentProvider));
         }
 
-        private void SetRSession(IRSession session) {
+        private async void SetRSession(IRSession session) {
             // cleans up old RSession
             if (_rSession != null) {
                 _rSession.Mutated -= RSession_Mutated;
@@ -46,9 +49,20 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
             // set new RSession
             _rSession = session;
+
+            // debug session is used to get access to the methods exported
+            // in the debugger R files (rtvs:::toJSON)
+            if (_debugSession != null) {
+                _debugSession.Dispose();
+                _debugSession = null;
+            }
+
             if (_rSession != null) {
                 _rSession.Mutated += RSession_Mutated;
                 _rSession.Connected += RSession_Connected;
+
+                _debugSession = new DebugSession(_rSession);
+                await _debugSession.InitializeAsync();
             }
 
             // notify the change
@@ -63,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async void RSession_Connected(object sender, EventArgs e) {
             // Let the host know the size of plot window
             if (_lastWidth >= 0 && _lastHeight >= 0) {
-                ResizePlot();
+                ApplyNewSize();
             }
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
@@ -87,39 +101,26 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         public event EventHandler<PlotChangedEventArgs> PlotChanged;
 
-        public void LoadFileOnIdle(string fileName) {
-            IdleTimeAction.Cancel(typeof(PlotContentProvider));
-            DeleteTempFile(_lastIdleLoadFile);
-
-            IdleTimeAction.Create(() => LoadFile(fileName), 200, typeof(PlotContentProvider));
-            _lastIdleLoadFile = fileName;
-        }
-
         public void LoadFile(string fileName) {
             UIElement element = null;
-            try {
-                if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
-                    var image = new Image();
-                    image.Source = new BitmapImage(new Uri(fileName));
-                    element = image;
-                } else {
-                    element = (UIElement)XamlServices.Load(fileName);
+            // Empty filename means clear
+            if (fileName.Length > 0) {
+                try {
+                    if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
+                        var image = new Image();
+                        image.Source = new BitmapImage(new Uri(fileName));
+                        element = image;
+                    } else {
+                        element = (UIElement)XamlServices.Load(fileName);
+                    }
+                    _lastLoadFile = fileName;
+                } catch (Exception e) {
+                    element = CreateErrorContent(
+                        new FormatException(string.Format("Couldn't load XAML file from {0}", fileName), e));
                 }
-                _lastLoadFile = fileName;
-            } catch (Exception e) {
-                element = CreateErrorContent(
-                    new FormatException(string.Format("Couldn't load XAML file from {0}", fileName), e));
             }
 
             OnPlotChanged(element);
-        }
-
-        public void SaveFile(string fileName) {
-            if (_lastLoadFile != null) {
-                File.Copy(_lastLoadFile, fileName, overwrite: true);
-                DeleteTempFile(_lastLoadFile);
-                _lastLoadFile = null;
-            }
         }
 
         public async void ExportFile(string fileName) {
@@ -154,12 +155,27 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
+        public async Task<Tuple<int, int>> GetHistoryInfo() {
+            if (_rSession == null || !_rSession.IsHostRunning) {
+                return new Tuple<int, int>(-1, 0);
+            }
+
+            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                var info = await eval.PlotHistoryInfo();
+                var first = info.JsonResult[0];
+                var second = info.JsonResult[1];
+                var activePlotIndex = (int)first.ToObject(typeof(int));
+                var plotCount = (int)second.ToObject(typeof(int));
+                return new Tuple<int, int>(activePlotIndex, plotCount);
+            }
+        }
+
         public async void NextPlot() {
             if (_rSession == null) {
                 return;
             }
 
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+            using (var eval = await _rSession.BeginInteractionAsync(false)) {
                 await eval.NextPlot();
             }
         }
@@ -169,7 +185,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 return;
             }
 
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+            using (var eval = await _rSession.BeginInteractionAsync(false)) {
                 await eval.PreviousPlot();
             }
         }
@@ -181,13 +197,13 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _lastHeight = height;
 
             if (_rSession != null) {
-                ResizePlot();
+                ApplyNewSize();
             }
         }
 
-        private async void ResizePlot() {
+        private async void ApplyNewSize() {
             if (_rSession != null) {
-                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                using (var eval = await _rSession.BeginInteractionAsync(false)) {
                     await eval.ResizePlot(_lastWidth, _lastHeight);
                 }
             }
@@ -207,19 +223,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        private static void DeleteTempFile(string fileName) {
-            if (!string.IsNullOrEmpty(fileName)) {
-                try {
-                    if (File.Exists(fileName)) {
-                        File.Delete(fileName);
-                    }
-                } catch (IOException) { }
-            }
-        }
-
         public void Dispose() {
-            IdleTimeAction.Cancel(typeof(PlotContentProvider));
-            DeleteTempFile(_lastLoadFile);
         }
     }
 }

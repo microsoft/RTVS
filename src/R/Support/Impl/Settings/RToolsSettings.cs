@@ -4,6 +4,7 @@ using Microsoft.R.Support.Settings.Definitions;
 namespace Microsoft.R.Support.Settings {
     public static class RToolsSettings {
         private static IRToolsSettings _settings;
+
         public static IRToolsSettings Current {
             get {
                 if (_settings == null) {
