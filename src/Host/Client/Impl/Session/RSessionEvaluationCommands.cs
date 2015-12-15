@@ -130,7 +130,7 @@ options(device='.rtvs.vsgd')
 @"setwd <- function(dir) {
     .Internal(setwd(dir))
     if(getwd() == dir) {
-        .C('rtvs::Call.send_message', '~/', rtvs:::toJSON(dir))
+        z <- .Call('rtvs::Call.send_message', '~/', rtvs:::toJSON(dir))
     }
   }";
             return evaluation.EvaluateAsync(script);
