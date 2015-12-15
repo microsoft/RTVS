@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -52,9 +55,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return false;
         }
 
+
         public bool HasChildren {
             get {
                 return _evaluation.HasChildren;
+            }
+        }
+
+        public static int Comparison(VariableNode left, VariableNode right, ListSortDirection sortDirection) {
+            int leftIndex = left._evaluation.Index;
+            int rightIndex = right._evaluation.Index;
+
+            Debug.Assert(leftIndex >= -1 && rightIndex >= -1);
+
+            // Regardless to sortDirection, special index -1 is larger than anything. So, put at the end always
+            if (leftIndex == -1 || rightIndex == -1) {
+                return rightIndex - leftIndex;
+            }
+
+            if (sortDirection == ListSortDirection.Ascending) {
+                return leftIndex - rightIndex;
+            } else {
+                return rightIndex - leftIndex;
             }
         }
 

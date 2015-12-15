@@ -62,5 +62,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
             return children;
         }
+
+        public static int Comparison(ITreeNode x, ITreeNode y) {
+            var xNode = (TestNode)x;
+            var yNode = (TestNode)y;
+
+            return string.CompareOrdinal((string)xNode.Content, (string)yNode.Content);
+        }
     }
 }
