@@ -6,16 +6,11 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Parser;
 
-namespace Microsoft.R.Editor.Tree
-{
+namespace Microsoft.R.Editor.Tree {
     /// <summary>
     /// Class that handles processing of changes happened in the text buffer.
     /// </summary>
-    internal sealed class TextChangeProcessor
-    {
-        private static BooleanSwitch _tracePartialParse =
-            new BooleanSwitch("tracePartialParse", "Trace R partial parse events in debug window.");
-
+    internal sealed class TextChangeProcessor {
         /// <summary>
         /// Editor tree
         /// </summary>
@@ -31,19 +26,13 @@ namespace Microsoft.R.Editor.Tree
         /// </summary>
         private Func<bool> _cancelCallback;
 
-        public TextChangeProcessor(EditorTree editorTree, AstRoot astRoot, Func<bool> cancelCallback = null)
-        {
-#if DEBUG
-            _tracePartialParse.Enabled = false;
-#endif
-
+        public TextChangeProcessor(EditorTree editorTree, AstRoot astRoot, Func<bool> cancelCallback = null) {
             _editorTree = editorTree;
             _astRoot = astRoot;
             _cancelCallback = cancelCallback;
         }
 
-        private bool IsCancellationRequested()
-        {
+        private bool IsCancellationRequested() {
             return _cancelCallback != null ? _cancelCallback() : false;
         }
 
@@ -60,8 +49,7 @@ namespace Microsoft.R.Editor.Tree
         /// <param name="newSnapshot">Text snapshot after the change</param>
         /// <param name="treeChanges">Collection of tree changes to apply 
         /// from the main thread</param>
-        public void ProcessChange(TextChange textChange, EditorTreeChangeCollection treeChanges)
-        {
+        public void ProcessChange(TextChange textChange, EditorTreeChangeCollection treeChanges) {
             IAstNode startNode = null, endNode = null;
             PositionType startPositionType = PositionType.Undefined;
             PositionType endPositionType = PositionType.Undefined;
@@ -85,28 +73,21 @@ namespace Microsoft.R.Editor.Tree
             _astRoot.GetElementsEnclosingRange(start, newLength, out startNode,
                           out startPositionType, out endNode, out endPositionType);
 
-            if (startNode is AstRoot)
-            {
+            if (startNode is AstRoot) {
                 commonParent = _astRoot;
-            }
-            else if (startNode == endNode)
-            {
-                if (startPositionType == PositionType.Token)
-                {
+            } else if (startNode == endNode) {
+                if (startPositionType == PositionType.Token) {
                     // Change in comment or string content. 
                     commonParent = OnTokenNodeChange(startNode as TokenNode, start, oldLength, newLength);
                 }
-            }
-            else
-            {
+            } else {
                 //if (commonParent == null)
                 //{
                 //    // Find parent that still has well formed curly braces.
                 //    commonParent = FindWellFormedOuterScope(startNode);
                 //}
 
-                if (commonParent == null)
-                {
+                if (commonParent == null) {
                     commonParent = _astRoot;
                 }
             }
@@ -114,23 +95,11 @@ namespace Microsoft.R.Editor.Tree
             if (IsCancellationRequested())
                 return;
 
-            if (!(commonParent is AstRoot))
-            {
+            if (!(commonParent is AstRoot)) {
                 Debug.Assert(commonParent is IScope);
-
-                // Partial parse and update case
-                if (_tracePartialParse.Enabled)
-                {
-                    Debug.WriteLine("R editor parser: parsing {0}, {1}:{2}",
-                        commonParent.ToString(), commonParent.Start, commonParent.End);
-                }
-
                 AstRoot subTree = RParser.Parse(newSnapshot, commonParent);
                 return;
             }
-
-            if (_tracePartialParse.Enabled)
-                Debug.WriteLine("R parser: full parse\r\n");
 
             AstRoot newTree = RParser.Parse(newSnapshot);
             treeChanges.ChangeQueue.Enqueue(new EditorTreeChange_NewTree(newTree));
@@ -140,8 +109,7 @@ namespace Microsoft.R.Editor.Tree
         /// Reflects change inside string or comment by shrinking or expanding token node.
         /// </summary>
         /// <returns></returns>
-        private IAstNode OnTokenNodeChange(TokenNode node, int start, int oldLength, int newLength)
-        {
+        private IAstNode OnTokenNodeChange(TokenNode node, int start, int oldLength, int newLength) {
             Debug.Assert(node != null);
             node.Token.Expand(0, newLength - oldLength);
 
@@ -151,8 +119,7 @@ namespace Microsoft.R.Editor.Tree
         /// <summary>
         /// Invokes full parse pass. Called from a background tree updating task.
         /// </summary>
-        public void FullParse(EditorTreeChangeCollection changes, ITextProvider newSnapshot)
-        {
+        public void FullParse(EditorTreeChangeCollection changes, ITextProvider newSnapshot) {
             AstRoot newTree = RParser.Parse(newSnapshot);
             changes.ChangeQueue.Enqueue(new EditorTreeChange_NewTree(newTree));
         }

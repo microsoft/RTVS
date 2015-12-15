@@ -117,6 +117,17 @@ options(device='.rtvs.vsgd')
             return evaluation.EvaluateAsync(script);
         }
 
+        public static Task<REvaluationResult> SetChangeDirectoryRedirection(this IRSessionEvaluation evaluation) {
+            var script =
+@"setwd <- function(dir) {
+    .Internal(setwd(dir))
+    if(getwd() == dir) {
+        .C('rtvs::Call.send_message', '~/', rtvs:::toJSON(dir))
+    }
+  }";
+            return evaluation.EvaluateAsync(script);
+        }
+
         private static Task<REvaluationResult> EvaluateNonReentrantAsync(this IRSessionEvaluation evaluation, FormattableString commandText) {
             return evaluation.EvaluateAsync(FormattableString.Invariant(commandText));
         }
