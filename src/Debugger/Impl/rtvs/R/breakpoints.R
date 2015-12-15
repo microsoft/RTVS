@@ -6,9 +6,11 @@ breakpoints <- new.env(parent = emptyenv())
 
 # Used to report a breakpoint. Before breaking, will check that the breakpoint is still set.
 breakpoint <- function(filename, line_number) {
-  line_numbers <- breakpoints[[filename]];
-  if (line_number %in% line_numbers) {
-    browser();
+  if (locals$breakpoints_enabled) {
+    line_numbers <- breakpoints[[filename]];
+    if (line_number %in% line_numbers) {
+      browser();
+    }
   }
 }
 
@@ -17,7 +19,7 @@ breakpoint <- function(filename, line_number) {
 add_breakpoint <- function(filename, line_number, reapply = TRUE) {
   breakpoints[[filename]] <- c(breakpoints[[filename]], line_number);
   if (reapply) {
-  	  reapply_breakpoints();
+      reapply_breakpoints();
   }
 }
 
@@ -135,20 +137,20 @@ inject_breakpoints <- function(expr) {
 
   changed <- FALSE;
   for (line_num in line_numbers) {
-  	step <- steps_for_line_num(expr, line_num);
-  	if (length(step) > 0) {
-  	bp_expr <- expr[[step]];
-  	original_expr <- attr(bp_expr, 'rtvs::original_expr');
-  	if (is.null(original_expr)) {
-  		original_expr <- bp_expr;
-  	}
+    step <- steps_for_line_num(expr, line_num);
+    if (length(step) > 0) {
+    bp_expr <- expr[[step]];
+    original_expr <- attr(bp_expr, 'rtvs::original_expr');
+    if (is.null(original_expr)) {
+        original_expr <- bp_expr;
+    }
           
-  	expr[[step]] <- substitute({.doTrace(rtvs:::breakpoint(FILENAME, LINE_NUMBER)); EXPR},
-  									list(FILENAME = filename, LINE_NUMBER = line_num, EXPR = original_expr));
-  	attr(expr[[step]], 'rtvs::original_expr') <- original_expr;
-  	attr(expr[[step]], 'srcref') <- attr(original_expr, 'srcref');
-  	changed <- TRUE;
-  	}
+    expr[[step]] <- substitute({.doTrace(rtvs:::breakpoint(FILENAME, LINE_NUMBER)); EXPR},
+                                    list(FILENAME = filename, LINE_NUMBER = line_num, EXPR = original_expr));
+    attr(expr[[step]], 'rtvs::original_expr') <- original_expr;
+    attr(expr[[step]], 'srcref') <- attr(original_expr, 'srcref');
+    changed <- TRUE;
+    }
   }
   
   if (!changed) {
@@ -158,90 +160,15 @@ inject_breakpoints <- function(expr) {
   expr
 }
 
-# Stash away the original .Internal before detouring it. In case it has already been detoured,
-# check the attribute that is set to save the original first.
-#original_.Internal <- attr(base::.Internal, 'rtvs::original');
-#if (is.null(original_.Internal)) {
-#  original_.Internal <- base::.Internal;
-#}
-
-detoured_.Internal <- function(call) {
-  # Call the real thing first.
-  res <- eval(substitute(.Primitive('.Internal')(call)), envir = parent.frame());
-
-  # If it was .Internal(parse(...)), inject breakpoints into the resulting expression object.
-  if (substitute(call)[[1]] == 'parse') {
-    bp_res <- inject_breakpoints(res);
-    if (!is.null(bp_res)) {
-      res <- bp_res;
-    }
-  }
-  
-  res
-}
-
-detour_parsing <- function(env, enable) {
-  on.exit({
-    lockBinding('.Internal', env);  
-    lockBinding('parse', env);  
-    lockBinding('source', env);  
-    lockBinding('sys.source', env);  
-  });  
-  
-  unlockBinding('.Internal', env);  
-  unlockBinding('parse', env);  
-  unlockBinding('source', env);  
-  unlockBinding('sys.source', env);  
-  
-  if (enable) {
-    .Internal <- env$.Internal;
-    attr(detoured_.Internal, 'rtvs::original') <- .Internal;
-    env$.Internal <- detoured_.Internal;
-  
-    # The following code is a magic hack to force these three functions from
-    # the same namespace as .Internal to notice the changed definition of it.
-    
-    ne <- new.env(parent = env);
-    
-    parse <- env$parse;
-    attr(parse, 'rtvs::original') <- parse;
-    environment(parse) <- ne;
-    env$parse <- parse;
-    
-    source <- env$source;
-    attr(source, 'rtvs::original') <- source;
-    environment(source) <- ne;
-    env$source <- source;
-    
-    sys.source <- env$sys.source;
-    attr(sys.source, 'rtvs::original') <- sys.source;
-    environment(sys.source) <- ne;
-    env$sys.source <- sys.source;
-    
-    # TODO: do the same to other stuff in base that calls .Internal(parse).
-  } else {
-    env$.Internal <- attr(env$.Internal, 'rtvs::original');
-    env$parse <- attr(env$parse, 'rtvs::original');
-    env$source <- attr(env$source, 'rtvs::original');
-    env$sys.source <- attr(env$sys.source, 'rtvs::original');
-  }
-}
-
 # Enables or disables instrumentation that makes breakpoints work.
 enable_breakpoints <- function(enable) {
   if (locals$breakpoints_enabled != enable) {
     locals$breakpoints_enabled <- enable;
-    
-    # Detouring needs to be done both in the package environment for base,
-    # and in the namespace environment for it.
-    detour_parsing(baseenv(), enable);
-    detour_parsing(.BaseNamespaceEnv, enable);
-    
-    # TODO: also detour the same in other package environments, in search
-    # paths for all loaded namespaces.
-    
     if (enable) {
+      call_embedded('set_instrumentation_callback', inject_breakpoints);
       reapply_breakpoints();
+    } else {
+      call_embedded('set_instrumentation_callback', NULL);
     }
   }
 }
