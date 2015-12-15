@@ -38,11 +38,6 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public bool UseExperimentalGraphicsDevice {
-            get { return false; }
-            set { }
-        }
-
         public bool ClearFilterOnAddHistory {
             get { return true; }
             set { }

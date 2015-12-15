@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
         }
 
         public void Disable() {
-            CurrentStatus ^= CommandStatus.Enabled;
+            CurrentStatus &= ~CommandStatus.Enabled;
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
                 if (docView != null) {
                     PlotWindowPane pane = (PlotWindowPane)docView;
-                    pane.PlotContentProvider.LoadFileOnIdle(filePath);
+                    pane.PlotContentProvider.LoadFile(filePath);
 
                     frame.ShowNoActivate();
                 }

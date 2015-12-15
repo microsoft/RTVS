@@ -8,11 +8,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
             base(pane, RPackageCommandId.icmdPrevPlot) {
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            return CommandStatus.NotSupported;
-            //return CommandStatus.SupportedAndEnabled;
-        }
-
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             _pane.PreviousPlot();
             return CommandResult.Executed;
