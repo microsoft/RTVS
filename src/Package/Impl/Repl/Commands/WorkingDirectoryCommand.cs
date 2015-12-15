@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor;
@@ -17,12 +16,12 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudioTools;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
-    public sealed class WorkingDirectoryCommand : ViewCommand {
+    public sealed class WorkingDirectoryCommand : Command {
         private const int MaxDirectoryEntries = 8;
         private IRSessionProvider _sessionProvider;
 
-        public WorkingDirectoryCommand(ITextView textView) :
-            base(textView, new CommandId[] {
+        public WorkingDirectoryCommand() :
+            base(new CommandId[] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGetDirectoryList),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory)
@@ -73,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return CommandResult.Executed;
         }
 
-        private Task SetDirectory(string friendlyName) {
+        internal Task SetDirectory(string friendlyName) {
             string currentDirectory = RToolsSettings.Current.WorkingDirectory;
             string newDirectory = GetFullPathName(friendlyName);
             if (newDirectory != null && currentDirectory != newDirectory) {
@@ -90,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return Task.CompletedTask;
         }
 
-        private void SelectDirectory() {
+        internal void SelectDirectory() {
             IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             IntPtr dialogOwner;
             uiShell.GetDialogOwnerHwnd(out dialogOwner);
@@ -100,13 +99,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             SetDirectory(newDirectory);
         }
 
-        private string[] GetFriendlyDirectoryNames() {
+        internal string[] GetFriendlyDirectoryNames() {
             return RToolsSettings.Current.WorkingDirectoryList
                 .Select(GetFriendlyDirectoryName)
                 .ToArray();
         }
 
-        private string GetFriendlyDirectoryName(string directory) {
+        internal string GetFriendlyDirectoryName(string directory) {
             Task<string> task = GetRUserDirectoryAsync();
             task.Wait(500);
             if (task.IsCompleted) {
@@ -124,7 +123,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return directory;
         }
 
-        private string GetFullPathName(string friendlyName) {
+        internal string GetFullPathName(string friendlyName) {
             string folder = friendlyName;
             if (friendlyName == null) {
                 return folder;
@@ -142,14 +141,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return PathHelper.MakeRooted(PathHelper.EnsureTrailingSlash(myDocuments), friendlyName.Substring(2));
         }
 
-        private async Task<string> GetRWorkingDirectoryAsync() {
+        internal async Task<string> GetRWorkingDirectoryAsync() {
             using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
                 REvaluationResult result = await eval.EvaluateAsync("getwd()");
                 return ToWindowsPath(result.StringResult);
             }
         }
 
-        private async Task<string> GetRUserDirectoryAsync() {
+        internal async Task<string> GetRUserDirectoryAsync() {
             using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
                 REvaluationResult result = await eval.EvaluateAsync("Sys.getenv('R_USER')");
                 return ToWindowsPath(result.StringResult);

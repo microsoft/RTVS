@@ -102,6 +102,7 @@
     <Compile Include="Telemetry\StringTelemetryRecorderTests.cs" />
     <Compile Include="Telemetry\TelemetryTestService.cs" />
     <Compile Include="Telemetry\TelemetryTestServiceTests.cs" />
+    <Compile Include="Utility\SequentialTestExecutor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
