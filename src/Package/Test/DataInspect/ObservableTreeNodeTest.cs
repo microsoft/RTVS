@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,26 +12,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [TestClass]
     public class ObservableTreeNodeTest {
-        private List<ObservableTreeNode> _linearized;
         private ObservableTreeNode _rootNode;
-
-        public TestContext TestContext { get; set; }
+        private TreeNodeCollection _linearized;
+        private Comparer<ITreeNode> _testNodeComparer;
 
         [TestInitialize]
         public void InitializeTest() {
-            _linearized = new List<ObservableTreeNode>();
-            _rootNode = new ObservableTreeNode(new TestNode(0));
-            _rootNode.CollectionChanged += Target_CollectionChanged;
-
-            _linearized.Add(_rootNode);
+            _testNodeComparer = Comparer<ITreeNode>.Create(TestNode.Comparison);
+            _rootNode = new ObservableTreeNode(new TestNode(0), _testNodeComparer);
+            _linearized = new TreeNodeCollection(_rootNode);
         }
+
 
         [TestCleanup]
         public void CleanupTest() {
-            _rootNode.CollectionChanged -= Target_CollectionChanged;
-
-            _rootNode = null;
             _linearized = null;
+            _rootNode = null;
         }
 
         #region manual Add/Removal Test
@@ -35,120 +35,126 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [TestMethod]
         [TestCategory("Variable.Explorer")]
         public void ObservableTreeNodeConstructorTest() {
-            var target = new ObservableTreeNode(new TestNode(1234));
+            var target = new ObservableTreeNode(new TestNode(1234), _testNodeComparer);
             Assert.AreEqual(false, target.HasChildren, "Default HasChildren value");
             Assert.AreEqual(1234.ToString(), target.Model.Content);
-            Assert.AreEqual(1, target.Count);
             Assert.AreEqual(0, target.Children.Count);
         }
 
         [TestMethod]
         [TestCategory("Variable.Explorer")]
         public void ObservableTreeNodeAddChildTest() {
+            int[] expected;
             var target = _rootNode;
-            target.InsertChildAt(0, GetTestTree());
 
-            int[] expected = { 0, 1, 11, 111, 112, 12, 121, 122, 13, 131, 1311, 1312, 132 };
-            AssertLinearized(expected, _linearized, target);
+            // full tree: { 0, 1, 11, 111, 112, 12, 121, 122, 13, 131, 1311, 1312, 132 }
+            target.AddChild(GetTestTree());
+
+            // only root expanded by default
+            expected = new int[] { 1 };
+            AssertLinearized(expected, _linearized.ItemList, target);
+
+            // expand 1st at level 0
+            Expand(0, 3);
+            expected = new int[] { 1, 11, 12, 13 };
+            AssertLinearized(expected, _linearized.ItemList, target);
+
+            // expand 3rd at level 1
+            Expand(3, 2);
+            expected = new int[] { 1, 11, 12, 13, 131, 132 };
+            AssertLinearized(expected, _linearized.ItemList, target);
         }
 
         [TestMethod]
         [TestCategory("Variable.Explorer")]
         public void ObservableTreeNodeRemoveChildTest() {
             var target = _rootNode;
-            target.InsertChildAt(0, GetTestTree());
+            target.AddChild(GetTestTree());
+            Expand(0, 3);
+            Expand(3, 2);
+            Expand(4, 2);
             target.Children[0].Children[2].RemoveChild(0);
 
-            int[] expected = { 0, 1, 11, 111, 112, 12, 121, 122, 13, 132 };
-            AssertLinearized(expected, _linearized, target);
+            int[] expected = { 1, 11, 12, 13, 132 };
+            AssertLinearized(expected, _linearized.ItemList, target);
         }
 
         [TestMethod]
         [TestCategory("Variable.Explorer")]
-        public void AddLeafChildTest() {
+        public void AddChildOutOrderTest() {
             var target = _rootNode;
-            target.AddChild(new ObservableTreeNode(new TestNode(10)));
-            target.AddChild(new ObservableTreeNode(new TestNode(11)));
-            target.AddChild(new ObservableTreeNode(new TestNode(12)));
+            target.AddChild(new ObservableTreeNode(new TestNode(10), _testNodeComparer));
+            target.AddChild(new ObservableTreeNode(new TestNode(11), _testNodeComparer));
+            target.AddChild(new ObservableTreeNode(new TestNode(12), _testNodeComparer));
 
-            int[] expected = { 0, 10, 11, 12 };
-            AssertLinearized(expected, _linearized, target);
+            int[] expected = { 10, 11, 12 };
+            AssertLinearized(expected, _linearized.ItemList, target);
         }
 
         [TestMethod]
         [TestCategory("Variable.Explorer")]
-        public void AddChildTest() {
+        public void AddChildInOrderTest() {
             var target = _rootNode;
-            target.AddChild(new ObservableTreeNode(new TestNode(10)));
+            target.AddChild(new ObservableTreeNode(new TestNode(10), _testNodeComparer));
 
-            var added = new ObservableTreeNode(new TestNode(11));
-            added.AddChild(new ObservableTreeNode(new TestNode(111)));
-            added.AddChild(new ObservableTreeNode(new TestNode(112)));
+            var added = new ObservableTreeNode(new TestNode(11), _testNodeComparer);
+            added.IsExpanded = true;
+            added.AddChild(new ObservableTreeNode(new TestNode(111), _testNodeComparer));
+            added.AddChild(new ObservableTreeNode(new TestNode(112), _testNodeComparer));
 
             target.AddChild(added);
-            target.AddChild(new ObservableTreeNode(new TestNode(12)));
+            target.AddChild(new ObservableTreeNode(new TestNode(12), _testNodeComparer));
 
-            int[] expected = { 0, 10, 11, 111, 112, 12 };
+            int[] expected = { 10, 11, 111, 112, 12 };
 
-            AssertLinearized(expected, _linearized, target);
+            AssertLinearized(expected, _linearized.ItemList, target);
         }
 
         [TestMethod]
         [TestCategory("Variable.Explorer")]
-        public void InsertChildOrderTest() {
+        public void AddTreeTest() {
             var target = _rootNode;
-            target.InsertChildAt(0, new ObservableTreeNode(new TestNode(12)));
-            target.InsertChildAt(0, new ObservableTreeNode(new TestNode(10)));
-            target.InsertChildAt(1, new ObservableTreeNode(new TestNode(11)));
+            target.AddChild(new ObservableTreeNode(new TestNode(12), _testNodeComparer));
+            target.AddChild(new ObservableTreeNode(new TestNode(10), _testNodeComparer));
 
-            int[] expected = { 0, 10, 11, 12 };
-            AssertLinearized(expected, _linearized, target);
-        }
+            var tree = new ObservableTreeNode(new TestNode(11), _testNodeComparer);
+            tree.IsExpanded = true;
+            tree.AddChild(new ObservableTreeNode(new TestNode(111), _testNodeComparer));
+            tree.AddChild(new ObservableTreeNode(new TestNode(112), _testNodeComparer));
 
-        [TestMethod]
-        [TestCategory("Variable.Explorer")]
-        public void InsertAnoterTreeTest() {
-            var target = _rootNode;
-            target.InsertChildAt(0, new ObservableTreeNode(new TestNode(12)));
+            target.AddChild(tree);
 
-            target.InsertChildAt(0, new ObservableTreeNode(new TestNode(10)));
-
-            var added = new ObservableTreeNode(new TestNode(11));
-            added.AddChild(new ObservableTreeNode(new TestNode(111)));
-            added.AddChild(new ObservableTreeNode(new TestNode(112)));
-
-            target.InsertChildAt(1, added);
-
-            int[] expected = { 0, 10, 11, 111, 112, 12 };
-            AssertLinearized(expected, _linearized, target);
+            int[] expected = { 10, 11, 111, 112, 12 };
+            AssertLinearized(expected, _linearized.ItemList, target);
         }
 
         [TestMethod]
         [TestCategory("Variable.Explorer")]
         public void InsertChildTest() {
             var target = _rootNode;
-            target.InsertChildAt(0, new ObservableTreeNode(new TestNode(10)));
-            target.InsertChildAt(1, new ObservableTreeNode(new TestNode(11)));
-            target.InsertChildAt(2, new ObservableTreeNode(new TestNode(12)));
+            target.AddChild(new ObservableTreeNode(new TestNode(10), _testNodeComparer));
+            target.AddChild(new ObservableTreeNode(new TestNode(11), _testNodeComparer));
+            target.AddChild(new ObservableTreeNode(new TestNode(12), _testNodeComparer));
+            target.Children[1].IsExpanded = true;
 
-            target.Children[1].InsertChildAt(0, new ObservableTreeNode(new TestNode(111)));
+            target.Children[1].AddChild(new ObservableTreeNode(new TestNode(111), _testNodeComparer));
 
-            int[] expected = { 0, 10, 11, 111, 12 };
-            AssertLinearized(expected, _linearized, target);
+            int[] expected = { 10, 11, 111, 12 };
+            AssertLinearized(expected, _linearized.ItemList, target);
         }
 
         [TestMethod]
         [TestCategory("Variable.Explorer")]
         public void RemoveLeafChildTest() {
             var target = _rootNode;
-            target.InsertChildAt(0, new ObservableTreeNode(new TestNode(10)));
-            target.InsertChildAt(1, new ObservableTreeNode(new TestNode(11)));
-            target.InsertChildAt(2, new ObservableTreeNode(new TestNode(12)));
+            target.AddChild(new ObservableTreeNode(new TestNode(10), _testNodeComparer));
+            target.AddChild(new ObservableTreeNode(new TestNode(11), _testNodeComparer));
+            target.AddChild(new ObservableTreeNode(new TestNode(12), _testNodeComparer));
 
             target.RemoveChild(1);
 
-            int[] expected = { 0, 10, 12 };
-            AssertLinearized(expected, _linearized, target);
+            int[] expected = { 10, 12 };
+            AssertLinearized(expected, _linearized.ItemList, target);
         }
 
         #endregion manual Add/Removal Test
@@ -156,69 +162,78 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         #region test utilities
 
         private void AssertLinearized(int[] expected, IList<ObservableTreeNode> target, ObservableTreeNode targetTree) {
-            Assert.AreEqual(expected.Length, targetTree.Count);
             Assert.AreEqual(expected.Length, target.Count);
             for (int i = 0; i < expected.Length; i++) {
                 Assert.AreEqual(expected[i].ToString(), target[i].Model.Content, string.Format("{0}th item is different", i));
             }
         }
 
-        private void Target_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            switch (e.Action) {
-                case NotifyCollectionChangedAction.Add:
-                    int insertIndex = e.NewStartingIndex;
-                    foreach (var item in e.NewItems) {
-                        _linearized.Insert(insertIndex, (ObservableTreeNode)item);
-                        insertIndex++;
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    _linearized.RemoveRange(e.OldStartingIndex, e.OldItems.Count);
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    _linearized.RemoveRange(1, _linearized.Count - 1);
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                case NotifyCollectionChangedAction.Move:
-                default:
-                    Assert.Fail("Not supported collection change detected");
-                    break;
-            }
-        }
-
         private ObservableTreeNode GetTestTree() {
-            var n1 = new ObservableTreeNode(new TestNode(11));
-            var n11 = new ObservableTreeNode(new TestNode(111));
-            var n12 = new ObservableTreeNode(new TestNode(112));
-            n1.InsertChildAt(0, n11);
-            n1.InsertChildAt(1, n12);
+            var n1 = new ObservableTreeNode(new TestNode(11), _testNodeComparer);
+            var n11 = new ObservableTreeNode(new TestNode(111), _testNodeComparer);
+            var n12 = new ObservableTreeNode(new TestNode(112), _testNodeComparer);
+            n1.AddChild(n11);
+            n1.AddChild(n12);
 
-            var n2 = new ObservableTreeNode(new TestNode(12));
-            var n21 = new ObservableTreeNode(new TestNode(121));
-            var n22 = new ObservableTreeNode(new TestNode(122));
-            n2.InsertChildAt(0, n21);
-            n2.InsertChildAt(1, n22);
+            var n2 = new ObservableTreeNode(new TestNode(12), _testNodeComparer);
+            var n21 = new ObservableTreeNode(new TestNode(121), _testNodeComparer);
+            var n22 = new ObservableTreeNode(new TestNode(122), _testNodeComparer);
+            n2.AddChild(n21);
+            n2.AddChild(n22);
 
-            var n3 = new ObservableTreeNode(new TestNode(13));
+            var n3 = new ObservableTreeNode(new TestNode(13), _testNodeComparer);
 
-            var n311 = new ObservableTreeNode(new TestNode(1311));
-            var n312 = new ObservableTreeNode(new TestNode(1312));
-            var n31 = new ObservableTreeNode(new TestNode(131));
-            n31.InsertChildAt(0, n311);
-            n31.InsertChildAt(1, n312);
+            var n311 = new ObservableTreeNode(new TestNode(1311), _testNodeComparer);
+            var n312 = new ObservableTreeNode(new TestNode(1312), _testNodeComparer);
+            var n31 = new ObservableTreeNode(new TestNode(131), _testNodeComparer);
+            n31.AddChild(n311);
+            n31.AddChild(n312);
 
-            var n32 = new ObservableTreeNode(new TestNode(132));
-            n3.InsertChildAt(0, n31);
-            n3.InsertChildAt(1, n32);
+            var n32 = new ObservableTreeNode(new TestNode(132), _testNodeComparer);
+            n3.AddChild(n31);
+            n3.AddChild(n32);
 
-            var n = new ObservableTreeNode(new TestNode(1));
-            n.InsertChildAt(0, n1);
-            n.InsertChildAt(1, n2);
-            n.InsertChildAt(2, n3);
+            var n = new ObservableTreeNode(new TestNode(1), _testNodeComparer);
+            n.AddChild(n1);
+            n.AddChild(n2);
+            n.AddChild(n3);
 
             return n;
         }
 
         #endregion
+
+        private void Expand(int index, int childCount) {
+            using (var countDown = new AddCountDownEvent(childCount, _linearized.ItemList)) {
+                _linearized.ItemList[index].IsExpanded = true;
+                Assert.IsTrue(countDown.Wait(TimeSpan.FromMilliseconds(1000)));
+            }
+        }
+
+        class AddCountDownEvent : CountdownEvent {
+            private INotifyCollectionChanged _collection;
+
+            public AddCountDownEvent(int initialCount, ReadOnlyObservableCollection<ObservableTreeNode> collection)
+                : base(initialCount) {
+                _collection = collection;
+                _collection.CollectionChanged += ObservableTreeNodeTest_CollectionChanged;
+            }
+
+            private void ObservableTreeNodeTest_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+                if (e.Action == NotifyCollectionChangedAction.Add) {
+                    Signal();
+                }
+            }
+
+            protected override void Dispose(bool disposing) {
+                base.Dispose(disposing);
+
+                if (_collection != null) {
+                    _collection.CollectionChanged -= ObservableTreeNodeTest_CollectionChanged;
+                    _collection = null;
+                }
+            }
+        }
+
     }
 }

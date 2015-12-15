@@ -18,6 +18,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             this.readonlyList = new ReadOnlyObservableCollection<ObservableTreeNode>(this.itemList);
             this.includeRoot = includeRoot;
             this.RebuildList();
+
+            // Expand root node always
+            _rootNode.IsExpanded = true;
         }
 
         public ReadOnlyObservableCollection<ObservableTreeNode> ItemList {

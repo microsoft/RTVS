@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
@@ -10,6 +11,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableView() {
             InitializeComponent();
 
+            SortDirection = ListSortDirection.Ascending;
+
             if (VariableProvider.Current.LastEvaluation == null) {
                 SetRootNode(EvaluationWrapper.Ellipsis);
             } else {
@@ -17,6 +20,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 EnvironmentName.Text = VariableProvider.Current.LastEvaluation.Name;
             }
             VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
+
+            RootTreeGrid.Sorting += RootTreeGrid_Sorting;
+        }
+
+        private void RootTreeGrid_Sorting(object sender, DataGridSortingEventArgs e) {
+            // SortDirection
+            if (SortDirection == ListSortDirection.Ascending) {
+                SortDirection = ListSortDirection.Descending;
+            } else {
+                SortDirection = ListSortDirection.Ascending;
+            }
+
+            _rootNode.Sort();
+            e.Handled = true;
         }
 
         private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
@@ -33,9 +50,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void SetRootNode(EvaluationWrapper evaluation) {
-            _rootNode = new ObservableTreeNode(new VariableNode(evaluation));
-            _rootNode.IsExpanded = true;
+            _rootNode = new ObservableTreeNode(
+                new VariableNode(evaluation),
+                Comparer<ITreeNode>.Create(Comparison));
+
             RootTreeGrid.ItemsSource = new TreeNodeCollection(_rootNode).ItemList;
+        }
+
+        private ListSortDirection SortDirection { get; set; }
+
+        private int Comparison(ITreeNode left, ITreeNode right) {
+            return VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
-    internal class EvaluationWrapper {
+    internal class EvaluationWrapper : IIndexedItem {
         private readonly DebugEvaluationResult _evaluation;
 
         private static readonly char[] NameTrimChars = new char[] { '$' };
@@ -23,16 +23,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private readonly bool _truncateChildren;
 
-        private EvaluationWrapper() { }
+        private EvaluationWrapper() { Index = -1; }
 
-        public EvaluationWrapper(DebugEvaluationResult evaluation) : this(evaluation, true) { }
+        public EvaluationWrapper(int index, DebugEvaluationResult evaluation) : this(index, evaluation, true) { }
 
         /// <summary>
         /// Create new instance of <see cref="EvaluationWrapper"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public EvaluationWrapper(DebugEvaluationResult evaluation, bool truncateChildren) {
+        public EvaluationWrapper(int index, DebugEvaluationResult evaluation, bool truncateChildren) {
+            Index = index;
             _evaluation = evaluation;
             _truncateChildren = truncateChildren;
 
@@ -88,11 +89,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 var fields = (DebugEvaluationResultFields.All & ~DebugEvaluationResultFields.ReprAll) |
                     DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
+
+                // assumumption: DebugEvaluationResult returns children in ascending order
                 var children = await valueEvaluation.GetChildrenAsync(fields, _truncateChildren ? (int?)20 : null, 100);    // TODO: consider exception propagation such as OperationCanceledException
 
                 result = new List<EvaluationWrapper>();
-                foreach (var child in children) {
-                    result.Add(new EvaluationWrapper(child));
+                for (int i = 0; i < children.Count; i++) {
+                    result.Add(new EvaluationWrapper(i, children[i]));
                 }
 
                 if (valueEvaluation.Length > result.Count) {
@@ -102,6 +105,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             return result;
         }
+
+        /// <summary>
+        /// Index returned from evaluation provider, Sort is based on this, and assumes that DebugEvaluationResult returns in ascending order
+        /// </summary>
+        public int Index { get; }
 
         public string Name { get; private set; }
 

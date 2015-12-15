@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -44,9 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected void OnPropertyChanged(string propertyName) {
             var eventHandler = this.PropertyChanged;
             if (eventHandler != null) {
-                ThreadHelper.Generic.Invoke(() => {
-                    eventHandler(this, new PropertyChangedEventArgs(propertyName));
-                });
+                eventHandler(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }
