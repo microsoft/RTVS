@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         private void PlotWindowPane_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
             if (!useReparentPlot) {
-                PlotContentProvider.ResizePlot((int)e.NewSize.Width, (int)e.NewSize.Height);
+                PlotContentProvider.ResizePlotAsync((int)e.NewSize.Width, (int)e.NewSize.Height).DoNotWait();
             }
         }
 
@@ -93,11 +93,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             return commands;
         }
 
-        private async void RefreshHistoryInfo() {
-            var info = await PlotContentProvider.GetHistoryInfo();
-            int activeIndex = info.Item1;
-            int plotCount = info.Item2;
-            SetHistoryInfo(activeIndex, plotCount);
+        private async System.Threading.Tasks.Task RefreshHistoryInfo() {
+            var info = await PlotContentProvider.GetHistoryInfoAsync();
+            SetHistoryInfo(info.ActivePlotIndex, info.PlotCount);
         }
 
         private void ClearHistoryInfo() {
@@ -129,7 +127,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (e.NewPlotElement == null) {
                 ClearHistoryInfo();
             } else {
-                RefreshHistoryInfo();
+                RefreshHistoryInfo().DoNotWait();
             }
         }
 
@@ -141,11 +139,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         internal void NextPlot() {
-            PlotContentProvider.NextPlot();
+            PlotContentProvider.NextPlotAsync().DoNotWait();
         }
 
         internal void PreviousPlot() {
-            PlotContentProvider.PreviousPlot();
+            PlotContentProvider.PreviousPlotAsync().DoNotWait();
         }
 
         private string GetLoadFilePath() {

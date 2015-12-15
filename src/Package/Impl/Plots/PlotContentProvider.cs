@@ -17,9 +17,8 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotContentProvider : IPlotContentProvider {
         private IRSession _rSession;
-        private DebugSession _debugSession;
+        private IDebugSessionProvider _debugSessionProvider;
         private string _lastLoadFile;
-        private string _lastIdleLoadFile;
         private int _lastWidth;
         private int _lastHeight;
 
@@ -34,6 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
+
+            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
 
             IdleTimeAction.Create(() => {
                 SetRSession(sessionProvider.Current);
@@ -50,19 +51,13 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // set new RSession
             _rSession = session;
 
-            // debug session is used to get access to the methods exported
-            // in the debugger R files (rtvs:::toJSON)
-            if (_debugSession != null) {
-                _debugSession.Dispose();
-                _debugSession = null;
-            }
-
             if (_rSession != null) {
                 _rSession.Mutated += RSession_Mutated;
                 _rSession.Connected += RSession_Connected;
 
-                _debugSession = new DebugSession(_rSession);
-                await _debugSession.InitializeAsync();
+                // debug session is created to trigger a load of the R package
+                // that has functions we need such as rtvs:::toJSON
+                var debugSession = await _debugSessionProvider.GetDebugSessionAsync(_rSession);
             }
 
             // notify the change
@@ -77,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async void RSession_Connected(object sender, EventArgs e) {
             // Let the host know the size of plot window
             if (_lastWidth >= 0 && _lastHeight >= 0) {
-                ApplyNewSize();
+                await ApplyNewSize();
             }
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
@@ -155,22 +150,22 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        public async Task<Tuple<int, int>> GetHistoryInfo() {
+        public async Task<PlotHistoryInfo> GetHistoryInfoAsync() {
             if (_rSession == null || !_rSession.IsHostRunning) {
-                return new Tuple<int, int>(-1, 0);
+                return new PlotHistoryInfo();
             }
 
+            REvaluationResult result;
             using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                var info = await eval.PlotHistoryInfo();
-                var first = info.JsonResult[0];
-                var second = info.JsonResult[1];
-                var activePlotIndex = (int)first.ToObject(typeof(int));
-                var plotCount = (int)second.ToObject(typeof(int));
-                return new Tuple<int, int>(activePlotIndex, plotCount);
+                result = await eval.PlotHistoryInfo();
             }
+
+            return new PlotHistoryInfo(
+                (int)result.JsonResult[0].ToObject(typeof(int)),
+                (int)result.JsonResult[1].ToObject(typeof(int)));
         }
 
-        public async void NextPlot() {
+        public async System.Threading.Tasks.Task NextPlotAsync() {
             if (_rSession == null) {
                 return;
             }
@@ -180,7 +175,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        public async void PreviousPlot() {
+        public async System.Threading.Tasks.Task PreviousPlotAsync() {
             if (_rSession == null) {
                 return;
             }
@@ -190,18 +185,18 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        public void ResizePlot(int width, int height) {
+        public async System.Threading.Tasks.Task ResizePlotAsync(int width, int height) {
             // Cache the size, so we can set the initial size
             // whenever we get a new session
             _lastWidth = width;
             _lastHeight = height;
 
             if (_rSession != null) {
-                ApplyNewSize();
+                await ApplyNewSize();
             }
         }
 
-        private async void ApplyNewSize() {
+        private async System.Threading.Tasks.Task ApplyNewSize() {
             if (_rSession != null) {
                 using (var eval = await _rSession.BeginInteractionAsync(false)) {
                     await eval.ResizePlot(_lastWidth, _lastHeight);
