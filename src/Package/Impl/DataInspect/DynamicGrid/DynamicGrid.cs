@@ -205,7 +205,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             int? firstItemIndex = null;
             double firstItemOffset = 0;
             double extentWidth = 0.0;
-            for (int i = 0; i < Items.Count; i++) {
+
+            int columnCount = ColumnHeaderSource == null ? 0 : ColumnHeaderSource.Count;
+
+            for (int i = 0; i < columnCount; i++) {
                 double currentWidth;
 
                 MaxDouble columnWidth;
@@ -231,7 +234,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return new SharedScrollInfo() {
                 FirstItemIndex = firstItemIndex.HasValue ? firstItemIndex.Value : 0,
                 FirstItemOffset = firstItemOffset,
-                MaxItemInViewport = ColumnHeaderSource == null ? 0 : ColumnHeaderSource.Count - firstIndex,
+                MaxItemInViewport = columnCount - firstIndex,
             };
         }
 
