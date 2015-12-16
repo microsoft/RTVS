@@ -36,7 +36,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public ReplWindow() {
             IVsUIShell7 shell = VsAppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
-            _windowFrameEventsCookie = shell.AdviseWindowFrameEvents(this);
+            if (shell != null) {
+                _windowFrameEventsCookie = shell.AdviseWindowFrameEvents(this);
+            }
         }
 
         public static ReplWindow Current => Instance.Value;
