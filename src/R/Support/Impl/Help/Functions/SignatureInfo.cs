@@ -7,7 +7,16 @@ namespace Microsoft.R.Support.Help.Functions {
     public sealed class SignatureInfo : ISignatureInfo {
         public const int MaxSignatureLength = 160;
 
+        public SignatureInfo(string functionName) {
+            FunctionName = functionName;
+        }
+
         #region ISignatureInfo
+        /// <summary>
+        /// Function name
+        /// </summary>
+        public string FunctionName { get; private set; }
+
         /// <summary>
         /// Function arguments
         /// </summary>
@@ -19,8 +28,8 @@ namespace Microsoft.R.Support.Help.Functions {
         /// locus points (locations withing the string) for each function
         /// parameter.
         /// </summary>
-        public string GetSignatureString(string functionName, List<int> locusPoints = null) {
-            var sb = new StringBuilder(functionName);
+        public string GetSignatureString(List<int> locusPoints = null) {
+            var sb = new StringBuilder(FunctionName);
             int lineCount = 0;
 
             sb.Append('(');

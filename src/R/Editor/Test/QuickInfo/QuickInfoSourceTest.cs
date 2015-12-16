@@ -51,7 +51,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
             Assert.IsNotNull(applicableSpan);
             Assert.AreEqual(1, quickInfoContent.Count);
-            Assert.IsTrue(quickInfoContent[0].ToString().StartsWith("as.matrix(data = NA, nrow = 1, ncol = 1", StringComparison.Ordinal));
+            Assert.IsTrue(quickInfoContent[0].ToString().StartsWith("as.matrix(x, ...)", StringComparison.Ordinal));
 
             completedEvent.Set();
         }
