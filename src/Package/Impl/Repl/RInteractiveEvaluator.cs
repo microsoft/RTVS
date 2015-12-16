@@ -152,31 +152,34 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private void SessionOnOutput(object sender, ROutputEventArgs args) {
             if (args.OutputType == OutputType.Output) {
-                Write(args.Message).DoNotWait();
+                Write(args.Message);
             } else {
-                WriteError(args.Message).DoNotWait();
+                WriteError(args.Message);
             }
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
-            if (!CurrentWindow.IsResetting) {
-                WriteLine(Resources.MicrosoftRHostStopped).DoNotWait();
+            if (CurrentWindow == null || !CurrentWindow.IsResetting) {
+                WriteLine(Resources.MicrosoftRHostStopped);
             }
         }
 
-        private async Task Write(string message) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CurrentWindow.Write(message);
+        private void Write(string message) {
+            if (CurrentWindow != null) {
+                VsAppShell.Current.DispatchOnUIThread(() => CurrentWindow.Write(message));
+            }
         }
 
-        private async Task WriteError(string message) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CurrentWindow.WriteError(message);
+        private void WriteError(string message) {
+            if (CurrentWindow != null) {
+                VsAppShell.Current.DispatchOnUIThread(() => CurrentWindow.WriteError(message));
+            }
         }
 
-        private async Task WriteLine(string message) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CurrentWindow.WriteLine(message);
+        private void WriteLine(string message) {
+            if (CurrentWindow != null) {
+                VsAppShell.Current.DispatchOnUIThread(() => CurrentWindow.WriteLine(message));
+            }
         }
 
         /// <summary>

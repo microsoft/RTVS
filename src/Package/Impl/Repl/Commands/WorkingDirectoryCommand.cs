@@ -16,15 +16,27 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudioTools;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
-    public sealed class WorkingDirectoryCommand : ViewCommand {
+    public sealed class WorkingDirectoryCommand : Command {
         private const int MaxDirectoryEntries = 8;
+        private IRSessionProvider _sessionProvider;
 
-        public WorkingDirectoryCommand(ITextView textView) :
-            base(textView, new CommandId[] {
+        public WorkingDirectoryCommand() :
+            base(new CommandId[] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGetDirectoryList),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory)
             }, false) {
+            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _sessionProvider.Current.Connected += OnSessionConnected;
+            _sessionProvider.Current.DirectoryChanged += OnCurrentDirectoryChanged;
+        }
+
+        private async void OnCurrentDirectoryChanged(object sender, EventArgs e) {
+            RToolsSettings.Current.WorkingDirectory = await GetRWorkingDirectoryAsync();
+        }
+
+        private async void OnSessionConnected(object sender, EventArgs e) {
+            RToolsSettings.Current.WorkingDirectory = await GetRWorkingDirectoryAsync();
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -60,27 +72,24 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return CommandResult.Executed;
         }
 
-        private Task SetDirectory(string friendlyName) {
+        internal Task SetDirectory(string friendlyName) {
             string currentDirectory = RToolsSettings.Current.WorkingDirectory;
             string newDirectory = GetFullPathName(friendlyName);
             if (newDirectory != null && currentDirectory != newDirectory) {
                 RToolsSettings.Current.WorkingDirectory = newDirectory;
                 IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                var sessions = sessionProvider.GetSessions();
                 return Task.Run(async () => {
                     await TaskUtilities.SwitchToBackgroundThread();
-                    foreach (var s in sessions.Values) {
-                        s.ScheduleEvaluation(async (e) => {
-                            await e.SetWorkingDirectory(newDirectory);
-                        });
-                    }
+                    sessionProvider.Current.ScheduleEvaluation(async (e) => {
+                        await e.SetWorkingDirectory(newDirectory);
+                    });
                 });
             }
 
             return Task.CompletedTask;
         }
 
-        private void SelectDirectory() {
+        internal void SelectDirectory() {
             IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             IntPtr dialogOwner;
             uiShell.GetDialogOwnerHwnd(out dialogOwner);
@@ -90,26 +99,31 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             SetDirectory(newDirectory);
         }
 
-        private string[] GetFriendlyDirectoryNames() {
+        internal string[] GetFriendlyDirectoryNames() {
             return RToolsSettings.Current.WorkingDirectoryList
                 .Select(GetFriendlyDirectoryName)
                 .ToArray();
         }
 
-        private string GetFriendlyDirectoryName(string directory) {
-            string myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            if (directory.StartsWithIgnoreCase(myDocuments)) {
-                var relativePath = PathHelper.MakeRelative(myDocuments, directory);
-                if (relativePath.Length > 0) {
-                    return "~/" + relativePath.Replace('\\', '/');
-                } 
-                return "~";
+        internal string GetFriendlyDirectoryName(string directory) {
+            Task<string> task = GetRUserDirectoryAsync();
+            task.Wait(500);
+            if (task.IsCompleted) {
+                string userFolder = task.Result;
+                if(!string.IsNullOrEmpty(userFolder)) {
+                    if (directory.StartsWithIgnoreCase(userFolder)) {
+                        var relativePath = PathHelper.MakeRelative(userFolder, directory);
+                        if (relativePath.Length > 0) {
+                            return "~/" + relativePath.Replace('\\', '/');
+                        }
+                        return "~";
+                    }
+                }
             }
-
             return directory;
         }
 
-        private string GetFullPathName(string friendlyName) {
+        internal string GetFullPathName(string friendlyName) {
             string folder = friendlyName;
             if (friendlyName == null) {
                 return folder;
@@ -125,6 +139,24 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             return PathHelper.MakeRooted(PathHelper.EnsureTrailingSlash(myDocuments), friendlyName.Substring(2));
+        }
+
+        internal async Task<string> GetRWorkingDirectoryAsync() {
+            using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+                REvaluationResult result = await eval.EvaluateAsync("getwd()");
+                return ToWindowsPath(result.StringResult);
+            }
+        }
+
+        internal async Task<string> GetRUserDirectoryAsync() {
+            using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+                REvaluationResult result = await eval.EvaluateAsync("Sys.getenv('R_USER')");
+                return ToWindowsPath(result.StringResult);
+            }
+        }
+
+        private static string ToWindowsPath(string rPath) {
+            return rPath.Replace('/', '\\');
         }
     }
 }

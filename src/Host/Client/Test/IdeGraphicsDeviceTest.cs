@@ -488,6 +488,10 @@ Sys.sleep(1)
                 throw new NotImplementedException();
             }
 
+            public void DirectoryChanged() {
+                throw new NotImplementedException();
+            }
+
             public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
                 throw new NotImplementedException();
             }

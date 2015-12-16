@@ -38,5 +38,7 @@ namespace Microsoft.R.Host.Client {
         /// <param name="url"></param>
         /// <returns></returns>
         Task Browser(string url);
+
+        void DirectoryChanged();
     }
 }

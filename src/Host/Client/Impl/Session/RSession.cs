@@ -25,6 +25,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<EventArgs> Connected;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
+        public event EventHandler<EventArgs> DirectoryChanged;
 
         /// <summary>
         /// ReadConsole requires a task even if there are no pending requests
@@ -98,6 +99,7 @@ namespace Microsoft.R.Host.Client.Session {
                     await e.SetVsCranSelection(mirrorUrl);
 
                     await e.SetVsHelpRedirection();
+                    await e.SetChangeDirectoryRedirection();
                 }
             });
 
@@ -370,6 +372,12 @@ namespace Microsoft.R.Host.Client.Session {
         /// <returns></returns>
         Task IRCallbacks.Browser(string url) {
             return _hostClientApp?.ShowHelp(url);
+        }
+
+        void IRCallbacks.DirectoryChanged() {
+           if(DirectoryChanged != null) {
+                DirectoryChanged(this, EventArgs.Empty);
+            }
         }
 
         private void OnBeforeRequest(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {

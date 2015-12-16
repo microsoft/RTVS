@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -386,6 +385,10 @@ namespace Microsoft.R.Host.Client {
                                 break;
                             case "~-":
                                 await _callbacks.Busy(false, ct);
+                                break;
+
+                            case "~/":
+                                _callbacks.DirectoryChanged();
                                 break;
 
                             case "Plot":

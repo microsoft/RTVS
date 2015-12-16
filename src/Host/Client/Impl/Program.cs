@@ -95,6 +95,10 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync("Browser: " + url);
         }
 
+        public async void DirectoryChanged() {
+            await Console.Error.WriteLineAsync("Directory changed.");
+        }
+
         private async Task<string> ReadLineAsync(string prompt, bool isEvaluationAllowed, CancellationToken ct) {
             while (true) {
                 await Console.Out.WriteAsync($"|{_nesting}| {prompt}");
