@@ -19,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command {
         private const int MaxDirectoryEntries = 8;
         private IRSessionProvider _sessionProvider;
+        private string _userDirectory;
 
         public WorkingDirectoryCommand() :
             base(new CommandId[] {
@@ -29,6 +30,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             _sessionProvider.Current.Connected += OnSessionConnected;
             _sessionProvider.Current.DirectoryChanged += OnCurrentDirectoryChanged;
+
+            GetRUserDirectoryAsync();
         }
 
         private async void OnCurrentDirectoryChanged(object sender, EventArgs e) {
@@ -106,18 +109,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         internal string GetFriendlyDirectoryName(string directory) {
-            Task<string> task = GetRUserDirectoryAsync();
-            task.Wait(500);
-            if (task.IsCompleted) {
-                string userFolder = task.Result;
-                if(!string.IsNullOrEmpty(userFolder)) {
-                    if (directory.StartsWithIgnoreCase(userFolder)) {
-                        var relativePath = PathHelper.MakeRelative(userFolder, directory);
-                        if (relativePath.Length > 0) {
-                            return "~/" + relativePath.Replace('\\', '/');
-                        }
-                        return "~";
+            if (!string.IsNullOrEmpty(_userDirectory)) {
+                if (directory.StartsWithIgnoreCase(_userDirectory)) {
+                    var relativePath = PathHelper.MakeRelative(_userDirectory, directory);
+                    if (relativePath.Length > 0) {
+                        return "~/" + relativePath.Replace('\\', '/');
                     }
+                    return "~";
                 }
             }
             return directory;
@@ -148,10 +146,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
         }
 
-        internal async Task<string> GetRUserDirectoryAsync() {
+        internal async void GetRUserDirectoryAsync() {
             using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
                 REvaluationResult result = await eval.EvaluateAsync("Sys.getenv('R_USER')");
-                return ToWindowsPath(result.StringResult);
+                _userDirectory = ToWindowsPath(result.StringResult);
             }
         }
 
