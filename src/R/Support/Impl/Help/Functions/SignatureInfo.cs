@@ -15,7 +15,7 @@ namespace Microsoft.R.Support.Help.Functions {
         /// <summary>
         /// Function name
         /// </summary>
-        public string FunctionName { get; private set; }
+        public string FunctionName { get; }
 
         /// <summary>
         /// Function arguments
