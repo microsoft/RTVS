@@ -36,27 +36,23 @@ namespace Microsoft.Common.Core {
         /// Silently handles the specified exception.
         /// </summary>
         public static Task SilenceException<T>(this Task task) where T : Exception {
-            return task.ContinueWith(t => {
+            var tcs = new TaskCompletionSource<object>();
+            task.ContinueWith(t => {
                 try {
                     t.Wait();
+                    tcs.SetResult(null);
                 } catch (AggregateException ex) {
-                    ex.Handle(e => e is T);
+                    try {
+                        ex.Handle(e => e is T);
+                        tcs.SetResult(null);
+                    } catch (AggregateException ex2) {
+                        tcs.SetException(ex2.InnerExceptions);
+                    }
+                } catch (OperationCanceledException) {
+                    tcs.SetCanceled();
                 }
             });
-        }
-
-        /// <summary>
-        /// Silently handles the specified exception.
-        /// </summary>
-        public static Task<U> SilenceException<T, U>(this Task<U> task) where T : Exception {
-            return task.ContinueWith(t => {
-                try {
-                    return t.Result;
-                } catch (AggregateException ex) {
-                    ex.Handle(e => e is T);
-                    return default(U);
-                }
-            });
+            return tcs.Task;
         }
     }
 }

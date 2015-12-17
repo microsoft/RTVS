@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xaml;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
@@ -37,11 +38,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
 
             IdleTimeAction.Create(() => {
-                SetRSession(sessionProvider.Current);
+                SetRSession(sessionProvider.Current).DoNotWait();
             }, 10, typeof(PlotContentProvider));
         }
 
-        private async void SetRSession(IRSession session) {
+        private async System.Threading.Tasks.Task SetRSession(IRSession session) {
             // cleans up old RSession
             if (_rSession != null) {
                 _rSession.Mutated -= RSession_Mutated;
@@ -88,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             Debug.Assert(sessionProvider != null);
 
             if (sessionProvider != null) {
-                SetRSession(sessionProvider.Current);
+                SetRSession(sessionProvider.Current).DoNotWait();
             }
         }
 
@@ -99,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public void LoadFile(string fileName) {
             UIElement element = null;
             // Empty filename means clear
-            if (fileName.Length > 0) {
+            if (!string.IsNullOrEmpty(fileName)) {
                 try {
                     if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
                         var image = new Image();
@@ -109,7 +110,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                         element = (UIElement)XamlServices.Load(fileName);
                     }
                     _lastLoadFile = fileName;
-                } catch (Exception e) {
+                } catch (Exception e) when (!e.IsCriticalException()) {
                     element = CreateErrorContent(
                         new FormatException(string.Format("Couldn't load XAML file from {0}", fileName), e));
                 }

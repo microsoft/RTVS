@@ -4,8 +4,7 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
@@ -53,8 +52,18 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         private void PlotWindowPane_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
             if (!useReparentPlot) {
-                PlotContentProvider.ResizePlotAsync((int)e.NewSize.Width, (int)e.NewSize.Height).DoNotWait();
+                DoNotWait(PlotContentProvider.ResizePlotAsync((int)e.NewSize.Width, (int)e.NewSize.Height));
             }
+        }
+
+        public static async void DoNotWait(System.Threading.Tasks.Task task) {
+            // Errors like invalid graphics state which go to the REPL stderr will come back
+            // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
+            // as the user can see them in the REPL.
+            await task
+                .SilenceException<OperationCanceledException>()
+                .SilenceException<MessageTransportException>()
+                .SilenceException<Microsoft.R.Host.Client.RException>();
         }
 
         public override void OnToolWindowCreated() {
@@ -127,7 +136,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (e.NewPlotElement == null) {
                 ClearHistoryInfo();
             } else {
-                RefreshHistoryInfo().DoNotWait();
+                DoNotWait(RefreshHistoryInfo());
             }
         }
 
@@ -139,11 +148,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         internal void NextPlot() {
-            PlotContentProvider.NextPlotAsync().DoNotWait();
+            DoNotWait(PlotContentProvider.NextPlotAsync());
         }
 
         internal void PreviousPlot() {
-            PlotContentProvider.PreviousPlotAsync().DoNotWait();
+            DoNotWait(PlotContentProvider.PreviousPlotAsync());
         }
 
         private string GetLoadFilePath() {
