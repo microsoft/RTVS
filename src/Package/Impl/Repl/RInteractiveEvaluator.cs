@@ -17,7 +17,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
-        private static bool useReparentPlot = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_NEW_GFX"));
+        private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
 
         private readonly IntPtr _plotWindowHandle;
 

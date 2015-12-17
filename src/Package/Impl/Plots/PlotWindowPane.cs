@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
     internal class PlotWindowPane : ToolWindowPane, IVsWindowFrameNotify3 {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
-        private static bool useReparentPlot = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_NEW_GFX"));
+        private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
 
         private ExportPlotCommand _exportPlotCommand;
         private HistoryNextPlotCommand _historyNextPlotCommand;
