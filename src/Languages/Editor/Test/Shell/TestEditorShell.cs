@@ -60,6 +60,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             if (Idle != null) {
                 Idle(null, EventArgs.Empty);
             }
+            DoEvents();
         }
 
         public void DispatchOnUIThread(Action action) {
@@ -73,6 +74,17 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             action();
         }
 
+        public void DoEvents() {
+            DispatcherFrame frame = new DispatcherFrame();
+            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,
+                new DispatcherOperationCallback(ExitFrame), frame);
+            Dispatcher.PushFrame(frame);
+        }
+
+        public object ExitFrame(object f) {
+            ((DispatcherFrame)f).Continue = false;
+            return null;
+        }
         public int LocaleId => 1033;
         public bool IsUnitTestEnvironment { get; set; } = true;
         public bool IsUITestEnvironment { get; set; } = false;
