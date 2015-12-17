@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
-using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Common.Core.Test.STA;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace Microsoft.R.Editor.Application.Test.TestShell
-{
+namespace Microsoft.R.Editor.Application.Test.TestShell {
     [ExcludeFromCodeCoverage]
     public sealed partial class TestScript: IDisposable
     {
@@ -100,15 +99,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
         /// </summary>
         public void Invoke(Action action)
         {
-            EditorWindow.Invoke(action);
-        }
-
-        /// <summary>
-        /// Invokes a callback function in the editor window and return result
-        /// </summary>
-        public object Invoke(EditorWindow.FunctionInvoke func, object param)
-        {
-            return EditorWindow.Invoke(func, param);
+            StaThread.Invoke(action);
         }
 
         /// <summary>

@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Core.Test.Tokens;
-using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Formatting;
-using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Core.Test.Tokens {

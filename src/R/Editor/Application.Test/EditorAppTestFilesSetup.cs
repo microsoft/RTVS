@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Markdown.Editor.Test.Utility;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Application.Test
-{
+namespace Microsoft.R.Editor.Application.Test {
     [ExcludeFromCodeCoverage]
     [TestClass]
     public class EditorAppTestFilesSetup

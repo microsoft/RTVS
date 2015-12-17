@@ -3,42 +3,33 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using Microsoft.Common.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Languages.Core.Test.Utility
-{
+namespace Microsoft.Common.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
-    public static class TestFiles
-    {
-        static public string LoadFile(TestContext context, string fileName)
-        {
+    public static class TestFiles {
+        static public string LoadFile(TestContext context, string fileName) {
             var filePath = GetTestFilePath(context, fileName);
 
-            using (var sr = new StreamReader(filePath))
-            {
+            using (var sr = new StreamReader(filePath)) {
                 return sr.ReadToEnd();
             }
         }
 
-        static public string GetTestFilesFolder(TestContext context)
-        {
+        static public string GetTestFilesFolder(TestContext context) {
             return Path.Combine(context.TestRunDirectory, CommonTestData.TestFilesRelativePath);
         }
 
-        static public string GetTestFilePath(TestContext context, string fileName)
-        {
+        static public string GetTestFilePath(TestContext context, string fileName) {
             return Path.Combine(GetTestFilesFolder(context), fileName);
         }
 
-        public static IList<string> GetTestFiles(TestContext context, string extension)
-        {
+        public static IList<string> GetTestFiles(TestContext context, string extension) {
             string path = GetTestFilesFolder(context);
             var files = new List<string>();
 
             IEnumerable<string> filesInFolder = Directory.EnumerateFiles(path);
-            foreach (string name in filesInFolder)
-            {
+            foreach (string name in filesInFolder) {
                 if (name.EndsWithIgnoreCase(extension))
                     files.Add(name);
             }
@@ -46,12 +37,10 @@ namespace Microsoft.Languages.Core.Test.Utility
             return files;
         }
 
-        public static void CompareToBaseLine(string baselinefilePath, string actual)
-        {
+        public static void CompareToBaseLine(string baselinefilePath, string actual) {
             string expected;
 
-            using (var streamReader = new StreamReader(baselinefilePath))
-            {
+            using (var streamReader = new StreamReader(baselinefilePath)) {
                 expected = streamReader.ReadToEnd();
             }
 
@@ -69,15 +58,12 @@ namespace Microsoft.Languages.Core.Test.Utility
                     "\r\nDifferent at line {0}\r\nExpected: {1}\r\nActual: {2}", lineNumber, baseLine, actualLine));
         }
 
-        public static void UpdateBaseline(string filePath, string content)
-        {
-            if (File.Exists(filePath))
-            {
+        public static void UpdateBaseline(string filePath, string content) {
+            if (File.Exists(filePath)) {
                 File.SetAttributes(filePath, FileAttributes.Normal);
             }
 
-            using (var streamWriter = new StreamWriter(filePath))
-            {
+            using (var streamWriter = new StreamWriter(filePath)) {
                 streamWriter.Write(content);
             }
         }
