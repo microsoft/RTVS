@@ -56,14 +56,17 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        public static async void DoNotWait(System.Threading.Tasks.Task task) {
+        private static void DoNotWait(System.Threading.Tasks.Task task) {
             // Errors like invalid graphics state which go to the REPL stderr will come back
             // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
             // as the user can see them in the REPL.
-            await task
-                .SilenceException<OperationCanceledException>()
-                .SilenceException<MessageTransportException>()
-                .SilenceException<Microsoft.R.Host.Client.RException>();
+            // TODO:
+            // See if we can fix the cause of those errors - to be
+            // determined based on the various errors we see displayed
+            // in REPL during testing.
+            task.SilenceException<MessageTransportException>()
+                .SilenceException<Microsoft.R.Host.Client.RException>()
+                .DoNotWait();
         }
 
         public override void OnToolWindowCreated() {
