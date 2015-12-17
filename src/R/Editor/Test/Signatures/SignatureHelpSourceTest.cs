@@ -43,12 +43,11 @@ namespace Microsoft.R.Editor.Test.Signatures {
         }
 
         private void SignatureHelpSourceTest01_TestBody(List<ISignature> signatures, ManualResetEventSlim completedEvent) {
-            Assert.AreEqual(2, signatures.Count);
-            Assert.AreEqual(5, signatures[0].Parameters.Count);
-            Assert.AreEqual(3, signatures[1].Parameters.Count);
+            Assert.AreEqual(1, signatures.Count);
+            Assert.AreEqual(2, signatures[0].Parameters.Count);
 
-            Assert.AreEqual("data", signatures[0].CurrentParameter.Name);
-            Assert.AreEqual("as.matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE, dimnames = NULL)", signatures[0].Content);
+            Assert.AreEqual("x", signatures[0].CurrentParameter.Name);
+            Assert.AreEqual("as.matrix(x, ...)", signatures[0].Content);
             Assert.IsFalse(string.IsNullOrEmpty(signatures[0].Documentation));
 
             completedEvent.Set();

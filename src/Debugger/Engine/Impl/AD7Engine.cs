@@ -518,7 +518,7 @@ namespace Microsoft.R.Debugger.Engine {
             }
         }
 
-        private async void RSession_Disconnected(object sender, EventArgs e) {
+        private void RSession_Disconnected(object sender, EventArgs e) {
             Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
         }
     }

@@ -81,7 +81,7 @@ namespace Microsoft.R.Editor.QuickInfo {
 
                 if (functionInfo != null && functionInfo.Signatures != null) {
                     foreach (ISignatureInfo sig in functionInfo.Signatures) {
-                        string signatureString = sig.GetSignatureString(functionInfo.Name);
+                        string signatureString = sig.GetSignatureString();
                         int wrapLength = Math.Min(SignatureInfo.MaxSignatureLength, signatureString.Length);
                         string text;
 

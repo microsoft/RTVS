@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Definitions;
@@ -14,46 +15,48 @@ namespace Microsoft.R.Support.RD.Parser {
     /// </summary>
     public static class RdParser {
         /// <summary>
-        /// Given RD data and function name parses the data and
-        /// creates structured information about the function.
+        /// Given RD data and function name parses the data and creates structured
+        /// information about the function. Method returns multiple functions since
+        /// RD data often provides information on several functions so in order
+        /// to avoid processing same data multiple times parser extracts information
+        /// on all related functions.
         /// </summary>
-        public static IFunctionInfo GetFunctionInfo(string functionName, string rdHelpData) {
+        public static IReadOnlyList<IFunctionInfo> GetFunctionInfos(string rdHelpData) {
             var tokenizer = new RdTokenizer(tokenizeRContent: false);
 
             ITextProvider textProvider = new TextStream(rdHelpData);
             IReadOnlyTextRangeCollection<RdToken> tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
             RdParseContext context = new RdParseContext(tokens, textProvider);
 
-            return ParseFunction(functionName, context);
+            return ParseFunctions(context);
         }
 
-        private static IFunctionInfo ParseFunction(string functionName, RdParseContext context) {
-            FunctionInfo info = new FunctionInfo(functionName);
-            List<string> aliases = new List<string>();
+        private static IReadOnlyList<IFunctionInfo> ParseFunctions(RdParseContext context) {
+            IReadOnlyList<ISignatureInfo> signatureInfos = null;
             IReadOnlyDictionary<string, string> argumentDescriptions = null;
+            string functionDescription = null; // Description is normally one for all similar functions
+            bool isInternal = false;
+            string returnValue = null;
 
             while (!context.Tokens.IsEndOfStream() && argumentDescriptions == null) {
                 RdToken token = context.Tokens.CurrentToken;
 
                 if (context.IsAtKeywordWithParameters()) {
-                    if (string.IsNullOrEmpty(info.Description) && context.IsAtKeyword(@"\description")) {
-                        info.Description = RdText.GetText(context);
-                    } else if (context.IsAtKeyword(@"\alias")) {
-                        string alias = RdText.GetText(context);
-                        if (!string.IsNullOrEmpty(alias)) {
-                            aliases.Add(alias);
-                        }
+                    if (string.IsNullOrEmpty(functionDescription) && context.IsAtKeyword(@"\description")) {
+                        functionDescription = RdText.GetText(context);
                     } else if (context.IsAtKeyword(@"\keyword")) {
                         string keyword = RdText.GetText(context);
                         if (!string.IsNullOrEmpty(keyword) && keyword.Contains("internal")) {
-                            info.IsInternal = true;
+                            isInternal = true;
                         }
-                    } else if (string.IsNullOrEmpty(info.ReturnValue) && context.IsAtKeyword(@"\value")) {
-                        info.ReturnValue = RdText.GetText(context);
+                    } else if (string.IsNullOrEmpty(returnValue) && context.IsAtKeyword(@"\value")) {
+                        returnValue = RdText.GetText(context);
                     } else if (argumentDescriptions == null && context.IsAtKeyword(@"\arguments")) {
+                        // Extract arguments and their descriptions
                         argumentDescriptions = RdArgumentDescription.ExtractArgumentDecriptions(context);
-                    } else if (info.Signatures == null && context.IsAtKeyword(@"\usage")) {
-                        info.Signatures = RdFunctionSignature.ExtractSignatures(context);
+                    } else if (signatureInfos == null && context.IsAtKeyword(@"\usage")) {
+                        // Extract signatures with function names
+                        signatureInfos = RdFunctionSignature.ExtractSignatures(context);
                     } else {
                         context.Tokens.Advance(2);
                     }
@@ -62,9 +65,9 @@ namespace Microsoft.R.Support.RD.Parser {
                 }
             }
 
-            if (argumentDescriptions != null && info.Signatures != null) {
+            if (argumentDescriptions != null && signatureInfos != null) {
                 // Merge descriptions into signatures
-                foreach (SignatureInfo sigInfo in info.Signatures) {
+                foreach (ISignatureInfo sigInfo in signatureInfos) {
                     foreach (var arg in sigInfo.Arguments) {
                         string description;
                         if (argumentDescriptions.TryGetValue(arg.Name, out description)) {
@@ -74,8 +77,31 @@ namespace Microsoft.R.Support.RD.Parser {
                 }
             }
 
-            info.Aliases = aliases;
-            return info;
+            // Merge signatures into function infos
+            Dictionary<string, FunctionInfo> functionInfos = new Dictionary<string, FunctionInfo>();
+            Dictionary<string, List<ISignatureInfo>> functionSignatures = new Dictionary<string, List<ISignatureInfo>>();
+            foreach (ISignatureInfo sigInfo in signatureInfos) {
+                FunctionInfo functionInfo;
+                List<ISignatureInfo> sigList;
+                if (!functionInfos.TryGetValue(sigInfo.FunctionName, out functionInfo)) {
+                    // Create function info
+                    functionInfo = new FunctionInfo(sigInfo.FunctionName, functionDescription);
+                    functionInfos[sigInfo.FunctionName] = functionInfo;
+                    functionInfo.IsInternal = isInternal;
+                    functionInfo.ReturnValue = returnValue;
+                    // Create list of signatures for this function
+                    sigList = new List<ISignatureInfo>();
+                    functionSignatures[sigInfo.FunctionName] = sigList;
+                    functionInfo.Signatures = sigList;
+                }
+                else {
+                    sigList = functionSignatures[sigInfo.FunctionName];
+                }
+
+                sigList.Add(sigInfo);
+            }
+
+            return functionInfos.Values.Select(x => x).ToList();
         }
     }
 }

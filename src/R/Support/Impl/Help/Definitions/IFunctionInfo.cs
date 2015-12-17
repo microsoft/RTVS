@@ -4,11 +4,6 @@ using System.Collections.Generic;
 namespace Microsoft.R.Support.Help.Definitions {
     public interface IFunctionInfo : INamedItemInfo {
         /// <summary>
-        /// Other function name variants
-        /// </summary>
-        IReadOnlyList<string> Aliases { get; }
-
-        /// <summary>
         /// Function sugnatures
         /// </summary>
         IReadOnlyList<ISignatureInfo> Signatures { get; }

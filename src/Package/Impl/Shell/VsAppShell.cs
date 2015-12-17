@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public static IApplicationShell Current {
             get {
-                if(_testShell == null) {
+                if(_testShell == null && !_instance.IsValueCreated) {
                     // Try test environment
                     CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsAppShell");
                 }

@@ -108,7 +108,7 @@ namespace Microsoft.R.Editor.Signatures {
 
             // Locus points in the pretty printed signature (the one displayed in the tooltip)
             var locusPoints = new List<int>();
-            string signatureString = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
+            string signatureString = signatureInfo.GetSignatureString(locusPoints);
             sig.Content = signatureString;
             sig.ApplicableToSpan = span;
 

@@ -23,19 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [TestMethod]
         [TestCategory("Repl")]
-        public void CurrentDirectoryTest_UserDirectoryTest() {
-            string actual = null;
-            SequentialHostTestExecutor.ExecuteTest(() => {
-                WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
-                actual = cmd.GetRUserDirectoryAsync().Result;
-            });
-
-            string myDocs = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            Assert.AreEqual(myDocs, actual);
-        }
-
-        [TestMethod]
-        [TestCategory("Repl")]
         public void CurrentDirectoryTest_SetDirectoryTest() {
             string dir = "c:\\";
             string actual = null;
