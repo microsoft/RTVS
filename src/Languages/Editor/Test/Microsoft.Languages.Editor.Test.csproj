@@ -74,12 +74,12 @@
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Services\ServiceManagerTest.cs" />
+    <Compile Include="Shell\EditorTestCompositionCatalog.cs" />
     <Compile Include="Shell\TestEditorShell.cs" />
     <Compile Include="Text\TextChangesTest.cs" />
     <Compile Include="Text\TextProviderTest.cs" />
     <Compile Include="Text\Typing.cs" />
     <Compile Include="Utility\ClassificationWriter.cs" />
-    <Compile Include="Utility\EditorTestCompositionCatalog.cs" />
     <Compile Include="Utility\SequentialEditorTestExecutor.cs" />
     <Compile Include="Utility\TestFilesSetup.cs" />
   </ItemGroup>
@@ -87,6 +87,10 @@
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
+      <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
+      <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>

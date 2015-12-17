@@ -5,6 +5,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
@@ -16,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async Task ShowErrorMessage(string message) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            AppShell.Current.ShowErrorMessage(message);
+            VsAppShell.Current.ShowErrorMessage(message);
         }
 
         /// <summary>
@@ -24,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async System.Threading.Tasks.Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            return AppShell.Current.ShowMessage(message, buttons);
+            return VsAppShell.Current.ShowMessage(message, buttons);
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
                 if (docView != null) {
                     PlotWindowPane pane = (PlotWindowPane)docView;
-                    pane.PlotContentProvider.LoadFileOnIdle(filePath);
+                    pane.PlotContentProvider.LoadFile(filePath);
 
                     frame.ShowNoActivate();
                 }
@@ -62,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags) {
-            IVsUIShell shell = AppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
             // First just find. If it exists, use it. 
             IVsWindowFrame frame;

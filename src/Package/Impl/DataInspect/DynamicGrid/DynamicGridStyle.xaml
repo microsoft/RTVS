@@ -25,31 +25,9 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <local:DynamicGridRowHeader Content="{Binding Header, RelativeSource={RelativeSource AncestorType={x:Type local:DynamicGridRow}}}" />
+                        <local:DynamicGridRowHeader Content="{Binding Header.Data, RelativeSource={RelativeSource AncestorType={x:Type local:DynamicGridRow}}}" />
                         <ItemsPresenter Grid.Column="1" />
                     </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="{x:Type local:DynamicGridColumnHeadersPresenter}" TargetType="{x:Type local:DynamicGridColumnHeadersPresenter}">
-        <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Visible" />
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
-        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel" />
-        <Setter Property="VirtualizingPanel.CacheLength" Value="1" />
-        <Setter Property="ItemsPanel">
-            <Setter.Value>
-                <ItemsPanelTemplate>
-                    <local:DynamicGridCellsPanel IsVirtualizing="True"/>
-                </ItemsPanelTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:DynamicGridColumnHeadersPresenter}">
-                    <ItemsPresenter />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -62,7 +40,9 @@
         <Setter Property="VirtualizingPanel.CacheLength" Value="1"/>
         <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Pixel"/>
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
-        <!--<Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />-->
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="GridLinesBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}" />
+        <Setter Property="HeaderLinesBrush" Value="{DynamicResource {x:Static vsui:HeaderColors.SeparatorLineBrushKey}}" />
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
@@ -84,17 +64,14 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" SharedSizeGroup="RightCorner" />
                             </Grid.ColumnDefinitions>
 
-                            <Rectangle x:Name="LeftTopCorner" Width="{Binding RowHeaderActualWidth, RelativeSource={RelativeSource AncestorType={x:Type local:DynamicGrid}}}" />
-
-                            <local:DynamicGridColumnHeadersPresenter Grid.Column="1" />
+                            <local:DynamicGridRow Grid.Column="0" ColumnHeader="true" />
 
                             <ScrollViewer x:Name="VG_ScrollViewer" Focusable="False"
-                                          Grid.Row="1" Grid.ColumnSpan="3">
+                                          Grid.Row="1" Grid.ColumnSpan="2">
                                 <ScrollViewer.Template>
                                     <ControlTemplate TargetType="{x:Type ScrollViewer}">
                                         <Grid Background="{TemplateBinding Background}">
@@ -125,7 +102,7 @@
                                 <ItemsPresenter />
                             </ScrollViewer>
                             <ScrollBar x:Name="HorizontalScrollBar"
-                                       Grid.Row="2" Grid.Column="1"
+                                       Grid.Row="2" Grid.Column="0"
                                        Orientation="Horizontal" Visibility="Visible"
                                        Minimum="0"
                                        Maximum="{Binding ScrollableWidth, RelativeSource={RelativeSource AncestorType={x:Type local:DynamicGrid}}}"
@@ -140,12 +117,62 @@
     </Style>
 
     <Style x:Key="{x:Type local:DynamicGridCell}" TargetType="{x:Type local:DynamicGridCell}">
-        <Setter Property="Padding" Value="1" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="4" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:DynamicGridCell}">
-                    <Border SnapsToDevicePixels="true" BorderBrush="Black" BorderThickness="1" Padding="{TemplateBinding Padding}" >
+                    <Border SnapsToDevicePixels="true"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            MinHeight="10" >
                         <ContentPresenter Content="{Binding Data}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type local:DynamicGridColumnHeaderCell}" TargetType="{x:Type local:DynamicGridColumnHeaderCell}">
+        <Setter Property="Background"  Value="{DynamicResource {x:Static vsui:HeaderColors.DefaultBrushKey}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsui:HeaderColors.SeparatorLineBrushKey}}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:DynamicGridCell}">
+                    <Border SnapsToDevicePixels="true"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            MinHeight="10" >
+                        <ContentPresenter Content="{Binding Data}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type local:DynamicGridRowHeader}" TargetType="{x:Type local:DynamicGridRowHeader}">
+        <Setter Property="Background"  Value="{DynamicResource {x:Static vsui:HeaderColors.DefaultBrushKey}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsui:HeaderColors.SeparatorLineBrushKey}}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:DynamicGridRowHeader}">
+                    <Border SnapsToDevicePixels="true"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            MinHeight="10" >
+                        <ContentPresenter />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Plots;
@@ -16,6 +17,8 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
+        private static bool useReparentPlot = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_NEW_GFX"));
+
         private readonly IntPtr _plotWindowHandle;
 
         public IRHistory History { get; }
@@ -27,8 +30,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
 
-            // Cache handle here since it must be done on UI thread
-            _plotWindowHandle = RPlotWindowHost.RPlotWindowContainerHandle;
+            if (useReparentPlot) {
+                // Cache handle here since it must be done on UI thread
+                _plotWindowHandle = RPlotWindowHost.RPlotWindowContainerHandle;
+            } else {
+                _plotWindowHandle = IntPtr.Zero;
+            }
         }
 
         public void Dispose() {
@@ -145,31 +152,34 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private void SessionOnOutput(object sender, ROutputEventArgs args) {
             if (args.OutputType == OutputType.Output) {
-                Write(args.Message).DoNotWait();
+                Write(args.Message);
             } else {
-                WriteError(args.Message).DoNotWait();
+                WriteError(args.Message);
             }
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
-            if (!CurrentWindow.IsResetting) {
-                WriteLine(Resources.MicrosoftRHostStopped).DoNotWait();
+            if (CurrentWindow == null || !CurrentWindow.IsResetting) {
+                WriteLine(Resources.MicrosoftRHostStopped);
             }
         }
 
-        private async Task Write(string message) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CurrentWindow.Write(message);
+        private void Write(string message) {
+            if (CurrentWindow != null) {
+                VsAppShell.Current.DispatchOnUIThread(() => CurrentWindow.Write(message));
+            }
         }
 
-        private async Task WriteError(string message) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CurrentWindow.WriteError(message);
+        private void WriteError(string message) {
+            if (CurrentWindow != null) {
+                VsAppShell.Current.DispatchOnUIThread(() => CurrentWindow.WriteError(message));
+            }
         }
 
-        private async Task WriteLine(string message) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CurrentWindow.WriteLine(message);
+        private void WriteLine(string message) {
+            if (CurrentWindow != null) {
+                VsAppShell.Current.DispatchOnUIThread(() => CurrentWindow.WriteLine(message));
+            }
         }
 
         /// <summary>

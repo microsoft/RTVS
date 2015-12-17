@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.TestApp {
 
         public Task<IGrid<GridItem>> GetRangeAsync(GridRange gridRange) {
             return Task.Run(async () => {
-                await Task.Delay(1000);
+                await Task.Delay(100);
 
                 var grid = new Grid<GridItem>(
                     gridRange.Rows.Count,

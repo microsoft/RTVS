@@ -43,6 +43,8 @@
       <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.Logic.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
@@ -51,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="RD\Files\Help\02.rd" />
     <None Include="RD\Files\Help\01.rd" />
     <None Include="RD\Files\Tokenization\01.rd" />
     <None Include="RD\Files\Tokenization\01.rd.tokens" />
@@ -80,9 +83,9 @@
   <ItemGroup>
     <Compile Include="Functions\FunctionIndexTest.cs" />
     <Compile Include="Packages\PackageIndexTest.cs" />
+    <Compile Include="RD\BraceMatch\BraceMatchTest.cs" />
     <Compile Include="RD\Classification\RdClassifierTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
-    <Compile Include="Utility\RSupportTestCompositionCatalog.cs" />
     <Compile Include="Utility\TokenizeFiles.cs" />
     <Compile Include="RD\Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="RD\Tokens\TokenizeTest.cs" />
@@ -95,6 +98,10 @@
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>

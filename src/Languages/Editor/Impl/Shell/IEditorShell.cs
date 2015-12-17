@@ -9,7 +9,7 @@ namespace Microsoft.Languages.Editor.Shell {
     /// Host for Web editing component. This interface provides 
     /// application-specific services and settings.
     /// </summary>
-    public interface IEditorShell: IApplicationShell {
+    public interface IEditorShell: ICoreShell {
         /// <summary>
         /// Provides shim that implements ICommandTarget over 
         /// application-specific command target. For example, 

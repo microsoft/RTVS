@@ -1,30 +1,25 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Utility;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.Editor.Mocks;
 
-namespace Microsoft.R.Support.Test.Utility
-{
+namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
-    public static class FunctionIndexTestExecutor
-    {
+    public static class FunctionIndexTestExecutor {
         private static object _lockObject = new object();
         private static bool _closed = true;
 
-        public static void ExecuteTest(Action<ManualResetEventSlim> action, ITestCompositionCatalog catalog)
-        {
-            SequentialEditorTestExecutor.ExecuteTest(action, InitFunctionIndex, DisposeFunctionIndex, catalog);
+        public static void ExecuteTest(Action<ManualResetEventSlim> action) {
+            SequentialEditorTestExecutor.ExecuteTest(action, InitFunctionIndex, DisposeFunctionIndex);
         }
 
-        private static void InitFunctionIndex()
-        {
-            lock (_lockObject)
-            {
-                if (_closed)
-                {
+        private static void InitFunctionIndex() {
+            lock (_lockObject) {
+                if (_closed) {
                     RToolsSettings.Current = new TestRToolsSettings();
 
                     FunctionIndex.Initialize();
@@ -33,10 +28,17 @@ namespace Microsoft.R.Support.Test.Utility
             }
         }
 
-        private static void DisposeFunctionIndex()
-        {
-            lock (_lockObject)
-            {
+        private static void DisposeFunctionIndex() {
+            lock (_lockObject) {
+                IRSessionProvider sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                if (sessionProvider != null) {
+                    foreach (var s in sessionProvider.GetSessions()) {
+                        if (s.Value.IsHostRunning) {
+                            s.Value.StopHostAsync().Wait();
+                        }
+                    }
+                }
+
                 FunctionIndex.Terminate();
                 _closed = true;
             }

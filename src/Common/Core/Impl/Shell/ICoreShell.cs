@@ -1,15 +1,13 @@
 ﻿using System;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Threading;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
-    /// Application shell provides access to services such as 
+    /// Basic shell provides access to services such as 
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface IApplicationShell {
+    public interface ICoreShell: ICompositionCatalog {
         /// <summary>
         /// Retrieves global service from the host application.
         /// This method is not thread safe and should not be called 
@@ -19,16 +17,6 @@ namespace Microsoft.Common.Core.Shell {
         /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
         /// <returns>Service instance of null if not found.</returns>
         T GetGlobalService<T>(Type type = null) where T : class;
-
-        /// <summary>
-        /// Host application MEF composition service.
-        /// </summary>
-        ICompositionService CompositionService { get; }
-
-        /// <summary>
-        /// Visual Studio MEF export provider.
-        /// </summary>
-        ExportProvider ExportProvider { get; }
 
         /// <summary>
         /// Provides a way to execute action on UI thread while

@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // otherwise, add one to insert after it.
             int childIndex = (position.Offset == 0) ? position.Index : position.Index + 1;
 
-            double height = this.ActualHeight;
+            double height = 10.0;
             double width = 0;
             int finalCount = 0;
             using (generator.StartAt(position, GeneratorDirection.Forward, true)) {
@@ -78,9 +78,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         Debug.Assert(child == InternalChildren[childIndex]);
                     }
 
-                    if (newlyRealized) {
-                        child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                    }
+                    child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
                     if (child.DesiredSize.Height > height) {
                         height = child.DesiredSize.Height;
                     }
@@ -115,10 +114,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             double x = 0.0;
             for (int i = 0; i < InternalChildren.Count; i++) {
-                var child = InternalChildren[i] as DynamicGridCell;
-                Debug.Assert(child != null);
+                var child = (DynamicGridCell) InternalChildren[i];
 
                 child.Arrange(new Rect(x, 0, child.ColumnWidth.Max, finalSize.Height));
+
                 x += child.ColumnWidth.Max;
             }
 

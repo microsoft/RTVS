@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.R.Editor.Application.Test.TestShell
 {
@@ -187,6 +188,35 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
 
             return session;
         }
+
+        public IList<IMappingTagSpan<IErrorTag>> GetErrorTagSpans() {
+            var aggregatorService = EditorShell.Current.ExportProvider.GetExport<IViewTagAggregatorFactoryService>().Value;
+            var tagAggregator = aggregatorService.CreateTagAggregator<IErrorTag>(EditorWindow.CoreEditor.View);
+            var textBuffer = EditorWindow.CoreEditor.View.TextBuffer;
+            return tagAggregator.GetTags(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length))).ToList();
+        }
+
+        public string WriteErrorTags(IList<IMappingTagSpan<IErrorTag>> tags) {
+            var sb = new StringBuilder();
+
+            foreach (var c in tags) {
+                IMappingSpan span = c.Span;
+                SnapshotPoint? ptStart = span.Start.GetPoint(span.AnchorBuffer, PositionAffinity.Successor);
+                SnapshotPoint? ptEnd = span.End.GetPoint(span.AnchorBuffer, PositionAffinity.Successor);
+                sb.Append('[');
+                sb.Append(ptStart.Value.Position);
+                sb.Append(" - ");
+                sb.Append(ptEnd.Value.Position);
+                sb.Append(']');
+                sb.Append(' ');
+                sb.Append(c.Tag.ToolTipContent);
+                sb.Append('\r');
+                sb.Append('\n');
+            }
+
+            return sb.ToString();
+        }
+
 
         public void Dispose() {
             Close();

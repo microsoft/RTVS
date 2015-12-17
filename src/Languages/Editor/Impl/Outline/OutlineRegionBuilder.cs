@@ -16,7 +16,7 @@ namespace Microsoft.Languages.Editor.Outline {
         protected ITextBuffer TextBuffer { get; set; }
 
         private long _disposed = 0;
-        private object _regionsLock = new object();
+        private readonly object _regionsLock = new object();
 
         protected OutlineRegionBuilder(ITextBuffer textBuffer) {
             CurrentRegions = new OutlineRegionCollection(0);

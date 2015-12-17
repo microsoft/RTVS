@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Bytes\ByteStreamTest.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Text\BraceCounterTest.cs" />
     <Compile Include="Text\TextRangeCollectionTest.cs" />
     <Compile Include="Text\TextHelperTest.cs" />
     <Compile Include="Tokens\TokenizeTestBase.cs" />

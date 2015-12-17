@@ -10,13 +10,11 @@ namespace Microsoft.VisualStudio.R.TestApp {
     /// </summary>
     public partial class MainWindow : Window {
 
-        private static int RowCount = 1000;
-        private static int ColumnCount = 1000;
+        private static int RowCount = 20;
+        private static int ColumnCount = 20;
 
         public MainWindow() {
             InitializeComponent();
-
-            SetDataSources();
         }
 
         private void SetDataSources() {
@@ -27,7 +25,7 @@ namespace Microsoft.VisualStudio.R.TestApp {
                 4);
 
             var columnPageManager = new PageManager<string>(
-                new HeaderProvider(ColumnCount, true),
+                new HeaderProvider(ColumnCount, false),
                 64,
                 TimeSpan.FromMinutes(1.0),
                 4);
@@ -46,7 +44,7 @@ namespace Microsoft.VisualStudio.R.TestApp {
 
             this.GridHost.RowHeaderSource = new DelegateList<PageItem<string>>(0, (i) => rowPageManager.GetItem(i), rowPageManager.Count);
             this.GridHost.ColumnHeaderSource = new DelegateList<PageItem<string>>(0, (i) => columnPageManager.GetItem(i), columnPageManager.Count);
-            this.GridHost.GridItemsSource = gridSource;
+            this.GridHost.ItemsSource = gridSource;
         }
 
         private static DelegateList<PageItem<GridItem>> GetItem(Page2DManager<GridItem> pm, int rowIndex, int itemCount) {
@@ -54,6 +52,10 @@ namespace Microsoft.VisualStudio.R.TestApp {
                 rowIndex,
                 (columnIndex) => pm.GetItem(rowIndex, columnIndex),
                 itemCount);
+        }
+
+        private void LoadItemsSource_Click(object sender, RoutedEventArgs e) {
+            SetDataSources();
         }
     }
 }

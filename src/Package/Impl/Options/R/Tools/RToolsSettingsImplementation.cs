@@ -34,8 +34,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public bool AlwaysSaveHistory { get; set; } = true;
 
-        public bool UseExperimentalGraphicsDevice { get; set; } = false;
-
         public bool ClearFilterOnAddHistory { get; set; } = true;
 
         public string CranMirror {
@@ -53,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set {
                 _workingDirectory = value;
                 UpdateWorkingDirectoryList(_workingDirectory);
-                if (EditorShell.Current != null) {
+                if (EditorShell.HasShell) {
                     EditorShell.DispatchOnUIThread(() => {
                         IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
                         shell.UpdateCommandUI(1);

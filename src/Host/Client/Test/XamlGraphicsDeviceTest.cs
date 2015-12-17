@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Host.Client.Test {
+    [ExcludeFromCodeCoverage]
     [TestClass]
     public class XamlGraphicsDeviceTest {
         private const string ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
@@ -280,6 +282,10 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
             }
 
             public Task Browser(string url) {
+                throw new NotImplementedException();
+            }
+
+            public void DirectoryChanged() {
                 throw new NotImplementedException();
             }
 

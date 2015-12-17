@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.Outline
         internal IREditorDocument EditorDocument { get; private set; }
         internal IEditorTree EditorTree { get; private set; }
 
-        private object _threadLock = new object();
+        private readonly object _threadLock = new object();
 
         public ROutlineRegionBuilder(IREditorDocument document)
             : base(document.EditorTree.TextBuffer)

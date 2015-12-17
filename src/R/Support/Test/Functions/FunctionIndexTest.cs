@@ -22,7 +22,7 @@ namespace Microsoft.R.Support.Test.Functions {
                 if (result != null && !evt.IsSet) {
                     FunctionInfoTest1_TestBody(evt);
                 }
-            }, RSupportTestCompositionCatalog.Current);
+            });
         }
 
         [TestMethod]
@@ -36,7 +36,7 @@ namespace Microsoft.R.Support.Test.Functions {
                 if (result != null && !evt.IsSet) {
                     FunctionInfoTest2_TestBody(evt);
                 }
-            }, RSupportTestCompositionCatalog.Current);
+            });
         }
 
         private void FunctionInfoTest1_TestBody(ManualResetEventSlim completed) {
@@ -46,15 +46,11 @@ namespace Microsoft.R.Support.Test.Functions {
             Assert.AreEqual("abs", functionInfo.Name);
             Assert.IsTrue(functionInfo.Description.Length > 0);
 
-            Assert.AreEqual(2, functionInfo.Aliases.Count);
-            Assert.AreEqual("abs", functionInfo.Aliases[0]);
-            Assert.AreEqual("sqrt", functionInfo.Aliases[1]);
-
             Assert.AreEqual(1, functionInfo.Signatures.Count);
             Assert.AreEqual(1, functionInfo.Signatures[0].Arguments.Count);
 
             List<int> locusPoints = new List<int>();
-            Assert.AreEqual("abs(x)", functionInfo.Signatures[0].GetSignatureString("abs", locusPoints));
+            Assert.AreEqual("abs(x)", functionInfo.Signatures[0].GetSignatureString(locusPoints));
 
             Assert.AreEqual(2, locusPoints.Count);
             Assert.AreEqual(4, locusPoints[0]);
@@ -70,17 +66,11 @@ namespace Microsoft.R.Support.Test.Functions {
             Assert.AreEqual("eval", functionInfo.Name);
             Assert.IsTrue(functionInfo.Description.Length > 0);
 
-            Assert.AreEqual(4, functionInfo.Aliases.Count);
-            Assert.AreEqual("eval", functionInfo.Aliases[0]);
-            Assert.AreEqual("evalq", functionInfo.Aliases[1]);
-            Assert.AreEqual("eval.parent", functionInfo.Aliases[2]);
-            Assert.AreEqual("local", functionInfo.Aliases[3]);
-
             Assert.AreEqual(1, functionInfo.Signatures.Count);
             Assert.AreEqual(3, functionInfo.Signatures[0].Arguments.Count);
 
             List<int> locusPoints = new List<int>();
-            string signature = functionInfo.Signatures[0].GetSignatureString("eval", locusPoints);
+            string signature = functionInfo.Signatures[0].GetSignatureString(locusPoints);
             Assert.AreEqual("eval(expr, envir = parent.frame(), enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())", signature);
 
             Assert.AreEqual(4, locusPoints.Count);

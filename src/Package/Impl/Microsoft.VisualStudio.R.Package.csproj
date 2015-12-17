@@ -72,11 +72,13 @@
     <Compile Include="DataInspect\DynamicGrid\DynamicGrid.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCell.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCellsPanel.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridColumnHeadersPresenter.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRow.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowHeader.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowsPanel.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
+    <Compile Include="DataInspect\DynamicGrid\DynamicGridUtilities.cs" />
+    <Compile Include="DataInspect\GridHeader.cs" />
+    <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
@@ -287,7 +289,7 @@
     <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\VsAppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
-    <Compile Include="Shell\IVsApplicationShell.cs" />
+    <Compile Include="Shell\IApplicationShell.cs" />
     <Compile Include="Packages\R\RGuidList.cs" />
     <Compile Include="Packages\R\RLanguageService.cs" />
     <Compile Include="Editors\TextBufferInitializationTracker.cs" />
@@ -297,7 +299,6 @@
     <Compile Include="Packages\R\RPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell\IdleTimeSource.cs" />
-    <Compile Include="Shell\VsEditorShell.cs" />
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />

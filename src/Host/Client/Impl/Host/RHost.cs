@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -388,9 +387,12 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.Busy(false, ct);
                                 break;
 
+                            case "~/":
+                                _callbacks.DirectoryChanged();
+                                break;
+
                             case "Plot":
                                 await _callbacks.Plot(message.GetString(0, "xaml_file_path"), ct);
-                                // TODO: delete temporary xaml and bitmap files
                                 break;
 
                             case "Browser":
@@ -542,6 +544,7 @@ namespace Microsoft.R.Host.Client {
                 try {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
 
+                    // Timeout increased to allow more time in test and code coverage runs.
                     await Task.WhenAny(_transportTcs.Task, Task.Delay(3000)).Unwrap();
                     if (!_transportTcs.Task.IsCompleted) {
                         _log.FailedToConnectToRHost();
@@ -549,6 +552,10 @@ namespace Microsoft.R.Host.Client {
                     }
 
                     await Run(null, ct);
+                } catch (Exception) {
+                    // TODO: delete when we figure out why host occasionally times out in code coverage runs.
+                    //await _log.WriteFormatAsync(MessageCategory.Error, "Exception running R Host: {0}", ex.Message);
+                    throw;
                 } finally {
                     if (!_process.HasExited) {
                         try {

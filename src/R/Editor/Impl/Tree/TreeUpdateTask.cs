@@ -66,7 +66,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Prevents disposing when background task is running
         /// </summary>
-        object _disposeLock = new object();
+        private readonly object _disposeLock = new object();
 
         /// <summary>
         /// List of tree update completion callbacks supplied called once
@@ -82,7 +82,7 @@ namespace Microsoft.R.Editor.Tree {
         #region Constructors
         public TreeUpdateTask(EditorTree editorTree) {
             _editorTree = editorTree;
-            if (EditorShell.Current != null) {
+            if (EditorShell.HasShell) {
                 // Can be null in test cases
                 EditorShell.Current.Idle += OnIdle;
             }
@@ -628,7 +628,7 @@ namespace Microsoft.R.Editor.Tree {
                     Cancel();
 
                     _disposed = true;
-                    if (EditorShell.Current != null) {
+                    if (EditorShell.HasShell) {
                         EditorShell.Current.Idle -= OnIdle;
                     }
                 }

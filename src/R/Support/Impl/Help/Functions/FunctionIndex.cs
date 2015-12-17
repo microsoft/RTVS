@@ -123,9 +123,11 @@ namespace Microsoft.R.Support.Help.Functions {
                 functionName,
                 packageName,
                 (string rdData) => {
-                    IFunctionInfo info = GetFunctionInfoFromRd(functionName, rdData);
-                    if (info != null) {
-                        UpdateFunctionIndex(info);
+                    IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(rdData);
+                    if (functionInfos != null) {
+                        foreach (IFunctionInfo info in functionInfos) {
+                            _functionToInfoMap[info.Name] = info;
+                        }
                     }
 
                     if (infoReadyCallback != null) {
@@ -136,27 +138,14 @@ namespace Microsoft.R.Support.Help.Functions {
                 });
         }
 
-        private static IFunctionInfo GetFunctionInfoFromRd(string functionName, string rdData) {
-            IFunctionInfo info = null;
+        private static IReadOnlyList<IFunctionInfo> GetFunctionInfosFromRd(string rdData) {
+            IReadOnlyList<IFunctionInfo> infos = null;
             try {
-                info = RdParser.GetFunctionInfo(functionName, rdData);
+                infos = RdParser.GetFunctionInfos(rdData);
             } catch (Exception ex) {
                 Debug.WriteLine("Exception in parsing R engine RD response: {0}", ex.Message);
             }
-
-            return info;
-        }
-
-        private static void UpdateFunctionIndex(IFunctionInfo functionInfo) {
-            if (functionInfo != null) {
-                if (functionInfo.Aliases != null) {
-                    foreach (string alias in functionInfo.Aliases) {
-                        _functionToInfoMap[alias] = functionInfo;
-                    }
-                } else if (!string.IsNullOrEmpty(functionInfo.Name)) {
-                    _functionToInfoMap[functionInfo.Name] = functionInfo;
-                }
-            }
+            return infos;
         }
     }
 }

@@ -190,7 +190,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers {
         }
 
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, Action<ITextBuffer> callback) {
-            if (EditorShell.Current != null) {
+            if (EditorShell.HasShell) {
                 ITextDocumentFactoryService textDocumentFactoryService = EditorShell.Current.ExportProvider.GetExport<ITextDocumentFactoryService>().Value;
                 ITextDocument textDocument;
 

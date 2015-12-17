@@ -3,10 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
-using Microsoft.Languages.Editor.Tests.Shell;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.Markdown.Editor.Test.Utility;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
@@ -22,7 +20,6 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             string content = "```'{r}\n#R\n```";
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
-            TestEditorShell.Create(MarkdownTestCompositionCatalog.Current);
             MdClassifierProvider classifierProvider = new MdClassifierProvider();
             IClassifier cls = classifierProvider.GetClassifier(textBuffer);
 

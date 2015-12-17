@@ -5,6 +5,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using Microsoft.Common.Core;
 using Microsoft.VisualStudio.R.Package.Wpf;
 
@@ -33,11 +36,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue) {
             base.OnItemsSourceChanged(oldValue, newValue);
 
+            if (ColumnHeadersPresenter != null) {
+                ColumnHeadersPresenter.ItemsSource = ColumnHeaderSource;
+            }
+
             foreach (var item in newValue) {
                 var rowSource = item as IList;
                 if (rowSource != null) {
                     if (rowSource.Count > 0) {
-                        _layoutInfo = new SharedScrollInfo() { FirstItemIndex = 0, FirstItemOffset = 0.0, MaxItemInViewport = 1 };
+                        _layoutInfo = new SharedScrollInfo() {
+                            FirstItemIndex = 0,
+                            FirstItemOffset = 0.0,
+                            MaxItemInViewport = ColumnHeaderSource == null ? 0 : ColumnHeaderSource.Count
+                        };
+                        HorizontalOffset = 0;
+                        _columns.Clear();
                     }
                 } else {
                     throw new NotSupportedException($"{nameof(DynamicGrid)} supports only nested collection for ItemsSource");
@@ -73,8 +86,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             base.PrepareContainerForItemOverride(element, item);
 
             DynamicGridRow row = (DynamicGridRow)element;
-
-            _realizedRows.AddFirst(row.Track);  // ObservableCollection.Replace cause this fail, as it has been added already. That's fine for now.
+            if (row.ParentGrid != this) {
+                _realizedRows.AddFirst(row.Track);  // ObservableCollection.Replace cause this fail, as it has been added already. That's fine for now.
+            }
 
             row.Header = RowHeaderSource[Items.IndexOf(item)];
             row.Prepare(this, item);
@@ -86,8 +100,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             DynamicGridRow row = (DynamicGridRow)element;
 
             row.Header = null;
-
-            _realizedRows.Remove(row.Track);
+            if (row.ParentGrid == this) {
+                _realizedRows.Remove(row.Track);
+            }
             row.CleanUp(this, item);
         }
 
@@ -110,6 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OnNotifyRowHeaderPropertyChanged() {
+            ColumnHeadersPresenter?.NotifyRowHeader();
             foreach (var row in _realizedRows) {
                 row.NotifyRowHeader();
             }
@@ -119,9 +135,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region ColumnHeader
 
-        private DynamicGridColumnHeadersPresenter _columnHeadersPresenter;
+        private DynamicGridRow _columnHeadersPresenter;
 
-        internal DynamicGridColumnHeadersPresenter ColumnHeadersPresenter {
+        internal DynamicGridRow ColumnHeadersPresenter {
             get {
                 return _columnHeadersPresenter;
             }
@@ -129,6 +145,36 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 _columnHeadersPresenter = value;
                 _columnHeadersPresenter.ItemsSource = ColumnHeaderSource;
             }
+        }
+
+        #endregion
+
+        #region Grid line
+
+        public static readonly DependencyProperty GridLinesBrushProperty =
+            DependencyProperty.Register(
+                nameof(GridLinesBrush),
+                typeof(Brush),
+                typeof(DynamicGrid),
+                new FrameworkPropertyMetadata(Brushes.Black));
+
+        public Brush GridLinesBrush
+        {
+            get { return (Brush)GetValue(GridLinesBrushProperty); }
+            set { SetValue(GridLinesBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty HeaderLinesBrushProperty =
+            DependencyProperty.Register(
+                nameof(HeaderLinesBrush),
+                typeof(Brush),
+                typeof(DynamicGrid),
+                new FrameworkPropertyMetadata(Brushes.Black));
+
+        public Brush HeaderLinesBrush
+        {
+            get { return (Brush)GetValue(HeaderLinesBrushProperty); }
+            set { SetValue(HeaderLinesBrushProperty, value); }
         }
 
         #endregion
@@ -159,7 +205,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             int? firstItemIndex = null;
             double firstItemOffset = 0;
             double extentWidth = 0.0;
-            for (int i = 0; i < Items.Count; i++) {
+
+            int columnCount = ColumnHeaderSource == null ? 0 : ColumnHeaderSource.Count;
+
+            for (int i = 0; i < columnCount; i++) {
                 double currentWidth;
 
                 MaxDouble columnWidth;
@@ -185,7 +234,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return new SharedScrollInfo() {
                 FirstItemIndex = firstItemIndex.HasValue ? firstItemIndex.Value : 0,
                 FirstItemOffset = firstItemOffset,
-                MaxItemInViewport = Items.Count - firstIndex,
+                MaxItemInViewport = columnCount - firstIndex,
             };
         }
 
@@ -212,7 +261,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        internal void OnHorizontalMeasureEnd() {
+        internal void OnInvalidateScrollInfo() {
             ComputeHorizontalScroll(_panelSize);
         }
 

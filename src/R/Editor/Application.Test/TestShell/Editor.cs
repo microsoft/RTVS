@@ -25,8 +25,10 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
     /// <summary>
     /// Visual Studio Editor window
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class EditorWindow
     {
+        [ExcludeFromCodeCoverage]
         class Request
         {
             public string FileName;
@@ -64,7 +66,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
         /// Editor UI thread
         /// </summary>
         private static Thread EditorThread;
-        private static object _creatorLock = new object();
+        private static readonly object _creatorLock = new object();
 
         private static ManualResetEventSlim ThreadAvailable = new ManualResetEventSlim(false);
         private static ConcurrentQueue<Request> _requestQueue = new ConcurrentQueue<Request>();
@@ -216,7 +218,6 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
                  while (time < ms)
                  {
                      EditorShell.Current.DoIdle();
-
                      Thread.Sleep(20);
                      time += 20;
                  }

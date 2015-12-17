@@ -2,8 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -17,7 +15,6 @@ namespace Microsoft.R.Host.Client.Session {
             IRSession currentSession = this.Current;
 
             if (!_sessions.TryAdd(sessionId, session)) {
-                Debug.Fail(string.Format(CultureInfo.InvariantCulture, "Session with id {0} is created already", sessionId));
                 return _sessions[sessionId];
             }
 

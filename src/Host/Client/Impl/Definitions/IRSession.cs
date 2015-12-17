@@ -10,6 +10,7 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<EventArgs> Connected;
         event EventHandler<EventArgs> Disconnected;
         event EventHandler<EventArgs> Disposed;
+        event EventHandler<EventArgs> DirectoryChanged;
 
         int Id { get; }
         string Prompt { get; }

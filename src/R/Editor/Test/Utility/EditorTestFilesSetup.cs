@@ -9,7 +9,7 @@ namespace Microsoft.R.Editor.Test.Utility
     [TestClass]
     public class EditorTestFilesSetup
     {
-        static object _deploymentLock = new object();
+        static readonly object _deploymentLock = new object();
         static bool _deployed = false;
 
         [AssemblyInitialize]

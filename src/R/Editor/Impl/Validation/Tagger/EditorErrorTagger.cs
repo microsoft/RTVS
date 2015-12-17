@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         /// <summary>
-        /// Reference to the html validation results queue
+        /// Reference to the validation results queue
         /// </summary>
         internal ConcurrentQueue<IValidationError> ResultsQueue;
 
@@ -76,7 +76,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         }
 
         /// <summary>
-        /// Retriever HTML error (squiggly) tagger associated with a HTML text buffer
+        /// Retriever error (squiggly) tagger associated with the text buffer
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
         public static EditorErrorTagger FromTextBuffer(ITextBuffer textBuffer)

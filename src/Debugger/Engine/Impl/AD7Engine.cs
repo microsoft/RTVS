@@ -54,6 +54,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             DebugSession.Browse -= Session_Browse;
             DebugSession.RSession.AfterRequest -= RSession_AfterRequest;
+            DebugSession.RSession.Disconnected -= RSession_Disconnected;
 
             _events = null;
             _program = null;
@@ -132,6 +133,7 @@ namespace Microsoft.R.Debugger.Engine {
             // we may get a Browse event immediately, and we want to raise a breakpoint notification in response to that
             // to pause the debugger - but it will be ignored unless the engine has reported its creation.
             DebugSession.RSession.AfterRequest += RSession_AfterRequest;
+            DebugSession.RSession.Disconnected += RSession_Disconnected;
             DebugSession.Browse += Session_Browse;
 
             return VSConstants.S_OK;
