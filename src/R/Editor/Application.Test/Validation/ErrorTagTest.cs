@@ -21,6 +21,12 @@ namespace Microsoft.R.Editor.Application.Test.Validation {
                 tagSpans = script.GetErrorTagSpans();
                 string errorTags = script.WriteErrorTags(tagSpans);
                 Assert.AreEqual("[5 - 6] } expected\r\n", errorTags);
+
+                script.Type("}");
+                script.DoIdle(500);
+
+                tagSpans = script.GetErrorTagSpans();
+                Assert.AreEqual(0, tagSpans.Count);
             }
         }
     }
