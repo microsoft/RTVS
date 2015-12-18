@@ -28,6 +28,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         internal bool IsDisposed { get; private set; }
         internal bool IsBrowsing { get; private set; }
+        internal bool IsConnected { get; private set; }
         internal DebugSession DebugSession { get; private set; }
         internal AD7Thread MainThread { get; private set; }
 
@@ -116,6 +117,7 @@ namespace Microsoft.R.Debugger.Engine {
             _events = pCallback;
             DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetResultOnUIThread();
             MainThread = new AD7Thread(this);
+            IsConnected = true;
 
             // Enable breakpoint instrumentation.
             DebugSession.EnableBreakpoints(true).GetResultOnUIThread();
@@ -519,6 +521,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void RSession_Disconnected(object sender, EventArgs e) {
+            IsConnected = false;
             Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
         }
     }

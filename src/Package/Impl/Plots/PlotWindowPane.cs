@@ -4,8 +4,7 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
@@ -18,7 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
     internal class PlotWindowPane : ToolWindowPane, IVsWindowFrameNotify3 {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
-        private static bool useReparentPlot = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_NEW_GFX"));
+        private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
+
+        // Anything below 150 is impractical, and prone to rendering errors
+        private const int MinWidth = 150;
+        private const int MinHeight = 150;
 
         private ExportPlotCommand _exportPlotCommand;
         private HistoryNextPlotCommand _historyNextPlotCommand;
@@ -53,8 +56,25 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         private void PlotWindowPane_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
             if (!useReparentPlot) {
-                PlotContentProvider.ResizePlotAsync((int)e.NewSize.Width, (int)e.NewSize.Height).DoNotWait();
+                // If the window gets below a certain minimum size, plot to the minimum size
+                // and user will be able to use scrollbars to see the whole thing
+                int width = Math.Max((int)e.NewSize.Width, MinWidth);
+                int height = Math.Max((int)e.NewSize.Height, MinHeight);
+                DoNotWait(PlotContentProvider.ResizePlotAsync(width, height));
             }
+        }
+
+        private static void DoNotWait(System.Threading.Tasks.Task task) {
+            // Errors like invalid graphics state which go to the REPL stderr will come back
+            // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
+            // as the user can see them in the REPL.
+            // TODO:
+            // See if we can fix the cause of those errors - to be
+            // determined based on the various errors we see displayed
+            // in REPL during testing.
+            task.SilenceException<MessageTransportException>()
+                .SilenceException<Microsoft.R.Host.Client.RException>()
+                .DoNotWait();
         }
 
         public override void OnToolWindowCreated() {
@@ -127,7 +147,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (e.NewPlotElement == null) {
                 ClearHistoryInfo();
             } else {
-                RefreshHistoryInfo().DoNotWait();
+                DoNotWait(RefreshHistoryInfo());
             }
         }
 
@@ -139,11 +159,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         internal void NextPlot() {
-            PlotContentProvider.NextPlotAsync().DoNotWait();
+            DoNotWait(PlotContentProvider.NextPlotAsync());
         }
 
         internal void PreviousPlot() {
-            PlotContentProvider.PreviousPlotAsync().DoNotWait();
+            DoNotWait(PlotContentProvider.PreviousPlotAsync());
         }
 
         private string GetLoadFilePath() {
@@ -186,9 +206,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public int OnClose(ref uint pgrfSaveOptions) {
-            IVsWindowPane pane = GetIVsWindowPane() as IVsWindowPane;
-            if (pane != null) {
-                pane.ClosePane();
+            if (useReparentPlot) {
+                IVsWindowPane pane = GetIVsWindowPane() as IVsWindowPane;
+                if (pane != null) {
+                    pane.ClosePane();
+                }
             }
             return VSConstants.S_OK;
         }

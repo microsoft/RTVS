@@ -71,7 +71,9 @@ namespace Microsoft.R.Debugger.Engine {
                 if (state == enum_BP_STATE.BPS_DISABLED || state == enum_BP_STATE.BPS_DELETED) {
                     if (DebugBreakpoint != null) {
                         DebugBreakpoint.BreakpointHit -= DebugBreakpoint_BreakpointHit;
-                        DebugBreakpoint.DeleteAsync().GetResultOnUIThread();
+                        if (Engine.IsConnected) {
+                            DebugBreakpoint.DeleteAsync().GetResultOnUIThread();
+                        }
                     }
                 }
             } else {

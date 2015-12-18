@@ -26,6 +26,8 @@ namespace Microsoft.R.Host.Client {
 
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
 
+        private static bool showConsole = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
+
         private IMessageTransport _transport;
         private readonly object _transportLock = new object();
         private readonly TaskCompletionSource<IMessageTransport> _transportTcs = new TaskCompletionSource<IMessageTransport>();
@@ -530,6 +532,9 @@ namespace Microsoft.R.Host.Client {
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
             psi.Arguments = Invariant($"--rhost-connect ws://127.0.0.1:{server.Port} --rhost-reparent-plot-windows {plotWindowContainerHandle.ToInt64()}");
+            if (!showConsole) {
+                psi.CreateNoWindow = true;
+            }
 
             if (!string.IsNullOrWhiteSpace(settings.RCommandLineArguments)) {
                 psi.Arguments += Invariant($" {settings.RCommandLineArguments}");
