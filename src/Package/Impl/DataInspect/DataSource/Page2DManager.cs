@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
@@ -48,27 +50,57 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public TimeSpan Timeout { get; }
 
+        public bool WaitForItemRealization { get { return true; } }
+
         public PageItem<T> GetItem(int row, int column) {
+            bool shouldWait = false;
+            Page2D<T> foundPage = null;
+            Task waitTask;
+
             lock (_syncObj) {
                 int rowPageNumber, columnPageNumber;
                 ComputePageNumber(row, column, out rowPageNumber, out columnPageNumber);
 
                 Dictionary<int, Page2D<T>> bank;
-                Page2D<T> foundPage;
+
                 if (_banks.TryGetValue(rowPageNumber, out bank)) {
                     if (!bank.TryGetValue(columnPageNumber, out foundPage)) {
                         foundPage = CreateEmptyPage(new PageNumber(rowPageNumber, columnPageNumber));
+                        shouldWait = WaitForItemRealization;
                         bank.Add(columnPageNumber, foundPage);
                     }
-
                 } else {
                     bank = new Dictionary<int, Page2D<T>>();
                     foundPage = CreateEmptyPage(new PageNumber(rowPageNumber, columnPageNumber));
+                    shouldWait = WaitForItemRealization;
                     bank.Add(columnPageNumber, foundPage);
                     _banks.Add(rowPageNumber, bank);
                 }
 
-                return foundPage.GetItem(row, column);
+                if (shouldWait) {
+                    int firstRow = foundPage.Range.Rows.Start;
+                    int firstColumn = foundPage.Range.Columns.Start;
+                    var pageItem = foundPage.GetItem(firstRow, firstColumn);
+                    waitTask = WaitPropertyChangeAsync(pageItem);
+                } else {
+                    waitTask = Task.FromResult<object>(null);
+                }
+            }
+
+            waitTask.Wait(TimeSpan.FromMilliseconds(1000));
+
+            return foundPage.GetItem(row, column);
+        }
+
+        private static async Task WaitPropertyChangeAsync(PageItem<T> pageItem) {
+            var tcs = new TaskCompletionSource<object>();
+            PropertyChangedEventHandler handler = (sender, args) => tcs.TrySetResult(null);
+            try {
+                pageItem.PropertyChanged += handler;
+                await TaskUtilities.SwitchToBackgroundThread();
+                await tcs.Task;
+            } finally {
+                pageItem.PropertyChanged -= handler;
             }
         }
 
@@ -157,6 +189,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task LoadAndCleanPagesAsync() {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             bool cleanHasRun = false;
             while (true) {
                 Page2D<T> page = null;
@@ -164,7 +198,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     if (_requests.Count == 0) {
                         if (cleanHasRun) {
                             _loadTask = null;
-                            return;
+                            break;
                         } else {
 
                         }
@@ -192,10 +226,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     IEnumerable<KeyValuePair<int, Page2D<T>>> toRemove;
 
                     lock (_syncObj) {
-                        toRemove = bank.Where(kv => (kv.Value.LastAccessTime < lastTime)).ToList();
+                        toRemove = bank.Where(kv => (kv.Value.LastAccessTime < lastTime) && kv.Key != 0).ToList();
+                        if (toRemove.Count() <= 0) {
+                            break;
+                        }
                     }
 
                     foreach (var item in toRemove) {
+                        Trace.WriteLine(string.Format("Removing:Page:{0}", item.Value.PageNumber));
                         lock (_syncObj) {
                             bank.Remove(item.Key);
                         }

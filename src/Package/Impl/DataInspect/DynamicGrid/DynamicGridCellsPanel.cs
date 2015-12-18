@@ -37,6 +37,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        private DynamicGridRow _owningRow;
+        internal DynamicGridRow OwningRow {
+            get {
+                if (_owningRow == null) {
+                    _owningRow = ItemsControl.GetItemsOwner(this) as DynamicGridRow;
+
+                    Debug.Assert(_owningRow != null, "DynamicGridCellsPanel supports only DynamicGridRow");
+                }
+                return _owningRow;
+            }
+        }
+
         #region Layout
 
         private void SharedScrollChanged(object sender, EventArgs e) {
@@ -98,10 +110,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Size desired = new Size(width, height);
 
             if (finalCount > 0) {
-                // TODO: the index might be invalid at the time when CleanUpItems runs
-                Dispatcher.BeginInvoke(
-                    DispatcherPriority.Background,
-                    new Action(() => { CleanUpItems(startIndex, startIndex + finalCount - 1); }));
+                CleanUpItems(startIndex, startIndex + finalCount - 1);
             }
 
             SharedScroll.InvalidateScrollInfo();

@@ -130,7 +130,13 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Padding="{TemplateBinding Padding}"
                             MinHeight="10" >
-                        <ContentPresenter Content="{Binding Data}" />
+                        <ContentPresenter Content="{Binding Data}">
+                            <ContentPresenter.ContentTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" />
+                                </DataTemplate>
+                            </ContentPresenter.ContentTemplate>
+                        </ContentPresenter>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -151,7 +157,13 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Padding="{TemplateBinding Padding}"
                             MinHeight="10" >
-                        <ContentPresenter Content="{Binding Data}" />
+                        <ContentPresenter Content="{Binding Data}">
+                            <ContentPresenter.ContentTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" />
+                                </DataTemplate>
+                            </ContentPresenter.ContentTemplate>
+                        </ContentPresenter>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

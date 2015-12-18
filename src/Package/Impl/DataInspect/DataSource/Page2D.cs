@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             PageNumber = pageNumber;
             Range = range;
             Node = new LinkedListNode<Page2D<T>>(this);
-            LastAccessTime = DateTime.MinValue;
+            LastAccessTime = DateTime.UtcNow;
 
             _grid = new Grid<PageItem<T>>(
                 range.Rows.Count,
