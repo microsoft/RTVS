@@ -9,14 +9,20 @@ namespace Microsoft.Languages.Editor.Text {
         public static SnapshotPoint? MapDownToBuffer(this ITextView textView, int position, ITextBuffer buffer) {
             if (textView.BufferGraph == null) {
                 // Unit test case
-                return new SnapshotPoint(buffer.CurrentSnapshot, position);
+                if (position < buffer.CurrentSnapshot.Length) {
+                    return new SnapshotPoint(buffer.CurrentSnapshot, position);
+                }
+                return null;
             }
-            return textView.BufferGraph.MapDownToBuffer(
-                new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position),
-                PointTrackingMode.Positive,
-                buffer,
-                PositionAffinity.Successor
-            );
+            if (position < textView.TextBuffer.CurrentSnapshot.Length) {
+                return textView.BufferGraph.MapDownToBuffer(
+                    new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position),
+                    PointTrackingMode.Positive,
+                    buffer,
+                    PositionAffinity.Successor
+                );
+            }
+            return null;
         }
 
         public static SnapshotPoint? MapUpToBuffer(this ITextView textView, int position, ITextBuffer buffer) {

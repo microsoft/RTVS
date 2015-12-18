@@ -104,7 +104,7 @@
     <Compile Include="Script\TestScript.cs" />
     <Compile Include="StackExtensionsTest.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
-    <Compile Include="Utility\IgnoredProperties.cs" />
+    <Compile Include="Utility\IgnoredWpfProperties.cs" />
     <Compile Include="Utility\TestFiles.cs" />
     <Compile Include="Utility\TestSetup.cs" />
     <Compile Include="Utility\UnitTestBase.cs" />

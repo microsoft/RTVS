@@ -35,11 +35,11 @@ namespace Microsoft.VisualStudio.R.Application.Test.Data {
         [TestCategory("Interactive")]
         public void VaraibleExplorer_SimpleDataTest() {
             string actual = null;
-            SequentialHostTestExecutor.ExecuteTest(() => {
+            using (var hostScript = new RHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
                     Task.Run(async () => {
-                        using (var eval = await SequentialHostTestExecutor.Session.BeginEvaluationAsync()) {
+                        using (var eval = await hostScript.Session.BeginEvaluationAsync()) {
                             await eval.EvaluateAsync("x <- c(1:10)");
                         }
                     }).Wait();
@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Application.Test.Data {
                     DoIdle(2000);
                     actual = script.WriteVisualTree();
                 }
-            });
+            }
             ViewTreeDump.CompareVisualTrees(this.TestContext, actual, "VariableExplorer03");
         }
 
@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Application.Test.Data {
             StaThread.Invoke(() => {
                 int time = 0;
                 while (time < ms) {
-                    SequentialHostTestExecutor.DoIdle();
+                    IdleTime.DoIdle();
                     Thread.Sleep(20);
                     time += 20;
                 }

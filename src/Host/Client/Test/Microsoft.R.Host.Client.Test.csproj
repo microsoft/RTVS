@@ -97,6 +97,9 @@
   <ItemGroup>
     <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-PlotCars-0.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Script\" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />

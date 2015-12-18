@@ -64,18 +64,11 @@ namespace Microsoft.Common.Core.Test.Utility {
         }
 
         private void WriteObjectProperties(DependencyObject o) {
-            var control = o as Control;
-            if (control != null) {
-                WriteControlProperties(control);
-            }
-        }
-
-        private void WriteControlProperties(Control control) {
-            var properties = GetAttachedProperties(control);
+            var properties = GetAttachedProperties(o);
             for (int i = 0; i < properties.Count; i++) {
                 var prop = properties[i];
-                if (!IgnoredProperties.IsIgnoredProperty(prop.Name)) {
-                    object value = control.GetValue(prop);
+                if (!IgnoredWpfProperties.IsIgnoredProperty(prop.Name)) {
+                    object value = o.GetValue(prop);
                     Indent();
                     _sb.Append(prop.Name);
                     _sb.Append(" = ");
