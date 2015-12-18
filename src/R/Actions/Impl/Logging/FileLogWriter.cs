@@ -93,7 +93,7 @@ namespace Microsoft.R.Actions.Logging {
                 if (!File.Exists(path)) {
                     return new FileLogWriter(path);
                 }
-                timeStamp.AddSeconds(1);
+                timeStamp = timeStamp.AddSeconds(1);
             }
         }
 

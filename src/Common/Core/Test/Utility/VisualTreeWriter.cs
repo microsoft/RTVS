@@ -67,7 +67,7 @@ namespace Microsoft.Common.Core.Test.Utility {
             var properties = GetAttachedProperties(o);
             for (int i = 0; i < properties.Count; i++) {
                 var prop = properties[i];
-                if (!IgnoredWpfProperties.IsIgnoredProperty(prop.Name)) {
+                if (SupportedWpfProperties.IsSupported(prop.Name)) {
                     object value = o.GetValue(prop);
                     Indent();
                     _sb.Append(prop.Name);
