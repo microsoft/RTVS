@@ -198,9 +198,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public int OnClose(ref uint pgrfSaveOptions) {
-            IVsWindowPane pane = GetIVsWindowPane() as IVsWindowPane;
-            if (pane != null) {
-                pane.ClosePane();
+            if (useReparentPlot) {
+                IVsWindowPane pane = GetIVsWindowPane() as IVsWindowPane;
+                if (pane != null) {
+                    pane.ClosePane();
+                }
             }
             return VSConstants.S_OK;
         }
