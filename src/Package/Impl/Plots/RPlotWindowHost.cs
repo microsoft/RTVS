@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal static class RPlotWindowHost {
         private static IntPtr _handle = IntPtr.Zero;
-        private static bool useReparentPlot = !RToolsSettings.Current.UseExperimentalGraphicsDevice;
+        private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
 
         public static IntPtr RPlotWindowContainerHandle {
             get {

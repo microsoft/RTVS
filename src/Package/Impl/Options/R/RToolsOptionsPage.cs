@@ -74,15 +74,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.AlwaysSaveHistory = value; }
         }
 
-        [LocCategory("Settings_PlotCategory")]
-        [CustomLocDisplayName("Settings_UseExperimentalGraphicsDevice")]
-        [LocDescription("Settings_UseExperimentalGraphicsDevice_Description")]
-        [DefaultValue(false)]
-        public bool UseExperimentalGraphicsDevice {
-            get { return RToolsSettings.Current.UseExperimentalGraphicsDevice; }
-            set { RToolsSettings.Current.UseExperimentalGraphicsDevice = value; }
-        }
-
         [LocCategory("Settings_HistoryCategory")]
         [CustomLocDisplayName("Settings_ClearFilterOnAddHistory")]
         [LocDescription("Settings_ClearFilterOnAddHistory_Description")]

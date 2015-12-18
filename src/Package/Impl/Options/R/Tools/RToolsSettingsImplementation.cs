@@ -34,8 +34,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public bool AlwaysSaveHistory { get; set; } = true;
 
-        public bool UseExperimentalGraphicsDevice { get; set; } = false;
-
         public bool ClearFilterOnAddHistory { get; set; } = true;
 
         public string CranMirror {

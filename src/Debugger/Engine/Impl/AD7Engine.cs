@@ -28,6 +28,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         internal bool IsDisposed { get; private set; }
         internal bool IsBrowsing { get; private set; }
+        internal bool IsConnected { get; private set; }
         internal DebugSession DebugSession { get; private set; }
         internal AD7Thread MainThread { get; private set; }
 
@@ -53,6 +54,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             DebugSession.Browse -= Session_Browse;
             DebugSession.RSession.AfterRequest -= RSession_AfterRequest;
+            DebugSession.RSession.Disconnected -= RSession_Disconnected;
 
             _events = null;
             _program = null;
@@ -115,6 +117,7 @@ namespace Microsoft.R.Debugger.Engine {
             _events = pCallback;
             DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetResultOnUIThread();
             MainThread = new AD7Thread(this);
+            IsConnected = true;
 
             // Enable breakpoint instrumentation.
             DebugSession.EnableBreakpoints(true).GetResultOnUIThread();
@@ -130,6 +133,7 @@ namespace Microsoft.R.Debugger.Engine {
             // we may get a Browse event immediately, and we want to raise a breakpoint notification in response to that
             // to pause the debugger - but it will be ignored unless the engine has reported its creation.
             DebugSession.RSession.AfterRequest += RSession_AfterRequest;
+            DebugSession.RSession.Disconnected += RSession_Disconnected;
             DebugSession.Browse += Session_Browse;
 
             return VSConstants.S_OK;
@@ -514,6 +518,11 @@ namespace Microsoft.R.Debugger.Engine {
                 var ex = Marshal.GetExceptionForHR(vsShell.PostExecCommand(ref group, (uint)VSConstants.VSStd97CmdID.Start, 0, ref arg));
                 Trace.Assert(ex == null);
             }
+        }
+
+        private void RSession_Disconnected(object sender, EventArgs e) {
+            IsConnected = false;
+            Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
         }
     }
 }

@@ -2,11 +2,14 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xaml;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -15,8 +18,8 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotContentProvider : IPlotContentProvider {
         private IRSession _rSession;
+        private IDebugSessionProvider _debugSessionProvider;
         private string _lastLoadFile;
-        private string _lastIdleLoadFile;
         private int _lastWidth;
         private int _lastHeight;
 
@@ -32,12 +35,14 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
 
+            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
+
             IdleTimeAction.Create(() => {
-                SetRSession(sessionProvider.Current);
+                SetRSession(sessionProvider.Current).DoNotWait();
             }, 10, typeof(PlotContentProvider));
         }
 
-        private void SetRSession(IRSession session) {
+        private async System.Threading.Tasks.Task SetRSession(IRSession session) {
             // cleans up old RSession
             if (_rSession != null) {
                 _rSession.Mutated -= RSession_Mutated;
@@ -46,9 +51,14 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
             // set new RSession
             _rSession = session;
+
             if (_rSession != null) {
                 _rSession.Mutated += RSession_Mutated;
                 _rSession.Connected += RSession_Connected;
+
+                // debug session is created to trigger a load of the R package
+                // that has functions we need such as rtvs:::toJSON
+                var debugSession = await _debugSessionProvider.GetDebugSessionAsync(_rSession);
             }
 
             // notify the change
@@ -63,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async void RSession_Connected(object sender, EventArgs e) {
             // Let the host know the size of plot window
             if (_lastWidth >= 0 && _lastHeight >= 0) {
-                ResizePlot();
+                await ApplyNewSize();
             }
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
@@ -79,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             Debug.Assert(sessionProvider != null);
 
             if (sessionProvider != null) {
-                SetRSession(sessionProvider.Current);
+                SetRSession(sessionProvider.Current).DoNotWait();
             }
         }
 
@@ -87,39 +97,26 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         public event EventHandler<PlotChangedEventArgs> PlotChanged;
 
-        public void LoadFileOnIdle(string fileName) {
-            IdleTimeAction.Cancel(typeof(PlotContentProvider));
-            DeleteTempFile(_lastIdleLoadFile);
-
-            IdleTimeAction.Create(() => LoadFile(fileName), 200, typeof(PlotContentProvider));
-            _lastIdleLoadFile = fileName;
-        }
-
         public void LoadFile(string fileName) {
             UIElement element = null;
-            try {
-                if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
-                    var image = new Image();
-                    image.Source = new BitmapImage(new Uri(fileName));
-                    element = image;
-                } else {
-                    element = (UIElement)XamlServices.Load(fileName);
+            // Empty filename means clear
+            if (!string.IsNullOrEmpty(fileName)) {
+                try {
+                    if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
+                        var image = new Image();
+                        image.Source = new BitmapImage(new Uri(fileName));
+                        element = image;
+                    } else {
+                        element = (UIElement)XamlServices.Load(fileName);
+                    }
+                    _lastLoadFile = fileName;
+                } catch (Exception e) when (!e.IsCriticalException()) {
+                    element = CreateErrorContent(
+                        new FormatException(string.Format("Couldn't load XAML file from {0}", fileName), e));
                 }
-                _lastLoadFile = fileName;
-            } catch (Exception e) {
-                element = CreateErrorContent(
-                    new FormatException(string.Format("Couldn't load XAML file from {0}", fileName), e));
             }
 
             OnPlotChanged(element);
-        }
-
-        public void SaveFile(string fileName) {
-            if (_lastLoadFile != null) {
-                File.Copy(_lastLoadFile, fileName, overwrite: true);
-                DeleteTempFile(_lastLoadFile);
-                _lastLoadFile = null;
-            }
         }
 
         public async void ExportFile(string fileName) {
@@ -154,40 +151,55 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        public async void NextPlot() {
+        public async Task<PlotHistoryInfo> GetHistoryInfoAsync() {
+            if (_rSession == null || !_rSession.IsHostRunning) {
+                return new PlotHistoryInfo();
+            }
+
+            REvaluationResult result;
+            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                result = await eval.PlotHistoryInfo();
+            }
+
+            return new PlotHistoryInfo(
+                (int)result.JsonResult[0].ToObject(typeof(int)),
+                (int)result.JsonResult[1].ToObject(typeof(int)));
+        }
+
+        public async System.Threading.Tasks.Task NextPlotAsync() {
             if (_rSession == null) {
                 return;
             }
 
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+            using (var eval = await _rSession.BeginInteractionAsync(false)) {
                 await eval.NextPlot();
             }
         }
 
-        public async void PreviousPlot() {
+        public async System.Threading.Tasks.Task PreviousPlotAsync() {
             if (_rSession == null) {
                 return;
             }
 
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+            using (var eval = await _rSession.BeginInteractionAsync(false)) {
                 await eval.PreviousPlot();
             }
         }
 
-        public void ResizePlot(int width, int height) {
+        public async System.Threading.Tasks.Task ResizePlotAsync(int width, int height) {
             // Cache the size, so we can set the initial size
             // whenever we get a new session
             _lastWidth = width;
             _lastHeight = height;
 
             if (_rSession != null) {
-                ResizePlot();
+                await ApplyNewSize();
             }
         }
 
-        private async void ResizePlot() {
+        private async System.Threading.Tasks.Task ApplyNewSize() {
             if (_rSession != null) {
-                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                using (var eval = await _rSession.BeginInteractionAsync(false)) {
                     await eval.ResizePlot(_lastWidth, _lastHeight);
                 }
             }
@@ -207,19 +219,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        private static void DeleteTempFile(string fileName) {
-            if (!string.IsNullOrEmpty(fileName)) {
-                try {
-                    if (File.Exists(fileName)) {
-                        File.Delete(fileName);
-                    }
-                } catch (IOException) { }
-            }
-        }
-
         public void Dispose() {
-            IdleTimeAction.Cancel(typeof(PlotContentProvider));
-            DeleteTempFile(_lastLoadFile);
         }
     }
 }

@@ -4,8 +4,7 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
@@ -18,9 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
     internal class PlotWindowPane : ToolWindowPane, IVsWindowFrameNotify3 {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
-        private static bool useReparentPlot = !RToolsSettings.Current.UseExperimentalGraphicsDevice;
+        private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
 
-        //private SavePlotCommand _saveCommand;
+        private ExportPlotCommand _exportPlotCommand;
+        private HistoryNextPlotCommand _historyNextPlotCommand;
+        private HistoryPreviousPlotCommand _historyPreviousPlotCommand;
         private Lazy<RPlotWindowContainer> _plotWindowContainer = Lazy.Create(() => new RPlotWindowContainer());
 
         public PlotWindowPane() {
@@ -51,8 +52,21 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         private void PlotWindowPane_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
             if (!useReparentPlot) {
-                PlotContentProvider.ResizePlot((int)e.NewSize.Width, (int)e.NewSize.Height);
+                DoNotWait(PlotContentProvider.ResizePlotAsync((int)e.NewSize.Width, (int)e.NewSize.Height));
             }
+        }
+
+        private static void DoNotWait(System.Threading.Tasks.Task task) {
+            // Errors like invalid graphics state which go to the REPL stderr will come back
+            // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
+            // as the user can see them in the REPL.
+            // TODO:
+            // See if we can fix the cause of those errors - to be
+            // determined based on the various errors we see displayed
+            // in REPL during testing.
+            task.SilenceException<MessageTransportException>()
+                .SilenceException<Microsoft.R.Host.Client.RException>()
+                .DoNotWait();
         }
 
         public override void OnToolWindowCreated() {
@@ -74,14 +88,14 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private IEnumerable<ICommand> GetCommands() {
             List<ICommand> commands = new List<ICommand>();
 
-            //commands.Add(new OpenPlotCommand(this));
+            _exportPlotCommand = new ExportPlotCommand(this);
+            _historyNextPlotCommand = new HistoryNextPlotCommand(this);
+            _historyPreviousPlotCommand = new HistoryPreviousPlotCommand(this);
 
-            //_saveCommand = new SavePlotCommand(this);
-            //commands.Add(_saveCommand);
+            commands.Add(_exportPlotCommand);
+            commands.Add(_historyNextPlotCommand);
+            commands.Add(_historyPreviousPlotCommand);
 
-            commands.Add(new ExportPlotCommand(this));
-            commands.Add(new HistoryNextPlotCommand(this));
-            commands.Add(new HistoryPreviousPlotCommand(this));
             //commands.Add(new FixPlotCommand(this));
             //commands.Add(new CopyPlotCommand(this));
             //commands.Add(new PrintPlotCommand(this));
@@ -91,32 +105,44 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             return commands;
         }
 
-        private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e) {
-            //if (e.NewPlotElement == null) {
-            //    _saveCommand.Disable();
-            //} else {
-            //    _saveCommand.Enable();
-            //}
+        private async System.Threading.Tasks.Task RefreshHistoryInfo() {
+            var info = await PlotContentProvider.GetHistoryInfoAsync();
+            SetHistoryInfo(info.ActivePlotIndex, info.PlotCount);
         }
 
-        //public void OpenPlot() {
-        //    string filePath = GetLoadFilePath();
-        //    if (!string.IsNullOrEmpty(filePath)) {
-        //        try {
-        //            PlotContentProvider.LoadFile(filePath);
-        //        } catch (Exception ex) {
-        //            EditorShell.Current.ShowErrorMessage(
-        //                string.Format(CultureInfo.InvariantCulture, Resources.CannotOpenPlotFile, ex.Message));
-        //        }
-        //    }
-        //}
+        private void ClearHistoryInfo() {
+            SetHistoryInfo(-1, 0);
+        }
 
-        //public void SavePlot() {
-        //    string destinationFilePath = GetSaveFilePath();
-        //    if (!string.IsNullOrEmpty(destinationFilePath)) {
-        //        PlotContentProvider.SaveFile(destinationFilePath);
-        //    }
-        //}
+        private void SetHistoryInfo(int activeIndex, int plotCount) {
+            if (activeIndex >= 0) {
+                if (activeIndex < (plotCount - 1)) {
+                    _historyNextPlotCommand.Enable();
+                } else {
+                    _historyNextPlotCommand.Disable();
+                }
+                if (activeIndex > 0) {
+                    _historyPreviousPlotCommand.Enable();
+                } else {
+                    _historyPreviousPlotCommand.Disable();
+                }
+            } else {
+                _historyNextPlotCommand.Disable();
+                _historyPreviousPlotCommand.Disable();
+            }
+
+            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            shell.UpdateCommandUI(1);
+        }
+
+        private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e) {
+            if (e.NewPlotElement == null) {
+                ClearHistoryInfo();
+            } else {
+                DoNotWait(RefreshHistoryInfo());
+            }
+        }
+
         internal void ExportPlot() {
             string destinationFilePath = GetExportFilePath();
             if (!string.IsNullOrEmpty(destinationFilePath)) {
@@ -125,11 +151,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         internal void NextPlot() {
-            PlotContentProvider.NextPlot();
+            DoNotWait(PlotContentProvider.NextPlotAsync());
         }
 
         internal void PreviousPlot() {
-            PlotContentProvider.PreviousPlot();
+            DoNotWait(PlotContentProvider.PreviousPlotAsync());
         }
 
         private string GetLoadFilePath() {
@@ -138,10 +164,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 // TODO: open in current project folder if one is active
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\",
                 Resources.OpenPlotDialogTitle);
-        }
-
-        private string GetSaveFilePath() {
-            return VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotFileFilter, null, Resources.SavePlotDialogTitle);
         }
 
         private string GetExportFilePath() {
