@@ -19,6 +19,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
         private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
 
+        // Anything below 150 is impractical, and prone to rendering errors
+        private const int MinWidth = 150;
+        private const int MinHeight = 150;
+
         private ExportPlotCommand _exportPlotCommand;
         private HistoryNextPlotCommand _historyNextPlotCommand;
         private HistoryPreviousPlotCommand _historyPreviousPlotCommand;
@@ -52,7 +56,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         private void PlotWindowPane_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
             if (!useReparentPlot) {
-                DoNotWait(PlotContentProvider.ResizePlotAsync((int)e.NewSize.Width, (int)e.NewSize.Height));
+                // If the window gets below a certain minimum size, plot to the minimum size
+                // and user will be able to use scrollbars to see the whole thing
+                int width = Math.Max((int)e.NewSize.Width, MinWidth);
+                int height = Math.Max((int)e.NewSize.Height, MinHeight);
+                DoNotWait(PlotContentProvider.ResizePlotAsync(width, height));
             }
         }
 
