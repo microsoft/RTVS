@@ -9,12 +9,12 @@ namespace Microsoft.Languages.Editor.Text {
         public static SnapshotPoint? MapDownToBuffer(this ITextView textView, int position, ITextBuffer buffer) {
             if (textView.BufferGraph == null) {
                 // Unit test case
-                if (position < buffer.CurrentSnapshot.Length) {
+                if (position <= buffer.CurrentSnapshot.Length) {
                     return new SnapshotPoint(buffer.CurrentSnapshot, position);
                 }
                 return null;
             }
-            if (position < textView.TextBuffer.CurrentSnapshot.Length) {
+            if (position <= textView.TextBuffer.CurrentSnapshot.Length) {
                 return textView.BufferGraph.MapDownToBuffer(
                     new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position),
                     PointTrackingMode.Positive,
