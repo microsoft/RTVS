@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Test.Script;
 using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -8,8 +10,8 @@ using Microsoft.VisualStudio.R.Package.Shell;
 namespace Microsoft.VisualStudio.R.Package.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class SequentialHostTestExecutor {
-        private static IRSessionProvider _sessionProvider;
-        private static IRSession _session;
+        public static IRSessionProvider SessionProvider { get; private set; }
+        public static IRSession Session { get; private set; }
 
         public static void ExecuteTest(Action action) {
             SequentialTestExecutor.ExecuteTest((evt) => {
@@ -17,17 +19,23 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
                 evt.Set();
             },
             () => {
-                if (_sessionProvider == null) {
-                    _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                    _session = _sessionProvider.Create(0, new RHostClientApp());
-                    _session.StartHostAsync(IntPtr.Zero).Wait();
+                if (SessionProvider == null) {
+                    SessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                    Session = SessionProvider.Create(0, new RHostClientApp());
+                    Session.StartHostAsync(IntPtr.Zero).Wait();
                 }
             },
             () => {
-                if (_session != null) {
-                    _session.StopHostAsync().Wait();
+                if (Session != null) {
+                    Session.StopHostAsync().Wait();
                 }
             });
+        }
+
+        public static void DoIdle() {
+            TestScript.DoEvents();
+            VsAppShell.Current.DoIdle();
+            EditorShell.Current.DoIdle();
         }
     }
 }

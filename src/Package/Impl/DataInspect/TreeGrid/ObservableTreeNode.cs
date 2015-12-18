@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Utility;
+using Microsoft.VisualStudio.R.Package.Shell;
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -206,8 +207,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             try {
                 var nodes = await model.GetChildrenAsync(CancellationToken.None);
-                ThreadHelper.Generic.BeginInvoke(
-                    DispatcherPriority.Normal,
+                VsAppShell.Current.DispatchOnUIThread(
                     () => UpdateChildren(nodes));
             } catch (Exception e) {
                 if (!(e is OperationCanceledException)) {

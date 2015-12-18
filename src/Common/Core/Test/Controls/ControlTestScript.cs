@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Test.Script;
 using Microsoft.Common.Core.Test.STA;
 using Microsoft.Common.Core.Test.Utility;
 
-namespace Microsoft.VisualStudio.R.Application.Test {
+namespace Microsoft.Common.Core.Test.Controls {
     [ExcludeFromCodeCoverage]
-    public sealed class ControlTestScript : IDisposable {
+    public sealed class ControlTestScript : TestScript, IDisposable {
         public ControlTestScript(Type type) {
             ControlWindow.Create(type);
         }
         /// <summary>
-        /// Invokes a particular action in the editor window
+        /// Invokes a particular action in the control window thread
         /// </summary>
         public void Invoke(Action action) {
             StaThread.Invoke(action);

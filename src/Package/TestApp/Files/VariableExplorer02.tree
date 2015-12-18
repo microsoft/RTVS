@@ -1,0 +1,1866 @@
+VariableView
+Content = System.Windows.Controls.Grid
+ContentTemplate = null
+ContentTemplateSelector = null
+BorderBrush = null
+BorderThickness = 0,0,0,0
+Background = null
+Foreground = #FF000000
+FontFamily = Segoe UI
+FontSize = 12
+FontStretch = Normal
+FontStyle = Normal
+FontWeight = Normal
+HorizontalContentAlignment = Stretch
+VerticalContentAlignment = Stretch
+TabIndex = 2147483647
+IsTabStop = False
+Padding = 0,0,0,0
+Template = System.Windows.Controls.ControlTemplate
+Style = null
+DataContext = null
+ActualWidth = 784
+ActualHeight = 561
+Width = NaN
+MinWidth = 0
+MaxWidth = ∞
+Height = NaN
+MinHeight = 0
+MaxHeight = ∞
+Margin = 0,0,0,0
+HorizontalAlignment = Stretch
+VerticalAlignment = Stretch
+Cursor = null
+ToolTip = null
+ContextMenu = null
+Visibility = Visible
+Clip = null
+IsFocused = False
+IsEnabled = True
+IsVisible = True
+Left = NaN
+Top = NaN
+Right = NaN
+Bottom = NaN
+IsEnabled = True
+IsEnabled = True
+FocusedElement = null
+TextAlignment = Left
+IsVirtualizing = True
+VirtualizationMode = Standard
+ScrollUnit = Item
+HorizontalScrollBarVisibility = Disabled
+VerticalScrollBarVisibility = Visible
+Dpi = 0
+GrayscaleBiasColor = null
+HighContrast = null
+ImageLibrary = null
+ScaleFactor = 1
+--------------------------------------------------------------
+    Border
+    --------------------------------------------------------------
+        ContentPresenter
+        --------------------------------------------------------------
+            Grid
+            --------------------------------------------------------------
+                TextBlock
+                TreeGrid
+                CanUserResizeColumns = True
+                ColumnWidth = SizeToHeader
+                MinColumnWidth = 20
+                MaxColumnWidth = ∞
+                GridLinesVisibility = All
+                HorizontalGridLinesBrush = #FF000000
+                VerticalGridLinesBrush = #FF000000
+                RowStyle = null
+                RowValidationErrorTemplate = null
+                RowStyleSelector = null
+                RowBackground = null
+                AlternatingRowBackground = null
+                RowHeight = NaN
+                MinRowHeight = 0
+                RowHeaderWidth = NaN
+                RowHeaderActualWidth = 0
+                ColumnHeaderHeight = NaN
+                HeadersVisibility = All
+                CellStyle = null
+                ColumnHeaderStyle = null
+                RowHeaderStyle = null
+                RowHeaderTemplate = null
+                RowHeaderTemplateSelector = null
+                HorizontalScrollBarVisibility = Auto
+                VerticalScrollBarVisibility = Visible
+                IsReadOnly = True
+                CurrentItem = null
+                CurrentColumn = null
+                CurrentCell = System.Windows.Controls.DataGridCellInfo
+                CanUserAddRows = False
+                CanUserDeleteRows = False
+                RowDetailsVisibilityMode = VisibleWhenSelected
+                AreRowDetailsFrozen = False
+                RowDetailsTemplate = null
+                RowDetailsTemplateSelector = null
+                CanUserResizeRows = True
+                NewItemMargin = 0,0,0,0
+                SelectionMode = Extended
+                SelectionUnit = FullRow
+                CanUserSortColumns = True
+                AutoGenerateColumns = False
+                FrozenColumnCount = 0
+                NonFrozenColumnsViewportHorizontalOffset = 0
+                EnableRowVirtualization = True
+                EnableColumnVirtualization = False
+                CanUserReorderColumns = True
+                DragIndicatorStyle = null
+                DropLocationIndicatorStyle = null
+                ClipboardCopyMode = ExcludeHeader
+                CellsPanelHorizontalOffset = 0
+                SelectedItems = System.Windows.Controls.SelectedItemCollection
+                IsSynchronizedWithCurrentItem = null
+                SelectedIndex = -1
+                SelectedItem = null
+                SelectedValue = null
+                SelectedValuePath = 
+                ItemsSource = System.Collections.ObjectModel.ReadOnlyObservableCollection`1[Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode]
+                HasItems = False
+                ItemTemplate = null
+                ItemTemplateSelector = null
+                ItemStringFormat = null
+                ItemBindingGroup = System.Windows.Data.BindingGroup
+                ItemContainerStyle = null
+                ItemContainerStyleSelector = null
+                ItemsPanel = System.Windows.Controls.ItemsPanelTemplate
+                IsGrouping = False
+                GroupStyleSelector = null
+                AlternationCount = 0
+                IsTextSearchEnabled = False
+                IsTextSearchCaseSensitive = False
+                BorderBrush = #FF688CAF
+                BorderThickness = 1,1,1,1
+                Background = #FFF0F0F0
+                Foreground = #FF000000
+                FontFamily = Segoe UI
+                FontSize = 12
+                FontStretch = Normal
+                FontStyle = Normal
+                FontWeight = Normal
+                HorizontalContentAlignment = Left
+                VerticalContentAlignment = Top
+                TabIndex = 2147483647
+                IsTabStop = False
+                Padding = 0,0,0,0
+                Template = System.Windows.Controls.ControlTemplate
+                Style = null
+                DataContext = null
+                ActualWidth = 784
+                ActualHeight = 537.04
+                Width = NaN
+                MinWidth = 0
+                MaxWidth = ∞
+                Height = NaN
+                MinHeight = 0
+                MaxHeight = ∞
+                Margin = 0,0,0,0
+                HorizontalAlignment = Stretch
+                VerticalAlignment = Stretch
+                Cursor = null
+                ToolTip = null
+                ContextMenu = null
+                Visibility = Visible
+                Clip = null
+                IsFocused = False
+                IsEnabled = True
+                IsVisible = True
+                Left = NaN
+                Top = NaN
+                Right = NaN
+                Bottom = NaN
+                IsEnabled = True
+                IsEnabled = True
+                FocusedElement = null
+                TextAlignment = Left
+                IsVirtualizing = True
+                VirtualizationMode = Recycling
+                ScrollUnit = Item
+                Dpi = 0
+                GrayscaleBiasColor = null
+                HighContrast = null
+                ImageLibrary = null
+                ScaleFactor = 1
+                --------------------------------------------------------------
+                    Border
+                    --------------------------------------------------------------
+                        ScrollViewer
+                        HorizontalScrollBarVisibility = Auto
+                        VerticalScrollBarVisibility = Visible
+                        ComputedHorizontalScrollBarVisibility = Collapsed
+                        ComputedVerticalScrollBarVisibility = Visible
+                        ExtentWidth = 0
+                        ExtentHeight = 0
+                        ScrollableWidth = 0
+                        ScrollableHeight = 0
+                        ViewportWidth = 765
+                        ViewportHeight = 0
+                        ContentVerticalOffset = 0
+                        ContentHorizontalOffset = 0
+                        Content = System.Windows.Controls.ItemsPresenter
+                        ContentTemplate = null
+                        ContentTemplateSelector = null
+                        BorderBrush = null
+                        BorderThickness = 0,0,0,0
+                        Background = null
+                        Foreground = #FF000000
+                        FontFamily = Segoe UI
+                        FontSize = 12
+                        FontStretch = Normal
+                        FontStyle = Normal
+                        FontWeight = Normal
+                        HorizontalContentAlignment = Left
+                        VerticalContentAlignment = Top
+                        TabIndex = 2147483647
+                        IsTabStop = False
+                        Padding = 0,0,0,0
+                        Template = System.Windows.Controls.ControlTemplate
+                        Style = null
+                        DataContext = null
+                        ActualWidth = 782
+                        ActualHeight = 535.04
+                        Width = NaN
+                        MinWidth = 0
+                        MaxWidth = ∞
+                        Height = NaN
+                        MinHeight = 0
+                        MaxHeight = ∞
+                        Margin = 0,0,0,0
+                        HorizontalAlignment = Stretch
+                        VerticalAlignment = Stretch
+                        Cursor = null
+                        ToolTip = null
+                        ContextMenu = null
+                        Visibility = Visible
+                        Clip = null
+                        IsFocused = False
+                        IsEnabled = True
+                        IsVisible = True
+                        Left = NaN
+                        Top = NaN
+                        Right = NaN
+                        Bottom = NaN
+                        IsEnabled = True
+                        IsEnabled = True
+                        FocusedElement = null
+                        TextAlignment = Left
+                        IsVirtualizing = True
+                        VirtualizationMode = Standard
+                        ScrollUnit = Item
+                        Dpi = 0
+                        GrayscaleBiasColor = null
+                        HighContrast = null
+                        ImageLibrary = null
+                        ScaleFactor = 1
+                        --------------------------------------------------------------
+                            Grid
+                            --------------------------------------------------------------
+                                Button
+                                IsDefault = False
+                                IsCancel = False
+                                IsDefaulted = False
+                                IsPressed = False
+                                Command = System.Windows.Input.RoutedUICommand
+                                ClickMode = Release
+                                Content = null
+                                ContentTemplate = null
+                                ContentTemplateSelector = null
+                                BorderBrush = #FF707070
+                                BorderThickness = 1,1,1,1
+                                Background = #FFDDDDDD
+                                Foreground = #FF000000
+                                FontFamily = Segoe UI
+                                FontSize = 12
+                                FontStretch = Normal
+                                FontStyle = Normal
+                                FontWeight = Normal
+                                HorizontalContentAlignment = Center
+                                VerticalContentAlignment = Center
+                                TabIndex = 2147483647
+                                IsTabStop = True
+                                Padding = 1,1,1,1
+                                Template = System.Windows.Controls.ControlTemplate
+                                Style = System.Windows.Style
+                                DataContext = null
+                                ActualWidth = 0
+                                ActualHeight = 23.96
+                                Width = 0
+                                MinWidth = 0
+                                MaxWidth = ∞
+                                Height = NaN
+                                MinHeight = 0
+                                MaxHeight = ∞
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                Cursor = null
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                Clip = null
+                                IsFocused = False
+                                IsEnabled = True
+                                IsVisible = True
+                                Left = NaN
+                                Top = NaN
+                                Right = NaN
+                                Bottom = NaN
+                                IsEnabled = True
+                                IsEnabled = True
+                                FocusedElement = null
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                VirtualizationMode = Standard
+                                ScrollUnit = Item
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Dpi = 0
+                                GrayscaleBiasColor = null
+                                HighContrast = null
+                                ImageLibrary = null
+                                ScaleFactor = 1
+                                --------------------------------------------------------------
+                                    Grid
+                                    --------------------------------------------------------------
+                                        Rectangle
+                                        Polygon
+                                    --------------------------------------------------------------
+                                --------------------------------------------------------------
+                                DataGridColumnHeadersPresenter
+                                ItemsSource = System.Windows.Controls.DataGridColumnHeaderCollection
+                                HasItems = True
+                                ItemTemplate = null
+                                ItemTemplateSelector = null
+                                ItemStringFormat = null
+                                ItemBindingGroup = null
+                                ItemContainerStyle = null
+                                ItemContainerStyleSelector = null
+                                ItemsPanel = System.Windows.Controls.ItemsPanelTemplate
+                                IsGrouping = False
+                                GroupStyleSelector = null
+                                AlternationCount = 0
+                                IsTextSearchEnabled = False
+                                IsTextSearchCaseSensitive = False
+                                BorderBrush = null
+                                BorderThickness = 0,0,0,0
+                                Background = null
+                                Foreground = #FF000000
+                                FontFamily = Segoe UI
+                                FontSize = 12
+                                FontStretch = Normal
+                                FontStyle = Normal
+                                FontWeight = Normal
+                                HorizontalContentAlignment = Left
+                                VerticalContentAlignment = Top
+                                TabIndex = 2147483647
+                                IsTabStop = True
+                                Padding = 0,0,0,0
+                                Template = System.Windows.Controls.ControlTemplate
+                                Style = null
+                                DataContext = null
+                                ActualWidth = 765
+                                ActualHeight = 23.96
+                                Width = NaN
+                                MinWidth = 0
+                                MaxWidth = ∞
+                                Height = NaN
+                                MinHeight = 0
+                                MaxHeight = ∞
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                Cursor = null
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                Clip = null
+                                IsFocused = False
+                                IsEnabled = True
+                                IsVisible = True
+                                Left = NaN
+                                Top = NaN
+                                Right = NaN
+                                Bottom = NaN
+                                IsEnabled = True
+                                IsEnabled = True
+                                FocusedElement = null
+                                TextAlignment = Left
+                                IsVirtualizing = False
+                                VirtualizationMode = Recycling
+                                ScrollUnit = Item
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Dpi = 0
+                                GrayscaleBiasColor = null
+                                HighContrast = null
+                                ImageLibrary = null
+                                ScaleFactor = 1
+                                --------------------------------------------------------------
+                                    Grid
+                                    --------------------------------------------------------------
+                                        DataGridColumnHeader
+                                        SeparatorBrush = null
+                                        SeparatorVisibility = Visible
+                                        DisplayIndex = -1
+                                        CanUserSort = True
+                                        SortDirection = null
+                                        IsFrozen = False
+                                        IsPressed = False
+                                        Command = null
+                                        ClickMode = Release
+                                        Content = null
+                                        ContentTemplate = null
+                                        ContentTemplateSelector = null
+                                        BorderBrush = null
+                                        BorderThickness = 0,0,1,1
+                                        Background = null
+                                        Foreground = #FF000000
+                                        FontFamily = Segoe UI
+                                        FontSize = 12
+                                        FontStretch = Normal
+                                        FontStyle = Normal
+                                        FontWeight = Normal
+                                        HorizontalContentAlignment = Left
+                                        VerticalContentAlignment = Center
+                                        TabIndex = 2147483647
+                                        IsTabStop = True
+                                        Padding = 4,4,4,4
+                                        Template = System.Windows.Controls.ControlTemplate
+                                        Style = System.Windows.Style
+                                        DataContext = null
+                                        ActualWidth = 765
+                                        ActualHeight = 23.96
+                                        Width = NaN
+                                        MinWidth = 0
+                                        MaxWidth = ∞
+                                        Height = NaN
+                                        MinHeight = 0
+                                        MaxHeight = ∞
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        Cursor = null
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        Clip = null
+                                        IsFocused = False
+                                        IsEnabled = True
+                                        IsVisible = True
+                                        Left = NaN
+                                        Top = NaN
+                                        Right = NaN
+                                        Bottom = NaN
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        FocusedElement = null
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        VirtualizationMode = Standard
+                                        ScrollUnit = Item
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Dpi = 0
+                                        GrayscaleBiasColor = null
+                                        HighContrast = null
+                                        ImageLibrary = null
+                                        ScaleFactor = 1
+                                        --------------------------------------------------------------
+                                            Grid
+                                            --------------------------------------------------------------
+                                                DataGridHeaderBorder
+                                                --------------------------------------------------------------
+                                                    ContentPresenter
+                                                --------------------------------------------------------------
+                                                Thumb
+                                                IsDragging = False
+                                                BorderBrush = null
+                                                BorderThickness = 0,0,0,0
+                                                Background = #00FFFFFF
+                                                Foreground = #FF000000
+                                                FontFamily = Segoe UI
+                                                FontSize = 12
+                                                FontStretch = Normal
+                                                FontStyle = Normal
+                                                FontWeight = Normal
+                                                HorizontalContentAlignment = Left
+                                                VerticalContentAlignment = Top
+                                                TabIndex = 2147483647
+                                                IsTabStop = True
+                                                Padding = 0,0,0,0
+                                                Template = System.Windows.Controls.ControlTemplate
+                                                Style = System.Windows.Style
+                                                DataContext = null
+                                                ActualWidth = 8
+                                                ActualHeight = 23.96
+                                                Width = 8
+                                                MinWidth = 0
+                                                MaxWidth = ∞
+                                                Height = NaN
+                                                MinHeight = 0
+                                                MaxHeight = ∞
+                                                Margin = 0,0,0,0
+                                                HorizontalAlignment = Left
+                                                VerticalAlignment = Stretch
+                                                Cursor = SizeWE
+                                                ToolTip = null
+                                                ContextMenu = null
+                                                Visibility = Visible
+                                                Clip = null
+                                                IsFocused = False
+                                                IsEnabled = True
+                                                IsVisible = True
+                                                Left = NaN
+                                                Top = NaN
+                                                Right = NaN
+                                                Bottom = NaN
+                                                IsEnabled = True
+                                                IsEnabled = True
+                                                FocusedElement = null
+                                                TextAlignment = Left
+                                                IsVirtualizing = True
+                                                VirtualizationMode = Standard
+                                                ScrollUnit = Item
+                                                HorizontalScrollBarVisibility = Disabled
+                                                VerticalScrollBarVisibility = Visible
+                                                Dpi = 0
+                                                GrayscaleBiasColor = null
+                                                HighContrast = null
+                                                ImageLibrary = null
+                                                ScaleFactor = 1
+                                                --------------------------------------------------------------
+                                                    Border
+                                                --------------------------------------------------------------
+                                                Thumb
+                                                IsDragging = False
+                                                BorderBrush = null
+                                                BorderThickness = 0,0,0,0
+                                                Background = #00FFFFFF
+                                                Foreground = #FF000000
+                                                FontFamily = Segoe UI
+                                                FontSize = 12
+                                                FontStretch = Normal
+                                                FontStyle = Normal
+                                                FontWeight = Normal
+                                                HorizontalContentAlignment = Left
+                                                VerticalContentAlignment = Top
+                                                TabIndex = 2147483647
+                                                IsTabStop = True
+                                                Padding = 0,0,0,0
+                                                Template = System.Windows.Controls.ControlTemplate
+                                                Style = System.Windows.Style
+                                                DataContext = null
+                                                ActualWidth = 8
+                                                ActualHeight = 23.96
+                                                Width = 8
+                                                MinWidth = 0
+                                                MaxWidth = ∞
+                                                Height = NaN
+                                                MinHeight = 0
+                                                MaxHeight = ∞
+                                                Margin = 0,0,0,0
+                                                HorizontalAlignment = Right
+                                                VerticalAlignment = Stretch
+                                                Cursor = SizeWE
+                                                ToolTip = null
+                                                ContextMenu = null
+                                                Visibility = Visible
+                                                Clip = null
+                                                IsFocused = False
+                                                IsEnabled = True
+                                                IsVisible = True
+                                                Left = NaN
+                                                Top = NaN
+                                                Right = NaN
+                                                Bottom = NaN
+                                                IsEnabled = True
+                                                IsEnabled = True
+                                                FocusedElement = null
+                                                TextAlignment = Left
+                                                IsVirtualizing = True
+                                                VirtualizationMode = Standard
+                                                ScrollUnit = Item
+                                                HorizontalScrollBarVisibility = Disabled
+                                                VerticalScrollBarVisibility = Visible
+                                                Dpi = 0
+                                                GrayscaleBiasColor = null
+                                                HighContrast = null
+                                                ImageLibrary = null
+                                                ScaleFactor = 1
+                                                --------------------------------------------------------------
+                                                    Border
+                                                --------------------------------------------------------------
+                                            --------------------------------------------------------------
+                                        --------------------------------------------------------------
+                                        ItemsPresenter
+                                        --------------------------------------------------------------
+                                            DataGridCellsPanel
+                                            --------------------------------------------------------------
+                                                DataGridColumnHeader
+                                                SeparatorBrush = null
+                                                SeparatorVisibility = Visible
+                                                DisplayIndex = 0
+                                                CanUserSort = True
+                                                SortDirection = null
+                                                IsFrozen = False
+                                                IsPressed = False
+                                                Command = null
+                                                ClickMode = Release
+                                                Content = Name
+                                                ContentTemplate = null
+                                                ContentTemplateSelector = null
+                                                BorderBrush = null
+                                                BorderThickness = 0,0,1,1
+                                                Background = null
+                                                Foreground = #FF000000
+                                                FontFamily = Segoe UI
+                                                FontSize = 12
+                                                FontStretch = Normal
+                                                FontStyle = Normal
+                                                FontWeight = Normal
+                                                HorizontalContentAlignment = Left
+                                                VerticalContentAlignment = Center
+                                                TabIndex = 0
+                                                IsTabStop = True
+                                                Padding = 4,4,4,4
+                                                Template = System.Windows.Controls.ControlTemplate
+                                                Style = System.Windows.Style
+                                                DataContext = Name
+                                                ActualWidth = 20
+                                                ActualHeight = 23.96
+                                                Width = NaN
+                                                MinWidth = 0
+                                                MaxWidth = ∞
+                                                Height = NaN
+                                                MinHeight = 0
+                                                MaxHeight = ∞
+                                                Margin = 0,0,0,0
+                                                HorizontalAlignment = Stretch
+                                                VerticalAlignment = Stretch
+                                                Cursor = null
+                                                ToolTip = null
+                                                ContextMenu = null
+                                                Visibility = Visible
+                                                Clip = null
+                                                IsFocused = False
+                                                IsEnabled = True
+                                                IsVisible = True
+                                                Left = NaN
+                                                Top = NaN
+                                                Right = NaN
+                                                Bottom = NaN
+                                                IsEnabled = True
+                                                IsEnabled = True
+                                                FocusedElement = null
+                                                TextAlignment = Left
+                                                IsVirtualizing = True
+                                                VirtualizationMode = Standard
+                                                ScrollUnit = Item
+                                                HorizontalScrollBarVisibility = Disabled
+                                                VerticalScrollBarVisibility = Visible
+                                                Dpi = 0
+                                                GrayscaleBiasColor = null
+                                                HighContrast = null
+                                                ImageLibrary = null
+                                                ScaleFactor = 1
+                                                --------------------------------------------------------------
+                                                    Grid
+                                                    --------------------------------------------------------------
+                                                        DataGridHeaderBorder
+                                                        --------------------------------------------------------------
+                                                            ContentPresenter
+                                                            --------------------------------------------------------------
+                                                                TextBlock
+                                                            --------------------------------------------------------------
+                                                        --------------------------------------------------------------
+                                                        Thumb
+                                                        IsDragging = False
+                                                        BorderBrush = null
+                                                        BorderThickness = 0,0,0,0
+                                                        Background = #00FFFFFF
+                                                        Foreground = #FF000000
+                                                        FontFamily = Segoe UI
+                                                        FontSize = 12
+                                                        FontStretch = Normal
+                                                        FontStyle = Normal
+                                                        FontWeight = Normal
+                                                        HorizontalContentAlignment = Left
+                                                        VerticalContentAlignment = Top
+                                                        TabIndex = 2147483647
+                                                        IsTabStop = True
+                                                        Padding = 0,0,0,0
+                                                        Template = System.Windows.Controls.ControlTemplate
+                                                        Style = System.Windows.Style
+                                                        DataContext = Name
+                                                        ActualWidth = 0
+                                                        ActualHeight = 0
+                                                        Width = 8
+                                                        MinWidth = 0
+                                                        MaxWidth = ∞
+                                                        Height = NaN
+                                                        MinHeight = 0
+                                                        MaxHeight = ∞
+                                                        Margin = 0,0,0,0
+                                                        HorizontalAlignment = Left
+                                                        VerticalAlignment = Stretch
+                                                        Cursor = SizeWE
+                                                        ToolTip = null
+                                                        ContextMenu = null
+                                                        Visibility = Collapsed
+                                                        Clip = null
+                                                        IsFocused = False
+                                                        IsEnabled = True
+                                                        IsVisible = False
+                                                        Left = NaN
+                                                        Top = NaN
+                                                        Right = NaN
+                                                        Bottom = NaN
+                                                        IsEnabled = True
+                                                        IsEnabled = True
+                                                        FocusedElement = null
+                                                        TextAlignment = Left
+                                                        IsVirtualizing = True
+                                                        VirtualizationMode = Standard
+                                                        ScrollUnit = Item
+                                                        HorizontalScrollBarVisibility = Disabled
+                                                        VerticalScrollBarVisibility = Visible
+                                                        Dpi = 0
+                                                        GrayscaleBiasColor = null
+                                                        HighContrast = null
+                                                        ImageLibrary = null
+                                                        ScaleFactor = 1
+                                                        Thumb
+                                                        IsDragging = False
+                                                        BorderBrush = null
+                                                        BorderThickness = 0,0,0,0
+                                                        Background = #00FFFFFF
+                                                        Foreground = #FF000000
+                                                        FontFamily = Segoe UI
+                                                        FontSize = 12
+                                                        FontStretch = Normal
+                                                        FontStyle = Normal
+                                                        FontWeight = Normal
+                                                        HorizontalContentAlignment = Left
+                                                        VerticalContentAlignment = Top
+                                                        TabIndex = 2147483647
+                                                        IsTabStop = True
+                                                        Padding = 0,0,0,0
+                                                        Template = System.Windows.Controls.ControlTemplate
+                                                        Style = System.Windows.Style
+                                                        DataContext = Name
+                                                        ActualWidth = 8
+                                                        ActualHeight = 23.96
+                                                        Width = 8
+                                                        MinWidth = 0
+                                                        MaxWidth = ∞
+                                                        Height = NaN
+                                                        MinHeight = 0
+                                                        MaxHeight = ∞
+                                                        Margin = 0,0,0,0
+                                                        HorizontalAlignment = Right
+                                                        VerticalAlignment = Stretch
+                                                        Cursor = SizeWE
+                                                        ToolTip = null
+                                                        ContextMenu = null
+                                                        Visibility = Visible
+                                                        Clip = null
+                                                        IsFocused = False
+                                                        IsEnabled = True
+                                                        IsVisible = True
+                                                        Left = NaN
+                                                        Top = NaN
+                                                        Right = NaN
+                                                        Bottom = NaN
+                                                        IsEnabled = True
+                                                        IsEnabled = True
+                                                        FocusedElement = null
+                                                        TextAlignment = Left
+                                                        IsVirtualizing = True
+                                                        VirtualizationMode = Standard
+                                                        ScrollUnit = Item
+                                                        HorizontalScrollBarVisibility = Disabled
+                                                        VerticalScrollBarVisibility = Visible
+                                                        Dpi = 0
+                                                        GrayscaleBiasColor = null
+                                                        HighContrast = null
+                                                        ImageLibrary = null
+                                                        ScaleFactor = 1
+                                                        --------------------------------------------------------------
+                                                            Border
+                                                        --------------------------------------------------------------
+                                                    --------------------------------------------------------------
+                                                --------------------------------------------------------------
+                                                DataGridColumnHeader
+                                                SeparatorBrush = null
+                                                SeparatorVisibility = Visible
+                                                DisplayIndex = 1
+                                                CanUserSort = False
+                                                SortDirection = null
+                                                IsFrozen = False
+                                                IsPressed = False
+                                                Command = null
+                                                ClickMode = Release
+                                                Content = Value
+                                                ContentTemplate = null
+                                                ContentTemplateSelector = null
+                                                BorderBrush = null
+                                                BorderThickness = 0,0,1,1
+                                                Background = null
+                                                Foreground = #FF000000
+                                                FontFamily = Segoe UI
+                                                FontSize = 12
+                                                FontStretch = Normal
+                                                FontStyle = Normal
+                                                FontWeight = Normal
+                                                HorizontalContentAlignment = Left
+                                                VerticalContentAlignment = Center
+                                                TabIndex = 1
+                                                IsTabStop = True
+                                                Padding = 4,4,4,4
+                                                Template = System.Windows.Controls.ControlTemplate
+                                                Style = System.Windows.Style
+                                                DataContext = Value
+                                                ActualWidth = 20
+                                                ActualHeight = 23.96
+                                                Width = NaN
+                                                MinWidth = 0
+                                                MaxWidth = ∞
+                                                Height = NaN
+                                                MinHeight = 0
+                                                MaxHeight = ∞
+                                                Margin = 0,0,0,0
+                                                HorizontalAlignment = Stretch
+                                                VerticalAlignment = Stretch
+                                                Cursor = null
+                                                ToolTip = null
+                                                ContextMenu = null
+                                                Visibility = Visible
+                                                Clip = null
+                                                IsFocused = False
+                                                IsEnabled = True
+                                                IsVisible = True
+                                                Left = NaN
+                                                Top = NaN
+                                                Right = NaN
+                                                Bottom = NaN
+                                                IsEnabled = True
+                                                IsEnabled = True
+                                                FocusedElement = null
+                                                TextAlignment = Left
+                                                IsVirtualizing = True
+                                                VirtualizationMode = Standard
+                                                ScrollUnit = Item
+                                                HorizontalScrollBarVisibility = Disabled
+                                                VerticalScrollBarVisibility = Visible
+                                                Dpi = 0
+                                                GrayscaleBiasColor = null
+                                                HighContrast = null
+                                                ImageLibrary = null
+                                                ScaleFactor = 1
+                                                --------------------------------------------------------------
+                                                    Grid
+                                                    --------------------------------------------------------------
+                                                        DataGridHeaderBorder
+                                                        --------------------------------------------------------------
+                                                            ContentPresenter
+                                                            --------------------------------------------------------------
+                                                                TextBlock
+                                                            --------------------------------------------------------------
+                                                        --------------------------------------------------------------
+                                                        Thumb
+                                                        IsDragging = False
+                                                        BorderBrush = null
+                                                        BorderThickness = 0,0,0,0
+                                                        Background = #00FFFFFF
+                                                        Foreground = #FF000000
+                                                        FontFamily = Segoe UI
+                                                        FontSize = 12
+                                                        FontStretch = Normal
+                                                        FontStyle = Normal
+                                                        FontWeight = Normal
+                                                        HorizontalContentAlignment = Left
+                                                        VerticalContentAlignment = Top
+                                                        TabIndex = 2147483647
+                                                        IsTabStop = True
+                                                        Padding = 0,0,0,0
+                                                        Template = System.Windows.Controls.ControlTemplate
+                                                        Style = System.Windows.Style
+                                                        DataContext = Value
+                                                        ActualWidth = 8
+                                                        ActualHeight = 23.96
+                                                        Width = 8
+                                                        MinWidth = 0
+                                                        MaxWidth = ∞
+                                                        Height = NaN
+                                                        MinHeight = 0
+                                                        MaxHeight = ∞
+                                                        Margin = 0,0,0,0
+                                                        HorizontalAlignment = Left
+                                                        VerticalAlignment = Stretch
+                                                        Cursor = SizeWE
+                                                        ToolTip = null
+                                                        ContextMenu = null
+                                                        Visibility = Visible
+                                                        Clip = null
+                                                        IsFocused = False
+                                                        IsEnabled = True
+                                                        IsVisible = True
+                                                        Left = NaN
+                                                        Top = NaN
+                                                        Right = NaN
+                                                        Bottom = NaN
+                                                        IsEnabled = True
+                                                        IsEnabled = True
+                                                        FocusedElement = null
+                                                        TextAlignment = Left
+                                                        IsVirtualizing = True
+                                                        VirtualizationMode = Standard
+                                                        ScrollUnit = Item
+                                                        HorizontalScrollBarVisibility = Disabled
+                                                        VerticalScrollBarVisibility = Visible
+                                                        Dpi = 0
+                                                        GrayscaleBiasColor = null
+                                                        HighContrast = null
+                                                        ImageLibrary = null
+                                                        ScaleFactor = 1
+                                                        --------------------------------------------------------------
+                                                            Border
+                                                        --------------------------------------------------------------
+                                                        Thumb
+                                                        IsDragging = False
+                                                        BorderBrush = null
+                                                        BorderThickness = 0,0,0,0
+                                                        Background = #00FFFFFF
+                                                        Foreground = #FF000000
+                                                        FontFamily = Segoe UI
+                                                        FontSize = 12
+                                                        FontStretch = Normal
+                                                        FontStyle = Normal
+                                                        FontWeight = Normal
+                                                        HorizontalContentAlignment = Left
+                                                        VerticalContentAlignment = Top
+                                                        TabIndex = 2147483647
+                                                        IsTabStop = True
+                                                        Padding = 0,0,0,0
+                                                        Template = System.Windows.Controls.ControlTemplate
+                                                        Style = System.Windows.Style
+                                                        DataContext = Value
+                                                        ActualWidth = 8
+                                                        ActualHeight = 23.96
+                                                        Width = 8
+                                                        MinWidth = 0
+                                                        MaxWidth = ∞
+                                                        Height = NaN
+                                                        MinHeight = 0
+                                                        MaxHeight = ∞
+                                                        Margin = 0,0,0,0
+                                                        HorizontalAlignment = Right
+                                                        VerticalAlignment = Stretch
+                                                        Cursor = SizeWE
+                                                        ToolTip = null
+                                                        ContextMenu = null
+                                                        Visibility = Visible
+                                                        Clip = null
+                                                        IsFocused = False
+                                                        IsEnabled = True
+                                                        IsVisible = True
+                                                        Left = NaN
+                                                        Top = NaN
+                                                        Right = NaN
+                                                        Bottom = NaN
+                                                        IsEnabled = True
+                                                        IsEnabled = True
+                                                        FocusedElement = null
+                                                        TextAlignment = Left
+                                                        IsVirtualizing = True
+                                                        VirtualizationMode = Standard
+                                                        ScrollUnit = Item
+                                                        HorizontalScrollBarVisibility = Disabled
+                                                        VerticalScrollBarVisibility = Visible
+                                                        Dpi = 0
+                                                        GrayscaleBiasColor = null
+                                                        HighContrast = null
+                                                        ImageLibrary = null
+                                                        ScaleFactor = 1
+                                                        --------------------------------------------------------------
+                                                            Border
+                                                        --------------------------------------------------------------
+                                                    --------------------------------------------------------------
+                                                --------------------------------------------------------------
+                                                DataGridColumnHeader
+                                                SeparatorBrush = null
+                                                SeparatorVisibility = Visible
+                                                DisplayIndex = 2
+                                                CanUserSort = False
+                                                SortDirection = null
+                                                IsFrozen = False
+                                                IsPressed = False
+                                                Command = null
+                                                ClickMode = Release
+                                                Content = Class
+                                                ContentTemplate = null
+                                                ContentTemplateSelector = null
+                                                BorderBrush = null
+                                                BorderThickness = 0,0,1,1
+                                                Background = null
+                                                Foreground = #FF000000
+                                                FontFamily = Segoe UI
+                                                FontSize = 12
+                                                FontStretch = Normal
+                                                FontStyle = Normal
+                                                FontWeight = Normal
+                                                HorizontalContentAlignment = Left
+                                                VerticalContentAlignment = Center
+                                                TabIndex = 2
+                                                IsTabStop = True
+                                                Padding = 4,4,4,4
+                                                Template = System.Windows.Controls.ControlTemplate
+                                                Style = System.Windows.Style
+                                                DataContext = Class
+                                                ActualWidth = 20
+                                                ActualHeight = 23.96
+                                                Width = NaN
+                                                MinWidth = 0
+                                                MaxWidth = ∞
+                                                Height = NaN
+                                                MinHeight = 0
+                                                MaxHeight = ∞
+                                                Margin = 0,0,0,0
+                                                HorizontalAlignment = Stretch
+                                                VerticalAlignment = Stretch
+                                                Cursor = null
+                                                ToolTip = null
+                                                ContextMenu = null
+                                                Visibility = Visible
+                                                Clip = null
+                                                IsFocused = False
+                                                IsEnabled = True
+                                                IsVisible = True
+                                                Left = NaN
+                                                Top = NaN
+                                                Right = NaN
+                                                Bottom = NaN
+                                                IsEnabled = True
+                                                IsEnabled = True
+                                                FocusedElement = null
+                                                TextAlignment = Left
+                                                IsVirtualizing = True
+                                                VirtualizationMode = Standard
+                                                ScrollUnit = Item
+                                                HorizontalScrollBarVisibility = Disabled
+                                                VerticalScrollBarVisibility = Visible
+                                                Dpi = 0
+                                                GrayscaleBiasColor = null
+                                                HighContrast = null
+                                                ImageLibrary = null
+                                                ScaleFactor = 1
+                                                --------------------------------------------------------------
+                                                    Grid
+                                                    --------------------------------------------------------------
+                                                        DataGridHeaderBorder
+                                                        --------------------------------------------------------------
+                                                            ContentPresenter
+                                                            --------------------------------------------------------------
+                                                                TextBlock
+                                                            --------------------------------------------------------------
+                                                        --------------------------------------------------------------
+                                                        Thumb
+                                                        IsDragging = False
+                                                        BorderBrush = null
+                                                        BorderThickness = 0,0,0,0
+                                                        Background = #00FFFFFF
+                                                        Foreground = #FF000000
+                                                        FontFamily = Segoe UI
+                                                        FontSize = 12
+                                                        FontStretch = Normal
+                                                        FontStyle = Normal
+                                                        FontWeight = Normal
+                                                        HorizontalContentAlignment = Left
+                                                        VerticalContentAlignment = Top
+                                                        TabIndex = 2147483647
+                                                        IsTabStop = True
+                                                        Padding = 0,0,0,0
+                                                        Template = System.Windows.Controls.ControlTemplate
+                                                        Style = System.Windows.Style
+                                                        DataContext = Class
+                                                        ActualWidth = 8
+                                                        ActualHeight = 23.96
+                                                        Width = 8
+                                                        MinWidth = 0
+                                                        MaxWidth = ∞
+                                                        Height = NaN
+                                                        MinHeight = 0
+                                                        MaxHeight = ∞
+                                                        Margin = 0,0,0,0
+                                                        HorizontalAlignment = Left
+                                                        VerticalAlignment = Stretch
+                                                        Cursor = SizeWE
+                                                        ToolTip = null
+                                                        ContextMenu = null
+                                                        Visibility = Visible
+                                                        Clip = null
+                                                        IsFocused = False
+                                                        IsEnabled = True
+                                                        IsVisible = True
+                                                        Left = NaN
+                                                        Top = NaN
+                                                        Right = NaN
+                                                        Bottom = NaN
+                                                        IsEnabled = True
+                                                        IsEnabled = True
+                                                        FocusedElement = null
+                                                        TextAlignment = Left
+                                                        IsVirtualizing = True
+                                                        VirtualizationMode = Standard
+                                                        ScrollUnit = Item
+                                                        HorizontalScrollBarVisibility = Disabled
+                                                        VerticalScrollBarVisibility = Visible
+                                                        Dpi = 0
+                                                        GrayscaleBiasColor = null
+                                                        HighContrast = null
+                                                        ImageLibrary = null
+                                                        ScaleFactor = 1
+                                                        --------------------------------------------------------------
+                                                            Border
+                                                        --------------------------------------------------------------
+                                                        Thumb
+                                                        IsDragging = False
+                                                        BorderBrush = null
+                                                        BorderThickness = 0,0,0,0
+                                                        Background = #00FFFFFF
+                                                        Foreground = #FF000000
+                                                        FontFamily = Segoe UI
+                                                        FontSize = 12
+                                                        FontStretch = Normal
+                                                        FontStyle = Normal
+                                                        FontWeight = Normal
+                                                        HorizontalContentAlignment = Left
+                                                        VerticalContentAlignment = Top
+                                                        TabIndex = 2147483647
+                                                        IsTabStop = True
+                                                        Padding = 0,0,0,0
+                                                        Template = System.Windows.Controls.ControlTemplate
+                                                        Style = System.Windows.Style
+                                                        DataContext = Class
+                                                        ActualWidth = 8
+                                                        ActualHeight = 23.96
+                                                        Width = 8
+                                                        MinWidth = 0
+                                                        MaxWidth = ∞
+                                                        Height = NaN
+                                                        MinHeight = 0
+                                                        MaxHeight = ∞
+                                                        Margin = 0,0,0,0
+                                                        HorizontalAlignment = Right
+                                                        VerticalAlignment = Stretch
+                                                        Cursor = SizeWE
+                                                        ToolTip = null
+                                                        ContextMenu = null
+                                                        Visibility = Visible
+                                                        Clip = null
+                                                        IsFocused = False
+                                                        IsEnabled = True
+                                                        IsVisible = True
+                                                        Left = NaN
+                                                        Top = NaN
+                                                        Right = NaN
+                                                        Bottom = NaN
+                                                        IsEnabled = True
+                                                        IsEnabled = True
+                                                        FocusedElement = null
+                                                        TextAlignment = Left
+                                                        IsVirtualizing = True
+                                                        VirtualizationMode = Standard
+                                                        ScrollUnit = Item
+                                                        HorizontalScrollBarVisibility = Disabled
+                                                        VerticalScrollBarVisibility = Visible
+                                                        Dpi = 0
+                                                        GrayscaleBiasColor = null
+                                                        HighContrast = null
+                                                        ImageLibrary = null
+                                                        ScaleFactor = 1
+                                                        --------------------------------------------------------------
+                                                            Border
+                                                        --------------------------------------------------------------
+                                                    --------------------------------------------------------------
+                                                --------------------------------------------------------------
+                                                DataGridColumnHeader
+                                                SeparatorBrush = null
+                                                SeparatorVisibility = Visible
+                                                DisplayIndex = 3
+                                                CanUserSort = False
+                                                SortDirection = null
+                                                IsFrozen = False
+                                                IsPressed = False
+                                                Command = null
+                                                ClickMode = Release
+                                                Content = Type
+                                                ContentTemplate = null
+                                                ContentTemplateSelector = null
+                                                BorderBrush = null
+                                                BorderThickness = 0,0,1,1
+                                                Background = null
+                                                Foreground = #FF000000
+                                                FontFamily = Segoe UI
+                                                FontSize = 12
+                                                FontStretch = Normal
+                                                FontStyle = Normal
+                                                FontWeight = Normal
+                                                HorizontalContentAlignment = Left
+                                                VerticalContentAlignment = Center
+                                                TabIndex = 3
+                                                IsTabStop = True
+                                                Padding = 4,4,4,4
+                                                Template = System.Windows.Controls.ControlTemplate
+                                                Style = System.Windows.Style
+                                                DataContext = Type
+                                                ActualWidth = 20
+                                                ActualHeight = 23.96
+                                                Width = NaN
+                                                MinWidth = 0
+                                                MaxWidth = ∞
+                                                Height = NaN
+                                                MinHeight = 0
+                                                MaxHeight = ∞
+                                                Margin = 0,0,0,0
+                                                HorizontalAlignment = Stretch
+                                                VerticalAlignment = Stretch
+                                                Cursor = null
+                                                ToolTip = null
+                                                ContextMenu = null
+                                                Visibility = Visible
+                                                Clip = null
+                                                IsFocused = False
+                                                IsEnabled = True
+                                                IsVisible = True
+                                                Left = NaN
+                                                Top = NaN
+                                                Right = NaN
+                                                Bottom = NaN
+                                                IsEnabled = True
+                                                IsEnabled = True
+                                                FocusedElement = null
+                                                TextAlignment = Left
+                                                IsVirtualizing = True
+                                                VirtualizationMode = Standard
+                                                ScrollUnit = Item
+                                                HorizontalScrollBarVisibility = Disabled
+                                                VerticalScrollBarVisibility = Visible
+                                                Dpi = 0
+                                                GrayscaleBiasColor = null
+                                                HighContrast = null
+                                                ImageLibrary = null
+                                                ScaleFactor = 1
+                                                --------------------------------------------------------------
+                                                    Grid
+                                                    --------------------------------------------------------------
+                                                        DataGridHeaderBorder
+                                                        --------------------------------------------------------------
+                                                            ContentPresenter
+                                                            --------------------------------------------------------------
+                                                                TextBlock
+                                                            --------------------------------------------------------------
+                                                        --------------------------------------------------------------
+                                                        Thumb
+                                                        IsDragging = False
+                                                        BorderBrush = null
+                                                        BorderThickness = 0,0,0,0
+                                                        Background = #00FFFFFF
+                                                        Foreground = #FF000000
+                                                        FontFamily = Segoe UI
+                                                        FontSize = 12
+                                                        FontStretch = Normal
+                                                        FontStyle = Normal
+                                                        FontWeight = Normal
+                                                        HorizontalContentAlignment = Left
+                                                        VerticalContentAlignment = Top
+                                                        TabIndex = 2147483647
+                                                        IsTabStop = True
+                                                        Padding = 0,0,0,0
+                                                        Template = System.Windows.Controls.ControlTemplate
+                                                        Style = System.Windows.Style
+                                                        DataContext = Type
+                                                        ActualWidth = 8
+                                                        ActualHeight = 23.96
+                                                        Width = 8
+                                                        MinWidth = 0
+                                                        MaxWidth = ∞
+                                                        Height = NaN
+                                                        MinHeight = 0
+                                                        MaxHeight = ∞
+                                                        Margin = 0,0,0,0
+                                                        HorizontalAlignment = Left
+                                                        VerticalAlignment = Stretch
+                                                        Cursor = SizeWE
+                                                        ToolTip = null
+                                                        ContextMenu = null
+                                                        Visibility = Visible
+                                                        Clip = null
+                                                        IsFocused = False
+                                                        IsEnabled = True
+                                                        IsVisible = True
+                                                        Left = NaN
+                                                        Top = NaN
+                                                        Right = NaN
+                                                        Bottom = NaN
+                                                        IsEnabled = True
+                                                        IsEnabled = True
+                                                        FocusedElement = null
+                                                        TextAlignment = Left
+                                                        IsVirtualizing = True
+                                                        VirtualizationMode = Standard
+                                                        ScrollUnit = Item
+                                                        HorizontalScrollBarVisibility = Disabled
+                                                        VerticalScrollBarVisibility = Visible
+                                                        Dpi = 0
+                                                        GrayscaleBiasColor = null
+                                                        HighContrast = null
+                                                        ImageLibrary = null
+                                                        ScaleFactor = 1
+                                                        --------------------------------------------------------------
+                                                            Border
+                                                        --------------------------------------------------------------
+                                                        Thumb
+                                                        IsDragging = False
+                                                        BorderBrush = null
+                                                        BorderThickness = 0,0,0,0
+                                                        Background = #00FFFFFF
+                                                        Foreground = #FF000000
+                                                        FontFamily = Segoe UI
+                                                        FontSize = 12
+                                                        FontStretch = Normal
+                                                        FontStyle = Normal
+                                                        FontWeight = Normal
+                                                        HorizontalContentAlignment = Left
+                                                        VerticalContentAlignment = Top
+                                                        TabIndex = 2147483647
+                                                        IsTabStop = True
+                                                        Padding = 0,0,0,0
+                                                        Template = System.Windows.Controls.ControlTemplate
+                                                        Style = System.Windows.Style
+                                                        DataContext = Type
+                                                        ActualWidth = 8
+                                                        ActualHeight = 23.96
+                                                        Width = 8
+                                                        MinWidth = 0
+                                                        MaxWidth = ∞
+                                                        Height = NaN
+                                                        MinHeight = 0
+                                                        MaxHeight = ∞
+                                                        Margin = 0,0,0,0
+                                                        HorizontalAlignment = Right
+                                                        VerticalAlignment = Stretch
+                                                        Cursor = SizeWE
+                                                        ToolTip = null
+                                                        ContextMenu = null
+                                                        Visibility = Visible
+                                                        Clip = null
+                                                        IsFocused = False
+                                                        IsEnabled = True
+                                                        IsVisible = True
+                                                        Left = NaN
+                                                        Top = NaN
+                                                        Right = NaN
+                                                        Bottom = NaN
+                                                        IsEnabled = True
+                                                        IsEnabled = True
+                                                        FocusedElement = null
+                                                        TextAlignment = Left
+                                                        IsVirtualizing = True
+                                                        VirtualizationMode = Standard
+                                                        ScrollUnit = Item
+                                                        HorizontalScrollBarVisibility = Disabled
+                                                        VerticalScrollBarVisibility = Visible
+                                                        Dpi = 0
+                                                        GrayscaleBiasColor = null
+                                                        HighContrast = null
+                                                        ImageLibrary = null
+                                                        ScaleFactor = 1
+                                                        --------------------------------------------------------------
+                                                            Border
+                                                        --------------------------------------------------------------
+                                                    --------------------------------------------------------------
+                                                --------------------------------------------------------------
+                                            --------------------------------------------------------------
+                                        --------------------------------------------------------------
+                                    --------------------------------------------------------------
+                                --------------------------------------------------------------
+                                ScrollContentPresenter
+                                --------------------------------------------------------------
+                                    ItemsPresenter
+                                    --------------------------------------------------------------
+                                        DataGridRowsPresenter
+                                    --------------------------------------------------------------
+                                    AdornerLayer
+                                --------------------------------------------------------------
+                                ScrollBar
+                                Orientation = Vertical
+                                ViewportSize = 0
+                                Minimum = 0
+                                Maximum = 0
+                                Value = 0
+                                LargeChange = 1
+                                SmallChange = 0.1
+                                BorderBrush = #FFF0F0F0
+                                BorderThickness = 1,0,1,0
+                                Background = #FFF0F0F0
+                                Foreground = #FF000000
+                                FontFamily = Segoe UI
+                                FontSize = 12
+                                FontStretch = Normal
+                                FontStyle = Normal
+                                FontWeight = Normal
+                                HorizontalContentAlignment = Left
+                                VerticalContentAlignment = Top
+                                TabIndex = 2147483647
+                                IsTabStop = True
+                                Padding = 0,0,0,0
+                                Template = System.Windows.Controls.ControlTemplate
+                                Style = null
+                                DataContext = null
+                                ActualWidth = 17
+                                ActualHeight = 511.08
+                                Width = 17
+                                MinWidth = 17
+                                MaxWidth = ∞
+                                Height = NaN
+                                MinHeight = 0
+                                MaxHeight = ∞
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                Cursor = null
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                Clip = null
+                                IsFocused = False
+                                IsEnabled = False
+                                IsVisible = True
+                                Left = NaN
+                                Top = NaN
+                                Right = NaN
+                                Bottom = NaN
+                                IsEnabled = True
+                                IsEnabled = True
+                                FocusedElement = null
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                VirtualizationMode = Standard
+                                ScrollUnit = Item
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Dpi = 0
+                                GrayscaleBiasColor = null
+                                HighContrast = null
+                                ImageLibrary = null
+                                ScaleFactor = 1
+                                --------------------------------------------------------------
+                                    Grid
+                                    --------------------------------------------------------------
+                                        Border
+                                        RepeatButton
+                                        IsPressed = False
+                                        Command = System.Windows.Input.RoutedCommand
+                                        ClickMode = Press
+                                        Content = System.Windows.Shapes.Path
+                                        ContentTemplate = null
+                                        ContentTemplateSelector = null
+                                        BorderBrush = #FF707070
+                                        BorderThickness = 1,1,1,1
+                                        Background = #FFDDDDDD
+                                        Foreground = #FF000000
+                                        FontFamily = Segoe UI
+                                        FontSize = 12
+                                        FontStretch = Normal
+                                        FontStyle = Normal
+                                        FontWeight = Normal
+                                        HorizontalContentAlignment = Center
+                                        VerticalContentAlignment = Center
+                                        TabIndex = 2147483647
+                                        IsTabStop = False
+                                        Padding = 1,1,1,1
+                                        Template = System.Windows.Controls.ControlTemplate
+                                        Style = System.Windows.Style
+                                        DataContext = null
+                                        ActualWidth = 17
+                                        ActualHeight = 17
+                                        Width = NaN
+                                        MinWidth = 0
+                                        MaxWidth = ∞
+                                        Height = NaN
+                                        MinHeight = 0
+                                        MaxHeight = ∞
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        Cursor = null
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        Clip = null
+                                        IsFocused = False
+                                        IsEnabled = False
+                                        IsVisible = True
+                                        Left = NaN
+                                        Top = NaN
+                                        Right = NaN
+                                        Bottom = NaN
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        FocusedElement = null
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        VirtualizationMode = Standard
+                                        ScrollUnit = Item
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Dpi = 0
+                                        GrayscaleBiasColor = null
+                                        HighContrast = null
+                                        ImageLibrary = null
+                                        ScaleFactor = 1
+                                        --------------------------------------------------------------
+                                            Border
+                                            --------------------------------------------------------------
+                                                ContentPresenter
+                                                --------------------------------------------------------------
+                                                    Path
+                                                --------------------------------------------------------------
+                                            --------------------------------------------------------------
+                                        --------------------------------------------------------------
+                                        Track
+                                        --------------------------------------------------------------
+                                            RepeatButton
+                                            IsPressed = False
+                                            Command = System.Windows.Input.RoutedCommand
+                                            ClickMode = Press
+                                            Content = null
+                                            ContentTemplate = null
+                                            ContentTemplateSelector = null
+                                            BorderBrush = null
+                                            BorderThickness = 0,0,0,0
+                                            Background = #00FFFFFF
+                                            Foreground = #FF000000
+                                            FontFamily = Segoe UI
+                                            FontSize = 12
+                                            FontStretch = Normal
+                                            FontStyle = Normal
+                                            FontWeight = Normal
+                                            HorizontalContentAlignment = Left
+                                            VerticalContentAlignment = Top
+                                            TabIndex = 2147483647
+                                            IsTabStop = False
+                                            Padding = 0,0,0,0
+                                            Template = System.Windows.Controls.ControlTemplate
+                                            Style = System.Windows.Style
+                                            DataContext = null
+                                            ActualWidth = 0
+                                            ActualHeight = 0
+                                            Width = NaN
+                                            MinWidth = 0
+                                            MaxWidth = ∞
+                                            Height = NaN
+                                            MinHeight = 0
+                                            MaxHeight = ∞
+                                            Margin = 0,0,0,0
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            Cursor = null
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            Clip = null
+                                            IsFocused = False
+                                            IsEnabled = False
+                                            IsVisible = False
+                                            Left = NaN
+                                            Top = NaN
+                                            Right = NaN
+                                            Bottom = NaN
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            FocusedElement = null
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            VirtualizationMode = Standard
+                                            ScrollUnit = Item
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Dpi = 0
+                                            GrayscaleBiasColor = null
+                                            HighContrast = null
+                                            ImageLibrary = null
+                                            ScaleFactor = 1
+                                            RepeatButton
+                                            IsPressed = False
+                                            Command = System.Windows.Input.RoutedCommand
+                                            ClickMode = Press
+                                            Content = null
+                                            ContentTemplate = null
+                                            ContentTemplateSelector = null
+                                            BorderBrush = null
+                                            BorderThickness = 0,0,0,0
+                                            Background = #00FFFFFF
+                                            Foreground = #FF000000
+                                            FontFamily = Segoe UI
+                                            FontSize = 12
+                                            FontStretch = Normal
+                                            FontStyle = Normal
+                                            FontWeight = Normal
+                                            HorizontalContentAlignment = Left
+                                            VerticalContentAlignment = Top
+                                            TabIndex = 2147483647
+                                            IsTabStop = False
+                                            Padding = 0,0,0,0
+                                            Template = System.Windows.Controls.ControlTemplate
+                                            Style = System.Windows.Style
+                                            DataContext = null
+                                            ActualWidth = 0
+                                            ActualHeight = 0
+                                            Width = NaN
+                                            MinWidth = 0
+                                            MaxWidth = ∞
+                                            Height = NaN
+                                            MinHeight = 0
+                                            MaxHeight = ∞
+                                            Margin = 0,0,0,0
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            Cursor = null
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            Clip = null
+                                            IsFocused = False
+                                            IsEnabled = False
+                                            IsVisible = False
+                                            Left = NaN
+                                            Top = NaN
+                                            Right = NaN
+                                            Bottom = NaN
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            FocusedElement = null
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            VirtualizationMode = Standard
+                                            ScrollUnit = Item
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Dpi = 0
+                                            GrayscaleBiasColor = null
+                                            HighContrast = null
+                                            ImageLibrary = null
+                                            ScaleFactor = 1
+                                            Thumb
+                                            IsDragging = False
+                                            BorderBrush = null
+                                            BorderThickness = 0,0,0,0
+                                            Background = null
+                                            Foreground = #FF000000
+                                            FontFamily = Segoe UI
+                                            FontSize = 12
+                                            FontStretch = Normal
+                                            FontStyle = Normal
+                                            FontWeight = Normal
+                                            HorizontalContentAlignment = Left
+                                            VerticalContentAlignment = Top
+                                            TabIndex = 2147483647
+                                            IsTabStop = False
+                                            Padding = 0,0,0,0
+                                            Template = System.Windows.Controls.ControlTemplate
+                                            Style = System.Windows.Style
+                                            DataContext = null
+                                            ActualWidth = 0
+                                            ActualHeight = 0
+                                            Width = NaN
+                                            MinWidth = 0
+                                            MaxWidth = ∞
+                                            Height = NaN
+                                            MinHeight = 0
+                                            MaxHeight = ∞
+                                            Margin = 0,0,0,0
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            Cursor = null
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            Clip = null
+                                            IsFocused = False
+                                            IsEnabled = False
+                                            IsVisible = False
+                                            Left = NaN
+                                            Top = NaN
+                                            Right = NaN
+                                            Bottom = NaN
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            FocusedElement = null
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            VirtualizationMode = Standard
+                                            ScrollUnit = Item
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Dpi = 0
+                                            GrayscaleBiasColor = null
+                                            HighContrast = null
+                                            ImageLibrary = null
+                                            ScaleFactor = 1
+                                            --------------------------------------------------------------
+                                                Rectangle
+                                            --------------------------------------------------------------
+                                        --------------------------------------------------------------
+                                        RepeatButton
+                                        IsPressed = False
+                                        Command = System.Windows.Input.RoutedCommand
+                                        ClickMode = Press
+                                        Content = System.Windows.Shapes.Path
+                                        ContentTemplate = null
+                                        ContentTemplateSelector = null
+                                        BorderBrush = #FF707070
+                                        BorderThickness = 1,1,1,1
+                                        Background = #FFDDDDDD
+                                        Foreground = #FF000000
+                                        FontFamily = Segoe UI
+                                        FontSize = 12
+                                        FontStretch = Normal
+                                        FontStyle = Normal
+                                        FontWeight = Normal
+                                        HorizontalContentAlignment = Center
+                                        VerticalContentAlignment = Center
+                                        TabIndex = 2147483647
+                                        IsTabStop = False
+                                        Padding = 1,1,1,1
+                                        Template = System.Windows.Controls.ControlTemplate
+                                        Style = System.Windows.Style
+                                        DataContext = null
+                                        ActualWidth = 17
+                                        ActualHeight = 17
+                                        Width = NaN
+                                        MinWidth = 0
+                                        MaxWidth = ∞
+                                        Height = NaN
+                                        MinHeight = 0
+                                        MaxHeight = ∞
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        Cursor = null
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        Clip = null
+                                        IsFocused = False
+                                        IsEnabled = False
+                                        IsVisible = True
+                                        Left = NaN
+                                        Top = NaN
+                                        Right = NaN
+                                        Bottom = NaN
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        FocusedElement = null
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        VirtualizationMode = Standard
+                                        ScrollUnit = Item
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Dpi = 0
+                                        GrayscaleBiasColor = null
+                                        HighContrast = null
+                                        ImageLibrary = null
+                                        ScaleFactor = 1
+                                        --------------------------------------------------------------
+                                            Border
+                                            --------------------------------------------------------------
+                                                ContentPresenter
+                                                --------------------------------------------------------------
+                                                    Path
+                                                --------------------------------------------------------------
+                                            --------------------------------------------------------------
+                                        --------------------------------------------------------------
+                                    --------------------------------------------------------------
+                                --------------------------------------------------------------
+                                Grid
+                                --------------------------------------------------------------
+                                    ScrollBar
+                                    Orientation = Horizontal
+                                    ViewportSize = 765
+                                    Minimum = 0
+                                    Maximum = 0
+                                    Value = 0
+                                    LargeChange = 1
+                                    SmallChange = 0.1
+                                    BorderBrush = #FFF0F0F0
+                                    BorderThickness = 0,1,0,1
+                                    Background = #FFF0F0F0
+                                    Foreground = #FF000000
+                                    FontFamily = Segoe UI
+                                    FontSize = 12
+                                    FontStretch = Normal
+                                    FontStyle = Normal
+                                    FontWeight = Normal
+                                    HorizontalContentAlignment = Left
+                                    VerticalContentAlignment = Top
+                                    TabIndex = 2147483647
+                                    IsTabStop = True
+                                    Padding = 0,0,0,0
+                                    Template = System.Windows.Controls.ControlTemplate
+                                    Style = null
+                                    DataContext = null
+                                    ActualWidth = 0
+                                    ActualHeight = 0
+                                    Width = NaN
+                                    MinWidth = 0
+                                    MaxWidth = ∞
+                                    Height = 17
+                                    MinHeight = 17
+                                    MaxHeight = ∞
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    Cursor = null
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Collapsed
+                                    Clip = null
+                                    IsFocused = False
+                                    IsEnabled = False
+                                    IsVisible = False
+                                    Left = NaN
+                                    Top = NaN
+                                    Right = NaN
+                                    Bottom = NaN
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    FocusedElement = null
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    VirtualizationMode = Standard
+                                    ScrollUnit = Item
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Dpi = 0
+                                    GrayscaleBiasColor = null
+                                    HighContrast = null
+                                    ImageLibrary = null
+                                    ScaleFactor = 1
+                                --------------------------------------------------------------
+                            --------------------------------------------------------------
+                        --------------------------------------------------------------
+                    --------------------------------------------------------------
+                --------------------------------------------------------------
+            --------------------------------------------------------------
+        --------------------------------------------------------------
+    --------------------------------------------------------------
+--------------------------------------------------------------

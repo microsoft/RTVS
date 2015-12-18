@@ -60,8 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\VariableExplorerTest.cs" />
-    <Compile Include="TestShell\ControlWindow.cs" />
-    <Compile Include="TestShell\ControlTestScript.cs" />
     <Compile Include="TreeWindow.xaml.cs">
       <DependentUpon>TreeWindow.xaml</DependentUpon>
     </Compile>
@@ -102,6 +100,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Files\VariableExplorer01.tree" />
+    <None Include="Files\VariableExplorer02.tree" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -120,9 +119,17 @@
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>
       <Name>Microsoft.VisualStudio.R.Package</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Test\Microsoft.VisualStudio.R.Package.Test.csproj">
+      <Project>{c1b7ffe8-4d64-485e-a504-d041b05d7132}</Project>
+      <Name>Microsoft.VisualStudio.R.Package.Test</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
