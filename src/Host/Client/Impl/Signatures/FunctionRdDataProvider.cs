@@ -45,7 +45,7 @@ namespace Microsoft.R.Host.Client.Signatures {
                 var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 _session = provider.Create(_sessionId, null);
                 _session.Disposed += OnSessionDisposed;
-                await _session.StartHostAsync(IntPtr.Zero);
+                await _session.StartHostAsync("RdData", IntPtr.Zero);
             }
         }
 

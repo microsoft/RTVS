@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
                 if (_sessionProvider == null) {
                     _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                     _session = _sessionProvider.Create(0, new RHostClientApp());
-                    _session.StartHostAsync(IntPtr.Zero).Wait();
+                    _session.StartHostAsync("Test", IntPtr.Zero).Wait();
                 }
             },
             () => {

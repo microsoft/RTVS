@@ -369,7 +369,7 @@ Sys.sleep(1)
 
         private IEnumerable<string> GraphicsTest(string code) {
             _callbacks.SetInput(setupCode + "\n" + code + "\n");
-            var host = new RHost(_callbacks);
+            var host = new RHost("Test", _callbacks);
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;
