@@ -29,8 +29,8 @@ namespace Microsoft.R.Editor.Application.Test {
                     string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetup.GetTestFolders(@"R\Editor\Application.Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
-                    TestSetup.CopyDirectory(srcFilesFolder, testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"R\Editor\Application.Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }
         }

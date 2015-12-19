@@ -22,8 +22,8 @@ namespace Microsoft.Languages.Core.Test.Utility {
                      string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetup.GetTestFolders(@"Common\Core\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
-                    TestSetup.CopyDirectory(srcFilesFolder, testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"Common\Core\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }
         }

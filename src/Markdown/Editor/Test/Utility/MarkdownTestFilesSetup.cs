@@ -22,8 +22,8 @@ namespace Microsoft.Markdown.Editor.Test.Utility {
                     string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetup.GetTestFolders(@"Markdown\Editor\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
-                    TestSetup.CopyDirectory(srcFilesFolder, testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"Markdown\Editor\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }
         }

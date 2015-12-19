@@ -18,8 +18,8 @@ namespace Microsoft.VisualStudio.R.Application.Test.Utility {
                     string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetup.GetTestFolders(@"Package\TestApp\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
-                    TestSetup.CopyDirectory(srcFilesFolder, testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"Package\TestApp\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }
         }

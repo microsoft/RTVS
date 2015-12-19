@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Common.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
-    public static class TestSetup {
+    public static class TestSetupUtilities {
         private static object _copyFilesLock = new object();
 
         public static void GetTestFolders(string editorRelativePath, string outputRelativePath, TestContext context, out string sourceFolder, out string destinationFolder) {
