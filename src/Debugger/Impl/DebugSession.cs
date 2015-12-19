@@ -21,8 +21,6 @@ namespace Microsoft.R.Debugger {
             None,
             BrowserSetDebug,
             Continue,
-            StepIn,
-            StepInBrowser,
         }
 
         private Task _initializeTask;
@@ -195,8 +193,23 @@ namespace Microsoft.R.Debugger {
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
         }
 
+        public async Task Break() {
+            await TaskUtilities.SwitchToBackgroundThread();
+            using (var inter = await RSession.BeginInteractionAsync(isVisible: true)) {
+                await inter.RespondAsync("browser()\n");
+            }
+        }
+
+        public async Task Continue() {
+            await TaskUtilities.SwitchToBackgroundThread();
+            ExecuteBrowserCommandAsync("c")
+                .SilenceException<OperationCanceledException>()
+                .SilenceException<MessageTransportException>()
+                .SilenceException<RException>()
+                .DoNotWait();
+        }
+
         public Task StepIntoAsync() {
-            _browseProcState = BrowseProcessingState.StepIn;
             return StepAsync("s");
         }
 
@@ -219,7 +232,14 @@ namespace Microsoft.R.Debugger {
                 await ExecuteBrowserCommandAsync(commands[i]);
             }
 
-            ExecuteBrowserCommandAsync(commands.Last()).DoNotWait();
+            // If RException happens, it means that the expression we just stepped over caused an error.
+            // The step is still considered successful and complete in that case, so we just ignore it.
+            ExecuteBrowserCommandAsync(commands.Last())
+                .SilenceException<OperationCanceledException>()
+                .SilenceException<MessageTransportException>()
+                .SilenceException<RException>()
+                .DoNotWait();
+
             await _stepTcs.Task;
         }
 
@@ -359,21 +379,6 @@ namespace Microsoft.R.Debugger {
                     // We have issued a browserSetDebug() on the previous interaction prompt to set destination
                     // for the "c" command. Issue that command now, and move to the next step.
                     await inter.RespondAsync("c\n");
-                    _browseProcState = BrowseProcessingState.Continue;
-                    return;
-
-                case BrowseProcessingState.StepIn:
-                    // If we just did a step-in, R will be in a weird state where any eval at the current prompt
-                    // will be considered a step-in target, and will cause another Browse> prompt. To avoid this,
-                    // manually trigger a nested browser, and then immediately step out of it.
-                    await inter.RespondAsync("browser()\n");
-                    _browseProcState = BrowseProcessingState.StepInBrowser;
-                    return;
-
-                case BrowseProcessingState.StepInBrowser:
-                    // We have invoked browser() in response to a step-in; now we need to step out of it. Note
-                    // that this must use "n" rather than "c", so as to overwrite "s" as last browse command.
-                    await inter.RespondAsync("n\n");
                     _browseProcState = BrowseProcessingState.Continue;
                     return;
 

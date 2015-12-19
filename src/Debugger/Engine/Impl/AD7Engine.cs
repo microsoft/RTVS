@@ -141,12 +141,11 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugEngine2.CauseBreak() {
             ThrowIfDisposed();
-            DebugSession.RSession.BeginInteractionAsync(isVisible: true).ContinueWith(async t => {
-                using (var inter = await t.ConfigureAwait(false)) {
-                    await inter.RespondAsync("browser()\n").ConfigureAwait(false);
-                }
-            }).DoNotWait();
-
+            DebugSession.Break()
+                .SilenceException<OperationCanceledException>()
+                .SilenceException<MessageTransportException>()
+                .SilenceException<RException>()
+                .DoNotWait();
             return VSConstants.S_OK;
         }
 
@@ -267,7 +266,7 @@ namespace Microsoft.R.Debugger.Engine {
                 // debugger that user has explicitly entered something at the Browse prompt. 
                 if (_sentContinue != true) {
                     _sentContinue = true;
-                    DebugSession.ExecuteBrowserCommandAsync("c").DoNotWait();
+                    DebugSession.Continue().GetResultOnUIThread();
                 }
             }
 
