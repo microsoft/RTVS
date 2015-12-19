@@ -126,7 +126,7 @@ eval_and_describe <- function(expr, env, kind, fields, obj, repr_max_length = NA
       expr <- parse(text = expr);
     }
     if (missing(obj)) {
-      obj <- eval(expr, env);
+      obj <- safe_eval(expr, env);
     } else {
       force(obj);
     }
@@ -146,7 +146,7 @@ eval_and_describe <- function(expr, env, kind, fields, obj, repr_max_length = NA
 describe_children <- function(obj, env, fields, count = NULL, repr_max_length = NA) {
   if (!missing(env)) {
     expr <- obj;
-    obj <- eval(parse(text = obj), env);
+    obj <- safe_eval(parse(text = obj), env);
   } else {
     expr <- 'obj';
   }
@@ -167,8 +167,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
       name <- force_toString(name);
 
       # If a binding has an empty name, or it wasn't a string, it cannot be accessed, so ignore it.
-      # If it's a missing parameter, it doesn't have a value - also ignore it.
-      if (name == '' || eval(bquote(missing(.(as.symbol(name)))), obj)) {
+      if (name == '') {
         next;
       }
 
@@ -186,7 +185,18 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
         # It's an active binding - we don't want to read it to avoid inadvertently changing program state.
         value <- list(active_binding = TRUE);
       } else {
-        # It's just a regular binding, so get the actual value.
+        # It's just a regular binding, so get the actual value, but check for missing() first.
+
+        is_missing <- tryCatch({
+          value <- obj[[name]];
+          missing(value)
+        }, error = function(e) {
+            FALSE
+        });
+        if (is_missing) {
+            next;
+        }
+
         item_expr <- paste0(expr, '$', dput_symbol(name), collapse = '');
         value <- eval_and_describe(item_expr, environment(), '$', fields, get(name, envir = obj), repr_max_length);
       }
