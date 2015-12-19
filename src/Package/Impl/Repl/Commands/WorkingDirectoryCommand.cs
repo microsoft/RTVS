@@ -21,6 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private IRSessionProvider _sessionProvider;
         private string _userDirectory;
 
+        public Task InitializationTask { get; }
+
         public WorkingDirectoryCommand() :
             base(new CommandId[] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory),
@@ -31,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _sessionProvider.Current.Connected += OnSessionConnected;
             _sessionProvider.Current.DirectoryChanged += OnCurrentDirectoryChanged;
 
-            GetRUserDirectoryAsync();
+            InitializationTask = GetRUserDirectoryAsync();
         }
 
         private async void OnCurrentDirectoryChanged(object sender, EventArgs e) {
@@ -140,17 +142,22 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         internal async Task<string> GetRWorkingDirectoryAsync() {
-            using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
-                REvaluationResult result = await eval.EvaluateAsync("getwd()");
-                return ToWindowsPath(result.StringResult);
-            }
+            try {
+                using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+                    REvaluationResult result = await eval.EvaluateAsync("getwd()");
+                    return ToWindowsPath(result.StringResult);
+                }
+            } catch (TaskCanceledException) { }
+            return null;
         }
 
-        internal async void GetRUserDirectoryAsync() {
-            using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
-                REvaluationResult result = await eval.EvaluateAsync("Sys.getenv('R_USER')");
-                _userDirectory = ToWindowsPath(result.StringResult);
-            }
+        internal Task GetRUserDirectoryAsync() {
+            return Task.Run(async () => {
+                using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+                    REvaluationResult result = await eval.EvaluateAsync("Sys.getenv('R_USER')");
+                    _userDirectory = ToWindowsPath(result.StringResult);
+                }
+            });
         }
 
         private static string ToWindowsPath(string rPath) {

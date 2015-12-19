@@ -51,8 +51,7 @@ namespace Microsoft.R.Actions.Logging {
                     }
                     _sb.Clear();
                 }
-            }
-            finally {
+            } finally {
                 _semaphore.Release();
             }
         }

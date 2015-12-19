@@ -1,15 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Languages.Core.Test.Utility;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Test.Utility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Languages.Core.Test.Utility
-{
-    [ExcludeFromCodeCoverage]
-    public static class CommonTestData
-    {
-        public const string TestFilesRelativePath = @"Files\";
-    }
-
+namespace Microsoft.Languages.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
     [TestClass]
     public class TestFilesSetup
@@ -29,8 +22,8 @@ namespace Microsoft.Languages.Core.Test.Utility
                      string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetup.GetTestFolders(@"Common\Core\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
-                    TestSetup.CopyDirectory(srcFilesFolder, testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"Common\Core\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }
         }
