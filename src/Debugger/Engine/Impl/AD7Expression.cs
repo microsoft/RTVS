@@ -45,7 +45,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugExpression2.EvaluateSync(enum_EVALFLAGS dwFlags, uint dwTimeout, IDebugEventCallback2 pExprCallback, out IDebugProperty2 ppResult) {
-            var res = StackFrame.StackFrame.EvaluateAsync(_expression, reprMaxLength: AD7Property.ReprMaxLength).WaitAndUnwrapExceptions();
+            var res = StackFrame.StackFrame.EvaluateAsync(_expression, reprMaxLength: AD7Property.ReprMaxLength).GetResultOnUIThread();
             ppResult = new AD7Property(StackFrame, res);
             return VSConstants.S_OK;
         }

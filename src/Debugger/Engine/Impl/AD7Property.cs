@@ -229,7 +229,7 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_NAME)) {
-                dpi.bstrName = EvaluationResult.Name;
+                dpi.bstrName = EvaluationResult.Name ?? EvaluationResult.Expression;
                 if (Parent?.IsFrameEnvironment == true && dpi.bstrName?.StartsWith("$") == true) {
                     dpi.bstrName = dpi.bstrName.Substring(1);
                 }
