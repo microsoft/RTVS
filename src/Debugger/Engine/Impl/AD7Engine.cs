@@ -142,7 +142,6 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugEngine2.CauseBreak() {
             ThrowIfDisposed();
             DebugSession.Break()
-                .SilenceException<OperationCanceledException>()
                 .SilenceException<MessageTransportException>()
                 .SilenceException<RException>()
                 .DoNotWait();

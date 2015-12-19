@@ -203,7 +203,6 @@ namespace Microsoft.R.Debugger {
         public async Task Continue() {
             await TaskUtilities.SwitchToBackgroundThread();
             ExecuteBrowserCommandAsync("c")
-                .SilenceException<OperationCanceledException>()
                 .SilenceException<MessageTransportException>()
                 .SilenceException<RException>()
                 .DoNotWait();
@@ -235,7 +234,6 @@ namespace Microsoft.R.Debugger {
             // If RException happens, it means that the expression we just stepped over caused an error.
             // The step is still considered successful and complete in that case, so we just ignore it.
             ExecuteBrowserCommandAsync(commands.Last())
-                .SilenceException<OperationCanceledException>()
                 .SilenceException<MessageTransportException>()
                 .SilenceException<RException>()
                 .DoNotWait();
