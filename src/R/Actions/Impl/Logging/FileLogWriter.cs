@@ -87,14 +87,8 @@ namespace Microsoft.R.Actions.Logging {
         }
 
         public static FileLogWriter InTempFolder(string fileName) {
-            DateTime timeStamp = DateTime.Now;
-            while(true) {
-                var path = $@"{Path.GetTempPath()}/{fileName}_{timeStamp:yyyyMdd_HHmmss}.log";
-                if (!File.Exists(path)) {
-                    return new FileLogWriter(path);
-                }
-                timeStamp = timeStamp.AddSeconds(1);
-            }
+            var path = $@"{Path.GetTempPath()}/{fileName}_{DateTime.Now:yyyyMdd_HHmmss}.log";
+            return new FileLogWriter(path);
         }
 
         private static string GetCategoryString(MessageCategory category) {
