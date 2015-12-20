@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Tokens;
-using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Languages.Core.Tests.Tokens;
+using Microsoft.Languages.Core.Tests.Utility;
 using Microsoft.R.Support.RD.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

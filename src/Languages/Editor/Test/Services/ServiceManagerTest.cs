@@ -46,7 +46,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
         #endregion
 
         [TestMethod]
-        [TestCategory("Languages.Core")]
+        [TestCategory("Languages.Editor")]
         public void ServiceManager_Test01() {
             PropertyOwner propertyOwner = new PropertyOwner();
             Service1 s1 = new Service1();
@@ -87,7 +87,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
         }
 
         [TestMethod]
-        [TestCategory("Languages.Core")]
+        [TestCategory("Languages.Editor")]
         public void ServiceManager_Test02() {
             PropertyOwner propertyOwner = new PropertyOwner();
             int servicesAdded = 0;

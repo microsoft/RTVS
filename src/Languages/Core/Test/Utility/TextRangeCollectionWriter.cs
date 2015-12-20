@@ -2,9 +2,8 @@
 using System.Text;
 using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.Languages.Core.Test.Utility
+namespace Microsoft.Languages.Core.Tests.Utility
 {
-    [ExcludeFromCodeCoverage]
     public static class TextRangeCollectionWriter
     {
         public static string WriteCollection<T>(ITextRangeCollection<T> ranges) where T : ITextRange
