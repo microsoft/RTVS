@@ -1,7 +1,6 @@
 using System;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.Text.Editor;
 

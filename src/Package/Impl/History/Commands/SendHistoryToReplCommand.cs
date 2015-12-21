@@ -11,7 +11,10 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         private readonly IRHistory _history;
 
         public SendHistoryToReplCommand(ITextView textView, IRHistoryProvider historyProvider)
-            : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendHistoryToRepl, false) {
+            : base(textView, new [] {
+                new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendHistoryToRepl),
+                new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteLineInInteractive)
+            }, false) {
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 

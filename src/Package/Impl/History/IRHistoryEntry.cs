@@ -2,8 +2,8 @@
 
 namespace Microsoft.VisualStudio.R.Package.History {
     public interface IRHistoryEntry {
-        string Text { get; }
-        ITrackingSpan TrackingSpan { get; set; }
+        ITrackingSpan EntrySpan { get; }
+        ITrackingSpan Span { get; }
         bool IsSelected { get; set; }
 
         IRHistoryEntry Next { get; }

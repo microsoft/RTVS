@@ -36,6 +36,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public bool ClearFilterOnAddHistory { get; set; } = true;
 
+        public bool MultilineHistorySelection { get; set; } = true;
+
         public string CranMirror {
             get { return _cranMirror; }
             set {

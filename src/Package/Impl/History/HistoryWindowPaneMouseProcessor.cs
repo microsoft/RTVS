@@ -217,7 +217,11 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private bool HandleDoubleClick(InputEventArgs e, ModifierKeys modifiers) {
             switch (modifiers) {
                 case ModifierKeys.None:
-                    _history.SendSelectedToRepl();
+                    var point = GetAdjustedPosition(e, _textView);
+                    var textLine = GetTextViewLineUnderPoint(point);
+                    if (textLine != null) {
+                        _history.SendSelectedToRepl();
+                    }
                     return true;
 
                 default:

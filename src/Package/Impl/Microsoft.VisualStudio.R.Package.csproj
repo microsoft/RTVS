@@ -118,6 +118,7 @@
     <Compile Include="History\Commands\SaveHistoryCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
+    <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistorySelectionTextAdornment.cs" />
     <Compile Include="History\HistorySelectionTextAdornmentFactory.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
@@ -126,11 +127,13 @@
     <Compile Include="History\IRHistory.cs" />
     <Compile Include="History\IRHistoryEntries.cs" />
     <Compile Include="History\IRHistoryProvider.cs" />
+    <Compile Include="History\MultilineRHistoryEntries.cs" />
     <Compile Include="History\RHistory.cs" />
     <Compile Include="History\RHistoryEntries.cs" />
     <Compile Include="History\RHistoryProvider.cs" />
     <Compile Include="History\IRHistoryEntry.cs" />
     <Compile Include="History\ShowHistoryWindowCommand.cs" />
+    <Compile Include="History\SinglelineRHistoryEntries.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />
     <Compile Include="Interop\MailUtility.cs" />
     <Compile Include="Logging\LogCleanup.cs" />
