@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,22 +13,14 @@ using static System.FormattableString;
 namespace Microsoft.R.Actions.Logging {
     public sealed class FileLogWriter : IActionLogWriter {
         private const int _maxBufferSize = 1024;
-        private static readonly HashSet<string> _filePaths = new HashSet<string>();
+        private static readonly ConcurrentDictionary<string, FileLogWriter> _writers = new ConcurrentDictionary<string, FileLogWriter>();
         private readonly char[] _lineBreaks = { '\n' };
         private readonly string _filePath;
         private readonly ActionBlock<string> _messages;
         private readonly StringBuilder _sb = new StringBuilder();
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        public FileLogWriter(string filePath) {
-            lock (_filePaths) {
-                if (!_filePaths.Add(filePath)) {
-                    string err = Invariant($"FileLogWriter for file '{filePath}' is already created.");
-                    Trace.Fail(err);
-                    throw new InvalidOperationException(err);
-                }
-            }
-
+        private FileLogWriter(string filePath) {
             _filePath = filePath;
             _messages = new ActionBlock<string>(new Func<string, Task>(WriteToFile));
 
@@ -97,8 +90,10 @@ namespace Microsoft.R.Actions.Logging {
         }
 
         public static FileLogWriter InTempFolder(string fileName) {
-            var path = $@"{Path.GetTempPath()}/{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log";
-            return new FileLogWriter(path);
+            return _writers.GetOrAdd(fileName, _ => {
+                var path = $@"{Path.GetTempPath()}/{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log";
+                return new FileLogWriter(path);
+            });
         }
 
         private static string GetCategoryString(MessageCategory category) {
