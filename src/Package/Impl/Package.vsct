@@ -289,6 +289,9 @@
       <Group guid="guidRToolsCmdSet" id="historyWindowDeleteGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="historyWindowToolBarId"/>
       </Group>
+      <Group guid="guidRToolsCmdSet" id="historyWindowSettingsGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowToolBarId"/>
+      </Group>
       <Group guid="guidRToolsCmdSet" id="historyCopySelectedGroup" priority="0x100">
       </Group>
 
@@ -876,6 +879,16 @@
           <ButtonText>Delete all history entries</ButtonText>
         </Strings>
       </Button>
+      
+      <Button guid="guidRToolsCmdSet" id="icmdToggleMultilineSelection" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="historyWindowSettingsGroup"/>
+        <Icon guid="ImageCatalogGuid" id="BlockSelection"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Toggle Multiline Selection</ButtonText>
+        </Strings>
+      </Button>
       <!-- End history window buttons -->
       
       <Button guid="guidRToolsCmdSet" id="icmdGoToFormattingOptions" priority="0x0200" type="Button">
@@ -1390,6 +1403,7 @@
       <IDSymbol name="icmdSendHistoryToSource" value="1203" />
       <IDSymbol name="icmdDeleteSelectedHistoryEntries" value="1204" />
       <IDSymbol name="icmdDeleteAllHistoryEntries" value="1205" />
+      <IDSymbol name="icmdToggleMultilineSelection" value="1206" />
 
       <IDSymbol name="plotToolbarFileGroup" value="0x1000" />
       <IDSymbol name="plotToolbarPrintGroup" value="0x1100" />
@@ -1405,7 +1419,8 @@
       <IDSymbol name="historyWindowLoadSaveGroup" value="0x2021"/>
       <IDSymbol name="historyWindowSendToGroup" value="0x2022"/>
       <IDSymbol name="historyWindowDeleteGroup" value="0x2023"/>
-      <IDSymbol name="historyCopySelectedGroup" value="0x2024"/>
+      <IDSymbol name="historyWindowSettingsGroup" value="0x2024"/>
+      <IDSymbol name="historyCopySelectedGroup" value="0x2025"/>
 
       <!-- Submenus-->
       <IDSymbol name="mainMenuGroup" value="0x100"/>

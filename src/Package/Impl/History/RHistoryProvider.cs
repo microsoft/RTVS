@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
@@ -38,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
 
             var vsUiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            return new RHistory(textView, FileSystem, EditorOperationsFactory, elisionBuffer, RtfBuilderService, TextSearchService, vsUiShell);
+            return new RHistory(textView, FileSystem, RToolsSettings.Current, EditorOperationsFactory, elisionBuffer, RtfBuilderService, TextSearchService, vsUiShell);
         }
     }
 }
