@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Script;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Support.Settings;
@@ -93,13 +94,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             }
         }
         public void DispatchOnUIThread(Action action) {
-            if (!MainThread.IsBackground) {
-                var disp = Dispatcher.FromThread(MainThread);
-                if (disp != null) {
-                    disp.BeginInvoke(action, DispatcherPriority.Normal);
-                    return;
-                }
+            //if (!MainThread.IsBackground) {
+            var disp = Dispatcher.FromThread(MainThread);
+            if (disp != null) {
+                disp.BeginInvoke(action, DispatcherPriority.Normal);
+                TestScript.DoEvents(disp);
+                return;
             }
+            //}
             action();
         }
 

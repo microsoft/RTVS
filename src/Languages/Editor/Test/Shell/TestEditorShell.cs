@@ -85,6 +85,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             ((DispatcherFrame)f).Continue = false;
             return null;
         }
+
         public int LocaleId => 1033;
         public bool IsUnitTestEnvironment { get; set; } = true;
         public bool IsUITestEnvironment { get; set; } = false;

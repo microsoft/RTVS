@@ -12,10 +12,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [TestCategory("Repl")]
         public void CurrentDirectoryTest_DefaultDirectoryTest() {
             string actual = null;
-            SequentialHostTestExecutor.ExecuteTest(() => {
+            using (var hostScript = new RHostScript()) {
                 WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
+                cmd.InitializationTask.Wait();
                 actual = cmd.GetRWorkingDirectoryAsync().Result;
-            });
+            };
 
             string myDocs = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             Assert.AreEqual(myDocs, actual);
@@ -26,11 +27,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         public void CurrentDirectoryTest_SetDirectoryTest() {
             string dir = "c:\\";
             string actual = null;
-            SequentialHostTestExecutor.ExecuteTest(() => {
+            using (var hostScript = new RHostScript()) {
                 WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
+                cmd.InitializationTask.Wait();
                 cmd.SetDirectory(dir).Wait();
                 actual = cmd.GetRWorkingDirectoryAsync().Result;
-            });
+            }
 
             Assert.AreEqual(dir, actual);
         }
@@ -39,10 +41,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [TestCategory("Repl")]
         public void CurrentDirectoryTest_GetFriendlyNameTest() {
             string actual = null;
-            SequentialHostTestExecutor.ExecuteTest(() => {
+            using (var hostScript = new RHostScript()) {
                 WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
+                cmd.InitializationTask.Wait();
                 actual = cmd.GetFriendlyDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
-            });
+            };
 
             Assert.AreEqual("~", actual);
         }
@@ -51,11 +54,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [TestCategory("Repl")]
         public void CurrentDirectoryTest_GetFullPathNameTest() {
             string dir = null;
-
-            SequentialHostTestExecutor.ExecuteTest(() => {
+            using (var hostScript = new RHostScript()) {
                 WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
+                cmd.InitializationTask.Wait();
                 dir = cmd.GetFullPathName("~");
-            });
+            }
 
             string actual = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             Assert.AreEqual(dir, actual);

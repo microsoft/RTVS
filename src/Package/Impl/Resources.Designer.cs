@@ -923,6 +923,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use multiline selection.
+        /// </summary>
+        public static string Settings_MultilineHistorySelection {
+            get {
+                return ResourceManager.GetString("Settings_MultilineHistorySelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Single click in R history window selects the entire fragment that was sent to R.\r\nUp/Down arrows in the R Interactive Window navigate through chunks instead of single lines..
+        /// </summary>
+        public static string Settings_MultilineHistorySelection_Description {
+            get {
+                return ResourceManager.GetString("Settings_MultilineHistorySelection_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Match partially typed argument names.
         /// </summary>
         public static string Settings_PartialArgumentNameMatch {

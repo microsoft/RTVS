@@ -1,10 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.Languages.Editor.Test.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Test.Utility
-{
+namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     [TestClass]
     public class EditorTestFilesSetup
@@ -24,8 +22,8 @@ namespace Microsoft.R.Editor.Test.Utility
                     string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetup.GetTestFolders(@"R\Editor\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
-                    TestSetup.CopyDirectory(srcFilesFolder, testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"R\Editor\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }
         }

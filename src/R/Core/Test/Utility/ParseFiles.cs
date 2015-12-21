@@ -2,14 +2,13 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Utility
-{
+namespace Microsoft.R.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
     public class ParseFiles
     {
@@ -26,20 +25,20 @@ namespace Microsoft.R.Core.Test.Utility
                 string text = TestFiles.LoadFile(context, testFile);
                 AstRoot actualTree = RParser.Parse(text);
 
-                //AstWriter astWriter = new AstWriter();
-                //string actual = astWriter.WriteTree(actualTree);
+                AstWriter astWriter = new AstWriter();
+                string actual = astWriter.WriteTree(actualTree);
 
                 if (_regenerateBaselineFiles)
                 {
                     // Update this to your actual enlistment if you need to update baseline
-                    string enlistmentPath = @"F:\RTVS\src\R\Core\Test\Files\Parser";
+                    string enlistmentPath = @"C:\RTVS\src\R\Core\Test\Files\Parser";
                     baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tree";
 
-                    //TestFiles.UpdateBaseline(baselineFile, actual);
+                    TestFiles.UpdateBaseline(baselineFile, actual);
                 }
                 else
                 {
-                    //TestFiles.CompareToBaseLine(baselineFile, actual);
+                    TestFiles.CompareToBaseLine(baselineFile, actual);
                 }
             }
             catch (Exception exception)
