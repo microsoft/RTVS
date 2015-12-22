@@ -52,6 +52,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="RD\Files\Help\02.rd" />
     <None Include="RD\Files\Help\01.rd" />

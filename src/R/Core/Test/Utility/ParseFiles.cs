@@ -19,10 +19,10 @@ namespace Microsoft.R.Core.Test.Utility {
         {
             try
             {
-                string testFile = TestFiles.GetTestFilePath(context, name);
+                string testFile = TestFiles.GetTestFilePath(context.TestRunDirectory, name);
                 string baselineFile = testFile + ".tree";
 
-                string text = TestFiles.LoadFile(context, testFile);
+                string text = TestFiles.LoadFile(context.TestRunDirectory, testFile);
                 AstRoot actualTree = RParser.Parse(text);
 
                 AstWriter astWriter = new AstWriter();

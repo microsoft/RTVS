@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.Common.Core.Tests
 {
     public class StackExtensionsTest
     {
-        [Test]
+        [Fact]
         public void PopWhile()
         {
             var stack = new Stack<int>(Enumerable.Range(0, 10));

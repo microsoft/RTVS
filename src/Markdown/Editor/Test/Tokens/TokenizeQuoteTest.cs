@@ -1,40 +1,38 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Tests.Tokens;
+﻿using Microsoft.Languages.Core.Tests.Tokens;
 using Microsoft.Markdown.Editor.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
-namespace Microsoft.Markdown.Editor.Test.Tokens {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
+namespace Microsoft.Markdown.Editor.Tests.Tokens {
     public class TokenizeQuoteTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
+        [Fact]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_Quote01() {
             var tokens = this.Tokenize(@"> quote", new MdTokenizer());
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.Equal(1, tokens.Count);
 
-            Assert.AreEqual(MarkdownTokenType.Blockquote, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(7, tokens[0].Length);
+            Assert.Equal(MarkdownTokenType.Blockquote, tokens[0].TokenType);
+            Assert.Equal(0, tokens[0].Start);
+            Assert.Equal(7, tokens[0].Length);
         }
 
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
+        [Fact]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_Quote02() {
             var tokens = this.Tokenize(@">quote", new MdTokenizer());
-            Assert.AreEqual(0, tokens.Count);
+            Assert.Equal(0, tokens.Count);
         }
 
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
+        [Fact]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_Quote03() {
             var tokens = this.Tokenize(@" > quote", new MdTokenizer());
-            Assert.AreEqual(0, tokens.Count);
+            Assert.Equal(0, tokens.Count);
         }
 
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
+        [Fact]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_Quote04() {
             string content =
 @"> quote
@@ -43,11 +41,11 @@ namespace Microsoft.Markdown.Editor.Test.Tokens {
 ";
             var tokens = this.Tokenize(content, new MdTokenizer());
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.Equal(1, tokens.Count);
 
-            Assert.AreEqual(MarkdownTokenType.Blockquote, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(18, tokens[0].Length);
+            Assert.Equal(MarkdownTokenType.Blockquote, tokens[0].TokenType);
+            Assert.Equal(0, tokens[0].Start);
+            Assert.Equal(18, tokens[0].Length);
         }
     }
 }

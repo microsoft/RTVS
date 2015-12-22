@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Tests.Utility;
-using Microsoft.Markdown.Editor.Test.Utility;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,7 +16,7 @@ namespace Microsoft.R.Editor.Application.Test {
         public static void DeployFiles(TestContext context)
         {
             SupportTestFilesSetup.DeployFiles(context);
-            MarkdownTestFilesSetup.DeployFiles(context);
+            //MarkdownTestFilesSetup.DeployFiles(context);
             EditorTestFilesSetup.DeployFiles(context);
 
             lock (_deploymentLock)

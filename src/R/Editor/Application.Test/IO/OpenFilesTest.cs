@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Application.Test.IO {
         /// <param name="fileName">File name</param>
         void OpenFileInEditor(string fileName)
         {
-            string text = TestFiles.LoadFile(this.TestContext, fileName);
+            string text = TestFiles.LoadFile(TestContext.TestRunDirectory, fileName);
 
             try
             {

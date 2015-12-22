@@ -1,31 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Reflection;
+using Xunit;
 
 namespace Microsoft.Common.Core.Tests.Utility {
-    [ExcludeFromCodeCoverage]
-    public static class TestFiles {
-        static public string LoadFile(string testRunDirectory, string fileName) {
-            var filePath = GetTestFilePath(testRunDirectory, fileName);
+    public class xUnitFileTest : xUnitTest, IClassFixture<TestFilesSetupFixture> {
+        protected TestFilesSetupFixture Fixture { get; }
+        public xUnitFileTest(TestFilesSetupFixture fixture) {
+            Fixture = fixture;
+        }
+
+        protected string LoadFile(string fileName) {
+            var filePath = GetTestFilePath(fileName);
 
             using (var sr = new StreamReader(filePath)) {
                 return sr.ReadToEnd();
             }
         }
 
-        static public string GetTestFilesFolder(string testRunDirectory) {
-            return Path.Combine(testRunDirectory, CommonTestData.TestFilesRelativePath);
+        protected string GetTestFilesFolder() {
+            string thisAssembly = Assembly.GetExecutingAssembly().Location;
+            string assemblyLoc = Path.GetDirectoryName(thisAssembly);
+            return Path.Combine(assemblyLoc, @"Files\");
         }
 
-        static public string GetTestFilePath(string testRunDirectory, string fileName) {
-            return Path.Combine(GetTestFilesFolder(testRunDirectory), fileName);
+        protected string GetTestFilePath(string fileName) {
+            return Path.Combine(GetTestFilesFolder(), fileName);
         }
 
-        public static IList<string> GetTestFiles(string testRunDirectory, string extension) {
-            string path = GetTestFilesFolder(testRunDirectory);
+        protected IList<string> GetTestFiles(string extension) {
+            string path = GetTestFilesFolder();
             var files = new List<string>();
 
             IEnumerable<string> filesInFolder = Directory.EnumerateFiles(path);
@@ -37,7 +43,7 @@ namespace Microsoft.Common.Core.Tests.Utility {
             return files;
         }
 
-        public static void CompareToBaseLine(string baselinefilePath, string actual) {
+        protected void CompareToBaseLine(string baselinefilePath, string actual) {
             string expected;
 
             using (var streamReader = new StreamReader(baselinefilePath)) {
@@ -53,12 +59,12 @@ namespace Microsoft.Common.Core.Tests.Utility {
             string actualLine;
             int lineNumber = BaselineCompare.CompareLines(expected, actual, out baseLine, out actualLine);
 
-            Assert.AreEqual(0, lineNumber,
-                String.Format(CultureInfo.InvariantCulture,
+            Assert.False(false,
+                string.Format(CultureInfo.InvariantCulture,
                     "\r\nDifferent at line {0}\r\nExpected: {1}\r\nActual: {2}", lineNumber, baseLine, actualLine));
         }
 
-        public static void UpdateBaseline(string filePath, string content) {
+        protected void UpdateBaseline(string filePath, string content) {
             if (File.Exists(filePath)) {
                 File.SetAttributes(filePath, FileAttributes.Normal);
             }

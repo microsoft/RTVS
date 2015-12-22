@@ -1,13 +1,12 @@
 ﻿using System;
 using FluentAssertions;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
-namespace Microsoft.Common.Core.Tests.Disposables
-{
+namespace Microsoft.Common.Core.Tests.Disposables {
     public class DisposableTest
     {
-        [Test]
+        [Fact]
         public void Create()
         {
             var callCount = 0;

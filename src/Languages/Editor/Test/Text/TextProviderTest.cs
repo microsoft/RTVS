@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Microsoft.Languages.Editor.Tests.Text {
     public class TextProviderTest {
-        [Test]
+        [Fact]
         [Trait("Category", "Languages.Editor")]
         public void TextProvider_GetCharAt() {
             var text = "Quick brown fox jumps over the lazy dog";
@@ -20,7 +20,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
             }
         }
 
-        [Test]
+        [Fact]
         [Trait("Category", "Languages.Editor")]
         public void TextProvider_GetText() {
             var text = "Quick brown fox jumps over the lazy dog";
@@ -31,7 +31,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
             Assert.Equal("wn fo", textProvider.GetText(9, 5));
         }
 
-        [Test]
+        [Fact]
         [Trait("Category", "Languages.Editor")]
         public void TextProvider_IndexOf1() {
             var text = "Quick brown fox jumps over the lazy dog";
@@ -42,7 +42,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
             Assert.Equal(12, textProvider.IndexOf("fox", 0, true));
         }
 
-        [Test]
+        [Fact]
         [Trait("Category", "Languages.Editor")]
         public void TextProvider_IndexOf2() {
             var text = "Quick brown fox jumps over the lazy dog";
@@ -53,7 +53,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
             Assert.Equal(8, textProvider.IndexOf("o", new TextRange(3, 7), true));
         }
 
-        [Test]
+        [Fact]
         [Trait("Category", "Languages.Editor")]
         public void TextProvider_IndexOf_Range1() {
             var text = "Quick brown fox jumps over the lazy dog";
@@ -67,7 +67,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
             Assert.Equal(-1, textProvider.IndexOf("uick", new TextRange(1, 0), false));
         }
 
-        [Test]
+        [Fact]
         [Trait("Category", "Languages.Editor")]
         public void TextProvider_CompareTo() {
             var text = "Quick brown fox jumps over the lazy dog";
@@ -83,7 +83,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
             Assert.False(textProvider.CompareTo(text.Length - 2, 3, "dog", true));
         }
 
-        [Test]
+        [Fact]
         [Trait("Category", "Languages.Editor")]
         public void TextProvider_Boundary1() {
             var text = "Quick brown fox jumps over the lazy dog";
@@ -99,7 +99,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
             Assert.False(textProvider.CompareTo(text.Length - 2, 3, "dog", true));
         }
 
-        [Test]
+        [Fact]
         [Trait("Category", "Languages.Editor")]
         public void TextProvider_Boundary2() {
             var text = String.Empty;
@@ -113,7 +113,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
             Assert.False(textProvider.CompareTo(0, 2, String.Empty, true));
         }
 
-        [Test]
+        [Fact]
         [Trait("Category", "Languages.Editor")]
         public void TextProvider_Boundary3() {
             var text = "ab";

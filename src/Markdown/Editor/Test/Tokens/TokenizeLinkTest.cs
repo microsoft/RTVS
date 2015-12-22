@@ -1,37 +1,35 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Tests.Tokens;
+﻿using Microsoft.Languages.Core.Tests.Tokens;
 using Microsoft.Markdown.Editor.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
-namespace Microsoft.Markdown.Editor.Test.Tokens {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
+namespace Microsoft.Markdown.Editor.Tests.Tokens {
     public class TokenizeLinkTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
+        [Fact]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_Link01() {
             var tokens = this.Tokenize(@"[text]()", new MdTokenizer());
 
-            Assert.AreEqual(1, tokens.Count);
+            Assert.Equal(1, tokens.Count);
 
-            Assert.AreEqual(MarkdownTokenType.AltText, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(6, tokens[0].Length);
+            Assert.Equal(MarkdownTokenType.AltText, tokens[0].TokenType);
+            Assert.Equal(0, tokens[0].Start);
+            Assert.Equal(6, tokens[0].Length);
         }
 
 
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
+        [Fact]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_Link02() {
             var tokens = this.Tokenize(@"[text] (", new MdTokenizer());
-            Assert.AreEqual(0, tokens.Count);
+            Assert.Equal(0, tokens.Count);
         }
 
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
+        [Fact]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_Link03() {
             var tokens = this.Tokenize(@"[text] ()", new MdTokenizer());
-            Assert.AreEqual(0, tokens.Count);
+            Assert.Equal(0, tokens.Count);
         }
     }
 }

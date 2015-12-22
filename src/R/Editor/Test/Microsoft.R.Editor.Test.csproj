@@ -120,6 +120,7 @@
     <Folder Include="Classification\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Files\01.r" />
     <None Include="Files\01.r.outline" />
     <None Include="packages.config" />

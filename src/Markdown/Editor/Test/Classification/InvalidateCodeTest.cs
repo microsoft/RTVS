@@ -1,21 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Tests.Utility;
 using Microsoft.Languages.Editor.Tests.Text;
 using Microsoft.Languages.Editor.Tests.Utility;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
+using Xunit;
 
-namespace Microsoft.Markdown.Editor.Test.Classification {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
+namespace Microsoft.Markdown.Editor.Tests.Classification {
     public class InvalidateCodeTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("Md.Classifier")]
+        [Fact]
+        [Trait("Category", "Md.Classifier")]
         public void Markdown_InvalidateCodeTest() {
             string content = "```'{r}\n#R\n```";
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
@@ -28,7 +26,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             IList<ClassificationSpan> spans = cls.GetClassificationSpans(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length)));
             string actual = ClassificationWriter.WriteClassifications(spans);
 
-            Assert.AreEqual("[0:15] Markdown Code", actual.TrimEnd());
+            Assert.Equal("[0:15] Markdown Code", actual.TrimEnd());
         }
     }
 }

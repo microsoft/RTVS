@@ -354,7 +354,7 @@ Sys.sleep(1)
         }
 
         private string[] GetTestExpectedFiles() {
-            var folderPath = TestFiles.GetTestFilesFolder(TestContext);
+            var folderPath = TestFiles.GetTestFilesFolder(TestContext.TestRunDirectory);
             var expectedFilesFilter = string.Format("{0}-{1}-*.png", TestContext.FullyQualifiedTestClassName, TestContext.TestName);
             var expectedFiles = Directory.GetFiles(folderPath, expectedFilesFilter);
             return expectedFiles;
