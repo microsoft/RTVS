@@ -11,16 +11,13 @@ using Xunit;
 
 namespace Microsoft.Languages.Editor.Tests.Utility {
     [ExcludeFromCodeCoverage]
-    public static class TokenizeFiles
-    {
+    public static class TokenizeFiles {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void TokenizeFile<Token, TokenType>(string testFile, string language, Type tokenizerType) 
-            where Token: IToken<TokenType>
-        {
-            try
-            {
+        public static void TokenizeFile<Token, TokenType>(string testFile, string language, Type tokenizerType, string baselineFilesPath)
+            where Token : IToken<TokenType> {
+            try {
                 string baselineFile = testFile + ".tokens";
                 using (var sr = new StreamReader(testFile)) {
                     string text = sr.ReadToEnd();
@@ -31,8 +28,8 @@ namespace Microsoft.Languages.Editor.Tests.Utility {
                     string actual = DebugWriter.WriteTokens<Token, TokenType>(tokens);
 
                     if (_regenerateBaselineFiles) {
-                        // Update this to your actual enlistment if you need to update baseline
-                        string enlistmentPath = @"F:\RTVS\src\R\Support\Test\" + language + @"\Files\Tokenization";
+                        string currentDir = Directory.GetCurrentDirectory();
+                        string enlistmentPath = Path.Combine(currentDir, @"..\..", baselineFilesPath);
                         baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
 
                         TestFiles.UpdateBaseline(baselineFile, actual);
@@ -40,10 +37,8 @@ namespace Microsoft.Languages.Editor.Tests.Utility {
                         TestFiles.CompareToBaseLine(baselineFile, actual);
                     }
                 }
-            }
-            catch (Exception exception)
-            {
-                Assert.False(false, string.Format(CultureInfo.InvariantCulture, "Test {0} has thrown an exception: {1}", 
+            } catch (Exception exception) {
+                Assert.False(false, string.Format(CultureInfo.InvariantCulture, "Test {0} has thrown an exception: {1}",
                               Path.GetFileName(testFile), exception.Message));
             }
         }
