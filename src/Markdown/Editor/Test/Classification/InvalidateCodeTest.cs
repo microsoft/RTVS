@@ -13,7 +13,7 @@ using Xunit;
 namespace Microsoft.Markdown.Editor.Tests.Classification {
     public class InvalidateCodeTest : UnitTestBase {
         [Fact]
-        [Trait("Category", "Md.Classifier")]
+        [Trait( "Md.Classifier", "")]
         public void Markdown_InvalidateCodeTest() {
             string content = "```'{r}\n#R\n```";
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);

@@ -5,7 +5,7 @@ using Xunit;
 namespace Microsoft.Languages.Core.Tests.Text {
     public class TextHelperTest {
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void TextHelperTest_IsNewLineBeforePositionTest() {
             ITextProvider tp = new TextStream("01\n34\r678\r\nBC");
 
@@ -25,7 +25,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void TextHelperTest_IsNewLineAfterPositionTest() {
             ITextProvider tp = new TextStream("0 \n3 \r 7 \r\n  ");
 
@@ -45,7 +45,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void TextHelperTest_IsWhitespaceOnlyBetweenPositionsTest() {
             ITextProvider tp = new TextStream("0 \n3 \r 7 \r\n    AB ");
 

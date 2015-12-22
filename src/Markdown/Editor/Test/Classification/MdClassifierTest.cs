@@ -24,7 +24,7 @@ namespace Microsoft.Markdown.Editor.Tests.Classification {
         }
 
         [Fact]
-        [Trait("Category", "Md.Classifier")]
+        [Trait( "Md.Classifier", "")]
         public void ClassifyMarkdownFileTest01() {
             ClassifyFile("01.md");
         }

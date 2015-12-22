@@ -8,7 +8,7 @@ using Xunit;
 namespace Microsoft.Languages.Editor.Tests.Text {
     public class TextProviderTest {
         [Fact]
-        [Trait("Category", "Languages.Editor")]
+        [Trait("Languages.Editor", "")]
         public void TextProvider_GetCharAt() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
@@ -21,7 +21,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Editor")]
+        [Trait("Languages.Editor", "")]
         public void TextProvider_GetText() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
@@ -32,7 +32,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Editor")]
+        [Trait("Languages.Editor", "")]
         public void TextProvider_IndexOf1() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
@@ -43,7 +43,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Editor")]
+        [Trait("Languages.Editor", "")]
         public void TextProvider_IndexOf2() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
@@ -54,7 +54,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Editor")]
+        [Trait("Languages.Editor", "")]
         public void TextProvider_IndexOf_Range1() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
@@ -68,7 +68,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Editor")]
+        [Trait("Languages.Editor", "")]
         public void TextProvider_CompareTo() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
@@ -84,7 +84,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Editor")]
+        [Trait("Languages.Editor", "")]
         public void TextProvider_Boundary1() {
             var text = "Quick brown fox jumps over the lazy dog";
             var textBuffer = new TextBufferMock(text, "text");
@@ -100,7 +100,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Editor")]
+        [Trait("Languages.Editor", "")]
         public void TextProvider_Boundary2() {
             var text = String.Empty;
             var textBuffer = new TextBufferMock(text, "text");
@@ -114,7 +114,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Editor")]
+        [Trait("Languages.Editor", "")]
         public void TextProvider_Boundary3() {
             var text = "ab";
             var textBuffer = new TextBufferMock(text, "text");

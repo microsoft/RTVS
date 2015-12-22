@@ -5,7 +5,7 @@ using Xunit;
 namespace Microsoft.Languages.Core.Tests.Bytes {
     public class ByteStreamTest {
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_AdvanceTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -24,7 +24,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_CurrentStringEqualsToTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -43,7 +43,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_IsAnsiLetterTest() {
             byte[] text = new byte[256];
             int i = 0;
@@ -72,7 +72,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_IsCharAtTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -85,7 +85,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_IsDigitTest() {
             byte[] text = new byte[256];
 
@@ -115,7 +115,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_IsEndOfStreamTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -133,7 +133,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_IsNewLineCharTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'\r', (byte)'\n', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -150,7 +150,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_IsWhiteSpaceTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'\r', (byte)'\n', (byte)'\t', (byte)' ', };
             ByteStream target = new ByteStream(text);
@@ -167,7 +167,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_CurrentCharTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -185,7 +185,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_DistanceFromEndTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -203,7 +203,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_LengthTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -215,7 +215,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_NextCharTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -229,7 +229,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_PositionTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
@@ -247,7 +247,7 @@ namespace Microsoft.Languages.Core.Tests.Bytes {
         }
 
         [Fact]
-        [Trait("Category", "Languages.Core")]
+        [Trait("Languages.Core", "")]
         public void ByteStream_StringEqualsTest() {
             ByteStream bs = new ByteStream(new byte[0]);
             Assert.True(bs.CurrentStringEqualsTo("", 0));

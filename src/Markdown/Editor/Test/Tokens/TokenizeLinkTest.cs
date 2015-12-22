@@ -6,7 +6,7 @@ using Xunit;
 namespace Microsoft.Markdown.Editor.Tests.Tokens {
     public class TokenizeLinkTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
         [Fact]
-        [Trait("Category","Md.Tokenizer")]
+        [Trait("Md.Tokenizer", "")]
         public void TokenizeMd_Link01() {
             var tokens = this.Tokenize(@"[text]()", new MdTokenizer());
 
@@ -19,14 +19,14 @@ namespace Microsoft.Markdown.Editor.Tests.Tokens {
 
 
         [Fact]
-        [Trait("Category","Md.Tokenizer")]
+        [Trait("Md.Tokenizer", "")]
         public void TokenizeMd_Link02() {
             var tokens = this.Tokenize(@"[text] (", new MdTokenizer());
             Assert.Equal(0, tokens.Count);
         }
 
         [Fact]
-        [Trait("Category","Md.Tokenizer")]
+        [Trait("Md.Tokenizer", "")]
         public void TokenizeMd_Link03() {
             var tokens = this.Tokenize(@"[text] ()", new MdTokenizer());
             Assert.Equal(0, tokens.Count);

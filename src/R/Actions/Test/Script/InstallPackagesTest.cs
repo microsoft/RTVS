@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Actions.Script;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
-namespace Microsoft.R.Actions.Test.Script
-{
-    [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class InstallPackagesTest
-    {
-        [TestMethod]
-        [TestCategory("R.Packages")]
-        public void InstallPackages_BaseTest()
-        {
+namespace Microsoft.R.Actions.Test.Script {
+    public class InstallPackagesTest {
+        [Fact]
+        [Trait("R.Packages", "")]
+        public void InstallPackages_BaseTest() {
             bool result = InstallPackages.IsInstalled("base", Int32.MaxValue, null);
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
     }
 }

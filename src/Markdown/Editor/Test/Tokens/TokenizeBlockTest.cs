@@ -7,14 +7,14 @@ using Xunit;
 namespace Microsoft.Markdown.Editor.Tests.Tokens {
     public class TokenizeBlockTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
         [Fact]
-        [Trait("Category","Md.Tokenizer")]
+        [Trait("Md.Tokenizer", "")]
         public void TokenizeMd_Block01() {
             var tokens = this.Tokenize(@"```block```", new MdTokenizer());
             Assert.Equal(0, tokens.Count);
         }
 
         [Fact]
-        [Trait("Category","Md.Tokenizer")]
+        [Trait("Md.Tokenizer", "")]
         public void TokenizeMd_Block02() {
             string content =
 @"```
@@ -33,21 +33,21 @@ block
         }
 
         [Fact]
-        [Trait("Category","Md.Tokenizer")]
+        [Trait("Md.Tokenizer", "")]
         public void TokenizeMd_Block03() {
             var tokens = this.Tokenize(@"```block", new MdTokenizer());
             Assert.Equal(0, tokens.Count);
         }
 
         [Fact]
-        [Trait("Category","Md.Tokenizer")]
+        [Trait("Md.Tokenizer", "")]
         public void TokenizeMd_Block04() {
             var tokens = this.Tokenize(@"```block` ```", new MdTokenizer());
             Assert.Equal(0, tokens.Count);
         }
 
         [Fact]
-        [Trait("Category","Md.Tokenizer")]
+        [Trait("Md.Tokenizer", "")]
         public void TokenizeMd_Block05() {
             string content =
 @"```
@@ -65,7 +65,7 @@ block
         }
 
         [Fact]
-        [Trait("Category","Md.Tokenizer")]
+        [Trait("Md.Tokenizer", "")]
         public void TokenizeMd_Block06() {
             var tokens = this.Tokenize(@"`r x <- 1`", new MdTokenizer());
             Assert.Equal(3, tokens.Count);
