@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Common.Core.Tests.Utility;
 using Microsoft.Languages.Core.Tests.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;

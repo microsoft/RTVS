@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Common.Core.Test.Utility {
+namespace Microsoft.Common.Core.Tests.Utility {
     /// <summary>
     /// This is the base class for all unit tests.
     /// </summary>

@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Common.Core.Tests.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.VisualStudio.R.Application.Test.Utility {
@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Application.Test.Utility {
                     string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetupUtilities.GetTestFolders(@"Package\TestApp\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"Package\TestApp\Files", CommonTestData.TestFilesRelativePath, context.TestRunDirectory, out srcFilesFolder, out testFilesDir);
                     TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }

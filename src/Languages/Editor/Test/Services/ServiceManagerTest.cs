@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Utilities;
+using Xunit;
 
-namespace Microsoft.Languages.Editor.Test.Services {
-    /// <summary>
-    /// Summary description for UnitTest1
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    [TestClass]
+namespace Microsoft.Languages.Editor.Tests.Services {
     public class ServiceManagerTest {
         #region Mock Services
         interface IService1 {
@@ -45,8 +41,8 @@ namespace Microsoft.Languages.Editor.Test.Services {
         }
         #endregion
 
-        [TestMethod]
-        [TestCategory("Languages.Editor")]
+        [Test]
+        [Trait("Category", "Languages.Editor")]
         public void ServiceManager_Test01() {
             PropertyOwner propertyOwner = new PropertyOwner();
             Service1 s1 = new Service1();
@@ -56,38 +52,38 @@ namespace Microsoft.Languages.Editor.Test.Services {
             ServiceManager.AdviseServiceAdded<IService1>(propertyOwner, s => { added = true; });
 
             // Verify notifications not sent out when advising
-            Assert.IsFalse(added);
+            Assert.False(added);
 
             // Verify notifications not sent out after adding other service
             ServiceManager.AddService<Service1>(s1, propertyOwner);
-            Assert.IsFalse(added);
+            Assert.False(added);
 
             // Verify added notification sent out after adding this service
             ServiceManager.AddService<IService1>(s1, propertyOwner);
-            Assert.IsTrue(added);
+            Assert.True(added);
 
             added = false;
             ServiceManager.AdviseServiceRemoved<IService1>(propertyOwner, s => { removed = true; });
 
             // Verify notifications not sent out after removing other service
             ServiceManager.RemoveService<Service1>(propertyOwner);
-            Assert.IsFalse(removed);
+            Assert.False(removed);
 
             // Verify removed notification sent out after adding this service
             ServiceManager.RemoveService<IService1>(propertyOwner);
-            Assert.IsTrue(removed);
+            Assert.True(removed);
 
             // Verify we aren't still listening to advised events
             ServiceManager.AddService<IService1>(s1, propertyOwner);
-            Assert.IsFalse(added);
+            Assert.False(added);
 
             // Verify notification sent out when advising to existing service
             ServiceManager.AdviseServiceAdded<IService1>(propertyOwner, s => { added = true; });
-            Assert.IsTrue(added);
+            Assert.True(added);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Editor")]
+        [Test]
+        [Trait("Category", "Languages.Editor")]
         public void ServiceManager_Test02() {
             PropertyOwner propertyOwner = new PropertyOwner();
             int servicesAdded = 0;
@@ -98,25 +94,25 @@ namespace Microsoft.Languages.Editor.Test.Services {
 
             ServiceManager.AddService<IService1>(s1, propertyOwner);
 
-            Assert.AreEqual(s1 as IService1, ServiceManager.GetService<IService1>(propertyOwner));
-            Assert.AreEqual(s1, ServiceManager.GetService<Service1>(propertyOwner));
-            Assert.IsNotNull(ServiceManager.GetService<Service1>(propertyOwner));
+            Assert.Equal(s1 as IService1, ServiceManager.GetService<IService1>(propertyOwner));
+            Assert.Equal(s1, ServiceManager.GetService<Service1>(propertyOwner));
+            Assert.NotNull(ServiceManager.GetService<Service1>(propertyOwner));
 
             ServiceManager.RemoveService<IService1>(propertyOwner);
-            Assert.IsNull(ServiceManager.GetService<IService1>(propertyOwner));
+            Assert.Null(ServiceManager.GetService<IService1>(propertyOwner));
 
             ServiceManager sm = ServiceManager.FromPropertyOwner(propertyOwner);
-            Assert.IsNotNull(sm);
+            Assert.NotNull(sm);
 
             EventHandler<ServiceManagerEventArgs> onServiceAdded = (object sender, ServiceManagerEventArgs e) => {
                 servicesAdded++;
 
                 if (servicesAdded == 1) {
-                    Assert.AreEqual(s1, e.Service);
-                    Assert.AreEqual(typeof(IService1), e.ServiceType);
+                    Assert.Equal(s1, e.Service);
+                    Assert.Equal(typeof(IService1), e.ServiceType);
                 } else if (servicesAdded == 2) {
-                    Assert.AreEqual(s2, e.Service);
-                    Assert.AreEqual(typeof(IService2), e.ServiceType);
+                    Assert.Equal(s2, e.Service);
+                    Assert.Equal(typeof(IService2), e.ServiceType);
                 }
             };
 
@@ -124,9 +120,9 @@ namespace Microsoft.Languages.Editor.Test.Services {
                 servicesRemoved++;
 
                 if (servicesRemoved == 1) {
-                    Assert.AreEqual(typeof(IService1), e.ServiceType);
+                    Assert.Equal(typeof(IService1), e.ServiceType);
                 } else if (servicesRemoved == 2) {
-                    Assert.AreEqual(typeof(IService2), e.ServiceType);
+                    Assert.Equal(typeof(IService2), e.ServiceType);
                 }
             };
 
@@ -139,8 +135,8 @@ namespace Microsoft.Languages.Editor.Test.Services {
             ServiceManager.RemoveService<IService1>(propertyOwner);
             ServiceManager.RemoveService<IService2>(propertyOwner);
 
-            Assert.IsNull(ServiceManager.GetService<IService1>(propertyOwner));
-            Assert.IsNull(ServiceManager.GetService<IService2>(propertyOwner));
+            Assert.Null(ServiceManager.GetService<IService1>(propertyOwner));
+            Assert.Null(ServiceManager.GetService<IService2>(propertyOwner));
         }
     }
 }

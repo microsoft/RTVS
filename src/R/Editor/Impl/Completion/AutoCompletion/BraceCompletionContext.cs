@@ -5,7 +5,7 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.BraceCompletion;
 
-namespace Microsoft.R.Editor.Completion.AutoCompletion {
+namespace Microsoft.R.Editor.Completions.AutoCompletion {
 
     /// <summary>
     /// Represents a simple context used to extend the default brace 

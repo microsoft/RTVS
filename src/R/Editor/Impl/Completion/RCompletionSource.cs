@@ -5,14 +5,14 @@ using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Editor.Completion.Definitions;
-using Microsoft.R.Editor.Completion.Engine;
+using Microsoft.R.Editor.Completions.Definitions;
+using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Completion {
+namespace Microsoft.R.Editor.Completions {
     using Languages.Editor.Services;
     using Completion = VisualStudio.Language.Intellisense.Completion;
 

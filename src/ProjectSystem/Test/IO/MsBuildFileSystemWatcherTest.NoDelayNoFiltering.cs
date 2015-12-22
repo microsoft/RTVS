@@ -10,7 +10,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using NSubstitute;
 using Xunit;
-using Microsoft.Common.Core.Test.IO.SubstituteFactories;
+using Microsoft.Common.Core.Tests.IO.SubstituteFactories;
 using Microsoft.R.Actions.Logging;
 using NSubstitute.ExceptionExtensions;
 

@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Test.Utility;
+using Microsoft.Languages.Editor.Tests.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;

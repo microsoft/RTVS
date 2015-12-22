@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Media;
 
-namespace Microsoft.R.Editor.Completion {
+namespace Microsoft.R.Editor.Completions {
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>

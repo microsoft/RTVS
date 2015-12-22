@@ -7,7 +7,7 @@
     <ProjectGuid>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Common.Core.Test</RootNamespace>
+    <RootNamespace>Microsoft.Common.Core.Tests</RootNamespace>
     <AssemblyName>Microsoft.R.Common.Core.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -106,6 +106,7 @@
     <Compile Include="Utility\CommonTestData.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
     <Compile Include="Utility\TestFiles.cs" />
+    <Compile Include="Utility\TestFilesSetupFixture.cs" />
     <Compile Include="Utility\TestSetup.cs" />
     <Compile Include="Utility\UnitTestBase.cs" />
     <Compile Include="Utility\VisualTreeWriter.cs" />

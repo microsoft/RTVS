@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Common.Core.Test.Utility {
+namespace Microsoft.Common.Core.Tests.Utility {
     [ExcludeFromCodeCoverage]
     public static class TestFiles {
         static public string LoadFile(TestContext context, string fileName) {

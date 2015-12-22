@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Threading;
 
-namespace Microsoft.Common.Core.Test.Script {
+namespace Microsoft.Common.Core.Tests.Script {
     public abstract class TestScript {
         public static void DoEvents(Dispatcher disp = null) {
             DispatcherFrame frame = new DispatcherFrame();

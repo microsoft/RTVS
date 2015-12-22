@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Common.Core.Tests.Utility;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Test.Utility;

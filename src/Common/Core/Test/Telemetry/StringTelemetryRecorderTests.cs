@@ -4,7 +4,7 @@ using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
-namespace Microsoft.Common.Core.Test.Telemetry {
+namespace Microsoft.Common.Core.Tests.Telemetry {
     [ExcludeFromCodeCoverage]
     public class StringTelemetryRecorderTests {
         [CompositeTest]

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Languages.Editor.Test.Text {
+namespace Microsoft.Languages.Editor.Tests.Text {
     [ExcludeFromCodeCoverage]
     public static class Typing {
         public static void Type(ITextBuffer textBuffer, string textToType) {

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Test.Shell;
+using Microsoft.Languages.Editor.Tests.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     [ExcludeFromCodeCoverage]

@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Test.Controls;
-using Microsoft.Common.Core.Test.STA;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Common.Core.Tests.Controls;
+using Microsoft.Common.Core.Tests.STA;
+using Microsoft.Common.Core.Tests.Utility;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Test.Utility;

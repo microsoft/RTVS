@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     [MetadataAttribute]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public sealed class CompletionTypeAttribute : Attribute {

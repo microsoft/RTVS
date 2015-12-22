@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.R.Editor.Completion.Definitions
+namespace Microsoft.R.Editor.Completions.Definitions
 {
     /// <summary>
     /// An interface implemented by R completion provider that supplies

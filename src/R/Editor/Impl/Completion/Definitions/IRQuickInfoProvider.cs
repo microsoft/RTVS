@@ -1,5 +1,5 @@
 ﻿
-namespace Microsoft.R.Editor.Completion.Definitions
+namespace Microsoft.R.Editor.Completions.Definitions
 {
     /// <summary>
     /// Get something (a string or WPF element) to show in a tooltip

@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using Microsoft.Common.Core.Test.STA;
+using Microsoft.Common.Core.Tests.STA;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text;

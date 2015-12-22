@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Test.IO.SubstituteFactories;
+using Microsoft.Common.Core.Tests.IO.SubstituteFactories;
 using Microsoft.R.Actions.Logging;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;

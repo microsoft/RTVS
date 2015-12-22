@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.VisualStudio.Telemetry;
 
-namespace Microsoft.Common.Core.Test.Telemetry {
+namespace Microsoft.Common.Core.Tests.Telemetry {
 
     [ExcludeFromCodeCoverage]
     public sealed class StringTelemetryRecorder : ITelemetryRecorder, ITelemetryTestSupport {

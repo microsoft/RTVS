@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.Script;
+using Microsoft.Common.Core.Tests.Script;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Support.Settings;

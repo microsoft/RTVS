@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Common.Core.Tests.Utility;
 using Microsoft.R.Core.Formatting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

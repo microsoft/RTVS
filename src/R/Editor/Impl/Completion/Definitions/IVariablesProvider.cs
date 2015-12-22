@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.R.Support.Help.Definitions;
 
-namespace Microsoft.R.Editor.Completion.Definitions
+namespace Microsoft.R.Editor.Completions.Definitions
 {
     /// <summary>
     /// Provides information on variables members or

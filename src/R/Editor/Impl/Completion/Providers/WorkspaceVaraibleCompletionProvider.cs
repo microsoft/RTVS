@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Completions.Definitions;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace Microsoft.R.Editor.Completion.Providers {
+namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// Provides list of installed packages for completion inside 
     /// library(...) statement. List of packages is  obtained from 

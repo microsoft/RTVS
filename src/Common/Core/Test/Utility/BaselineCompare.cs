@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Common.Core.Test.Utility {
+namespace Microsoft.Common.Core.Tests.Utility {
     [ExcludeFromCodeCoverage]
     public static class BaselineCompare {
         public static string CompareStrings(string expected, string actual) {
