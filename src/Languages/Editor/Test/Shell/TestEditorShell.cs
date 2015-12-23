@@ -13,11 +13,11 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
-    sealed class TestEditorShell : IEditorShell {
+    internal sealed class TestEditorShell : IEditorShell {
         private static TestEditorShell _instance;
         private static readonly object _lock = new object();
 
-        public TestEditorShell(ICompositionCatalog catalog) {
+        private TestEditorShell(ICompositionCatalog catalog) {
             CompositionService = catalog.CompositionService;
             ExportProvider = catalog.ExportProvider;
             MainThread = Thread.CurrentThread;

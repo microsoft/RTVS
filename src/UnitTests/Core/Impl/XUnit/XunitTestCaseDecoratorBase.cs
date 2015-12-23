@@ -6,10 +6,8 @@ using Microsoft.UnitTests.Core.XUnit.MessageBusInjections;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Microsoft.UnitTests.Core.XUnit
-{
-    internal abstract class XunitTestCaseDecoratorBase : LongLivedMarshalByRefObject, IXunitTestCase
-    {
+namespace Microsoft.UnitTests.Core.XUnit {
+    internal abstract class XunitTestCaseDecoratorBase : LongLivedMarshalByRefObject, IXunitTestCase {
         private IXunitTestCase _testCase;
         private bool _suppressDebugFail;
         private string _displayName;
@@ -17,8 +15,7 @@ namespace Microsoft.UnitTests.Core.XUnit
         protected IXunitTestCase TestCase => _testCase;
         protected bool SuppressDebugFail => _suppressDebugFail;
 
-        protected XunitTestCaseDecoratorBase(IXunitTestCase testCase)
-        {
+        protected XunitTestCaseDecoratorBase(IXunitTestCase testCase) {
             _testCase = testCase;
         }
 
@@ -26,8 +23,7 @@ namespace Microsoft.UnitTests.Core.XUnit
         {
             get
             {
-                if (_displayName != null)
-                {
+                if (_displayName != null) {
                     return _displayName;
                 }
 
@@ -44,7 +40,7 @@ namespace Microsoft.UnitTests.Core.XUnit
 
         public ISourceInformation SourceInformation
         {
-            get { return _testCase.SourceInformation; } 
+            get { return _testCase.SourceInformation; }
             set { _testCase.SourceInformation = value; }
         }
 
@@ -58,8 +54,7 @@ namespace Microsoft.UnitTests.Core.XUnit
 
         public IMethodInfo Method => _testCase.Method;
 
-        public Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
-        {
+        public Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource) {
             TestTraceListener.Ensure();
             MessageBusOverride messageBusOverride = new MessageBusOverride(messageBus)
                 .AddAfterStartingBeforeFinished(new ExecuteBeforeAfterAttributesMessageBusInjection(Method, _testCase.TestMethod.TestClass.Class));
@@ -68,14 +63,12 @@ namespace Microsoft.UnitTests.Core.XUnit
 
         protected abstract Task<RunSummary> RunAsyncOverride(IMessageSink diagnosticMessageSink, MessageBusOverride messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource);
 
-        public void Deserialize(IXunitSerializationInfo info)
-        {
+        public void Deserialize(IXunitSerializationInfo info) {
             _testCase = info.GetValue<IXunitTestCase>("testCase");
             _suppressDebugFail = info.GetValue<bool>("suppressDebugFail");
         }
 
-        public void Serialize(IXunitSerializationInfo info)
-        {
+        public void Serialize(IXunitSerializationInfo info) {
             info.AddValue("testCase", _testCase);
             info.AddValue("suppressDebugFail", _suppressDebugFail);
         }

@@ -15,7 +15,7 @@ namespace Microsoft.Common.Core.Shell {
         // service provider with a specific name.
         public static void TryCreateTestInstance(string assemblyName, string className) {
             try {
-                string thisAssembly = Assembly.GetExecutingAssembly().Location;
+                string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
                 string assemblyLoc = Path.GetDirectoryName(thisAssembly);
                 string packageTestAssemblyPath = Path.Combine(assemblyLoc, assemblyName);
 

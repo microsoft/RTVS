@@ -1,0 +1,87 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using Microsoft.Common.Core;
+
+namespace Microsoft.UnitTests.Core.XUnit {
+    public abstract class DeployFilesFixture : IDisposable {
+        /// <summary>
+        /// Implementation assumes that repository has structure
+        /// > [repo root]
+        ///   > bin
+        ///     > [Configuration]
+        ///   > src
+        ///   > TestFiles
+        ///     > [yyyy-MM-dd HH-mm-ss]
+        /// and Microsoft.UnitTests.Core.dll is in [repo root]\bin\[Configuration]
+        /// </summary>
+        private static readonly Lazy<string> RepoRootLazy = new Lazy<string>(() => {
+            var path = Assembly.GetExecutingAssembly().GetAssemblyPath();
+            var directory = Path.GetDirectoryName(path);
+            
+            // Cut bin\Debug or bin\Release from path;
+            return Path.GetDirectoryName(Path.GetDirectoryName(directory));
+        });
+
+        private static readonly Lazy<string> TestFilesRootLazy = new Lazy<string>(() => Path.Combine(RepoRootLazy.Value, "TestFiles", DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")));
+        private static readonly Lazy<string> SolutionRootLazy = new Lazy<string>(() => Path.Combine(RepoRootLazy.Value, "src"));
+        private static readonly object CopyFilesLock = new object();
+
+        public string SourcePath { get; }
+        public string DestinationPath { get; }
+
+        public string SolutionRoot => SolutionRootLazy.Value;
+        public string TestFilesRoot => TestFilesRootLazy.Value;
+
+        protected DeployFilesFixture(string relativeSource, string relativeDestination) {
+            SourcePath = Path.Combine(SolutionRoot, relativeSource);
+            DestinationPath = Path.Combine(TestFilesRoot, relativeDestination);
+
+            try {
+                CopyDirectory(SourcePath, DestinationPath);
+            } catch (IOException) {
+                // Swallow IO exceptions, let tests fail because of missing test files
+            }
+        }
+
+        public void Dispose() {
+            // We want to preserve input data for future comparison
+        }
+
+        protected static void CopyDirectory(string src, string dst) {
+            CopyDirectory(src, dst, "*");
+        }
+
+        protected static void CopyDirectory(string src, string dst, string searchPattern) {
+            lock (CopyFilesLock) {
+                if (!Directory.Exists(src)) {
+                    return;
+                }
+
+                Directory.CreateDirectory(dst);
+
+                var dirs = Directory.GetDirectories(src);
+                foreach (var srcDir in dirs) {
+                    string srcDirName = Path.GetFileName(srcDir);
+                    string dstDir = Path.Combine(dst, srcDirName);
+
+                    CopyDirectory(srcDir, dstDir, searchPattern);
+                }
+
+                var srcFiles = Directory.GetFiles(src, searchPattern);
+                var expectedDestinationFileSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var filePath in srcFiles) {
+                    var fileName = Path.GetFileName(filePath);
+                    var dstPath = Path.Combine(dst, fileName);
+                    expectedDestinationFileSet.Add(dstPath);
+
+                    if (!File.Exists(dstPath) || File.GetLastWriteTimeUtc(dstPath) < File.GetLastWriteTimeUtc(filePath)) {
+                        File.Copy(filePath, dstPath, overwrite: true);
+                        File.SetAttributes(dstPath, FileAttributes.Normal);
+                    }
+                }
+            }
+        }
+    }
+}

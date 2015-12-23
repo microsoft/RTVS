@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class RangeFormatterTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+    [Category.R.Formatting]
+    public class RangeFormatterTest {
+        [Test]
         public void RangeFormatter_EmptyFileTest() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(string.Empty, out ast);
@@ -22,11 +21,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
             RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, ast, new RFormatOptions());
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
-            Assert.AreEqual(0, actual.Length);
+            actual.Should().BeEmpty();
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_EmptyArgumentsTest01() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c(,,)", out ast);
@@ -35,11 +33,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c(,,)";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_EmptyArgumentsTest02() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[,,]", out ast);
@@ -48,11 +45,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c[,,]";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_EmptyArgumentsTest03() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[[,,]]", out ast);
@@ -61,11 +57,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c[[,,]]";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_ArgumentsTest01() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[[a,,]]", out ast);
@@ -74,11 +69,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c[[a,,]]";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_ArgumentsTest02() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[[a,b,]]", out ast);
@@ -87,11 +81,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c[[a, b,]]";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_FormatConditionalTest01() {
             AstRoot ast;
             string original = "if(true){if(false){}}";
@@ -105,11 +98,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
   if (false) { }
 }";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_FormatConditionalTest02() {
             AstRoot ast;
             string original =
@@ -124,11 +116,10 @@ if(func(a,b,c +2, x =2,...)){}}";
 @"if (a == a + ((b + c) / x)) {
 if(func(a,b,c +2, x =2,...)){}}";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_FormatConditionalTest03() {
             AstRoot ast;
             string original =
@@ -148,11 +139,10 @@ x<-1
         x <- 1
     }
 }";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_FormatConditionalTest04() {
             AstRoot ast;
             string original = "if (x > 1)\r\ny<-2";
@@ -163,12 +153,11 @@ x<-1
             string expected = "if (x > 1)\r\n    y <- 2";
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_FormatOneLine() {
             AstRoot ast;
             string original =
@@ -183,11 +172,10 @@ foo(cache=TRUE)
 @"foo(cache = TRUE)
 foo(cache=TRUE)
 ";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_FormatSimpleScope() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("{}", out ast);
@@ -195,11 +183,10 @@ foo(cache=TRUE)
             RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(0, 1), ast, new RFormatOptions());
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
-            Assert.AreEqual("{ }", actual);
+            actual.Should().Be("{ }");
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
         public void RangeFormatter_FormatScopeLessIf01() {
             string original =
 @"
@@ -221,7 +208,7 @@ if (z < ncx)
     stop()
 ";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
     }
 }

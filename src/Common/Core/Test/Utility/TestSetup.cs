@@ -11,7 +11,7 @@ namespace Microsoft.Common.Core.Test.Utility {
         private static object _copyFilesLock = new object();
 
         public static void GetTestFolders(string editorRelativePath, string outputRelativePath, TestContext context, out string sourceFolder, out string destinationFolder) {
-            string thisAssembly = Assembly.GetExecutingAssembly().Location;
+            string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
             string assemblyLoc = Path.GetDirectoryName(thisAssembly);
             string enlistmentRoot = null;
 

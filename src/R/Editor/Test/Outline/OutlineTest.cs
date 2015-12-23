@@ -10,7 +10,6 @@ using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Test.Outline
 {
@@ -34,34 +33,30 @@ namespace Microsoft.R.Editor.Test.Outline
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void OutlineFile(TestContext context, string name)
+        public static void OutlineFile(EditorTestFilesFixture fixture, string name)
         {
-            try
-            {
-                string testFile = TestFiles.GetTestFilePath(context, name);
-                string baselineFile = testFile + ".outline";
+            string testFile = Path.Combine(fixture.DestinationPath, name);
+            string baselineFile = testFile + ".outline";
 
-                string text = TestFiles.LoadFile(context, testFile);
-
-                OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(text);
-                string actual = TextRangeCollectionWriter.WriteCollection(rc);
-
-                if (_regenerateBaselineFiles)
-                {
-                    // Update this to your actual enlistment if you need to update baseline
-                    string enlistmentPath = @"F:\RTVS\src\R\Editor\Test\Files";
-                    baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".outline";
-
-                    TestFiles.UpdateBaseline(baselineFile, actual);
-                }
-                else
-                {
-                    TestFiles.CompareToBaseLine(baselineFile, actual);
-                }
+            string text;
+            using (var sr = new StreamReader(testFile)) {
+                text = sr.ReadToEnd();
             }
-            catch (Exception exception)
+
+            OutlineRegionCollection rc = BuildOutlineRegions(text);
+            string actual = TextRangeCollectionWriter.WriteCollection(rc);
+
+            if (_regenerateBaselineFiles)
             {
-                Assert.Fail(string.Format(CultureInfo.InvariantCulture, "Test {0} has thrown an exception: {1}", Path.GetFileName(name), exception.Message));
+                // Update this to your actual enlistment if you need to update baseline
+                string enlistmentPath = @"F:\RTVS\src\R\Editor\Test\Files";
+                baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".outline";
+
+                TestFiles.UpdateBaseline(baselineFile, actual);
+            }
+            else
+            {
+                TestFiles.CompareToBaseLine(baselineFile, actual);
             }
         }
     }
