@@ -44,6 +44,8 @@
       <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.CoreUtility.14.1.24720\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.Common, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -52,10 +54,15 @@
       <HintPath>..\..\..\..\NugetPackages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
       <Private>True</Private>
@@ -87,12 +94,22 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Controls\ControlTestScript.cs" />
+    <Compile Include="Controls\ControlWindow.cs" />
     <Compile Include="Disposables\CountdownDisposableTest.cs" />
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="IO\SubstituteFactories\DirectoryInfoFactory.cs" />
     <Compile Include="IO\SubstituteFactories\FileInfoFactory.cs" />
+    <Compile Include="Script\TestScript.cs" />
     <Compile Include="StackExtensionsTest.cs" />
+    <Compile Include="Utility\CommonTestData.cs" />
+    <Compile Include="Utility\SupportedWpfProperties.cs" />
+    <Compile Include="Utility\TestFiles.cs" />
+    <Compile Include="Utility\TestSetup.cs" />
+    <Compile Include="Utility\UnitTestBase.cs" />
+    <Compile Include="Utility\VisualTreeWriter.cs" />
+    <Compile Include="STA\StaThread.cs" />
     <Compile Include="StringBuilderExtensionsTest.cs" />
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="Telemetry\FileTelemetryRecorder.cs" />
@@ -102,6 +119,7 @@
     <Compile Include="Telemetry\StringTelemetryRecorderTests.cs" />
     <Compile Include="Telemetry\TelemetryTestService.cs" />
     <Compile Include="Telemetry\TelemetryTestServiceTests.cs" />
+    <Compile Include="Utility\BaselineCompare.cs" />
     <Compile Include="Utility\SequentialTestExecutor.cs" />
   </ItemGroup>
   <ItemGroup>

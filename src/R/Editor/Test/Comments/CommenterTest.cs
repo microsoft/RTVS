@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Threading;
-using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Constants;
@@ -12,7 +11,6 @@ using Microsoft.R.Editor.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]

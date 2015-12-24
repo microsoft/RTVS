@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public async Task<ExecutionResult> InitializeAsync() {
             try {
-                await Session.StartHostAsync(_plotWindowHandle);
+                await Session.StartHostAsync("REPL", _plotWindowHandle);
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);

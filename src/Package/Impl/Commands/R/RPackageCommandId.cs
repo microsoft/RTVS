@@ -80,5 +80,6 @@
         public const int icmdSendHistoryToSource = 1203;
         public const int icmdDeleteSelectedHistoryEntries = 1204;
         public const int icmdDeleteAllHistoryEntries = 1205;
+        public const int icmdToggleMultilineSelection = 1206;
     }
 }

@@ -57,12 +57,7 @@ namespace Microsoft.R.Debugger {
 
         internal async Task SetBreakpointAsync() {
             TaskUtilities.AssertIsOnBackgroundThread();
-
-            var res = await Session.EvaluateAsync(GetAddBreakpointExpression(true));
-            if (res is DebugErrorEvaluationResult) {
-                throw new InvalidOperationException(Invariant($"{res.Expression}: {res}"));
-            }
-
+            await Session.InvokeDebugHelperAsync(GetAddBreakpointExpression(true));
             ++UseCount;
         }
 

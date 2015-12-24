@@ -419,6 +419,12 @@
   <data name="Settings_ClearFilterOnAddHistory_Description" xml:space="preserve">
     <value>Reset search filter in history window when new entry is added or .RHistory file is loaded</value>
   </data>
+  <data name="Settings_MultilineHistorySelection" xml:space="preserve">
+    <value>Use multiline selection</value>
+  </data>
+  <data name="Settings_MultilineHistorySelection_Description" xml:space="preserve">
+    <value>Single click in R history window selects the entire fragment that was sent to R.\r\nUp/Down arrows in the R Interactive Window navigate through chunks instead of single lines.</value>
+  </data>
   <data name="Ask" xml:space="preserve">
     <value>Ask</value>
   </data>

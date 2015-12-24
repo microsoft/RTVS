@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Outline;

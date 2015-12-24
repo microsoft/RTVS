@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,11 +13,20 @@ using static System.FormattableString;
 namespace Microsoft.R.Actions.Logging {
     public sealed class FileLogWriter : IActionLogWriter {
         private const int _maxBufferSize = 1024;
+        private static readonly ConcurrentDictionary<string, FileLogWriter> _writers = new ConcurrentDictionary<string, FileLogWriter>();
         private readonly char[] _lineBreaks = { '\n' };
         private readonly string _filePath;
         private readonly ActionBlock<string> _messages;
         private readonly StringBuilder _sb = new StringBuilder();
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+        private FileLogWriter(string filePath) {
+            _filePath = filePath;
+            _messages = new ActionBlock<string>(new Func<string, Task>(WriteToFile));
+
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        }
 
         private async Task WriteToFile(string message) {
             try {
@@ -51,18 +62,9 @@ namespace Microsoft.R.Actions.Logging {
                     }
                     _sb.Clear();
                 }
-            }
-            finally {
+            } finally {
                 _semaphore.Release();
             }
-        }
-
-        public FileLogWriter(string filePath) {
-            _filePath = filePath;
-            _messages = new ActionBlock<string>(new Func<string, Task>(WriteToFile));
-
-            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
         }
 
         public Task WriteAsync(MessageCategory category, string message) {
@@ -88,8 +90,10 @@ namespace Microsoft.R.Actions.Logging {
         }
 
         public static FileLogWriter InTempFolder(string fileName) {
-            var path = $@"{Path.GetTempPath()}/{fileName}_{DateTime.Now:yyyyMdd_HHmmss}.log";
-            return new FileLogWriter(path);
+            return _writers.GetOrAdd(fileName, _ => {
+                var path = $@"{Path.GetTempPath()}/{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log";
+                return new FileLogWriter(path);
+            });
         }
 
         private static string GetCategoryString(MessageCategory category) {

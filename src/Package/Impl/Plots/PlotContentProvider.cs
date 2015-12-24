@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _lastHeight = -1;
 
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
-            sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
+            sessionProvider.CurrentChanged += RSessionProvider_CurrentChanged;
 
             _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
 

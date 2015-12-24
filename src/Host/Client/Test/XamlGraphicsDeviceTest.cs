@@ -221,7 +221,7 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         private XDocument RunGraphicsTest(string code, string outputFilePath) {
             var callbacks = new Callbacks(code);
-            var host = new RHost(callbacks);
+            var host = new RHost("Test", callbacks);
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;

@@ -20,6 +20,7 @@ namespace Microsoft.R.Support.Settings.Definitions {
 
         bool AlwaysSaveHistory { get; set; }
         bool ClearFilterOnAddHistory { get; set; }
+        bool MultilineHistorySelection { get; set; }
 
         /// <summary>
         /// Current working directory for REPL

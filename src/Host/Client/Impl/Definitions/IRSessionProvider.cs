@@ -12,6 +12,6 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// event raised when current session changes
         /// </summary>
-        event EventHandler CurrentSessionChanged;
+        event EventHandler CurrentChanged;
     }
 }

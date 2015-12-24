@@ -73,7 +73,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Common.Wpf", "Com
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.R.Host", "Host\Process\src\Microsoft.R.Host.vcxproj", "{131842CE-DAF9-4C0E-8409-4A26EF7961A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.TestApp", "Package\TestApp\Microsoft.VisualStudio.R.TestApp.csproj", "{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Interactive.Test", "Package\TestApp\Microsoft.VisualStudio.R.Interactive.Test.csproj", "{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
-using System.Windows.Threading;
-using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl {
@@ -41,8 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void VariableChanged(EvaluationWrapper variable) {
-            ThreadHelper.Generic.BeginInvoke(
-                DispatcherPriority.Normal,
+            VsAppShell.Current.DispatchOnUIThread(
                 () => {
                     EnvironmentName.Text = variable.Name;
                     _rootNode.Model = new VariableNode(variable);

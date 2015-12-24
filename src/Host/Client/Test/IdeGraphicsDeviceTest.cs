@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -369,7 +369,7 @@ Sys.sleep(1)
 
         private IEnumerable<string> GraphicsTest(string code) {
             _callbacks.SetInput(setupCode + "\n" + code + "\n");
-            var host = new RHost(_callbacks);
+            var host = new RHost("Test", _callbacks);
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo();
             psi.CreateNoWindow = true;

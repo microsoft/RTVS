@@ -210,7 +210,7 @@
     <Compile Include="Repl\ReplWindowProviderTest.cs" />
     <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
-    <Compile Include="Utility\SequentialHostTestExecutor.cs" />
+    <Compile Include="Utility\RHostScript.cs" />
     <Compile Include="Utility\TestInstanceFactory.cs" />
     <Compile Include="Utility\TestPackage.cs" />
     <Compile Include="Utility\TestServiceProvider.cs" />
