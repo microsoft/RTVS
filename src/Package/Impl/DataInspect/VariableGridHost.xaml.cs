@@ -23,19 +23,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         internal void SetEvaluation(EvaluationWrapper evaluation) {
             var rowPageManager = new PageManager<string>(
                 new HeaderProvider(evaluation, true),
-                64,
+                32,
                 TimeSpan.FromMinutes(1.0),
                 4);
 
             var columnPageManager = new PageManager<string>(
                 new HeaderProvider(evaluation, false),
-                64,
+                32,
                 TimeSpan.FromMinutes(1.0),
                 4);
 
             var pageManager = new Page2DManager<string>(
                 new ItemsProvider(evaluation),
-                64,
+                32,
                 TimeSpan.FromMinutes(1.0),
                 4);
 
@@ -118,23 +118,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             var result = await VariableProvider.Current.EvaluateGridDataAsync(_evaluation.Name, rows, cols);
 
-            JToken columnNames = result.Value<JToken>("col.names");
-            JToken dataToken = result["data"];
+            var data = GridParser.Parse(result);
 
-            List<string> list = new List<string>();
-            if (columnNames is JValue) {   // single column
-                Debug.Assert(gridRange.Columns.Count == 1);
-
-                var key = columnNames.Value<string>();
-                AddColumn(dataToken, list, key);
-            } else {
-                foreach (var columnName in columnNames) {
-                    var key = columnName.Value<string>();
-
-                    AddColumn(dataToken, list, key);
-                }
-            }
-            return new Grid<string>(gridRange.Rows.Count, gridRange.Columns.Count, list);
+            return new GridByList<string>(data.RowNames.Count, data.ColumnNames.Count, data.Values);
         }
 
         private static void AddColumn(JToken dataToken, List<string> list, string key) {

@@ -45,15 +45,31 @@ grid.str.vector<-function(v) {
   vr;
 };
 
-gdJson <- function(obj) {
-  conn <- textConnection(NULL, open="w");
-  json <- "{}";
-  tryCatch({
-    rtvs:::toJSON(obj, conn);
-    cat('\n', file=conn, sep='');
-    json <- textConnectionValue(conn);
-  }, finally = {
-    close(conn);
-  });
-  json;
+grid.dput2 <- function(obj) {
+    capture.output(cat(capture.output(dput(obj))));
+}
+
+grid.dput <- function(obj) {
+    conn <- memory_connection(NA, 0x10000);
+    json <- "{}";
+    tryCatch({
+        dput(obj, conn);
+        json <- memory_connection_tochar(conn);
+    }, finally = {
+        close(conn);
+    });
+    json;
+}
+
+grid.toJSON <- function(obj) {
+    conn <- textConnection(NULL, open = "w");
+    json <- "{}";
+    tryCatch({
+        rtvs:::toJSON(obj, conn);
+        cat('\n', file = conn, sep = '');
+        json <- textConnectionValue(conn);
+    }, finally = {
+        close(conn);
+    });
+    json;
 }

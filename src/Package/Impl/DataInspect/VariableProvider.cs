@@ -47,17 +47,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public EvaluationWrapper LastEvaluation { get; private set; }
 
-        public async Task<JToken> EvaluateGridDataAsync(string expression, string rows, string columns) {
+        public async Task<string> EvaluateGridDataAsync(string expression, string rows, string columns) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            using (var evaluation = await _debugSession.RSession.BeginEvaluationAsync(false)) {
-                var result = await evaluation.EvaluateAsync($"rtvs:::toJSON(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Json);
+            using (var elapsed = new Elapsed("Data:Evaluate:")) {
+                using (var evaluation = await _debugSession.RSession.BeginEvaluationAsync(false)) {
+                    var result = await evaluation.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
 
-                if (result.ParseStatus != RParseStatus.OK || result.Error != null || result.JsonResult == null) {
-                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
+                    if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
+                        throw new InvalidOperationException($"Grid data evaluation failed:{result}");
+                    }
+
+                    return result.StringResult;
                 }
-
-                return result.JsonResult;
             }
         }
 
@@ -67,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             using (var evaluation = await _debugSession.RSession.BeginEvaluationAsync(false)) {
                 var result = await evaluation.EvaluateAsync($"rtvs:::toJSON(rtvs:::grid.header({expression}, {range}, {isRow.ToString().ToUpperInvariant()}))", REvaluationKind.Normal);
                 if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
-                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
+                    throw new InvalidOperationException($"Grid header evaluation failed:{result}");
                 }
                 Debug.Assert(result.StringResult != null);
                 return Newtonsoft.Json.JsonConvert.DeserializeObject<GridHeader>(result.StringResult);

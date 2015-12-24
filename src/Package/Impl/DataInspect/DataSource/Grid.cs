@@ -50,4 +50,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public int RowCount { get; }
     }
+
+    public class GridByList<T> : IGrid<T> {
+        List<List<T>> _data;
+
+        public GridByList(int rowCount, int columnCount, List<List<T>> data) {
+            RowCount = rowCount;
+            ColumnCount = columnCount;
+            _data = data;
+        }
+
+        public T this[int rowIndex, int columnIndex] {
+            get {
+                return _data[columnIndex][rowIndex];
+            }
+
+            set {
+                _data[columnIndex][rowIndex] = value;
+            }
+        }
+
+        public int ColumnCount {
+            get;
+        }
+
+        public int RowCount {
+            get;
+        }
+    }
 }
