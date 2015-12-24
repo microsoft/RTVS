@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
         public RHostScript() {
             SessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             Session = SessionProvider.Create(0, new RHostClientApp());
-            Session.StartHostAsync(IntPtr.Zero).Wait();
+            Session.StartHostAsync("RHostScript", IntPtr.Zero).Wait();
         }
 
         public void Dispose() {
