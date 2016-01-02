@@ -6,7 +6,7 @@ using Xunit;
 namespace Microsoft.Markdown.Editor.Tests.Tokens {
     public class TokenizeListTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
         [Fact]
-        [Trait("Md.Tokenizer", "")]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_List01() {
             var tokens = this.Tokenize(@"- item", new MdTokenizer());
 
@@ -18,7 +18,7 @@ namespace Microsoft.Markdown.Editor.Tests.Tokens {
         }
 
         [Fact]
-        [Trait("Md.Tokenizer", "")]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_List02() {
             var tokens = this.Tokenize(@"* item", new MdTokenizer());
 
@@ -30,7 +30,7 @@ namespace Microsoft.Markdown.Editor.Tests.Tokens {
         }
 
         [Fact]
-        [Trait("Md.Tokenizer", "")]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_List03() {
             var tokens = this.Tokenize(@"12. item", new MdTokenizer());
 
@@ -42,21 +42,21 @@ namespace Microsoft.Markdown.Editor.Tests.Tokens {
         }
 
         [Fact]
-        [Trait("Md.Tokenizer", "")]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_List04() {
             var tokens = this.Tokenize(@"-item", new MdTokenizer());
             Assert.Equal(0, tokens.Count);
         }
 
         [Fact]
-        [Trait("Md.Tokenizer", "")]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_List05() {
             var tokens = this.Tokenize(@"*item", new MdTokenizer());
             Assert.Equal(0, tokens.Count);
         }
 
         [Fact]
-        [Trait("Md.Tokenizer", "")]
+        [Trait("Category","Md.Tokenizer")]
         public void TokenizeMd_List06() {
             var tokens = this.Tokenize(@"1.item", new MdTokenizer());
             Assert.Equal(0, tokens.Count);

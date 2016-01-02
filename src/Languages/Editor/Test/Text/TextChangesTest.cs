@@ -7,7 +7,7 @@ using Xunit;
 namespace Microsoft.Languages.Editor.Tests.Text {
     public class TextChangesTest {
         [Fact]
-        [Trait("Languages.Editor", "")]
+        [Trait("Category", "Languages.Editor")]
         public void TextChanges_DeleteInMiddle() {
             IList<TextChange> changes = BuildChangeList("abc", "adc");
             Assert.Equal(1, changes.Count);
@@ -15,7 +15,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Languages.Editor", "")]
+        [Trait("Category", "Languages.Editor")]
         public void TextChanges_DontBreakCRNL() {
             IList<TextChange> changes = BuildChangeList(" \n\n ", " \r\n ");
             Assert.Equal(1, changes.Count);
@@ -23,7 +23,7 @@ namespace Microsoft.Languages.Editor.Tests.Text {
         }
 
         [Fact]
-        [Trait("Languages.Editor", "")]
+        [Trait("Category", "Languages.Editor")]
         public void TextChanges_DeleteOnlyAtStart() {
             IList<TextChange> changes = BuildChangeList("abc", "bc");
             Assert.Equal(1, changes.Count);

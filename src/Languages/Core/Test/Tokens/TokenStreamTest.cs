@@ -20,7 +20,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
         }
 
         [Fact]
-        [Trait("Languages.Core", "")]
+        [Trait("Category", "Languages.Core")]
         public void EmptyTokenStreamTest() {
             var tokens = new TestToken[] { };
             var ts = CreateTokenStream(tokens);
@@ -56,7 +56,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
         }
 
         [Fact]
-        [Trait("Languages.Core", "")]
+        [Trait("Category", "Languages.Core")]
         public void TokenStreamTest1() {
             var tokens = new TestToken[]
             {
@@ -122,7 +122,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
         }
 
         [Fact]
-        [Trait("Languages.Core", "")]
+        [Trait("Category", "Languages.Core")]
         public void TokenStreamLineBreakTest() {
             var tokens = new TestToken[]
             {
@@ -152,7 +152,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
         }
 
         [Fact]
-        [Trait("Languages.Core", "")]
+        [Trait("Category", "Languages.Core")]
         public void TokenStreamEnumerationTest() {
             var tokens = new TestToken[]
             {
