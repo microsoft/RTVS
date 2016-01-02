@@ -69,7 +69,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         /// <returns>Editor instance</returns>
         public void OpenFile(TestContext context, string fileName)
         {
-            string content = TestFiles.LoadFile(context.TestRunDirectory, fileName);
+            string content = TestFiles.LoadFile(context, fileName);
             EditorWindow.Create(content, fileName);
         }
 

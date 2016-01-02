@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Microsoft.Languages.Core.Tests.Text {
     public class TextRangeTest {
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_IntersectTest01() {
             TextRange r1 = TextRange.FromBounds(1, 5);
@@ -42,7 +42,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.False(TextRange.Intersect(r8, r1));
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_IntersectTest02() {
             TextRange r1 = TextRange.FromBounds(1, 5);
@@ -79,7 +79,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.False(r8.Intersect(r1));
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_IsValidTest() {
             Assert.False(TextRange.IsValid(TextRange.EmptyRange));
@@ -94,7 +94,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.True(TextRange.IsValid(r4));
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_CompareToTest() {
             TextRange r1 = TextRange.FromBounds(1, 1);
@@ -103,7 +103,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.False(r1.Equals(null));
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_ConstructionTest1() {
             bool exception = false;
@@ -117,7 +117,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.True(exception);
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_ConstructionTest2() {
             bool exception = false;
@@ -131,7 +131,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.True(exception);
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_ConstructionTest3() {
             bool exception = false;
@@ -145,7 +145,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.False(exception);
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_ConstructionTest4() {
             TextRange r = new TextRange(0);
@@ -164,7 +164,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.Equal(0, r.Length);
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_ContainsTest() {
             TextRange r = TextRange.FromBounds(1, 3);
@@ -179,7 +179,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.False(TextRange.Contains(r, Int32.MaxValue));
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_ContainsTest1() {
             TextRange r = TextRange.FromBounds(1, 5);
@@ -196,7 +196,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.False(TextRange.Contains(r, TextRange.FromBounds(1, 5)));
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_ContainsTest2() {
             TextRange r = TextRange.FromBounds(1, 5);
@@ -213,7 +213,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.False(r.Contains(TextRange.FromBounds(1, 5)));
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_EmptyTest() {
             TextRange r = TextRange.FromBounds(1, 2);
@@ -225,7 +225,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.Equal(0, r.Length);
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TextRange_AreEqualTest() {
             TextRange r = TextRange.FromBounds(1, 2);

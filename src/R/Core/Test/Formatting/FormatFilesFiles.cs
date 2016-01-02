@@ -24,10 +24,10 @@ namespace Microsoft.R.Core.Test.Tokens
         {
             try
             {
-                string testFile = TestFiles.GetTestFilePath(context.TestRunDirectory, name);
+                string testFile = TestFiles.GetTestFilePath(context, name);
                 string baselineFile = testFile + ".formatted";
 
-                string text = TestFiles.LoadFile(context.TestRunDirectory, testFile);
+                string text = TestFiles.LoadFile(context, testFile);
                 RFormatter formatter = new RFormatter(options);
 
                 string actual = formatter.Format(text);

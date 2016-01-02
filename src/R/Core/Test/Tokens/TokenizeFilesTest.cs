@@ -20,10 +20,10 @@ namespace Microsoft.R.Core.Test.Tokens
         {
             try
             {
-                string testFile = TestFiles.GetTestFilePath(context.TestRunDirectory, name);
+                string testFile = TestFiles.GetTestFilePath(context, name);
                 string baselineFile = testFile + ".tokens";
 
-                string text = TestFiles.LoadFile(context.TestRunDirectory, testFile);
+                string text = TestFiles.LoadFile(context, testFile);
                 ITextProvider textProvider = new TextStream(text);
                 var tokenizer = new RTokenizer();
 

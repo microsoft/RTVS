@@ -1,6 +1,7 @@
 ﻿using System;
+using Microsoft.Common.Core.Tests.Utility;
 
-namespace Microsoft.Common.Core.Tests.Utility {
+namespace Microsoft.Common.Core.Testss.Utility {
     public sealed class TestFilesSetupFixture: IDisposable {
         static readonly object _deploymentLock = new object();
         static bool _deployed = false;

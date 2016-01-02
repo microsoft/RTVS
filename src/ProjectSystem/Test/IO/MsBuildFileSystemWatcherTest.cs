@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
     {
         private const string ProjectDirectory = @"Z:\abc\";
 
-        [Fact]
+        [Test]
         public void Start()
         {
             var filter = "*";

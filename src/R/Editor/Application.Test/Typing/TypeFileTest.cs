@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
         /// <param name="fileName">File name</param>
         private string TypeFileInEditor(string fileName, string contentType) {
             using (var script = new TestScript(contentType)) {
-                string text = TestFiles.LoadFile(TestContext.TestRunDirectory, fileName);
+                string text = TestFiles.LoadFile(this.TestContext, fileName);
                 script.Type(text, idleTime: 10);
                 return script.EditorText;
             }

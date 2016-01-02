@@ -3,36 +3,40 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.Tests.Utility;
-using Microsoft.R.Core.AST;
-using Microsoft.R.Core.Parser;
-using Microsoft.R.Core.Utility;
+using Microsoft.Languages.Core.Tests.Utility;
+using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Core.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Core.Test.Utility {
+namespace Microsoft.R.Markdown.Editor.Test.Utility
+{
     [ExcludeFromCodeCoverage]
-    public class ParseFiles
+    public static class TokenizeFiles
     {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void ParseFile(TestContext context, string name)
+        public static void TokenizeFile<Token, TokenType, Tokenizer>(TestContext context, string name, string language) 
+            where Tokenizer: ITokenizer<Token>, new()
+            where Token: IToken<TokenType>
         {
             try
             {
                 string testFile = TestFiles.GetTestFilePath(context, name);
-                string baselineFile = testFile + ".tree";
+                string baselineFile = testFile + ".tokens";
 
                 string text = TestFiles.LoadFile(context, testFile);
-                AstRoot actualTree = RParser.Parse(text);
+                ITextProvider textProvider = new TextStream(text);
+                var tokenizer = new Tokenizer();
 
-                AstWriter astWriter = new AstWriter();
-                string actual = astWriter.WriteTree(actualTree);
+                var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
+                string actual = DebugWriter.WriteTokens<Token, TokenType>(tokens);
 
                 if (_regenerateBaselineFiles)
                 {
                     // Update this to your actual enlistment if you need to update baseline
-                    string enlistmentPath = @"C:\RTVS\src\R\Core\Test\Files\Parser";
-                    baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tree";
+                    string enlistmentPath = @"C:\RTVS\src\Markdown\Editor\Test\Files\Tokenization";
+                    baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
 
                     TestFiles.UpdateBaseline(baselineFile, actual);
                 }

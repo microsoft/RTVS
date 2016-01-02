@@ -7,7 +7,7 @@ using Xunit;
 namespace Microsoft.Common.Core.Tests.Telemetry {
     [ExcludeFromCodeCoverage]
     public class TelemetryTestServiceTests {
-        [Fact]
+        [Test]
         public void TelemetryTestService_DefaultPrefixConstructorTest() {
             var telemetryService = new TelemetryTestService();
             telemetryService.EventNamePrefix.Should().Be(TelemetryTestService.EventNamePrefixString);

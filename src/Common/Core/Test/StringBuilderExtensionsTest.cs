@@ -1,13 +1,12 @@
 using System.Text;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
-using Xunit;
 
 namespace Microsoft.Common.Core.Tests
 {
     public class StringBuilderExtensionsTest
     {
-        [Fact]
+        [Test]
         public void AppendIf_True()
         {
             var sb = new StringBuilder();
@@ -15,7 +14,7 @@ namespace Microsoft.Common.Core.Tests
             sb.ToString().Should().Be("ab");
         }
 
-        [Fact]
+        [Test]
         public void AppendIf_False()
         {
             var sb = new StringBuilder();

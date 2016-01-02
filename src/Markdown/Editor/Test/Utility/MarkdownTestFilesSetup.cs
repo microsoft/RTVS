@@ -1,14 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Tests.Utility;
-using Microsoft.Markdown.Editor.Test.Utility;
-using Microsoft.R.Editor.Test.Utility;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Application.Test {
+namespace Microsoft.Markdown.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class EditorAppTestFilesSetup
+    public class MarkdownTestFilesSetup
     {
         static readonly object _deploymentLock = new object();
         static bool _deployed = false;
@@ -16,10 +13,6 @@ namespace Microsoft.R.Editor.Application.Test {
         [AssemblyInitialize]
         public static void DeployFiles(TestContext context)
         {
-            SupportTestFilesSetup.DeployFiles(context);
-            MarkdownTestFilesSetup.DeployFiles(context);
-            EditorTestFilesSetup.DeployFiles(context);
-
             lock (_deploymentLock)
             {
                 if (!_deployed)
@@ -29,7 +22,7 @@ namespace Microsoft.R.Editor.Application.Test {
                     string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetupUtilities.GetTestFolders(@"R\Editor\Application.Test\Files", CommonTestData.TestFilesRelativePath, context.TestRunDirectory, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"Markdown\Editor\Test\Files", CommonTestData.TestFilesRelativePath, context.TestRunDirectory, out srcFilesFolder, out testFilesDir);
                     TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }

@@ -390,7 +390,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 _changeset.RemovedFiles.Should().Equal(expectedRemoved);
             }
 
-            [Fact]
+            [Test]
             public async Task DirectoryAdded_SymlinkIgnored() {
 
                 const string projectDirectorySubtree = @"

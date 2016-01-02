@@ -8,24 +8,24 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Common.Core.Tests.Utility {
     [ExcludeFromCodeCoverage]
     public static class TestFiles {
-        static public string LoadFile(string testRunDirectory, string fileName) {
-            var filePath = GetTestFilePath(testRunDirectory, fileName);
+        static public string LoadFile(TestContext context, string fileName) {
+            var filePath = GetTestFilePath(context, fileName);
 
             using (var sr = new StreamReader(filePath)) {
                 return sr.ReadToEnd();
             }
         }
 
-        static public string GetTestFilesFolder(string testRunDirectory) {
-            return Path.Combine(testRunDirectory, CommonTestData.TestFilesRelativePath);
+        static public string GetTestFilesFolder(TestContext context) {
+            return Path.Combine(context.TestRunDirectory, CommonTestData.TestFilesRelativePath);
         }
 
-        static public string GetTestFilePath(string testRunDirectory, string fileName) {
-            return Path.Combine(GetTestFilesFolder(testRunDirectory), fileName);
+        static public string GetTestFilePath(TestContext context, string fileName) {
+            return Path.Combine(GetTestFilesFolder(context), fileName);
         }
 
-        public static IList<string> GetTestFiles(string testRunDirectory, string extension) {
-            string path = GetTestFilesFolder(testRunDirectory);
+        public static IList<string> GetTestFiles(TestContext context, string extension) {
+            string path = GetTestFilesFolder(context);
             var files = new List<string>();
 
             IEnumerable<string> filesInFolder = Directory.EnumerateFiles(path);

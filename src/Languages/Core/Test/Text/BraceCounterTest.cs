@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Microsoft.Languages.Core.Tests.Text {
     public class BraceCounterTest {
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void BraceCounterTest_SingleBraces() {
             BraceCounter<char> braceCounter = new BraceCounter<char>(new char[] { '{', '}'});
@@ -16,7 +16,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             }
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void BraceCounterTest_MultipleBraces() {
             BraceCounter<char> braceCounter = new BraceCounter<char>(new char[] { '{', '}', '[', ']' });

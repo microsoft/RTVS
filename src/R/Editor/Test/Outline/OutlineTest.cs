@@ -38,10 +38,10 @@ namespace Microsoft.R.Editor.Test.Outline
         {
             try
             {
-                string testFile = TestFiles.GetTestFilePath(context.TestRunDirectory, name);
+                string testFile = TestFiles.GetTestFilePath(context, name);
                 string baselineFile = testFile + ".outline";
 
-                string text = TestFiles.LoadFile(context.TestRunDirectory, testFile);
+                string text = TestFiles.LoadFile(context, testFile);
 
                 OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(text);
                 string actual = TextRangeCollectionWriter.WriteCollection(rc);

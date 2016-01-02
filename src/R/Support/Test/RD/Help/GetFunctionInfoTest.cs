@@ -130,7 +130,7 @@ is.matrix(x)
         [TestMethod]
         [TestCategory("R.Signatures")]
         public void GetRdFunctionInfoTest01() {
-            string rdData = TestFiles.LoadFile(TestContext.TestRunDirectory, @"Help\01.rd");
+            string rdData = TestFiles.LoadFile(this.TestContext, @"Help\01.rd");
             IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
 
             Assert.IsNotNull(functionInfos);
@@ -150,7 +150,7 @@ is.matrix(x)
         [TestMethod]
         [TestCategory("R.Signatures")]
         public void GetRdFunctionInfoTest02() {
-            string rdData = TestFiles.LoadFile(TestContext.TestRunDirectory, @"Help\02.rd");
+            string rdData = TestFiles.LoadFile(this.TestContext, @"Help\02.rd");
             IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
 
             Assert.IsNotNull(functionInfos);

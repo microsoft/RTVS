@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
-using Xunit;
+using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.UnitTests.Core.Test.Threading {
+namespace Microsoft.UnitTests.Core.Test.Threading
+{
     public class ControlledTaskSchedulerTest
 	{
         private readonly ControlledTaskScheduler _scheduler;
@@ -15,14 +16,14 @@ namespace Microsoft.UnitTests.Core.Test.Threading {
             _scheduler = new ControlledTaskScheduler(SynchronizationContext.Current);
         }
 
-		[Fact]
+		[Test]
 		public void ControlledTaskScheduler_ThrowException()
 		{
 			Func<Task> f = async () => await Task.Factory.StartNew(SleepAndThrow, CancellationToken.None, TaskCreationOptions.None, _scheduler);
 			f.ShouldThrow<CustomException>();
 		}
 
-		[Fact]
+		[Test]
 		public void ControlledTaskScheduler_GetAwaiter_ThrowException()
 		{
 			Task.Factory.StartNew(SleepAndThrow, CancellationToken.None, TaskCreationOptions.None, _scheduler);
@@ -30,7 +31,7 @@ namespace Microsoft.UnitTests.Core.Test.Threading {
 			f.ShouldThrow<CustomException>();
 		}
 
-		[Fact]
+		[Test]
 		public void ControlledTaskScheduler_Wait_ThrowException()
 		{
 			Task.Factory.StartNew(SleepAndThrow, CancellationToken.None, TaskCreationOptions.None, _scheduler);
@@ -38,7 +39,7 @@ namespace Microsoft.UnitTests.Core.Test.Threading {
 			a.ShouldThrow<CustomException>();
         }
 
-		[Fact]
+		[Test]
 		public void ControlledTaskScheduler_WaitForUpcomingTasks_ThrowException()
 		{
 			Task.Delay(100).ContinueWith(t => Task.Factory.StartNew(SleepAndThrow, CancellationToken.None, TaskCreationOptions.None, _scheduler));
@@ -46,7 +47,7 @@ namespace Microsoft.UnitTests.Core.Test.Threading {
 			a.ShouldThrow<CustomException>();
 		}
 
-		[Fact]
+		[Test]
 		public void ControlledTaskScheduler_WaitForUpcomingTasks_ThrowTimeoutException()
 		{
 			
@@ -55,7 +56,7 @@ namespace Microsoft.UnitTests.Core.Test.Threading {
 			a.ShouldThrow<TimeoutException>();
 		}
 
-		[Fact]
+		[Test]
 		public void ControlledTaskScheduler_WaitActionBlock_ThrowException()
 		{
             Func<object, Task> f = o => Task.Factory.StartNew(SleepAndThrow);

@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             }
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void EmptyTokenStreamTest() {
             var tokens = new TestToken[] { };
@@ -55,7 +55,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.Equal(0, ts.Position);
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TokenStreamTest1() {
             var tokens = new TestToken[]
@@ -121,7 +121,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.Equal(3, ts.Position);
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TokenStreamLineBreakTest() {
             var tokens = new TestToken[]
@@ -151,7 +151,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.Equal("12345678", s);
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Core")]
         public void TokenStreamEnumerationTest() {
             var tokens = new TestToken[]

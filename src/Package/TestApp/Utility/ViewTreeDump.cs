@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
         public static void CompareVisualTrees(TestContext context, string actual, string fileName) {
             try {
                 string testFileName = fileName + ".tree";
-                string testFilePath = TestFiles.GetTestFilePath(context.TestRunDirectory, testFileName) ;
+                string testFilePath = TestFiles.GetTestFilePath(context, testFileName) ;
 
                 if (_regenerateBaselineFiles) {
                     // Update this to your actual enlistment if you need to update baseline

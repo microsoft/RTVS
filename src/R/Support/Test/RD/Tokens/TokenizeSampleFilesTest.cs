@@ -11,73 +11,73 @@ namespace Microsoft.R.Support.Test.RD.Tokens {
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile01() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\01.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\01.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile02() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\02.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\02.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile03() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\03.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\03.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile04() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\04.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\04.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile05() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\05.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\05.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile06() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\06.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\06.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile07() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\07.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\07.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile08() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\08.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\08.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile09() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\09.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\09.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile10() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\10.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\10.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile11() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\11.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\11.rd", "RD");
         }
 
         [TestMethod]
         [TestCategory("Rd.Tokenizer")]
         public void TokenizeSampleRdFile12() {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(TestContext.TestRunDirectory, @"Tokenization\12.rd", "RD");
+            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(this.TestContext, @"Tokenization\12.rd", "RD");
         }
     }
 }

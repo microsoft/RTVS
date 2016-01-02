@@ -41,7 +41,7 @@ namespace Microsoft.Languages.Editor.Tests.Services {
         }
         #endregion
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Editor")]
         public void ServiceManager_Test01() {
             PropertyOwner propertyOwner = new PropertyOwner();
@@ -82,7 +82,7 @@ namespace Microsoft.Languages.Editor.Tests.Services {
             Assert.True(added);
         }
 
-        [Fact]
+        [Test]
         [Trait("Category", "Languages.Editor")]
         public void ServiceManager_Test02() {
             PropertyOwner propertyOwner = new PropertyOwner();

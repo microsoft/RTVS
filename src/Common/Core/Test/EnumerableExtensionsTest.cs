@@ -2,13 +2,12 @@
 using System.Linq;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
-using Xunit;
 
 namespace Microsoft.Common.Core.Tests
 {
     public class EnumerableExtensionsTest
     {
-        [Fact]
+        [Test]
         public void AsList_Enumerable()
         {
             var actual = Enumerable.Range(0, 3).AsList();
@@ -20,7 +19,7 @@ namespace Microsoft.Common.Core.Tests
                 .BeOfType<List<int>>();
         }
 
-        [Fact]
+        [Test]
         public void AsList_Array()
         {
             var actual = Enumerable.Range(0, 3).ToArray().AsList();
@@ -32,7 +31,7 @@ namespace Microsoft.Common.Core.Tests
                 .BeOfType<List<int>>();
         }
 
-        [Fact]
+        [Test]
         public void AsList_List()
         {
             var source = Enumerable.Range(0, 3).ToList();
@@ -42,7 +41,7 @@ namespace Microsoft.Common.Core.Tests
             actual.Should().BeSameAs(expected);
         }
 
-        [Fact]
+        [Test]
         public void AsArray_Enumerable()
         {
             var actual = Enumerable.Range(0, 3).AsArray();
@@ -54,7 +53,7 @@ namespace Microsoft.Common.Core.Tests
                 .BeOfType<int[]>();
         }
 
-        [Fact]
+        [Test]
         public void AsArray_List()
         {
             var actual = Enumerable.Range(0, 3).ToList().AsArray();
@@ -66,7 +65,7 @@ namespace Microsoft.Common.Core.Tests
                 .BeOfType<int[]>();
         }
 
-        [Fact]
+        [Test]
         public void AsArray_Array()
         {
             var expected = new [] { 0,1,2 };
@@ -75,13 +74,13 @@ namespace Microsoft.Common.Core.Tests
             actual.Should().BeSameAs(expected);
         }
 
-        [Fact]
+        [Test]
         public void Append()
         {
             new[] {1, 2, 3}.Append(5).Should().Equal(1, 2, 3, 5);
         }
 
-        [Fact]
+        [Test]
         public void Split()
         {
             var actual = Enumerable.Range(0, 10).Split(3);
@@ -96,21 +95,21 @@ namespace Microsoft.Common.Core.Tests
             actual.Should().Equal(expected, (a, e) => a.SequenceEqual(e));
         }
 
-        [Fact]
+        [Test]
         public void Split_Empty()
         {
             var actual = Enumerable.Empty<int>().Split(3);
             actual.Should().Equal(Enumerable.Empty<IReadOnlyCollection<int>>());
         }
 
-        [Fact]
+        [Test]
         public void IndexWhere()
         {
             var actual = Enumerable.Range(2, 10).IndexWhere(v => v % 3 == 0);
             actual.Should().Equal(1, 4, 7);
         }
 
-        [Fact]
+        [Test]
         public void TraverseBreadthFirst()
         {
             var tree = new TreeItem(0, new []
@@ -127,7 +126,7 @@ namespace Microsoft.Common.Core.Tests
             actual.Select(i => i.Value).Should().Equal(0, 1, 5, 10, 2, 3, 4, 6, 7, 11, 8, 9);
         }
 
-        [Fact]
+        [Test]
         public void TraverseDepthFirst() {
             var tree = new TreeItem(0, new[]
             {

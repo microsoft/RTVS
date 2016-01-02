@@ -16,16 +16,16 @@ namespace Microsoft.R.Support.Test.Utility
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void TokenizeFile<Token, TokenType, Tokenizer>(string testRunDirectory, string name, string language) 
+        public static void TokenizeFile<Token, TokenType, Tokenizer>(TestContext context, string name, string language) 
             where Tokenizer: ITokenizer<Token>, new()
             where Token: IToken<TokenType>
         {
             try
             {
-                string testFile = TestFiles.GetTestFilePath(testRunDirectory, name);
+                string testFile = TestFiles.GetTestFilePath(context, name);
                 string baselineFile = testFile + ".tokens";
 
-                string text = TestFiles.LoadFile(testRunDirectory, testFile);
+                string text = TestFiles.LoadFile(context, testFile);
                 ITextProvider textProvider = new TextStream(text);
                 var tokenizer = new Tokenizer();
 
