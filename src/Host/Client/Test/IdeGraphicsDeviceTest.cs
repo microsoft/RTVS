@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Tests.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

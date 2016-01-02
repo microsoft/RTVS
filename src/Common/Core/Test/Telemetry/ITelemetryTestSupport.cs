@@ -1,5 +1,5 @@
 ﻿
-namespace Microsoft.Common.Core.Tests.Telemetry {
+namespace Microsoft.Common.Core.Test.Telemetry {
     public interface ITelemetryTestSupport {
         /// <summary>
         /// Resets current session and clear telemetry log.

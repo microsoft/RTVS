@@ -2,7 +2,7 @@ using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
-namespace Microsoft.Common.Core.Tests {
+namespace Microsoft.Common.Core.Test {
     public class StringExtensionsTest {
         [CompositeTest]
         [InlineData("aaaa", "a", "b", 0, 2, "bbaa")]

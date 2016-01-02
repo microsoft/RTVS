@@ -4,7 +4,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Editor.Completions.Definitions;
+using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Utilities;

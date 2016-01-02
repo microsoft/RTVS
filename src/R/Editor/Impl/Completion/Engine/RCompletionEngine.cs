@@ -10,14 +10,14 @@ using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Completions.Definitions;
-using Microsoft.R.Editor.Completions.Providers;
+using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Completion.Providers;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Completions.Engine {
+namespace Microsoft.R.Editor.Completion.Engine {
     internal static class RCompletionEngine {
         private static IEnumerable<Lazy<IRCompletionListProvider>> _completionProviders;
 

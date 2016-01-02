@@ -3,7 +3,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.Common.Core.Tests.Disposables
+namespace Microsoft.Common.Core.Test.Disposables
 {
     public class CountdownDisposableTest
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 
-namespace Microsoft.R.Editor.Completions.Definitions
+namespace Microsoft.R.Editor.Completion.Definitions
 {
     /// <summary>
     /// Attribute that allows completion provider to specify

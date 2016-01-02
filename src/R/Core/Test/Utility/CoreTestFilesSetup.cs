@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Tests.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.R.Editor.Test.Utility {
@@ -22,7 +22,7 @@ namespace Microsoft.R.Editor.Test.Utility {
                     string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetupUtilities.GetTestFolders(@"R\Core\Test\Files", CommonTestData.TestFilesRelativePath, context.TestRunDirectory, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"R\Core\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
                     TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }

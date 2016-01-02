@@ -2,7 +2,7 @@ using System.Text;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.Common.Core.Tests
+namespace Microsoft.Common.Core.Test
 {
     public class StringBuilderExtensionsTest
     {

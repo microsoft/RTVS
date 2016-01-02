@@ -6,7 +6,7 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.VisualStudio.Telemetry;
 using Newtonsoft.Json;
 
-namespace Microsoft.Common.Core.Tests.Telemetry {
+namespace Microsoft.Common.Core.Test.Telemetry {
     /// <summary>
     /// Records telemetry events into file. Typically used in test
     /// scenarios or when remote service is not available. In the latter

@@ -2,10 +2,10 @@
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Editor.Test.Utility {
+namespace Microsoft.Languages.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     [TestClass]
-    public class EditorTestFilesSetup
+    public class TestFilesSetup
     {
         static readonly object _deploymentLock = new object();
         static bool _deployed = false;
@@ -22,7 +22,7 @@ namespace Microsoft.R.Editor.Test.Utility {
                     string srcFilesFolder;
                     string testFilesDir;
 
-                    TestSetupUtilities.GetTestFolders(@"R\Editor\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
+                    TestSetupUtilities.GetTestFolders(@"Common\Editor\Test\Files", CommonTestData.TestFilesRelativePath, context, out srcFilesFolder, out testFilesDir);
                     TestSetupUtilities.CopyDirectory(srcFilesFolder, testFilesDir);
                 }
             }

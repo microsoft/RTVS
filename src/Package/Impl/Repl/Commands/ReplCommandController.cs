@@ -3,7 +3,7 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.Commands;
-using Microsoft.R.Editor.Completions;
+using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Commands;

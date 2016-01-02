@@ -13,7 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Win32;
 
-namespace Microsoft.Languages.Editor.Tests.Shell {
+namespace Microsoft.Languages.Editor.Test.Shell {
     /// <summary>
     /// Composition catalog that is primarily used in interactive tests.
     /// It is assigned to EditorShell.Current.CompositionService.

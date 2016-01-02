@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Completions.Providers {
+namespace Microsoft.R.Editor.Completion.Providers {
     /// <summary>
     /// Completion controller provider for Visual Studio core editor
     /// </summary>

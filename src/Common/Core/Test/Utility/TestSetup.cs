@@ -5,12 +5,12 @@ using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Common.Core.Tests.Utility {
+namespace Microsoft.Common.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class TestSetupUtilities {
         private static object _copyFilesLock = new object();
 
-        public static void GetTestFolders(string editorRelativePath, string outputRelativePath, string testRunDirectory, out string sourceFolder, out string destinationFolder) {
+        public static void GetTestFolders(string editorRelativePath, string outputRelativePath, TestContext context, out string sourceFolder, out string destinationFolder) {
             string thisAssembly = Assembly.GetExecutingAssembly().Location;
             string assemblyLoc = Path.GetDirectoryName(thisAssembly);
             string enlistmentRoot = null;
@@ -21,6 +21,9 @@ namespace Microsoft.Common.Core.Tests.Utility {
             if (testResultsIndex >= 0) {
                 int srcIndex = assemblyLoc.LastIndexOfIgnoreCase(@"\test\", testResultsIndex);
                 enlistmentRoot = assemblyLoc.Substring(0, (srcIndex >= 0) ? srcIndex : testResultsIndex);
+            } else if (assemblyLoc.ToLowerInvariant().IndexOfIgnoreCase(@"\school\") != -1) {
+                // in this case, we're running from Maddog, so just take the current path
+                enlistmentRoot = assemblyLoc;
             } else {
                 // Running tests from the command line will deploy into the "bin" directory
                 int binIndex = assemblyLoc.IndexOfIgnoreCase(@"\bin\");
@@ -31,7 +34,7 @@ namespace Microsoft.Common.Core.Tests.Utility {
             Assert.IsNotNull(enlistmentRoot);
 
             sourceFolder = Path.Combine(enlistmentRoot, editorRelativePath);
-            destinationFolder = Path.Combine(testRunDirectory, outputRelativePath);
+            destinationFolder = Path.Combine(context.TestRunDirectory, outputRelativePath);
         }
 
         public static void CopyDirectory(string src, string dst) {

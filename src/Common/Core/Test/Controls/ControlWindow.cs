@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Common.Core.Tests.STA;
+using Microsoft.Common.Core.Test.STA;
 using Screen = System.Windows.Forms.Screen;
 
-namespace Microsoft.Common.Core.Tests.Controls {
+namespace Microsoft.Common.Core.Test.Controls {
     /// <summary>
     /// Control window
     /// </summary>

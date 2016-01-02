@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.Common.Core.Tests.Utility {
+namespace Microsoft.Common.Core.Test.Utility {
     /// <summary>
     /// Properties written by the <see cref="VisualTreeWriter"/>
     /// </summary>

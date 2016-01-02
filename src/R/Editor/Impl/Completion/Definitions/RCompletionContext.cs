@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Completions.Definitions
+namespace Microsoft.R.Editor.Completion.Definitions
 {
     /// <summary>
     /// R completion context. Provides information about current document, 

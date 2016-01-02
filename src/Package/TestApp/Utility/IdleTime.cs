@@ -1,4 +1,4 @@
-﻿using Microsoft.Common.Core.Tests.Script;
+﻿using Microsoft.Common.Core.Test.Script;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Microsoft.Common.Core.Tests.Telemetry {
+namespace Microsoft.Common.Core.Test.Telemetry {
     internal sealed class SimpleTelemetryEvent {
         public SimpleTelemetryEvent(string eventName) {
             this.Name = eventName;

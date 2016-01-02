@@ -5,13 +5,13 @@ using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Editor.Completions.Definitions;
+using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace Microsoft.R.Editor.Completions.Providers {
+namespace Microsoft.R.Editor.Completion.Providers {
     /// <summary>
     /// Provides list of parameter names in function parameter completion
     /// in the form of 'name=' so when parameter name is the simiar

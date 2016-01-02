@@ -1,18 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.Common.Core.Tests.Utility;
-using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.Completions;
+using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.ContentType;
-using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Test.Completions {
+    using Common.Core.Test.Utility;
+    using Languages.Core.Text;
+    using VisualStudio.Editor.Mocks;
+    using VisualStudio.Text;
+    using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
+
     [ExcludeFromCodeCoverage]
     [TestClass]
     public class RCompletionSourceTest : UnitTestBase {

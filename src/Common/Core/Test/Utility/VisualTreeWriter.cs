@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Microsoft.Common.Core.Tests.Utility {
+namespace Microsoft.Common.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
     public sealed class VisualTreeWriter {
         private int _indent = 0;

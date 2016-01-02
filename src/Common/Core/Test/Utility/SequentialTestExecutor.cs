@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
-namespace Microsoft.Common.Core.Tests.Utility {
+namespace Microsoft.Common.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class SequentialTestExecutor {
         [ExcludeFromCodeCoverage]

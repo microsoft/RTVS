@@ -11,7 +11,7 @@ using Microsoft.Languages.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Tests.Shell {
+namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
     sealed class TestEditorShell : IEditorShell {
         private static TestEditorShell _instance;

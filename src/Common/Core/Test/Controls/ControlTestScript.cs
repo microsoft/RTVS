@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Tests.Script;
-using Microsoft.Common.Core.Tests.STA;
-using Microsoft.Common.Core.Tests.Utility;
+using Microsoft.Common.Core.Test.Script;
+using Microsoft.Common.Core.Test.STA;
+using Microsoft.Common.Core.Test.Utility;
 
-namespace Microsoft.Common.Core.Tests.Controls {
+namespace Microsoft.Common.Core.Test.Controls {
     [ExcludeFromCodeCoverage]
     public sealed class ControlTestScript : TestScript, IDisposable {
         public ControlTestScript(Type type) {

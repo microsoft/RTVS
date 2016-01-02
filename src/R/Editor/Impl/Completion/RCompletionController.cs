@@ -4,7 +4,7 @@ using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Editor.Completions.Definitions;
+using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Completions {
+namespace Microsoft.R.Editor.Completion {
     using Core.Tokens;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 

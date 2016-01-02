@@ -5,7 +5,7 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Common.Core.Tests.STA {
+namespace Microsoft.Common.Core.Test.STA {
     [ExcludeFromCodeCoverage]
     [TestClass]
     internal sealed class EditorTest {

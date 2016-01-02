@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Telemetry;
 
-namespace Microsoft.Common.Core.Tests.Telemetry {
+namespace Microsoft.Common.Core.Test.Telemetry {
     [ExcludeFromCodeCoverage]
     public sealed class TelemetryTestService : TelemetryServiceBase, ITelemetryTestSupport {
         public static readonly string EventNamePrefixString = "Test/RTVS/";

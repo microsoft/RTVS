@@ -12,7 +12,7 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Commands;
-using Microsoft.R.Editor.Completions.Engine;
+using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;

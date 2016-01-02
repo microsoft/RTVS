@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using Microsoft.Common.Core.Tests.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Tests.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;

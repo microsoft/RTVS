@@ -7,7 +7,7 @@ using Microsoft.Common.Core.IO;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
-namespace Microsoft.Common.Core.Tests.IO.SubstituteFactories
+namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
 {
     public static class DirectoryInfoFactory
     {

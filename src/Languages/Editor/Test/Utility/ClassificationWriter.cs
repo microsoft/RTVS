@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace Microsoft.Languages.Editor.Tests.Utility
+namespace Microsoft.Languages.Editor.Test.Utility
 {
     [ExcludeFromCodeCoverage]
     public static class ClassificationWriter

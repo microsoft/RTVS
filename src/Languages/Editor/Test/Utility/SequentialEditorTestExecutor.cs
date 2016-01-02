@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Microsoft.Languages.Editor.Shell;
 
-namespace Microsoft.Languages.Editor.Tests.Utility {
+namespace Microsoft.Languages.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class SequentialEditorTestExecutor {
         [ExcludeFromCodeCoverage]
