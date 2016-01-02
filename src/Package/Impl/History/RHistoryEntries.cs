@@ -5,25 +5,27 @@ using Microsoft.Languages.Core.Utility;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.VisualStudio.R.Package.History {
-    internal sealed class RHistoryEntries : IRHistoryEntries {
+    internal abstract class RHistoryEntries : IRHistoryEntries {
         private static readonly IComparer<Entry> EntryComparer = Comparer<Entry>.Create((e1, e2) => e1.Index.CompareTo(e2.Index));
 
         private long _index;
         private readonly List<Entry> _entries = new List<Entry>();
         private List<Entry> _selectedEntries = new List<Entry>();
 
+        public abstract bool IsMultiline { get; }
+
         public IReadOnlyList<IRHistoryEntry> GetEntries() => new List<IRHistoryEntry>(_entries);
         public IReadOnlyList<IRHistoryEntry> GetSelectedEntries() => new List<IRHistoryEntry>(_selectedEntries);
-        public IEnumerable<string> GetEntriesText() => _entries.Select(e => e.Text);
-        public IEnumerable<string> GetSelectedEntriesText() => _selectedEntries.Select(e => e.Text);
         public IRHistoryEntry Find(Func<IRHistoryEntry, bool> predicate) => _entries.First(predicate);
         public IRHistoryEntry FirstOrDefault() => _entries.FirstOrDefault();
         public IRHistoryEntry LastOrDefault() => _entries.LastOrDefault();
         public bool HasEntries => _entries.Count > 0;
         public bool HasSelectedEntries => _selectedEntries.Count > 0;
 
-        public IRHistoryEntry Add(string text) {
-            var entry = new Entry(this, _index++, text);
+        public abstract void Add(ITrackingSpan span);
+
+        protected IRHistoryEntry AddEntry(ITrackingSpan entrySpan, ITrackingSpan span) {
+            var entry = new Entry(this, _index++, entrySpan, span);
 
             if (_entries.Count > 0) {
                 var previous = _entries[_entries.Count - 1];
@@ -81,6 +83,13 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _index = 0;
         }
 
+        protected void CloneEntries(IRHistoryEntries existingEntries) {
+            foreach (var existingEntry in existingEntries.GetEntries()) {
+                var newEntry = AddEntry(existingEntry.EntrySpan, existingEntry.Span);
+                newEntry.IsSelected = existingEntry.IsSelected;
+            }
+        }
+
         private void DeleteEntry(Entry entry) {
             _entries.RemoveSorted(entry, EntryComparer);
             var previous = (Entry)entry.Previous;
@@ -105,19 +114,21 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private class Entry : IRHistoryEntry, IDisposable {
             private bool _isSelected;
 
-            public Entry(RHistoryEntries owner, long index, string text) {
+            public Entry(RHistoryEntries owner, long index, ITrackingSpan entrySpan, ITrackingSpan span) {
                 Owner = owner;
                 Index = index;
-                Text = text;
+                EntrySpan = entrySpan;
+                Span = span;
             }
+
+            public long Index { get; }
+            public ITrackingSpan EntrySpan { get; private set; }
+            public ITrackingSpan Span { get; private set; }
+            public RHistoryEntries Owner { get; private set; }
 
             public IRHistoryEntry Next { get; set; }
             public IRHistoryEntry Previous { get; set; }
 
-            public RHistoryEntries Owner { get; private set; }
-            public long Index { get; }
-            public string Text { get; }
-            public ITrackingSpan TrackingSpan { get; set; }
 
             public bool IsSelected {
                 get { return _isSelected; }
@@ -135,6 +146,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
 
             public void Dispose() {
+                EntrySpan = null;
+                Span = null;
                 Owner = null;
                 Previous = null;
                 Next = null;

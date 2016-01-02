@@ -59,13 +59,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void ConnectToSessionChangeEvents() {
-            _sessionProvider.CurrentSessionChanged += OnCurrentSessionChanged;
+            _sessionProvider.CurrentChanged += OnCurrentSessionChanged;
             ConnectToSessionEvents();
         }
 
         private void DisconnectFromSessionChangeEvents() {
             if (_sessionProvider != null) {
-                _sessionProvider.CurrentSessionChanged -= OnCurrentSessionChanged;
+                _sessionProvider.CurrentChanged -= OnCurrentSessionChanged;
                 _sessionProvider = null;
             }
         }

@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public VariableProvider() {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
-            sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
+            sessionProvider.CurrentChanged += RSessionProvider_CurrentChanged;
 
             IdleTimeAction.Create(() => {
                 SetRSession(sessionProvider.Current).SilenceException<Exception>().DoNotWait();

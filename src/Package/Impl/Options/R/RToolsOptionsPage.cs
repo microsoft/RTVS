@@ -83,6 +83,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.ClearFilterOnAddHistory = value; }
         }
 
+        [LocCategory("Settings_HistoryCategory")]
+        [CustomLocDisplayName("Settings_MultilineHistorySelection")]
+        [LocDescription("Settings_MultilineHistorySelection_Description")]
+        [DefaultValue(false)]
+        public bool MultilineHistorySelection {
+            get { return RToolsSettings.Current.MultilineHistorySelection; }
+            set { RToolsSettings.Current.MultilineHistorySelection = value; }
+        }
+
         [LocCategory("Settings_GeneralCategory")]
         [CustomLocDisplayName("Settings_RBasePath")]
         [LocDescription("Settings_RBasePath_Description")]

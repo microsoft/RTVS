@@ -9,6 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         event EventHandler<EventArgs> HistoryChanged;
         bool HasSelectedEntries { get; }
         bool HasEntries { get; }
+        bool IsMultiline { get; set; }
 
         bool TryLoadFromFile(string path);
         bool TrySaveToFile(string path);
@@ -20,13 +21,14 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         IReadOnlyList<SnapshotSpan> GetSelectedHistoryEntrySpans();
         string GetSelectedText();
+
         SnapshotSpan SelectHistoryEntry(int lineNumber);
         SnapshotSpan DeselectHistoryEntry(int lineNumber);
         SnapshotSpan ToggleHistoryEntrySelection(int lineNumber);
-
         void SelectHistoryEntries(IEnumerable<int> lineNumbers);
         void SelectAllEntries();
         void ClearHistoryEntrySelection();
+
         void DeleteSelectedHistoryEntries();
         void DeleteAllHistoryEntries();
         void Filter(string searchPattern);
