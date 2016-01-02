@@ -235,6 +235,7 @@ namespace Microsoft.Languages.Core.Tests.Text {
             Assert.True(TextRange.Equals(r, r));
             Assert.False(TextRange.Equals(r, null));
             Assert.False(TextRange.Equals(null, r));
+            Assert.True(TextRange.Equals(r, r1));
         }
     }
 }
