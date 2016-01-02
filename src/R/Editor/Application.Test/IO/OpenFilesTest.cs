@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Test.Utility;
-using Microsoft.Languages.Core.Tests.Utility;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

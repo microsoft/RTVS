@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.Test.Utility;
-using Microsoft.Languages.Core.Tests.Utility;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Outline;

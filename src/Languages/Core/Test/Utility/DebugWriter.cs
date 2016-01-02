@@ -6,8 +6,9 @@ using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
-namespace Microsoft.Languages.Core.Tests.Utility
+namespace Microsoft.Languages.Core.Test.Utility
 {
+    [ExcludeFromCodeCoverage]
     public class DebugWriter
     {
         public static string WriteTokens<Token, TokenType>(IReadOnlyTextRangeCollection<Token> tokens) where Token : ITextRange
