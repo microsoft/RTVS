@@ -78,27 +78,28 @@ namespace Microsoft.R.Support.RD.Parser {
             }
 
             // Merge signatures into function infos
-            Dictionary<string, FunctionInfo> functionInfos = new Dictionary<string, FunctionInfo>();
-            Dictionary<string, List<ISignatureInfo>> functionSignatures = new Dictionary<string, List<ISignatureInfo>>();
-            foreach (ISignatureInfo sigInfo in signatureInfos) {
-                FunctionInfo functionInfo;
-                List<ISignatureInfo> sigList;
-                if (!functionInfos.TryGetValue(sigInfo.FunctionName, out functionInfo)) {
-                    // Create function info
-                    functionInfo = new FunctionInfo(sigInfo.FunctionName, functionDescription);
-                    functionInfos[sigInfo.FunctionName] = functionInfo;
-                    functionInfo.IsInternal = isInternal;
-                    functionInfo.ReturnValue = returnValue;
-                    // Create list of signatures for this function
-                    sigList = new List<ISignatureInfo>();
-                    functionSignatures[sigInfo.FunctionName] = sigList;
-                    functionInfo.Signatures = sigList;
-                }
-                else {
-                    sigList = functionSignatures[sigInfo.FunctionName];
-                }
+            if (signatureInfos != null) {
+                Dictionary<string, FunctionInfo> functionInfos = new Dictionary<string, FunctionInfo>();
+                Dictionary<string, List<ISignatureInfo>> functionSignatures = new Dictionary<string, List<ISignatureInfo>>();
+                foreach (ISignatureInfo sigInfo in signatureInfos) {
+                    FunctionInfo functionInfo;
+                    List<ISignatureInfo> sigList;
+                    if (!functionInfos.TryGetValue(sigInfo.FunctionName, out functionInfo)) {
+                        // Create function info
+                        functionInfo = new FunctionInfo(sigInfo.FunctionName, functionDescription);
+                        functionInfos[sigInfo.FunctionName] = functionInfo;
+                        functionInfo.IsInternal = isInternal;
+                        functionInfo.ReturnValue = returnValue;
+                        // Create list of signatures for this function
+                        sigList = new List<ISignatureInfo>();
+                        functionSignatures[sigInfo.FunctionName] = sigList;
+                        functionInfo.Signatures = sigList;
+                    } else {
+                        sigList = functionSignatures[sigInfo.FunctionName];
+                    }
 
-                sigList.Add(sigInfo);
+                    sigList.Add(sigInfo);
+                }
             }
 
             return functionInfos.Values.Select(x => x).ToList();
