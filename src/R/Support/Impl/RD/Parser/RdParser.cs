@@ -78,8 +78,8 @@ namespace Microsoft.R.Support.RD.Parser {
             }
 
             // Merge signatures into function infos
+            Dictionary<string, FunctionInfo> functionInfos = new Dictionary<string, FunctionInfo>();
             if (signatureInfos != null) {
-                Dictionary<string, FunctionInfo> functionInfos = new Dictionary<string, FunctionInfo>();
                 Dictionary<string, List<ISignatureInfo>> functionSignatures = new Dictionary<string, List<ISignatureInfo>>();
                 foreach (ISignatureInfo sigInfo in signatureInfos) {
                     FunctionInfo functionInfo;
