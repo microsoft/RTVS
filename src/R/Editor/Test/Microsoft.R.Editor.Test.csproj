@@ -173,7 +173,7 @@
     <Compile Include="Assertions\ParameterInfoAssertion.cs" />
     <Compile Include="Signatures\ParameterTest.cs" />
     <Compile Include="Signatures\SignatureHelpSourceTest.cs" />
-    <Compile Include="Signatures\SignatureTests.cs" />
+    <Compile Include="Signatures\SignatureTest.cs" />
     <Compile Include="Tree\EditorTreeTest.cs" />
     <Compile Include="Tree\InvalidateTest.cs" />
     <Compile Include="Tree\ProcessChangesTest.cs" />
