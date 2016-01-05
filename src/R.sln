@@ -73,7 +73,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Common.Wpf", "Com
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.R.Host", "Host\Process\src\Microsoft.R.Host.vcxproj", "{131842CE-DAF9-4C0E-8409-4A26EF7961A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.TestApp", "Package\TestApp\Microsoft.VisualStudio.R.TestApp.csproj", "{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Interactive.Test", "Package\TestApp\Microsoft.VisualStudio.R.Interactive.Test.csproj", "{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.TestApp", "Package\TestApp2\Microsoft.VisualStudio.R.TestApp.csproj", "{130C9240-9537-42D4-A62C-2A13815F0020}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -493,6 +495,18 @@ Global
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}.Release|x64.Build.0 = Release|Any CPU
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}.Release|x86.ActiveCfg = Release|Any CPU
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}.Release|x86.Build.0 = Release|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Debug|x64.Build.0 = Debug|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Debug|x86.Build.0 = Debug|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Release|Any CPU.Build.0 = Release|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Release|x64.ActiveCfg = Release|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Release|x64.Build.0 = Release|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Release|x86.ActiveCfg = Release|Any CPU
+		{130C9240-9537-42D4-A62C-2A13815F0020}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -516,5 +530,6 @@ Global
 		{BEF9464F-FF58-4693-AF12-A6FA75033A5C} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{E4528324-C399-48D2-AB38-66D951158F12} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
+		{130C9240-9537-42D4-A62C-2A13815F0020} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 	EndGlobalSection
 EndGlobal

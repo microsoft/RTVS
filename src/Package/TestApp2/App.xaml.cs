@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Microsoft.VisualStudio.R.TestApp {
+namespace TestApp2 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>

@@ -26,11 +26,14 @@ namespace Microsoft.R.Host.Client {
 
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
 
+        private static bool showConsole = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
+
         private IMessageTransport _transport;
         private readonly object _transportLock = new object();
         private readonly TaskCompletionSource<IMessageTransport> _transportTcs = new TaskCompletionSource<IMessageTransport>();
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly string _name;
         private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
         private readonly FileLogWriter _fileLogWriter;
@@ -43,9 +46,11 @@ namespace Microsoft.R.Host.Client {
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
-        public RHost(IRCallbacks callbacks) {
+        public RHost(string name, IRCallbacks callbacks) {
             _callbacks = callbacks;
-            _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client");
+            _name = name;
+
+            _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client" + (name != null ? "_" + name : ""));
             _log = new LinesLog(_fileLogWriter);
         }
 
@@ -529,7 +534,13 @@ namespace Microsoft.R.Host.Client {
             psi.UseShellExecute = false;
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
-            psi.Arguments = Invariant($"--rhost-connect ws://127.0.0.1:{server.Port} --rhost-reparent-plot-windows {plotWindowContainerHandle.ToInt64()}");
+            if (_name != null) {
+                psi.Arguments += " --rhost-name " + _name;
+            }
+            psi.Arguments += Invariant($" --rhost-connect ws://127.0.0.1:{server.Port} --rhost-reparent-plot-windows {plotWindowContainerHandle.ToInt64()}");
+            if (!showConsole) {
+                psi.CreateNoWindow = true;
+            }
 
             if (!string.IsNullOrWhiteSpace(settings.RCommandLineArguments)) {
                 psi.Arguments += Invariant($" {settings.RCommandLineArguments}");

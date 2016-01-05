@@ -1,8 +1,8 @@
-﻿<Application x:Class="Microsoft.VisualStudio.R.TestApp.App"
+﻿<Application x:Class="TestApp2.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Microsoft.VisualStudio.R.TestApp"
-             StartupUri="TreeWindow.xaml">
+             xmlns:local="clr-namespace:TestApp2"
+             StartupUri="MainWindow.xaml">
     <Application.Resources>
          
     </Application.Resources>

@@ -2,9 +2,11 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.History.Commands;
+using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
@@ -47,6 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                 new DeleteAllHistoryEntriesCommand(textView, _historyProvider),
                 new HistoryWindowVsStd2KCmdIdReturnCommand(textView, sendToReplCommand, sendToSourceCommand),
                 new HistoryWindowVsStd97CmdIdSelectAllCommand(textView, _historyProvider),
+                new ToggleMultilineHistorySelectionCommand(textView, _historyProvider, RToolsSettings.Current), 
                 new CopySelectedHistoryCommand(textView, _historyProvider, _editorOperationsService)
             };
         }

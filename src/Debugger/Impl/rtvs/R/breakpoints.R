@@ -172,3 +172,34 @@ enable_breakpoints <- function(enable) {
     }
   }
 }
+
+# Like parse, but returns a single `{` call object wrapping the content of the file, rather than
+# an expression object containing separate calls. Consequently, when the returned object is eval'd,
+# it is possible to use debug stepping commands to execute expressions sequentially.
+debug_parse <- function(filename, encoding = getOption('encoding')) {
+   exprs <- parse(filename, encoding = encoding);
+
+   # Create a `{` call wrapping all expressions in the file.
+   result <- quote({});
+   for (i in 1:length(exprs)) {
+     result[[i + 1]] <- exprs[[i]];
+   }
+
+   # Copy top-level source info.
+   attr(result, 'srcfile') <- attr(exprs, 'srcfile');
+
+   # Since the result has indices shifted by 1 due to the addition of `{` at the beginning,
+   # per-line source info needs to be adjusted accordingly before copying.
+   old_srcref <- attr(exprs, 'srcref');
+   new_srcref <- list(attr(exprs, 'srcref')[[1]]);
+   for (i in 1:length(exprs)) {
+      new_srcref[[i + 1]] <- old_srcref[[i]];
+   }
+   attr(result, 'srcref') <- new_srcref;
+
+   result
+}
+
+debug_source <- function(file, encoding = getOption('encoding')) {
+    eval.parent(debug_parse(file, encoding))
+}

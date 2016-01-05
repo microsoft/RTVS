@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Parser;
@@ -183,6 +184,15 @@ is.matrix(x)
             Assert.AreEqual("logical specifying whether bindings should be locked.", functionInfos[0].Signatures[0].Arguments[1].Description);
             Assert.AreEqual("a name object or character string.", functionInfos[2].Signatures[0].Arguments[0].Description);
             Assert.AreEqual("a function taking zero or one arguments.", functionInfos[5].Signatures[0].Arguments[1].Description);
+        }
+
+        [TestMethod]
+        [TestCategory("R.Signatures")]
+        public void GetRdFunctionArgumentsBadData01() {
+            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(string.Empty);
+
+            Assert.IsNotNull(functionInfos);
+            Assert.AreEqual(0, functionInfos.Count);
         }
     }
 }

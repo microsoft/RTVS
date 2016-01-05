@@ -1,0 +1,1094 @@
+VariableGridHost
+Content = Microsoft.VisualStudio.R.Package.DataInspect.DynamicGrid Items.Count:0
+ContentTemplate = null
+Padding = 0,0,0,0
+DataContext = null
+Name = 
+Margin = 0,0,0,0
+HorizontalAlignment = Stretch
+VerticalAlignment = Stretch
+ToolTip = null
+ContextMenu = null
+Visibility = Visible
+IsEnabled = True
+IsVisible = True
+IsEnabled = True
+IsEnabled = True
+TextAlignment = Left
+IsVirtualizing = True
+HorizontalScrollBarVisibility = Disabled
+VerticalScrollBarVisibility = Visible
+Name = 
+--------------------------------------------------------------
+    Border
+    Padding = 0,0,0,0
+    DataContext = null
+    Name = 
+    Margin = 0,0,0,0
+    HorizontalAlignment = Stretch
+    VerticalAlignment = Stretch
+    ToolTip = null
+    ContextMenu = null
+    Visibility = Visible
+    IsEnabled = True
+    IsVisible = True
+    IsEnabled = True
+    IsEnabled = True
+    TextAlignment = Left
+    IsVirtualizing = True
+    HorizontalScrollBarVisibility = Disabled
+    VerticalScrollBarVisibility = Visible
+    Name = 
+    --------------------------------------------------------------
+        ContentPresenter
+        Content = Microsoft.VisualStudio.R.Package.DataInspect.DynamicGrid Items.Count:0
+        ContentTemplate = null
+        DataContext = null
+        Name = 
+        Margin = 0,0,0,0
+        HorizontalAlignment = Stretch
+        VerticalAlignment = Stretch
+        ToolTip = null
+        ContextMenu = null
+        Visibility = Visible
+        IsEnabled = True
+        IsVisible = True
+        IsEnabled = True
+        IsEnabled = True
+        TextAlignment = Left
+        IsVirtualizing = True
+        HorizontalScrollBarVisibility = Disabled
+        VerticalScrollBarVisibility = Visible
+        Name = 
+        --------------------------------------------------------------
+            DynamicGrid
+            Padding = 0,0,0,0
+            DataContext = null
+            Name = VariableGrid
+            Margin = 0,0,0,0
+            HorizontalAlignment = Stretch
+            VerticalAlignment = Stretch
+            ToolTip = null
+            ContextMenu = null
+            Visibility = Visible
+            IsEnabled = True
+            IsVisible = True
+            IsEnabled = True
+            IsEnabled = True
+            TextAlignment = Left
+            IsVirtualizing = True
+            HorizontalScrollBarVisibility = Disabled
+            VerticalScrollBarVisibility = Visible
+            Name = 
+            --------------------------------------------------------------
+                Border
+                Padding = 0,0,0,0
+                DataContext = null
+                Name = 
+                Margin = 0,0,0,0
+                HorizontalAlignment = Stretch
+                VerticalAlignment = Stretch
+                ToolTip = null
+                ContextMenu = null
+                Visibility = Visible
+                IsEnabled = True
+                IsVisible = True
+                IsEnabled = True
+                IsEnabled = True
+                TextAlignment = Left
+                IsVirtualizing = True
+                HorizontalScrollBarVisibility = Disabled
+                VerticalScrollBarVisibility = Visible
+                Name = 
+                --------------------------------------------------------------
+                    Grid
+                    DataContext = null
+                    Name = 
+                    Margin = 0,0,0,0
+                    HorizontalAlignment = Stretch
+                    VerticalAlignment = Stretch
+                    ToolTip = null
+                    ContextMenu = null
+                    Visibility = Visible
+                    IsEnabled = True
+                    IsVisible = True
+                    IsEnabled = True
+                    IsEnabled = True
+                    TextAlignment = Left
+                    IsVirtualizing = True
+                    HorizontalScrollBarVisibility = Disabled
+                    VerticalScrollBarVisibility = Visible
+                    Name = 
+                    --------------------------------------------------------------
+                        DynamicGridRow
+                        Padding = 0,0,0,0
+                        DataContext = null
+                        Name = 
+                        Margin = 0,0,0,0
+                        HorizontalAlignment = Stretch
+                        VerticalAlignment = Stretch
+                        ToolTip = null
+                        ContextMenu = null
+                        Visibility = Visible
+                        IsEnabled = True
+                        IsVisible = True
+                        IsEnabled = True
+                        IsEnabled = True
+                        TextAlignment = Left
+                        IsVirtualizing = True
+                        HorizontalScrollBarVisibility = Visible
+                        VerticalScrollBarVisibility = Disabled
+                        Name = 
+                        --------------------------------------------------------------
+                            Grid
+                            DataContext = null
+                            Name = 
+                            Margin = 0,0,0,0
+                            HorizontalAlignment = Stretch
+                            VerticalAlignment = Stretch
+                            ToolTip = null
+                            ContextMenu = null
+                            Visibility = Visible
+                            IsEnabled = True
+                            IsVisible = True
+                            IsEnabled = True
+                            IsEnabled = True
+                            TextAlignment = Left
+                            IsVirtualizing = True
+                            HorizontalScrollBarVisibility = Disabled
+                            VerticalScrollBarVisibility = Visible
+                            Name = 
+                            --------------------------------------------------------------
+                                DynamicGridRowHeader
+                                Content = null
+                                ContentTemplate = null
+                                Padding = 4,4,4,4
+                                DataContext = null
+                                Name = 
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                IsEnabled = True
+                                IsVisible = True
+                                IsEnabled = True
+                                IsEnabled = True
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Name = 
+                                --------------------------------------------------------------
+                                    Border
+                                    Padding = 4,4,4,4
+                                    DataContext = null
+                                    Name = 
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = True
+                                    IsVisible = True
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                    --------------------------------------------------------------
+                                        ContentPresenter
+                                        Content = null
+                                        ContentTemplate = null
+                                        DataContext = null
+                                        Name = 
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = True
+                                        IsVisible = True
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                    --------------------------------------------------------------
+                                --------------------------------------------------------------
+                                ItemsPresenter
+                                DataContext = null
+                                Name = 
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                IsEnabled = True
+                                IsVisible = True
+                                IsEnabled = True
+                                IsEnabled = True
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Name = 
+                                --------------------------------------------------------------
+                                    DynamicGridCellsPanel
+                                    DataContext = null
+                                    Name = 
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = True
+                                    IsVisible = True
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                --------------------------------------------------------------
+                            --------------------------------------------------------------
+                        --------------------------------------------------------------
+                        ScrollViewer
+                        HorizontalScrollBarVisibility = Disabled
+                        VerticalScrollBarVisibility = Visible
+                        Content = System.Windows.Controls.ItemsPresenter
+                        ContentTemplate = null
+                        Padding = 0,0,0,0
+                        DataContext = null
+                        Name = VG_ScrollViewer
+                        Margin = 0,0,0,0
+                        HorizontalAlignment = Stretch
+                        VerticalAlignment = Stretch
+                        ToolTip = null
+                        ContextMenu = null
+                        Visibility = Visible
+                        IsEnabled = True
+                        IsVisible = True
+                        IsEnabled = True
+                        IsEnabled = True
+                        TextAlignment = Left
+                        IsVirtualizing = True
+                        Name = 
+                        --------------------------------------------------------------
+                            Grid
+                            DataContext = null
+                            Name = 
+                            Margin = 0,0,0,0
+                            HorizontalAlignment = Stretch
+                            VerticalAlignment = Stretch
+                            ToolTip = null
+                            ContextMenu = null
+                            Visibility = Visible
+                            IsEnabled = True
+                            IsVisible = True
+                            IsEnabled = True
+                            IsEnabled = True
+                            TextAlignment = Left
+                            IsVirtualizing = True
+                            HorizontalScrollBarVisibility = Disabled
+                            VerticalScrollBarVisibility = Visible
+                            Name = 
+                            --------------------------------------------------------------
+                                ScrollContentPresenter
+                                Content = System.Windows.Controls.ItemsPresenter
+                                ContentTemplate = null
+                                DataContext = null
+                                Name = PART_ScrollContentPresenter
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                IsEnabled = True
+                                IsVisible = True
+                                IsEnabled = True
+                                IsEnabled = True
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Name = 
+                                --------------------------------------------------------------
+                                    ItemsPresenter
+                                    DataContext = null
+                                    Name = 
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = True
+                                    IsVisible = True
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                    --------------------------------------------------------------
+                                        DynamicGridRowsPanel
+                                        DataContext = null
+                                        Name = 
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = True
+                                        IsVisible = True
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                    --------------------------------------------------------------
+                                    AdornerLayer
+                                    DataContext = null
+                                    Name = 
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = True
+                                    IsVisible = True
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                --------------------------------------------------------------
+                                ScrollBar
+                                Padding = 0,0,0,0
+                                DataContext = null
+                                Name = PART_VerticalScrollBar
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                IsEnabled = False
+                                IsVisible = True
+                                IsEnabled = True
+                                IsEnabled = True
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Name = 
+                                --------------------------------------------------------------
+                                    Grid
+                                    DataContext = null
+                                    Name = Bg
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = False
+                                    IsVisible = True
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                    --------------------------------------------------------------
+                                        Border
+                                        Padding = 0,0,0,0
+                                        DataContext = null
+                                        Name = 
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = False
+                                        IsVisible = True
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                        RepeatButton
+                                        Content = System.Windows.Shapes.Path
+                                        ContentTemplate = null
+                                        Padding = 1,1,1,1
+                                        DataContext = null
+                                        Name = PART_LineUpButton
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = False
+                                        IsVisible = True
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                        --------------------------------------------------------------
+                                            Border
+                                            Padding = 0,0,0,0
+                                            DataContext = null
+                                            Name = border
+                                            Margin = 0,0,0,0
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            IsEnabled = False
+                                            IsVisible = True
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Name = 
+                                            --------------------------------------------------------------
+                                                ContentPresenter
+                                                Content = System.Windows.Shapes.Path
+                                                ContentTemplate = null
+                                                DataContext = null
+                                                Name = contentPresenter
+                                                Margin = 1,1,1,1
+                                                HorizontalAlignment = Center
+                                                VerticalAlignment = Center
+                                                ToolTip = null
+                                                ContextMenu = null
+                                                Visibility = Visible
+                                                IsEnabled = False
+                                                IsVisible = True
+                                                IsEnabled = True
+                                                IsEnabled = True
+                                                TextAlignment = Left
+                                                IsVirtualizing = True
+                                                HorizontalScrollBarVisibility = Disabled
+                                                VerticalScrollBarVisibility = Visible
+                                                Name = 
+                                                --------------------------------------------------------------
+                                                    Path
+                                                    Data = M0,4C0,4 0,6 0,6 0,6 3.5,2.5 3.5,2.5 3.5,2.5 7,6 7,6 7,6 7,4 7,4 7,4 3.5,0.5 3.5,0.5 3.5,0.5 0,4 0,4z
+                                                    DataContext = null
+                                                    Name = ArrowTop
+                                                    Margin = 3,4,3,3
+                                                    HorizontalAlignment = Stretch
+                                                    VerticalAlignment = Stretch
+                                                    ToolTip = null
+                                                    ContextMenu = null
+                                                    Visibility = Visible
+                                                    IsEnabled = False
+                                                    IsVisible = True
+                                                    IsEnabled = True
+                                                    IsEnabled = True
+                                                    TextAlignment = Left
+                                                    IsVirtualizing = True
+                                                    HorizontalScrollBarVisibility = Disabled
+                                                    VerticalScrollBarVisibility = Visible
+                                                    Name = 
+                                                --------------------------------------------------------------
+                                            --------------------------------------------------------------
+                                        --------------------------------------------------------------
+                                        Track
+                                        DataContext = null
+                                        Name = PART_Track
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Hidden
+                                        IsEnabled = False
+                                        IsVisible = False
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                        --------------------------------------------------------------
+                                            RepeatButton
+                                            Content = null
+                                            ContentTemplate = null
+                                            Padding = 0,0,0,0
+                                            DataContext = null
+                                            Name = 
+                                            Margin = 0,0,0,0
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            IsEnabled = False
+                                            IsVisible = False
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Name = 
+                                            RepeatButton
+                                            Content = null
+                                            ContentTemplate = null
+                                            Padding = 0,0,0,0
+                                            DataContext = null
+                                            Name = 
+                                            Margin = 0,0,0,0
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            IsEnabled = False
+                                            IsVisible = False
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Name = 
+                                            Thumb
+                                            Padding = 0,0,0,0
+                                            DataContext = null
+                                            Name = 
+                                            Margin = 0,0,0,0
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            IsEnabled = False
+                                            IsVisible = False
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Name = 
+                                            --------------------------------------------------------------
+                                                Rectangle
+                                                DataContext = null
+                                                Name = rectangle
+                                                Margin = 0,0,0,0
+                                                HorizontalAlignment = Stretch
+                                                VerticalAlignment = Stretch
+                                                ToolTip = null
+                                                ContextMenu = null
+                                                Visibility = Visible
+                                                IsEnabled = False
+                                                IsVisible = False
+                                                IsEnabled = True
+                                                IsEnabled = True
+                                                TextAlignment = Left
+                                                IsVirtualizing = True
+                                                HorizontalScrollBarVisibility = Disabled
+                                                VerticalScrollBarVisibility = Visible
+                                                Name = 
+                                            --------------------------------------------------------------
+                                        --------------------------------------------------------------
+                                        RepeatButton
+                                        Content = System.Windows.Shapes.Path
+                                        ContentTemplate = null
+                                        Padding = 1,1,1,1
+                                        DataContext = null
+                                        Name = PART_LineDownButton
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = False
+                                        IsVisible = True
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                        --------------------------------------------------------------
+                                            Border
+                                            Padding = 0,0,0,0
+                                            DataContext = null
+                                            Name = border
+                                            Margin = 0,0,0,0
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            IsEnabled = False
+                                            IsVisible = True
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Name = 
+                                            --------------------------------------------------------------
+                                                ContentPresenter
+                                                Content = System.Windows.Shapes.Path
+                                                ContentTemplate = null
+                                                DataContext = null
+                                                Name = contentPresenter
+                                                Margin = 1,1,1,1
+                                                HorizontalAlignment = Center
+                                                VerticalAlignment = Center
+                                                ToolTip = null
+                                                ContextMenu = null
+                                                Visibility = Visible
+                                                IsEnabled = False
+                                                IsVisible = True
+                                                IsEnabled = True
+                                                IsEnabled = True
+                                                TextAlignment = Left
+                                                IsVirtualizing = True
+                                                HorizontalScrollBarVisibility = Disabled
+                                                VerticalScrollBarVisibility = Visible
+                                                Name = 
+                                                --------------------------------------------------------------
+                                                    Path
+                                                    Data = M0,2.5C0,2.5 0,0.5 0,0.5 0,0.5 3.5,4 3.5,4 3.5,4 7,0.5 7,0.5 7,0.5 7,2.5 7,2.5 7,2.5 3.5,6 3.5,6 3.5,6 0,2.5 0,2.5z
+                                                    DataContext = null
+                                                    Name = ArrowBottom
+                                                    Margin = 3,4,3,3
+                                                    HorizontalAlignment = Stretch
+                                                    VerticalAlignment = Stretch
+                                                    ToolTip = null
+                                                    ContextMenu = null
+                                                    Visibility = Visible
+                                                    IsEnabled = False
+                                                    IsVisible = True
+                                                    IsEnabled = True
+                                                    IsEnabled = True
+                                                    TextAlignment = Left
+                                                    IsVirtualizing = True
+                                                    HorizontalScrollBarVisibility = Disabled
+                                                    VerticalScrollBarVisibility = Visible
+                                                    Name = 
+                                                --------------------------------------------------------------
+                                            --------------------------------------------------------------
+                                        --------------------------------------------------------------
+                                    --------------------------------------------------------------
+                                --------------------------------------------------------------
+                            --------------------------------------------------------------
+                        --------------------------------------------------------------
+                        ScrollBar
+                        Padding = 0,0,0,0
+                        DataContext = null
+                        Name = HorizontalScrollBar
+                        Margin = 0,0,0,0
+                        HorizontalAlignment = Stretch
+                        VerticalAlignment = Stretch
+                        ToolTip = null
+                        ContextMenu = null
+                        Visibility = Visible
+                        IsEnabled = False
+                        IsVisible = True
+                        IsEnabled = True
+                        IsEnabled = True
+                        TextAlignment = Left
+                        IsVirtualizing = True
+                        HorizontalScrollBarVisibility = Disabled
+                        VerticalScrollBarVisibility = Visible
+                        Name = 
+                        --------------------------------------------------------------
+                            Grid
+                            DataContext = null
+                            Name = Bg
+                            Margin = 0,0,0,0
+                            HorizontalAlignment = Stretch
+                            VerticalAlignment = Stretch
+                            ToolTip = null
+                            ContextMenu = null
+                            Visibility = Visible
+                            IsEnabled = False
+                            IsVisible = True
+                            IsEnabled = True
+                            IsEnabled = True
+                            TextAlignment = Left
+                            IsVirtualizing = True
+                            HorizontalScrollBarVisibility = Disabled
+                            VerticalScrollBarVisibility = Visible
+                            Name = 
+                            --------------------------------------------------------------
+                                Border
+                                Padding = 0,0,0,0
+                                DataContext = null
+                                Name = 
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                IsEnabled = False
+                                IsVisible = True
+                                IsEnabled = True
+                                IsEnabled = True
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Name = 
+                                RepeatButton
+                                Content = System.Windows.Shapes.Path
+                                ContentTemplate = null
+                                Padding = 1,1,1,1
+                                DataContext = null
+                                Name = PART_LineLeftButton
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                IsEnabled = False
+                                IsVisible = True
+                                IsEnabled = True
+                                IsEnabled = True
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Name = 
+                                --------------------------------------------------------------
+                                    Border
+                                    Padding = 0,0,0,0
+                                    DataContext = null
+                                    Name = border
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = False
+                                    IsVisible = True
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                    --------------------------------------------------------------
+                                        ContentPresenter
+                                        Content = System.Windows.Shapes.Path
+                                        ContentTemplate = null
+                                        DataContext = null
+                                        Name = contentPresenter
+                                        Margin = 1,1,1,1
+                                        HorizontalAlignment = Center
+                                        VerticalAlignment = Center
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = False
+                                        IsVisible = True
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                        --------------------------------------------------------------
+                                            Path
+                                            Data = M3.18,7C3.18,7 5,7 5,7 5,7 1.81,3.5 1.81,3.5 1.81,3.5 5,0 5,0 5,0 3.18,0 3.18,0 3.18,0 0,3.5 0,3.5 0,3.5 3.18,7 3.18,7z
+                                            DataContext = null
+                                            Name = ArrowLeft
+                                            Margin = 3,3,3,3
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            IsEnabled = False
+                                            IsVisible = True
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Name = 
+                                        --------------------------------------------------------------
+                                    --------------------------------------------------------------
+                                --------------------------------------------------------------
+                                Track
+                                DataContext = null
+                                Name = PART_Track
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Hidden
+                                IsEnabled = False
+                                IsVisible = False
+                                IsEnabled = True
+                                IsEnabled = True
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Name = 
+                                --------------------------------------------------------------
+                                    RepeatButton
+                                    Content = null
+                                    ContentTemplate = null
+                                    Padding = 0,0,0,0
+                                    DataContext = null
+                                    Name = 
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = False
+                                    IsVisible = False
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                    --------------------------------------------------------------
+                                        Rectangle
+                                        DataContext = null
+                                        Name = 
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = False
+                                        IsVisible = False
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                    --------------------------------------------------------------
+                                    RepeatButton
+                                    Content = null
+                                    ContentTemplate = null
+                                    Padding = 0,0,0,0
+                                    DataContext = null
+                                    Name = 
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = False
+                                    IsVisible = False
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                    --------------------------------------------------------------
+                                        Rectangle
+                                        DataContext = null
+                                        Name = 
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = False
+                                        IsVisible = False
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                    --------------------------------------------------------------
+                                    Thumb
+                                    Padding = 0,0,0,0
+                                    DataContext = null
+                                    Name = 
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = False
+                                    IsVisible = False
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                    --------------------------------------------------------------
+                                        Rectangle
+                                        DataContext = null
+                                        Name = rectangle
+                                        Margin = 0,0,0,0
+                                        HorizontalAlignment = Stretch
+                                        VerticalAlignment = Stretch
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = False
+                                        IsVisible = False
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                    --------------------------------------------------------------
+                                --------------------------------------------------------------
+                                RepeatButton
+                                Content = System.Windows.Shapes.Path
+                                ContentTemplate = null
+                                Padding = 1,1,1,1
+                                DataContext = null
+                                Name = PART_LineRightButton
+                                Margin = 0,0,0,0
+                                HorizontalAlignment = Stretch
+                                VerticalAlignment = Stretch
+                                ToolTip = null
+                                ContextMenu = null
+                                Visibility = Visible
+                                IsEnabled = False
+                                IsVisible = True
+                                IsEnabled = True
+                                IsEnabled = True
+                                TextAlignment = Left
+                                IsVirtualizing = True
+                                HorizontalScrollBarVisibility = Disabled
+                                VerticalScrollBarVisibility = Visible
+                                Name = 
+                                --------------------------------------------------------------
+                                    Border
+                                    Padding = 0,0,0,0
+                                    DataContext = null
+                                    Name = border
+                                    Margin = 0,0,0,0
+                                    HorizontalAlignment = Stretch
+                                    VerticalAlignment = Stretch
+                                    ToolTip = null
+                                    ContextMenu = null
+                                    Visibility = Visible
+                                    IsEnabled = False
+                                    IsVisible = True
+                                    IsEnabled = True
+                                    IsEnabled = True
+                                    TextAlignment = Left
+                                    IsVirtualizing = True
+                                    HorizontalScrollBarVisibility = Disabled
+                                    VerticalScrollBarVisibility = Visible
+                                    Name = 
+                                    --------------------------------------------------------------
+                                        ContentPresenter
+                                        Content = System.Windows.Shapes.Path
+                                        ContentTemplate = null
+                                        DataContext = null
+                                        Name = contentPresenter
+                                        Margin = 1,1,1,1
+                                        HorizontalAlignment = Center
+                                        VerticalAlignment = Center
+                                        ToolTip = null
+                                        ContextMenu = null
+                                        Visibility = Visible
+                                        IsEnabled = False
+                                        IsVisible = True
+                                        IsEnabled = True
+                                        IsEnabled = True
+                                        TextAlignment = Left
+                                        IsVirtualizing = True
+                                        HorizontalScrollBarVisibility = Disabled
+                                        VerticalScrollBarVisibility = Visible
+                                        Name = 
+                                        --------------------------------------------------------------
+                                            Path
+                                            Data = M1.81,7C1.81,7 0,7 0,7 0,7 3.18,3.5 3.18,3.5 3.18,3.5 0,0 0,0 0,0 1.81,0 1.81,0 1.81,0 5,3.5 5,3.5 5,3.5 1.81,7 1.81,7z
+                                            DataContext = null
+                                            Name = ArrowRight
+                                            Margin = 3,3,3,3
+                                            HorizontalAlignment = Stretch
+                                            VerticalAlignment = Stretch
+                                            ToolTip = null
+                                            ContextMenu = null
+                                            Visibility = Visible
+                                            IsEnabled = False
+                                            IsVisible = True
+                                            IsEnabled = True
+                                            IsEnabled = True
+                                            TextAlignment = Left
+                                            IsVirtualizing = True
+                                            HorizontalScrollBarVisibility = Disabled
+                                            VerticalScrollBarVisibility = Visible
+                                            Name = 
+                                        --------------------------------------------------------------
+                                    --------------------------------------------------------------
+                                --------------------------------------------------------------
+                            --------------------------------------------------------------
+                        --------------------------------------------------------------
+                    --------------------------------------------------------------
+                --------------------------------------------------------------
+            --------------------------------------------------------------
+        --------------------------------------------------------------
+    --------------------------------------------------------------
+--------------------------------------------------------------
