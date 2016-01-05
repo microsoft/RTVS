@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseMultilineExpressionsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    [ExcludeFromCodeCoverage]  
+    public class ParseMultilineExpressionsTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseMultilineExpressionsTest01() {
             string expected =
 @"GlobalScope  [Global]
@@ -32,8 +30,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "x+ \n 1 * ( \r\n a + b)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseMultilineExpressionsTest02() {
             string expected =
 @"GlobalScope  [Global]
@@ -45,8 +43,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "break \n ;");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseMultilineExpressionsTest03() {
             string expected =
 @"GlobalScope  [Global]
@@ -66,8 +64,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "for \r\n (x \n in \n y) \n { \n }");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseMultilineExpressionsTest04() {
             string expected =
 @"GlobalScope  [Global]
@@ -86,8 +84,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "x + 1 \n + 2");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseMultilineExpressionsTest05() {
             string expected =
 @"GlobalScope  [Global]
@@ -105,8 +103,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "(x\n || y)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseMultilineExpressionsTest06() {
             string expected =
 @"GlobalScope  [Global]
@@ -123,8 +121,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "if(x\n || y)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseMultilineExpressionsTest07() {
             string expected =
 @"GlobalScope  [Global]

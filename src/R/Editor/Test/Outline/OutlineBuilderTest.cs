@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Outline;
-using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
@@ -15,7 +14,7 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Category.R.Outlining]
-    [Collection(nameof(EditorTestFilesCollection))]
+    [Collection(CollectionNames.DefaultNonParallel)]
     public class OutlineBuilderTest {
         private readonly EditorTestFilesFixture _testFiles;
 

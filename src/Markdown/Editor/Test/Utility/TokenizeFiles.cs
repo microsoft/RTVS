@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
+using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.R.Markdown.Editor.Test.Utility
+namespace Microsoft.Markdown.Editor.Test.Utility
 {
     [ExcludeFromCodeCoverage]
     public static class TokenizeFiles
@@ -16,38 +15,36 @@ namespace Microsoft.R.Markdown.Editor.Test.Utility
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void TokenizeFile<Token, TokenType, Tokenizer>(TestContext context, string name, string language) 
-            where Tokenizer: ITokenizer<Token>, new()
-            where Token: IToken<TokenType>
-        {
-            try
-            {
-                string testFile = TestFiles.GetTestFilePath(context, name);
-                string baselineFile = testFile + ".tokens";
+        public static void TokenizeFile<TToken, TTokenType, TTokenizer>(MarkdownTestFilesFixture fixture, string name, string language) 
+            where TTokenizer: ITokenizer<TToken>, new()
+            where TToken: IToken<TTokenType> {
+            Action a = () => TokenizeFileImplementation<TToken, TTokenType, TTokenizer>(fixture, name);
+            a.ShouldNotThrow();
+        }
 
-                string text = TestFiles.LoadFile(context, testFile);
-                ITextProvider textProvider = new TextStream(text);
-                var tokenizer = new Tokenizer();
-
-                var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
-                string actual = DebugWriter.WriteTokens<Token, TokenType>(tokens);
-
-                if (_regenerateBaselineFiles)
-                {
-                    // Update this to your actual enlistment if you need to update baseline
-                    string enlistmentPath = @"C:\RTVS\src\Markdown\Editor\Test\Files\Tokenization";
-                    baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
-
-                    TestFiles.UpdateBaseline(baselineFile, actual);
-                }
-                else
-                {
-                    TestFiles.CompareToBaseLine(baselineFile, actual);
-                }
+        private static void TokenizeFileImplementation<TToken, TTokenType, TTokenizer>(MarkdownTestFilesFixture fixture, string name)
+            where TTokenizer : ITokenizer<TToken>, new() where TToken : IToken<TTokenType> {
+            string testFile = Path.Combine(fixture.DestinationPath, name);
+            string baselineFile = testFile + ".tokens";
+            string text;
+            using (var sr = new StreamReader(testFile)) {
+                text = sr.ReadToEnd();
             }
-            catch (Exception exception)
-            {
-                Assert.Fail(string.Format(CultureInfo.InvariantCulture, "Test {0} has thrown an exception: {1}", Path.GetFileName(name), exception.Message));
+
+            ITextProvider textProvider = new TextStream(text);
+            var tokenizer = new TTokenizer();
+
+            var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
+            string actual = DebugWriter.WriteTokens<TToken, TTokenType>(tokens);
+
+            if (_regenerateBaselineFiles) {
+                // Update this to your actual enlistment if you need to update baseline
+                string enlistmentPath = @"C:\RTVS\src\Markdown\Editor\Test\Files\Tokenization";
+                baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
+
+                TestFiles.UpdateBaseline(baselineFile, actual);
+            } else {
+                TestFiles.CompareToBaseLine(baselineFile, actual);
             }
         }
     }

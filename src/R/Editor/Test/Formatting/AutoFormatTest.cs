@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
@@ -16,7 +15,6 @@ using Microsoft.R.Editor.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Xunit;
 
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]

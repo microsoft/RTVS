@@ -1,75 +1,84 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class TokenizeIdentifierTest : TokenizeTestBase<RToken, RTokenType> {
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        private readonly CoreTestFilesFixture _files;
+
+        public TokenizeIdentifierTest(CoreTestFilesFixture files) {
+            _files = files;
+        }
+
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeIdentifierTest01() {
-            var tokens = this.Tokenize("`_data_`", new RTokenizer());
+            var tokens = Tokenize("`_data_`", new RTokenizer());
 
-            Assert.AreEqual(1, tokens.Count);
-            Assert.AreEqual(RTokenType.Identifier, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(8, tokens[0].Length);
+            tokens.Should().ContainSingle()
+                .Which.Should().HaveType(RTokenType.Identifier)
+                .And.StartAt(0)
+                .And.HaveLength(8);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeIdentifierTest02() {
-            var tokens = this.Tokenize("\"odd name\" <- 1", new RTokenizer());
+            var tokens = Tokenize("\"odd name\" <- 1", new RTokenizer());
 
-            Assert.AreEqual(3, tokens.Count);
-            Assert.AreEqual(RTokenType.Identifier, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(10, tokens[0].Length);
+            tokens.Should().HaveCount(3);
+            tokens[0].Should().HaveType(RTokenType.Identifier)
+                .And.StartAt(0)
+                .And.HaveLength(10);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeIdentifierTest03() {
-            var tokens = this.Tokenize("1 -> \"odd name\"", new RTokenizer());
+            var tokens = Tokenize("1 -> \"odd name\"", new RTokenizer());
 
-            Assert.AreEqual(3, tokens.Count);
-            Assert.AreEqual(RTokenType.Identifier, tokens[2].TokenType);
-            Assert.AreEqual(5, tokens[2].Start);
-            Assert.AreEqual(10, tokens[2].Length);
+            tokens.Should().HaveCount(3);
+            tokens[2].Should().HaveType(RTokenType.Identifier)
+                .And.StartAt(5)
+                .And.HaveLength(10);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeIdentifierLogicalTest01() {
             var tokens = this.Tokenize("1 <- F(~x)", new RTokenizer());
 
-            Assert.AreEqual(7, tokens.Count);
-            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
-            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
-            Assert.AreEqual(RTokenType.Identifier, tokens[2].TokenType);
-            Assert.AreEqual(RTokenType.OpenBrace, tokens[3].TokenType);
-            Assert.AreEqual(RTokenType.Operator, tokens[4].TokenType);
-            Assert.AreEqual(RTokenType.Identifier, tokens[5].TokenType);
-            Assert.AreEqual(RTokenType.CloseBrace, tokens[6].TokenType);
+            tokens.Should().Equal(new[] {
+                RTokenType.Number,
+                RTokenType.Operator,
+                RTokenType.Identifier,
+                RTokenType.OpenBrace,
+                RTokenType.Operator,
+                RTokenType.Identifier,
+                RTokenType.CloseBrace,
+            }, (token, tokenType) => token.TokenType == tokenType);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeIdentifierLogicalTest02() {
-            var tokens = this.Tokenize("1 <- F", new RTokenizer());
+            var tokens = Tokenize("1 <- F", new RTokenizer());
 
-            Assert.AreEqual(3, tokens.Count);
-            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
-            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
-            Assert.AreEqual(RTokenType.Logical, tokens[2].TokenType);
+            tokens.Should().Equal(new [] {
+                RTokenType.Number,
+                RTokenType.Operator,
+                RTokenType.Logical,
+            }, (token, tokenType) => token.TokenType == tokenType);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void Tokenize_IdentifiersFile() {
-            TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Identifiers.r");
+            TokenizeFiles.TokenizeFile(_files, @"Tokenization\Identifiers.r");
         }
     }
 }

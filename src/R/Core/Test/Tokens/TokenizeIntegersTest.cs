@@ -1,71 +1,79 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class TokenizeIntegersTest : TokenizeTestBase<RToken, RTokenType> {
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
-        public void TokenizeIntegers1() {
-            var tokens = this.Tokenize("+1 ", new RTokenizer());
+        private readonly CoreTestFilesFixture _files;
 
-            Assert.AreEqual(1, tokens.Count);
-            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(2, tokens[0].Length);
+        public TokenizeIntegersTest(CoreTestFilesFixture files) {
+            _files = files;
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
+        public void TokenizeIntegers1() {
+            var tokens = Tokenize("+1 ", new RTokenizer());
+
+            tokens.Should().ContainSingle()
+                .Which.Should().HaveType(RTokenType.Number)
+                .And.StartAt(0)
+                .And.HaveLength(2);
+        }
+
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeIntegers2() {
             var tokens = this.Tokenize("-12 +1", new RTokenizer());
 
-            Assert.AreEqual(3, tokens.Count);
-            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(3, tokens[0].Length);
+            tokens.Should().HaveCount(3);
 
-            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
-            Assert.AreEqual(4, tokens[1].Start);
-            Assert.AreEqual(1, tokens[1].Length);
+            tokens[0].Should().HaveType(RTokenType.Number)
+                .And.StartAt(0)
+                .And.HaveLength(3);
 
-            Assert.AreEqual(RTokenType.Number, tokens[2].TokenType);
-            Assert.AreEqual(5, tokens[2].Start);
-            Assert.AreEqual(1, tokens[2].Length);
+            tokens[1].Should().HaveType(RTokenType.Operator)
+                .And.StartAt(4)
+                .And.HaveLength(1);
+
+            tokens[2].Should().HaveType(RTokenType.Number)
+                .And.StartAt(5)
+                .And.HaveLength(1);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeIntegers3() {
-            var tokens = this.Tokenize("-12+-1", new RTokenizer());
+            var tokens = Tokenize("-12+-1", new RTokenizer());
 
-            Assert.AreEqual(3, tokens.Count);
-            Assert.AreEqual(RTokenType.Number, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(3, tokens[0].Length);
+            tokens.Should().HaveCount(3);
 
-            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
-            Assert.AreEqual(3, tokens[1].Start);
-            Assert.AreEqual(1, tokens[1].Length);
+            tokens[0].Should().HaveType(RTokenType.Number)
+                .And.StartAt(0)
+                .And.HaveLength(3);
 
-            Assert.AreEqual(RTokenType.Number, tokens[2].TokenType);
-            Assert.AreEqual(4, tokens[2].Start);
-            Assert.AreEqual(2, tokens[2].Length);
+            tokens[1].Should().HaveType(RTokenType.Operator)
+                .And.StartAt(3)
+                .And.HaveLength(1);
+
+            tokens[2].Should().HaveType(RTokenType.Number)
+                .And.StartAt(4)
+                .And.HaveLength(2);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeFile_IntegerFile() {
-            TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Integers.r");
+            TokenizeFiles.TokenizeFile(_files, @"Tokenization\Integers.r");
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeFile_HexFile() {
-            TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Hex.r");
+            TokenizeFiles.TokenizeFile(_files, @"Tokenization\Hex.r");
         }
     }
 }

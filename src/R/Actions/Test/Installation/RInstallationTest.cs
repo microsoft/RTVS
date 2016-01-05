@@ -1,28 +1,27 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Actions.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Actions.Test.Installation {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class RInstallationTest {
-        [TestMethod]
-        [TestCategory("R.Install")]
+        [Test]
+        [Category.R.Install]
         public void RInstallation_Test01() {
             RInstallData data = RInstallation.GetInstallationData(null, 0, 0, 0, 0);
-            Assert.AreEqual(RInstallStatus.UnsupportedVersion, data.Status);
-            Assert.IsTrue(data.Path.StartsWith(@"C:\Program Files\R", StringComparison.OrdinalIgnoreCase));
+            data.Status.Should().Be(RInstallStatus.UnsupportedVersion);
+            data.Path.Should().StartWithEquivalent(@"C:\Program Files\R");
         }
 
-        [TestMethod]
-        [TestCategory("R.Install")]
+        [Test]
+        [Category.R.Install]
         public void RInstallation_Test02() {
             RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2);
-            Assert.AreEqual(RInstallStatus.OK, data.Status);
-            Assert.IsTrue(data.Version.Major >= 3);
-            Assert.IsTrue(data.Version.Minor >= 2);
-            Assert.IsTrue(data.Path.StartsWith(@"C:\Program Files\R", StringComparison.OrdinalIgnoreCase));
+            data.Status.Should().Be(RInstallStatus.OK);
+            data.Version.Major.Should().BeGreaterOrEqualTo(3);
+            data.Version.Minor.Should().BeGreaterOrEqualTo(2);
+            data.Path.Should().StartWithEquivalent(@"C:\Program Files\R");
         }
     }
 }

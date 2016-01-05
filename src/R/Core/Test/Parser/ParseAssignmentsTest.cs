@@ -1,14 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseAssignmentsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    public class ParseAssignmentsTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseAssignmentsTest1() {
             string expected =
 @"GlobalScope  [Global]
@@ -29,8 +28,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "x <- as.matrix(x)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseAssignmentsTest2() {
             string expected =
 @"GlobalScope  [Global]
@@ -51,8 +50,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "as.matrix(x) -> x");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseAssignmentsTest3() {
             string expected =
 @"GlobalScope  [Global]
@@ -72,8 +71,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a <- b <- c <- 0");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseAssignmentsTest4() {
             string expected =
 @"GlobalScope  [Global]
@@ -90,8 +89,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "0 -> a -> b");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseAssignmentsTest5() {
             string expected =
 @"GlobalScope  [Global]
@@ -112,8 +111,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "z <- .Call(x)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseAssignmentsTest6() {
             string expected =
 @"GlobalScope  [Global]
@@ -123,8 +122,8 @@ UnexpectedToken Token [0...2)
             ParserTest.VerifyParse(expected, "_z <- 0");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseAssignmentsTest7() {
             string expected =
 @"GlobalScope  [Global]

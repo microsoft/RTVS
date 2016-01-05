@@ -17,7 +17,6 @@ namespace Microsoft.R.Editor.Application.Test {
         public static void DeployFiles(TestContext context)
         {
             SupportTestFilesSetup.DeployFiles(context);
-            MarkdownTestFilesSetup.DeployFiles(context);
 
             lock (_deploymentLock)
             {
