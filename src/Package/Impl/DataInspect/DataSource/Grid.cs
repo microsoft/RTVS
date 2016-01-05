@@ -60,8 +60,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         Func<int, int, T> _getItemFunc;
         Action<int, int, T> _setItemFunc;
 
-        public RangeToGrid(Range range, IRange<T> data, bool columnMode) {
-            if (columnMode) {
+        public RangeToGrid(Range range, IRange<T> data, bool takeColumn) {
+            if (takeColumn) {
                 Range = new GridRange(new Range(0, 1), range);
                 _getItemFunc = GetItemColumnMode;
                 _setItemFunc = SetItemColumnMode;
@@ -86,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public GridRange Range { get; }
 
-        private T GetItemRowMode(int rowIndex, int columnIndex) {
+        private T GetItemColumnMode(int rowIndex, int columnIndex) {
             if (rowIndex != 0) {
                 throw new ArgumentOutOfRangeException("rowIndex");
             }
@@ -94,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return _data[columnIndex];
         }
 
-        private void SetItemRowMode(int rowIndex, int columnIndex, T value) {
+        private void SetItemColumnMode(int rowIndex, int columnIndex, T value) {
             if (rowIndex != 0) {
                 throw new ArgumentOutOfRangeException("rowIndex");
             }
@@ -102,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _data[columnIndex] = value;
         }
 
-        private T GetItemColumnMode(int rowIndex, int columnIndex) {
+        private T GetItemRowMode(int rowIndex, int columnIndex) {
             if (columnIndex != 0) {
                 throw new ArgumentOutOfRangeException("columnIndex");
             }
@@ -110,7 +110,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return _data[rowIndex];
         }
 
-        private void SetItemColumnMode(int rowIndex, int columnIndex, T value) {
+        private void SetItemRowMode(int rowIndex, int columnIndex, T value) {
             if (columnIndex != 0) {
                 throw new ArgumentOutOfRangeException("columnIndex");
             }

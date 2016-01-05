@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public Range(int start, int count) {
             Start = start;
             Count = count;
-            _end = start + count - 1;
+            _end = start + count;
         }
 
         public int Start { get; }
@@ -18,19 +18,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public int Count { get; }
 
         public bool Contains(int value) {
-            return (value >= Start) && (value <= _end);
-        }
-
-        public Range MoveStartBy(int count) {
-            return new Range(Start + count, Count - count);
-        }
-
-        public Range MoveEndBy(int count) {
-            return new Range(Start, Count + count);
+            return (value >= Start) && (value < _end);
         }
 
         public IEnumerable<int> GetEnumerable() {
-            for (int i = Start; i <= _end; i++) {
+            for (int i = Start; i < _end; i++) {
                 yield return i;
             }
         }
