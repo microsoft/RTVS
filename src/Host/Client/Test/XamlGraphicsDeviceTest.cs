@@ -19,7 +19,7 @@ namespace Microsoft.R.Host.Client.Test {
     public class XamlGraphicsDeviceTest {
         private const string ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
         private const string setupCode = @"
-xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graphicsdevice_new', filename, width, height)}
+xaml <- function(filename, width, height) { .External('Microsoft.R.Host::External.xaml_graphicsdevice_new', filename, width, height)}
 ";
         private const string gridPrefixCode = "xaml(\"{0}\", {1}, {2});library(grid);grid.newpage();\n";
         private const string gridSuffixCode = "dev.off()\n";

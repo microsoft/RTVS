@@ -1,5 +1,5 @@
 call_embedded <- function(name, ...) {
-  .Call(paste0('rtvs::Call.', name, collapse = ''), ..., PACKAGE = '(embedding)')
+  .Call(paste0('Microsoft.R.Host::Call.', name, collapse = ''), ..., PACKAGE = '(embedding)')
 }
 
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {

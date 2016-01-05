@@ -24,10 +24,10 @@ namespace Microsoft.R.Host.Client.Test {
         // TODO: need to merge into a single location
         private const string setupCode = @"
 .rtvs.vsgdresize <- function(width, height) {
-   invisible(.External('rtvs::External.ide_graphicsdevice_resize', width, height))
+   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_resize', width, height))
 }
 .rtvs.vsgd <- function() {
-   invisible(.External('rtvs::External.ide_graphicsdevice_new'))
+   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_new'))
 }
 .rtvs.vsgdexportimage <- function(filename, device) {
     dev.copy(device=device,filename=filename)
@@ -38,13 +38,13 @@ namespace Microsoft.R.Host.Client.Test {
     dev.off()
 }
 .rtvs.vsgdnextplot <- function() {
-   invisible(.External('rtvs::External.ide_graphicsdevice_next_plot'))
+   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_next_plot'))
 }
 .rtvs.vsgdpreviousplot <- function() {
-   invisible(.External('rtvs::External.ide_graphicsdevice_previous_plot'))
+   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_previous_plot'))
 }
 .rtvs.vsgdhistoryinfo <- function() {
-   .External('rtvs::External.ide_graphicsdevice_history_info')
+   .External('Microsoft.R.Host::External.ide_graphicsdevice_history_info')
 }
 options(device = '.rtvs.vsgd')
 ";
