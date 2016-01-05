@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal class GridData {
+    internal class GridData : IGridData<string> {
         public GridData() {
             RowNames = new List<string>();
             ColumnNames = new List<string>();
@@ -18,6 +18,73 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public List<string> ColumnNames { get; }
 
         public List<List<string>> Values { get; }
+
+        // TODO: the instantiation of this class seems weird. Clean up
+        public GridRange Range { get; set; }
+
+        private IRange<string> _columnHeader;
+        public IRange<string> ColumnHeader {
+            get {
+                if (_columnHeader == null) {
+                    _columnHeader = new ListToRange<string>(
+                        Range.Columns,
+                        ColumnNames);
+                }
+                return _columnHeader;
+            }
+        }
+
+        private IRange<string> _rowHeader;
+        public IRange<string> RowHeader {
+            get {
+                if (_rowHeader == null) {
+                    _rowHeader = new ListToRange<string>(
+                        Range.Rows,
+                        RowNames);
+                }
+
+                return _rowHeader;
+            }
+        }
+
+        private IGrid<string> _grid;
+        public IGrid<string> Grid {
+            get {
+                if (_grid == null) {
+                    _grid = new Grid<string>(
+                        Range,
+                        (r, c) => Values[c - Range.Columns.Start][r - Range.Rows.Start]);
+                }
+
+                return _grid;
+            }
+        }
+    }
+
+    internal class ListToRange<T> : IRange<T> {
+        private IList<T> _list;
+
+        public ListToRange(Range range, IList<T> list) {
+            if (range.Count != list.Count) {
+                throw new ArgumentException("Range data cound doesn't match with range");
+            }
+
+            Range = range;
+
+            _list = list;
+        }
+
+        public Range Range { get; }
+
+        public T this[int index] {
+            get {
+                return _list[index - Range.Start];
+            }
+
+            set {
+                _list[index - Range.Start] = value;
+            }
+        }
     }
 
     internal class GridParser {

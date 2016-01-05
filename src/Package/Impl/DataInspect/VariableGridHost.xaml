@@ -17,5 +17,6 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <local:DynamicGrid x:Name="VariableGrid" />
+    <!--<local:DynamicGrid x:Name="VariableGrid" />-->
+    <local:MatrixView x:Name="VariableGrid" />
 </UserControl>

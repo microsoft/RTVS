@@ -77,7 +77,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
             base.OnRenderSizeChanged(sizeInfo);
 
-            _scroller.EnqueueCommand(ScrollType.SizeChange, Data.RenderSize);
+            // null if not Initialized yet
+            if (_scroller != null) {
+                _scroller.EnqueueCommand(ScrollType.SizeChange, Data.RenderSize);
+            }
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e) {
