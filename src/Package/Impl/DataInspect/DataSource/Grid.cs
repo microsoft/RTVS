@@ -9,27 +9,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class Grid<T> : IGrid<T> {
         private IList<T> _list;
 
-        /// <summary>
-        /// Constructs and fill grid with generated items
-        /// </summary>
-        /// <param name="CreateNew">function to generate item</param>
-        public Grid(int rowCount, int columnCount, Func<int, int, T> CreateNew) {
-            RowCount = rowCount;
-            ColumnCount = columnCount;
+        public Grid(GridRange range, Func<int, int, T> createNew) {
+            Range = range;
 
-            var list = new List<T>(rowCount * columnCount);
-            for (int c = 0; c < columnCount; c++) {
-                for (int r = 0; r < rowCount; r++) {
-                    list.Add(CreateNew(r, c));
+            _list = new List<T>(range.Rows.Count * range.Columns.Count);
+
+            foreach (int c in range.Columns.GetEnumerable()) {
+                foreach (int r in range.Rows.GetEnumerable()) {
+                    _list.Add(createNew(r, c));
                 }
             }
-
-            _list = list;
         }
 
-        public Grid(int rowCount, int columnCount, IList<T> list) {
-            RowCount = rowCount;
-            ColumnCount = columnCount;
+        public Grid(GridRange range, IList<T> list) {
+            if (list.Count != range.Rows.Count * range.Columns.Count) {
+                throw new ArgumentException("Number of initializing data doesn't match with grid's dimensions");
+            }
+
+            Range = range;
+
             _list = list;
         }
 
@@ -37,45 +35,108 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         {
             get
             {
-                return _list[(columnIndex * RowCount) + rowIndex];
+                return _list[ListIndex(rowIndex, columnIndex)];
             }
 
             set
             {
-                _list[(columnIndex * RowCount) + rowIndex] = value;
+                _list[ListIndex(rowIndex, columnIndex)] = value;
             }
         }
 
-        public int ColumnCount { get; }
+        public GridRange Range { get; }
 
-        public int RowCount { get; }
+        private int ListIndex(int rowIndex, int columnIndex) {
+            return ((columnIndex - Range.Columns.Start) * Range.Rows.Count) + (rowIndex - Range.Rows.Start);
+        }
     }
 
-    public class GridByList<T> : IGrid<T> {
-        List<List<T>> _data;
+    /// <summary>
+    /// an adapter from IRange to IGrid
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class RangeToGrid<T> : IGrid<T> {
+        IRange<T> _data;
+        Func<int, int, T> _getItemFunc;
+        Action<int, int, T> _setItemFunc;
 
-        public GridByList(int rowCount, int columnCount, List<List<T>> data) {
-            RowCount = rowCount;
-            ColumnCount = columnCount;
+        public RangeToGrid(Range range, IRange<T> data, bool columnMode) {
+            if (columnMode) {
+                Range = new GridRange(new Range(0, 1), range);
+                _getItemFunc = GetItemColumnMode;
+                _setItemFunc = SetItemColumnMode;
+            } else {
+                Range = new GridRange(range, new Range(0, 1));
+                _getItemFunc = GetItemRowMode;
+                _setItemFunc = SetItemRowMode;
+            }
+
             _data = data;
         }
 
         public T this[int rowIndex, int columnIndex] {
             get {
-                return _data[columnIndex][rowIndex];
+                return _getItemFunc(rowIndex, columnIndex);
             }
 
             set {
-                _data[columnIndex][rowIndex] = value;
+                _setItemFunc(rowIndex, columnIndex, value);
             }
         }
 
-        public int ColumnCount {
-            get;
+        public GridRange Range { get; }
+
+        private T GetItemRowMode(int rowIndex, int columnIndex) {
+            if (rowIndex != 0) {
+                throw new ArgumentOutOfRangeException("rowIndex");
+            }
+
+            return _data[columnIndex];
         }
 
-        public int RowCount {
-            get;
+        private void SetItemRowMode(int rowIndex, int columnIndex, T value) {
+            if (rowIndex != 0) {
+                throw new ArgumentOutOfRangeException("rowIndex");
+            }
+
+            _data[columnIndex] = value;
+        }
+
+        private T GetItemColumnMode(int rowIndex, int columnIndex) {
+            if (columnIndex != 0) {
+                throw new ArgumentOutOfRangeException("columnIndex");
+            }
+
+            return _data[rowIndex];
+        }
+
+        private void SetItemColumnMode(int rowIndex, int columnIndex, T value) {
+            if (columnIndex != 0) {
+                throw new ArgumentOutOfRangeException("columnIndex");
+            }
+
+            _data[rowIndex] = value;
+        }
+    }
+
+    public class GridByList<T> : IGrid<T> {
+        List<List<T>> _data;
+
+        public GridByList(GridRange range, List<List<T>> data) {
+            Range = range;
+
+            _data = data;
+        }
+        public GridRange Range { get; }
+
+        public T this[int rowIndex, int columnIndex] {
+            get {
+                return _data[columnIndex - Range.Columns.Start][rowIndex - Range.Rows.Start];
+            }
+
+            set {
+                _data[columnIndex - Range.Columns.Start][rowIndex - Range.Rows.Start] = value;
+            }
         }
     }
 }

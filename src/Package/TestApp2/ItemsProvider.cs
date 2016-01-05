@@ -16,14 +16,17 @@ namespace Microsoft.VisualStudio.R.TestApp {
 
         public int RowCount { get; }
 
+        public Task<IGridData<GridItem>> GetAsync(GridRange range) {
+            throw new NotImplementedException();
+        }
+
         public Task<IGrid<GridItem>> GetRangeAsync(GridRange gridRange) {
             return Task.Run(async () => {
                 await Task.Delay(100);
 
                 var grid = new Grid<GridItem>(
-                    gridRange.Rows.Count,
-                    gridRange.Columns.Count,
-                    (r, c) => new GridItem(r + gridRange.Rows.Start, c + gridRange.Columns.Start));
+                    gridRange,
+                    (r, c) => new GridItem(r, c));
 
                 return (IGrid<GridItem>)grid;
             });

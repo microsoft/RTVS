@@ -80,6 +80,14 @@
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
+    <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
+    <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixView.xaml.cs">
+      <DependentUpon>MatrixView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
+    <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
+    <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
@@ -759,6 +767,10 @@
     <Page Include="DataInspect\VariableGridHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataInspect\VisualGrid\MatrixView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Plots\XamlPresenter.xaml">
       <Generator>MSBuild:Compile</Generator>

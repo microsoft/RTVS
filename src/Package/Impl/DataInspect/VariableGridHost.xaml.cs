@@ -120,7 +120,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             var data = GridParser.Parse(result);
 
-            return new GridByList<string>(data.RowNames.Count, data.ColumnNames.Count, data.Values);
+            if (data.ColumnNames.Count != gridRange.Columns.Count
+                || data.RowNames.Count != gridRange.Rows.Count) {
+                throw new InvalidOperationException("The number of evaluatoin data doesn't match with what is requested");
+            }
+
+            return new GridByList<string>(gridRange, data.Values);
         }
 
         private static void AddColumn(JToken dataToken, List<string> list, string key) {
@@ -139,6 +144,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private static string RangeToRString(Range range) {
             return $"{range.Start + 1}:{range.Start + range.Count}";
+        }
+
+        public Task<IGridData<string>> GetAsync(GridRange range) {
+            throw new NotImplementedException();
         }
     }
 }

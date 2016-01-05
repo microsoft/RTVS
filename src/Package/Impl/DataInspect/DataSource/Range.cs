@@ -1,4 +1,6 @@
-﻿namespace Microsoft.VisualStudio.R.Package.DataInspect {
+﻿using System.Collections.Generic;
+
+namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Range of integers
     /// </summary>
@@ -25,6 +27,12 @@
 
         public Range MoveEndBy(int count) {
             return new Range(Start, Count + count);
+        }
+
+        public IEnumerable<int> GetEnumerable() {
+            for (int i = Start; i <= _end; i++) {
+                yield return i;
+            }
         }
     }
 }
