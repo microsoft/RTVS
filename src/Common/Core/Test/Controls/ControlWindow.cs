@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Common.Core.Test.STA;
 using Microsoft.UnitTests.Core.Threading;
 using Screen = System.Windows.Forms.Screen;
 
