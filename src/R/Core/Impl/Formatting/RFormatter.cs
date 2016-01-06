@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
+using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Formatting {
@@ -382,7 +383,11 @@ namespace Microsoft.R.Core.Formatting {
         }
 
         private void AppendOperator() {
-            if (IsOperatorWithoutSpaces()) {
+            string text = _textProvider.GetText(_tokens.CurrentToken);
+            if (TokenOperator.IsUnaryOperator(_tokens, TokenOperator.GetOperatorType(text))) {
+                AppendToken(leadingSpace: true, trailingSpace: false);
+            }
+            else if (IsOperatorWithoutSpaces(text)) {
                 AppendToken(leadingSpace: false, trailingSpace: false);
             } else {
                 AppendToken(leadingSpace: true, trailingSpace: true);
@@ -550,10 +555,8 @@ namespace Microsoft.R.Core.Formatting {
             return false;
         }
 
-        private bool IsOperatorWithoutSpaces() {
-            string text = _textProvider.GetText(_tokens.CurrentToken);
+        private bool IsOperatorWithoutSpaces(string text) {
             switch (text) {
-                case "~":
                 case "!":
                 case ":":
                 case "::":

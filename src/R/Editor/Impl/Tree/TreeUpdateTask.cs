@@ -178,6 +178,7 @@ namespace Microsoft.R.Editor.Tree {
             _editorTree.FireOnUpdatesPending(textChanges);
             if (UpdatesSuspended) {
                 this.TextBufferChangedSinceSuspend = true;
+                _pendingChanges.FullParseRequired = true;
             } else {
                 foreach (TextChangeEventArgs change in textChanges) {
                     _lastChangeTime = DateTime.UtcNow;
