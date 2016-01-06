@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Test.Tree {
     public class TreeChangeTypeTest {
         [CompositeTest]
         [InlineData(0, 0, 1, " ", TextChangeType.Trivial)]
-        [InlineData(0, 1, 0, "", TextChangeType.Trivial)]
+        [InlineData(1, 1, 0, "", TextChangeType.Trivial)]
         [InlineData(1, 0, 1, "\n", TextChangeType.Trivial)]
         public void TextChange_EditWhitespaceTest(int start, int oldLength, int newLength, string newText, TextChangeType expected) {
             string expression = "x <- a + b";

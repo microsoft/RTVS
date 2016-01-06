@@ -31,29 +31,50 @@ namespace Microsoft.Common.Core.Test.Utility {
 
         public static void CompareStringLines(string expected, string actual) {
             string baseLine, newLine;
-            int line = CompareLines(expected, actual, out baseLine, out newLine);
-            line.Should().Be(0, "There should be no difference at line {0}\r\n\tExpected:\t{1}\r\n\tActual:\t{2}\r\n", line, baseLine.Trim(), newLine.Trim());
+            int index;
+            int line = CompareLines(expected, actual, out baseLine, out newLine, out index);
+            line.Should().Be(0, "there should be no difference at line {0}\r\nExpected:{1}\r\nActual:{2}\r\nDifference at position {3}\r\n", line, baseLine.Trim(), newLine.Trim(), index);
         }
 
-        public static int CompareLines(string expected, string actual, out string baseLine, out string newLine, bool ignoreCase = false) {
-            var newReader = new StringReader(actual);
-            var baseReader = new StringReader(expected);
+        public static int CompareLines(string expected, string actual, out string expectedLine, out string actualLine, out int index, bool ignoreCase = false) {
+            var actualReader = new StringReader(actual);
+            var expectedReader = new StringReader(expected);
 
             int lineNum = 1;
-            for (lineNum = 1; ; lineNum++) {
-                baseLine = baseReader.ReadLine();
-                newLine = newReader.ReadLine();
+            index = 0;
 
-                if (baseLine == null || newLine == null)
+            for (lineNum = 1; ; lineNum++) {
+                expectedLine = expectedReader.ReadLine();
+                actualLine = actualReader.ReadLine();
+
+                if (expectedLine == null || actualLine == null)
                     break;
 
-                if (string.Compare(baseLine, newLine, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) != 0)
+                int minLength = Math.Min(expectedLine.Length, actualLine.Length);
+                for (int i = 0; i < minLength; i++) {
+                    char act = actualLine[i];
+                    char exp = expectedLine[i];
+
+                    if (ignoreCase) {
+                        act = Char.ToLowerInvariant(act);
+                        exp = Char.ToLowerInvariant(exp);
+                    }
+
+                    if (act != exp) {
+                        index = i + 1;
+                        return lineNum;
+                    }
+                }
+
+                if (expectedLine.Length != actualLine.Length) {
+                    index = minLength + 1;
                     return lineNum;
+                }
             }
 
-            if (baseLine == null && newLine == null) {
-                baseLine = string.Empty;
-                newLine = string.Empty;
+            if (expectedLine == null && actualLine == null) {
+                expectedLine = string.Empty;
+                actualLine = string.Empty;
 
                 return 0;
             }
@@ -74,9 +95,10 @@ namespace Microsoft.Common.Core.Test.Utility {
                     string expected = sr.ReadToEnd();
 
                     string baseLine, newLine;
-                    int line = CompareLines(expected, actual, out baseLine, out newLine, ignoreCase);
-                    line.Should().Be(0, "There should be no difference at line {0}\r\n\tExpected:\t{1}\r\n\tActual:\t{2}\r\nBaselineFile:\t{3}\r\n",
-                        line, baseLine.Trim(), newLine.Trim(), baselineFile.Substring(baselineFile.LastIndexOf('\\') + 1));
+                    int index;
+                    int line = CompareLines(expected, actual, out baseLine, out newLine, out index, ignoreCase);
+                    line.Should().Be(0, "there should be no difference at line {0}\r\nExpected:{1}\r\nActual:{2}\r\nBaselineFile:{3}\r\nDifference at {4}\r\n",
+                        line, baseLine.Trim(), newLine.Trim(), baselineFile.Substring(baselineFile.LastIndexOf('\\') + 1), index);
                 }
             }
         }

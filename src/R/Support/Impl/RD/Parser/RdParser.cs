@@ -102,7 +102,7 @@ namespace Microsoft.R.Support.RD.Parser {
                 }
             }
 
-            return functionInfos.Values.Select(x => x).ToList();
+            return functionInfos.Values.ToList();
         }
     }
 }

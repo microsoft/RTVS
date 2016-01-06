@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
@@ -37,7 +36,7 @@ namespace Microsoft.R.Core.AST.Operators {
         public override bool Parse(ParseContext context, IAstNode parent) {
             Debug.Assert(context.Tokens.CurrentToken.TokenType == RTokenType.Operator);
 
-            _operatorType = TokenOperator.GetOperatorType(context);
+            _operatorType = TokenOperator.GetOperatorType(context.TextProvider.GetText(context.Tokens.CurrentToken));
             this.OperatorToken = RParser.ParseToken(context, this);
 
             this.Association = OperatorAssociation.GetAssociation(_operatorType);
@@ -57,22 +56,10 @@ namespace Microsoft.R.Core.AST.Operators {
             return this.OperatorToken.ToString();
         }
 
-        private bool IsUnaryOperator(ParseContext context, OperatorType operatorType) {
-            bool possibleUnary = Operator.IsPossibleUnary(operatorType);
-
-            // We need to lock back two tokens since operator
-            // parsing already consumed its token.
-            TokenStream<RToken> tokens = context.Tokens;
-            if (tokens.LookAhead(-2).TokenType == RTokenType.Operator) {
-                return true;
-            }
-
-            return false;
-        }
         private int GetCurrentOperatorPrecedence(ParseContext context, OperatorType operatorType, out bool isUnary) {
             isUnary = false;
 
-            if (this.IsUnaryOperator(context, operatorType)) {
+            if (IsUnaryOperator(context.Tokens, operatorType, -1)) {
                 operatorType = OperatorType.Unary;
                 isUnary = true;
             }
@@ -80,10 +67,7 @@ namespace Microsoft.R.Core.AST.Operators {
             return OperatorPrecedence.GetPrecedence(operatorType);
         }
 
-        private static OperatorType GetOperatorType(ParseContext context) {
-            RToken token = context.Tokens.CurrentToken;
-
-            string text = context.TextProvider.GetText(token);
+        public static OperatorType GetOperatorType(string text) {
             switch (text) {
                 case "+":
                     return OperatorType.Add;
@@ -176,6 +160,10 @@ namespace Microsoft.R.Core.AST.Operators {
 
                 case "=":
                     return OperatorType.Equals;
+
+                case "?":
+                case "??":
+                    return OperatorType.Help;
 
                 default:
                     if (text.Length > 2 && text[0] == '%' && text[text.Length - 1] == '%') {

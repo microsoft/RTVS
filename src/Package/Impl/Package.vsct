@@ -90,7 +90,7 @@
 
       <!-- Packages flyout -->
       <Menu guid="guidRToolsCmdSet" id="packagesSubMenu" type="Menu" priority="0x0200">
-        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
+        <!--<Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>-->
         <Strings>
           <ButtonText>P&amp;ackages</ButtonText>
         </Strings>
@@ -106,7 +106,7 @@
 
       <!-- Data flyout -->
       <Menu guid="guidRToolsCmdSet" id="dataSubMenu" type="Menu" priority="0x0400">
-        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
+        <!--<Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>-->
         <Strings>
           <ButtonText>&amp;Data</ButtonText>
         </Strings>
