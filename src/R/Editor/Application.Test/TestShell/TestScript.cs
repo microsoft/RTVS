@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Common.Core.Test.STA;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -55,21 +56,20 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         /// Create script that opens a disk file in an editor window
         /// </summary>
         /// <param name="fileName">File name</param>
-        public TestScript(TestContext context, string fileName, bool unused)
+        public TestScript(DeployFilesFixture fixture, string fileName, bool unused)
         {
-            OpenFile(context, fileName);
+            OpenFile(fixture, fileName);
         }
         #endregion
 
         /// <summary>
         /// Open a disk file in an editor window
         /// </summary>
+        /// <param name="fixture"></param>
         /// <param name="fileName">File name</param>
-        /// <param name="contentType">File content type</param>
         /// <returns>Editor instance</returns>
-        public void OpenFile(TestContext context, string fileName)
-        {
-            string content = TestFiles.LoadFile(context, fileName);
+        public void OpenFile(DeployFilesFixture fixture, string fileName) {
+            string content = fixture.LoadDestinationFile(fileName);
             EditorWindow.Create(content, fileName);
         }
 

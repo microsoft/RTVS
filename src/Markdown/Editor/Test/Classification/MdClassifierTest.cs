@@ -36,12 +36,8 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
         private static void ClassifyFile(MarkdownTestFilesFixture fixture, string fileName)
         {
-            string testFile = Path.Combine(fixture.DestinationPath, fileName);
-
-            string content;
-            using (var sr = new StreamReader(testFile)) {
-                content = sr.ReadToEnd();
-            }
+            string testFile = fixture.GetDestinationPath(fileName);
+            string content = fixture.LoadDestinationFile(fileName);
 
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 

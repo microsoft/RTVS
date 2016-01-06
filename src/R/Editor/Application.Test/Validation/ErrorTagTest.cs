@@ -1,14 +1,16 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Validation {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Collection(CollectionNames.NonParallel)]
     public class ErrorTagTest {
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_ErrorTagsTest01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 // Force tagger creation
@@ -20,13 +22,13 @@ namespace Microsoft.R.Editor.Application.Test.Validation {
 
                 tagSpans = script.GetErrorTagSpans();
                 string errorTags = script.WriteErrorTags(tagSpans);
-                Assert.AreEqual("[5 - 6] } expected\r\n", errorTags);
+                errorTags.Should().Be("[5 - 6] } expected\r\n");
 
                 script.Type("}");
                 script.DoIdle(500);
 
                 tagSpans = script.GetErrorTagSpans();
-                Assert.AreEqual(0, tagSpans.Count);
+                tagSpans.Should().BeEmpty();
             }
         }
     }

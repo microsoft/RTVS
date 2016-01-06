@@ -23,13 +23,9 @@ namespace Microsoft.R.Core.Test.Tokens
 
         public static void TokenizeFileImplementation(CoreTestFilesFixture fixture, string name)
         {
-            string testFile = Path.Combine(fixture.DestinationPath, name);
+            string testFile = fixture.GetDestinationPath(name);
             string baselineFile = testFile + ".tokens";
-
-            string text;
-            using (var sr = new StreamReader(testFile)) {
-                text = sr.ReadToEnd();
-            }
+            string text = fixture.LoadDestinationFile(name);
 
             ITextProvider textProvider = new TextStream(text);
             var tokenizer = new RTokenizer();

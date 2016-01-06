@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Utility;
-using Xunit;
-
 
 namespace Microsoft.R.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
@@ -23,13 +20,9 @@ namespace Microsoft.R.Core.Test.Utility {
         }
 
         private static void ParseFileImplementation(CoreTestFilesFixture fixture, string name) {
-            string testFile = Path.Combine(fixture.DestinationPath, name);
+            string testFile = fixture.GetDestinationPath(name);
             string baselineFile = testFile + ".tree";
-
-            string text;
-            using (var sr = new StreamReader(testFile)) {
-                text = sr.ReadToEnd();
-            }
+            string text = fixture.LoadDestinationFile(name);
 
             AstRoot actualTree = RParser.Parse(text);
 

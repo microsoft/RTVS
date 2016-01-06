@@ -24,12 +24,9 @@ namespace Microsoft.Markdown.Editor.Test.Utility
 
         private static void TokenizeFileImplementation<TToken, TTokenType, TTokenizer>(MarkdownTestFilesFixture fixture, string name)
             where TTokenizer : ITokenizer<TToken>, new() where TToken : IToken<TTokenType> {
-            string testFile = Path.Combine(fixture.DestinationPath, name);
+            string testFile = fixture.GetDestinationPath(name);
             string baselineFile = testFile + ".tokens";
-            string text;
-            using (var sr = new StreamReader(testFile)) {
-                text = sr.ReadToEnd();
-            }
+            string text = fixture.LoadDestinationFile(name);
 
             ITextProvider textProvider = new TextStream(text);
             var tokenizer = new TTokenizer();

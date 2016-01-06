@@ -484,7 +484,7 @@ namespace Microsoft.R.Host.Client {
         public async Task CreateAndRun(string rHome, IntPtr plotWindowContainerHandle, IRToolsSettings settings, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
+            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath()), RHostExe);
             string rBinPath = Path.Combine(rHome, RBinPathX64);
 
             if (!File.Exists(rhostExe)) {

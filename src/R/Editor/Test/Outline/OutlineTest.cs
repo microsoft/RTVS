@@ -35,13 +35,9 @@ namespace Microsoft.R.Editor.Test.Outline
 
         public static void OutlineFile(EditorTestFilesFixture fixture, string name)
         {
-            string testFile = Path.Combine(fixture.DestinationPath, name);
+            string testFile = fixture.GetDestinationPath(name);
             string baselineFile = testFile + ".outline";
-
-            string text;
-            using (var sr = new StreamReader(testFile)) {
-                text = sr.ReadToEnd();
-            }
+            string text = fixture.LoadDestinationFile(name);
 
             OutlineRegionCollection rc = BuildOutlineRegions(text);
             string actual = TextRangeCollectionWriter.WriteCollection(rc);

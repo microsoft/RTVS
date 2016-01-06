@@ -17,7 +17,7 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
-    [Collection(CollectionNames.DefaultNonParallel)]
+    [Collection(CollectionNames.NonParallel)]
     public class SignatureHelpSourceTest {
         [Test(Skip = "Need to understand how test is working")]
         public void SignatureHelpSourceTest01() {

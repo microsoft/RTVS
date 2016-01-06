@@ -34,6 +34,16 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public string SolutionRoot => SolutionRootLazy.Value;
         public string TestFilesRoot => TestFilesRootLazy.Value;
 
+        public string GetDestinationPath(string fileName) => Path.Combine(DestinationPath, fileName);
+
+        public string LoadDestinationFile(string fileName) {
+            var filePath = GetDestinationPath(fileName);
+
+            using (var sr = new StreamReader(filePath)) {
+                return sr.ReadToEnd();
+            }
+        }
+
         protected DeployFilesFixture(string relativeSource, string relativeDestination) {
             SourcePath = Path.Combine(SolutionRoot, relativeSource);
             DestinationPath = Path.Combine(TestFilesRoot, relativeDestination);

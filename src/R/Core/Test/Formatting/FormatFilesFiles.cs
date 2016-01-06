@@ -21,13 +21,9 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         private static void FormatFileImplementation(CoreTestFilesFixture fixture, string name, RFormatOptions options) {
-            string testFile = Path.Combine(fixture.DestinationPath, name);
+            string testFile = fixture.GetDestinationPath(name);
             string baselineFile = testFile + ".formatted";
-
-            string text;
-            using (var sr = new StreamReader(testFile)) {
-                text = sr.ReadToEnd();
-            }
+            string text = fixture.LoadDestinationFile(name);
 
             RFormatter formatter = new RFormatter(options);
 

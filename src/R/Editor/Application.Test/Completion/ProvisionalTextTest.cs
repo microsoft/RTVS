@@ -1,15 +1,17 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Settings;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Collection(CollectionNames.NonParallel)]
     public sealed class RProvisionalTextTest {
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_ProvisionalText01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("{");
@@ -20,7 +22,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string expected = "{([\"\"])}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
 
                 REditorSettings.AutoFormat = false;
 
@@ -33,12 +35,12 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 expected = "{([\"\"])}";
                 actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_ProvisionalText02() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("c(\"");
@@ -46,7 +48,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string expected = "c(\"\")";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
 
                 // Move caret outside of the provisional text area 
                 // and back so provisional text becomes permanent.
@@ -62,13 +64,12 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 expected = "c(\"\"\")";
                 actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        // Unstable test
-        //[TestMethod]
-        [TestCategory("Interactive")]
+        [Test(Skip = "Unstable")]
+        [Category.Interactive]
         public void R_ProvisionalCurlyBrace01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -82,7 +83,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string expected = "while (1) {\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
     }

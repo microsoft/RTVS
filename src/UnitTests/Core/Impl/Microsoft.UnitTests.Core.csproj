@@ -119,6 +119,7 @@
     <Compile Include="XUnit\TestFrameworkExecutor.cs" />
     <Compile Include="XUnit\TestFrameworkOverrideAttribute.cs" />
     <Compile Include="XUnit\TestFrameworkTypeDiscoverer.cs" />
+    <Compile Include="XUnit\TestMethodInfoFixture.cs" />
     <Compile Include="XUnit\TestParameters.cs" />
     <Compile Include="XUnit\TestTraceListener.cs" />
     <Compile Include="XUnit\ThreadType.cs" />

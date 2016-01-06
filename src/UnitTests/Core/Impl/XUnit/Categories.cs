@@ -10,6 +10,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public LoggingAttribute() : base("Logging") { }
         }
 
+        public class InteractiveAttribute : CategoryAttribute {
+            public InteractiveAttribute() : base("Interactive") { }
+        }
+
         public static class Md {
             public class ClassifierAttribute : CategoryAttribute {
                 public ClassifierAttribute() : base("Md.Classifier") { }
@@ -17,6 +21,16 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             public class TokenizerAttribute : CategoryAttribute {
                 public TokenizerAttribute() : base("Md.Tokenizer") { }
+            }
+        }
+
+        public class PlotsAttribute : CategoryAttribute {
+            public PlotsAttribute() : base("Plots") { }
+        }
+
+        public static class Project {
+            public class ServicesAttribute : CategoryAttribute {
+                public ServicesAttribute() : base("Project.Services") { }
             }
         }
 
@@ -31,6 +45,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             public class BraceMatchAttribute : CategoryAttribute {
                 public BraceMatchAttribute() : base("R.BraceMatch") {}
+            }
+
+            public class ClassifierAttribute : CategoryAttribute {
+                public ClassifierAttribute() : base("R.Classifier") {}
             }
 
             public class CommentingAttribute : CategoryAttribute {
@@ -79,6 +97,30 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             public class TokenizerAttribute : CategoryAttribute {
                 public TokenizerAttribute() : base("R.Tokenizer") { }
+            }
+        }
+
+        public static class Rd {
+            public class BraceMatchAttribute : CategoryAttribute {
+                public BraceMatchAttribute() : base("Rd.BraceMatch") { }
+            }
+
+            public class ClassifierAttribute : CategoryAttribute {
+                public ClassifierAttribute() : base("Rd.Classifier") { }
+            }
+
+            public class TokenizerAttribute : CategoryAttribute {
+                public TokenizerAttribute() : base("Rd.Tokenizer") { }
+            }
+        }
+
+        public class ReplAttribute : CategoryAttribute {
+            public ReplAttribute() : base("Repl") { }
+        }
+
+        public static class Variable {
+            public class ExplorerAttribute : CategoryAttribute {
+                public ExplorerAttribute() : base("Variable.Explorer") {}
             }
         }
     }

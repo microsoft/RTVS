@@ -14,8 +14,16 @@ namespace Microsoft.Languages.Core.Test.Assertions {
         where TAssertion : TokenAssertions<T, TTokenType, TAssertion> {
         protected override string Context { get; } = "Microsoft.Languages.Core.Tokens.Token";
 
-        public TokenAssertions(T token) {
+        protected TokenAssertions(T token) {
             Subject = token;
+        }
+
+        public AndConstraint<TAssertion> Be(TTokenType tokenType, int start, int length, string because = "", params object[] reasonArgs) {
+            Subject.Should().HaveType(tokenType)
+                .And.StartAt(start)
+                .And.HaveLength(length);
+
+            return new AndConstraint<TAssertion>((TAssertion)this);
         }
 
         public AndConstraint<TAssertion> HaveType(TTokenType tokenType, string because = "", params object[] reasonArgs) {
