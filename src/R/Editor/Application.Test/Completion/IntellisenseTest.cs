@@ -1,14 +1,16 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Collection(CollectionNames.NonParallel)]
     public class IntellisenseTest {
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_KeywordIntellisense() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("funct");
@@ -18,12 +20,12 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string expected = "function";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_LibraryIntellisense() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("library(ut");
@@ -33,12 +35,12 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string expected = "library(utils)";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_RequireIntellisense() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("require(uti");
@@ -48,12 +50,12 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string expected = "require(utils)";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_CompletionFilter01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("x <- lm");
@@ -70,12 +72,12 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string expected = "x <- labels.default";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_CompletionFilter02() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("x <- lm");
@@ -85,7 +87,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string expected = "x <- lm+";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
     }

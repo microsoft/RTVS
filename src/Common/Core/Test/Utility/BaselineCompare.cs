@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 
 namespace Microsoft.Common.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
@@ -32,10 +32,7 @@ namespace Microsoft.Common.Core.Test.Utility {
         public static void CompareStringLines(string expected, string actual) {
             string baseLine, newLine;
             int line = CompareLines(expected, actual, out baseLine, out newLine);
-
-            Assert.AreEqual(0, line,
-                String.Format(
-                 CultureInfo.InvariantCulture, "\r\nDifferent at line {0}\r\n\tExpected:\t{1}\r\n\tActual:\t{2}\r\n", line, baseLine.Trim(), newLine.Trim()));
+            line.Should().Be(0, "There should be no difference at line {0}\r\n\tExpected:\t{1}\r\n\tActual:\t{2}\r\n", line, baseLine.Trim(), newLine.Trim());
         }
 
         public static int CompareLines(string expected, string actual, out string baseLine, out string newLine, bool ignoreCase = false) {
@@ -50,13 +47,13 @@ namespace Microsoft.Common.Core.Test.Utility {
                 if (baseLine == null || newLine == null)
                     break;
 
-                if (String.Compare(baseLine, newLine, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) != 0)
+                if (string.Compare(baseLine, newLine, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) != 0)
                     return lineNum;
             }
 
             if (baseLine == null && newLine == null) {
-                baseLine = String.Empty;
-                newLine = String.Empty;
+                baseLine = string.Empty;
+                newLine = string.Empty;
 
                 return 0;
             }
@@ -65,28 +62,22 @@ namespace Microsoft.Common.Core.Test.Utility {
         }
 
         public static void CompareFiles(string baselineFile, string actual, bool regenerateBaseline, bool ignoreCase = false) {
-            try {
-                if (regenerateBaseline) {
-                    if (File.Exists(baselineFile))
-                        File.SetAttributes(baselineFile, FileAttributes.Normal);
+            if (regenerateBaseline) {
+                if (File.Exists(baselineFile))
+                    File.SetAttributes(baselineFile, FileAttributes.Normal);
 
-                    using (var sw = new StreamWriter(baselineFile)) {
-                        sw.Write(actual);
-                    }
-                } else {
-                    using (var sr = new StreamReader(baselineFile)) {
-                        string expected = sr.ReadToEnd();
-
-                        string baseLine, newLine;
-                        int line = CompareLines(expected, actual, out baseLine, out newLine, ignoreCase);
-
-                        Assert.AreEqual(0, line,
-                            String.Format(
-                             CultureInfo.InvariantCulture, "\r\nDifferent at line {0}\r\n\tExpected:\t{1}\r\n\tActual:\t{2}\r\n", line, baseLine.Trim(), newLine.Trim()));
-                    }
+                using (var sw = new StreamWriter(baselineFile)) {
+                    sw.Write(actual);
                 }
-            } catch (AssertFailedException ex) {
-                Assert.Fail(string.Format(CultureInfo.InvariantCulture, "Test {0} has thrown an exception: {1}", baselineFile.Substring(baselineFile.LastIndexOf('\\') + 1), ex.Message));
+            } else {
+                using (var sr = new StreamReader(baselineFile)) {
+                    string expected = sr.ReadToEnd();
+
+                    string baseLine, newLine;
+                    int line = CompareLines(expected, actual, out baseLine, out newLine, ignoreCase);
+                    line.Should().Be(0, "There should be no difference at line {0}\r\n\tExpected:\t{1}\r\n\tActual:\t{2}\r\nBaselineFile:\t{3}\r\n",
+                        line, baseLine.Trim(), newLine.Trim(), baselineFile.Substring(baselineFile.LastIndexOf('\\') + 1));
+                }
             }
         }
     }

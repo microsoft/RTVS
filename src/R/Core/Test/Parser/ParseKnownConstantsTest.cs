@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseKnownConstantsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    [ExcludeFromCodeCoverage]    
+    public class ParseKnownConstantsTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseKnownContstantsTest01() {
             string expected =
 @"GlobalScope  [Global]
@@ -23,8 +21,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "NULL + NA");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseKnownContstantsTest02() {
             string expected =
 @"GlobalScope  [Global]

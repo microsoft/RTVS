@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Expressions.Definitions;
@@ -7,40 +7,42 @@ using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.AST {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class AstShiftTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("AST")]
+    public class AstShiftTest {
+        [Test]
+        [Category.R.Ast]
         public void AstShiftTest1() {
             AstRoot ast = RParser.Parse(new TextStream(" a()"));
-            IScope scope = ast.Children[0] as IScope;
+            IScope scope = ast.Children[0].Should().BeAssignableTo<IScope>().Which;
 
-            Assert.AreEqual(1, scope.Children[0].Start);
+            scope.Children[0].Start.Should().Be(1);
             ast.Shift(1);
-            Assert.AreEqual(2, scope.Children[0].Start);
+            scope.Children[0].Start.Should().Be(2);
         }
 
-        [TestMethod]
-        [TestCategory("AST")]
+        [Test]
+        [Category.R.Ast]
         public void AstShiftTest2() {
             AstRoot ast = RParser.Parse(new TextStream(" a()"));
-            IScope scope = ast.Children[0] as IScope;
+            var scope = ast.Children[0].Should().BeAssignableTo<IScope>().Which;
+            scope.Children[0].Start.Should().Be(1);
 
-            Assert.AreEqual(1, scope.Children[0].Start);
+            var expression = scope.Children[0].Should().BeAssignableTo<IStatement>()
+                .Which.Children[0].Should().BeAssignableTo<IExpression>()
+                .Which;
 
-            IStatement statement = scope.Children[0] as IStatement;
-            IExpression expression = statement.Children[0] as IExpression;
-            Assert.AreEqual(1, expression.Children[0].Start);
+            expression.Children[0].Start.Should().Be(1);
+            var func = expression.Children[0].Should().BeAssignableTo<IFunction>()
+                .Which;
 
-            IFunction func = expression.Children[0] as IFunction;
-            Assert.AreEqual(2, func.OpenBrace.Start);
+            func.OpenBrace.Start.Should().Be(2);
 
             ast.ShiftStartingFrom(2, 1);
-            Assert.AreEqual(3, func.OpenBrace.Start);
+
+            func.OpenBrace.Start.Should().Be(3);
         }
     }
 }

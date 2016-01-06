@@ -177,7 +177,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         private CompositionContainer CreateContainer() {
             CompositionContainer container = null;
 
-            string thisAssembly = Assembly.GetExecutingAssembly().Location;
+            string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
             string assemblyLoc = Path.GetDirectoryName(thisAssembly);
 
             _idePath = GetHostExePath();

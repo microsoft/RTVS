@@ -1,29 +1,35 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Core.Formatting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.R.Core.Test.Tokens {
+namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class FormatSamplesFilesTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Formatting")]
-        public void Formatter_FormatFile_LeastSquares() {
-            RFormatOptions options = new RFormatOptions();
-            options.IndentType = IndentType.Tabs;
+    public class FormatSamplesFilesTest {
+        private readonly CoreTestFilesFixture _files;
 
-            FormatFilesFiles.FormatFile(this.TestContext, @"Formatting\lsfit.r", options);
+        public FormatSamplesFilesTest(CoreTestFilesFixture files) {
+            _files = files;
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
-        public void Formatter_FormatFile_IfElse() {
-            RFormatOptions options = new RFormatOptions();
-            options.IndentSize = 2;
+        [Test]
+        [Category.R.Formatting]
+        public void Formatter_FormatFile_LeastSquares() {
+            RFormatOptions options = new RFormatOptions {
+                IndentType = IndentType.Tabs
+            };
 
-            FormatFilesFiles.FormatFile(this.TestContext, @"Formatting\ifelse.r", options);
+            FormatFilesFiles.FormatFile(_files, @"Formatting\lsfit.r", options);
+        }
+
+        [Test]
+        [Category.R.Formatting]
+        public void Formatter_FormatFile_IfElse() {
+            RFormatOptions options = new RFormatOptions {
+                IndentSize = 2
+            };
+
+            FormatFilesFiles.FormatFile(_files, @"Formatting\ifelse.r", options);
         }
     }
 }

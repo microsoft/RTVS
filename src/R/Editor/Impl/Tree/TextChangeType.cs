@@ -4,7 +4,7 @@ namespace Microsoft.R.Editor.Tree
     /// <summary>
     /// Type of text change in the editor document
     /// </summary>
-    internal enum TextChangeType
+    public enum TextChangeType
     {
         /// <summary>
         /// Trivial change like whitespace change

@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseSimpleExpressionsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    [ExcludeFromCodeCoverage]   
+    public class ParseSimpleExpressionsTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions01() {
             string expected =
 @"GlobalScope  [Global]
@@ -25,8 +23,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a*b+c");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions02() {
             string expected =
 @"GlobalScope  [Global]
@@ -46,8 +44,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a*b+c*d");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions03() {
             string expected =
 @"GlobalScope  [Global]
@@ -68,8 +66,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a*(b+c)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions04() {
             string expected =
 @"GlobalScope  [Global]
@@ -88,8 +86,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "((x))");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions05() {
             string expected =
 @"GlobalScope  [Global]
@@ -111,8 +109,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "((x))+1");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions06() {
             string expected =
 @"GlobalScope  [Global]
@@ -127,8 +125,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "(x)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions07() {
             string expected =
 @"GlobalScope  [Global]
@@ -139,8 +137,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "x");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions08() {
             string expected =
 @"GlobalScope  [Global]
@@ -148,8 +146,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions09() {
             string expected =
 @"GlobalScope  [Global]
@@ -174,8 +172,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "((c+1)/2.0)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSimpleExpressions10() {
             string expected =
 @"GlobalScope  [Global]
