@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using FluentAssertions;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
@@ -17,16 +16,16 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
             _files = files;
         }
 
-        [Test(Skip = "Unstable")]
-        [Category.Interactive]
+        //[Test(Skip = "Unstable")]
+        //[Category.Interactive]
         public void TypeFile_R() {
             string actual = TypeFileInEditor("lsfit-part.r", RContentTypeDefinition.ContentType);
             string expected = "";
             actual.Should().Be(expected);
         }
 
-        [Test(Skip="Unstable")]
-        [Category.Interactive]
+        //[Test(Skip="Unstable")]
+        //[Category.Interactive]
         public void TypeFile_RD() {
             TypeFileInEditor("01.rd", RdContentTypeDefinition.ContentType);
         }
