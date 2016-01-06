@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseLoopsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    [ExcludeFromCodeCoverage]    
+    public class ParseLoopsTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseRepeatTest() {
             string expected =
 @"GlobalScope  [Global]
@@ -30,8 +28,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "repeat { x <- x+1 }");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseWhileTest1() {
             string expected =
 @"GlobalScope  [Global]
@@ -66,8 +64,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "while(a+b > c+d) { a <- a+1 }");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseWhileTest2() {
             string expected =
 @"GlobalScope  [Global]
@@ -93,8 +91,8 @@ RightOperandExpected Token [12...13)
             ParserTest.VerifyParse(expected, "while(a+b > ) { a <- a+1 }");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseForTest1() {
             string expected =
 @"GlobalScope  [Global]

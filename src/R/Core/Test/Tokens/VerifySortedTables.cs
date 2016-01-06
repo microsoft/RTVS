@@ -1,45 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class VerifySortedTables : TokenizeTestBase<RToken, RTokenType> {
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Formatting]
         public void VerifySortedRKeywords() {
             string[] array = new List<string>(Keywords.KeywordList).ToArray();
             Array.Sort(array);
 
-            for (int i = 0; i < array.Length; i++) {
-                Assert.AreEqual(Keywords.KeywordList[i], array[i]);
-            }
+            array.Should().Equal(Keywords.KeywordList);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Formatting]
         public void VerifySorted2CharOperators() {
             string[] array = new List<string>(Operators._twoChars).ToArray();
             Array.Sort(array);
 
-            for (int i = 0; i < array.Length; i++) {
-                Assert.AreEqual(Operators._twoChars[i], array[i]);
-            }
+            array.Should().Equal(Operators._twoChars);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Formatting]
         public void VerifySorted3CharOperators() {
             string[] array = new List<string>(Operators._threeChars).ToArray();
             Array.Sort(array);
 
-            for (int i = 0; i < array.Length; i++) {
-                Assert.AreEqual(Operators._threeChars[i], array[i]);
-            }
+            array.Should().Equal(Operators._threeChars);
         }
     }
 }

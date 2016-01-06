@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.R.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
@@ -25,11 +26,10 @@ namespace Microsoft.R.Core.Test.Utility {
             string actual = astWriter.WriteTree(actualTree);
             
             string expectedLine, actualLine;
-            int result = BaselineCompare.CompareLines(expected, actual, out expectedLine, out actualLine);
+            int index;
+            int result = BaselineCompare.CompareLines(expected, actual, out expectedLine, out actualLine, out index);
 
-            Assert.AreEqual(0, result,
-                String.Format(CultureInfo.InvariantCulture,
-                    "\r\nDifferent at line {0}\r\nExpected: {1}\r\nActual: {2}", result, expectedLine, actualLine));
+            result.Should().Be(0, "Line at {0} should be {1}, but found {2}, different at position {3}", result, expectedLine, actualLine, index);
         }
     }
 }

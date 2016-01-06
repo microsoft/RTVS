@@ -1,74 +1,52 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Support.RD.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Support.Test.RD.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class TokenizeRdTest : TokenizeTestBase<RdToken, RdTokenType> {
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdKeywords1() {
-            var tokens = this.Tokenize(@" \title", new RdTokenizer());
-
-            Assert.AreEqual(1, tokens.Count);
-
-            Assert.AreEqual(RdTokenType.Keyword, tokens[0].TokenType);
-            Assert.AreEqual(1, tokens[0].Start);
-            Assert.AreEqual(6, tokens[0].Length);
+            var tokens = Tokenize(@" \title", new RdTokenizer());
+            tokens.Should().ContainSingle()
+                .Which.Should().Be(RdTokenType.Keyword, 1, 6);
         }
 
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdKeywords2() {
-            var tokens = this.Tokenize(@" \title{}", new RdTokenizer());
-
-            Assert.AreEqual(3, tokens.Count);
-
-            Assert.AreEqual(RdTokenType.Keyword, tokens[0].TokenType);
-            Assert.AreEqual(1, tokens[0].Start);
-            Assert.AreEqual(6, tokens[0].Length);
-
-            Assert.AreEqual(RdTokenType.OpenCurlyBrace, tokens[1].TokenType);
-            Assert.AreEqual(7, tokens[1].Start);
-            Assert.AreEqual(1, tokens[1].Length);
-
-            Assert.AreEqual(RdTokenType.CloseCurlyBrace, tokens[2].TokenType);
-            Assert.AreEqual(8, tokens[2].Start);
-            Assert.AreEqual(1, tokens[2].Length);
+            var tokens = Tokenize(@" \title{}", new RdTokenizer());
+            tokens.Should().HaveCount(3);
+            tokens[0].Should().Be(RdTokenType.Keyword, 1, 6);
+            tokens[1].Should().Be(RdTokenType.OpenCurlyBrace, 7, 1);
+            tokens[2].Should().Be(RdTokenType.CloseCurlyBrace, 8, 1);
         }
 
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdPragmas1() {
-            var tokens = this.Tokenize("#ifdef\ntext\n#endif", new RdTokenizer());
-
-            Assert.AreEqual(2, tokens.Count);
-
-            Assert.AreEqual(RdTokenType.Pragma, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(6, tokens[0].Length);
-
-            Assert.AreEqual(RdTokenType.Pragma, tokens[1].TokenType);
-            Assert.AreEqual(12, tokens[1].Start);
-            Assert.AreEqual(6, tokens[1].Length);
+            var tokens = Tokenize("#ifdef\ntext\n#endif", new RdTokenizer());
+            tokens.Should().HaveCount(2);
+            tokens[0].Should().Be(RdTokenType.Pragma, 0, 6);
+            tokens[1].Should().Be(RdTokenType.Pragma, 12, 6);
         }
 
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdPragmas2() {
-            var tokens = this.Tokenize(" #if\ntext\n #endif", new RdTokenizer());
-
-            Assert.AreEqual(0, tokens.Count);
+            var tokens = Tokenize(" #if\ntext\n #endif", new RdTokenizer());
+            tokens.Should().BeEmpty();
         }
 
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments01() {
-            var actualTokens = this.Tokenize(@"\a1{arg[text \a1[=a2]] text}", new RdTokenizer());
-            var expectedTokens = new TokenData<RdTokenType>[]
+            var actualTokens = Tokenize(@"\a1{arg[text \a1[=a2]] text}", new RdTokenizer());
+            var expectedTokens = new[]
             {
                 new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 3),
                 new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 3, 1),
@@ -84,11 +62,11 @@ namespace Microsoft.R.Support.Test.RD.Tokens {
         }
 
 
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments02() {
-            var actualTokens = this.Tokenize(@"\method{as.matrix}{data.frame}(x)", new RdTokenizer());
-            var expectedTokens = new TokenData<RdTokenType>[]
+            var actualTokens = Tokenize(@"\method{as.matrix}{data.frame}(x)", new RdTokenizer());
+            var expectedTokens = new[]
             {
                 new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 7),
                 new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 7, 1),
@@ -100,11 +78,11 @@ namespace Microsoft.R.Support.Test.RD.Tokens {
             TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
 
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments03() {
-            var actualTokens = this.Tokenize(@"\usage{\method{as.matrix}{data.frame}(x)}", new RdTokenizer());
-            var expectedTokens = new TokenData<RdTokenType>[]
+            var actualTokens = Tokenize(@"\usage{\method{as.matrix}{data.frame}(x)}", new RdTokenizer());
+            var expectedTokens = new[]
             {
                 new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 6),
                 new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 6, 1),
@@ -119,11 +97,11 @@ namespace Microsoft.R.Support.Test.RD.Tokens {
             TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
 
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments04() {
-            var actualTokens = this.Tokenize(@"\ifelse{{latex}{\out[x]{~}}{ }}{}", new RdTokenizer());
-            var expectedTokens = new TokenData<RdTokenType>[]
+            var actualTokens = Tokenize(@"\ifelse{{latex}{\out[x]{~}}{ }}{}", new RdTokenizer());
+            var expectedTokens = new[]
             {
                 new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 7),
                 new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 7, 1),
@@ -146,11 +124,11 @@ namespace Microsoft.R.Support.Test.RD.Tokens {
             TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
 
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments05() {
-            var actualTokens = this.Tokenize(@"\item{\dots}{ A }", new RdTokenizer());
-            var expectedTokens = new TokenData<RdTokenType>[]
+            var actualTokens = Tokenize(@"\item{\dots}{ A }", new RdTokenizer());
+            var expectedTokens = new[]
             {
                 new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 5),
                 new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 5, 1),
@@ -163,14 +141,14 @@ namespace Microsoft.R.Support.Test.RD.Tokens {
             TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
         }
 
-        [TestMethod]
-        [TestCategory("Rd.Tokenizer")]
+        [Test]
+        [Category.Rd.Tokenizer]
         public void TokenizeRdVerbationContent() {
-            var actualTokens = this.Tokenize(
+            var actualTokens = Tokenize(
 @"\alias{\% \dots %foo}
 #ifdef
 %comment", new RdTokenizer());
-            var expectedTokens = new TokenData<RdTokenType>[]
+            var expectedTokens = new[]
             {
                 new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 6),
                 new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 6, 1),

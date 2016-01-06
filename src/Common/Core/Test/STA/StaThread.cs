@@ -3,17 +3,14 @@ using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Windows.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Common.Core.Test.STA {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
-    internal sealed class EditorTest {
-        [AssemblyCleanup]
-        public static void Cleanup() {
-            StaThread.Terminate();
-        }
-    }
+    //internal sealed class EditorTest {
+    //    [AssemblyCleanup]
+    //    public static void Cleanup() {
+    //        StaThread.Terminate();
+    //    }
+    //}
 
     [ExcludeFromCodeCoverage]
     public static class StaThread {

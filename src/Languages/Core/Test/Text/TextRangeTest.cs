@@ -1,243 +1,222 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Languages.Core.Test.Text {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class TextRangeTest {
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_IntersectTest01() {
             TextRange r1 = TextRange.FromBounds(1, 5);
             TextRange r2 = TextRange.FromBounds(5, 10);
 
-            Assert.IsFalse(TextRange.Intersect(r1, r2));
-            Assert.IsFalse(TextRange.Intersect(r2, r1));
+            TextRange.Intersect(r1, r2).Should().BeFalse();
+            TextRange.Intersect(r2, r1).Should().BeFalse();
 
-            Assert.IsTrue(TextRange.Intersect(r1, r1));
+            TextRange.Intersect(r1, r1).Should().BeTrue();
 
             TextRange r3 = TextRange.FromBounds(1, 1);
             TextRange r4 = TextRange.FromBounds(1, 2);
             TextRange r5 = TextRange.FromBounds(2, 3);
 
-            Assert.IsTrue(TextRange.Intersect(r1, r3));
+            TextRange.Intersect(r1, r3).Should().BeTrue();
 
-            Assert.IsTrue(TextRange.Intersect(r1, r4));
-            Assert.IsTrue(TextRange.Intersect(r1, r5));
+            TextRange.Intersect(r1, r4).Should().BeTrue();
+            TextRange.Intersect(r1, r5).Should().BeTrue();
 
-            Assert.IsTrue(TextRange.Intersect(r3, r1));
-            Assert.IsTrue(TextRange.Intersect(r4, r1));
-            Assert.IsTrue(TextRange.Intersect(r5, r1));
+            TextRange.Intersect(r3, r1).Should().BeTrue();
+            TextRange.Intersect(r4, r1).Should().BeTrue();
+            TextRange.Intersect(r5, r1).Should().BeTrue();
 
             TextRange r6 = TextRange.FromBounds(Int32.MinValue / 2, Int32.MaxValue / 2);
-            Assert.IsTrue(TextRange.Intersect(r1, r6));
-            Assert.IsTrue(TextRange.Intersect(r6, r1));
+            TextRange.Intersect(r1, r6).Should().BeTrue();
+            TextRange.Intersect(r6, r1).Should().BeTrue();
 
             TextRange r7 = TextRange.FromBounds(0, 20);
-            Assert.IsTrue(TextRange.Intersect(r1, r7));
-            Assert.IsTrue(TextRange.Intersect(r7, r1));
+            TextRange.Intersect(r1, r7).Should().BeTrue();
+            TextRange.Intersect(r7, r1).Should().BeTrue();
 
             TextRange r8 = TextRange.FromBounds(5, 8);
-            Assert.IsFalse(TextRange.Intersect(r1, r8));
-            Assert.IsFalse(TextRange.Intersect(r8, r1));
+            TextRange.Intersect(r1, r8).Should().BeFalse();
+            TextRange.Intersect(r8, r1).Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_IntersectTest02() {
             TextRange r1 = TextRange.FromBounds(1, 5);
             TextRange r2 = TextRange.FromBounds(5, 10);
 
-            Assert.IsFalse(r1.Intersect(r2));
-            Assert.IsFalse(r2.Intersect(r1));
+            r1.Intersect(r2).Should().BeFalse();
+            r2.Intersect(r1).Should().BeFalse();
 
-            Assert.IsTrue(r1.Intersect(r1));
+            r1.Intersect(r1).Should().BeTrue();
 
             TextRange r3 = TextRange.FromBounds(1, 1);
             TextRange r4 = TextRange.FromBounds(1, 2);
             TextRange r5 = TextRange.FromBounds(2, 3);
 
-            Assert.IsTrue(r1.Intersect(r3));
+            r1.Intersect(r3).Should().BeTrue();
 
-            Assert.IsTrue(r1.Intersect(r4));
-            Assert.IsTrue(r1.Intersect(r5));
+            r1.Intersect(r4).Should().BeTrue();
+            r1.Intersect(r5).Should().BeTrue();
 
-            Assert.IsTrue(r3.Intersect(r1));
-            Assert.IsTrue(r4.Intersect(r1));
-            Assert.IsTrue(r5.Intersect(r1));
+            r3.Intersect(r1).Should().BeTrue();
+            r4.Intersect(r1).Should().BeTrue();
+            r5.Intersect(r1).Should().BeTrue();
 
             TextRange r6 = TextRange.FromBounds(Int32.MinValue / 2, Int32.MaxValue / 2);
-            Assert.IsTrue(r1.Intersect(r6));
-            Assert.IsTrue(r6.Intersect(r1));
+            r1.Intersect(r6).Should().BeTrue();
+            r6.Intersect(r1).Should().BeTrue();
 
             TextRange r7 = TextRange.FromBounds(0, 20);
-            Assert.IsTrue(r1.Intersect(r7));
-            Assert.IsTrue(r7.Intersect(r1));
+            r1.Intersect(r7).Should().BeTrue();
+            r7.Intersect(r1).Should().BeTrue();
 
             TextRange r8 = TextRange.FromBounds(5, 8);
-            Assert.IsFalse(r1.Intersect(r8));
-            Assert.IsFalse(r8.Intersect(r1));
+            r1.Intersect(r8).Should().BeFalse();
+            r8.Intersect(r1).Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_IsValidTest() {
-            Assert.IsFalse(TextRange.IsValid(TextRange.EmptyRange));
+            TextRange.IsValid(TextRange.EmptyRange).Should().BeFalse();
 
             TextRange r1 = TextRange.FromBounds(1, 1);
-            Assert.IsFalse(TextRange.IsValid(r1));
+            TextRange.IsValid(r1).Should().BeFalse();
 
             TextRange r2 = TextRange.FromBounds(1, 2);
-            Assert.IsTrue(TextRange.IsValid(r2));
+            TextRange.IsValid(r2).Should().BeTrue();
 
             TextRange r4 = TextRange.FromBounds(2, 3);
-            Assert.IsTrue(TextRange.IsValid(r4));
+            TextRange.IsValid(r4).Should().BeTrue();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_CompareToTest() {
             TextRange r1 = TextRange.FromBounds(1, 1);
 
-            Assert.IsFalse(r1.Equals(new object()));
-            Assert.IsFalse(r1.Equals(null));
+            r1.Equals(new object()).Should().BeFalse();
+            r1.Equals(null).Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_ConstructionTest1() {
-            bool exception = false;
-
-            try {
-                TextRange t = TextRange.FromBounds(2, 1);
-            } catch (Exception) {
-                exception = true;
-            }
-
-            Assert.IsTrue(exception);
+            Action a = () => TextRange.FromBounds(2, 1);
+            a.ShouldThrow<Exception>();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_ConstructionTest2() {
-            bool exception = false;
-
-            try {
-                TextRange t = TextRange.FromBounds(Int32.MinValue, Int32.MaxValue);
-            } catch (Exception) {
-                exception = true;
-            }
-
-            Assert.IsTrue(exception);
+            Action a = () => TextRange.FromBounds(Int32.MinValue, Int32.MaxValue);
+            a.ShouldThrow<Exception>();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_ConstructionTest3() {
-            bool exception = false;
-
-            try {
-                TextRange t = TextRange.FromBounds(Int32.MinValue / 2, Int32.MaxValue / 2);
-            } catch (Exception) {
-                exception = true;
-            }
-
-            Assert.IsFalse(exception);
+            Action a = () => TextRange.FromBounds(int.MinValue/2, Int32.MaxValue/2);
+            a.ShouldNotThrow();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_ConstructionTest4() {
             TextRange r = new TextRange(0);
 
-            Assert.AreEqual(0, r.Start);
-            Assert.AreEqual(1, r.Length);
+            r.Start.Should().Be(0);
+            r.Length.Should().Be(1);
 
             r = new TextRange();
 
-            Assert.AreEqual(0, r.Start);
-            Assert.AreEqual(1, r.Length);
+            r.Start.Should().Be(0);
+            r.Length.Should().Be(1);
 
             r = new TextRange(Int32.MaxValue);
 
-            Assert.AreEqual(Int32.MaxValue, r.Start);
-            Assert.AreEqual(0, r.Length);
+            r.Start.Should().Be(Int32.MaxValue);
+            r.Length.Should().Be(0);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_ContainsTest() {
             TextRange r = TextRange.FromBounds(1, 3);
 
-            Assert.IsFalse(TextRange.Contains(r, Int32.MinValue));
-            Assert.IsFalse(TextRange.Contains(r, 0));
+            TextRange.Contains(r, Int32.MinValue).Should().BeFalse();
+            TextRange.Contains(r, 0).Should().BeFalse();
 
-            Assert.IsTrue(TextRange.Contains(r, 1));
-            Assert.IsTrue(TextRange.Contains(r, 2));
+            TextRange.Contains(r, 1).Should().BeTrue();
+            TextRange.Contains(r, 2).Should().BeTrue();
 
-            Assert.IsFalse(TextRange.Contains(r, 3));
-            Assert.IsFalse(TextRange.Contains(r, Int32.MaxValue));
+            TextRange.Contains(r, 3).Should().BeFalse();
+            TextRange.Contains(r, Int32.MaxValue).Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_ContainsTest1() {
             TextRange r = TextRange.FromBounds(1, 5);
 
-            Assert.IsFalse(TextRange.Contains(r, TextRange.FromBounds(Int32.MinValue / 2, 0)));
-            Assert.IsFalse(TextRange.Contains(r, TextRange.FromBounds(0, 1)));
+            TextRange.Contains(r, TextRange.FromBounds(Int32.MinValue / 2, 0)).Should().BeFalse();
+            TextRange.Contains(r, TextRange.FromBounds(0, 1)).Should().BeFalse();
 
-            Assert.IsFalse(TextRange.Contains(r, TextRange.FromBounds(5, 6)));
-            Assert.IsFalse(TextRange.Contains(r, TextRange.FromBounds(5, Int32.MaxValue / 2)));
+            TextRange.Contains(r, TextRange.FromBounds(5, 6)).Should().BeFalse();
+            TextRange.Contains(r, TextRange.FromBounds(5, Int32.MaxValue / 2)).Should().BeFalse();
 
-            Assert.IsTrue(TextRange.Contains(r, TextRange.FromBounds(1, 2)));
-            Assert.IsTrue(TextRange.Contains(r, TextRange.FromBounds(3, 4)));
+            TextRange.Contains(r, TextRange.FromBounds(1, 2)).Should().BeTrue();
+            TextRange.Contains(r, TextRange.FromBounds(3, 4)).Should().BeTrue();
 
-            Assert.IsFalse(TextRange.Contains(r, TextRange.FromBounds(1, 5)));
+            TextRange.Contains(r, TextRange.FromBounds(1, 5)).Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_ContainsTest2() {
             TextRange r = TextRange.FromBounds(1, 5);
 
-            Assert.IsFalse(r.Contains(TextRange.FromBounds(Int32.MinValue / 2, 0)));
-            Assert.IsFalse(r.Contains(TextRange.FromBounds(0, 1)));
+            r.Contains(TextRange.FromBounds(Int32.MinValue / 2, 0)).Should().BeFalse();
+            r.Contains(TextRange.FromBounds(0, 1)).Should().BeFalse();
 
-            Assert.IsFalse(r.Contains(TextRange.FromBounds(5, 6)));
-            Assert.IsFalse(r.Contains(TextRange.FromBounds(5, Int32.MaxValue / 2)));
+            r.Contains(TextRange.FromBounds(5, 6)).Should().BeFalse();
+            r.Contains(TextRange.FromBounds(5, Int32.MaxValue / 2)).Should().BeFalse();
 
-            Assert.IsTrue(r.Contains(TextRange.FromBounds(1, 2)));
-            Assert.IsTrue(r.Contains(TextRange.FromBounds(3, 4)));
+            r.Contains(TextRange.FromBounds(1, 2)).Should().BeTrue();
+            r.Contains(TextRange.FromBounds(3, 4)).Should().BeTrue();
 
-            Assert.IsFalse(r.Contains(TextRange.FromBounds(1, 5)));
+            r.Contains(TextRange.FromBounds(1, 5)).Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_EmptyTest() {
             TextRange r = TextRange.FromBounds(1, 2);
             r.Empty();
 
-            Assert.IsFalse(TextRange.IsValid(r));
-            Assert.AreEqual(0, r.Start);
-            Assert.AreEqual(0, r.End);
-            Assert.AreEqual(0, r.Length);
+            TextRange.IsValid(r).Should().BeFalse();
+            r.Start.Should().Be(0);
+            r.End.Should().Be(0);
+            r.Length.Should().Be(0);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TextRange_AreEqualTest() {
             TextRange r = TextRange.FromBounds(1, 2);
             TextRange r1 = TextRange.FromBounds(1, 2);
 
-            Assert.IsFalse(TextRange.AreEqual(r, TextRange.EmptyRange));
-            Assert.IsTrue(TextRange.AreEqual(r, r));
-            Assert.IsFalse(TextRange.AreEqual(r, null));
-            Assert.IsFalse(TextRange.AreEqual(null, r));
-            Assert.IsTrue(TextRange.AreEqual(r, r1));
+            TextRange.AreEqual(r, TextRange.EmptyRange).Should().BeFalse();
+            TextRange.AreEqual(r, r).Should().BeTrue();
+            TextRange.AreEqual(r, null).Should().BeFalse();
+            TextRange.AreEqual(null, r).Should().BeFalse();
+            TextRange.AreEqual(r, r1).Should().BeTrue();
         }
     }
 }

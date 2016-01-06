@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseInlineIfElseTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    [ExcludeFromCodeCoverage]    
+    public class ParseInlineIfElseTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseInlineIfElseTest01() {
             string expected =
 @"GlobalScope  [Global]
@@ -43,8 +41,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a <- b + if(x > 1) 1 else 2");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseInlineIfElseTest02() {
             string expected =
 @"GlobalScope  [Global]
@@ -89,8 +87,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a <- b + if(x > 1) {1+3} else {4-5}");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseInlineIfElseTest03() {
             string expected =
 @"GlobalScope  [Global]
@@ -139,8 +137,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a <- b + if(x > 1) { function(a) { return(x) }}");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseInlineIfElseTest04() {
             string expected =
 @"GlobalScope  [Global]

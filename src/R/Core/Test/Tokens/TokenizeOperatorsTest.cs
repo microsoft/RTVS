@@ -1,92 +1,96 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class TokenizeOperatorsTest : TokenizeTestBase<RToken, RTokenType> {
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void Tokenize_OneCharOperatorsTest() {
-            var tokens = this.Tokenize("^~-+*/$@<>|&=!?:", new RTokenizer());
+            var tokens = Tokenize("^~-+*/$@<>|&=!?:", new RTokenizer());
 
-            Assert.AreEqual(16, tokens.Count);
-            for (int i = 0; i < tokens.Count; i++) {
-                Assert.AreEqual(RTokenType.Operator, tokens[i].TokenType);
-                Assert.AreEqual(i, tokens[i].Start);
-                Assert.AreEqual(1, tokens[i].Length);
+            tokens.Should().HaveCount(16);
+            for (var i = 0; i < tokens.Count; i++) {
+                tokens[i].Should().HaveType(RTokenType.Operator)
+                    .And.StartAt(i)
+                    .And.HaveLength(1);
             }
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void Tokenize_TwoCharOperatorsTest() {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < Operators._twoChars.Length; i++) {
-                sb.Append(Operators._twoChars[i]);
+            foreach (var t in Operators._twoChars) {
+                sb.Append(t);
                 sb.Append(' ');
             }
 
-            var tokens = this.Tokenize(sb.ToString(), new RTokenizer());
+            var tokens = Tokenize(sb.ToString(), new RTokenizer());
 
-            Assert.AreEqual(Operators._twoChars.Length, tokens.Count);
-            for (int i = 0; i < tokens.Count; i++) {
-                Assert.AreEqual(RTokenType.Operator, tokens[i].TokenType);
-                Assert.AreEqual(3 * i, tokens[i].Start);
-                Assert.AreEqual(2, tokens[i].Length);
+            tokens.Should().HaveCount(Operators._twoChars.Length);
+
+            for (var i = 0; i < tokens.Count; i++) {
+                tokens[i].Should().HaveType(RTokenType.Operator)
+                    .And.StartAt(3 * i)
+                    .And.HaveLength(2);
             }
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void Tokenize_ThreeCharOperatorsTest() {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < Operators._threeChars.Length; i++) {
-                sb.Append(Operators._threeChars[i]);
+            foreach (var token in Operators._threeChars) {
+                sb.Append(token);
                 sb.Append(' ');
             }
 
-            var tokens = this.Tokenize(sb.ToString(), new RTokenizer());
+            var tokens = Tokenize(sb.ToString(), new RTokenizer());
 
-            Assert.AreEqual(Operators._threeChars.Length, tokens.Count);
-            for (int i = 0; i < tokens.Count; i++) {
-                Assert.AreEqual(RTokenType.Operator, tokens[i].TokenType);
-                Assert.AreEqual(4 * i, tokens[i].Start);
-                Assert.AreEqual(3, tokens[i].Length);
+            tokens.Should().HaveCount(Operators._threeChars.Length);
+
+            for (var i = 0; i < tokens.Count; i++) {
+                tokens[i].Should().HaveType(RTokenType.Operator)
+                    .And.StartAt(4 * i)
+                    .And.HaveLength(3);
             }
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void Tokenize_CustomOperatorsTest01() {
-            var tokens = this.Tokenize("%foo% %русский%", new RTokenizer());
+            var tokens = Tokenize("%foo% %русский%", new RTokenizer());
 
-            Assert.AreEqual(2, tokens.Count);
-            Assert.AreEqual(RTokenType.Operator, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(5, tokens[0].Length);
+            tokens.Should().HaveCount(2);
 
-            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
-            Assert.AreEqual(6, tokens[1].Start);
-            Assert.AreEqual(9, tokens[1].Length);
+            tokens[0].Should().HaveType(RTokenType.Operator)
+                .And.StartAt(0)
+                .And.HaveLength(5);
+
+            tokens[1].Should().HaveType(RTokenType.Operator)
+                .And.StartAt(6)
+                .And.HaveLength(9);
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void Tokenize_CustomOperatorsTest02() {
-            var tokens = this.Tokenize("%<% %?=?%", new RTokenizer());
+            var tokens = Tokenize("%<% %?=?%", new RTokenizer());
 
-            Assert.AreEqual(2, tokens.Count);
-            Assert.AreEqual(RTokenType.Operator, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(3, tokens[0].Length);
+            tokens.Should().HaveCount(2);
 
-            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
-            Assert.AreEqual(4, tokens[1].Start);
-            Assert.AreEqual(5, tokens[1].Length);
+            tokens[0].Should().HaveType(RTokenType.Operator)
+                .And.StartAt(0)
+                .And.HaveLength(3);
+
+            tokens[1].Should().HaveType(RTokenType.Operator)
+                .And.StartAt(4)
+                .And.HaveLength(5);
         }
     }
 }

@@ -1,23 +1,29 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
-using Microsoft.Languages.Core.Test.Utility;
+using System.IO;
 using Microsoft.R.Editor.Application.Test.TestShell;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.IO {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class OpenFilesTest: UnitTestBase
+    [Collection(CollectionNames.NonParallel)]
+    public class OpenFilesTest
     {
-        //[TestMethod]
-        [TestCategory("Interactive")]
+        private readonly EditorAppTestFilesFixture _files;
+
+        public OpenFilesTest(EditorAppTestFilesFixture files) {
+            _files = files;
+        }
+
+        [Test(Skip="Unstable")]
+        [Category.Interactive]
         public void OpenFile_R()
         {
             OpenFileInEditor("lsfit.r");
         }
 
-        //[TestMethod]
-        [TestCategory("Interactive")]
+        [Test(Skip = "Unstable")]
+        [Category.Interactive]
         public void OpenFile_RD()
         {
             OpenFileInEditor("01.rd");
@@ -29,7 +35,7 @@ namespace Microsoft.R.Editor.Application.Test.IO {
         /// <param name="fileName">File name</param>
         void OpenFileInEditor(string fileName)
         {
-            string text = TestFiles.LoadFile(this.TestContext, fileName);
+            string text = _files.LoadDestinationFile(fileName);
 
             try
             {

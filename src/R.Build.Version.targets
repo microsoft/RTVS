@@ -1,6 +1,11 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup >
+    <AssemblyVersionInfoPath>$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs</AssemblyVersionInfoPath>
+    <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND Exists('$(AssemblyVersionInfoPath)')">false</GenerateAssemblyVersionInfo>
+    <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND !Exists('$(AssemblyVersionInfoPath)')">true</GenerateAssemblyVersionInfo>
+  </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="$(GenerateAssemblyVersionInfo)">
     <!-- 1.0.YMMDD.HHMM -->
     <Year>$([System.DateTime]::Now.Year)</Year>
     <YearMinus4>$([MSBuild]::Subtract($(Year), 4))</YearMinus4>
@@ -19,7 +24,7 @@
     <BuildVersion>$(MajorVersion).$(MinorVersion).$(Build).$(Revision)</BuildVersion>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="$(GenerateAssemblyVersionInfo)">
     <AssemblyVersionAttribute Include="System.Reflection.AssemblyVersionAttribute">
       <_Parameter1>$(AssemblyVersion)</_Parameter1>
     </AssemblyVersionAttribute>
@@ -32,29 +37,31 @@
   </ItemGroup>
 
   <!-- C# -->
-  <Target Name="DeleteVersionInfoFile" BeforeTargets="GenerateAssemblyInfoFile">
-    <Delete Files="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs" />
+  <Target Name="DeleteVersionInfoFile" BeforeTargets="GenerateAssemblyInfoFile" Condition="$(GenerateAssemblyVersionInfo)">
+    <Delete Files="$(AssemblyVersionInfoPath)" />
   </Target>
 
   <Target Name="GenerateAssemblyInfoFile"
-          Inputs="$(MSBuildAllProjects)"
-          Outputs="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs">
+          Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND $(GenerateAssemblyVersionInfo)"
+          Inputs="$(MSBuildProjectFullPath)"
+          Outputs="$(AssemblyVersionInfoPath)">
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
                        Language="C#"
-                       OutputFile="$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs">
+                       OutputFile="$(AssemblyVersionInfoPath)">
       <Output TaskParameter="OutputFile" ItemName="Compile" />
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
     </WriteCodeFragment>
   </Target>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="$(GenerateAssemblyVersionInfo)">
     <CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>
     <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
   </PropertyGroup>
 
   <!-- C++ -->
   <Target Name="GenerateNativeVersionInfoFile"
-          Inputs="$(MSBuildAllProjects)"
+          Condition="'$(MSBuildProjectExtension)'=='.vcxproj' AND $(GenerateAssemblyVersionInfo)"
+          Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(MSBuildProjectDirectory)\GeneratedVersion.h"
           BeforeTargets="PrepareForBuild">
     <WriteLinesToFile File="$(MSBuildProjectDirectory)\GeneratedVersion.h"

@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.Languages.Core.Test.Text {
+namespace Microsoft.Languages.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class TokenStreamTest {
         enum TestTokenType {
             Token1,
@@ -21,46 +21,46 @@ namespace Microsoft.Languages.Core.Test.Text {
             }
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void EmptyTokenStreamTest() {
             var tokens = new TestToken[] { };
             var ts = CreateTokenStream(tokens);
 
-            Assert.AreEqual(0, ts.Length);
-            Assert.IsTrue(ts.IsEndOfStream());
+            ts.Length.Should().Be(0);
+            ts.IsEndOfStream().Should().BeTrue();
 
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.CurrentToken.TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.NextToken.TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.PreviousToken.TokenType);
-            Assert.AreEqual(0, ts.Position);
+            ts.CurrentToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.NextToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.PreviousToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.Position.Should().Be(0);
 
             var token = ts.Advance(10);
-            Assert.AreEqual(token.TokenType, TestTokenType.EndOfStream);
-            Assert.IsTrue(ts.IsEndOfStream());
-            Assert.AreEqual(0, ts.Position);
+            TestTokenType.EndOfStream.Should().Be(token.TokenType);
+            ts.IsEndOfStream().Should().BeTrue();
+            ts.Position.Should().Be(0);
 
             token = ts.Advance(-100);
-            Assert.AreEqual(token.TokenType, TestTokenType.EndOfStream);
-            Assert.AreEqual(0, ts.Position);
+            TestTokenType.EndOfStream.Should().Be(token.TokenType);
+            ts.Position.Should().Be(0);
 
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.CurrentToken.TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.NextToken.TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.PreviousToken.TokenType);
+            ts.CurrentToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.NextToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.PreviousToken.Should().HaveType(TestTokenType.EndOfStream);
 
             ts.Position = 0;
-            Assert.IsTrue(ts.IsEndOfStream());
-            Assert.AreEqual(0, ts.Position);
+            ts.IsEndOfStream().Should().BeTrue();
+            ts.Position.Should().Be(0);
 
             ts.MoveToNextToken();
-            Assert.IsTrue(ts.IsEndOfStream());
-            Assert.AreEqual(0, ts.Position);
+            ts.IsEndOfStream().Should().BeTrue();
+            ts.Position.Should().Be(0);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TokenStreamTest1() {
-            var tokens = new TestToken[]
+            var tokens = new[]
             {
                 new TestToken(TestTokenType.Token1, TextRange.FromBounds(0,1)),
                 new TestToken(TestTokenType.Token2, TextRange.FromBounds(3,4)),
@@ -71,62 +71,62 @@ namespace Microsoft.Languages.Core.Test.Text {
 
             var ts = CreateTokenStream(tokens);
 
-            Assert.AreEqual(5, ts.Length);
+            ts.Length.Should().Be(5);
 
-            Assert.IsFalse(ts.IsEndOfStream());
-            Assert.AreEqual(TestTokenType.Token1, ts.CurrentToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token2, ts.NextToken.TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.PreviousToken.TokenType);
-            Assert.AreEqual(0, ts.Position);
-
-            ts.MoveToNextToken();
-
-            Assert.IsFalse(ts.IsEndOfStream());
-            Assert.AreEqual(TestTokenType.Token2, ts.CurrentToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token3, ts.NextToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token1, ts.PreviousToken.TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.LookAhead(-2).TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.LookAhead(100).TokenType);
-            Assert.AreEqual(1, ts.Position);
-
-            var token = ts.Advance(2);
-
-            Assert.AreEqual(TestTokenType.Token1, ts.CurrentToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token2, ts.NextToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token3, ts.PreviousToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token2, ts.LookAhead(-2).TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.LookAhead(100).TokenType);
-            Assert.AreEqual(3, ts.Position);
-
-            ts.MoveToNextToken();
-            ts.MoveToNextToken();
-
-            Assert.IsTrue(ts.IsEndOfStream());
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.CurrentToken.TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.NextToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token2, ts.PreviousToken.TokenType);
+            ts.IsEndOfStream().Should().BeFalse();
+            ts.CurrentToken.Should().HaveType(TestTokenType.Token1);
+            ts.NextToken.Should().HaveType(TestTokenType.Token2);
+            ts.PreviousToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.Position.Should().Be(0);
 
             ts.MoveToNextToken();
 
-            Assert.IsTrue(ts.IsEndOfStream());
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.CurrentToken.TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.NextToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token2, ts.PreviousToken.TokenType);
+            ts.IsEndOfStream().Should().BeFalse();
+            ts.CurrentToken.Should().HaveType(TestTokenType.Token2);
+            ts.NextToken.Should().HaveType(TestTokenType.Token3);
+            ts.PreviousToken.Should().HaveType(TestTokenType.Token1);
+            ts.LookAhead(-2).Should().HaveType(TestTokenType.EndOfStream);
+            ts.LookAhead(100).Should().HaveType(TestTokenType.EndOfStream);
+            ts.Position.Should().Be(1);
+
+            ts.Advance(2);
+
+            ts.CurrentToken.Should().HaveType(TestTokenType.Token1);
+            ts.NextToken.Should().HaveType(TestTokenType.Token2);
+            ts.PreviousToken.Should().HaveType(TestTokenType.Token3);
+            ts.LookAhead(-2).Should().HaveType(TestTokenType.Token2);
+            ts.LookAhead(100).Should().HaveType(TestTokenType.EndOfStream);
+            ts.Position.Should().Be(3);
+
+            ts.MoveToNextToken();
+            ts.MoveToNextToken();
+
+            ts.IsEndOfStream().Should().BeTrue();
+            ts.CurrentToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.NextToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.PreviousToken.Should().HaveType(TestTokenType.Token2);
+
+            ts.MoveToNextToken();
+
+            ts.IsEndOfStream().Should().BeTrue();
+            ts.CurrentToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.NextToken.Should().HaveType(TestTokenType.EndOfStream);
+            ts.PreviousToken.Should().HaveType(TestTokenType.Token2);
 
             ts.Advance(-2);
 
-            Assert.AreEqual(TestTokenType.Token1, ts.CurrentToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token2, ts.NextToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token3, ts.PreviousToken.TokenType);
-            Assert.AreEqual(TestTokenType.Token2, ts.LookAhead(-2).TokenType);
-            Assert.AreEqual(TestTokenType.EndOfStream, ts.LookAhead(100).TokenType);
-            Assert.AreEqual(3, ts.Position);
+            ts.CurrentToken.Should().HaveType(TestTokenType.Token1);
+            ts.NextToken.Should().HaveType(TestTokenType.Token2);
+            ts.PreviousToken.Should().HaveType(TestTokenType.Token3);
+            ts.LookAhead(-2).Should().HaveType(TestTokenType.Token2);
+            ts.LookAhead(100).Should().HaveType(TestTokenType.EndOfStream);
+            ts.Position.Should().Be(3);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TokenStreamLineBreakTest() {
-            var tokens = new TestToken[]
+            var tokens = new[]
             {
                 new TestToken(TestTokenType.Token1, TextRange.FromBounds(0,1)),
                 new TestToken(TestTokenType.Token2, TextRange.FromBounds(3,4)),
@@ -138,25 +138,25 @@ namespace Microsoft.Languages.Core.Test.Text {
             var ts = CreateTokenStream(tokens);
             ITextProvider textProvider = new TextStream("1  2  11  \r\n12345678x");
 
-            Assert.IsFalse(ts.IsLineBreakAfter(textProvider, ts.Position));
+            ts.IsLineBreakAfter(textProvider, ts.Position).Should().BeFalse();
 
             ts.Advance(2);
-            Assert.IsTrue(ts.IsLineBreakAfter(textProvider, ts.Position));
+            ts.IsLineBreakAfter(textProvider, ts.Position).Should().BeTrue();
 
             ts.Advance(-1);
-            Assert.IsFalse(ts.IsLineBreakAfter(textProvider, ts.Position));
+            ts.IsLineBreakAfter(textProvider, ts.Position).Should().BeFalse();
 
             ts.MoveToNextLine(textProvider);
-            Assert.AreEqual(TestTokenType.Token1, ts.CurrentToken.TokenType);
+            ts.CurrentToken.Should().HaveType(TestTokenType.Token1);
 
             string s = textProvider.GetText(ts.CurrentToken);
-            Assert.AreEqual("12345678", s);
+            s.Should().Be("12345678");
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void TokenStreamEnumerationTest() {
-            var tokens = new TestToken[]
+            var tokens = new[]
             {
                 new TestToken(TestTokenType.Token1, TextRange.FromBounds(0,1)),
                 new TestToken(TestTokenType.Token2, TextRange.FromBounds(3,4)),
@@ -166,11 +166,7 @@ namespace Microsoft.Languages.Core.Test.Text {
             };
 
             var ts = CreateTokenStream(tokens);
-            int i = 0;
-            foreach (var token in ts) {
-                Assert.AreEqual(tokens[i], token);
-                i++;
-            }
+            ts.Should().Equal(tokens);
         }
 
         private TokenStream<TestToken> CreateTokenStream(TestToken[] tokens) {

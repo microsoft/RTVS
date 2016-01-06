@@ -3,36 +3,42 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.Common.Core.Test.STA;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
-namespace Microsoft.VisualStudio.R.Application.Test.Data {
+namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class VaraibleExplorerTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("Interactive")]
+    [Collection(CollectionNames.NonParallel)]
+    public class VaraibleExplorerTest {
+        private readonly TestFilesFixture _files;
+
+        public VaraibleExplorerTest(TestFilesFixture files) {
+            _files = files;
+        }
+
+        [Test]
+        [Category.Interactive]
         public void VaraibleExplorer_ConstructorTest01() {
             using (var script = new ControlTestScript(typeof(VariableGridHost))) {
                 string actual = script.WriteVisualTree();
-                ViewTreeDump.CompareVisualTrees(this.TestContext, actual, "VariableExplorer01");
+                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer01");
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void VaraibleExplorer_ConstructorTest02() {
             using (var script = new ControlTestScript(typeof(VariableView))) {
                 string actual = script.WriteVisualTree();
-                ViewTreeDump.CompareVisualTrees(this.TestContext, actual, "VariableExplorer02");
+                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void VaraibleExplorer_SimpleDataTest() {
             string actual = null;
             using (var hostScript = new RHostScript()) {
@@ -48,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Application.Test.Data {
                     actual = script.WriteVisualTree();
                 }
             }
-            ViewTreeDump.CompareVisualTrees(this.TestContext, actual, "VariableExplorer03");
+            ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer03");
         }
 
         private static void DoIdle(int ms) {

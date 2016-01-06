@@ -1,42 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 
 namespace Microsoft.Common.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class TestFiles {
-        static public string LoadFile(TestContext context, string fileName) {
-            var filePath = GetTestFilePath(context, fileName);
-
-            using (var sr = new StreamReader(filePath)) {
-                return sr.ReadToEnd();
-            }
-        }
-
-        static public string GetTestFilesFolder(TestContext context) {
-            return Path.Combine(context.TestRunDirectory, CommonTestData.TestFilesRelativePath);
-        }
-
-        static public string GetTestFilePath(TestContext context, string fileName) {
-            return Path.Combine(GetTestFilesFolder(context), fileName);
-        }
-
-        public static IList<string> GetTestFiles(TestContext context, string extension) {
-            string path = GetTestFilesFolder(context);
-            var files = new List<string>();
-
-            IEnumerable<string> filesInFolder = Directory.EnumerateFiles(path);
-            foreach (string name in filesInFolder) {
-                if (name.EndsWithIgnoreCase(extension))
-                    files.Add(name);
-            }
-
-            return files;
-        }
-
         public static void CompareToBaseLine(string baselinefilePath, string actual) {
             string expected;
 
@@ -46,16 +14,15 @@ namespace Microsoft.Common.Core.Test.Utility {
 
             // trim whitescpase in the end to avoid false positives b/c file 
             // has extra line break or whitespace at the end.
-            expected = expected.TrimEnd(new char[] { ' ', '\r', '\n', '\t' });
-            actual = actual.TrimEnd(new char[] { ' ', '\r', '\n', '\t' });
+            expected = expected.TrimEnd(' ', '\r', '\n', '\t');
+            actual = actual.TrimEnd(' ', '\r', '\n', '\t');
 
             string baseLine;
             string actualLine;
-            int lineNumber = BaselineCompare.CompareLines(expected, actual, out baseLine, out actualLine);
+            int index;
+            var lineNumber = BaselineCompare.CompareLines(expected, actual, out baseLine, out actualLine, out index);
 
-            Assert.AreEqual(0, lineNumber,
-                String.Format(CultureInfo.InvariantCulture,
-                    "\r\nDifferent at line {0}\r\nExpected: {1}\r\nActual: {2}", lineNumber, baseLine, actualLine));
+            lineNumber.Should().Be(0, "there should be no difference at line {0}.\r\nExpected:{1}\r\nActual:{2}\r\nDifference at position {3}\r\n", lineNumber, baseLine, actualLine, index);
         }
 
         public static void UpdateBaseline(string filePath, string content) {

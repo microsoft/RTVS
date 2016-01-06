@@ -9,8 +9,6 @@
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0]" />
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[14.0]" />
     <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[14.0]" />
-    <InstallationTarget Id="Microsoft.VisualStudio.IsolatedShell" Version="[14.0]" />
-    <InstallationTarget Id="Microsoft.VisualStudio.IntergratedShell" Version="[14.0]" />
   </Installation>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Newtonsoft.Json.dll" />

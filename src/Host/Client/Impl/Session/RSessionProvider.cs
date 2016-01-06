@@ -48,6 +48,7 @@ namespace Microsoft.R.Host.Client.Session {
                     session.Dispose();
                 }
 
+                Current = null;
                 _sessions.Clear();
             }
         }
