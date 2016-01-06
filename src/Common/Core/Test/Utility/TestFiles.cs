@@ -19,9 +19,10 @@ namespace Microsoft.Common.Core.Test.Utility {
 
             string baseLine;
             string actualLine;
-            var lineNumber = BaselineCompare.CompareLines(expected, actual, out baseLine, out actualLine);
+            int index;
+            var lineNumber = BaselineCompare.CompareLines(expected, actual, out baseLine, out actualLine, out index);
 
-            lineNumber.Should().Be(0, "There should be no difference at line {0}\r\n\tExpected:\t{1}\r\n\tActual:\t{2}\r\n", lineNumber, baseLine, actualLine);
+            lineNumber.Should().Be(0, "there should be no difference at line {0}.\r\nExpected:{1}\r\nActual:{2}\r\nDifference at position {3}\r\n", lineNumber, baseLine, actualLine, index);
         }
 
         public static void UpdateBaseline(string filePath, string content) {
