@@ -4,23 +4,23 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using Microsoft.Common.Core.Test.Utility;
+using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Support.Test.Packages {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class PackageIndexTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Completion")]
+    public class PackageIndexTest {
+        [Test]
+        [Category.R.Completion]
         public void BuildPackageIndexTest() {
-            IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
-            string[] packageNames = new string[]
-            {
+            IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages.AsList();
+            string[] packageNames = {
                 "base",
                 "boot",
                 "class",
@@ -57,33 +57,30 @@ namespace Microsoft.R.Support.Test.Packages {
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                 @"R\R-3.2.2\library");
 
-            int i = 0;
-            foreach (string name in packageNames) {
-                IPackageInfo info = basePackages.FirstOrDefault((x) => x.Name == name);
-                Assert.IsNotNull(info);
+            foreach (var name in packageNames) {
+                IPackageInfo info = basePackages.FirstOrDefault(x => x.Name == name);
+                info.Should().NotBeNull();
 
                 IPackageInfo pi1 = PackageIndex.GetPackageByName(info.Name);
-                Assert.IsNotNull(pi1);
+                pi1.Should().NotBeNull();
 
-                Assert.AreEqual(info.Name, pi1.Name);
-
-                i++;
+                pi1.Name.Should().Be(info.Name);
             }
         }
 
-        [TestMethod]
-        [TestCategory("R.Completion")]
+        [Test]
+        [Category.R.Completion]
         public void PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
 
             IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
 
             IPackageInfo pi = PackageIndex.GetPackageByName("base");
-            Assert.AreEqual("Base R functions.", pi.Description);
+            pi.Description.Should().Be("Base R functions.");
         }
 
-        [TestMethod]
-        [TestCategory("R.Completion")]
+        [Test]
+        [Category.R.Completion]
         public void UserPackagesIndex_Test01() {
             RToolsSettings.Current = new TestRToolsSettings();
 
@@ -92,15 +89,15 @@ namespace Microsoft.R.Support.Test.Packages {
             string installPath = UserPackagesCollection.GetInstallPath();
             string userDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            Assert.AreEqual(Path.Combine(userDocumentsPath, UserPackagesCollection.RLibraryPath), installPath);
+            installPath.Should().Be(Path.Combine(userDocumentsPath, UserPackagesCollection.RLibraryPath));
 
             var collection = new UserPackagesCollection();
-            Assert.IsNotNull(collection.Packages);
+            collection.Packages.Should().NotBeNull();
 
             IEnumerator en = collection.Packages.GetEnumerator();
-            Assert.IsNotNull(en);
-            Assert.IsFalse(en.MoveNext());
-            Assert.IsNull(en.Current);
+            en.Should().NotBeNull();
+            en.MoveNext().Should().BeFalse();
+            en.Current.Should().BeNull();
         }
     }
 }

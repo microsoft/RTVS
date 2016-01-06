@@ -1,14 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseStringContstantsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    
+    public class ParseStringContstantsTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseStringContstantsTest1() {
             string expected =
 "GlobalScope  [Global]\r\n" +

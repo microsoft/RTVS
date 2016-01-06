@@ -1,26 +1,27 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+using FluentAssertions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseCommentsTest : UnitTestBase
+    public class ParseCommentsTest
     {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseCommentsTest01()
         {
             AstRoot ast = RParser.Parse("#Not");
-            Assert.AreEqual(1, ast.Comments.Count);
-            Assert.AreEqual(0, ast.Comments[0].Start);
-            Assert.AreEqual(4, ast.Comments[0].Length);
 
-            Assert.IsFalse(ast.Comments.Contains(0));
-            Assert.IsTrue(ast.Comments.Contains(1));
-            Assert.IsTrue(ast.Comments.Contains(4));
+            ast.Comments.Should().ContainSingle();
+            ast.Comments[0].Start.Should().Be(0);
+            ast.Comments[0].Length.Should().Be(4);
+
+            ast.Comments.Contains(0).Should().BeFalse();
+            ast.Comments.Contains(1).Should().BeTrue();
+            ast.Comments.Contains(4).Should().BeTrue();
         }
     }
 }

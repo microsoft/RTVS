@@ -1,36 +1,35 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Tokens {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
+    [ExcludeFromCodeCoverage]  
     public class TokenizeBuiltinsTest : TokenizeTestBase<RToken, RTokenType> {
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void Tokenize_BuiltIns01() {
             IReadOnlyTextRangeCollection<RToken> tokens = this.Tokenize("require library switch return", new RTokenizer());
 
-            Assert.AreEqual(4, tokens.Count);
-            for (int i = 0; i < tokens.Count; i++) {
-                Assert.AreEqual(RTokenType.Identifier, tokens[i].TokenType);
-                Assert.AreEqual(RTokenSubType.BuiltinFunction, tokens[i].SubType);
+            tokens.Should().HaveCount(4);
+            foreach (var token in tokens) {
+                token.Should().HaveType(RTokenType.Identifier).And.HaveSubType(RTokenSubType.BuiltinFunction);
             }
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void Tokenize_BuiltIns02() {
             IReadOnlyTextRangeCollection<RToken> tokens = this.Tokenize("require() library() switch() return()", new RTokenizer());
 
-            Assert.AreEqual(12, tokens.Count);
-            for (int i = 0; i < tokens.Count; i += 3) {
-                Assert.AreEqual(RTokenType.Identifier, tokens[i].TokenType);
-                Assert.AreEqual(RTokenSubType.BuiltinFunction, tokens[i].SubType);
-                Assert.AreEqual(RTokenType.OpenBrace, tokens[i + 1].TokenType);
-                Assert.AreEqual(RTokenType.CloseBrace, tokens[i + 2].TokenType);
+            tokens.Should().HaveCount(12);
+            for (var i = 0; i < tokens.Count; i += 3) {
+                tokens[i].Should().HaveType(RTokenType.Identifier).And.HaveSubType(RTokenSubType.BuiltinFunction);
+                tokens[i + 1].Should().HaveType(RTokenType.OpenBrace);
+                tokens[i + 2].Should().HaveType(RTokenType.CloseBrace);
             }
         }
     }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
+using FluentAssertions.Collections;
 using FluentAssertions.Specialized;
 
 namespace Microsoft.UnitTests.Core.FluentAssertions

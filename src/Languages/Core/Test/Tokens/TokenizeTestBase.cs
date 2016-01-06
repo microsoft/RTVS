@@ -7,7 +7,7 @@ using Microsoft.Languages.Core.Tokens;
 namespace Microsoft.Languages.Core.Test.Tokens
 {
     [ExcludeFromCodeCoverage]
-    public class TokenizeTestBase<TTokenClass, TTokenType> : UnitTestBase where TTokenClass: IToken<TTokenType>
+    public class TokenizeTestBase<TTokenClass, TTokenType> where TTokenClass: IToken<TTokenType>
     {
         protected string TokenizeToString(string text, ITokenizer<TTokenClass> tokenizer)
         {

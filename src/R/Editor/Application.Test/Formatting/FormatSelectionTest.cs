@@ -1,15 +1,17 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Collection(CollectionNames.NonParallel)]
     public class FormatSelectionTest {
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_FormatSelection01() {
             string content =
 @"
@@ -29,7 +31,7 @@ while (TRUE) {
                 script.Execute(VSConstants.VSStd2KCmdID.FORMATSELECTION, 50);
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
     }

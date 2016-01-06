@@ -1,15 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+using FluentAssertions;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Core.Formatting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class FormatConditionalsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+    public class FormatConditionalsTest {
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatConditionalTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true){if(false){}}");
@@ -17,11 +16,11 @@ namespace Microsoft.R.Core.Test.Formatting {
 @"if (true) {
   if (false) { }
 }";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatConditionalTest02() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(a == a+((b+c)/x)){if(func(a,b, c+2, x=2, ...)){}}");
@@ -29,11 +28,11 @@ namespace Microsoft.R.Core.Test.Formatting {
 @"if (a == a + ((b + c) / x)) {
   if (func(a, b, c + 2, x = 2, ...)) { }
 }";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatConditionalTest03() {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
@@ -48,11 +47,11 @@ namespace Microsoft.R.Core.Test.Formatting {
 {
 	if (func(a, b, c + 2, x = 2, ...)) { }
 }";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Ast]
         public void Formatter_FormatConditionalTest04() {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
@@ -69,11 +68,11 @@ else
   2
 }
 x <- 1";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatConditionalTest05() {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
@@ -94,32 +93,32 @@ else
   3
 }
 x <- 1";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatNoCurlyConditionalTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) x<-2");
             string expected =
 @"if (true)
   x <- 2";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatNoCurlyConditionalTest02() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) x<-2 else x<-1");
             string expected =
 @"if (true) x <- 2 else x <- 1";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatNoCurlyConditionalTest03() {
             RFormatOptions options = new RFormatOptions();
             options.IndentType = IndentType.Tabs;
@@ -129,11 +128,11 @@ x <- 1";
             string expected =
 @"if (true)
 	x <- 2";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatNoCurlyConditionalTest04() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) if(false)   x<-2");
@@ -141,11 +140,11 @@ x <- 1";
 @"if (true)
   if (false)
     x <- 2";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatNoCurlyConditionalTest05() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) if(false)   x<-2 else {1}");
@@ -154,11 +153,11 @@ x <- 1";
   if (false) x <- 2 else {
     1
   }";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatNoCurlyConditionalTest06() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) repeat { x <-1; next;} else z");
@@ -170,11 +169,11 @@ x <- 1";
   }
 else
   z";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatNoCurlyConditionalTest07() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) if(false) {  x<-2 } else 1");
@@ -184,22 +183,22 @@ else
     x <- 2
   } else
     1";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatNoCurlyRepeatTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("repeat x<-2");
             string expected =
 @"repeat
   x <- 2";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatConditionalAlignBraces01() {
             RFormatter f = new RFormatter();
             string original =
@@ -216,11 +215,11 @@ if (intercept) {
   x <- cbind(1, x)
 }
 ";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatConditionalAlignBraces02() {
             RFormatter f = new RFormatter();
             string original =
@@ -248,11 +247,11 @@ if (intercept) {
     }
 }
 ";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_PreserveEmptyLines() {
             RFormatter f = new RFormatter();
             string original =
@@ -273,11 +272,11 @@ if (intercept) {
   x <- 3
 }
 ";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_AlignComments() {
             RFormatter f = new RFormatter();
             string original =
@@ -302,11 +301,11 @@ if (intercept) {
   x <- 3
 }
 ";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatForTest() {
             RFormatter f = new RFormatter();
             string original = @"for (i in 1:6) x[, i] = rowMeans(fmri[[i]])";
@@ -317,7 +316,7 @@ if (intercept) {
 @"for (i in 1:6)
   x[, i] = rowMeans(fmri[[i]])";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
     }
 }

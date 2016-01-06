@@ -1,50 +1,46 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+using FluentAssertions;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class SmartIndentTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.SmartIndent")]
+    [Category.R.SmartIndent]
+    public class SmartIndentTest {
+        [Test]
         public void SmartIndent_NoScopeTest01() {
             int? indent = GetSmartIndent("if (x > 1)\n", 1);
 
-            Assert.IsTrue(indent.HasValue);
-            Assert.AreEqual(4, indent);
+            indent.Should().HaveValue()
+                .And.Be(4);
         }
 
-        [TestMethod]
-        [TestCategory("R.SmartIndent")]
+        [Test]
         public void SmartIndent_UnclosedScopeTest01() {
             int? indent = GetSmartIndent("{if (x > 1)\r\n    x <- 1\r\nelse\n", 3);
 
-            Assert.IsTrue(indent.HasValue);
-            Assert.AreEqual(4, indent);
+            indent.Should().HaveValue()
+                .And.Be(4);
         }
 
-        [TestMethod]
-        [TestCategory("R.SmartIndent")]
+        [Test]
         public void SmartIndent_UnclosedScopeTest02() {
             int? indent = GetSmartIndent("repeat\r\n    if (x > 1)\r\n", 2);
 
-            Assert.IsTrue(indent.HasValue);
-            Assert.AreEqual(8, indent);
+            indent.Should().HaveValue()
+                .And.Be(8);
         }
 
-        [TestMethod]
-        [TestCategory("R.SmartIndent")]
+        [Test]
         public void SmartIndent_ScopedIfTest01() {
             int? indent = GetSmartIndent("if (x > 1) {\r\n\r\n}", 1);
 
-            Assert.IsTrue(indent.HasValue);
-            Assert.AreEqual(4, indent);
+            indent.Should().HaveValue()
+                .And.Be(4);
         }
 
         private int? GetSmartIndent(string content, int lineNumber) {

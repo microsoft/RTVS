@@ -1,43 +1,42 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+using FluentAssertions;
 using Microsoft.R.Core.Formatting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class FormatScopeTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+    public class FormatScopeTest {
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_EmptyFileTest() {
             RFormatter f = new RFormatter();
             string s = f.Format(string.Empty);
-            Assert.AreEqual(0, s.Length);
+            s.Should().BeEmpty();
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatRandom01() {
             RFormatter f = new RFormatter();
             string original = "a   b 1.  2 Inf\tNULL";
 
             string actual = f.Format(original);
 
-            Assert.AreEqual(@"a b 1. 2 Inf NULL", actual);
+            actual.Should().Be(@"a b 1. 2 Inf NULL");
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_StatementTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x<-2");
             string expected =
 @"x <- 2";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatSimpleScopesTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("{{}}");
@@ -45,7 +44,7 @@ namespace Microsoft.R.Core.Test.Formatting {
 @"{
   { }
 }";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
     }
 }

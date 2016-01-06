@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseFunctionsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    public class ParseFunctionsTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionsTest01() {
             string expected =
 @"GlobalScope  [Global]
@@ -22,8 +20,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a()");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionsTest02() {
             string expected =
 @"GlobalScope  [Global]
@@ -41,8 +39,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a(1)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionsTest03() {
             string expected =
 @"GlobalScope  [Global]
@@ -64,8 +62,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "a(1,2)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionsTest04() {
             string expected =
 @"GlobalScope  [Global]
@@ -98,8 +96,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "x(a, b=NA, c=NULL, ...)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionsTest05() {
             string expected =
 @"GlobalScope  [Global]
@@ -120,8 +118,8 @@ CloseBraceExpected AfterToken [3...4)
             ParserTest.VerifyParse(expected, "x(,, ");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionsTest06() {
             string expected =
 @"GlobalScope  [Global]
@@ -144,8 +142,8 @@ OpenBraceExpected AfterToken [5...8)";
             ParserTest.VerifyParse(expected, "x(,, for");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionsTest07() {
             string expected =
 @"GlobalScope  [Global]
@@ -170,8 +168,8 @@ ExpressionExpected Token [6...7)
             ParserTest.VerifyParse(expected, "x(a=,b=)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionsTest08() {
             string expected =
 @"GlobalScope  [Global]
@@ -193,8 +191,8 @@ ExpressionExpected Token [3...4)
             ParserTest.VerifyParse(expected, "x(a=,)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionsTest09() {
             string expected =
 @"GlobalScope  [Global]

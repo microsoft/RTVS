@@ -1,17 +1,21 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Tokens;
+using Microsoft.Markdown.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Tokens;
-using Microsoft.R.Markdown.Editor.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Markdown.Editor.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class TokenizeSampleMdFilesTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
+    public class TokenizeSampleMdFilesTest {
+        private readonly MarkdownTestFilesFixture _files;
+
+        public TokenizeSampleMdFilesTest(MarkdownTestFilesFixture files) {
+            _files = files;
+        }
+
+        [Test]
+        [Category.Md.Tokenizer]
         public void TokenizeSampleMdFile01() {
-            TokenizeFiles.TokenizeFile<MarkdownToken, MarkdownTokenType, MdTokenizer>(this.TestContext, @"Tokenization\01.md", "Markdown");
+            TokenizeFiles.TokenizeFile<MarkdownToken, MarkdownTokenType, MdTokenizer>(_files, @"Tokenization\01.md", "Markdown");
         }
     }
 }

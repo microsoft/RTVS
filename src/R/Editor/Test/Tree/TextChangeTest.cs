@@ -1,23 +1,23 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Tree;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using TextChange = Microsoft.R.Editor.Tree.TextChange;
 
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Category.R.EditorTree]
     public class TextChangesTest {
-        [TestMethod]
-        [TestCategory("R.EditorTree")]
+        [Test]
         public void TextChange_Test() {
             TextChange tc = new TextChange();
-            Assert.IsTrue(tc.IsEmpty);
-            Assert.AreEqual(TextChangeType.Trivial, tc.TextChangeType);
+            tc.IsEmpty.Should().BeTrue();
+            tc.TextChangeType.Should().Be(TextChangeType.Trivial);
 
             string content = "23456789";
             TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
@@ -37,37 +37,45 @@ namespace Microsoft.R.Editor.Test.Tree {
 
             var tc1 = new TextChange(tc, new TextProvider(newSnapshot2));
 
-            Assert.AreEqual(0, tc1.OldRange.Length);
-            Assert.AreEqual(2, tc1.NewRange.Length);
-            Assert.AreEqual(2, tc1.Version);
-            Assert.IsFalse(tc1.FullParseRequired);
-            Assert.IsFalse(tc1.IsEmpty);
-            Assert.IsTrue(tc1.IsSimpleChange);
+            tc1.ShouldBeEquivalentTo(new {
+                OldRange = new { Length = 0 },
+                NewRange = new { Length = 2 },
+                Version = 2,
+                FullParseRequired = false,
+                IsEmpty = false,
+                IsSimpleChange = true
+            }, o => o.ExcludingMissingMembers());
 
             var tc2 = tc1.Clone() as TextChange;
 
-            Assert.AreEqual(0, tc2.OldRange.Length);
-            Assert.AreEqual(2, tc2.NewRange.Length);
-            Assert.AreEqual(2, tc2.Version);
-            Assert.IsFalse(tc2.FullParseRequired);
-            Assert.IsFalse(tc2.IsEmpty);
-            Assert.IsTrue(tc2.IsSimpleChange);
+            tc2.ShouldBeEquivalentTo(new {
+                OldRange = new { Length = 0 },
+                NewRange = new { Length = 2 },
+                Version = 2,
+                FullParseRequired = false,
+                IsEmpty = false,
+                IsSimpleChange = true
+            }, o => o.ExcludingMissingMembers());
 
             tc1.Clear();
 
-            Assert.AreEqual(0, tc1.OldRange.Length);
-            Assert.AreEqual(0, tc1.NewRange.Length);
-            Assert.IsNull(tc1.OldTextProvider);
-            Assert.IsNull(tc1.NewTextProvider);
-            Assert.IsTrue(tc1.IsEmpty);
-            Assert.IsTrue(tc1.IsSimpleChange);
+            tc1.ShouldBeEquivalentTo(new {
+                OldRange = new { Length = 0 },
+                NewRange = new { Length = 0 },
+                OldTextProvider = (ITextProvider)null,
+                NewTextProvider = (ITextProvider)null,
+                IsEmpty = true,
+                IsSimpleChange = true
+            }, o => o.ExcludingMissingMembers());
 
-            Assert.AreEqual(0, tc2.OldRange.Length);
-            Assert.AreEqual(2, tc2.NewRange.Length);
-            Assert.AreEqual(2, tc2.Version);
-            Assert.IsFalse(tc2.FullParseRequired);
-            Assert.IsFalse(tc2.IsEmpty);
-            Assert.IsTrue(tc2.IsSimpleChange);
+            tc2.ShouldBeEquivalentTo(new {
+                OldRange = new { Length = 0 },
+                NewRange = new { Length = 2 },
+                Version = 2,
+                FullParseRequired = false,
+                IsEmpty = false,
+                IsSimpleChange = true
+            }, o => o.ExcludingMissingMembers());
         }
     }
 }

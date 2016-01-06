@@ -1,15 +1,17 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Settings;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Collection(CollectionNames.NonParallel)]
     public class AutoFormatTest {
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatFunctionBraces() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("function(a,b){");
@@ -19,12 +21,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "function(a, b) {\r\n    a\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatScopeBraces01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -36,12 +38,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "if (x > 1) {\r\n    a\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatScopeBraces02() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
@@ -53,12 +55,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "if (x > 1) \r\n{\r\n    a\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatScopeBraces03() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -72,12 +74,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "while (true) {\r\n    if (x > 1) {\r\n        foo\r\n    }\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatScopeBraces04() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -89,12 +91,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "while (true) { }";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatScopeBraces05() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -109,12 +111,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "while (true) {\r\n    if (x > 1) {\r\n    }\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatScopeBraces06() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
@@ -126,12 +128,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "x <- function(a) \r\n{\r\n    a\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatScopeBraces07() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
@@ -143,12 +145,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "x <- function(a,\r\n    b) \r\n{\r\n    a\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatScopeBraces08() {
             using (var script = new TestScript("while (true) {\r\n}", RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
@@ -159,12 +161,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "while (true) {\r\n\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatIfNoScope() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("if(x>1)");
@@ -174,12 +176,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "if (x > 1)\r\n    a";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatFuncionDefinition01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
@@ -196,7 +198,7 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 {
     abind(a, )
 }";
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
     }

@@ -1,14 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.R.Editor.Tree;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Category.R.EditorTree]
     public class ProcessChangesTest {
-        [TestMethod]
-        [TestCategory("R.EditorTree")]
+        [Test]
         public void ProcessChange_EditExpression01() {
             string expression = "if(true) x <- 1";
             string expected1 =
@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Test.Tree {
             ParserTest.VerifyParse(expected1, expression);
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 3, 4, 5, "false");
-            Assert.IsTrue(tree.IsDirty);
+            tree.IsDirty.Should().BeTrue();
             tree.ProcessChanges();
 
             string expected2 =
@@ -52,8 +52,7 @@ namespace Microsoft.R.Editor.Test.Tree {
             ParserTest.CompareTrees(expected2, tree.AstRoot);
         }
 
-        [TestMethod]
-        [TestCategory("R.EditorTree")]
+        [Test]
         public void ProcessChange_EditIfElse01() {
             string expression = "if(true) x <- 1 else x <- 2";
             string expected1 =
@@ -84,7 +83,7 @@ namespace Microsoft.R.Editor.Test.Tree {
             ParserTest.VerifyParse(expected1, expression);
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 15, 0, 1, "\n");
-            Assert.IsTrue(tree.IsDirty);
+            tree.IsDirty.Should().BeTrue();
             tree.ProcessChanges();
 
             string expected2 =
@@ -114,8 +113,7 @@ UnexpectedToken Token [17...21)
             ParserTest.CompareTrees(expected2, tree.AstRoot);
         }
 
-        [TestMethod]
-        [TestCategory("R.EditorTree")]
+        [Test]
         public void ProcessChange_EditIfElse02() {
             string expression = "if(true) {x <- 1} else x <- 2";
             string expected1 =
@@ -148,7 +146,7 @@ UnexpectedToken Token [17...21)
             ParserTest.VerifyParse(expected1, expression);
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 17, 0, 1, "\n");
-            Assert.IsFalse(tree.IsDirty);
+            tree.IsDirty.Should().BeFalse();
             tree.ProcessChanges();
 
             string expected2 =

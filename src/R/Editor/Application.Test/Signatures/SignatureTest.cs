@@ -1,16 +1,18 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Signatures {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Collection(CollectionNames.NonParallel)]
     public class SignatureTest {
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_SignatureParametersMatch() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 PrepareFunctionIndex();
@@ -18,11 +20,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 script.Type("x <- lm(");
 
                 ISignatureHelpSession session = script.GetSignatureSession();
-                Assert.IsNotNull(session);
+                session.Should().NotBeNull();
                 IParameter parameter = session.SelectedSignature.CurrentParameter;
-                Assert.IsNotNull(parameter);
+                parameter.Should().NotBeNull();
 
-                Assert.AreEqual("formula", parameter.Name);
+                parameter.Name.Should().Be("formula");
 
                 script.Type("sub");
                 script.DoIdle(100);
@@ -30,18 +32,18 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 script.DoIdle(200);
 
                 parameter = session.SelectedSignature.CurrentParameter;
-                Assert.AreEqual("subset", parameter.Name);
+                parameter.Name.Should().Be("subset");
 
                 string actual = script.EditorText;
-                Assert.AreEqual("x <- lm(subset = )", actual);
+                actual.Should().Be("x <- lm(subset = )");
 
                 session = script.GetSignatureSession();
                 parameter = session.SelectedSignature.CurrentParameter;
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_SignatureSessionNavigation() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 PrepareFunctionIndex();
@@ -52,19 +54,19 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 script.DoIdle(1000);
 
                 ISignatureHelpSession session = script.GetSignatureSession();
-                Assert.IsNotNull(session);
+                session.Should().NotBeNull();
                 IParameter parameter = session.SelectedSignature.CurrentParameter;
-                Assert.IsNotNull(parameter);
+                parameter.Should().NotBeNull();
 
-                Assert.AreEqual("singular.ok", parameter.Name);
+                parameter.Name.Should().Be("singular.ok");
 
                 script.MoveLeft(17);
                 parameter = session.SelectedSignature.CurrentParameter;
-                Assert.AreEqual("subset", parameter.Name);
+                parameter.Name.Should().Be("subset");
 
                 script.MoveRight(3);
                 parameter = session.SelectedSignature.CurrentParameter;
-                Assert.AreEqual("singular.ok", parameter.Name);
+                parameter.Name.Should().Be("singular.ok");
             }
         }
 

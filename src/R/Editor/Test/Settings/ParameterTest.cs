@@ -1,34 +1,33 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Test.Utility;
+using FluentAssertions;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Editor.Settings;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.R.Editor.Test.Signatures {
+namespace Microsoft.R.Editor.Test.Settings {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class SettingsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Settings")]
+    [Category.R.Settings]
+    public class SettingsTest {
+        [Test]
         public void Settings_TestDefaults() {
-            Assert.AreEqual(false, REditorSettings.CommitOnSpace);
-            Assert.AreEqual(true, REditorSettings.CompletionEnabled);
-            Assert.AreEqual(true, REditorSettings.FormatOnPaste);
-            Assert.AreEqual(4, REditorSettings.IndentSize);
-            Assert.AreEqual(IndentStyle.Smart, REditorSettings.IndentStyle);
-            Assert.AreEqual(IndentType.Spaces, REditorSettings.IndentType);
-            Assert.AreEqual(4, REditorSettings.TabSize);
-            Assert.AreEqual(true, REditorSettings.SyntaxCheck);
-            Assert.AreEqual(true, REditorSettings.SignatureHelpEnabled);
-            //Assert.AreEqual(false, REditorSettings.ShowTclFunctions);
-            //Assert.AreEqual(false, REditorSettings.ShowInternalFunctions);
+            REditorSettings.CommitOnSpace.Should().BeFalse();
+            REditorSettings.CompletionEnabled.Should().BeTrue();
+            REditorSettings.FormatOnPaste.Should().BeTrue();
+            REditorSettings.IndentSize.Should().Be(4);
+            REditorSettings.IndentStyle.Should().Be(IndentStyle.Smart);
+            REditorSettings.IndentType.Should().Be(IndentType.Spaces);
+            REditorSettings.TabSize.Should().Be(4);
+            REditorSettings.SyntaxCheck.Should().BeTrue();
+            REditorSettings.SignatureHelpEnabled.Should().BeTrue();
+            //REditorSettings.ShowTclFunctions.Should().BeFalse();
+            //REditorSettings.ShowInternalFunctions.Should().BeFalse();
 
-            Assert.AreEqual(4, REditorSettings.FormatOptions.IndentSize);
-            Assert.AreEqual(4, REditorSettings.FormatOptions.TabSize);
-            Assert.AreEqual(IndentType.Spaces, REditorSettings.FormatOptions.IndentType);
-            Assert.AreEqual(true, REditorSettings.FormatOptions.SpaceAfterComma);
-            Assert.AreEqual(true, REditorSettings.FormatOptions.SpaceAfterKeyword);
-            Assert.AreEqual(false, REditorSettings.FormatOptions.BracesOnNewLine);
+            REditorSettings.FormatOptions.IndentSize.Should().Be(4);
+            REditorSettings.FormatOptions.TabSize.Should().Be(4);
+            REditorSettings.FormatOptions.IndentType.Should().Be(IndentType.Spaces);
+            REditorSettings.FormatOptions.SpaceAfterComma.Should().BeTrue();
+            REditorSettings.FormatOptions.SpaceAfterKeyword.Should().BeTrue();
+            REditorSettings.FormatOptions.BracesOnNewLine.Should().BeFalse();
         }
     }
 }

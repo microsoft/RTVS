@@ -1,54 +1,53 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Languages.Core.Bytes;
+﻿using Microsoft.Languages.Core.Bytes;
 using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Languages.Core.Test.Bytes {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class ByteStreamTest {
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_AdvanceTest() {
-            byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
+            byte[] text = { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
-            bool actual;
-            actual = target.Advance(0);
-            Assert.IsTrue(actual);
-            Assert.AreEqual(0, target.Position);
+            var actual = target.Advance(0);
+            actual.Should().BeTrue();
+            target.Position.Should().Be(0);
 
             actual = target.Advance(1);
-            Assert.IsTrue(actual);
-            Assert.AreEqual(1, target.Position);
+            actual.Should().BeTrue();
+            target.Position.Should().Be(1);
 
             actual = target.Advance(100);
-            Assert.IsFalse(actual);
-            Assert.AreEqual(5, target.Position);
+            actual.Should().BeFalse();
+            target.Position.Should().Be(5);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_CurrentStringEqualsToTest() {
-            byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
+            byte[] text = { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
-            bool actual;
-            actual = target.Advance(0);
-            Assert.IsTrue(actual);
-            Assert.AreEqual(0, target.Position);
+
+            var actual = target.Advance(0);
+            actual.Should().BeTrue();
+            target.Position.Should().Be(0);
 
             actual = target.Advance(1);
-            Assert.IsTrue(actual);
-            Assert.AreEqual(1, target.Position);
+            actual.Should().BeTrue();
+            target.Position.Should().Be(1);
 
             actual = target.Advance(100);
-            Assert.IsFalse(actual);
-            Assert.AreEqual(5, target.Position);
+            actual.Should().BeFalse();
+            target.Position.Should().Be(5);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_IsAnsiLetterTest() {
             byte[] text = new byte[256];
-            int i = 0;
+            int i;
 
             for (i = 0; i < text.Length; i++)
                 text[i] = (byte)i;
@@ -56,38 +55,38 @@ namespace Microsoft.Languages.Core.Test.Bytes {
             ByteStream target = new ByteStream(text);
 
             for (i = 0; i < 'A'; i++) {
-                Assert.IsFalse(target.IsAnsiLetter());
+                target.IsAnsiLetter().Should().BeFalse();
                 target.MoveToNextChar();
             }
 
             for (; i <= 'z'; i++) {
-                Assert.IsTrue(target.IsAnsiLetter());
+                target.IsAnsiLetter().Should().BeTrue();
                 target.MoveToNextChar();
             }
 
             for (; i < text.Length; i++) {
-                Assert.IsFalse(target.IsAnsiLetter());
+                target.IsAnsiLetter().Should().BeFalse();
                 target.MoveToNextChar();
             }
 
-            Assert.IsFalse(target.IsAnsiLetter());
+            target.IsAnsiLetter().Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_IsCharAtTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
             for (int i = 0; i < text.Length; i++) {
-                Assert.IsTrue(target.IsCharAt(i, text[i]));
+                target.IsCharAt(i, text[i]).Should().BeTrue();
             }
 
-            Assert.IsFalse(target.IsCharAt(100, text[0]));
-            Assert.AreEqual(0, target.Position);
+            target.IsCharAt(100, text[0]).Should().BeFalse();
+            target.Position.Should().Be(0);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_IsDigitTest() {
             byte[] text = new byte[256];
 
@@ -99,171 +98,171 @@ namespace Microsoft.Languages.Core.Test.Bytes {
 
             i = 0;
             for (; i < '0'; i++) {
-                Assert.IsFalse(target.IsDigit());
+                target.IsDigit().Should().BeFalse();
                 target.MoveToNextChar();
             }
 
             for (; i <= '9'; i++) {
-                Assert.IsTrue(target.IsDigit());
+                target.IsDigit().Should().BeTrue();
                 target.MoveToNextChar();
             }
 
             for (; i < text.Length; i++) {
-                Assert.IsFalse(target.IsDigit());
+                target.IsDigit().Should().BeFalse();
                 target.MoveToNextChar();
             }
 
-            Assert.IsFalse(target.IsDigit());
+            target.IsDigit().Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_IsEndOfStreamTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
-            Assert.IsFalse(target.IsEndOfStream());
+            target.IsEndOfStream().Should().BeFalse();
 
             target.Advance(1);
-            Assert.IsFalse(target.IsEndOfStream());
+            target.IsEndOfStream().Should().BeFalse();
 
             target.Advance(100);
-            Assert.IsTrue(target.IsEndOfStream());
+            target.IsEndOfStream().Should().BeTrue();
 
             text = new byte[0];
             target = new ByteStream(text);
-            Assert.IsTrue(target.IsEndOfStream());
+            target.IsEndOfStream().Should().BeTrue();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_IsNewLineCharTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'\r', (byte)'\n', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
 
-            Assert.IsFalse(target.IsNewLineChar());
+            target.IsNewLineChar().Should().BeFalse();
             target.MoveToNextChar();
-            Assert.IsTrue(target.IsNewLineChar());
+            target.IsNewLineChar().Should().BeTrue();
             target.MoveToNextChar();
-            Assert.IsTrue(target.IsNewLineChar());
+            target.IsNewLineChar().Should().BeTrue();
             target.MoveToNextChar();
-            Assert.IsFalse(target.IsNewLineChar());
+            target.IsNewLineChar().Should().BeFalse();
             target.MoveToNextChar();
-            Assert.IsFalse(target.IsNewLineChar());
+            target.IsNewLineChar().Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_IsWhiteSpaceTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'\r', (byte)'\n', (byte)'\t', (byte)' ', };
             ByteStream target = new ByteStream(text);
 
-            Assert.IsFalse(target.IsWhiteSpace());
+            target.IsWhiteSpace().Should().BeFalse();
             target.MoveToNextChar();
-            Assert.IsTrue(target.IsWhiteSpace());
+            target.IsWhiteSpace().Should().BeTrue();
             target.MoveToNextChar();
-            Assert.IsTrue(target.IsWhiteSpace());
+            target.IsWhiteSpace().Should().BeTrue();
             target.MoveToNextChar();
-            Assert.IsTrue(target.IsWhiteSpace());
+            target.IsWhiteSpace().Should().BeTrue();
             target.MoveToNextChar();
-            Assert.IsTrue(target.IsWhiteSpace());
+            target.IsWhiteSpace().Should().BeTrue();
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_CurrentCharTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
-            Assert.AreEqual((byte)'a', target.CurrentChar);
+            target.CurrentChar.Should().Be((byte)'a');
 
             target.Advance(1);
-            Assert.AreEqual((byte)'b', target.CurrentChar);
+            target.CurrentChar.Should().Be((byte)'b');
 
             target.Advance(100);
-            Assert.AreEqual((byte)0, target.CurrentChar);
+            target.CurrentChar.Should().Be(0);
 
             text = new byte[0];
             target = new ByteStream(text);
-            Assert.AreEqual((byte)0, target.CurrentChar);
+            target.CurrentChar.Should().Be(0);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_DistanceFromEndTest() {
-            byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
+            byte[] text = { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
-            Assert.AreEqual(5, target.DistanceFromEnd);
+            target.DistanceFromEnd.Should().Be(5);
 
             target.Advance(1);
-            Assert.AreEqual(4, target.DistanceFromEnd);
+            target.DistanceFromEnd.Should().Be(4);
 
             target.Advance(100);
-            Assert.AreEqual(0, target.DistanceFromEnd);
+            target.DistanceFromEnd.Should().Be(0);
 
             text = new byte[0];
             target = new ByteStream(text);
-            Assert.AreEqual(0, target.DistanceFromEnd);
+            target.DistanceFromEnd.Should().Be(0);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_LengthTest() {
-            byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
+            byte[] text = { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
-            Assert.AreEqual(5, target.Length);
+            target.Length.Should().Be(5);
 
             text = new byte[0];
             target = new ByteStream(text);
-            Assert.AreEqual(0, target.Length);
+            target.Length.Should().Be(0);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_NextCharTest() {
-            byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
+            byte[] text = { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
 
             for (int i = 0; i < text.Length - 1; i++) {
-                Assert.AreEqual(text[i + 1], target.NextChar);
+                target.NextChar.Should().Be(text[i + 1]);
                 target.MoveToNextChar();
             }
 
-            Assert.AreEqual((byte)0, target.NextChar);
+            target.NextChar.Should().Be(0);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_PositionTest() {
             byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             ByteStream target = new ByteStream(text);
-            Assert.AreEqual(0, target.Position);
+            target.Position.Should().Be(0);
 
             target.Advance(1);
-            Assert.AreEqual(1, target.Position);
+            target.Position.Should().Be(1);
 
             target.Advance(100);
-            Assert.AreEqual(5, target.Position);
+            target.Position.Should().Be(5);
 
             text = new byte[0];
             target = new ByteStream(text);
-            Assert.AreEqual(0, target.Position);
+            target.Position.Should().Be(0);
         }
 
-        [TestMethod]
-        [TestCategory("Languages.Core")]
+        [Test]
+        [Category.Languages.Core]
         public void ByteStream_StringEqualsTest() {
             ByteStream bs = new ByteStream(new byte[0]);
-            Assert.IsTrue(bs.CurrentStringEqualsTo("", 0));
-            Assert.IsTrue(bs.CurrentStringEqualsTo("a", 0));
-            Assert.IsFalse(bs.CurrentStringEqualsTo("abc", 3));
+            bs.CurrentStringEqualsTo("", 0).Should().BeTrue();
+            bs.CurrentStringEqualsTo("a", 0).Should().BeTrue();
+            bs.CurrentStringEqualsTo("abc", 3).Should().BeFalse();
 
-            byte[] text = new byte[] { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
+            byte[] text = { (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', };
             bs = new ByteStream(text);
 
-            Assert.IsTrue(bs.CurrentStringEqualsTo("abcd", 4));
-            Assert.IsTrue(bs.CurrentStringEqualsTo("abcdef", 5));
-            Assert.IsFalse(bs.CurrentStringEqualsTo("abcdef", 6));
-            Assert.IsTrue(bs.CurrentStringEqualsTo("", 0));
-            Assert.IsFalse(bs.CurrentStringEqualsTo("", 1));
+            bs.CurrentStringEqualsTo("abcd", 4).Should().BeTrue();
+            bs.CurrentStringEqualsTo("abcdef", 5).Should().BeTrue();
+            bs.CurrentStringEqualsTo("abcdef", 6).Should().BeFalse();
+            bs.CurrentStringEqualsTo("", 0).Should().BeTrue();
+            bs.CurrentStringEqualsTo("", 1).Should().BeFalse();
         }
     }
 }

@@ -8,21 +8,23 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Collection(CollectionNames.NonParallel)]
     public class XamlGraphicsDeviceTest {
-        private const string ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
-        private const string setupCode = @"
+        private const string Ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        private const string SetupCode = @"
 xaml <- function(filename, width, height) { .External('Microsoft.R.Host::External.xaml_graphicsdevice_new', filename, width, height)}
 ";
-        private const string gridPrefixCode = "xaml(\"{0}\", {1}, {2});library(grid);grid.newpage();\n";
-        private const string gridSuffixCode = "dev.off()\n";
+        private const string GridPrefixCode = "xaml(\"{0}\", {1}, {2});library(grid);grid.newpage();\n";
+        private const string GridSuffixCode = "dev.off()\n";
 
         private const int DefaultWidth = 360;
         private const int DefaultHeight = 360;
@@ -43,100 +45,102 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
             return DefaultHeight * percentY;
         }
 
-        [TestMethod]
-        [TestCategory("Plots")]
-        public void Line() {
+        [Test]
+        [Category.Plots]
+        public async Task Line() {
             var code = @"grid.segments(.01, .1, .99, .1)";
-            var doc = GridTest(code);
-            var shapes = doc.Descendants(XName.Get("Line", ns)).ToList();
-            Assert.AreEqual(1, shapes.Count);
+            var doc = await GridTest(code);
+            var shapes = doc.Descendants(XName.Get("Line", Ns)).ToList();
+            shapes.Should().ContainSingle();
+
             CheckX1Y1X2Y2(shapes[0], X(0.01), Y(0.1), X(0.99), Y(0.1));
             CheckStrokeThickness(shapes[0], 1);
             CheckStroke(shapes[0], "#FF000000");
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [TestMethod]
-        [TestCategory("Plots")]
-        public void LineCustomLineType() {
+        [Test]
+        [Category.Plots]
+        public async Task LineCustomLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty='4812',lwd=5,col='Blue'))";
-            var doc = GridTest(code);
-            var shapes = doc.Descendants(XName.Get("Line", ns)).ToList();
-            Assert.AreEqual(1, shapes.Count);
+            var doc = await GridTest(code);
+            var shapes = doc.Descendants(XName.Get("Line", Ns)).ToList();
+            shapes.Should().ContainSingle();
             CheckX1Y1X2Y2(shapes[0], X(0.01), Y(0.1), X(0.99), Y(0.1));
             CheckStrokeThickness(shapes[0], 5);
             CheckStroke(shapes[0], "#FF0000FF");
             CheckStrokeDashArray(shapes[0], "4 8 1 2");
         }
 
-        [TestMethod]
-        [TestCategory("Plots")]
-        public void LineSolidLineType() {
+        [Test]
+        [Category.Plots]
+        public async Task LineSolidLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=1))";
-            var doc = GridTest(code);
-            var shapes = doc.Descendants(XName.Get("Line", ns)).ToList();
-            Assert.AreEqual(1, shapes.Count);
+            var doc = await GridTest(code);
+            var shapes = doc.Descendants(XName.Get("Line", Ns)).ToList();
+            shapes.Should().ContainSingle();
             CheckX1Y1X2Y2(shapes[0], X(0.01), Y(0.1), X(0.99), Y(0.1));
             CheckStrokeThickness(shapes[0], 1);
             CheckStroke(shapes[0], "#FF000000");
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [TestMethod]
-        [TestCategory("Plots")]
-        public void LineDashedLineType() {
+        [Test]
+        [Category.Plots]
+        public async Task LineDashedLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=2))";
-            var doc = GridTest(code);
-            var shapes = doc.Descendants(XName.Get("Line", ns)).ToList();
-            Assert.AreEqual(1, shapes.Count);
+            var doc = await GridTest(code);
+            var shapes = doc.Descendants(XName.Get("Line", Ns)).ToList();
+            shapes.Should().ContainSingle();
             CheckX1Y1X2Y2(shapes[0], X(0.01), Y(0.1), X(0.99), Y(0.1));
             CheckStrokeThickness(shapes[0], 1);
             CheckStroke(shapes[0], "#FF000000");
             CheckStrokeDashArray(shapes[0], "4 4");
         }
 
-        [TestMethod]
-        [TestCategory("Plots")]
-        public void Polygon() {
+        [Test]
+        [Category.Plots]
+        public async Task Polygon() {
             var code = @"grid.polygon(x=c(0,0.5,1,0.5),y=c(0.5,1,0.5,0))";
-            var doc = GridTest(code);
-            var shapes = doc.Descendants(XName.Get("Polygon", ns)).ToList();
-            Assert.AreEqual(1, shapes.Count);
+            var doc = await GridTest(code);
+            var shapes = doc.Descendants(XName.Get("Polygon", Ns)).ToList();
+            shapes.Should().ContainSingle();
             CheckPoints(shapes[0], X(0), Y(0.5), X(0.5), Y(1.0), X(1.0), Y(0.5), X(0.5), Y(0));
             CheckStrokeThickness(shapes[0], 1);
             CheckStroke(shapes[0], "#FF000000");
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [TestMethod]
-        [TestCategory("Plots")]
-        public void Circle() {
+        [Test]
+        [Category.Plots]
+        public async Task Circle() {
             var code = @"grid.circle(0.5, 0.5, 0.2)";
-            var doc = GridTest(code);
-            var shapes = doc.Descendants(XName.Get("Ellipse", ns)).ToList();
-            Assert.AreEqual(1, shapes.Count);
+            var doc = await GridTest(code);
+            var shapes = doc.Descendants(XName.Get("Ellipse", Ns)).ToList();
+            shapes.Should().ContainSingle();
             CheckWidthHeight(shapes[0], W(0.4), H(0.4));
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.2), Y(0.5) - W(0.2));
         }
 
-        [TestMethod]
-        [TestCategory("Plots")]
-        public void Rectangle() {
+        [Test]
+        [Category.Plots]
+        public async Task Rectangle() {
             var code = @"grid.rect(0.5, 0.5, 0.3, 0.4)";
-            var doc = GridTest(code);
-            var shapes = doc.Descendants(XName.Get("Rectangle", ns)).ToList();
-            Assert.AreEqual(1, shapes.Count);
+            var doc = await GridTest(code);
+            var shapes = doc.Descendants(XName.Get("Rectangle", Ns)).ToList();
+            shapes.Should().ContainSingle();
             CheckWidthHeight(shapes[0], W(0.3), H(0.4));
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.15), Y(0.5) - W(0.2));
         }
 
-        [TestMethod]
-        [TestCategory("Plots")]
-        public void Path() {
+        [Test]
+        [Category.Plots]
+        public async Task Path() {
             var code = @"grid.path(c(.1, .1, .9, .9, .2, .2, .8, .8), c(.1, .9, .9, .1, .2, .8, .8, .2), id=rep(1:2,each=4), rule='winding', gp=gpar(filled.contour='grey'))";
-            var doc = GridTest(code);
-            var shapes = doc.Descendants(XName.Get("Path", ns)).ToList();
-            Assert.AreEqual(1, shapes.Count);
+            var doc = await GridTest(code);
+            var shapes = doc.Descendants(XName.Get("Path", Ns)).ToList();
+            shapes.Should().ContainSingle();
+
             string expected = string.Format("F 1 M {0},{1} L {2},{3} L {4},{5} L {6},{7} Z M {8},{9} L {10},{11} L {12},{13} L {14},{15} Z ",
                 X(.1), Y(.1),
                 X(.1), Y(.9),
@@ -149,19 +153,20 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
             CheckStringAttr(shapes[0], "Data", expected);
         }
 
-        [TestMethod]
-        [TestCategory("Plots")]
-        public void TextXmlEscape() {
+        [Test]
+        [Category.Plots]
+        public async Task TextXmlEscape() {
             var code = "grid.text('hello<>&\"', 0.1, 0.3)";
-            var doc = GridTest(code);
-            var shapes = doc.Descendants(XName.Get("TextBlock", ns)).ToList();
-            Assert.AreEqual(1, shapes.Count);
+            var doc = await GridTest(code);
+            var shapes = doc.Descendants(XName.Get("TextBlock", Ns)).ToList();
+            shapes.Should().ContainSingle();
+
             CheckStringAttr(shapes[0], "Text", "hello<>&\"");
         }
 
-        private XDocument GridTest(string code) {
+        private async Task<XDocument> GridTest(string code) {
             string outputFilePath = System.IO.Path.GetTempFileName();
-            return RunGraphicsTest(setupCode + "\n" + string.Format(gridPrefixCode, outputFilePath.Replace("\\", "/"), DefaultWidth, DefaultHeight) + "\n" + code + "\n" + gridSuffixCode + "\n", outputFilePath);
+            return await RunGraphicsTest(SetupCode + "\n" + string.Format(GridPrefixCode, outputFilePath.Replace("\\", "/"), DefaultWidth, DefaultHeight) + "\n" + code + "\n" + GridSuffixCode + "\n", outputFilePath);
         }
 
         private void CheckX1Y1X2Y2(XElement element, double x1, double y1, double x2, double y2) {
@@ -177,7 +182,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
         }
 
         private void CheckPoints(XElement element, params double[] xyPoints) {
-            Assert.AreEqual(0, xyPoints.Length % 2);
+            (xyPoints.Length % 2).Should().Be(0);
             var sb = new StringBuilder();
             int i = 0;
             while (i < xyPoints.Length) {
@@ -186,6 +191,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
             }
             CheckStringAttr(element, "Points", sb.ToString().Trim());
         }
+
         private void CheckCanvasLeftTop(XElement element, double left, double top) {
             CheckDoubleAttr(element, "Canvas.Left", left);
             CheckDoubleAttr(element, "Canvas.Top", top);
@@ -205,29 +211,35 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
 
         private void CheckStringAttr(XElement element, string attributeName, string expected) {
             var attrs = element.Attributes(attributeName);
-            Assert.AreEqual(expected != null ? 1 : 0, attrs.Count());
+
             if (expected != null) {
-                Assert.AreEqual(expected, attrs.First().Value);
+                attrs.Should().ContainSingle().Which.Should().HaveValue(expected);
+            } else {
+                attrs.Should().BeEmpty();
             }
         }
 
         private void CheckDoubleAttr(XElement element, string attributeName, double? expected) {
             var attrs = element.Attributes(attributeName);
-            Assert.AreEqual(expected != null ? 1 : 0, attrs.Count());
+            
             if (expected != null) {
-                Assert.AreEqual(expected.Value, double.Parse(attrs.First().Value));
+                attrs.Should().ContainSingle().Which.Should().HaveValue(expected.ToString());
+            } else {
+                attrs.Should().BeEmpty();
             }
         }
 
-        private XDocument RunGraphicsTest(string code, string outputFilePath) {
+        private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
             var callbacks = new Callbacks(code);
             var host = new RHost("Test", callbacks);
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
-            var psi = new ProcessStartInfo();
-            psi.CreateNoWindow = true;
-            host.CreateAndRun(rhome, IntPtr.Zero, new TestRToolsSettings(), psi).GetAwaiter().GetResult();
+            var psi = new ProcessStartInfo {
+                CreateNoWindow = true
+            };
 
-            Assert.IsTrue(File.Exists(outputFilePath));
+            await host.CreateAndRun(rhome, IntPtr.Zero, new TestRToolsSettings(), psi);
+
+            File.Exists(outputFilePath).Should().BeTrue();
             var doc = XDocument.Load(outputFilePath);
             var docXml = doc.ToString();
             Console.WriteLine(docXml);
@@ -238,9 +250,6 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
             private string _inputCode;
             public Callbacks(string code) {
                 _inputCode = code;
-            }
-
-            public void Dispose() {
             }
 
             public Task Busy(bool which, CancellationToken ct) {
@@ -274,7 +283,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
             }
 
             public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
-                return Task.FromResult<YesNoCancel>(Microsoft.R.Host.Client.YesNoCancel.Yes);
+                return Task.FromResult(Client.YesNoCancel.Yes);
             }
 
             public Task Plot(string filePath, CancellationToken ct) {
