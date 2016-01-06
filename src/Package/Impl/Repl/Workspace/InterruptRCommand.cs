@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         public InterruptRCommand(IRSessionProvider rSessionProvider) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
             _rSessionProvider = rSessionProvider;
-            _rSessionProvider.CurrentSessionChanged += OnCurrentSessionChanged;
+            _rSessionProvider.CurrentChanged += OnCurrentSessionChanged;
         }
 
         private void OnCurrentSessionChanged(object sender, EventArgs e) {

@@ -21,7 +21,7 @@ namespace Microsoft.R.Host.Client.Test {
     public class XamlGraphicsDeviceTest {
         private const string Ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
         private const string SetupCode = @"
-xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graphicsdevice_new', filename, width, height)}
+xaml <- function(filename, width, height) { .External('Microsoft.R.Host::External.xaml_graphicsdevice_new', filename, width, height)}
 ";
         private const string GridPrefixCode = "xaml(\"{0}\", {1}, {2});library(grid);grid.newpage();\n";
         private const string GridSuffixCode = "dev.off()\n";
@@ -47,9 +47,9 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         [Test]
         [Category.Plots]
-        public void Line() {
+        public async Task Line() {
             var code = @"grid.segments(.01, .1, .99, .1)";
-            var doc = GridTest(code);
+            var doc = await GridTest(code);
             var shapes = doc.Descendants(XName.Get("Line", Ns)).ToList();
             shapes.Should().ContainSingle();
 
@@ -61,9 +61,9 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         [Test]
         [Category.Plots]
-        public void LineCustomLineType() {
+        public async Task LineCustomLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty='4812',lwd=5,col='Blue'))";
-            var doc = GridTest(code);
+            var doc = await GridTest(code);
             var shapes = doc.Descendants(XName.Get("Line", Ns)).ToList();
             shapes.Should().ContainSingle();
             CheckX1Y1X2Y2(shapes[0], X(0.01), Y(0.1), X(0.99), Y(0.1));
@@ -74,9 +74,9 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         [Test]
         [Category.Plots]
-        public void LineSolidLineType() {
+        public async Task LineSolidLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=1))";
-            var doc = GridTest(code);
+            var doc = await GridTest(code);
             var shapes = doc.Descendants(XName.Get("Line", Ns)).ToList();
             shapes.Should().ContainSingle();
             CheckX1Y1X2Y2(shapes[0], X(0.01), Y(0.1), X(0.99), Y(0.1));
@@ -87,9 +87,9 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         [Test]
         [Category.Plots]
-        public void LineDashedLineType() {
+        public async Task LineDashedLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=2))";
-            var doc = GridTest(code);
+            var doc = await GridTest(code);
             var shapes = doc.Descendants(XName.Get("Line", Ns)).ToList();
             shapes.Should().ContainSingle();
             CheckX1Y1X2Y2(shapes[0], X(0.01), Y(0.1), X(0.99), Y(0.1));
@@ -100,9 +100,9 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         [Test]
         [Category.Plots]
-        public void Polygon() {
+        public async Task Polygon() {
             var code = @"grid.polygon(x=c(0,0.5,1,0.5),y=c(0.5,1,0.5,0))";
-            var doc = GridTest(code);
+            var doc = await GridTest(code);
             var shapes = doc.Descendants(XName.Get("Polygon", Ns)).ToList();
             shapes.Should().ContainSingle();
             CheckPoints(shapes[0], X(0), Y(0.5), X(0.5), Y(1.0), X(1.0), Y(0.5), X(0.5), Y(0));
@@ -113,9 +113,9 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         [Test]
         [Category.Plots]
-        public void Circle() {
+        public async Task Circle() {
             var code = @"grid.circle(0.5, 0.5, 0.2)";
-            var doc = GridTest(code);
+            var doc = await GridTest(code);
             var shapes = doc.Descendants(XName.Get("Ellipse", Ns)).ToList();
             shapes.Should().ContainSingle();
             CheckWidthHeight(shapes[0], W(0.4), H(0.4));
@@ -124,9 +124,9 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         [Test]
         [Category.Plots]
-        public void Rectangle() {
+        public async Task Rectangle() {
             var code = @"grid.rect(0.5, 0.5, 0.3, 0.4)";
-            var doc = GridTest(code);
+            var doc = await GridTest(code);
             var shapes = doc.Descendants(XName.Get("Rectangle", Ns)).ToList();
             shapes.Should().ContainSingle();
             CheckWidthHeight(shapes[0], W(0.3), H(0.4));
@@ -135,9 +135,9 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         [Test]
         [Category.Plots]
-        public void Path() {
+        public async Task Path() {
             var code = @"grid.path(c(.1, .1, .9, .9, .2, .2, .8, .8), c(.1, .9, .9, .1, .2, .8, .8, .2), id=rep(1:2,each=4), rule='winding', gp=gpar(filled.contour='grey'))";
-            var doc = GridTest(code);
+            var doc = await GridTest(code);
             var shapes = doc.Descendants(XName.Get("Path", Ns)).ToList();
             shapes.Should().ContainSingle();
 
@@ -155,18 +155,18 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
 
         [Test]
         [Category.Plots]
-        public void TextXmlEscape() {
+        public async Task TextXmlEscape() {
             var code = "grid.text('hello<>&\"', 0.1, 0.3)";
-            var doc = GridTest(code);
+            var doc = await GridTest(code);
             var shapes = doc.Descendants(XName.Get("TextBlock", Ns)).ToList();
             shapes.Should().ContainSingle();
 
             CheckStringAttr(shapes[0], "Text", "hello<>&\"");
         }
 
-        private XDocument GridTest(string code) {
+        private async Task<XDocument> GridTest(string code) {
             string outputFilePath = System.IO.Path.GetTempFileName();
-            return RunGraphicsTest(SetupCode + "\n" + string.Format(GridPrefixCode, outputFilePath.Replace("\\", "/"), DefaultWidth, DefaultHeight) + "\n" + code + "\n" + GridSuffixCode + "\n", outputFilePath);
+            return await RunGraphicsTest(SetupCode + "\n" + string.Format(GridPrefixCode, outputFilePath.Replace("\\", "/"), DefaultWidth, DefaultHeight) + "\n" + code + "\n" + GridSuffixCode + "\n", outputFilePath);
         }
 
         private void CheckX1Y1X2Y2(XElement element, double x1, double y1, double x2, double y2) {
@@ -229,15 +229,15 @@ xaml <- function(filename, width, height) { .External('rtvs::External.xaml_graph
             }
         }
 
-        private XDocument RunGraphicsTest(string code, string outputFilePath) {
+        private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
             var callbacks = new Callbacks(code);
-            var host = new RHost(callbacks);
+            var host = new RHost("Test", callbacks);
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             var psi = new ProcessStartInfo {
                 CreateNoWindow = true
             };
 
-            host.CreateAndRun(rhome, IntPtr.Zero, new TestRToolsSettings(), psi).GetAwaiter().GetResult();
+            await host.CreateAndRun(rhome, IntPtr.Zero, new TestRToolsSettings(), psi);
 
             File.Exists(outputFilePath).Should().BeTrue();
             var doc = XDocument.Load(outputFilePath);
