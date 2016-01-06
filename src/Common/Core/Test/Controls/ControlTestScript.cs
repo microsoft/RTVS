@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Test.Script;
-using Microsoft.Common.Core.Test.STA;
 using Microsoft.Common.Core.Test.Utility;
+using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.Common.Core.Test.Controls {
     [ExcludeFromCodeCoverage]
@@ -14,7 +14,7 @@ namespace Microsoft.Common.Core.Test.Controls {
         /// Invokes a particular action in the control window thread
         /// </summary>
         public void Invoke(Action action) {
-            StaThread.Invoke(action);
+            UIThreadHelper.Instance.Invoke(action);
         }
 
         public void Dispose() {

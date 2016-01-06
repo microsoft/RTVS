@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Test.Controls;
-using Microsoft.Common.Core.Test.STA;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         private static void DoIdle(int ms) {
-            StaThread.Invoke(() => {
+            UIThreadHelper.Instance.Invoke(() => {
                 int time = 0;
                 while (time < ms) {
                     IdleTime.DoIdle();
