@@ -116,7 +116,7 @@
     <Compile Include="RD\Tokens\TokenizeTest.cs" />
     <Compile Include="RD\Tokens\VerifySortedTables.cs" />
     <Compile Include="Utility\SupportTestFilesSetup.cs" />
-    <Compile Include="Utility\FunctionIndexTestExecutor.cs" />
+    <Compile Include="Utility\FunctionIndexUtility.cs" />
     <Compile Include="Utility\TestRToolsSettings.cs" />
   </ItemGroup>
   <ItemGroup>
