@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
             _files = files;
         }
 
-        //[Test(Skip = "Unstable")]
+        //[Test]
         //[Category.Interactive]
         public void TypeFile_R() {
             string actual = TypeFileInEditor("lsfit-part.r", RContentTypeDefinition.ContentType);
@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
             actual.Should().Be(expected);
         }
 
-        //[Test(Skip="Unstable")]
+        //[Test]
         //[Category.Interactive]
         public void TypeFile_RD() {
             TypeFileInEditor("01.rd", RdContentTypeDefinition.ContentType);
