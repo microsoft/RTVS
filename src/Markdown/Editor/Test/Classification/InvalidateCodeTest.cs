@@ -13,8 +13,8 @@ using Microsoft.VisualStudio.Text.Classification;
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
     public class InvalidateCodeTest {
-        [Test]
-        [Category.Md.Classifier]
+        //[Test]
+        //[Category.Md.Classifier]
         public void Markdown_InvalidateCodeTest() {
             string content = "```'{r}\n#R\n```";
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
