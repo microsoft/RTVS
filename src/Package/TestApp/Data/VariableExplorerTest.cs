@@ -31,9 +31,11 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Test]
         [Category.Interactive]
         public void VaraibleExplorer_ConstructorTest02() {
-            using (var script = new ControlTestScript(typeof(VariableView))) {
-                string actual = script.WriteVisualTree();
-                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
+            using (var hostScript = new RHostScript()) {
+                using (var script = new ControlTestScript(typeof(VariableView))) {
+                    string actual = script.WriteVisualTree();
+                    ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
+                }
             }
         }
 
