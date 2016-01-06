@@ -1,60 +1,44 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Support.Test.Functions {
     [ExcludeFromCodeCoverage]
-    public class FunctionIndexTest {
-        [Test(Skip = "Need to understand how test is working")]
-        [Category.R.Signatures]
-        public void FunctionInfoTest1() {
-            FunctionIndexTestExecutor.ExecuteTest(evt => {
-                object result = FunctionIndex.GetFunctionInfo("abs", o => {
-                    FunctionInfoTest1_TestBody(evt);
-                });
-
-                if (result != null && !evt.IsSet) {
-                    FunctionInfoTest1_TestBody(evt);
-                }
-            });
+    [Collection(CollectionNames.NonParallel)]
+    public class FunctionIndexTest : IAsyncLifetime {
+        public Task InitializeAsync() {
+            return FunctionIndexUtility.InitializeAsync();
         }
 
-        [Test(Skip = "Need to understand how test is working")]
-        [Category.R.Signatures]
-        public void FunctionInfoTest2() {
-            FunctionIndexTestExecutor.ExecuteTest(evt => {
-                object result = FunctionIndex.GetFunctionInfo("eval", o => {
-                    FunctionInfoTest2_TestBody(evt);
-                });
-
-                if (result != null && !evt.IsSet) {
-                    FunctionInfoTest2_TestBody(evt);
-                }
-            });
+        public Task DisposeAsync() {
+            return FunctionIndexUtility.DisposeAsync();
         }
 
-        private void FunctionInfoTest1_TestBody(ManualResetEventSlim completed) {
-            IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo("abs");
+        [Test]
+        [Category.R.Signatures]
+         public async Task FunctionInfoTest1() {
+            var functionInfo = await FunctionIndexUtility.GetFunctionInfoAsync("abs");
+
             functionInfo.Should().NotBeNull();
             functionInfo.Name.Should().Be("abs");
             functionInfo.Description.Should().NotBeEmpty();
             functionInfo.Signatures.Should().ContainSingle()
                 .Which.Arguments.Should().ContainSingle();
-            
+
             List<int> locusPoints = new List<int>();
             functionInfo.Signatures[0].GetSignatureString(locusPoints).Should().Be("abs(x)");
             locusPoints.Should().Equal(4, 5);
-
-            completed.Set();
         }
 
-        private void FunctionInfoTest2_TestBody(ManualResetEventSlim completed) {
-            IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo("eval");
+        [Test]
+        [Category.R.Signatures]
+        public async Task FunctionInfoTest2() {
+            var functionInfo = await FunctionIndexUtility.GetFunctionInfoAsync("eval");
+
             functionInfo.Should().NotBeNull();
             functionInfo.Name.Should().Be("eval");
             functionInfo.Description.Should().NotBeEmpty();
@@ -65,8 +49,6 @@ namespace Microsoft.R.Support.Test.Functions {
             string signature = functionInfo.Signatures[0].GetSignatureString(locusPoints);
             signature.Should().Be("eval(expr, envir = parent.frame(), enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())");
             locusPoints.Should().Equal(5, 11, 35, 114);
-            
-            completed.Set();
         }
     }
 }

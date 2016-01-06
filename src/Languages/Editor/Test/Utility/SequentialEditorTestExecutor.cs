@@ -6,17 +6,6 @@ using Microsoft.Languages.Editor.Shell;
 namespace Microsoft.Languages.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class SequentialEditorTestExecutor {
-        [ExcludeFromCodeCoverage]
-        class ExecutionRequest {
-            public ManualResetEventSlim Event { get; private set; }
-            public Action<ManualResetEventSlim> Action { get; private set; }
-
-            public ExecutionRequest(Action<ManualResetEventSlim> action) {
-                Action = action;
-                Event = new ManualResetEventSlim();
-            }
-        }
-
         private static readonly object _creatorLock = new object();
         private static Action _disposeAction;
 
