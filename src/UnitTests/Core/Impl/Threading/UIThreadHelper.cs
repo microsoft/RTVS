@@ -31,7 +31,6 @@ namespace Microsoft.UnitTests.Core.Threading
             Thread thread = new Thread(uiThreadHelper.RunMainThread) { Name = "WPF Dispatcher Thread" };
             thread.SetApartmentState(ApartmentState.STA);
             thread.IsBackground = true;
-            thread.DisableComObjectEagerCleanup();
             thread.Start(initialized);
 
             initialized.Wait();
