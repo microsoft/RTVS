@@ -2,9 +2,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Common.Core.Test.STA;
+using Microsoft.UnitTests.Core.Threading;
 using Screen = System.Windows.Forms.Screen;
 
 namespace Microsoft.Common.Core.Test.Controls {
@@ -36,9 +38,9 @@ namespace Microsoft.Common.Core.Test.Controls {
         /// Creates WPF window and control instance then hosts control in the window.
         /// </summary>
         public static void Create(Type controlType) {
-            StaThread.RunStaTest((o, evt) => {
-                CreateWindowInstance(o as ControlTestRequest, evt);
-            }, new ControlTestRequest(controlType));
+            var evt = new ManualResetEventSlim(false);
+            Task.Run(() => UIThreadHelper.Instance.Invoke(() => CreateWindowInstance(new ControlTestRequest(controlType), evt)));
+            evt.Wait();
         }
 
         private static void CreateWindowInstance(ControlTestRequest request, ManualResetEventSlim evt) {
@@ -74,14 +76,11 @@ namespace Microsoft.Common.Core.Test.Controls {
         public static void Close() {
             var action = new Action(() => {
                 IDisposable disp = Window.Content as IDisposable;
-                if(disp != null) {
-                    disp.Dispose();
-                }
+                disp?.Dispose();
                 Window.Close();
-                StaThread.ThreadAvailable.Set();
             });
 
-            StaThread.Invoke(action);
+            UIThreadHelper.Instance.Invoke(action);
         }
     }
 }
