@@ -29,11 +29,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGetDirectoryList),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory)
             }, false) {
-            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _sessionProvider.Current.Connected += OnSessionConnected;
-            _sessionProvider.Current.DirectoryChanged += OnCurrentDirectoryChanged;
 
-            InitializationTask = GetRUserDirectoryAsync();
+            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            if (_sessionProvider.Current != null) {
+                _sessionProvider.Current.Connected += OnSessionConnected;
+                _sessionProvider.Current.DirectoryChanged += OnCurrentDirectoryChanged;
+                InitializationTask = GetRUserDirectoryAsync();
+            }
         }
 
         private async void OnCurrentDirectoryChanged(object sender, EventArgs e) {
