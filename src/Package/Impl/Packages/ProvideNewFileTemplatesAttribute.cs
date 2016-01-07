@@ -47,6 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
 
             builder.Key(templatesKey)
                     .PackageGuidValue("Package")
+                    .StringValue(string.Empty, _languageNameId)
                     .StringValue("TemplatesDir", @"$PackageFolder$\" + _folderName)
                     .IntValue("SortPriority", _sortPriority);
             return builder;
