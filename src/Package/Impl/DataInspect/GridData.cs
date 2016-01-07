@@ -6,12 +6,37 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    public class MockRange : IRange<string> {
+        private bool _columnMode;
+        public MockRange(Range range, bool columnMode) {
+            Range = range;
+            _columnMode = columnMode;
+        }
+
+        public string this[int index] {
+            get {
+                if (_columnMode) {
+                    return string.Format("[,{0}]", index);
+                }
+                return string.Format("[{0},]", index);
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Range Range { get; }
+    }
+
     internal class GridData : IGridData<string> {
         public GridData() {
             RowNames = new List<string>();
             ColumnNames = new List<string>();
             Values = new List<List<string>>();
         }
+
+        public bool ValidHeaderNames { get; set; }
 
         public List<string> RowNames { get; }
 
@@ -26,9 +51,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public IRange<string> ColumnHeader {
             get {
                 if (_columnHeader == null) {
-                    _columnHeader = new ListToRange<string>(
-                        Range.Columns,
-                        ColumnNames);
+                    if (ValidHeaderNames) {
+                        _columnHeader = new ListToRange<string>(
+                            Range.Columns,
+                            ColumnNames);
+                    } else {
+                        _columnHeader = new MockRange(Range.Columns, true);
+                    }
                 }
                 return _columnHeader;
             }
@@ -38,9 +67,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public IRange<string> RowHeader {
             get {
                 if (_rowHeader == null) {
-                    _rowHeader = new ListToRange<string>(
-                        Range.Rows,
-                        RowNames);
+                    if (ValidHeaderNames) {
+                        _rowHeader = new ListToRange<string>(
+                            Range.Rows,
+                            RowNames);
+                    } else {
+                        _rowHeader = new MockRange(Range.Rows, false);
+                    }
                 }
 
                 return _rowHeader;
@@ -104,10 +137,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             current = input.IndexOf("list", current);
             current = input.IndexOf('(', current);
 
-            current = NamedValue(input, "row.names", data.RowNames, current);
+            current = input.IndexOf("dimnames", current);
+            current = input.IndexOf('=', current);
+            string dimnamesValue;
+            current = FirstQuotedString(input, current, out dimnamesValue);
+            data.ValidHeaderNames = bool.Parse(dimnamesValue);
+
+            current = NamedValue(input, "row.names", data.RowNames, current, true);
             current = input.IndexOf(',', current);
 
-            current = NamedValue(input, "col.names", data.ColumnNames, current);
+            current = NamedValue(input, "col.names", data.ColumnNames, current, true);
             current = input.IndexOf(',', current);
 
             current = input.IndexOf("data", current);
@@ -146,8 +185,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return sb.ToString();
         }
 
-        private static int NamedValue(string input, string name, List<string> names, int current) {
-            current = input.IndexOf(name, current);
+        private static int NamedValue(string input, string name, List<string> names, int current, bool optional = false) {
+            int nameIndex = input.IndexOf(name, current);
+            if (optional && nameIndex == -1) {
+                return current;
+            }
             current = input.IndexOf('=', current);
 
             current = input.IndexOfAny(ValueStart, current);

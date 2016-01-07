@@ -17,16 +17,24 @@ grid.header <- function(obj, range, isRow) {
 grid.data <- function(x, rows, cols) {
   d <- dim(x);
   if (is.null(d) || (length(d) != 2)) {
-    stop('gridata requires two dimensional object');
+    stop('grid.data requires two dimensional object');
   }
   
   x0 <- as.data.frame(x[rows, cols]);
-  x <- lapply(x0, as.character);
+  x1 <- lapply(x0, as.character);
 
   vp<-list();
+
+  dn <- dimnames(x);
+  if (!is.null(dn) && (length(dn)==2)) {
+    vp$dimnames <- 'true';
+  } else {
+    vp$dimnames <- 'false';
+  }
+
   vp$row.names <- row.names(x0);
   vp$col.names <- colnames(x0);
-  vp$data<-x;
+  vp$data<-x1;
 
   vp;
 }

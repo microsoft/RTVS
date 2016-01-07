@@ -35,9 +35,9 @@ namespace Microsoft.VisualStudio.R.TestApp {
         public string this[int index] {
             get {
                 if (_columnMode) {
-                    return string.Format("[{0},]", Range.Start + index);
+                    return string.Format("[{0},]", index);
                 }
-                return string.Format("[,{0}]", Range.Start + index);
+                return string.Format("[,{0}]", index);
             }
 
             set {
@@ -77,7 +77,7 @@ namespace Microsoft.VisualStudio.R.TestApp {
 
         public Task<IGridData<string>> GetAsync(GridRange range) {
             return Task.Run(async () => {
-                await Task.Delay(TimeSpan.FromMilliseconds(1));
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
                 return (IGridData<string>)new MockGridData(range);
             });
         }

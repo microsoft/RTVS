@@ -118,7 +118,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     visual.Column = c;
                     visual.Text = data[r, c];
                     visual.Typeface = Typeface;
-                    visual.FontSize = FontSize * (96.0 / 72.0);  // TODO: test in High DPI
+                    visual.FontSize = FontSize; // FontSize here is in device independent pixel, and Visual's FormattedText API uses the same unit
                     return visual;
                 });
 
