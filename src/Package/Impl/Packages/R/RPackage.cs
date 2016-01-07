@@ -58,6 +58,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideDebugPortPicker(typeof(RDebugPortPicker))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
+    [ProvideNewFileTemplatesAttribute(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 

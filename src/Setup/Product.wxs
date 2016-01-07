@@ -140,6 +140,7 @@
 
   <Fragment>
     <?include Assemblies.wxi ?>
+    <?include FileNewTemplates.wxi ?>
     <?include CpsRules.wxi ?>
     <?include ItemTemplates.wxi ?>
     <?include ProjectTemplates.wxi ?>

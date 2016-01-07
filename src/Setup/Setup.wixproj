@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Product.wxs" />
     <Content Include="Assemblies.wxi" />
+    <Content Include="FileNewTemplates.wxi" />
     <Content Include="packages.config" />
     <Content Include="RtvsPackage.wxi" />
     <Content Include="Profiles.wxi" />

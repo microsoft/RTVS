@@ -146,6 +146,7 @@
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
     <Compile Include="Packages\Definitions\IRPackage.cs" />
+    <Compile Include="Packages\ProvideNewFileTemplatesAttribute.cs" />
     <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
     <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\OpenPlotCommand.cs" />
@@ -620,6 +621,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
+    <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.ico" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
     <Content Include="Images\RDataNode.png" />
@@ -630,12 +632,23 @@
     <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
-    <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.png" />
     <Content Include="R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
+    <Content Include="Templates\NewItem\markdown.rmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Templates\NewItem\script.r">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Templates\NewItem\NewRItems.vsdir">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="VSShell\ShellIcons.h" />
     <Page Include="DataInspect\DataGridStyle.xaml">
       <SubType>Designer</SubType>

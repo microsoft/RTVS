@@ -18,7 +18,8 @@
     <?ifdef Debug?>
     <ComponentRef Id="ProductAssembliesDebugData" />
     <?endif?>
-    
+    <ComponentRef Id="FileNewTemplates" />
+
     <ComponentRef Id="Profiles" />
     
     <ComponentGroupRef Id="RtvsPackage" />
