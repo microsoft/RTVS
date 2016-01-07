@@ -151,7 +151,7 @@
     <value>R Markdown</value>
   </data>
   <data name="3011" xml:space="preserve">
-    <value>An R script is a text file containing same commands that can be entered on the command line of R</value>
+    <value>R script is a text file containing same commands that can be entered on the command line of R</value>
   </data>
   <data name="3012" xml:space="preserve">
     <value>R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R</value>
