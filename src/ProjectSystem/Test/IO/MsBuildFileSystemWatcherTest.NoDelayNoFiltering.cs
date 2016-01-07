@@ -32,6 +32,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             public NoDelayNoFiltering()
             {
                 _fileSystem = Substitute.For<IFileSystem>();
+                _fileSystem.GetFileAttributes(Arg.Any<string>()).Throws<FileNotFoundException>();
                 var watchers = GetWatchersFromMsBuildFileSystemWatcher(_fileSystem);
 
                 var fileSystemFilter = Substitute.For<IMsBuildFileSystemFilter>();
@@ -69,9 +70,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             {
                 using (_taskScheduler.Pause())
                 {
-                    foreach (var path in addedFiles)
-                    {
-                        _fileSystem.FileExists(path).Returns(true);
+                    foreach (var path in addedFiles) {
+                        FileInfoFactory.Create(_fileSystem, path);
                     }
 
                     RaiseCreated(_fileWatcher, addedFiles);
@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             {
                 foreach (var path in addedFiles)
                 {
-                    _fileSystem.FileExists(path).Returns(true);
+                    FileInfoFactory.Create(_fileSystem, path);
                 }
 
                 using (_taskScheduler.Pause())
@@ -148,13 +148,13 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 {
                     foreach (var path in createdFiles)
                     {
-                        _fileSystem.FileExists(path).Returns(true);
+                        FileInfoFactory.Create(_fileSystem, path);
                         RaiseCreated(_fileWatcher, path);
                     }
 
                     foreach (var path in deletedFiles)
                     {
-                        _fileSystem.FileExists(path).Returns(false);
+                        FileInfoFactory.Delete(_fileSystem, path);
                         RaiseDeleted(_fileWatcher, path);
                     }
 
@@ -181,19 +181,19 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 {
                     foreach (var path in addedFiles)
                     {
-                        _fileSystem.FileExists(path).Returns(true);
+                        FileInfoFactory.Create(_fileSystem, path);
                     }
 
                     RaiseCreated(_fileWatcher, addedFiles);
 
                     foreach (var path in addedFiles)
                     {
-                        _fileSystem.FileExists(path).Returns(false);
+                        FileInfoFactory.Delete(_fileSystem, path);
                     }
 
                     foreach (var path in existingFiles)
                     {
-                        _fileSystem.FileExists(path).Returns(true);
+                        FileInfoFactory.Create(_fileSystem, path);
                     }
 
                     RaiseDeleted(_directoryWatcher, deletedDirectories);
@@ -457,7 +457,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             {
                 foreach (var path in existingFiles)
                 {
-                    _fileSystem.FileExists(path).Returns(true);
+                    FileInfoFactory.Create(_fileSystem, path);
                 }
 
                 using (_taskScheduler.Pause())
@@ -572,7 +572,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
 
                     foreach (var path in createdFiles)
                     {
-                        _fileSystem.FileExists(path).Returns(true);
+                        FileInfoFactory.Create(_fileSystem, path);
                     }
 
                     RaiseCreated(_fileWatcher, createdFiles);

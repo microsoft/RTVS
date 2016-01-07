@@ -1,5 +1,8 @@
+using System;
+using System.IO;
 using Microsoft.Common.Core.IO;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 
 namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
 {
@@ -12,6 +15,13 @@ namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
             fi.Exists.Returns(true);
             fi.Directory.Returns((IDirectoryInfo)null);
             fileSystem.FileExists(path).Returns(true);
+
+            try {
+                fileSystem.GetFileAttributes(path);
+            } catch (IOException) {
+                default(FileAttributes).Returns(FileAttributes.Normal);
+            }
+
             return fi;
         }
 
@@ -22,6 +32,9 @@ namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
             fi.Exists.Returns(false);
             fi.Directory.Returns((IDirectoryInfo)null);
             fileSystem.FileExists(path).Returns(false);
+            try {
+                fileSystem.GetFileAttributes(path).Throws<FileNotFoundException>();
+            } catch (IOException) { }
             return fi;
         }
     }
