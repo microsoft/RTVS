@@ -9,7 +9,6 @@ namespace Microsoft.R.Support.Settings {
             get {
                 if (_settings == null) {
                     _settings = EditorShell.Current.ExportProvider.GetExport<IRToolsSettings>().Value;
-                    _settings?.LoadFromStorage();
                 }
                 return _settings;
             }

@@ -2,8 +2,6 @@
 
 namespace Microsoft.R.Support.Settings.Definitions {
     public interface IRToolsSettings {
-        void LoadFromStorage();
-
         /// <summary>
         /// Path to 64-bit R installation such as 
         /// 'C:\Program Files\R\R-3.2.2' without bin\x64
