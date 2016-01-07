@@ -68,7 +68,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             }
         }
 
-        [Test(Skip = "Unstable")]
+        [Test]
         [Category.Interactive]
         public void R_ProvisionalCurlyBrace01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {

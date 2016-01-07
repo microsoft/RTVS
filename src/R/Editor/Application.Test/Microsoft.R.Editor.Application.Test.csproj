@@ -151,7 +151,6 @@
     <Compile Include="Signatures\SignatureTest.cs" />
     <Compile Include="TestShell\EditorWindow.cs" />
     <Compile Include="Completion\IntellisenseTest.cs" />
-    <Compile Include="IO\OpenFilesTest.cs" />
     <Compile Include="TestShell\Navigation.cs" />
     <Compile Include="TestShell\TestScript.cs" />
     <Compile Include="TestShell\Typing.cs" />
@@ -171,6 +170,9 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />

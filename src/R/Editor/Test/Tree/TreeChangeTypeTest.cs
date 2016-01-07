@@ -97,5 +97,14 @@ namespace Microsoft.R.Editor.Test.Tree {
             tree.IsDirty.Should().BeTrue();
             tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Structure);
         }
+
+        [CompositeTest]
+        [InlineData(6, 0, 1, " ", TextChangeType.Structure)]
+        public void TextChange_AddWhitespace(int start, int oldLength, int newLength, string newText, TextChangeType expected) {
+            string expression = "x <- aa";
+
+            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, start, oldLength, newLength, newText);
+            tree.PendingChanges.TextChangeType.Should().Be(expected);
+        }
     }
 }

@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Text.Classification;
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
     public class InvalidateCodeTest {
-        [Test]
+        [Test(Skip = "Unstable")]
         [Category.Md.Classifier]
         public void Markdown_InvalidateCodeTest() {
             string content = "```'{r}\n#R\n```";

@@ -8,6 +8,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -64,7 +65,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         public void DispatchOnUIThread(Action action) {
-            if (!MainThread.IsBackground) {
+            if (MainThread != null && MainThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
                 var disp = Dispatcher.FromThread(MainThread);
                 if (disp != null) {
                     disp.BeginInvoke(action, DispatcherPriority.Normal);

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Test.Controls;
-using Microsoft.Common.Core.Test.STA;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -31,9 +31,11 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Test]
         [Category.Interactive]
         public void VaraibleExplorer_ConstructorTest02() {
-            using (var script = new ControlTestScript(typeof(VariableView))) {
-                string actual = script.WriteVisualTree();
-                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
+            using (var hostScript = new RHostScript()) {
+                using (var script = new ControlTestScript(typeof(VariableView))) {
+                    string actual = script.WriteVisualTree();
+                    ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
+                }
             }
         }
 
@@ -58,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         private static void DoIdle(int ms) {
-            StaThread.Invoke(() => {
+            UIThreadHelper.Instance.Invoke(() => {
                 int time = 0;
                 while (time < ms) {
                     IdleTime.DoIdle();

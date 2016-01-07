@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public EvaluationWrapper NewVariable { get; set; }
     }
 
-    internal class VariableProvider {
+    internal class VariableProvider: IDisposable {
         #region members and ctor
 
         private IRSession _rSession;
@@ -33,11 +33,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region Public
 
-        private static Lazy<VariableProvider> _instance = new Lazy<VariableProvider>(() => new VariableProvider());
+        private static VariableProvider _instance;
         /// <summary>
         /// Singleton
         /// </summary>
-        public static VariableProvider Current => _instance.Value;
+        public static VariableProvider Current {
+            get {
+                if(_instance == null) {
+                    _instance = new VariableProvider();
+                }
+                return _instance;
+            }
+        }
 
         /// <summary>
         /// R current session change triggers this SessionsChanged event
@@ -76,6 +83,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public void Dispose() {
+            // Only used in tests to make sure each instance 
+            // of the variable explorer uses fresh variable provider
+            _instance = null;
+        }
         #endregion
 
         #region RSession related event handler

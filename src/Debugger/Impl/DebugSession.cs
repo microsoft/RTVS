@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -92,7 +91,7 @@ namespace Microsoft.R.Debugger {
 
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var libPath = Path.GetDirectoryName(typeof(DebugSession).Assembly.Location);
+            var libPath = Path.GetDirectoryName(typeof(DebugSession).Assembly.GetAssemblyPath());
 
             using (var eval = await RSession.BeginEvaluationAsync()) {
                 var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));

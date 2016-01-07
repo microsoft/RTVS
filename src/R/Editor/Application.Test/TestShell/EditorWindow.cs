@@ -2,10 +2,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.Common.Core.Test.STA;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Text;
 using Screen = System.Windows.Forms.Screen;
 
@@ -56,9 +57,9 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         /// <param name="contentType">Content type of the text buffer</param>
         /// <returns></returns>
         public static void Create(string text, string fileName, string contentType = null) {
-            StaThread.RunStaTest((o, evt) => {
-                CreateEditorInstance(o as EditorTestRequest, evt);
-            }, new EditorTestRequest(text, fileName, contentType));
+            var evt = new ManualResetEventSlim(false);
+            Task.Run(() => UIThreadHelper.Instance.Invoke(() => CreateEditorInstance(new EditorTestRequest(text, fileName, contentType), evt)));
+            evt.Wait();
         }
 
         private static void CreateEditorInstance(EditorTestRequest a, ManualResetEventSlim evt) {
@@ -94,7 +95,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
                 Thread.Sleep(msIdle);
             });
 
-            StaThread.Invoke(action);
+            UIThreadHelper.Instance.Invoke(action);
         }
 
         public static void DoIdle(int ms) {
@@ -108,7 +109,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
                 }
             });
 
-            StaThread.Invoke(action);
+            UIThreadHelper.Instance.Invoke(action);
         }
 
         /// <summary>
@@ -118,31 +119,30 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
             var action = new Action(() => {
                 Window.Close();
                 CoreEditor.Close();
-                StaThread.ThreadAvailable.Set();
             });
 
-            StaThread.Invoke(action);
+            UIThreadHelper.Instance.Invoke(action);
         }
 
         /// <summary>
         /// Selects range in the editor view
         /// </summary>
         public static void Select(int start, int length) {
-            var action = new Action(() => {
+            Action action = () => {
                 var selection = CoreEditor.View.Selection;
                 var snapshot = CoreEditor.View.TextBuffer.CurrentSnapshot;
 
                 selection.Select(new SnapshotSpan(snapshot, start, length), isReversed: false);
-            });
+            };
 
-            StaThread.Invoke(action);
+            UIThreadHelper.Instance.Invoke(action);
         }
 
         /// <summary>
         /// Selects range in the editor view
         /// </summary>
         public static void Select(int startLine, int startColumn, int endLine, int endColumn) {
-            var action = new Action(() => {
+            Action action = () => {
                 var selection = CoreEditor.View.Selection;
                 var snapshot = CoreEditor.View.TextBuffer.CurrentSnapshot;
 
@@ -153,9 +153,9 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
                 var end = line2.Start + endColumn;
 
                 selection.Select(new SnapshotSpan(snapshot, start, end - start), isReversed: false);
-            });
+            };
 
-            StaThread.Invoke(action);
+            UIThreadHelper.Instance.Invoke(action);
         }
     }
 }

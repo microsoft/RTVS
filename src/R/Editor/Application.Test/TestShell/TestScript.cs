@@ -4,10 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.Common.Core.Test.STA;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -99,7 +99,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         /// </summary>
         public void Invoke(Action action)
         {
-            StaThread.Invoke(action);
+            UIThreadHelper.Instance.Invoke(action);
         }
 
         /// <summary>
