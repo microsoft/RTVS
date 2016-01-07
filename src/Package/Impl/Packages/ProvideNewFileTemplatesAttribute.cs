@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Packages {
@@ -31,18 +32,25 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         /// that unregistering just uses a hive that reverses the changes applied to it.
         ///</summary>
         public override void Register(RegistrationContext context) {
-            string templatesKey = string.Format(CultureInfo.InvariantCulture, "Projects\\{{{0}}}\\AddItemTemplates\\TemplateDirs\\{{{1}}}\\/1", 
-                _projectGuid, _packageGuid);
-
-            using (Key projectKey = context.CreateKey(templatesKey)) {
-                projectKey.SetValue(null, _languageNameId); // @="#3016"
-                projectKey.SetValue("Package", string.Format(CultureInfo.InvariantCulture, "{{{0}}}", _packageGuid));
-                projectKey.SetValue("TemplatesDir", @"$PackageFolder$\" + _folderName);
-                projectKey.SetValue("SortPriority", _sortPriority);
-            }
+            Build().Register(context);
         }
 
         public override void Unregister(RegistrationContext context) {
+            Build().Unregister(context);
         }
+
+        private RegistrationAttributeBuilder Build() {
+            var builder = new RegistrationAttributeBuilder();
+            string templatesKey = 
+                    string.Format(CultureInfo.InvariantCulture, "Projects\\{{{0}}}\\AddItemTemplates\\TemplateDirs\\{{{1}}}\\/1",
+                    _projectGuid, _packageGuid);
+
+            builder.Key(templatesKey)
+                    .PackageGuidValue("Package")
+                    .StringValue("TemplatesDir", @"$PackageFolder$\" + _folderName)
+                    .IntValue("SortPriority", _sortPriority);
+            return builder;
+        }
+
     }
 }

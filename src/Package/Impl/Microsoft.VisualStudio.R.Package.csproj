@@ -146,7 +146,7 @@
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
     <Compile Include="Packages\Definitions\IRPackage.cs" />
-    <Compile Include="Packages\ProvideLanguageTemplatesAttribute.cs" />
+    <Compile Include="Packages\ProvideNewFileTemplatesAttribute.cs" />
     <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
     <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\OpenPlotCommand.cs" />

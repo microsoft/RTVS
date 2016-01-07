@@ -21,9 +21,6 @@
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pkgdef" />
       <File Source="$(var.BinDir)\Newtonsoft.Json.dll" />
       <File Source="$(var.BinDir)\websocket-sharp.dll" />
-      <File Source="$(var.BinDir)\Templates\NewItem\markdown.rmd" />
-      <File Source="$(var.BinDir)\Templates\NewItem\script.r" />
-      <File Source="$(var.BinDir)\Templates\NewItem\NewRItems.vsdir" />
     </Component>
     <?ifdef Debug?>
       <Component Id="ProductAssembliesDebugData" Guid="{320E46DF-665F-492C-A0D6-9CE7DE21036D}">
