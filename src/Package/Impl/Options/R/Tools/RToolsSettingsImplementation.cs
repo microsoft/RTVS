@@ -87,17 +87,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        public void LoadFromStorage() {
-            // This causes IDE to load settings from storage.
-            // Page retrieval from package sets site which yields
-            // settings loaded. Just calling LoadSettingsFromStorage()
-            // does not work.
-            // Package can be null in test environment
-            if (RPackage.Current != null) {
-                using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) { }
-            }
-        }
-
         private void UpdateWorkingDirectoryList(string newDirectory) {
             List<string> list = new List<string>(WorkingDirectoryList);
             if (!list.Contains(newDirectory)) {

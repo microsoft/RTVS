@@ -6,6 +6,8 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Workspace;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
@@ -98,6 +100,12 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 windowFrame.GetProperty((int)propid, out result);
 
             return result != null;
+        }
+
+        public static void SaveFile(this ITextView textView) {
+            RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
+            string filePath = VsFileInfo.GetFileName(textView);
+            rdt.SaveFileIfDirty(filePath);
         }
     }
 }
