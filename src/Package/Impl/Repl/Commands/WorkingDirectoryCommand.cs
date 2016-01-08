@@ -16,12 +16,12 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudioTools;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
-    public sealed class WorkingDirectoryCommand : Command {
+    public sealed class WorkingDirectoryCommand : Command, IDisposable {
         private const int MaxDirectoryEntries = 8;
         private IRSessionProvider _sessionProvider;
         private string _userDirectory;
 
-        public Task InitializationTask { get; }
+        public Task InitializationTask { get; private set; }
 
         public WorkingDirectoryCommand() :
             base(new CommandId[] {
@@ -31,11 +31,33 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }, false) {
 
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _sessionProvider.CurrentChanged += OnSessionProviderChanged;
+            ConnectToSessionProvider();
+        }
+
+        private void ConnectToSessionProvider() {
             if (_sessionProvider.Current != null) {
                 _sessionProvider.Current.Connected += OnSessionConnected;
                 _sessionProvider.Current.DirectoryChanged += OnCurrentDirectoryChanged;
-                InitializationTask = GetRUserDirectoryAsync();
+                if (InitializationTask == null) {
+                    InitializationTask = GetRUserDirectoryAsync();
+                }
             }
+        }
+
+        public void Dispose() {
+            if (_sessionProvider != null) {
+                _sessionProvider.CurrentChanged -= OnSessionProviderChanged;
+                if (_sessionProvider.Current != null) {
+                    _sessionProvider.Current.Connected -= OnSessionConnected;
+                    _sessionProvider.Current.DirectoryChanged -= OnCurrentDirectoryChanged;
+                }
+                _sessionProvider = null;
+            }
+        }
+
+        private void OnSessionProviderChanged(object sender, EventArgs e) {
+            ConnectToSessionProvider();
         }
 
         private async void OnCurrentDirectoryChanged(object sender, EventArgs e) {
