@@ -10,6 +10,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Padding = 3.0;
         }
 
+        public Brush Foreground { get; set; }
+
         public Typeface Typeface { get; set; }
 
         public double FontSize { get; set; }
@@ -41,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight,
                     Typeface,
                     FontSize,
-                    Brushes.Black);
+                    Foreground);
             }
             return _formattedText;
         }
@@ -49,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public Size Size { get; set; }
 
         private bool _drawValid = false;
-        public bool Draw(Brush background, Size refSize) {
+        public bool Draw(Size refSize) {
             if (_drawValid) return false;
             DrawingContext dc = RenderOpen();
             try {
@@ -62,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 if (_isHighlight) {
                     dc.DrawRectangle(Brushes.Blue, null, new Rect(new Point(0, 0), Size));
                 } else {
-                    dc.DrawRectangle(background, null, new Rect(new Point(0, 0), Size));
+                    dc.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), Size));
                 }
 
                 dc.DrawText(formattedText, new Point(Padding, Padding));
@@ -74,11 +76,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private bool _isHighlight = false;
-        public void ToggleHighlight(Brush background) {
+        public void ToggleHighlight() {
             _isHighlight ^= true;
             _drawValid = false;
 
-            Draw(background, Size);
+            Draw(Size);
         }
 
         protected override GeometryHitTestResult HitTestCore(GeometryHitTestParameters hitTestParameters) {

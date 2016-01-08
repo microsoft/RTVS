@@ -101,6 +101,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // TODO: refresh at setting
         }
 
+        private Brush _foreground = Brushes.Black;
+        public Brush Foreground {
+            get {
+                return _foreground;
+            }
+            set {
+                _foreground = value;
+                // TODO: refresh at setting
+            }
+        }
+
         private Brush _background = Brushes.Transparent;
         public Brush Background {
             get {
@@ -150,6 +161,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     visual.Text = data[r, c];
                     visual.Typeface = Typeface;
                     visual.FontSize = FontSize; // FontSize here is in device independent pixel, and Visual's FormattedText API uses the same unit
+                    visual.Foreground = Foreground;
                     return visual;
                 });
 
@@ -160,7 +172,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     double width = Points.GetWidth(c) - GridLineThickness;
                     double height = Points.GetHeight(r) - GridLineThickness;
-                    if (visual.Draw(Background, new Size(width, height))) {
+                    if (visual.Draw(new Size(width, height))) {
                         Points.SetWidth(c, Math.Max(width, visual.Size.Width + GridLineThickness));
                         Points.SetHeight(r, Math.Max(height, visual.Size.Height + GridLineThickness));
                     }
@@ -229,6 +241,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             using (var elapsed = new Elapsed("Arrange:")) {
                 return base.ArrangeOverride(finalSize);
             }
+        }
+
+        protected override void OnRender(DrawingContext drawingContext) {
+            base.OnRender(drawingContext);
+
+            drawingContext.DrawRectangle(Background, null, new Rect(RenderSize));
         }
 
         protected override int VisualChildrenCount {

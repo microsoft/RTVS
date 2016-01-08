@@ -19,12 +19,17 @@
         </Grid.ColumnDefinitions>
 
         <!-- Row 0 -->
-        <Rectangle Fill="Red"
-                   Grid.Row="0" Grid.Column="0" MinWidth="10" MinHeight="10" SnapsToDevicePixels="true"/>
+        <Border Grid.Row="0" Grid.Column="0"
+                BorderBrush="{Binding HeaderLinesBrush, RelativeSource={RelativeSource AncestorType={x:Type local:MatrixView}}}"
+                BorderThickness="0,0,1,1">
+            <Rectangle x:Name="LeftTopCorner"
+                    MinWidth="10" MinHeight="10" SnapsToDevicePixels="true"
+                   Fill="{Binding HeaderBackground, RelativeSource={RelativeSource AncestorType={x:Type local:MatrixView}}}" />
+        </Border>
         <local:VisualGrid x:Name="ColumnHeader" GridType="ColumnHeader"
                           Grid.Row="0" Grid.Column="1"/>
-        <Rectangle Fill="Green"
-                   Grid.Row="0" Grid.Column="2" MinWidth="10" MinHeight="10"/>
+        <Rectangle x:Name="RightTopCorner"
+                   Grid.Row="0" Grid.Column="2" MinWidth="10" MinHeight="10" />
         
         <!-- Row 1 -->
         <local:VisualGrid x:Name="RowHeader" GridType="RowHeader"
@@ -37,13 +42,13 @@
                    Scroll="VerticalScrollBar_Scroll"/>
 
         <!-- Row 2 -->
-        <Rectangle Fill="Blue"
-                   Grid.Row="2" Grid.Column="0" MinWidth="10" MinHeight="10"/>
+        <Rectangle x:Name="LeftBottomCorner"
+                   Grid.Row="2" Grid.Column="0" MinWidth="10" MinHeight="10" />
         <ScrollBar x:Name="HorizontalScrollBar" Orientation="Horizontal"
                    Grid.Row="2" Grid.Column="1"
                    Minimum="0" Maximum="1000"
                    Scroll="HorizontalScrollBar_Scroll"/>
-        <Rectangle Fill="Yellow"
+        <Rectangle x:Name="RightBottomCorner"
                    Grid.Row="2" Grid.Column="2" MinWidth="10" MinHeight="10"/>
     </Grid>
 </UserControl>

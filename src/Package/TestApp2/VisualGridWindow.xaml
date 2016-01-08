@@ -7,5 +7,10 @@
         xmlns:rtvs="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect;assembly=Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
         Title="VisualGridWindow" Height="300" Width="300">
-    <rtvs:MatrixView x:Name="RootGrid" />
+    <rtvs:MatrixView x:Name="RootGrid"
+                     Foreground="White"
+                     GridLinesBrush="Blue"
+                     HeaderLinesBrush="Red"
+                     GridBackground="Green"
+                     HeaderBackground="Gray"/>
 </Window>

@@ -22,6 +22,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void Initialize(IGridProvider<string> dataProvider) {
+            Data.Foreground = Foreground;
+            ColumnHeader.Foreground = Foreground;
+            RowHeader.Foreground = Foreground;
+
             Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount);
 
             DataProvider = dataProvider;
@@ -208,7 +212,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             HitTestResult result = VisualTreeHelper.HitTest(this, pt);
             if (result.VisualHit is TextVisual) {
                 var textVisual = (TextVisual)result.VisualHit;
-                textVisual.ToggleHighlight(Background);
+                textVisual.ToggleHighlight();
 
                 e.Handled = true;
             }
