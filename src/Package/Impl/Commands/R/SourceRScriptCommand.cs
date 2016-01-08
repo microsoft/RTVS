@@ -5,6 +5,7 @@ using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -65,6 +66,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             if (filePath == null) {
                 return CommandResult.NotSupported;
             }
+
+            // Save file before sourcing
+            TextView.SaveFile();
 
             _replWindow.ExecuteCode($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
             return CommandResult.Executed;
