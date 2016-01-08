@@ -6,6 +6,10 @@ using System.Windows.Media;
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class TextVisual : DrawingVisual {
 
+        public TextVisual() {
+            Padding = 3.0;
+        }
+
         public Typeface Typeface { get; set; }
 
         public double FontSize { get; set; }
@@ -13,6 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public int Row { get; set; }
 
         public int Column { get; set; }
+
+        public double Padding { get; set; }
 
         private string _text;
         public string Text {
@@ -43,23 +49,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public Size Size { get; set; }
 
         private bool _drawValid = false;
-        public bool Draw(Size refSize) {
+        public bool Draw(Brush background, Size refSize) {
             if (_drawValid) return false;
             DrawingContext dc = RenderOpen();
             try {
                 var formattedText = GetFormattedText();
 
                 Size = new Size(
-                    Math.Max(refSize.Width, formattedText.Width),
-                    Math.Max(refSize.Height, formattedText.Height));
+                    Math.Max(refSize.Width, formattedText.Width + (2 * Padding)),
+                    Math.Max(refSize.Height, formattedText.Height + (2 * Padding)));
 
                 if (_isHighlight) {
                     dc.DrawRectangle(Brushes.Blue, null, new Rect(new Point(0, 0), Size));
                 } else {
-                    dc.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), Size));
+                    dc.DrawRectangle(background, null, new Rect(new Point(0, 0), Size));
                 }
 
-                dc.DrawText(formattedText, new Point(0, 0));
+                dc.DrawText(formattedText, new Point(Padding, Padding));
                 _drawValid = true;
                 return true;
             } finally {
@@ -68,11 +74,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private bool _isHighlight = false;
-        public void ToggleHighlight() {
+        public void ToggleHighlight(Brush background) {
             _isHighlight ^= true;
             _drawValid = false;
 
-            Draw(Size);
+            Draw(background, Size);
         }
 
         protected override GeometryHitTestResult HitTestCore(GeometryHitTestParameters hitTestParameters) {

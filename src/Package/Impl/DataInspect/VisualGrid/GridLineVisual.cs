@@ -3,9 +3,20 @@ using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class GridLineVisual : DrawingVisual {
+        public GridType GridType { get; set; }
+
         public double GridLineThickness { get { return 1.0; } }
 
-        public Brush GridLineBrush { get { return Brushes.Black; } }
+
+        private Brush _gridLineBrush = Brushes.Black;
+        public Brush GridLineBrush {
+            get {
+                return _gridLineBrush;
+            }
+            set {
+                _gridLineBrush = value;
+            }
+        }
 
         public void Draw(
             GridRange range,
@@ -17,19 +28,26 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             try {
                 // vertical line
+                double xBias = GridType == GridType.RowHeader ? points.HorizontalOffset : 0;
+                xBias -= GridLineThickness;
+
                 double renderHeight = points.GetHeight(range.Rows);
                 Rect verticalLineRect = new Rect(new Size(GridLineThickness, renderHeight));
                 foreach (int i in range.Columns.GetEnumerable()) {
-                    verticalLineRect.X = points.xPosition(i + 1) - GridLineThickness;
+                    verticalLineRect.X = points.xPosition(i + 1) + xBias;
                     drawingContext.DrawRectangle(GridLineBrush, null, verticalLineRect);
                     xCollection.Add(verticalLineRect.X);
                 }
 
+
                 // horizontal line
+                double yBias = GridType == GridType.ColumnHeader ? points.VerticalOffset : 0;
+                yBias -= GridLineThickness;
+
                 double renderWidth = points.GetWidth(range.Columns);
                 Rect horizontalLineRect = new Rect(new Size(renderWidth, GridLineThickness));
                 foreach (int i in range.Rows.GetEnumerable()) {
-                    horizontalLineRect.Y = points.yPosition(i + 1) - GridLineThickness;
+                    horizontalLineRect.Y = points.yPosition(i + 1) + yBias;
                     drawingContext.DrawRectangle(GridLineBrush, null, horizontalLineRect);
                     yCollection.Add(horizontalLineRect.Y);
                 }

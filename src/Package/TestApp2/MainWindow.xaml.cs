@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 
 namespace Microsoft.VisualStudio.R.TestApp {

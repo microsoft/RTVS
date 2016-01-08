@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -33,9 +24,33 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ClipToBounds = true;
         }
 
-        public GridType GridType { get; set; }
+        private GridType _gridType;
+        public GridType GridType {
+            get {
+                return _gridType;
+            }
+            set {
+                _gridType = value;
+                _gridLine.GridType = value;
+            }
+        }
 
-        public IGridProvider<string> DataProvider { get; set; }
+        private IGridProvider<string> _dataProvider;
+        public IGridProvider<string> DataProvider {
+            get {
+                return _dataProvider;
+            }
+            set {
+                _dataProvider = value;
+                if (_dataProvider == null) {
+                    RowCount = 0;
+                    ColumnCount = 0;
+                } else {
+                    RowCount = GridType == GridType.ColumnHeader ? 1 : _dataProvider.RowCount;
+                    ColumnCount = GridType == GridType.RowHeader ? 1 : _dataProvider.ColumnCount;
+                }
+            }
+        }
 
         public GridPoints Points { get; set; }
 
@@ -80,6 +95,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public int ColumnCount { get; set; }
 
         public double GridLineThickness { get { return _gridLine.GridLineThickness; } }
+
+        public void SetGridLineBrush(Brush brush) {
+            _gridLine.GridLineBrush = brush;
+            // TODO: refresh at setting
+        }
+
+        private Brush _background = Brushes.Transparent;
+        public Brush Background {
+            get {
+                return _background;
+            }
+            set {
+                _background = value;
+                // TODO: refresh at setting
+            }
+        }
 
         private double HorizontalOffset {
             get {
@@ -129,7 +160,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     double width = Points.GetWidth(c) - GridLineThickness;
                     double height = Points.GetHeight(r) - GridLineThickness;
-                    if (visual.Draw(new Size(width, height))) {
+                    if (visual.Draw(Background, new Size(width, height))) {
                         Points.SetWidth(c, Math.Max(width, visual.Size.Width + GridLineThickness));
                         Points.SetHeight(r, Math.Max(height, visual.Size.Height + GridLineThickness));
                     }

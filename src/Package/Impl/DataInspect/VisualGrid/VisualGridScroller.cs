@@ -2,14 +2,15 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-
+using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    /// <summary>
+    /// Handles scroll command
+    /// </summary>
     internal class VisualGridScroller {
         private TaskScheduler ui;
         private BlockingCollection<ScrollCommand> _scrollCommands;
@@ -19,7 +20,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             _scrollCommands = new BlockingCollection<ScrollCommand>();
 
-            Task.Run(() => ScrollCommandsHandler());
+            // silence every exception and don't wait
+            Task.Run(() => ScrollCommandsHandler().SilenceException<Exception>().DoNotWait());
         }
 
         public GridPoints Points { get; set; }
@@ -36,17 +38,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scrollCommands.Add(new ScrollCommand(code, size));
         }
 
-        private async void ScrollCommandsHandler() {
+        private async Task ScrollCommandsHandler() {
+            const int ScrollCommandUpperBound = 50;
             List<ScrollCommand> batch = new List<ScrollCommand>();
 
             foreach (var command in _scrollCommands.GetConsumingEnumerable()) {
                 try {
                     batch.Add(command);
-                    if (_scrollCommands.Count > 0) {
+                    if (_scrollCommands.Count > 0
+                        && _scrollCommands.Count < ScrollCommandUpperBound) {
                         // another command has been queued already. continue to next
+                        // upperbound 50 prevents infinite loop in case scroll commands is queued fast and endlessly, which happens only in theory
                         continue;
                     } else {
                         for (int i = 0; i < batch.Count; i++) {
+                            // if next command is same the current one, skip to next (new one) for optimization
                             if (i < (batch.Count - 1)
                                 && ((batch[i].Code == ScrollType.SizeChange && batch[i + 1].Code == ScrollType.SizeChange)
                                     || (batch[i].Code == ScrollType.SetHorizontalOffset && batch[i + 1].Code == ScrollType.SetHorizontalOffset)
