@@ -472,8 +472,15 @@ namespace Microsoft.VisualStudio.R.Package.History {
             using (EditTextBuffer()) {
                 foreach (var entry in selectedEntries) {
                     var snapshot = _historyTextBuffer.CurrentSnapshot;
-                    var startPoint = entry.Previous?.Span.GetEndPoint(snapshot) ?? entry.Span.GetStartPoint(snapshot);
-                    var endPoint = entry.Span.GetEndPoint(snapshot);
+                    SnapshotPoint startPoint, endPoint;
+                    if (entry.Previous != null) {
+                        startPoint = entry.Previous.Span.GetEndPoint(snapshot);
+                        endPoint = entry.Span.GetEndPoint(snapshot);
+                    } else {
+                        startPoint = entry.Span.GetStartPoint(snapshot);
+                        endPoint = entry.Next?.Span.GetStartPoint(snapshot) ?? entry.Span.GetEndPoint(snapshot);
+                    }
+
                     var span = new SnapshotSpan(startPoint, endPoint);
                     _historyTextBuffer.Delete(span);
                 }
