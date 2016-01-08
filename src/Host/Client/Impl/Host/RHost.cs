@@ -248,6 +248,10 @@ namespace Microsoft.R.Host.Client {
                 var id = await SendAsync(name, ct, expression);
 
                 var response = await RunLoop(ct, reentrant);
+                if (response == null) {
+                    throw new OperationCanceledException("Evaluation canceled because host process has been terminated.");
+                }
+
                 if (response.RequestId != id || response.Name != name) {
                     throw ProtocolError($"Mismatched host response ['{response.Id}',':','{response.Name}',...] to evaluation request ['{id}','{name}','{expression}']");
                 }
