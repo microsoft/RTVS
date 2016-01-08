@@ -76,6 +76,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             base.Initialize();
 
+            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) {
+                p.LoadSettingsFromStorage();
+            }
+
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
