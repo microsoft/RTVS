@@ -178,12 +178,19 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
         NULL
       });
 
+      item_expr <-
+        if (expr == 'environment()') {
+          dput_symbol(name)
+        } else {
+          paste0(expr, '$', dput_symbol(name), collapse = '')
+        };
+
       if (!is.null(code)) {
         # It's a promise - we don't want to force it as it could affect the debugged code.
-        value <- list(promise = dput_str(code));
+        value <- list(promise = dput_str(code), expression = item_expr);
       } else if (bindingIsActive(name, obj)) {
         # It's an active binding - we don't want to read it to avoid inadvertently changing program state.
-        value <- list(active_binding = TRUE);
+        value <- list(active_binding = TRUE, expression = item_expr);
       } else {
         # It's just a regular binding, so get the actual value, but check for missing() first.
 
@@ -197,7 +204,6 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
             next;
         }
 
-        item_expr <- paste0(expr, '$', dput_symbol(name), collapse = '');
         value <- eval_and_describe(item_expr, environment(), '$', fields, get(name, envir = obj), repr_max_length);
       }
       
