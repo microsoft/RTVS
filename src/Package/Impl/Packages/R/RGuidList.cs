@@ -22,5 +22,15 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         public static readonly Guid ReplInteractiveWindowProviderGuid = new Guid(ReplInteractiveWindowProviderGuidString);
         public static readonly Guid ReplWindowGuid = new Guid(ReplWindowGuidString);
+
+        /// <summary>
+        /// Miscellanious files project (no project is opened in IDE)
+        /// </summary>
+        public const string MiscFilesProjectGuidString = "A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3";
+
+        /// <summary>
+        /// SQLProj project guid
+        /// </summary>
+        public const string SqlProjectGuidString = "00D1A9C2-B5F0-4AF3-8072-F6C62B433612";
     };
 }
