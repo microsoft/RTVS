@@ -183,6 +183,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
                     return false;
 
                 case ModifierKeys.Control:
+                    _textView.Selection.Clear();
                     _history.ToggleHistoryEntrySelection(lineNumber);
                     _lastSelectedLineNumber = lineNumber;
                     return true;
