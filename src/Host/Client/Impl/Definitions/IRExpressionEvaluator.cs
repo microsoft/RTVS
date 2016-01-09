@@ -49,7 +49,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         public override string ToString() {
-            var sb = new StringBuilder((StringResult ?? JsonResult).ToString());
+            var sb = new StringBuilder((StringResult ?? JsonResult ?? "").ToString());
             if (ParseStatus != RParseStatus.OK) {
                 sb.AppendFormat(CultureInfo.InvariantCulture, "; {0}", ParseStatus);
             }
