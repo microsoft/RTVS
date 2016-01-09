@@ -374,6 +374,56 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdContinueDebugging" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Run"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdStopDebugging" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Stop"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Stop Debugging</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdStepInto" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="StepInto"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Step Into</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdStepOut" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="StepOut"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Step Out</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdStepOver" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="StepOver"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Step Over</ButtonText>
+         </Strings>
+      </Button>
+      
       <Button guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x0400" type="Button">
         <Icon guid="ImageCatalogGuid" id="DocumentsFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -1256,23 +1306,23 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidVSStd97" id="cmdidStart" priority="0x0460">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdContinueDebugging" priority="0x0460">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidVSStd97" id="cmdidStop" priority="0x0470">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdStopDebugging" priority="0x0470">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidVSStd97" id="cmdidStepInto" priority="0x0480">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepInto" priority="0x0480">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidVSStd97" id="cmdidStepOver" priority="0x0490">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepOver" priority="0x0490">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidVSStd97" id="cmdidStepOut" priority="0x04A0">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepOut" priority="0x04A0">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
     
@@ -1372,6 +1422,11 @@
       <IDSymbol name="icmdSourceRScript" value="508" />
       <IDSymbol name="icmdGetWorkingDirectoryList" value="509" />
       <IDSymbol name="icmdSetWorkingDirectory" value="510" />
+      <IDSymbol name="icmdContinueDebugging" value="511" />
+      <IDSymbol name="icmdStopDebugging" value="512" />
+      <IDSymbol name="icmdStepInto" value="513" />
+      <IDSymbol name="icmdStepOut" value="514" />
+      <IDSymbol name="icmdStepOver" value="515" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>

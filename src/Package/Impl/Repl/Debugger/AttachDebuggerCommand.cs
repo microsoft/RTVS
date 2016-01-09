@@ -6,38 +6,13 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
-    internal sealed class AttachDebuggerCommand : PackageCommand {
-        private readonly IRSessionProvider _rSessionProvider;
-
+namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
+    internal sealed class AttachDebuggerCommand : DebuggerCommand {
         public AttachDebuggerCommand(IRSessionProvider rSessionProvider)
-            : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdAttachDebugger) {
-            _rSessionProvider = rSessionProvider;
+            : base(rSessionProvider, RPackageCommandId.icmdAttachDebugger, DebuggerCommandVisibility.DesignMode) {
         }
-
-        protected override void SetStatus() {
-            Enabled = false;
-
-            if (_rSessionProvider.Current == null) {
-                return;
-            }
-
-            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(SVsShellDebugger));
-            if (debugger == null) {
-                return;
-            }
-
-            var mode = new DBGMODE[1];
-            if (debugger.GetMode(mode) < 0 || mode[0] != DBGMODE.DBGMODE_Design) {
-                return;
-            }
-
-            Enabled = true;
-        }
-
 
         protected unsafe override void Handle() {
             var session = _rSessionProvider.Current;
