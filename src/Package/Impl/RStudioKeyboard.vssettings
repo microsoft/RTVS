@@ -27,9 +27,13 @@
           <Shortcut Command="Edit.FormatDocument" Scope="Text Editor">Ctrl+Shift+A</Shortcut>
           <Shortcut Command="Edit.CommentSelection" Scope="Text Editor">Ctrl+Shift+C</Shortcut>
           <Shortcut Command="Edit.UncommentSelection" Scope="Text Editor">Ctrl+Shift+U</Shortcut>
+          <Shortcut Command="Edit.CollapseAllOutlining" Scope="Text Editor">Alt+O</Shortcut>
+          <Shortcut Command="Edit.ExpandAllOutlining" Scope="Text Editor">Alt+Shift+O</Shortcut>
+          <Shortcut Command="Edit.CollapseCurrentRegion" Scope="Text Editor">Alt+L</Shortcut>
+          <Shortcut Command="Edit.ExpandCurrentRegion" Scope="Text Editor">Alt+Shift+L</Shortcut>
           <Shortcut Command="RTools.NextPlot" Scope="Global">Ctrl+Alt+F12</Shortcut>
           <Shortcut Command="RTools.PreviousPlot" Scope="Global">Ctrl+Alt+F11</Shortcut>
-          <Shortcut Command="RTools.SourceRScript" Scope="Global">Ctrl+Shift+S</Shortcut>
+          <Shortcut Command="RTools.SourceRScript" Scope="Text Editor">Ctrl+Shift+S</Shortcut>
           <Shortcut Command="View.RInteractive" Scope="Global">Ctrl+2</Shortcut>
           <Shortcut Command="RTools.Help" Scope="Global">Ctrl+3</Shortcut>
           <Shortcut Command="RTools.History" Scope="Global">Ctrl+4</Shortcut>
@@ -37,7 +41,6 @@
           <Shortcut Command="RTools.Plots" Scope="Global">Ctrl+6</Shortcut>
           <!--<Shortcut Command="RTools.Packages" Scope="Global">Ctrl+7</Shortcut>-->
           <Shortcut Command="RTools.VariableExplorer" Scope="Global">Ctrl+8</Shortcut>
-          <Shortcut Command="InteractiveConsole.ClearScreen" Scope="Text Editor">Ctrl+L</Shortcut>
           <Shortcut Command="InteractiveConsole.ClearScreen" Scope="Global">Ctrl+L</Shortcut>
           <Shortcut Command="InteractiveConsole.Reset" Scope="Global">Ctrl+Shift+F10</Shortcut>
         </DefaultShortcuts>

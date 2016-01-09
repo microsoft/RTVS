@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideEditorFactory(typeof(REditorFactory), 106, CommonPhysicalViewAttributes = 0x2, TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
     [ProvideEditorLogicalView(typeof(REditorFactory), VSConstants.LOGVIEWID.TextView_string)]
     [ProvideLanguageService(typeof(RLanguageService), RContentTypeDefinition.LanguageName, 106, ShowSmartIndent = true,
-        ShowMatchingBrace = true, MatchBraces = true, MatchBracesAtCaret = true, ShowCompletion = true,
+        ShowMatchingBrace = true, MatchBraces = true, MatchBracesAtCaret = true, ShowCompletion = true, EnableLineNumbers = true,
         EnableFormatSelection = true, DefaultToInsertSpaces = true, RequestStockColors = true)]
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [DefaultIndentAttribute(RContentTypeDefinition.LanguageName, 2, true)]

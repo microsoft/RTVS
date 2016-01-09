@@ -341,7 +341,6 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdRestartR" priority="0x0300" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionRestart"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -1245,7 +1244,11 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdRestartR" priority="0x0405">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0410">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
