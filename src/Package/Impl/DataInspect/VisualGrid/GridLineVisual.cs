@@ -2,6 +2,9 @@
 using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    /// <summary>
+    /// DrawingVisual for grid's line
+    /// </summary>
     internal class GridLineVisual : DrawingVisual {
         public GridType GridType { get; set; }
 
@@ -38,7 +41,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     drawingContext.DrawRectangle(GridLineBrush, null, verticalLineRect);
                     xCollection.Add(verticalLineRect.X);
                 }
-
 
                 // horizontal line
                 double yBias = GridType == GridType.ColumnHeader ? points.VerticalOffset : 0;

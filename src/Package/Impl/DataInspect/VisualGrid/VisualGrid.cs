@@ -6,12 +6,9 @@ using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal enum GridType {
-        Data,
-        ColumnHeader,
-        RowHeader,
-    }
-
+    /// <summary>
+    /// A control that arranges Visual in grid
+    /// </summary>
     internal class VisualGrid : FrameworkElement {
         private GridLineVisual _gridLine;
         private VisualCollection _visualChildren;
@@ -82,7 +79,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private Typeface Typeface {
             get {
                 if (_typeFace == null) {
-                    _typeFace = FontFamily.GetTypefaces().First(tf => tf.Style == FontStyles.Normal && tf.Weight == FontWeights.Normal);
+                    // TODO: fall back when the specific typeface is not found
+                    _typeFace = FontFamily.GetTypefaces().First(tf => tf.Style == FontStyles.Normal && tf.Weight == FontWeights.Normal && tf.Stretch == FontStretches.Normal);
                 }
                 return _typeFace;
             }
@@ -141,18 +139,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        internal void DrawVisuals(GridRange newViewport, IGrid<string> data) {
-            DrawCells(newViewport, data);
+        internal void DrawVisuals(GridRange newViewport, IGrid<string> data, bool reuse = true) {
+            DrawCells(newViewport, data, reuse);
 
             DrawGridLine();
         }
 
-        private void DrawCells(GridRange newViewport, IGrid<string> data) {
+        private void DrawCells(GridRange newViewport, IGrid<string> data, bool reuse = true) {
             var orgGrid = _visualGrid;
             _visualGrid = new Grid<TextVisual>(
                 newViewport,
                 (r, c) => {
-                    if (_dataViewport.Contains(r, c)) {
+                    if (reuse && _dataViewport.Contains(r, c)) {
                         return orgGrid[r, c];
                     }
                     var visual = new TextVisual();
@@ -262,5 +260,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (index == 0) return _gridLine;
             return _visualChildren[index - 1];
         }
+    }
+
+    /// <summary>
+    /// use cases of VisualGrid
+    /// </summary>
+    internal enum GridType {
+        /// <summary>
+        /// Data grid, main part of table
+        /// </summary>
+        Data,
+
+        /// <summary>
+        /// part that shows column header
+        /// </summary>
+        ColumnHeader,
+
+        /// <summary>
+        /// part that shows row header
+        /// </summary>
+        RowHeader,
     }
 }

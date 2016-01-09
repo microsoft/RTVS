@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Windows;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    /// <summary>
+    /// A utility class that contains cell width and height in a grid
+    /// </summary>
     internal class GridPoints {
+        #region fields and ctor
+
         private double[] _xPositions;
         private double[] _yPositions;
         private double[] _width;
@@ -15,26 +21,43 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RowCount = rowCount;
             ColumnCount = columnCount;
 
-            _xPositions = new double[ColumnCount + 1];
+            _xPositions = new double[ColumnCount + 1];  // has one more item than the count
             _xPositionValid = false;
-            _yPositions = new double[RowCount + 1];
+            _yPositions = new double[RowCount + 1]; // has one more item than the count
             _yPositionValid = false;
             _width = new double[ColumnCount];
             _height = new double[RowCount];
 
-            MinItemWidth = 20.0;
-            MinItemHeight = 10.0;
-
             InitializeWidthAndHeight();
         }
+
+        #endregion
 
         private int RowCount { get; }
 
         private int ColumnCount { get; }
 
-        public double MinItemWidth { get; set; }
+        public double MinItemWidth { get { return 20.0; } }
 
-        public double MinItemHeight { get; set; }
+        public double MinItemHeight { get { return 10.0; } }
+
+        /// <summary>
+        /// total width of the grid
+        /// </summary>
+        public double Width {
+            get {
+                return _xPositions[ColumnCount];
+            }
+        }
+
+        /// <summary>
+        /// total height of the grid
+        /// </summary>
+        public double Height {
+            get {
+                return _yPositions[RowCount];
+            }
+        }
 
         private double _verticalOffset;
         public double VerticalOffset {
@@ -46,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 if (newOffset < 0) newOffset = 0;
                 if (newOffset > VerticalExtent) newOffset = VerticalExtent;
 
-                if (_verticalOffset != newOffset) { // TODO: double util
+                if (!_verticalOffset.AreClose(newOffset)) {
                     _verticalOffset = newOffset;
                 }
             }
@@ -62,7 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 if (newOffset < 0) newOffset = 0;
                 if (newOffset > HorizontalExtent) newOffset = HorizontalExtent;
 
-                if (_horizontalOffset != newOffset) {   // TODO: double util
+                if (!_horizontalOffset.AreClose(newOffset)) {
                     _horizontalOffset = newOffset;
                 }
             }
@@ -97,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void SetWidth(int xIndex, double value) {
-            if (_width[xIndex] < value) {   // TODO: double util
+            if (_width[xIndex].LessThan(value)) {
                 _width[xIndex] = value;
                 _xPositionValid = false;
             }
@@ -112,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void SetHeight(int yIndex, double value) {
-            if (_height[yIndex] < value) {  // TODO: double util
+            if (_height[yIndex].LessThan(value)) {
                 _height[yIndex] = value;
                 _yPositionValid = false;
             }
@@ -153,7 +176,39 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ComputePositions();
         }
 
-        public void ComputePositions() {
+        public GridRange ComputeDataViewport(Rect visualViewport) {
+            int columnStart = xIndex(visualViewport.X);
+            int rowStart = yIndex(visualViewport.Y);
+
+            double width = 0.0;
+            int columnCount = 0;
+            for (int c = columnStart; c < ColumnCount; c++) {
+                width += GetWidth(c);
+                columnCount++;
+                if (width.GreaterThanOrClose(visualViewport.Width)) {
+                    break;
+                }
+            }
+
+            double height = 0.0;
+            int rowEnd = rowStart;
+            int rowCount = 0;
+            for (int r = rowStart; r < RowCount; r++) {
+                height += GetHeight(r);
+                rowCount++;
+                if (height.GreaterThanOrClose(visualViewport.Height)) {
+                    break;
+                }
+            }
+
+            return new GridRange(
+                new Range(rowStart, rowCount),
+                new Range(columnStart, columnCount));
+        }
+
+        #region private
+
+        private void ComputePositions() {
             ComputeYPositions();
             ComputeXPositions();
         }
@@ -179,7 +234,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public void ComputeXPositions() {
+        private void ComputeXPositions() {
             double width = 0.0;
             for (int i = 0; i < ColumnCount; i++) {
                 width += _width[i];
@@ -188,34 +243,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _xPositionValid = true;
         }
 
-        public GridRange ComputeDataViewport(Rect visualViewport) {
-            int columnStart = xIndex(visualViewport.X);
-            int rowStart = yIndex(visualViewport.Y);
-
-            double width = 0.0;
-            int columnCount = 0;
-            for (int c = columnStart; c < ColumnCount; c++) {
-                width += GetWidth(c);
-                columnCount++;
-                if (width >= visualViewport.Width) {    // TODO: DoubleUtil
-                    break;
-                }
-            }
-
-            double height = 0.0;
-            int rowEnd = rowStart;
-            int rowCount = 0;
-            for (int r = rowStart; r < RowCount; r++) {
-                height += GetHeight(r);
-                rowCount++;
-                if (height >= visualViewport.Height) {    // TODO: DoubleUtil
-                    break;
-                }
-            }
-
-            return new GridRange(
-                new Range(rowStart, rowCount),
-                new Range(columnStart, columnCount));
-        }
+        #endregion
     }
 }

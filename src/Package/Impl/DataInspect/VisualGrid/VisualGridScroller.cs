@@ -28,7 +28,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VisualGrid ColumnHeader { get; set; }
         public VisualGrid RowHeader { get; set; }
         public VisualGrid DataGrid { get; set; }
-        public IGridProvider<string> DataProvider { get; set; }
+
+        private IGridProvider<string> _dataProvider;
+        public IGridProvider<string> DataProvider {
+            get {
+                return _dataProvider;
+            }
+            set {
+                FlushCommands();
+                _dataProvider = value;
+            }
+        }
+
+        internal void FlushCommands() {
+            ScrollCommand command;
+            while (_scrollCommands.TryTake(out command)) {
+            }
+        }
 
         internal void EnqueueCommand(ScrollType code, double param) {
             _scrollCommands.Add(new ScrollCommand(code, param));
@@ -101,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     await SetMouseWheelAsync(cmd.Param); break;
 
                 case ScrollType.SizeChange: {
-                        await RefreshVisualsInternalAsync(
+                        await DrawVisualsAsync(
                             new Rect(
                                 Points.HorizontalOffset,
                                 Points.VerticalOffset,
@@ -109,17 +125,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                 DataGrid.RenderSize.Height));
                         break;
                     }
+                case ScrollType.Refresh:
+                    break;
                 case ScrollType.Invalid:
                     break;
             }
         }
 
-        private async Task RefreshVisualsInternalAsync(Rect visualViewport) {
-            using (var elapsed = new Elapsed("RefreshVisuals:")) {
+        private async Task DrawVisualsAsync(Rect visualViewport) {
+            using (var elapsed = new Elapsed("PullDataAndDraw:")) {
                 GridRange newViewport = Points.ComputeDataViewport(visualViewport);
 
+                // pull data from provider
                 var data = await DataProvider.GetAsync(newViewport);
 
+                // actual drawing runs in UI thread
                 await Task.Factory.StartNew(
                     () => DrawVisuals(newViewport, data),
                     CancellationToken.None,
@@ -137,21 +157,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 GridRange columnViewport = new GridRange(
                     new Range(0, 1),
                     dataViewport.Columns);
-                ColumnHeader.DrawVisuals(columnViewport, new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true));
+
+                ColumnHeader.DrawVisuals(
+                    columnViewport,
+                    new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true));
             }
 
             if (RowHeader != null) {
                 GridRange rowViewport = new GridRange(
                     dataViewport.Rows,
                     new Range(0, 1));
-                RowHeader.DrawVisuals(rowViewport, new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false));
+
+                RowHeader.DrawVisuals(
+                    rowViewport,
+                    new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false));
             }
         }
 
         private async Task SetVerticalOffsetAsync(double offset) {
             Points.VerticalOffset = offset;
 
-            await RefreshVisualsInternalAsync(
+            await DrawVisualsAsync(
                             new Rect(
                                 Points.HorizontalOffset,
                                 Points.VerticalOffset,
@@ -178,7 +204,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task SetHorizontalOffsetAsync(double offset) {
             Points.HorizontalOffset = offset;
 
-            await RefreshVisualsInternalAsync(
+            await DrawVisualsAsync(
                             new Rect(
                                 Points.HorizontalOffset,
                                 Points.VerticalOffset,
@@ -221,6 +247,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         SetVerticalOffset,
         MouseWheel,
         SizeChange,
+        Refresh,
     }
 
     internal struct ScrollCommand {

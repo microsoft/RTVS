@@ -7,10 +7,24 @@
         xmlns:rtvs="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect;assembly=Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
         Title="VisualGridWindow" Height="300" Width="300">
-    <rtvs:MatrixView x:Name="RootGrid"
-                     Foreground="White"
-                     GridLinesBrush="Blue"
-                     HeaderLinesBrush="Red"
-                     GridBackground="Green"
-                     HeaderBackground="Gray"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <Button x:Name="AssingDataProvider" Content="AssignDataProvider" Click="AssingDataProvider_Click" />
+            <Button x:Name="ChangeForeground" Content="ChangeForeground" Click="ChangeForeground_Click" />
+            <Button x:Name="ChangeGridBackground" Content="ChangeGridBackground" Click="ChangeGridBackground_Click" />
+        </StackPanel>
+        
+        <rtvs:MatrixView x:Name="RootGrid"
+                         Grid.Row="1"
+                         Foreground="White"
+                         GridLinesBrush="Blue"
+                         HeaderLinesBrush="Red"
+                         GridBackground="Green"
+                         HeaderBackground="Gray"/>
+    </Grid>
 </Window>

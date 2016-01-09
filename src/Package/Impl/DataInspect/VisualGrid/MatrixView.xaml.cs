@@ -29,6 +29,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount);
 
             DataProvider = dataProvider;
+
+            HorizontalScrollBar.Value = HorizontalScrollBar.Minimum;
+            VerticalScrollBar.Value = VerticalScrollBar.Minimum;
         }
 
         private GridPoints _gridPoints;

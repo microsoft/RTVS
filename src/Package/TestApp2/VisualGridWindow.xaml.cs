@@ -23,6 +23,26 @@ namespace Microsoft.VisualStudio.R.TestApp {
 
             RootGrid.Initialize(new DataProvider(1000, 1000));
         }
+
+        private void AssingDataProvider_Click(object sender, RoutedEventArgs e) {
+            RootGrid.Initialize(new DataProvider(1000, 1000));
+        }
+
+        private void ChangeForeground_Click(object sender, RoutedEventArgs e) {
+            if (RootGrid.Foreground == Brushes.White) {
+                RootGrid.Foreground = Brushes.Yellow;   // toggle
+            } else {
+                RootGrid.Foreground = Brushes.White;
+            }
+        }
+
+        private void ChangeGridBackground_Click(object sender, RoutedEventArgs e) {
+            if (RootGrid.GridBackground == Brushes.Green) {
+                RootGrid.GridBackground = Brushes.Purple;
+            } else {
+                RootGrid.GridBackground = Brushes.Green;
+            }
+        }
     }
 
     class MockRange : IRange<string> {
