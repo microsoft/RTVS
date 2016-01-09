@@ -55,6 +55,7 @@ namespace Microsoft.R.Debugger.Engine {
             DebugSession.Browse -= Session_Browse;
             DebugSession.RSession.AfterRequest -= RSession_AfterRequest;
             DebugSession.RSession.Disconnected -= RSession_Disconnected;
+            DebugSession.ExitBrowserAsync().DoNotWait();
 
             _events = null;
             _program = null;

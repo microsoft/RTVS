@@ -142,6 +142,7 @@
     <Compile Include="Options\Attributes\YesNoAskTypeConverter.cs" />
     <Compile Include="Options\R\Tools\ChooseRFolderUIEditor.cs" />
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
+    <Compile Include="Options\R\Tools\ImportRSettingsCommand.cs" />
     <Compile Include="Packages\Definitions\IPackage.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
@@ -621,6 +622,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
+    <Content Include="RStudioKeyboard.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.ico" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
@@ -635,6 +641,7 @@
     <Content Include="R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <Content Include="Templates\NewItem\markdown.rmd">

@@ -98,7 +98,7 @@
 
       <!-- Plots flyout -->
       <Menu guid="guidRToolsCmdSet" id="plotSubMenu" type="Menu" priority="0x0300">
-        <!--<Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>-->
+        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
           <ButtonText>&amp;Plots</ButtonText>
         </Strings>
@@ -176,6 +176,10 @@
 
       <!-- Main menu groups-->
       <Group guid="guidRToolsCmdSet" id="toolsOptionsGroup" priority="0x1000">
+        <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="dataScienceSettingsGroup" priority="0x1010">
         <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
       </Group>
 
@@ -762,7 +766,7 @@
       </Button>
       <!-- End Windows flyout -->
 
-      <!-- Options... (last in the top level menu) -->
+      <!-- Options... -->
       <Button guid="guidRToolsCmdSet" id="icmdGoToREditorOptions" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="toolsOptionsGroup"/>
         <Icon guid="ImageCatalogGuid" id="SettingsFile"/>
@@ -779,6 +783,17 @@
         <Strings>
           <ButtonText>&amp;Options...</ButtonText>
           <CommandName>R Tools Options</CommandName>
+        </Strings>
+      </Button>
+
+      <!-- Import keyboard shortcuts and window layout... (last in the top level menu) -->
+      <Button guid="guidRToolsCmdSet" id="icmdImportRSettings" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataScienceSettingsGroup"/>
+        <Icon guid="ImageCatalogGuid" id="LibrarySettings"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>D&amp;ata Science Settings...</ButtonText>
+          <CommandName>Data Science Settings</CommandName>
         </Strings>
       </Button>
       <!-- End top level menu -->
@@ -1238,6 +1253,26 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidVSStd97" id="cmdidStart" priority="0x0460">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidVSStd97" id="cmdidStop" priority="0x0470">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidVSStd97" id="cmdidStepInto" priority="0x0480">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidVSStd97" id="cmdidStepOver" priority="0x0490">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidVSStd97" id="cmdidStepOut" priority="0x04A0">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+    
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
@@ -1322,6 +1357,7 @@
       <IDSymbol name="icmdGoToREditorOptions" value="402" />
       <IDSymbol name="icmdSendSmile" value="403" />
       <IDSymbol name="icmdSendFrown" value="404" />
+      <IDSymbol name="icmdImportRSettings" value="405"/>
 
       <!-- REPL-->
       <IDSymbol name="icmdLoadWorkspace" value="502" />
@@ -1431,6 +1467,7 @@
       <IDSymbol name="publishSubMenu" value="0x2150"/>
       <IDSymbol name="windowsSubMenu" value="0x2200"/>
       <IDSymbol name="toolsOptionsGroup" value="0x2300"/>
+      <IDSymbol name="dataScienceSettingsGroup" value="0x2301"/>
       <IDSymbol name="windowsSubMenuGroup" value="0x2310"/>
       <IDSymbol name="packagesSubMenuGroup" value="0x2320"/>
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>

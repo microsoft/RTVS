@@ -22,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
                 new GoToEditorOptionsCommand(),
+                new ImportRSettingsCommand(),
 
                 new SendSmileCommand(),
                 new SendFrownCommand(),

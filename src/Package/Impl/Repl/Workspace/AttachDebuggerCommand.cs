@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core;
-using Microsoft.Languages.Editor;
-using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class AttachDebuggerCommand : PackageCommand {
@@ -52,6 +49,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             if (debugger == null) {
                 return;
             }
+
+            // Source active file
+            ViewUtilities.SourceActiveFile();
 
             var pDebugEngines = stackalloc Guid[1];
             pDebugEngines[0] = DebuggerGuids.DebugEngine;

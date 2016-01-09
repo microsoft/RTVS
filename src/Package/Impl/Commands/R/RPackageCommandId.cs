@@ -10,6 +10,7 @@
         public const int icmdGoToREditorOptions = 402;
         public const int icmdSendSmile = 403;
         public const int icmdSendFrown = 404;
+        public const int icmdImportRSettings = 405;
 
         // REPL
         public const int icmdLoadWorkspace = 502;
