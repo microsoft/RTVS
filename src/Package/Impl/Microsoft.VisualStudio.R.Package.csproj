@@ -279,7 +279,6 @@
     <Compile Include="Repl\Commands\ReplShortcutSetting.cs" />
     <Compile Include="Repl\Workspace\LoadWorkspaceCommand.cs" />
     <Compile Include="Repl\Workspace\InterruptRCommand.cs" />
-    <Compile Include="Repl\Workspace\RestartRCommand.cs" />
     <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
     <Compile Include="Repl\Data\ImportDataSetTextFileCommand.cs" />
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />

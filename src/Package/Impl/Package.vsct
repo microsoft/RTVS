@@ -340,17 +340,6 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdRestartR" priority="0x0300" type="Button">
-        <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionRestart"/>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Restart R</ButtonText>
-          <MenuText>&amp;Restart R</MenuText>
-          <CommandName>Restart R</CommandName>
-        </Strings>
-      </Button>
-
       <Button guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400" type="Button">
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionInterrupt"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -1294,10 +1283,6 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdRestartR" priority="0x0405">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
-    </CommandPlacement>
-
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0410">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
@@ -1416,7 +1401,6 @@
       <IDSymbol name="icmdLoadWorkspace" value="502" />
       <IDSymbol name="icmdSaveWorkspace" value="503" />
       <IDSymbol name="icmdSelectWorkingDirectory" value="504" />
-      <IDSymbol name="icmdRestartR" value="505" />
       <IDSymbol name="icmdInterruptR" value="506" />
       <IDSymbol name="icmdAttachDebugger" value="507" />
       <IDSymbol name="icmdSourceRScript" value="508" />
