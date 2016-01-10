@@ -95,6 +95,10 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task<DebugEvaluationResult> SetValueAsync(string value) {
+            if (string.IsNullOrEmpty(Expression)) {
+                throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(DebugEvaluationResult)} because it doesn't have an associated {nameof(Expression)}."));
+            }
+
             return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0);
         }
     }
