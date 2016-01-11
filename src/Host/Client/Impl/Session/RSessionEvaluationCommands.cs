@@ -127,12 +127,12 @@ options(device='.rtvs.vsgd')
 
         public static Task<REvaluationResult> SetChangeDirectoryRedirection(this IRSessionEvaluation evaluation) {
             var script =
-@"setwd <- function(dir) {
+@"utils::assignInNamespace('setwd', function(dir) {
     .Internal(setwd(dir))
     if(getwd() == dir) {
         z <- .Call('Microsoft.R.Host::Call.send_message', '~/', rtvs:::toJSON(dir))
     }
-  }";
+  }, 'base')";
             return evaluation.EvaluateAsync(script);
         }
 

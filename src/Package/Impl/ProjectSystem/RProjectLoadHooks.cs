@@ -74,10 +74,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 await evaluation.SetWorkingDirectory(_projectDirectory);
             }
 
+            await _threadHandling.SwitchToUIThread();
+
             RToolsSettings.Current.WorkingDirectory = _projectDirectory;
             var history = GetRHistory();
             if (history != null) {
-                await _threadHandling.SwitchToUIThread();
                 history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
             }
         }

@@ -1229,6 +1229,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compable with the RStudio where possible?.
+        /// </summary>
+        public static string Warning_RStudioKeyboardShortcuts {
+            get {
+                return ResourceManager.GetString("Warning_RStudioKeyboardShortcuts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will reset Visual Studio window layout to the Data Scientist profile. Proceed?.
+        /// </summary>
+        public static string Warning_SettingsReset {
+            get {
+                return ResourceManager.GetString("Warning_SettingsReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Data Files (*.rdata)|*.rdata|All Files (*.*)|*.*.
         /// </summary>
         public static string WorkspaceFileFilter {

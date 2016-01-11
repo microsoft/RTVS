@@ -3,8 +3,10 @@ using System.Runtime.InteropServices;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Workspace;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -55,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
                 IVsTextManager2 textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
 
-                if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)(_VIEWFRAMETYPE.vftCodeWindow | _VIEWFRAMETYPE.vftToolWindow), out vsTextView))) {
+                if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)(_VIEWFRAMETYPE.vftCodeWindow), out vsTextView))) {
                     activeTextView = AdaptersFactoryService.GetWpfTextView(vsTextView);
                 }
 
@@ -106,6 +108,17 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
             string filePath = VsFileInfo.GetFileName(textView);
             rdt.SaveFileIfDirty(filePath);
+        }
+
+        public static void SourceActiveFile() {
+            var activeView = ViewUtilities.ActiveTextView;
+            if (activeView != null) {
+                var controller = RMainController.FromTextView(activeView);
+                if (controller != null) {
+                    object o = null;
+                    controller.Invoke(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript, null, ref o);
+                }
+            }
         }
     }
 }
