@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Common.Core.Test.Utility {
     /// <summary>
     /// Properties written by the <see cref="VisualTreeWriter"/>
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal static class SupportedWpfProperties {
         private static HashSet<string> _hashset;
 

@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Common.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     public class StringBuilderExtensionsTest
     {
         [Test]

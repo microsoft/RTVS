@@ -1,10 +1,12 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Common.Core.Test.Disposables
 {
+    [ExcludeFromCodeCoverage]
     public class CountdownDisposableTest
     {
         [Test]
