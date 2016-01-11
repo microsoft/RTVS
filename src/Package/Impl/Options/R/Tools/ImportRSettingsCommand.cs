@@ -13,24 +13,22 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     public sealed class ImportRSettingsCommand : MenuCommand {
         public ImportRSettingsCommand() :
-            base((sender, args) => new Handler().OnCommand(), new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportRSettings)) { }
+            base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportRSettings)) { }
 
-        class Handler {
-            public void OnCommand() {
-                if (MessageButtons.Yes == VsAppShell.Current.ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
-                    IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                    Guid group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
+        public static void OnCommand(object sender, EventArgs args) {
+            if (MessageButtons.Yes == VsAppShell.Current.ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
+                IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                Guid group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
 
-                    string asmDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
-                    string settingsFilePath = Path.Combine(asmDirectory, "R.vssettings");
-                    object arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath);
+                string asmDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                string settingsFilePath = Path.Combine(asmDirectory, "R.vssettings");
+                object arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath);
+                shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
+
+                if (MessageButtons.Yes == VsAppShell.Current.ShowMessage(Resources.Warning_RStudioKeyboardShortcuts, MessageButtons.YesNo)) {
+                    settingsFilePath = Path.Combine(asmDirectory, "RStudioKeyboard.vssettings");
+                    arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath);
                     shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
-
-                    if (MessageButtons.Yes == VsAppShell.Current.ShowMessage(Resources.Warning_RStudioKeyboardShortcuts, MessageButtons.YesNo)) {
-                        settingsFilePath = Path.Combine(asmDirectory, "RStudioKeyboard.vssettings");
-                        arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath);
-                        shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
-                    }
                 }
             }
         }

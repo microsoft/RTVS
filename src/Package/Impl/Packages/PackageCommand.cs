@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal abstract class PackageCommand : OleMenuCommand {
         protected PackageCommand(Guid group, int id) :
-            base((sender, args) => new Handler().OnCommand(sender as PackageCommand), new CommandID(group, id)) {
+            base(OnCommand, new CommandID(group, id)) {
 
             BeforeQueryStatus += OnBeforeQueryStatus;
         }
@@ -20,11 +20,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         protected virtual void SetStatus() { }
         protected virtual void Handle() { }
 
-        private class Handler {
-            public void OnCommand(PackageCommand command) {
-                if (command != null) {
-                    command.Handle();
-                }
+        public static void OnCommand(object sender, EventArgs args) {
+            var command = sender as PackageCommand;
+            if (command != null) {
+                command.Handle();
             }
         }
     }
