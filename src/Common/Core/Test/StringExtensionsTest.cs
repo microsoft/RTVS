@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.Common.Core.Test {
+    [ExcludeFromCodeCoverage]
     public class StringExtensionsTest {
         [CompositeTest]
         [InlineData("aaaa", "a", "b", 0, 2, "bbaa")]

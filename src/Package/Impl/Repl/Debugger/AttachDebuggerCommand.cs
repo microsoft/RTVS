@@ -1,46 +1,18 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core;
-using Microsoft.Languages.Editor;
-using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
-    internal sealed class AttachDebuggerCommand : PackageCommand {
-        private readonly IRSessionProvider _rSessionProvider;
-
+namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
+    internal sealed class AttachDebuggerCommand : DebuggerCommand {
         public AttachDebuggerCommand(IRSessionProvider rSessionProvider)
-            : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdAttachDebugger) {
-            _rSessionProvider = rSessionProvider;
+            : base(rSessionProvider, RPackageCommandId.icmdAttachDebugger, DebuggerCommandVisibility.DesignMode) {
         }
-
-        protected override void SetStatus() {
-            Enabled = false;
-
-            if (_rSessionProvider.Current == null) {
-                return;
-            }
-
-            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(SVsShellDebugger));
-            if (debugger == null) {
-                return;
-            }
-
-            var mode = new DBGMODE[1];
-            if (debugger.GetMode(mode) < 0 || mode[0] != DBGMODE.DBGMODE_Design) {
-                return;
-            }
-
-            Enabled = true;
-        }
-
 
         protected unsafe override void Handle() {
             var session = _rSessionProvider.Current;
@@ -52,6 +24,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             if (debugger == null) {
                 return;
             }
+
+            // Source active file
+            ViewUtilities.SourceActiveFile();
 
             var pDebugEngines = stackalloc Guid[1];
             pDebugEngines[0] = DebuggerGuids.DebugEngine;

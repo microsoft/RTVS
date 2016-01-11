@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -10,6 +11,7 @@ using System.Windows.Threading;
 
 namespace Microsoft.UnitTests.Core.Threading
 {
+    [ExcludeFromCodeCoverage]
     public class UIThreadHelper
     {
         [DllImport("ole32.dll", ExactSpelling = true, SetLastError = true)]

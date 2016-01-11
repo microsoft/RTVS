@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace Microsoft.UnitTests.Core.XUnit
     /// <summary>
     /// Logic of this class requires change of the test method arguments, that cannot be done from decorator.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class TestForTypesXunitTestCase : XunitTestCase
     {
         public TestForTypesXunitTestCase() : base(null, default(TestMethodDisplay), null, null)

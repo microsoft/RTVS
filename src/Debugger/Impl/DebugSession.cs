@@ -138,6 +138,10 @@ namespace Microsoft.R.Debugger {
             }
         }
 
+        public async Task ExitBrowserAsync() {
+            await ExecuteBrowserCommandAsync("Q");
+        }
+
         internal async Task<REvaluationResult> InvokeDebugHelperAsync(string expression, bool json = false) {
             TaskUtilities.AssertIsOnBackgroundThread();
             ThrowIfDisposed();
@@ -342,8 +346,7 @@ namespace Microsoft.R.Debugger {
             DebugStackFrame lastFrame = null;
 
             switch (_browseProcState) {
-                case BrowseProcessingState.None:
-                    {
+                case BrowseProcessingState.None: {
                         lastFrame = (await GetStackFramesAsync()).LastOrDefault();
                         if (lastFrame?.FrameKind == DebugStackFrameKind.TracebackAfterBreakpoint) {
                             // If we're stopped at a breakpoint, step out of .doTrace, so that the next stepping command that

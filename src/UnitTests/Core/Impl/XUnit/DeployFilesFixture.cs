@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using Microsoft.Common.Core;
 
 namespace Microsoft.UnitTests.Core.XUnit {
+    [ExcludeFromCodeCoverage]
     public abstract class DeployFilesFixture : IDisposable {
         /// <summary>
         /// Implementation assumes that repository has structure

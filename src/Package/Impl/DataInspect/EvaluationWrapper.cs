@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (_evaluation is DebugValueEvaluationResult) {
                 var valueEvaluation = (DebugValueEvaluationResult)_evaluation;
 
-                Value = GetValue(valueEvaluation);
+                Value = GetValue(valueEvaluation).Trim();
                 ValueDetail = valueEvaluation.Representation.DPut;
                 TypeName = valueEvaluation.TypeName;
                 var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);

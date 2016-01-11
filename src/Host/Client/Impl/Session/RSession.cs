@@ -7,7 +7,6 @@ using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
-using Microsoft.R.Support.Settings;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -74,20 +73,17 @@ namespace Microsoft.R.Host.Client.Session {
             await cancelTask;
         }
 
-        public async Task StartHostAsync(string name, IntPtr plotWindowHandle) {
+        public async Task StartHostAsync(RHostStartupInfo startupInfo) {
             if (_hostRunTask != null && !_hostRunTask.IsCompleted) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
 
-            _host = new RHost(name, this);
+            _host = new RHost(startupInfo.Name, this);
             _initializationTcs = new TaskCompletionSource<object>();
 
-            _hostRunTask = _host.CreateAndRun(
-                RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath),
-                useReparentPlot ? plotWindowHandle : IntPtr.Zero,
-                RToolsSettings.Current);
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments);
             this.ScheduleEvaluation(async e => {
                 await e.SetDefaultWorkingDirectory();
                 await e.SetRdHelpExtraction();
@@ -97,8 +93,7 @@ namespace Microsoft.R.Host.Client.Session {
                         await e.SetVsGraphicsDevice();
                     }
 
-                    string mirrorName = RToolsSettings.Current.CranMirror;
-                    string mirrorUrl = _hostClientApp.CranUrlFromName(mirrorName);
+                    string mirrorUrl = _hostClientApp.CranUrlFromName(startupInfo.CranMirrorName);
                     await e.SetVsCranSelection(mirrorUrl);
 
                     await e.SetVsHelpRedirection();

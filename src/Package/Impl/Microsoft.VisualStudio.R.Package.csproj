@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\NugetPackages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\..\NugetPackages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props')" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\build\Microsoft.VSSDK.BuildTools.props')" />
   <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props')" />
   <PropertyGroup>
@@ -154,6 +153,7 @@
     <Compile Include="Options\Attributes\YesNoAskTypeConverter.cs" />
     <Compile Include="Options\R\Tools\ChooseRFolderUIEditor.cs" />
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
+    <Compile Include="Options\R\Tools\ImportRSettingsCommand.cs" />
     <Compile Include="Packages\Definitions\IPackage.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
     <Compile Include="Packages\DefaultIndentAttribute.cs" />
@@ -190,12 +190,20 @@
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Commands\RexecuteCommand.cs" />
+    <Compile Include="Repl\Debugger\DebuggerCommandVisibility.cs" />
+    <Compile Include="Repl\Debugger\StepIntoCommand.cs" />
+    <Compile Include="Repl\Debugger\StopDebuggingCommand.cs" />
+    <Compile Include="Repl\Debugger\StepOutCommand.cs" />
+    <Compile Include="Repl\Debugger\StepOverCommand.cs" />
+    <Compile Include="Repl\Debugger\DebuggerWrappedCommand.cs" />
+    <Compile Include="Repl\Debugger\DebuggerCommand.cs" />
     <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
     <Compile Include="Options\R\SupportedRVersions.cs" />
     <Compile Include="Repl\RHostClientApp.cs" />
-    <Compile Include="Repl\Workspace\AttachDebuggerCommand.cs" />
+    <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
+    <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
@@ -282,7 +290,6 @@
     <Compile Include="Repl\Commands\ReplShortcutSetting.cs" />
     <Compile Include="Repl\Workspace\LoadWorkspaceCommand.cs" />
     <Compile Include="Repl\Workspace\InterruptRCommand.cs" />
-    <Compile Include="Repl\Workspace\RestartRCommand.cs" />
     <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
     <Compile Include="Repl\Data\ImportDataSetTextFileCommand.cs" />
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
@@ -633,6 +640,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
+    <Content Include="RStudioKeyboard.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.ico" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
@@ -647,6 +659,7 @@
     <Content Include="R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <Content Include="Templates\NewItem\markdown.rmd">
@@ -829,7 +842,6 @@
     <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\tools\vssdk\Microsoft.VsSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\tools\vssdk\Microsoft.VsSDK.targets'))" />
     <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\build\Microsoft.VSSDK.BuildTools.props'))" />
     <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\build\Microsoft.VSSDK.BuildTools.targets'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
   <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" />
   <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.14.1.24720\tools\vssdk\Microsoft.VsSDK.targets')" />

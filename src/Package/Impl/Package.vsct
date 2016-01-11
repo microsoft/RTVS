@@ -98,7 +98,7 @@
 
       <!-- Plots flyout -->
       <Menu guid="guidRToolsCmdSet" id="plotSubMenu" type="Menu" priority="0x0300">
-        <!--<Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>-->
+        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
           <ButtonText>&amp;Plots</ButtonText>
         </Strings>
@@ -176,6 +176,10 @@
 
       <!-- Main menu groups-->
       <Group guid="guidRToolsCmdSet" id="toolsOptionsGroup" priority="0x1000">
+        <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="dataScienceSettingsGroup" priority="0x1010">
         <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
       </Group>
 
@@ -336,18 +340,6 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdRestartR" priority="0x0300" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRGroup"/>
-        <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionRestart"/>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Restart R</ButtonText>
-          <MenuText>&amp;Restart R</MenuText>
-          <CommandName>Restart R</CommandName>
-        </Strings>
-      </Button>
-
       <Button guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400" type="Button">
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionInterrupt"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -371,6 +363,56 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdContinueDebugging" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Run"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdStopDebugging" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Stop"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Stop Debugging</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdStepInto" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="StepInto"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Step Into</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdStepOut" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="StepOut"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Step Out</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdStepOver" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="StepOver"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Step Over</ButtonText>
+         </Strings>
+      </Button>
+      
       <Button guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x0400" type="Button">
         <Icon guid="ImageCatalogGuid" id="DocumentsFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -762,7 +804,7 @@
       </Button>
       <!-- End Windows flyout -->
 
-      <!-- Options... (last in the top level menu) -->
+      <!-- Options... -->
       <Button guid="guidRToolsCmdSet" id="icmdGoToREditorOptions" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="toolsOptionsGroup"/>
         <Icon guid="ImageCatalogGuid" id="SettingsFile"/>
@@ -779,6 +821,17 @@
         <Strings>
           <ButtonText>&amp;Options...</ButtonText>
           <CommandName>R Tools Options</CommandName>
+        </Strings>
+      </Button>
+
+      <!-- Import keyboard shortcuts and window layout... (last in the top level menu) -->
+      <Button guid="guidRToolsCmdSet" id="icmdImportRSettings" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataScienceSettingsGroup"/>
+        <Icon guid="ImageCatalogGuid" id="LibrarySettings"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>D&amp;ata Science Settings...</ButtonText>
+          <CommandName>Data Science Settings</CommandName>
         </Strings>
       </Button>
       <!-- End top level menu -->
@@ -1230,7 +1283,7 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0410">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
@@ -1238,6 +1291,26 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdContinueDebugging" priority="0x0460">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdStopDebugging" priority="0x0470">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepInto" priority="0x0480">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepOver" priority="0x0490">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepOut" priority="0x04A0">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+    
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
@@ -1322,17 +1395,22 @@
       <IDSymbol name="icmdGoToREditorOptions" value="402" />
       <IDSymbol name="icmdSendSmile" value="403" />
       <IDSymbol name="icmdSendFrown" value="404" />
+      <IDSymbol name="icmdImportRSettings" value="405"/>
 
       <!-- REPL-->
       <IDSymbol name="icmdLoadWorkspace" value="502" />
       <IDSymbol name="icmdSaveWorkspace" value="503" />
       <IDSymbol name="icmdSelectWorkingDirectory" value="504" />
-      <IDSymbol name="icmdRestartR" value="505" />
       <IDSymbol name="icmdInterruptR" value="506" />
       <IDSymbol name="icmdAttachDebugger" value="507" />
       <IDSymbol name="icmdSourceRScript" value="508" />
       <IDSymbol name="icmdGetWorkingDirectoryList" value="509" />
       <IDSymbol name="icmdSetWorkingDirectory" value="510" />
+      <IDSymbol name="icmdContinueDebugging" value="511" />
+      <IDSymbol name="icmdStopDebugging" value="512" />
+      <IDSymbol name="icmdStepInto" value="513" />
+      <IDSymbol name="icmdStepOut" value="514" />
+      <IDSymbol name="icmdStepOver" value="515" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -1431,6 +1509,7 @@
       <IDSymbol name="publishSubMenu" value="0x2150"/>
       <IDSymbol name="windowsSubMenu" value="0x2200"/>
       <IDSymbol name="toolsOptionsGroup" value="0x2300"/>
+      <IDSymbol name="dataScienceSettingsGroup" value="0x2301"/>
       <IDSymbol name="windowsSubMenuGroup" value="0x2310"/>
       <IDSymbol name="packagesSubMenuGroup" value="0x2320"/>
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>

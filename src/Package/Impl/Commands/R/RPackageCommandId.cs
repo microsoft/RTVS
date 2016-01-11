@@ -10,6 +10,7 @@
         public const int icmdGoToREditorOptions = 402;
         public const int icmdSendSmile = 403;
         public const int icmdSendFrown = 404;
+        public const int icmdImportRSettings = 405;
 
         // REPL
         public const int icmdLoadWorkspace = 502;
@@ -21,6 +22,11 @@
         public const int icmdSourceRScript = 508;
         public const int icmdGetDirectoryList = 509;
         public const int icmdSetWorkingDirectory = 510;
+        public const int icmdContinueDebugging = 511;
+        public const int icmdStopDebugging = 512;
+        public const int icmdStepInto = 513;
+        public const int icmdStepOut = 514;
+        public const int icmdStepOver = 515;
 
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;

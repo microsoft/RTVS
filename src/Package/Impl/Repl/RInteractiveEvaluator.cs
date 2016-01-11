@@ -8,15 +8,16 @@ using Microsoft.Common.Core;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
-using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
+        private readonly IRToolsSettings _toolsSettings;
         private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
 
         private readonly IntPtr _plotWindowHandle;
@@ -24,11 +25,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IRHistory History { get; }
         public IRSession Session { get; }
 
-        public RInteractiveEvaluator(IRSession session, IRHistory history) {
+        public RInteractiveEvaluator(IRSession session, IRHistory history, IRToolsSettings toolsSettings) {
             History = history;
             Session = session;
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
+            _toolsSettings = toolsSettings;
 
             if (useReparentPlot) {
                 // Cache handle here since it must be done on UI thread
@@ -45,7 +47,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public async Task<ExecutionResult> InitializeAsync() {
             try {
-                await Session.StartHostAsync("REPL", _plotWindowHandle);
+                await Session.StartHostAsync(new RHostStartupInfo {
+                    Name = "REPL",
+                    RBasePath = _toolsSettings.RBasePath,
+                    RCommandLineArguments = _toolsSettings.RCommandLineArguments,
+                    CranMirrorName = _toolsSettings.CranMirror
+                });
+
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
