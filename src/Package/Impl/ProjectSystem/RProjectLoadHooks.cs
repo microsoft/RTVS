@@ -8,7 +8,6 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
@@ -76,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             await _threadHandling.SwitchToUIThread();
 
-            RToolsSettings.Current.WorkingDirectory = _projectDirectory;
+            _toolsSettings.WorkingDirectory = _projectDirectory;
             var history = GetRHistory();
             if (history != null) {
                 history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));

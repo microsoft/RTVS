@@ -62,6 +62,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Definitions\IRHostClientApp.cs" />
+    <Compile Include="Definitions\RHostStartupInfo.cs" />
     <Compile Include="MessageTransportException.cs" />
     <Compile Include="Definitions\IMessageTransport.cs" />
     <Compile Include="Definitions\IRContext.cs" />
@@ -92,7 +93,6 @@
     <Compile Include="Session\RSessionInteractionCommands.cs" />
     <Compile Include="Session\RSessionProvider.cs" />
     <Compile Include="Session\RSessionRequestSource.cs" />
-    <Compile Include="Signatures\FunctionRdDataProvider.cs" />
     <Compile Include="WebSocketMessageTransport.cs" />
     <Compile Include="Definitions\YesNoCancel.cs" />
   </ItemGroup>
@@ -115,10 +115,6 @@
       <Project>{B68D4AD2-2DC2-473E-AB06-408172C4FB92}</Project>
       <Name>Microsoft.R.Actions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
-      <Project>{C1957D47-B0B4-42E0-BC08-0D5E96E47FE4}</Project>
-      <Name>Microsoft.R.Support</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
@@ -126,6 +122,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

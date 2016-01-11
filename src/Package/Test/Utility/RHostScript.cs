@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 
@@ -13,7 +14,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
         public RHostScript() {
             SessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             Session = SessionProvider.Create(0, new RHostClientApp());
-            Session.StartHostAsync("RHostScript", IntPtr.Zero).Wait();
+            Session.StartHostAsync(new RHostStartupInfo {
+                Name = "RHostScript",
+                RBasePath = RToolsSettings.Current.RBasePath,
+                RCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
+                CranMirrorName = RToolsSettings.Current.CranMirror
+            }).Wait();
         }
 
         public void Dispose() {
