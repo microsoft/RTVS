@@ -101,9 +101,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
+                await _threadHandling.SwitchToUIThread();
                 var history = GetRHistory();
                 if (history != null) {
-                    await _threadHandling.SwitchToUIThread();
                     history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
                 }
             }
