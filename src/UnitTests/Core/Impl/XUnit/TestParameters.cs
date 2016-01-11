@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Xunit.Abstractions;
 
 namespace Microsoft.UnitTests.Core.XUnit
 {
+    [ExcludeFromCodeCoverage]
     public class TestParameters
     {
         public TestParameters(IAttributeInfo factAttribute)

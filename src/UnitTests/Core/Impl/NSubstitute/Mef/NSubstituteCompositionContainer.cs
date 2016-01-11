@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Common.Core;
 
 namespace Microsoft.UnitTests.Core.NSubstitute.Mef
 {
+    [ExcludeFromCodeCoverage]
     public class NSubstituteCompositionContainer : CompositionContainer
     {
         private ExportProvider SubstituteProvider => Providers.Last();

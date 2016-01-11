@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Primitives;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -9,6 +10,7 @@ namespace Microsoft.UnitTests.Core.NSubstitute.Mef
     /// <summary>
     /// This class should match System.ComponentModel.Composition.ConstraintServices class
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class ImportDefinitionConstraintAnalyser
     {
         private static readonly MethodInfo MetadataItemMethod = typeof(IDictionary<string, object>).GetMethod("get_Item");

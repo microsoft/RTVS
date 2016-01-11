@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using NSubstitute.ExceptionExtensions;
 
 namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
 {
+    [ExcludeFromCodeCoverage]
     public static class DirectoryInfoFactory
     {
         public static IDirectoryInfo Create(IFileSystem fileSystem, string path)

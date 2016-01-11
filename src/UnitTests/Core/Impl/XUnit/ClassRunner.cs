@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
+    [ExcludeFromCodeCoverage]
     internal sealed class ClassRunner : XunitTestClassRunner {
         private static readonly TestMethodInfoFixture TestMethodInfoFixtureDummy = new TestMethodInfoFixture();
         private readonly IReadOnlyDictionary<Type, object> _assemblyFixtureMappings;

@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using Microsoft.R.Editor.Signatures;
 
 namespace Microsoft.R.Editor.Test.Assertions {
+    [ExcludeFromCodeCoverage]
     internal class ParameterInfoAssertion : ReferenceTypeAssertions<ParameterInfo, ParameterInfoAssertion> {
         protected override string Context { get; } = "Microsoft.R.Editor.Signatures.ParameterInfo";
 
