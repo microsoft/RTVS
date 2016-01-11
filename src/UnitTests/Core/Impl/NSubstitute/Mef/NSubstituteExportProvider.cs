@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.ReflectionModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +12,7 @@ using NSubstitute;
 
 namespace Microsoft.UnitTests.Core.NSubstitute.Mef
 {
+    [ExcludeFromCodeCoverage]
     public class NSubstituteExportProvider : ExportProvider
     {
         private readonly IDictionary<string, ExportSource> _exactlyOneExports = new Dictionary<string, ExportSource>();
@@ -123,6 +125,7 @@ namespace Microsoft.UnitTests.Core.NSubstitute.Mef
             return AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(fullName)).FirstOrDefault(t => t != null);
         }
 
+        [ExcludeFromCodeCoverage]
         private class ExportSource
         {
             public Export Export { get; }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -7,6 +8,7 @@ using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.UnitTests.Core.XUnit.MessageBusInjections
 {
+    [ExcludeFromCodeCoverage]
     internal class VerifyGlobalProviderMessageBusInjection : ITestCaseAfterStartingBeforeFinishedInjection
     {
         private IServiceProvider _oleServiceProvider;

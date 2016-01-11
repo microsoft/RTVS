@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using NSubstitute;
@@ -6,6 +7,7 @@ using Xunit;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.Project
 {
+    [ExcludeFromCodeCoverage]
     public class FileSystemMirroringProjectUtilitiesTest
     {
         [CompositeTest]

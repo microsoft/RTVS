@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit
 {
+    [ExcludeFromCodeCoverage]
     [XunitTestCaseDiscoverer("Microsoft.UnitTests.Core.XUnit.TestDiscoverer", "Microsoft.UnitTests.Core")]
     [TraitDiscoverer("Microsoft.UnitTests.Core.XUnit.UnitTestTraitDiscoverer", "Microsoft.UnitTests.Core")]
     [AttributeUsage(AttributeTargets.Method)]

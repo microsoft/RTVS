@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.UnitTests.Core.Threading;
@@ -7,6 +8,7 @@ using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit
 {
+    [ExcludeFromCodeCoverage]
     [Serializable]
     internal sealed class XunitMainThreadTestCaseDecorator : XunitTestCaseDecoratorBase
     {

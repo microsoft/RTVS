@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -8,6 +9,7 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.UnitTests.Core.Test.Threading
 {
+    [ExcludeFromCodeCoverage]
     public class ControlledTaskSchedulerTest
 	{
         private readonly ControlledTaskScheduler _scheduler;

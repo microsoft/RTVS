@@ -27,9 +27,9 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 parameter.Name.Should().Be("formula");
 
                 script.Type("sub");
-                script.DoIdle(100);
+                script.DoIdle(500);
                 script.Type("{TAB}");
-                script.DoIdle(200);
+                script.DoIdle(1000);
 
                 parameter = session.SelectedSignature.CurrentParameter;
                 parameter.Name.Should().Be("subset");
@@ -49,7 +49,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 PrepareFunctionIndex();
 
                 script.Type("x <- lm(subset = a, sing");
-                script.DoIdle(100);
+                script.DoIdle(500);
                 script.Type("{TAB}");
                 script.DoIdle(1000);
 
