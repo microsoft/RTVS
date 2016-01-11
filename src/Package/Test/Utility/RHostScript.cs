@@ -14,8 +14,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
         public RHostScript() {
             SessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             Session = SessionProvider.Create(0, new RHostClientApp());
-            
-
             Session.StartHostAsync(new RHostStartupInfo {
                 Name = "RHostScript",
                 RBasePath = RToolsSettings.Current.RBasePath,

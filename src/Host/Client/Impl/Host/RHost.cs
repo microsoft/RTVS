@@ -544,6 +544,8 @@ namespace Microsoft.R.Host.Client {
                 psi.Arguments += " --rhost-name " + _name;
             }
 
+            psi.Arguments += Invariant($" --rhost-connect ws://127.0.0.1:{server.Port}");
+
             if (!showConsole) {
                 psi.CreateNoWindow = true;
             }
