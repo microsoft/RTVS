@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Application.Test.TestShell;
@@ -15,11 +14,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class SignatureTest {
-        [Test(Skip = "Unstable")]
+        [Test]
         [Category.Interactive]
         public void R_SignatureParametersMatch() {
-            using (new RHostScript()) {
-                using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
                     PrepareFunctionIndex();
 
                     script.Type("x <- lm(");
@@ -48,11 +47,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
             }
         }
 
-        [Test(Skip = "Unstable")]
+        [Test]
         [Category.Interactive]
         public void R_SignatureSessionNavigation() {
-            using (new RHostScript()) {
-                using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
                     PrepareFunctionIndex();
 
                     script.Type("x <- lm(subset = a, sing");
@@ -81,31 +80,6 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         private void PrepareFunctionIndex() {
             FunctionIndex.Initialize();
             FunctionIndex.BuildIndexAsync().Wait();
-        }
-
-        [ExcludeFromCodeCoverage]
-        public sealed class RHostScript : IDisposable {
-            public IRSessionProvider SessionProvider { get; private set; }
-            public IRSession Session { get; private set; }
-
-            public RHostScript() {
-                SessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                Session = SessionProvider.Create(0, new RHostClientTestApp());
-                Session.StartHostAsync("RHostScript", IntPtr.Zero).Wait();
-            }
-
-            public void Dispose() {
-                if (Session != null) {
-                    Session.StopHostAsync().Wait();
-                    Session.Dispose();
-                    Session = null;
-                }
-
-                if (SessionProvider != null) {
-                    SessionProvider.Dispose();
-                    SessionProvider = null;
-                }
-            }
         }
     }
 }

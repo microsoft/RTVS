@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Test]
         [Category.Interactive]
         public void VaraibleExplorer_ConstructorTest02() {
-            using (var hostScript = new RHostScript()) {
+            using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     string actual = script.WriteVisualTree();
                     ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Category.Interactive]
         public void VaraibleExplorer_SimpleDataTest() {
             string actual = null;
-            using (var hostScript = new RHostScript()) {
+            using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
                     Task.Run(async () => {
