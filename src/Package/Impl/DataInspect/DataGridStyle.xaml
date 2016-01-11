@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary x:Uid="ResourceDictionary_1"
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect"
                     xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0">
 
     <!-- Data grid cell -->
@@ -79,7 +80,7 @@
         </Style.Triggers>
     </Style>
     <!-- Data grid -->
-    <Style x:Uid="Style_5" TargetType="{x:Type DataGrid}">
+    <Style x:Uid="Style_5" TargetType="{x:Type local:TreeGrid}">
         <Setter x:Uid="Setter_28" Property="Background" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}" />
         <Setter x:Uid="Setter_34" Property="Foreground" Value="{DynamicResource {x:Static vsui:TreeViewColors.BackgroundTextBrushKey}}" />
         <!-- Dont show selection column-->
