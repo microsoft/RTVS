@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 
 namespace Microsoft.VisualStudio.R.TestApp {
@@ -29,19 +20,21 @@ namespace Microsoft.VisualStudio.R.TestApp {
         }
 
         private void ChangeForeground_Click(object sender, RoutedEventArgs e) {
-            if (RootGrid.Foreground == Brushes.White) {
-                RootGrid.Foreground = Brushes.Yellow;   // toggle
-            } else {
-                RootGrid.Foreground = Brushes.White;
-            }
+            RootGrid.Foreground = ToggleColor(RootGrid.Foreground, Brushes.White, Brushes.Yellow);
         }
 
         private void ChangeGridBackground_Click(object sender, RoutedEventArgs e) {
-            if (RootGrid.GridBackground == Brushes.Green) {
-                RootGrid.GridBackground = Brushes.Purple;
-            } else {
-                RootGrid.GridBackground = Brushes.Green;
+            RootGrid.GridBackground = ToggleColor(RootGrid.GridBackground, Brushes.Green, Brushes.Purple);
+            RootGrid.GridLinesBrush = ToggleColor(RootGrid.GridLinesBrush, Brushes.Blue, Brushes.Brown);
+        }
+
+        private Brush ToggleColor(Brush brush, Brush value1, Brush value2) {
+            if (brush == value1) {
+                return value2;
+            } else if (brush == value2) {
+                return value1;
             }
+            return brush;
         }
     }
 
@@ -70,9 +63,9 @@ namespace Microsoft.VisualStudio.R.TestApp {
 
     class MockGridData : IGridData<string> {
         public MockGridData(GridRange range) {
-            ColumnHeader = new MockRange(range.Columns, true);
+            ColumnHeader = new DefaultHeaderData(range.Columns, DefaultHeaderData.Mode.Column);
 
-            RowHeader = new MockRange(range.Rows, false);
+            RowHeader = new DefaultHeaderData(range.Rows, DefaultHeaderData.Mode.Row);
 
             Grid = new Grid<string>(range, (r, c) => string.Format("{0}:{1}", r, c));
         }

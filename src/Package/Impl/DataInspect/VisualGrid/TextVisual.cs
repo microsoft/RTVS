@@ -61,12 +61,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     Math.Max(refSize.Width, formattedText.Width + (2 * Padding)),
                     Math.Max(refSize.Height, formattedText.Height + (2 * Padding)));
 
-                if (_isHighlight) {
-                    dc.DrawRectangle(Brushes.Blue, null, new Rect(new Point(0, 0), Size));
-                } else {
-                    dc.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0, 0), Size));
-                }
-
                 dc.DrawText(formattedText, new Point(Padding, Padding));
                 _drawValid = true;
                 return true;

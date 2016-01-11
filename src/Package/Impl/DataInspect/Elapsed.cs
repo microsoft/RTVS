@@ -8,8 +8,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Prints elapsed time, simple development utility calss
     /// </summary>
     internal class Elapsed : IDisposable {
+#if DEBUG && PRINT_ELAPSED
         Stopwatch _watch;
         string _header;
+#endif
         public Elapsed(string header) {
 #if DEBUG && PRINT_ELAPSED
             _header = header;

@@ -21,14 +21,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ClipToBounds = true;
         }
 
-        private GridType _gridType;
-        public GridType GridType {
+        private ScrollDirection _scrollDirection;
+        public ScrollDirection ScrollDirection {
             get {
-                return _gridType;
+                return _scrollDirection;
             }
             set {
-                _gridType = value;
-                _gridLine.GridType = value;
+                _scrollDirection = value;
+                _gridLine.ScrollDirection = value;
             }
         }
 
@@ -43,8 +43,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     RowCount = 0;
                     ColumnCount = 0;
                 } else {
-                    RowCount = GridType == GridType.ColumnHeader ? 1 : _dataProvider.RowCount;
-                    ColumnCount = GridType == GridType.RowHeader ? 1 : _dataProvider.ColumnCount;
+                    RowCount = ScrollDirection == ScrollDirection.Horizontal ? 1 : _dataProvider.RowCount;
+                    ColumnCount = ScrollDirection == ScrollDirection.Vertical ? 1 : _dataProvider.ColumnCount;
                 }
             }
         }
@@ -123,7 +123,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private double HorizontalOffset {
             get {
-                if (GridType == GridType.RowHeader) {
+                if (ScrollDirection == ScrollDirection.Vertical) {
                     return 0.0;
                 }
                 return Points.HorizontalOffset;
@@ -132,25 +132,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private double VerticalOffset {
             get {
-                if (GridType == GridType.ColumnHeader) {
+                if (ScrollDirection == ScrollDirection.Horizontal) {
                     return 0.0;
                 }
                 return Points.VerticalOffset;
             }
         }
 
-        internal void DrawVisuals(GridRange newViewport, IGrid<string> data, bool reuse = true) {
-            DrawCells(newViewport, data, reuse);
+        internal void DrawVisuals(GridRange newViewport, IGrid<string> data, bool refresh) {
+            using (var deferrence = Points.DeferChangeNotification()) {
+                DrawCells(newViewport, data, refresh);
 
-            DrawGridLine();
+                DrawGridLine();
+            }
         }
 
-        private void DrawCells(GridRange newViewport, IGrid<string> data, bool reuse = true) {
+        private void DrawCells(GridRange newViewport, IGrid<string> data, bool refresh) {
             var orgGrid = _visualGrid;
             _visualGrid = new Grid<TextVisual>(
                 newViewport,
                 (r, c) => {
-                    if (reuse && _dataViewport.Contains(r, c)) {
+                    if (!refresh && _dataViewport.Contains(r, c)) {
                         return orgGrid[r, c];
                     }
                     var visual = new TextVisual();
@@ -170,10 +172,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     double width = Points.GetWidth(c) - GridLineThickness;
                     double height = Points.GetHeight(r) - GridLineThickness;
-                    if (visual.Draw(new Size(width, height))) {
-                        Points.SetWidth(c, Math.Max(width, visual.Size.Width + GridLineThickness));
-                        Points.SetHeight(r, Math.Max(height, visual.Size.Height + GridLineThickness));
-                    }
+                    visual.Draw(new Size(width, height));
+                    Points.SetWidth(c, Math.Max(width, visual.Size.Width + GridLineThickness));
+                    Points.SetHeight(r, Math.Max(height, visual.Size.Height + GridLineThickness));
 
                     _visualChildren.Add(_visualGrid[r, c]);
                 }
@@ -195,15 +196,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _dataViewport = newViewport;
 
             // special handling for Row/Column header's size: this will layout system (measure/arrange) to know the size of component properly.
-            if (GridType == GridType.ColumnHeader && RowCount > 0) {
+            if (ScrollDirection == ScrollDirection.Horizontal && RowCount > 0) {
                 Height = Points.GetHeight(0);
-            } else if (GridType == GridType.RowHeader && ColumnCount > 0) {
+            } else if (ScrollDirection == ScrollDirection.Vertical && ColumnCount > 0) {
                 Width = Points.GetWidth(0);
             }
         }
 
         private double xPosition(TextVisual visual) {
-            if (GridType == GridType.RowHeader) {
+            if (ScrollDirection == ScrollDirection.Vertical) {
                 return 0.0;
             }
 
@@ -211,7 +212,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private double yPosition(TextVisual visual) {
-            if (GridType == GridType.ColumnHeader) {
+            if (ScrollDirection == ScrollDirection.Horizontal) {
                 return 0.0;
             }
 
@@ -263,22 +264,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     }
 
     /// <summary>
-    /// use cases of VisualGrid
+    /// Scroll orientation of Grid
     /// </summary>
-    internal enum GridType {
+    [Flags]
+    internal enum ScrollDirection {
         /// <summary>
-        /// Data grid, main part of table
+        /// grid doesn't scroll
         /// </summary>
-        Data,
+        None = 0x00,
 
         /// <summary>
-        /// part that shows column header
+        /// grid scrolls horizontally
         /// </summary>
-        ColumnHeader,
+        Horizontal = 0x01,
 
         /// <summary>
-        /// part that shows row header
+        /// grid scrolls vertically
         /// </summary>
-        RowHeader,
+        Vertical = 0x02,
+
+        /// <summary>
+        /// grid scrolls in vertical and horizontal direction
+        /// </summary>
+        Both = 0x03,
     }
 }

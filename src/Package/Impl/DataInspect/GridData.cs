@@ -1,31 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public class MockRange : IRange<string> {
-        private bool _columnMode;
-        public MockRange(Range range, bool columnMode) {
-            Range = range;
-            _columnMode = columnMode;
-        }
-
-        public string this[int index] {
-            get {
-                if (_columnMode) {
-                    return string.Format("[,{0}]", index);
-                }
-                return string.Format("[{0},]", index);
-            }
-
-            set {
-                throw new NotImplementedException();
-            }
-        }
-
-        public Range Range { get; }
-    }
-
     internal class GridData : IGridData<string> {
         public GridData() {
             RowNames = new List<string>();
@@ -53,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             Range.Columns,
                             ColumnNames);
                     } else {
-                        _columnHeader = new MockRange(Range.Columns, true);
+                        _columnHeader = new DefaultHeaderData(Range.Columns, DefaultHeaderData.Mode.Column);
                     }
                 }
                 return _columnHeader;
@@ -69,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             Range.Rows,
                             RowNames);
                     } else {
-                        _rowHeader = new MockRange(Range.Rows, false);
+                        _rowHeader = new DefaultHeaderData(Range.Rows, DefaultHeaderData.Mode.Row);
                     }
                 }
 

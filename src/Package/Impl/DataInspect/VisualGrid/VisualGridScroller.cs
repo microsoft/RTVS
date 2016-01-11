@@ -72,7 +72,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             if (i < (batch.Count - 1)
                                 && ((batch[i].Code == ScrollType.SizeChange && batch[i + 1].Code == ScrollType.SizeChange)
                                     || (batch[i].Code == ScrollType.SetHorizontalOffset && batch[i + 1].Code == ScrollType.SetHorizontalOffset)
-                                    || (batch[i].Code == ScrollType.SetVerticalOffset && batch[i + 1].Code == ScrollType.SetVerticalOffset))) {
+                                    || (batch[i].Code == ScrollType.SetVerticalOffset && batch[i + 1].Code == ScrollType.SetVerticalOffset)
+                                    || (batch[i].Code == ScrollType.Refresh && batch[i + 1].Code == ScrollType.Refresh))) {
                                 continue;
                             } else {
                                 await ExecuteCommand(batch[i]);
@@ -116,23 +117,30 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 case ScrollType.MouseWheel:
                     await SetMouseWheelAsync(cmd.Param); break;
 
-                case ScrollType.SizeChange: {
-                        await DrawVisualsAsync(
-                            new Rect(
-                                Points.HorizontalOffset,
-                                Points.VerticalOffset,
-                                DataGrid.RenderSize.Width,
-                                DataGrid.RenderSize.Height));
-                        break;
-                    }
+                case ScrollType.SizeChange:
+                    await DrawVisualsAsync(
+                        new Rect(
+                            Points.HorizontalOffset,
+                            Points.VerticalOffset,
+                            DataGrid.RenderSize.Width,
+                            DataGrid.RenderSize.Height),
+                        false);
+                    break;
                 case ScrollType.Refresh:
+                    await DrawVisualsAsync(
+                        new Rect(
+                            Points.HorizontalOffset,
+                            Points.VerticalOffset,
+                            DataGrid.RenderSize.Width,
+                            DataGrid.RenderSize.Height),
+                        true);
                     break;
                 case ScrollType.Invalid:
                     break;
             }
         }
 
-        private async Task DrawVisualsAsync(Rect visualViewport) {
+        private async Task DrawVisualsAsync(Rect visualViewport, bool refresh) {
             using (var elapsed = new Elapsed("PullDataAndDraw:")) {
                 GridRange newViewport = Points.ComputeDataViewport(visualViewport);
 
@@ -141,16 +149,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 // actual drawing runs in UI thread
                 await Task.Factory.StartNew(
-                    () => DrawVisuals(newViewport, data),
+                    () => DrawVisuals(newViewport, data, refresh),
                     CancellationToken.None,
                     TaskCreationOptions.None,
                     ui);
             }
         }
 
-        private void DrawVisuals(GridRange dataViewport, IGridData<string> data) {
+        private void DrawVisuals(GridRange dataViewport, IGridData<string> data, bool refresh) {
             if (DataGrid != null) {
-                DataGrid.DrawVisuals(dataViewport, data.Grid);
+                DataGrid.DrawVisuals(dataViewport, data.Grid, refresh);
             }
 
             if (ColumnHeader != null) {
@@ -160,7 +168,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 ColumnHeader.DrawVisuals(
                     columnViewport,
-                    new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true));
+                    new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true),
+                    refresh);
             }
 
             if (RowHeader != null) {
@@ -170,7 +179,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 RowHeader.DrawVisuals(
                     rowViewport,
-                    new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false));
+                    new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false),
+                    refresh);
             }
         }
 
@@ -178,11 +188,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Points.VerticalOffset = offset;
 
             await DrawVisualsAsync(
-                            new Rect(
-                                Points.HorizontalOffset,
-                                Points.VerticalOffset,
-                                DataGrid.RenderSize.Width,
-                                DataGrid.RenderSize.Height));
+                new Rect(
+                    Points.HorizontalOffset,
+                    Points.VerticalOffset,
+                    DataGrid.RenderSize.Width,
+                    DataGrid.RenderSize.Height),
+                false);
         }
 
         private Task LineUpAsync() {
@@ -205,11 +216,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Points.HorizontalOffset = offset;
 
             await DrawVisualsAsync(
-                            new Rect(
-                                Points.HorizontalOffset,
-                                Points.VerticalOffset,
-                                DataGrid.RenderSize.Width,
-                                DataGrid.RenderSize.Height));
+                new Rect(
+                    Points.HorizontalOffset,
+                    Points.VerticalOffset,
+                    DataGrid.RenderSize.Width,
+                    DataGrid.RenderSize.Height),
+                false);
         }
 
         private void LineRight() {
@@ -229,7 +241,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private Task SetMouseWheelAsync(double delta) {
-            return SetVerticalOffsetAsync(Points.VerticalOffset + delta);    // TODO: do not hard-code the number here.
+            return SetVerticalOffsetAsync(Points.VerticalOffset - delta);
         }
     }
 

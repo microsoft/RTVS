@@ -12,6 +12,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class MatrixView : UserControl {
         private VisualGridScroller _scroller;
 
+        static MatrixView() {
+            ForegroundProperty.OverrideMetadata(
+                typeof(MatrixView),
+                new FrameworkPropertyMetadata(
+                    SystemColors.ControlTextBrush,
+                    FrameworkPropertyMetadataOptions.Inherits,
+                    new PropertyChangedCallback(OnForegroundPropertyChanged)));
+        }
+
         public MatrixView() {
             InitializeComponent();
 
@@ -19,17 +28,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scroller.ColumnHeader = ColumnHeader;
             _scroller.RowHeader = RowHeader;
             _scroller.DataGrid = Data;
+
+            Points = new GridPoints(0, 0);
+            Points.PointChanged += Points_PointChanged;
         }
 
         public void Initialize(IGridProvider<string> dataProvider) {
-            Data.Foreground = Foreground;
-            ColumnHeader.Foreground = Foreground;
-            RowHeader.Foreground = Foreground;
-
-            Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount);
-
             DataProvider = dataProvider;
 
+            // reset scroll bar position to zero
             HorizontalScrollBar.Value = HorizontalScrollBar.Minimum;
             VerticalScrollBar.Value = VerticalScrollBar.Minimum;
         }
@@ -66,6 +73,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 Data.DataProvider = _dataProvider;
                 _scroller.DataProvider = DataProvider;
 
+                Points.Reset(_dataProvider.RowCount, _dataProvider.ColumnCount);
+
                 // queue fake command for visual refresh
                 _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, 0);
             }
@@ -82,6 +91,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return _dataProvider.ColumnCount;
             }
         }
+
+        #region Foreground
+
+        private static void OnForegroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (e.OldValue != e.NewValue) {
+                ((MatrixView)d).OnForegroundPropertyChanged((Brush)e.NewValue);
+            }
+        }
+
+        private void OnForegroundPropertyChanged(Brush foregroundBrush) {
+            ColumnHeader.Foreground = foregroundBrush;
+            RowHeader.Foreground = foregroundBrush;
+            Data.Foreground = foregroundBrush;
+
+            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
+        }
+
+        #endregion
 
         #region GridLinesBrush
 
@@ -105,6 +132,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void OnGridLinesBrushPropertyChanged(Brush gridLineBrush) {
             Data.SetGridLineBrush(gridLineBrush);
+
+            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
         }
 
         #endregion
@@ -131,6 +160,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void OnGridBackgroundPropertyChanged(Brush gridBackgroundBrush) {
             Data.Background = gridBackgroundBrush;
+
+            // VisualGrid uses OnRender to paint background color, InvalidateVisual will call it
+            Data.InvalidateVisual();
+
+            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
         }
 
         #endregion
@@ -158,6 +192,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void OnHeaderLinesBrushPropertyChanged(Brush gridLineBrush) {
             ColumnHeader.SetGridLineBrush(gridLineBrush);
             RowHeader.SetGridLineBrush(gridLineBrush);
+
+            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
         }
 
         #endregion
@@ -185,6 +221,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void OnHeaderBackgroundPropertyChanged(Brush headerBackground) {
             ColumnHeader.Background = headerBackground;
             RowHeader.Background = headerBackground;
+
+            // VisualGrid uses OnRender to paint background color, InvalidateVisual will call it
+            ColumnHeader.InvalidateVisual();
+            RowHeader.InvalidateVisual();
+
+            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
         }
 
         #endregion
@@ -290,6 +332,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void Points_PointChanged(object sender, PointChangedEvent e) {
+            if (e.Direction.HasFlag(ScrollDirection.Horizontal)) {
+                double width = Data.RenderSize.Width;
+                HorizontalScrollBar.ViewportSize = width;
+                HorizontalScrollBar.Maximum = Points.HorizontalExtent - width;
+                HorizontalScrollBar.Value = Points.HorizontalOffset;
+            }
+
+            if (e.Direction.HasFlag(ScrollDirection.Vertical)) {
+                double height = Data.RenderSize.Height;
+                VerticalScrollBar.ViewportSize = height;
+                VerticalScrollBar.Maximum = Points.VerticalExtent - height;
+                VerticalScrollBar.Value = Points.VerticalOffset;
             }
         }
     }

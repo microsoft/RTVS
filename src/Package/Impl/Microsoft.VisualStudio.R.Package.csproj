@@ -69,6 +69,7 @@
     <Compile Include="DataInspect\DataSource\PageItem.cs" />
     <Compile Include="DataInspect\DataSource\PageManager.cs" />
     <Compile Include="DataInspect\DataSource\PageNumber.cs" />
+    <Compile Include="DataInspect\DefaultHeaderData.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGrid.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCell.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCellsPanel.cs" />

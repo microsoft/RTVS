@@ -27,20 +27,20 @@
                     MinWidth="10" MinHeight="10" SnapsToDevicePixels="true"
                    Fill="{Binding HeaderBackground, RelativeSource={RelativeSource AncestorType={x:Type local:MatrixView}}}" />
         </Border>
-        <local:VisualGrid x:Name="ColumnHeader" GridType="ColumnHeader"
+        <local:VisualGrid x:Name="ColumnHeader" ScrollDirection="Horizontal"
                           Grid.Row="0" Grid.Column="1"/>
         <Rectangle x:Name="RightTopCorner"
                    Grid.Row="0" Grid.Column="2" MinWidth="10" MinHeight="10"
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.ScrollBarBackgroundBrushKey}}"/>
         
         <!-- Row 1 -->
-        <local:VisualGrid x:Name="RowHeader" GridType="RowHeader"
+        <local:VisualGrid x:Name="RowHeader" ScrollDirection="Vertical"
                             Grid.Row="1" Grid.Column="0" />
         <local:VisualGrid x:Name="Data"
                         Grid.Row="1" Grid.Column="1" />
         <ScrollBar x:Name="VerticalScrollBar" Orientation="Vertical"
                    Grid.Row="1" Grid.Column="2"
-                   Minimum="0" Maximum="1000"
+                   Minimum="0"
                    Scroll="VerticalScrollBar_Scroll"/>
 
         <!-- Row 2 -->
@@ -49,7 +49,7 @@
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.ScrollBarBackgroundBrushKey}}" />
         <ScrollBar x:Name="HorizontalScrollBar" Orientation="Horizontal"
                    Grid.Row="2" Grid.Column="1"
-                   Minimum="0" Maximum="1000"
+                   Minimum="0"
                    Scroll="HorizontalScrollBar_Scroll"/>
         <Rectangle x:Name="RightBottomCorner"
                    Grid.Row="2" Grid.Column="2" MinWidth="10" MinHeight="10"

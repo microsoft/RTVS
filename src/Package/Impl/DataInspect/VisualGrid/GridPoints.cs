@@ -3,11 +3,22 @@ using System.Windows;
 using Microsoft.VisualStudio.PlatformUI;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    internal class PointChangedEvent : EventArgs {
+        public PointChangedEvent(ScrollDirection direction) {
+            Direction = direction;
+        }
+
+        public ScrollDirection Direction { get; }
+    }
+
     /// <summary>
     /// A utility class that contains cell width and height in a grid
     /// </summary>
     internal class GridPoints {
         #region fields and ctor
+
+        private int _rowCount;
+        private int _columnCount;
 
         private double[] _xPositions;
         private double[] _yPositions;
@@ -18,24 +29,51 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _yPositionValid;
 
         public GridPoints(int rowCount, int columnCount) {
-            RowCount = rowCount;
-            ColumnCount = columnCount;
-
-            _xPositions = new double[ColumnCount + 1];  // has one more item than the count
-            _xPositionValid = false;
-            _yPositions = new double[RowCount + 1]; // has one more item than the count
-            _yPositionValid = false;
-            _width = new double[ColumnCount];
-            _height = new double[RowCount];
-
-            InitializeWidthAndHeight();
+            Reset(rowCount, columnCount);
         }
 
         #endregion
 
-        private int RowCount { get; }
+        public void Reset(int rowCount, int columnCount) {
+            _rowCount = rowCount;
+            _columnCount = columnCount;
 
-        private int ColumnCount { get; }
+            _xPositions = new double[_columnCount + 1];  // has one more item than the count
+            _xPositionValid = false;
+            _yPositions = new double[_rowCount + 1]; // has one more item than the count
+            _yPositionValid = false;
+            _width = new double[_columnCount];
+            _height = new double[_rowCount];
+
+            _horizontalOffset = 0.0;
+            _verticalOffset = 0.0;
+
+            InitializeWidthAndHeight();
+        }
+
+        public event EventHandler<PointChangedEvent> PointChanged;
+
+        private ScrollDirection _scrolledDirection = ScrollDirection.None;
+        private void OnPointChanged() {
+            if (_scrolledDirection != ScrollDirection.None
+                && PointChanged != null) {
+
+                if (_scrolledDirection.HasFlag(ScrollDirection.Horizontal)) {
+                    EnsureXPositions();
+                }
+                if (_scrolledDirection.HasFlag(ScrollDirection.Vertical)) {
+                    EnsureYPositions();
+                }
+
+                PointChanged(this, new PointChangedEvent(_scrolledDirection));
+            }
+
+            _scrolledDirection = ScrollDirection.None;
+        }
+
+        public DeferNotification DeferChangeNotification() {
+            return new DeferNotification(this);
+        }
 
         public double MinItemWidth { get { return 20.0; } }
 
@@ -46,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         public double Width {
             get {
-                return _xPositions[ColumnCount];
+                return _xPositions[_columnCount];
             }
         }
 
@@ -55,7 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         public double Height {
             get {
-                return _yPositions[RowCount];
+                return _yPositions[_rowCount];
             }
         }
 
@@ -71,6 +109,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 if (!_verticalOffset.AreClose(newOffset)) {
                     _verticalOffset = newOffset;
+                    _scrolledDirection |= ScrollDirection.Vertical;
                 }
             }
         }
@@ -87,6 +126,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 if (!_horizontalOffset.AreClose(newOffset)) {
                     _horizontalOffset = newOffset;
+                    _scrolledDirection |= ScrollDirection.Horizontal;
                 }
             }
         }
@@ -94,14 +134,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public double VerticalExtent {
             get {
                 EnsureYPositions();
-                return _yPositions[RowCount];
+                return _yPositions[_rowCount];
             }
         }
 
         public double HorizontalExtent {
             get {
                 EnsureXPositions();
-                return _xPositions[ColumnCount];
+                return _xPositions[_columnCount];
             }
         }
 
@@ -123,6 +163,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (_width[xIndex].LessThan(value)) {
                 _width[xIndex] = value;
                 _xPositionValid = false;
+                _scrolledDirection |= ScrollDirection.Horizontal;
             }
         }
 
@@ -138,6 +179,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (_height[yIndex].LessThan(value)) {
                 _height[yIndex] = value;
                 _yPositionValid = false;
+                _scrolledDirection |= ScrollDirection.Vertical;
             }
         }
 
@@ -165,11 +207,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void InitializeWidthAndHeight() {
-            for (int i = 0; i < ColumnCount; i++) {
+            for (int i = 0; i < _columnCount; i++) {
                 _width[i] = MinItemWidth;
             }
 
-            for (int i = 0; i < RowCount; i++) {
+            for (int i = 0; i < _rowCount; i++) {
                 _height[i] = MinItemHeight;
             }
 
@@ -182,7 +224,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             double width = 0.0;
             int columnCount = 0;
-            for (int c = columnStart; c < ColumnCount; c++) {
+            for (int c = columnStart; c < _columnCount; c++) {
                 width += GetWidth(c);
                 columnCount++;
                 if (width.GreaterThanOrClose(visualViewport.Width)) {
@@ -193,7 +235,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             double height = 0.0;
             int rowEnd = rowStart;
             int rowCount = 0;
-            for (int r = rowStart; r < RowCount; r++) {
+            for (int r = rowStart; r < _rowCount; r++) {
                 height += GetHeight(r);
                 rowCount++;
                 if (height.GreaterThanOrClose(visualViewport.Height)) {
@@ -221,7 +263,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void ComputeYPositions() {
             double height = 0.0;
-            for (int i = 0; i < RowCount; i++) {
+            for (int i = 0; i < _rowCount; i++) {
                 height += _height[i];
                 _yPositions[i + 1] = height;
             }
@@ -236,7 +278,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void ComputeXPositions() {
             double width = 0.0;
-            for (int i = 0; i < ColumnCount; i++) {
+            for (int i = 0; i < _columnCount; i++) {
                 width += _width[i];
                 _xPositions[i + 1] = width;
             }
@@ -244,5 +286,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         #endregion
+
+        public class DeferNotification : IDisposable {
+            private GridPoints _gridPoints;
+            public DeferNotification(GridPoints gridPoints) {
+                _gridPoints = gridPoints;
+            }
+
+            public void Dispose() {
+                if (_gridPoints != null) {
+                    _gridPoints.OnPointChanged();
+
+                    _gridPoints = null;
+                }
+            }
+        }
     }
 }

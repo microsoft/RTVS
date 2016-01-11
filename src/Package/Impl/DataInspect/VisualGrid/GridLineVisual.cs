@@ -6,7 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// DrawingVisual for grid's line
     /// </summary>
     internal class GridLineVisual : DrawingVisual {
-        public GridType GridType { get; set; }
+        public ScrollDirection ScrollDirection { get; set; }
 
         public double GridLineThickness { get { return 1.0; } }
 
@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             try {
                 // vertical line
-                double xBias = GridType == GridType.RowHeader ? points.HorizontalOffset : 0;
+                double xBias = ScrollDirection == ScrollDirection.Vertical ? points.HorizontalOffset : 0;
                 xBias -= GridLineThickness;
 
                 double renderHeight = points.GetHeight(range.Rows);
@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 // horizontal line
-                double yBias = GridType == GridType.ColumnHeader ? points.VerticalOffset : 0;
+                double yBias = ScrollDirection == ScrollDirection.Horizontal ? points.VerticalOffset : 0;
                 yBias -= GridLineThickness;
 
                 double renderWidth = points.GetWidth(range.Columns);
