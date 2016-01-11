@@ -7,7 +7,6 @@ using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
-using Microsoft.R.Support.Settings;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -74,7 +73,7 @@ namespace Microsoft.R.Host.Client.Session {
             await cancelTask;
         }
 
-        public async Task StartHostAsync(string name, IntPtr plotWindowHandle) {
+        public async Task StartHostAsync(string name, string rBasePath, string rCommandLineArguments, string cranMirrorName, IntPtr plotWindowHandle) {
             if (_hostRunTask != null && !_hostRunTask.IsCompleted) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
@@ -85,9 +84,9 @@ namespace Microsoft.R.Host.Client.Session {
             _initializationTcs = new TaskCompletionSource<object>();
 
             _hostRunTask = _host.CreateAndRun(
-                RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath),
+                RInstallation.GetRInstallPath(rBasePath),
                 useReparentPlot ? plotWindowHandle : IntPtr.Zero,
-                RToolsSettings.Current);
+                rCommandLineArguments);
             this.ScheduleEvaluation(async e => {
                 await e.SetDefaultWorkingDirectory();
                 await e.SetRdHelpExtraction();
@@ -97,8 +96,7 @@ namespace Microsoft.R.Host.Client.Session {
                         await e.SetVsGraphicsDevice();
                     }
 
-                    string mirrorName = RToolsSettings.Current.CranMirror;
-                    string mirrorUrl = _hostClientApp.CranUrlFromName(mirrorName);
+                    string mirrorUrl = _hostClientApp.CranUrlFromName(cranMirrorName);
                     await e.SetVsCranSelection(mirrorUrl);
 
                     await e.SetVsHelpRedirection();

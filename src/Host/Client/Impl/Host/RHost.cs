@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
-using Microsoft.R.Support.Settings.Definitions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -488,7 +487,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task CreateAndRun(string rHome, IntPtr plotWindowContainerHandle, IRToolsSettings settings, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
+        public async Task CreateAndRun(string rHome, IntPtr plotWindowContainerHandle, string rCommandLineArguments, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath()), RHostExe);
@@ -546,8 +545,8 @@ namespace Microsoft.R.Host.Client {
                 psi.CreateNoWindow = true;
             }
 
-            if (!string.IsNullOrWhiteSpace(settings.RCommandLineArguments)) {
-                psi.Arguments += Invariant($" {settings.RCommandLineArguments}");
+            if (!string.IsNullOrWhiteSpace(rCommandLineArguments)) {
+                psi.Arguments += Invariant($" {rCommandLineArguments}");
             }
 
             using (this)

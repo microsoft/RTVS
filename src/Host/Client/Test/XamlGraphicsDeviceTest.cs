@@ -237,7 +237,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
                 CreateNoWindow = true
             };
 
-            await host.CreateAndRun(rhome, IntPtr.Zero, new TestRToolsSettings(), psi);
+            await host.CreateAndRun(rhome, IntPtr.Zero, string.Empty, psi);
 
             File.Exists(outputFilePath).Should().BeTrue();
             var doc = XDocument.Load(outputFilePath);
