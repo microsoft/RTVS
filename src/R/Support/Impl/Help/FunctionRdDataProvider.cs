@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Host.Client.Signatures {
     /// <summary>
@@ -45,7 +46,12 @@ namespace Microsoft.R.Host.Client.Signatures {
                 var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 _session = provider.Create(_sessionId, null);
                 _session.Disposed += OnSessionDisposed;
-                await _session.StartHostAsync("RdData", IntPtr.Zero);
+
+                await _session.StartHostAsync(new RHostStartupInfo {
+                    Name = "RdData",
+                    RBasePath = RToolsSettings.Current.RBasePath,
+                    CranMirrorName = RToolsSettings.Current.CranMirror
+                });
             }
         }
 

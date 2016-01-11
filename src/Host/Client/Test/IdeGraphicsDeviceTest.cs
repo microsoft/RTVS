@@ -370,9 +370,7 @@ Sys.sleep(1)
             _callbacks.SetInput(SetupCode + "\n" + code + "\n");
             var host = new RHost("Test", _callbacks);
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
-            var psi = new ProcessStartInfo();
-            psi.CreateNoWindow = true;
-            host.CreateAndRun(rhome, IntPtr.Zero, new TestRToolsSettings(), psi).GetAwaiter().GetResult();
+            host.CreateAndRun(rhome, string.Empty).GetAwaiter().GetResult();
 
             // Ensure that all plot files created by the graphics device have been deleted
             foreach (var deletedFilePath in _callbacks.OriginalPlotFilePaths) {

@@ -14,20 +14,22 @@ namespace Microsoft.VisualStudio.R.Package.History {
     internal class RHistoryProvider : IRHistoryProvider {
         private const string IntraTextAdornmentBufferKey = "IntraTextAdornmentBuffer";
 
-        [Import]
-        private IEditorOperationsFactoryService EditorOperationsFactory { get; set; }
-
-        [Import]
-        private IRtfBuilderService RtfBuilderService { get; set; }
-
-        [Import]
-        private IFileSystem FileSystem { get; set; }
-
-        [Import]
-        private ITextSearchService2 TextSearchService { get; set; }
-
         public IRHistory GetAssociatedRHistory(ITextView textView) {
             return textView.Properties.GetOrCreateSingletonProperty(typeof(RHistory), () => CreateRHistory(textView));
+        }
+
+        private readonly IFileSystem _fileSystem;
+        private readonly IEditorOperationsFactoryService _editorOperationsFactory;
+        private readonly IRtfBuilderService _rtfBuilderService;
+        private readonly ITextSearchService2 _textSearchService;
+
+        [ImportingConstructor]
+        public RHistoryProvider(IFileSystem fileSystem, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService) {
+            _fileSystem = fileSystem;
+            _editorOperationsFactory = editorOperationsFactory;
+            _rtfBuilderService = rtfBuilderService;
+            _textSearchService = textSearchService;
+            _rtfBuilderService = rtfBuilderService;
         }
 
         private RHistory CreateRHistory(ITextView textView) {
@@ -39,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
 
             var vsUiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            return new RHistory(textView, FileSystem, RToolsSettings.Current, EditorOperationsFactory, elisionBuffer, RtfBuilderService, TextSearchService, vsUiShell);
+            return new RHistory(textView, _fileSystem, RToolsSettings.Current, _editorOperationsFactory, elisionBuffer, _rtfBuilderService, _textSearchService, vsUiShell);
         }
     }
 }

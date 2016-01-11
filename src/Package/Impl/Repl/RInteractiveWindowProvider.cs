@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.History;
@@ -46,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 var session = SessionProvider.Create(instanceId, new RHostClientApp());
                 var history = HistoryProvider.GetAssociatedRHistory(textView);
 
-                evaluator = new RInteractiveEvaluator(session, history);
+                evaluator = new RInteractiveEvaluator(session, history, RToolsSettings.Current);
 
                 EventHandler<EventArgs> clearPendingInputsHandler = (sender, args) => ReplWindow.Current.ClearPendingInputs();
                 session.Disconnected += clearPendingInputsHandler;
