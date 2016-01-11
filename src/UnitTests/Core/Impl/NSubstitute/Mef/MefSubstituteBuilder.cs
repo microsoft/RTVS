@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.ReflectionModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -11,6 +12,7 @@ using Microsoft.Common.Core;
 
 namespace Microsoft.UnitTests.Core.NSubstitute.Mef
 {
+    [ExcludeFromCodeCoverage]
     public partial class MefSubstituteBuilder
     {
         private readonly HashSet<Type> _types;

@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
 
             if (_regenerateBaselineFiles) {
                 // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"C:\RTVS\src\Package\TestApp\Files";
+                string enlistmentPath = @"F:\RTVS\src\Package\TestApp\Files";
                 string baselineFilePath = Path.Combine(enlistmentPath, Path.GetFileName(testFileName));
                 TestFiles.UpdateBaseline(baselineFilePath, actual);
             } else {

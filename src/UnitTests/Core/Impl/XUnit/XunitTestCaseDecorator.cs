@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.UnitTests.Core.XUnit.MessageBusInjections;
 using Xunit.Abstractions;
@@ -6,6 +7,7 @@ using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit
 {
+    [ExcludeFromCodeCoverage]
     internal sealed class XunitTestCaseDecorator : XunitTestCaseDecoratorBase
     {
         public XunitTestCaseDecorator(IXunitTestCase testCase) : base(testCase)

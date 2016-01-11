@@ -1,14 +1,17 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using Microsoft.Languages.Core.Tokens;
 
 namespace Microsoft.Languages.Core.Test.Assertions {
+    [ExcludeFromCodeCoverage]
     public class TokenAssertions<TTokenType> : TokenAssertions<IToken<TTokenType>, TTokenType, TokenAssertions<TTokenType>> {
         public TokenAssertions(IToken<TTokenType> token) : base(token) {}
     }
 
+    [ExcludeFromCodeCoverage]
     public abstract class TokenAssertions<T, TTokenType, TAssertion> : ReferenceTypeAssertions<T, TokenAssertions<T, TTokenType, TAssertion>> 
         where T: IToken<TTokenType>
         where TAssertion : TokenAssertions<T, TTokenType, TAssertion> {

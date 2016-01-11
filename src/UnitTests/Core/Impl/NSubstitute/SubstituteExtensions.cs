@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
 using NSubstitute.Core;
 
 namespace Microsoft.UnitTests.Core.NSubstitute
 {
+    [ExcludeFromCodeCoverage]
     public static class SubstituteExtensions
     {
         public static ConfiguredCall ReturnsAsync<T>(this Task<T> value, T returnThis, params T[] returnThese)

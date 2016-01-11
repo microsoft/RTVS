@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.QuickInfo;
@@ -6,6 +7,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Test.Utility {
+    [ExcludeFromCodeCoverage]
     internal static class QuickInfoSourceUtility {
         internal static Task<ITrackingSpan> AugmentQuickInfoSessionAsync(this QuickInfoSource quickInfoSource, AstRoot ast, int caretPosition, IQuickInfoSession quickInfoSession, IList<object> quickInfoContent) {
             var tcs = new TaskCompletionSource<ITrackingSpan>();

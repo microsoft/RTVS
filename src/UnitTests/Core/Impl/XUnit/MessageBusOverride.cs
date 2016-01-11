@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.UnitTests.Core.XUnit.MessageBusInjections;
 using Xunit.Abstractions;
@@ -7,6 +8,7 @@ using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit
 {
+    [ExcludeFromCodeCoverage]
     internal class MessageBusOverride : IMessageBus
     {
         private readonly IMessageBus _innerMessageBus;

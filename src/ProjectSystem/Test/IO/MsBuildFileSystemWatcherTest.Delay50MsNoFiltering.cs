@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
 {
+    [ExcludeFromCodeCoverage]
     public partial class MsBuildFileSystemWatcherTest
     {
         public class Delay50MsNoFiltering : IAsyncLifetime

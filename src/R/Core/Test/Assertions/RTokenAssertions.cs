@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Languages.Core.Test.Assertions;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Test.Assertions {
+    [ExcludeFromCodeCoverage]
     internal class RTokenAssertions : TokenAssertions<RToken, RTokenType, RTokenAssertions> {
         public RTokenAssertions(RToken token) : base(token) {}
 

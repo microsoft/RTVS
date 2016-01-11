@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Common.Core.IO;
 using NSubstitute;
@@ -6,6 +7,7 @@ using NSubstitute.ExceptionExtensions;
 
 namespace Microsoft.Common.Core.Test.IO.SubstituteFactories
 {
+    [ExcludeFromCodeCoverage]
     public static class FileInfoFactory
     {
         public static IFileInfo Create(IFileSystem fileSystem, string path)

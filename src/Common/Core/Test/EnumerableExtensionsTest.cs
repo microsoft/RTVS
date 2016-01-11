@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Common.Core.Test
 {
+    [ExcludeFromCodeCoverage]
     public class EnumerableExtensionsTest
     {
         [Test]
@@ -142,6 +144,7 @@ namespace Microsoft.Common.Core.Test
             actual.Select(i => i.Value).Should().Equal(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
         }
 
+        [ExcludeFromCodeCoverage]
         public class TreeItem
         {
             public int Value { get; }
