@@ -10,8 +10,8 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Task = System.Threading.Tasks.Task;
 using static System.FormattableString;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Debugger.Engine {
     [ComVisible(true)]
@@ -25,9 +25,9 @@ namespace Microsoft.R.Debugger.Engine {
         private Guid _programId;
         private bool _firstContinue = true;
         private bool? _sentContinue = null;
+        private volatile DebugBrowseEventArgs _currentBrowseEventArgs;
 
         internal bool IsDisposed { get; private set; }
-        internal bool IsBrowsing { get; private set; }
         internal bool IsConnected { get; private set; }
         internal DebugSession DebugSession { get; private set; }
         internal AD7Thread MainThread { get; private set; }
@@ -52,10 +52,10 @@ namespace Microsoft.R.Debugger.Engine {
                 return;
             }
 
+            var rSession = DebugSession.RSession;
             DebugSession.Browse -= Session_Browse;
             DebugSession.RSession.AfterRequest -= RSession_AfterRequest;
             DebugSession.RSession.Disconnected -= RSession_Disconnected;
-            DebugSession.ExitBrowserAsync().DoNotWait();
 
             _events = null;
             _program = null;
@@ -68,11 +68,24 @@ namespace Microsoft.R.Debugger.Engine {
             DebugSessionProvider = null;
 
             IsDisposed = true;
+
+            ExitBrowserAsync(rSession).SilenceException<MessageTransportException>().DoNotWait();
         }
 
         private void ThrowIfDisposed() {
             if (IsDisposed) {
                 throw new ObjectDisposedException(nameof(AD7Engine));
+            }
+        }
+
+        private async Task ExitBrowserAsync(IRSession session) {
+            using (var inter = await session.BeginInteractionAsync(isVisible: true)) {
+                // Check if this is still the same prompt as the last Browse prompt that we've seen.
+                // If it isn't, then session has moved on already, and there's nothing for us to exit.
+                var currentBrowseDebugEventArgs = _currentBrowseEventArgs;
+                if (currentBrowseDebugEventArgs != null && currentBrowseDebugEventArgs.Contexts == inter.Contexts) {
+                    await inter.RespondAsync("Q\n");
+                }
             }
         }
 
@@ -488,7 +501,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void Session_Browse(object sender, DebugBrowseEventArgs e) {
-            IsBrowsing = true;
+            _currentBrowseEventArgs = e;
             _sentContinue = false;
 
             // If we hit a breakpoint or completed a step, we have already reported the stop from the corresponding handlers.
@@ -501,10 +514,11 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
-            if (!IsBrowsing) {
+            if (_currentBrowseEventArgs == null) {
                 return;
             }
-            IsBrowsing = false;
+
+            _currentBrowseEventArgs = null;
 
             if (_sentContinue == false) {
                 // User has explicitly typed something at the Browse prompt, so tell the debugger that
