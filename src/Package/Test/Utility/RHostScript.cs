@@ -14,7 +14,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
         public RHostScript() {
             SessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             Session = SessionProvider.Create(0, new RHostClientApp());
-            Session.StartHostAsync("RHostScript", RToolsSettings.Current.RBasePath, RToolsSettings.Current.RCommandLineArguments, RToolsSettings.Current.CranMirror, IntPtr.Zero).Wait();
+            
+
+            Session.StartHostAsync(new RHostStartupInfo {
+                Name = "RHostScript",
+                RBasePath = RToolsSettings.Current.RBasePath,
+                RCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
+                CranMirrorName = RToolsSettings.Current.CranMirror
+            }).Wait();
         }
 
         public void Dispose() {

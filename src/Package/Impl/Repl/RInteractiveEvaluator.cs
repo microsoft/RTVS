@@ -47,7 +47,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public async Task<ExecutionResult> InitializeAsync() {
             try {
-                await Session.StartHostAsync("REPL", _toolsSettings.RBasePath, _toolsSettings.RCommandLineArguments, _toolsSettings.CranMirror, _plotWindowHandle);
+                await Session.StartHostAsync(new RHostStartupInfo {
+                    Name = "REPL",
+                    RBasePath = _toolsSettings.RBasePath,
+                    RCommandLineArguments = _toolsSettings.RCommandLineArguments,
+                    CranMirrorName = _toolsSettings.CranMirror
+                });
+
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);

@@ -487,7 +487,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task CreateAndRun(string rHome, IntPtr plotWindowContainerHandle, string rCommandLineArguments, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
+        public async Task CreateAndRun(string rHome, string rCommandLineArguments, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath()), RHostExe);
@@ -532,15 +532,18 @@ namespace Microsoft.R.Host.Client {
                 throw new MessageTransportException(new SocketException((int)SocketError.AddressAlreadyInUse));
             }
 
-            psi = psi ?? new ProcessStartInfo();
-            psi.FileName = rhostExe;
-            psi.UseShellExecute = false;
+            var psi = new ProcessStartInfo {
+                FileName = rhostExe,
+                UseShellExecute = false
+            };
+
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
+
             if (_name != null) {
                 psi.Arguments += " --rhost-name " + _name;
             }
-            psi.Arguments += Invariant($" --rhost-connect ws://127.0.0.1:{server.Port} --rhost-reparent-plot-windows {plotWindowContainerHandle.ToInt64()}");
+
             if (!showConsole) {
                 psi.CreateNoWindow = true;
             }
