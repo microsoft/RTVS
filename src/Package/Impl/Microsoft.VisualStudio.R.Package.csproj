@@ -62,6 +62,7 @@
     <Compile Include="DataInspect\DataSource\IGridProvider.cs" />
     <Compile Include="DataInspect\DataSource\IListProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
+    <Compile Include="DataInspect\DataSource\ListToRange.cs" />
     <Compile Include="DataInspect\DataSource\Page.cs" />
     <Compile Include="DataInspect\DataSource\Page2D.cs" />
     <Compile Include="DataInspect\DataSource\Page2DManager.cs" />

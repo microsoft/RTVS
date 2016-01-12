@@ -38,29 +38,6 @@ namespace Microsoft.VisualStudio.R.TestApp {
         }
     }
 
-    class MockRange : IRange<string> {
-        private bool _columnMode;
-        public MockRange(Range range, bool columnMode) {
-            Range = range;
-            _columnMode = columnMode;
-        }
-
-        public string this[int index] {
-            get {
-                if (_columnMode) {
-                    return string.Format("[{0},]", index);
-                }
-                return string.Format("[,{0}]", index);
-            }
-
-            set {
-                throw new NotImplementedException();
-            }
-        }
-
-        public Range Range { get; }
-    }
-
     class MockGridData : IGridData<string> {
         public MockGridData(GridRange range) {
             ColumnHeader = new DefaultHeaderData(range.Columns, DefaultHeaderData.Mode.Column);
