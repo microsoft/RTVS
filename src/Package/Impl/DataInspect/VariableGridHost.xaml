@@ -17,5 +17,9 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <local:DynamicGrid x:Name="VariableGrid" />
+    <local:MatrixView x:Name="VariableGrid"
+                      GridLinesBrush="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}"
+                      HeaderLinesBrush="{DynamicResource {x:Static vsui:HeaderColors.SeparatorLineBrushKey}}"
+                      GridBackground="{DynamicResource {x:Static vsui:TreeViewColors.BackgroundBrushKey}}"
+                      HeaderBackground="{DynamicResource {x:Static vsui:HeaderColors.DefaultBrushKey}}"/>
 </UserControl>

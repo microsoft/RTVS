@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
@@ -129,12 +130,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get { return Name.StartsWith(HiddenVariablePrefix); }
         }
 
-        private string FirstLine(string multiLine) {
-            int firstLine = multiLine.IndexOfAny(NewLineDelimiter);
-            if (firstLine == -1) {
-                return multiLine;
-            } else {
-                return multiLine.Substring(0, firstLine);
+        public string Expression {
+            get {
+                return _evaluation.Expression;
             }
         }
 

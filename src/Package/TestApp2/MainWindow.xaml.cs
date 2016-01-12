@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 
 namespace Microsoft.VisualStudio.R.TestApp {
@@ -10,8 +11,8 @@ namespace Microsoft.VisualStudio.R.TestApp {
     /// </summary>
     public partial class MainWindow : Window {
 
-        private static int RowCount = 20;
-        private static int ColumnCount = 20;
+        private static int RowCount = 500;
+        private static int ColumnCount = 1000;
 
         public MainWindow() {
             InitializeComponent();

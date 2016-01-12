@@ -12,7 +12,6 @@ using Task = System.Threading.Tasks.Task;
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
         private static string DefaultPrompt = "> ";
-        private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
@@ -89,9 +88,7 @@ namespace Microsoft.R.Host.Client.Session {
                 await e.SetRdHelpExtraction();
 
                 if (_hostClientApp != null) {
-                    if (!useReparentPlot) {
-                        await e.SetVsGraphicsDevice();
-                    }
+                    await e.SetVsGraphicsDevice();
 
                     string mirrorUrl = _hostClientApp.CranUrlFromName(startupInfo.CranMirrorName);
                     await e.SetVsCranSelection(mirrorUrl);

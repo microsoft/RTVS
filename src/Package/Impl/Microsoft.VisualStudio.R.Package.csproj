@@ -62,12 +62,14 @@
     <Compile Include="DataInspect\DataSource\IGridProvider.cs" />
     <Compile Include="DataInspect\DataSource\IListProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
+    <Compile Include="DataInspect\DataSource\ListToRange.cs" />
     <Compile Include="DataInspect\DataSource\Page.cs" />
     <Compile Include="DataInspect\DataSource\Page2D.cs" />
     <Compile Include="DataInspect\DataSource\Page2DManager.cs" />
     <Compile Include="DataInspect\DataSource\PageItem.cs" />
     <Compile Include="DataInspect\DataSource\PageManager.cs" />
     <Compile Include="DataInspect\DataSource\PageNumber.cs" />
+    <Compile Include="DataInspect\DefaultHeaderData.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGrid.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCell.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCellsPanel.cs" />
@@ -76,8 +78,19 @@
     <Compile Include="DataInspect\DynamicGrid\DynamicGridRowsPanel.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridUtilities.cs" />
+    <Compile Include="DataInspect\Elapsed.cs" />
+    <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
+    <Compile Include="DataInspect\GridParser.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
+    <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
+    <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixView.xaml.cs">
+      <DependentUpon>MatrixView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
+    <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
+    <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
@@ -155,14 +168,7 @@
     <Compile Include="Plots\Commands\ZoomInPlotCommand.cs" />
     <Compile Include="Plots\Commands\PrintPlotCommand.cs" />
     <Compile Include="Plots\IPlotContentProvider.cs" />
-    <Compile Include="Plots\NativeMethods.cs" />
     <Compile Include="Plots\PlotContentProvider.cs" />
-    <Compile Include="Plots\PlotWindowCommandController.cs" />
-    <Compile Include="Plots\PlotWindowMenu.cs" />
-    <Compile Include="Plots\RPlotWindowContainer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Plots\RPlotWindowHost.cs" />
     <Compile Include="ProjectSystem\ExcludeFromProjectCommand.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />
@@ -774,6 +780,10 @@
     <Page Include="DataInspect\VariableGridHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataInspect\VisualGrid\MatrixView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Plots\XamlPresenter.xaml">
       <Generator>MSBuild:Compile</Generator>

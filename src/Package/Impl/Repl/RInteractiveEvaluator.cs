@@ -18,9 +18,6 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
         private readonly IRToolsSettings _toolsSettings;
-        private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
-
-        private readonly IntPtr _plotWindowHandle;
 
         public IRHistory History { get; }
         public IRSession Session { get; }
@@ -31,13 +28,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
             _toolsSettings = toolsSettings;
-
-            if (useReparentPlot) {
-                // Cache handle here since it must be done on UI thread
-                _plotWindowHandle = RPlotWindowHost.RPlotWindowContainerHandle;
-            } else {
-                _plotWindowHandle = IntPtr.Zero;
-            }
         }
 
         public void Dispose() {

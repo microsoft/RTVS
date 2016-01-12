@@ -4,15 +4,7 @@
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IGrid<T> {
-        /// <summary>
-        /// number of rows
-        /// </summary>
-        int RowCount { get; }
-
-        /// <summary>
-        /// number of columns
-        /// </summary>
-        int ColumnCount { get; }
+        GridRange Range { get; }
 
         /// <summary>
         /// Return value at given position
@@ -24,6 +16,14 @@
         /// <exception cref="InvalidOperationException">when failed at setting or getting the value</exception>
         /// <exception cref="NotSupportedException">setter, when the grid is read only</exception>
         T this[int rowIndex, int columnIndex] {
+            get; set;
+        }
+    }
+
+    public interface IRange<T> {
+        Range Range { get; }
+
+        T this[int index] {
             get; set;
         }
     }

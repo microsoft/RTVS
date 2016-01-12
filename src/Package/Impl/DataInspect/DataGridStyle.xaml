@@ -110,4 +110,8 @@
         <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}" />
         <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}" />
     </Style>
+    
+    <Style TargetType="{x:Type DataGridRowHeader}">
+        <Setter Property="Background" Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}" />
+    </Style>
 </ResourceDictionary>

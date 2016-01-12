@@ -46,38 +46,36 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        /// <summary>
-        /// R current session change triggers this SessionsChanged event
-        /// </summary>
-        public event EventHandler SessionsChanged;
         public event EventHandler<VariableChangedArgs> VariableChanged;
 
         public EvaluationWrapper LastEvaluation { get; private set; }
 
-        public async Task<JToken> EvaluateGridDataAsync(string expression, string rows, string columns) {
+        public async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange gridRange) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            using (var evaluation = await _debugSession.RSession.BeginEvaluationAsync(false)) {
-                var result = await evaluation.EvaluateAsync($"rtvs:::toJSON(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Json);
+            var rSession = _rSession;
 
-                if (result.ParseStatus != RParseStatus.OK || result.Error != null || result.JsonResult == null) {
-                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
+            string rows = RangeToRString(gridRange.Rows);
+            string columns = RangeToRString(gridRange.Columns);
+
+            using (var elapsed = new Elapsed("Data:Evaluate:")) {
+                using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
+                    var result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
+
+                    if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
+                        throw new InvalidOperationException($"Grid data evaluation failed:{result}");
+                    }
+
+                    var data = GridParser.Parse(result.StringResult);
+                    data.Range = gridRange;
+
+                    if (data.ColumnNames.Count != gridRange.Columns.Count
+                        || data.RowNames.Count != gridRange.Rows.Count) {
+                        throw new InvalidOperationException("The number of evaluatoin data doesn't match with what is requested");
+                    }
+
+                    return data;
                 }
-
-                return result.JsonResult;
-            }
-        }
-
-        public async Task<GridHeader> EvaluateGridHeaderAsync(string expression, string range, bool isRow) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            using (var evaluation = await _debugSession.RSession.BeginEvaluationAsync(false)) {
-                var result = await evaluation.EvaluateAsync($"rtvs:::toJSON(rtvs:::grid.header({expression}, {range}, {isRow.ToString().ToUpperInvariant()}))", REvaluationKind.Normal);
-                if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
-                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
-                }
-                Debug.Assert(result.StringResult != null);
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<GridHeader>(result.StringResult);
             }
         }
 
@@ -128,11 +126,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 _rSession.Mutated += RSession_Mutated;
                 await InitializeData();
             }
-
-            // notify the change
-            if (SessionsChanged != null) {
-                SessionsChanged(this, EventArgs.Empty);
-            }
         }
 
         private async Task RefreshVariableCollection() {
@@ -154,6 +147,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     new VariableChangedArgs() { NewVariable = LastEvaluation });
                 }
             }
+        }
+
+        private static string RangeToRString(Range range) {
+            return $"{range.Start + 1}:{range.Start + range.Count}";
         }
     }
 }

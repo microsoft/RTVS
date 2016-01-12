@@ -23,11 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private int _lastWidth;
         private int _lastHeight;
 
-        /// <summary>
-        /// R current session change triggers this SessionsChanged event
-        /// </summary>
-        public event EventHandler SessionsChanged;
-
         public PlotContentProvider() {
             _lastWidth = -1;
             _lastHeight = -1;
@@ -59,11 +54,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 // debug session is created to trigger a load of the R package
                 // that has functions we need such as rtvs:::toJSON
                 var debugSession = await _debugSessionProvider.GetDebugSessionAsync(_rSession);
-            }
-
-            // notify the change
-            if (SessionsChanged != null) {
-                SessionsChanged(this, EventArgs.Empty);
             }
         }
 
