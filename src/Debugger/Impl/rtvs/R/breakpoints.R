@@ -126,7 +126,7 @@ inject_breakpoints <- function(expr) {
   }
   
   filename <- getSrcFilename(expr);
-  if (is.null(filename) || !is.character(filename) || length(filename) != 1 || is.na(filename)) {
+  if (is.null(filename) || !is.character(filename) || length(filename) != 1 || is.na(filename) || identical(filename, '')) {
     return(NULL);
   }
   
