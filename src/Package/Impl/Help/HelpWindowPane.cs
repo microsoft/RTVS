@@ -155,7 +155,11 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private static bool IsHelpUrl(string url) {
-            return url.StartsWith("http://127.0.0.1");
+            Uri uri = new Uri(url);
+            // dynamicHelp.R (startDynamicHelp function):
+            // # Choose 10 random port numbers between 10000 and 32000
+            // ports <- 10000 + 22000*((stats::runif(10) + unclass(Sys.time())/300) %% 1)
+            return uri.IsLoopback && uri.Port >= 10000 && uri.Port <= 32000 && !string.IsNullOrEmpty(uri.PathAndQuery);
         }
 
         private IEnumerable<ICommand> GetCommands() {
