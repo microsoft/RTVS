@@ -11,10 +11,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableGridHost : UserControl {
         public VariableGridHost() {
             InitializeComponent();
-        }
 
+            Loaded += VariableGridHost_Loaded;
+            Unloaded += VariableGridHost_Unloaded;
+        }
+        
         internal void SetEvaluation(EvaluationWrapper evaluation) {
             VariableGrid.Initialize(new DataProvider(evaluation));
+        }
+
+        private void VariableGridHost_Loaded(object sender, System.Windows.RoutedEventArgs e) {
+            VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
+        }
+
+        private void VariableGridHost_Unloaded(object sender, System.Windows.RoutedEventArgs e) {
+            VariableProvider.Current.VariableChanged -= VariableProvider_VariableChanged;
+        }
+
+        private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
+            VariableGrid.Refresh();
         }
     }
 
@@ -32,31 +47,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public int RowCount { get; }
 
-        public async Task<IGridData<string>> GetAsync(GridRange gridRange) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            string rows = RangeToRString(gridRange.Rows);
-            string cols = RangeToRString(gridRange.Columns);
-
-            var result = await VariableProvider.Current.EvaluateGridDataAsync(_evaluation.Name, rows, cols);
-
-            var data = GridParser.Parse(result);
-            data.Range = gridRange;
-
-            if (data.ColumnNames.Count != gridRange.Columns.Count
-                || data.RowNames.Count != gridRange.Rows.Count) {
-                throw new InvalidOperationException("The number of evaluatoin data doesn't match with what is requested");
-            }
-
-            return data;
+        public Task<IGridData<string>> GetAsync(GridRange gridRange) {
+            return VariableProvider.Current.GetGridDataAsync(_evaluation.Expression, gridRange);
         }
 
         public Task<IGrid<string>> GetRangeAsync(GridRange gridRange) {
             throw new NotImplementedException();
-        }
-
-        private static string RangeToRString(Range range) {
-            return $"{range.Start + 1}:{range.Start + range.Count}";
         }
     }
 }

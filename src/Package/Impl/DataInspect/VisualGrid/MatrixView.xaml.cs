@@ -41,6 +41,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             VerticalScrollBar.Value = VerticalScrollBar.Minimum;
         }
 
+        public void Refresh() {
+            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
+        }
+
         private GridPoints _gridPoints;
         private GridPoints Points {
             get {
@@ -75,8 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 Points.Reset(_dataProvider.RowCount, _dataProvider.ColumnCount);
 
-                // queue fake command for visual refresh
-                _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, 0);
+                Refresh();
             }
         }
 
@@ -105,7 +108,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RowHeader.Foreground = foregroundBrush;
             Data.Foreground = foregroundBrush;
 
-            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
+            Refresh();
         }
 
         #endregion
@@ -133,7 +136,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void OnGridLinesBrushPropertyChanged(Brush gridLineBrush) {
             Data.SetGridLineBrush(gridLineBrush);
 
-            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
+            Refresh();
         }
 
         #endregion
@@ -164,7 +167,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // VisualGrid uses OnRender to paint background color, InvalidateVisual will call it
             Data.InvalidateVisual();
 
-            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
+            Refresh();
         }
 
         #endregion
@@ -193,7 +196,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ColumnHeader.SetGridLineBrush(gridLineBrush);
             RowHeader.SetGridLineBrush(gridLineBrush);
 
-            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
+            Refresh();
         }
 
         #endregion
@@ -226,7 +229,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ColumnHeader.InvalidateVisual();
             RowHeader.InvalidateVisual();
 
-            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
+            Refresh();
         }
 
         #endregion
