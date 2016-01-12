@@ -52,6 +52,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return _workingDirectory; }
             set {
                 _workingDirectory = value;
+                // Trim trailing slash
+                if (_workingDirectory.EndsWith("\\")) {
+                    _workingDirectory = _workingDirectory.Substring(0, _workingDirectory.Length - 1);
+                }
                 UpdateWorkingDirectoryList(_workingDirectory);
                 if (EditorShell.HasShell) {
                     EditorShell.DispatchOnUIThread(() => {
