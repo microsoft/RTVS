@@ -30,6 +30,7 @@ namespace Microsoft.R.Debugger {
         private BrowseProcessingState _browseProcState;
         private DebugStackFrame _bpHitFrame;
         private volatile EventHandler<DebugBrowseEventArgs> _browse;
+        private volatile DebugBrowseEventArgs _currentBrowseEventArgs;
         private readonly object _browseLock = new object();
 
         private Dictionary<DebugBreakpointLocation, DebugBreakpoint> _breakpoints = new Dictionary<DebugBreakpointLocation, DebugBreakpoint>();
@@ -38,12 +39,13 @@ namespace Microsoft.R.Debugger {
 
         public IRSession RSession { get; private set; }
 
-        public bool IsBrowsing { get; private set; }
+        public bool IsBrowsing => _currentBrowseEventArgs != null;
 
         public event EventHandler<DebugBrowseEventArgs> Browse {
             add {
-                if (IsBrowsing) {
-                    value?.Invoke(this, new DebugBrowseEventArgs(false, null));
+                var eventArgs = _currentBrowseEventArgs;
+                if (eventArgs != null) {
+                    value?.Invoke(this, eventArgs);
                 }
 
                 lock (_browseLock) {
@@ -136,10 +138,6 @@ namespace Microsoft.R.Debugger {
                     await inter.RespondAsync(command + "\n");
                 }
             }
-        }
-
-        public async Task ExitBrowserAsync() {
-            await ExecuteBrowserCommandAsync("Q");
         }
 
         internal async Task<REvaluationResult> InvokeDebugHelperAsync(string expression, bool json = false) {
@@ -327,8 +325,6 @@ namespace Microsoft.R.Debugger {
                 return;
             }
 
-            IsBrowsing = true;
-
             RSession.BeginInteractionAsync().ContinueWith(async t => {
                 using (var inter = await t) {
                     if (inter.Contexts != contexts) {
@@ -413,7 +409,15 @@ namespace Microsoft.R.Debugger {
                 isStepCompleted = true;
             }
 
-            _browse?.Invoke(this, new DebugBrowseEventArgs(isStepCompleted, breakpointsHit));
+            EventHandler<DebugBrowseEventArgs> browse;
+            lock (_browseLock) {
+                browse = _browse;
+            }
+
+
+            var eventArgs = new DebugBrowseEventArgs(inter.Contexts, isStepCompleted, breakpointsHit);
+            _currentBrowseEventArgs = eventArgs;
+            browse?.Invoke(this, eventArgs);
         }
 
         private void RSession_Connected(object sender, EventArgs e) {
@@ -430,7 +434,7 @@ namespace Microsoft.R.Debugger {
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
-            IsBrowsing = false;
+            _currentBrowseEventArgs = null;
         }
     }
 
@@ -443,10 +447,12 @@ namespace Microsoft.R.Debugger {
     }
 
     public class DebugBrowseEventArgs : EventArgs {
+        public IReadOnlyList<IRContext> Contexts { get; }
         public bool IsStepCompleted { get; }
         public IReadOnlyCollection<DebugBreakpoint> BreakpointsHit { get; }
 
-        public DebugBrowseEventArgs(bool isStepCompleted, IReadOnlyCollection<DebugBreakpoint> breakpointsHit) {
+        public DebugBrowseEventArgs(IReadOnlyList<IRContext> contexts, bool isStepCompleted, IReadOnlyCollection<DebugBreakpoint> breakpointsHit) {
+            Contexts = contexts;
             IsStepCompleted = isStepCompleted;
             BreakpointsHit = breakpointsHit ?? new DebugBreakpoint[0];
         }
