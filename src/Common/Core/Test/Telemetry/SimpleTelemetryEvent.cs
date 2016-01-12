@@ -3,8 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace Microsoft.Common.Core.Test.Telemetry {
+    [ExcludeFromCodeCoverage]
     internal sealed class SimpleTelemetryEvent {
-        [ExcludeFromCodeCoverage]
         public SimpleTelemetryEvent(string eventName) {
             this.Name = eventName;
         }
