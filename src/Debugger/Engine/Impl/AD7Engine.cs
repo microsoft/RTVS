@@ -83,7 +83,11 @@ namespace Microsoft.R.Debugger.Engine {
             using (var inter = await session.BeginInteractionAsync(isVisible: true)) {
                 // Check if this is still the same prompt as the last Browse prompt that we've seen.
                 // If it isn't, then session has moved on already, and there's nothing for us to exit.
-                var currentBrowseDebugEventArgs = _currentBrowseEventArgs;
+                DebugBrowseEventArgs currentBrowseDebugEventArgs;
+                lock (_browseLock) {
+                    currentBrowseDebugEventArgs = _currentBrowseEventArgs;
+                }
+
                 if (currentBrowseDebugEventArgs != null && currentBrowseDebugEventArgs.Contexts == inter.Contexts) {
                     await inter.RespondAsync("Q\n");
                 }
