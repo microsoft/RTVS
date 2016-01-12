@@ -26,6 +26,7 @@ namespace Microsoft.R.Debugger.Engine {
         private bool _firstContinue = true;
         private bool? _sentContinue = null;
         private volatile DebugBrowseEventArgs _currentBrowseEventArgs;
+        private readonly object _browseLock = new object();
 
         internal bool IsDisposed { get; private set; }
         internal bool IsConnected { get; private set; }
@@ -146,9 +147,17 @@ namespace Microsoft.R.Debugger.Engine {
             // Register event handlers after notifying VS that debug engine has loaded. This order is important because
             // we may get a Browse event immediately, and we want to raise a breakpoint notification in response to that
             // to pause the debugger - but it will be ignored unless the engine has reported its creation.
+            // Also, AfterRequest must be registered before Browse, so that we never get in a situation where we get
+            // Browse but not AfterRequest that follows it because of a race between raising and registration.
             DebugSession.RSession.AfterRequest += RSession_AfterRequest;
             DebugSession.RSession.Disconnected += RSession_Disconnected;
-            DebugSession.Browse += Session_Browse;
+
+            // If we're already at the Browse prompt, registering the handler will result in its immediate invocation.
+            // We want to handle that fully before we process any following AfterRequest event to avoid concurrency issues
+            // where we pause and never resume, so hold the lock while adding the handler. 
+            lock (_browseLock) {
+                DebugSession.Browse += Session_Browse;
+            }
 
             return VSConstants.S_OK;
         }
@@ -276,10 +285,19 @@ namespace Microsoft.R.Debugger.Engine {
                 _firstContinue = false;
             } else {
                 // If _sentContinue is true, then this is a dummy Continue issued to notify the
-                // debugger that user has explicitly entered something at the Browse prompt. 
-                if (_sentContinue != true) {
-                    _sentContinue = true;
-                    DebugSession.Continue().GetResultOnUIThread();
+                // debugger that user has explicitly entered something at the Browse prompt, and
+                // we don't actually need to issue the command to R debugger.
+
+                Task continueTask = null;
+                lock (_browseLock) {
+                    if (_sentContinue != true) {
+                        _sentContinue = true;
+                        continueTask = DebugSession.Continue();
+                    }
+                }
+
+                if (continueTask != null) {
+                    continueTask.GetResultOnUIThread();
                 }
             }
 
@@ -501,8 +519,10 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void Session_Browse(object sender, DebugBrowseEventArgs e) {
-            _currentBrowseEventArgs = e;
-            _sentContinue = false;
+            lock (_browseLock) {
+                _currentBrowseEventArgs = e;
+                _sentContinue = false;
+            }
 
             // If we hit a breakpoint or completed a step, we have already reported the stop from the corresponding handlers.
             // Otherwise, this is just a random Browse prompt, so raise a dummy breakpoint event with no breakpoints to stop.
@@ -514,16 +534,25 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
-            if (_currentBrowseEventArgs == null) {
-                return;
+            bool? sentContinue;
+            lock (_browseLock) {
+                var browseEventArgs = _currentBrowseEventArgs;
+                if (browseEventArgs == null || browseEventArgs.Contexts != e.Contexts) {
+                    // This AfterRequest does not correspond to a Browse prompt, or at least not one
+                    // that we have seen before (and paused on), so there's nothing to do.
+                    return;
+                }
+
+                _currentBrowseEventArgs = null;
+                sentContinue = _sentContinue;
             }
 
-            _currentBrowseEventArgs = null;
-
-            if (_sentContinue == false) {
+            if (sentContinue == false) {
                 // User has explicitly typed something at the Browse prompt, so tell the debugger that
                 // we're moving on by issuing a dummy Continue request to switch it to the running state.
-                _sentContinue = true;
+                lock (_browseLock) {
+                    _sentContinue = true;
+                }
 
                 var vsShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
                 Guid group = VSConstants.GUID_VSStandardCommandSet97;

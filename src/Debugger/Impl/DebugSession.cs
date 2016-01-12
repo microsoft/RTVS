@@ -43,11 +43,15 @@ namespace Microsoft.R.Debugger {
 
         public event EventHandler<DebugBrowseEventArgs> Browse {
             add {
+                DebugBrowseEventArgs eventArgs;
                 lock (_browseLock) {
-                    if (_currentBrowseEventArgs != null) {
-                        value?.Invoke(this, _currentBrowseEventArgs);
-                    }
+                    eventArgs = _currentBrowseEventArgs;
+                }
+                if (eventArgs != null) {
+                    value?.Invoke(this, eventArgs);
+                }
 
+                lock (_browseLock) {
                     _browse += value;
                 }
             }
@@ -408,10 +412,12 @@ namespace Microsoft.R.Debugger {
                 isStepCompleted = true;
             }
 
+            EventHandler<DebugBrowseEventArgs> browse;
             lock (_browseLock) {
+                browse = _browse;
                 _currentBrowseEventArgs = new DebugBrowseEventArgs(inter.Contexts, isStepCompleted, breakpointsHit);
-                _browse?.Invoke(this, _currentBrowseEventArgs);
             }
+            browse?.Invoke(this, _currentBrowseEventArgs);
         }
 
         private void RSession_Connected(object sender, EventArgs e) {
