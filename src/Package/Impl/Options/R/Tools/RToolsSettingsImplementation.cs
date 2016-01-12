@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
@@ -51,17 +52,21 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public string WorkingDirectory {
             get { return _workingDirectory; }
             set {
-                _workingDirectory = value;
+                var newDirectory = value;
                 // Trim trailing slash
-                if (_workingDirectory.EndsWith("\\")) {
-                    _workingDirectory = _workingDirectory.Substring(0, _workingDirectory.Length - 1);
+                if (newDirectory.EndsWith("\\")) {
+                    newDirectory = newDirectory.Substring(0, newDirectory.Length - 1);
                 }
-                UpdateWorkingDirectoryList(_workingDirectory);
-                if (EditorShell.HasShell) {
-                    EditorShell.DispatchOnUIThread(() => {
-                        IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                        shell.UpdateCommandUI(1);
-                    });
+
+                _workingDirectory = newDirectory;
+
+                if (UpdateWorkingDirectoryList(newDirectory)) {
+                    if (EditorShell.HasShell) {
+                        EditorShell.DispatchOnUIThread(() => {
+                            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                            shell.UpdateCommandUI(1);
+                        });
+                    }
                 }
             }
         }
@@ -91,15 +96,19 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        private void UpdateWorkingDirectoryList(string newDirectory) {
+        private bool UpdateWorkingDirectoryList(string newDirectory) {
             List<string> list = new List<string>(WorkingDirectoryList);
-            if (!list.Contains(newDirectory)) {
+            if (!list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
                 list.Insert(0, newDirectory);
                 if (list.Count > MaxDirectoryEntries) {
                     list.RemoveAt(list.Count - 1);
                 }
+
                 WorkingDirectoryList = list.ToArray();
+                return true;
             }
+
+            return false;
         }
     }
 }
