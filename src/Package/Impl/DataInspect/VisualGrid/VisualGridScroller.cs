@@ -96,18 +96,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 case ScrollType.LineDown:
                     await LineDownAsync();
                     break;
-                case ScrollType.LineLeft: LineLeft(); break;
-                case ScrollType.LineRight: LineRight(); break;
-
+                case ScrollType.LineLeft:
+                    await LineLeftAsync();
+                    break;
+                case ScrollType.LineRight:
+                    await LineRightAsync();
+                    break;
                 case ScrollType.PageUp:
                     await PageUpAsync();
                     break;
                 case ScrollType.PageDown:
                     await PageDownAsync();
                     break;
-                case ScrollType.PageLeft: PageLeft(); break;
-                case ScrollType.PageRight: PageRight(); break;
-
+                case ScrollType.PageLeft:
+                    await PageLeftAsync();
+                    break;
+                case ScrollType.PageRight:
+                    await PageRightAsync();
+                    break;
                 case ScrollType.SetHorizontalOffset:
                     await SetHorizontalOffsetAsync(cmd.Param);
                     break;
@@ -115,8 +121,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     await SetVerticalOffsetAsync(cmd.Param);
                     break;
                 case ScrollType.MouseWheel:
-                    await SetMouseWheelAsync(cmd.Param); break;
-
+                    await SetMouseWheelAsync(cmd.Param);
+                    break;
                 case ScrollType.SizeChange:
                     await DrawVisualsAsync(
                         new Rect(
@@ -157,30 +163,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void DrawVisuals(GridRange dataViewport, IGridData<string> data, bool refresh) {
-            if (DataGrid != null) {
-                DataGrid.DrawVisuals(dataViewport, data.Grid, refresh);
-            }
-
-            if (ColumnHeader != null) {
-                GridRange columnViewport = new GridRange(
-                    new Range(0, 1),
-                    dataViewport.Columns);
-
-                ColumnHeader.DrawVisuals(
-                    columnViewport,
+            using (var deferal = Points.DeferChangeNotification()) {
+                // measure points
+                ColumnHeader?.MeasurePoints(
+                    new GridRange(
+                        new Range(0, 1),
+                        dataViewport.Columns),
                     new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true),
                     refresh);
-            }
 
-            if (RowHeader != null) {
-                GridRange rowViewport = new GridRange(
-                    dataViewport.Rows,
-                    new Range(0, 1));
-
-                RowHeader.DrawVisuals(
-                    rowViewport,
+                RowHeader?.MeasurePoints(
+                    new GridRange(
+                        dataViewport.Rows,
+                        new Range(0, 1)),
                     new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false),
                     refresh);
+
+                DataGrid?.MeasurePoints(dataViewport, data.Grid, refresh);
+
+                // arrange and draw gridline
+                ColumnHeader?.ArrangeVisuals();
+                RowHeader?.ArrangeVisuals();
+                DataGrid?.ArrangeVisuals();
             }
         }
 
@@ -224,20 +228,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 false);
         }
 
-        private void LineRight() {
-            throw new NotImplementedException();
+        private Task LineRightAsync() {
+            return SetHorizontalOffsetAsync(Points.HorizontalOffset + 10.0);
         }
 
-        private void LineLeft() {
-            throw new NotImplementedException();
+        private Task LineLeftAsync() {
+            return SetHorizontalOffsetAsync(Points.HorizontalOffset - 10.0);
         }
 
-        private void PageRight() {
-            throw new NotImplementedException();
+        private Task PageRightAsync() {
+            return SetHorizontalOffsetAsync(Points.HorizontalOffset + 100.0);
         }
 
-        private void PageLeft() {
-            throw new NotImplementedException();
+        private Task PageLeftAsync() {
+            return SetHorizontalOffsetAsync(Points.HorizontalOffset - 100.0);
         }
 
         private Task SetMouseWheelAsync(double delta) {

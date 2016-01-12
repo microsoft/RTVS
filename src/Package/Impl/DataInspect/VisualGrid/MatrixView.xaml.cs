@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 RowHeader.DataProvider = _dataProvider;
                 ColumnHeader.DataProvider = _dataProvider;
                 Data.DataProvider = _dataProvider;
-                _scroller.DataProvider = DataProvider;
+                _scroller.DataProvider = _dataProvider;
 
                 Points.Reset(_dataProvider.RowCount, _dataProvider.ColumnCount);
 

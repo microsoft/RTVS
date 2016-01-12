@@ -139,15 +139,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        internal void DrawVisuals(GridRange newViewport, IGrid<string> data, bool refresh) {
-            using (var deferrence = Points.DeferChangeNotification()) {
-                DrawCells(newViewport, data, refresh);
-
-                DrawGridLine();
-            }
-        }
-
-        private void DrawCells(GridRange newViewport, IGrid<string> data, bool refresh) {
+        internal void MeasurePoints(GridRange newViewport, IGrid<string> data, bool refresh) {
             var orgGrid = _visualGrid;
             _visualGrid = new Grid<TextVisual>(
                 newViewport,
@@ -170,18 +162,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 foreach (int r in newViewport.Rows.GetEnumerable()) {
                     var visual = _visualGrid[r, c];
 
-                    double width = Points.GetWidth(c) - GridLineThickness;
-                    double height = Points.GetHeight(r) - GridLineThickness;
+                    double width = GetWidth(c) - GridLineThickness;
+                    double height = GetHeight(r) - GridLineThickness;
                     visual.Draw(new Size(width, height));
-                    Points.SetWidth(c, Math.Max(width, visual.Size.Width + GridLineThickness));
-                    Points.SetHeight(r, Math.Max(height, visual.Size.Height + GridLineThickness));
+                    SetWidth(c, Math.Max(width, visual.Size.Width + GridLineThickness));
+                    SetHeight(r, Math.Max(height, visual.Size.Height + GridLineThickness));
 
                     _visualChildren.Add(_visualGrid[r, c]);
                 }
             }
 
-            foreach (int c in newViewport.Columns.GetEnumerable()) {
-                foreach (int r in newViewport.Rows.GetEnumerable()) {
+            _dataViewport = newViewport;
+        }
+
+        internal void ArrangeVisuals() {
+            foreach (int c in _dataViewport.Columns.GetEnumerable()) {
+                foreach (int r in _dataViewport.Rows.GetEnumerable()) {
                     var visual = _visualGrid[r, c];
 
                     var transform = visual.Transform as TranslateTransform;
@@ -193,14 +189,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                 }
             }
-            _dataViewport = newViewport;
 
             // special handling for Row/Column header's size: this will layout system (measure/arrange) to know the size of component properly.
             if (ScrollDirection == ScrollDirection.Horizontal && RowCount > 0) {
-                Height = Points.GetHeight(0);
+                Height = GetHeight(0);
             } else if (ScrollDirection == ScrollDirection.Vertical && ColumnCount > 0) {
-                Width = Points.GetWidth(0);
+                Width = GetWidth(0);
             }
+
+            DrawGridLine();
         }
 
         private double xPosition(TextVisual visual) {
@@ -217,6 +214,40 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             return Points.yPosition(visual.Row);
+        }
+
+        private double _width = GridPoints.MinItemWidth;
+        private double GetWidth(int column) {
+            if (ScrollDirection == ScrollDirection.Vertical) {
+                return _width;
+            }
+
+            return Points.GetWidth(column);
+        }
+
+        private void SetWidth(int column, double value) {
+            if (ScrollDirection == ScrollDirection.Vertical) {
+                _width = value;
+            }
+
+            Points.SetWidth(column, value);
+        }
+
+        private double _height = GridPoints.MinItemHeight;
+        private double GetHeight(int row) {
+            if (ScrollDirection == ScrollDirection.Horizontal) {
+                return _height;
+            }
+
+            return Points.GetHeight(row);
+        }
+
+        private void SetHeight(int row, double value) {
+            if (ScrollDirection == ScrollDirection.Horizontal) {
+                _height = value;
+            }
+
+            Points.SetHeight(row, value);
         }
 
         private void DrawGridLine() {

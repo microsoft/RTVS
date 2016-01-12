@@ -75,27 +75,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return new DeferNotification(this);
         }
 
-        public double MinItemWidth { get { return 20.0; } }
+        public static double MinItemWidth { get { return 20.0; } }
 
-        public double MinItemHeight { get { return 10.0; } }
-
-        /// <summary>
-        /// total width of the grid
-        /// </summary>
-        public double Width {
-            get {
-                return _xPositions[_columnCount];
-            }
-        }
-
-        /// <summary>
-        /// total height of the grid
-        /// </summary>
-        public double Height {
-            get {
-                return _yPositions[_rowCount];
-            }
-        }
+        public static double MinItemHeight { get { return 10.0; } }
 
         private double _verticalOffset;
         public double VerticalOffset {
