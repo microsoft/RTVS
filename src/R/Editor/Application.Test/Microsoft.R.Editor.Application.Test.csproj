@@ -31,6 +31,14 @@
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
+      <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>

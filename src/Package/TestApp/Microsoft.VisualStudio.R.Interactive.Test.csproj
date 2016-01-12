@@ -122,6 +122,10 @@
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
+      <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
