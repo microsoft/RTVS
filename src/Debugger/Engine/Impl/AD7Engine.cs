@@ -549,15 +549,12 @@ namespace Microsoft.R.Debugger.Engine {
 
                 _currentBrowseEventArgs = null;
                 sentContinue = _sentContinue;
+                _sentContinue = true;
             }
 
             if (sentContinue == false) {
                 // User has explicitly typed something at the Browse prompt, so tell the debugger that
                 // we're moving on by issuing a dummy Continue request to switch it to the running state.
-                lock (_browseLock) {
-                    _sentContinue = true;
-                }
-
                 var vsShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
                 Guid group = VSConstants.GUID_VSStandardCommandSet97;
                 object arg = null;
