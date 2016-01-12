@@ -109,6 +109,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
+        [LocCategory("Settings_GeneralCategory")]
+        [CustomLocDisplayName("Settings_HelpBrowser")]
+        [LocDescription("Settings_HelpBrowser_Description")]
+        [TypeConverter(typeof(HelpBrowserTypeConverter))]
+        [DefaultValue(HelpBrowserType.Automatic)]
+        public HelpBrowserType HelpBrowser {
+            get { return RToolsSettings.Current.HelpBrowser; }
+            set { RToolsSettings.Current.HelpBrowser = value; }
+        }
+
         /// <summary>
         /// REPL working directory: not exposed in Tools | Options dialog,
         /// only saved along with other settings.

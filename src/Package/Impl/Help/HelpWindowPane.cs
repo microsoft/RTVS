@@ -5,8 +5,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -140,7 +142,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public static void Navigate(string url) {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
-            if (IsHelpUrl(url)) {
+            if (RToolsSettings.Current.HelpBrowser == HelpBrowserType.Automatic && IsHelpUrl(url)) {
                 // When control is just being created don't navigate 
                 // to the default page since it will be replaced by
                 // the specific help page right away.

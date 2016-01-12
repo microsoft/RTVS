@@ -75,6 +75,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public string RCommandLineArguments { get; set; }
 
+        public HelpBrowserType HelpBrowser { get; set; }
+
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
             // settings (if any) when settings are loaded from storage
