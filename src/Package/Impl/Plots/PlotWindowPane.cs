@@ -17,7 +17,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
     internal class PlotWindowPane : ToolWindowPane, IVsWindowFrameNotify3 {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
-        private static bool useReparentPlot = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_REPARENT_PLOT"));
 
         // Anything below 150 is impractical, and prone to rendering errors
         private const int MinWidth = 150;
@@ -26,42 +25,33 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private ExportPlotCommand _exportPlotCommand;
         private HistoryNextPlotCommand _historyNextPlotCommand;
         private HistoryPreviousPlotCommand _historyPreviousPlotCommand;
-        private Lazy<RPlotWindowContainer> _plotWindowContainer = Lazy.Create(() => new RPlotWindowContainer());
 
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
 
-            if (!useReparentPlot) {
-                // set content with presenter
-                PlotContentProvider = new PlotContentProvider();
-                PlotContentProvider.PlotChanged += ContentProvider_PlotChanged;
+            // set content with presenter
+            PlotContentProvider = new PlotContentProvider();
+            PlotContentProvider.PlotChanged += ContentProvider_PlotChanged;
 
 
-                var presenter = new XamlPresenter(PlotContentProvider);
-                presenter.SizeChanged += PlotWindowPane_SizeChanged;
-                Content = presenter;
-            }
+            var presenter = new XamlPresenter(PlotContentProvider);
+            presenter.SizeChanged += PlotWindowPane_SizeChanged;
+            Content = presenter;
 
             // initialize toolbar
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
 
-            if (!useReparentPlot) {
-                Controller c = new Controller();
-                c.AddCommandSet(GetCommands());
-                this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
-            } else {
-                this.ToolBarCommandTarget = new CommandTargetToOleShim(null, new PlotWindowCommandController(this));
-            }
+            Controller c = new Controller();
+            c.AddCommandSet(GetCommands());
+            this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
         }
 
         private void PlotWindowPane_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
-            if (!useReparentPlot) {
-                // If the window gets below a certain minimum size, plot to the minimum size
-                // and user will be able to use scrollbars to see the whole thing
-                int width = Math.Max((int)e.NewSize.Width, MinWidth);
-                int height = Math.Max((int)e.NewSize.Height, MinHeight);
-                DoNotWait(PlotContentProvider.ResizePlotAsync(width, height));
-            }
+            // If the window gets below a certain minimum size, plot to the minimum size
+            // and user will be able to use scrollbars to see the whole thing
+            int width = Math.Max((int)e.NewSize.Width, MinWidth);
+            int height = Math.Max((int)e.NewSize.Height, MinHeight);
+            DoNotWait(PlotContentProvider.ResizePlotAsync(width, height));
         }
 
         private static void DoNotWait(System.Threading.Tasks.Task task) {
@@ -82,13 +72,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
             IVsWindowFrame frame = this.Frame as IVsWindowFrame;
             frame.SetProperty((int)__VSFPROPID.VSFPROPID_ViewHelper, this);
-        }
-
-        public override object GetIVsWindowPane() {
-            if (!useReparentPlot) {
-                return base.GetIVsWindowPane();
-            }
-            return _plotWindowContainer.Value;
         }
 
         public IPlotContentProvider PlotContentProvider { get; private set; }
@@ -206,12 +189,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public int OnClose(ref uint pgrfSaveOptions) {
-            if (useReparentPlot) {
-                IVsWindowPane pane = GetIVsWindowPane() as IVsWindowPane;
-                if (pane != null) {
-                    pane.ClosePane();
-                }
-            }
             return VSConstants.S_OK;
         }
         #endregion
