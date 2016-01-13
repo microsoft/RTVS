@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
@@ -26,6 +27,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
             "methods",
             "base"
         };
+
+        [Import]
+        private ILoadedPackagesProvider LoadedPackagesProvider { get; set; }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
@@ -122,20 +126,14 @@ namespace Microsoft.R.Editor.Completion.Providers {
         private IEnumerable<IPackageInfo> GetAllFilePackages(RCompletionContext context) {
             List<IPackageInfo> packages = new List<IPackageInfo>();
 
+            IEnumerable<string> loadedPackages = LoadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
-            foreach (string packageName in filePackageNames) {
+            IEnumerable<string> allPackageNames = Enumerable.Union(_preloadPackages, Enumerable.Union(filePackageNames, loadedPackages)).Distinct();
+
+            foreach (string packageName in allPackageNames) {
                 IPackageInfo p = PackageIndex.GetPackageByName(packageName);
                 // May be null if user mistyped package name in the library()
                 // statement or package is not installed.
-                if (p != null) {
-                    packages.Add(p);
-                }
-            }
-
-            // By default functions from all R built-in packages are available
-            foreach (string packageName in _preloadPackages) {
-                IPackageInfo p = PackageIndex.GetPackageByName(packageName);
-                Debug.Assert(p != null, "Can't find preloaded package " + packageName);
                 if (p != null) {
                     packages.Add(p);
                 }

@@ -82,6 +82,7 @@
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridParser.cs" />
+    <Compile Include="DataInspect\LoadedPackagesProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />

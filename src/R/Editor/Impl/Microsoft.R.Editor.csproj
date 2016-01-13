@@ -87,6 +87,7 @@
     <Compile Include="Comments\UncommentCommand.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
+    <Compile Include="Completion\Definitions\ILoadedPackagesProvider.cs" />
     <Compile Include="Completion\Definitions\IVariablesProvider.cs" />
     <Compile Include="Completion\Definitions\RCompletionProviderAttribute.cs" />
     <Compile Include="Completion\Definitions\IRQuickInfoProvider.cs" />
