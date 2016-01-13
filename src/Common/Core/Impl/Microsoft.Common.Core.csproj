@@ -42,9 +42,7 @@
     <Compile Include="Disposables\CountdownDisposable.cs" />
     <Compile Include="Disposables\DefaultDisposable.cs" />
     <Compile Include="Disposables\Disposable.cs" />
-    <Compile Include="Enums\HelpBrowser.cs" />
     <Compile Include="Enums\YesNoAsk.cs" />
-    <Compile Include="Extensions\RStringExtensions.cs" />
     <Compile Include="IO\DirectoryInfoProxy.cs" />
     <Compile Include="IO\FileInfoProxy.cs" />
     <Compile Include="IO\FileSystem.cs" />

@@ -4,6 +4,7 @@ using Microsoft.Common.Core.Enums;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;

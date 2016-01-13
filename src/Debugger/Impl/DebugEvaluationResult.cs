@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
