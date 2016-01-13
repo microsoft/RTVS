@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
