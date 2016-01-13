@@ -677,7 +677,8 @@
         <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="HTMLFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Preview HTML</ButtonText>
           <CommandName>Preview HTML</CommandName>
@@ -687,7 +688,8 @@
       <Button guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
         <Icon guid="pdfIconGuid" id="pdfIcon"/>
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Preview PDF</ButtonText>
           <CommandName>Preview PDF</CommandName>
@@ -698,7 +700,8 @@
         <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="OfficeWord2013"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Preview Word</ButtonText>
           <CommandName>Preview Word</CommandName>
@@ -706,7 +709,8 @@
       </Button>
 
       <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="publishPublishSubMenuGroup"/>
+        <!-- Actual publishing is not yet supported -->
+        <!--<Parent guid="guidRToolsCmdSet" id="publishPublishSubMenuGroup"/>-->
         <Icon guid="ImageCatalogGuid" id="PublishAllWebSites"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -1051,7 +1055,8 @@
       <!-- End Preview flyout menu items -->
 
       <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0104" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
+        <!-- Actual publishing is not yet supported -->
+        <!--<Parent guid="guidMdToolsCmdSet" id="groupPreview"/>-->
         <Icon guid="ImageCatalogGuid" id="PublishAllWebSites"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
