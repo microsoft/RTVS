@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Media;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion.Definitions;
@@ -28,9 +30,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
             "base"
         };
 
-        [Import]
-        private ILoadedPackagesProvider LoadedPackagesProvider { get; set; }
-
+        private Lazy<LoadedPackagesCollection> _loadedPackagesCollection = Lazy.Create(() => new LoadedPackagesCollection());
+ 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
@@ -126,7 +127,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
         private IEnumerable<IPackageInfo> GetAllFilePackages(RCompletionContext context) {
             List<IPackageInfo> packages = new List<IPackageInfo>();
 
-            IEnumerable<string> loadedPackages = LoadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
+            IEnumerable<string> loadedPackages = _loadedPackagesCollection.Value.LoadedPackages;
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
             IEnumerable<string> allPackageNames = Enumerable.Union(_preloadPackages, Enumerable.Union(filePackageNames, loadedPackages)).Distinct();
 

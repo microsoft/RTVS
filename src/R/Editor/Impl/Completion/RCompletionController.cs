@@ -217,7 +217,6 @@ namespace Microsoft.R.Editor.Completion {
             if (!HasActiveCompletionSession) {
                 switch (typedCharacter) {
                     case '$':
-                        //case '@':
                         return true;
 
                     case ':':
@@ -245,7 +244,6 @@ namespace Microsoft.R.Editor.Completion {
         /// </summary>
         protected override bool IsRetriggerChar(ICompletionSession session, char typedCharacter) {
             switch (typedCharacter) {
-                case '@':
                 case '$':
                     return true;
             }

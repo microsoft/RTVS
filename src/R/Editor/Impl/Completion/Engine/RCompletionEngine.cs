@@ -198,7 +198,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 for (int i = position - 1; i >= 0; i--) {
                     char ch = textProvider[i];
 
-                    if (ch == '$' || ch == '@') {
+                    if (ch == '$') {
                         return true;
                     }
 
