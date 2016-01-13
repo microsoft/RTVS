@@ -37,7 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// <summary>
         /// Browser that displays help content
         /// </summary>
-        private WebBrowser _browser;
+        public WebBrowser Browser { get; private set; }
+
         private IRSessionProvider _sessionProvider;
         private IRSession _session;
 
@@ -108,13 +109,15 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void CreateBrowser(bool showDefaultPage = false) {
-            _browser = new WebBrowser();
-            _browser.Navigating += OnNavigating;
-            _browser.Navigated += OnNavigated;
+            if (Browser == null) {
+                Browser = new WebBrowser();
+                Browser.Navigating += OnNavigating;
+                Browser.Navigated += OnNavigated;
 
-            _windowContentControl.Content = _browser;
-            if (showDefaultPage) {
-                HelpHomeCommand.ShowDefaultHelpPage();
+                _windowContentControl.Content = Browser;
+                if (showDefaultPage) {
+                    HelpHomeCommand.ShowDefaultHelpPage();
+                }
             }
         }
 
@@ -134,8 +137,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void NavigateTo(string url) {
-            if (_browser != null) {
-                _browser.Navigate(url);
+            if (Browser != null) {
+                Browser.Navigate(url);
             }
         }
 
@@ -166,10 +169,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private IEnumerable<ICommand> GetCommands() {
             List<ICommand> commands = new List<ICommand>() {
-                new HelpPreviousCommand(_browser),
-                new HelpNextCommand(_browser),
-                new HelpHomeCommand(_browser),
-                new HelpRefreshCommand(_browser)
+                new HelpPreviousCommand(this),
+                new HelpNextCommand(this),
+                new HelpHomeCommand(this),
+                new HelpRefreshCommand(this)
             };
             return commands;
         }
@@ -186,11 +189,11 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void CloseBrowser() {
             _windowContentControl.Content = null;
 
-            if (_browser != null) {
-                _browser.Navigating -= OnNavigating;
-                _browser.Navigated -= OnNavigated;
-                _browser.Dispose();
-                _browser = null;
+            if (Browser != null) {
+                Browser.Navigating -= OnNavigating;
+                Browser.Navigated -= OnNavigated;
+                Browser.Dispose();
+                Browser = null;
             }
         }
     }
