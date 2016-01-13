@@ -59,14 +59,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 }
 
                 _workingDirectory = newDirectory;
+                UpdateWorkingDirectoryList(newDirectory);
 
-                if (UpdateWorkingDirectoryList(newDirectory)) {
-                    if (EditorShell.HasShell) {
-                        EditorShell.DispatchOnUIThread(() => {
-                            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                            shell.UpdateCommandUI(1);
-                        });
-                    }
+                if (EditorShell.HasShell) {
+                    EditorShell.DispatchOnUIThread(() => {
+                        IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                        shell.UpdateCommandUI(1);
+                    });
                 }
             }
         }
@@ -98,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        private bool UpdateWorkingDirectoryList(string newDirectory) {
+        private void UpdateWorkingDirectoryList(string newDirectory) {
             List<string> list = new List<string>(WorkingDirectoryList);
             if (!list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
                 list.Insert(0, newDirectory);
@@ -107,10 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 }
 
                 WorkingDirectoryList = list.ToArray();
-                return true;
             }
-
-            return false;
         }
     }
 }
