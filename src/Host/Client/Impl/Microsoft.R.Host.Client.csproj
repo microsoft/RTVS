@@ -63,6 +63,7 @@
     </Compile>
     <Compile Include="Definitions\IRHostClientApp.cs" />
     <Compile Include="Definitions\RHostStartupInfo.cs" />
+    <Compile Include="Extensions\RStringExtensions.cs" />
     <Compile Include="MessageTransportException.cs" />
     <Compile Include="Definitions\IMessageTransport.cs" />
     <Compile Include="Definitions\IRContext.cs" />

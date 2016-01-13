@@ -35,5 +35,12 @@ namespace Microsoft.R.Support.Settings.Definitions {
         /// to the R Host process
         /// </summary>
         string RCommandLineArguments { get; set; }
+
+        /// <summary>
+        /// Determines if R Tools should always be using external Web browser or
+        /// try and send Help pages to the Help window and other Web requests 
+        /// to the external default Web browser.
+        /// </summary>
+        HelpBrowserType HelpBrowser { get; set; }
     }
 }

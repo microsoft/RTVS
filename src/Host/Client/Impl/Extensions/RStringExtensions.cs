@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace Microsoft.R.Debugger {
-    public static class DebugUtilities {
+namespace Microsoft.R.Host.Client {
+    public static class RStringExtensions {
         public static string ToRStringLiteral(this string s, char quote = '"', string nullValue = "NULL") {
             Debug.Assert(quote == '"' || quote == '\'');
 

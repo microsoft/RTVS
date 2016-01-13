@@ -129,9 +129,7 @@ options(device='.rtvs.vsgd')
             var script =
 @"utils::assignInNamespace('setwd', function(dir) {
     .Internal(setwd(dir))
-    if(getwd() == dir) {
-        z <- .Call('Microsoft.R.Host::Call.send_message', '~/', rtvs:::toJSON(dir))
-    }
+    invisible(.Call('Microsoft.R.Host::Call.send_message', '~/', rtvs:::toJSON(dir)))
   }, 'base')";
             return evaluation.EvaluateAsync(script);
         }

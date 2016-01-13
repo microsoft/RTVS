@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
