@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
         public override CommandStatus Status(Guid group, int id) {
             if (!IsFormatSupported()) {
-                return CommandStatus.Supported | CommandStatus.Invisible;
+                return CommandStatus.Invisible;
             }
 
             if (_lastCommand == null || _lastCommand.Task.IsCompleted) {
@@ -56,43 +56,43 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             }
 
             IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
-
-            if (!InstallPackages.IsInstalled(flavorHandler.RequiredPackageName, 5000, RToolsSettings.Current.RBasePath)) {
-                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
-                return CommandResult.Disabled;
-            }
-
-            // Save the file
-            ITextDocument textDocument;
-            if (TextView.TextBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument)) {
-                if (textDocument.IsDirty) {
-                    textDocument.Save();
+            if (flavorHandler != null) {
+                if (!InstallPackages.IsInstalled(flavorHandler.RequiredPackageName, 5000, RToolsSettings.Current.RBasePath)) {
+                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_PackageMissing, flavorHandler.RequiredPackageName));
+                    return CommandResult.Disabled;
                 }
+
+                // Save the file
+                ITextDocument textDocument;
+                if (TextView.TextBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument)) {
+                    if (textDocument.IsDirty) {
+                        textDocument.Save();
+                    }
+                }
+
+                IEditorDocument document = MdEditorDocument.FromTextBuffer(TextView.TextBuffer);
+                string inputFilePath = document.WorkspaceItem.Path;
+                var buffer = new StringBuilder(NativeMethods.MAX_PATH);
+                NativeMethods.GetShortPathName(inputFilePath, buffer, NativeMethods.MAX_PATH);
+
+                inputFilePath = buffer.ToString();
+                _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
+
+                try {
+                    File.Delete(_outputFilePath);
+                } catch (IOException ex) {
+                    PublishLog.Current.WriteFormatAsync(MessageCategory.Error, Resources.Error_CannotDeleteFile, _outputFilePath, ex.Message);
+                    return CommandResult.Executed;
+                }
+
+                inputFilePath = inputFilePath.Replace('\\', '/');
+                string outputFilePath = _outputFilePath.Replace('\\', '/');
+
+                string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, Format);
+
+                _lastCommand = RCommand.ExecuteRExpressionAsync(arguments, PublishLog.Current, RToolsSettings.Current.RBasePath);
+                _lastCommand.Task.ContinueWith((Task t) => LaunchViewer(t));
             }
-
-            IEditorDocument document = MdEditorDocument.FromTextBuffer(TextView.TextBuffer);
-            string inputFilePath = document.WorkspaceItem.Path;
-            var buffer = new StringBuilder(NativeMethods.MAX_PATH);
-            NativeMethods.GetShortPathName(inputFilePath, buffer, NativeMethods.MAX_PATH);
-
-            inputFilePath = buffer.ToString();
-            _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
-
-            try {
-                File.Delete(_outputFilePath);
-            } catch (IOException ex) {
-                PublishLog.Current.WriteFormatAsync(MessageCategory.Error, Resources.Error_CannotDeleteFile, _outputFilePath, ex.Message);
-                return CommandResult.Executed;
-            }
-
-            inputFilePath = inputFilePath.Replace('\\', '/');
-            string outputFilePath = _outputFilePath.Replace('\\', '/');
-
-            string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, Format);
-
-            _lastCommand = RCommand.ExecuteRExpressionAsync(arguments, PublishLog.Current, RToolsSettings.Current.RBasePath);
-            _lastCommand.Task.ContinueWith((Task t) => LaunchViewer(t));
-
             return CommandResult.Executed;
         }
 
@@ -129,8 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 return value;
             }
 
-            Debug.Assert(false, "Unknown markdown flavor");
-            return new MdPublishHandler();
+            return null; // new MdPublishHandler();
         }
 
         private bool IsFormatSupported() {

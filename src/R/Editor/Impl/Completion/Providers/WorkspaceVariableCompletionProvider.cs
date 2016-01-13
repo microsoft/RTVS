@@ -14,11 +14,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// library(...) statement. List of packages is  obtained from 
     /// ~\Program Files\R and from ~\Documents\R folders
     /// </summary>
-    public sealed class WorkspaceVaraibleCompletionProvider : IRCompletionListProvider {
+    public sealed class WorkspaceVariableCompletionProvider : IRCompletionListProvider {
         [Import]
         IVariablesProvider _variablesProvider = null;
 
-        public WorkspaceVaraibleCompletionProvider() {
+        public WorkspaceVariableCompletionProvider() {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
         }
 

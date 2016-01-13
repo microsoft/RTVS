@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Languages.Editor;
-using Microsoft.Markdown.Editor.Commands;
+﻿using Microsoft.Markdown.Editor.Commands;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.Text.Editor;
 
