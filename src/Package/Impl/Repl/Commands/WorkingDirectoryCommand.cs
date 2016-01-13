@@ -105,13 +105,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             string newDirectory = GetFullPathName(friendlyName);
             if (newDirectory != null && currentDirectory != newDirectory) {
                 RToolsSettings.Current.WorkingDirectory = newDirectory;
-                IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                return Task.Run(async () => {
-                    await TaskUtilities.SwitchToBackgroundThread();
-                    sessionProvider.Current.ScheduleEvaluation(async (e) => {
-                        await e.SetWorkingDirectory(newDirectory);
+                if (_sessionProvider.Current != null) {
+                    return Task.Run(async () => {
+                        await TaskUtilities.SwitchToBackgroundThread();
+                        _sessionProvider.Current.ScheduleEvaluation(async (e) => {
+                            await e.SetWorkingDirectory(newDirectory);
+                        });
                     });
-                });
+                }
             }
 
             return Task.CompletedTask;
@@ -166,21 +167,26 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         internal async Task<string> GetRWorkingDirectoryAsync() {
             try {
-                using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
-                    REvaluationResult result = await eval.EvaluateAsync("getwd()");
-                    return ToWindowsPath(result.StringResult);
+                if (_sessionProvider.Current != null) {
+                    using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+                        REvaluationResult result = await eval.EvaluateAsync("getwd()");
+                        return ToWindowsPath(result.StringResult);
+                    }
                 }
             } catch (TaskCanceledException) { }
             return null;
         }
 
         internal Task GetRUserDirectoryAsync() {
-            return Task.Run(async () => {
-                using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
-                    REvaluationResult result = await eval.EvaluateAsync("Sys.getenv('R_USER')");
-                    _userDirectory = ToWindowsPath(result.StringResult);
-                }
-            });
+            if (_sessionProvider.Current != null) {
+                return Task.Run(async () => {
+                    using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+                        REvaluationResult result = await eval.EvaluateAsync("Sys.getenv('R_USER')");
+                        _userDirectory = ToWindowsPath(result.StringResult);
+                    }
+                });
+            }
+            return Task.CompletedTask;
         }
 
         private static string ToWindowsPath(string rPath) {
