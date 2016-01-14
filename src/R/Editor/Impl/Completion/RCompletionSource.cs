@@ -20,11 +20,13 @@ namespace Microsoft.R.Editor.Completion {
     /// Provides actual content for the intellisense dropdown
     /// </summary>
     public sealed class RCompletionSource : ICompletionSource {
+        private static readonly string _asyncIntellisenseSession = "Async R Intellisense Session";
         private ITextBuffer _textBuffer;
-        private AsyncCompletionSession _asyncSession;
+        private ICompletionSession _asyncSession;
 
         public RCompletionSource(ITextBuffer textBuffer) {
             _textBuffer = textBuffer;
+            _textBuffer.Changed += OnTextBufferChanged;
         }
 
         /// <summary>
@@ -39,40 +41,50 @@ namespace Microsoft.R.Editor.Completion {
                 return;
             }
 
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(_textBuffer);
-            if (document == null) {
+            IREditorDocument doc = REditorDocument.TryFromTextBuffer(_textBuffer);
+            if (doc == null) {
                 return;
             }
 
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(_textBuffer.CurrentSnapshot);
-            if (!document.EditorTree.IsReady) {
+            if (!doc.EditorTree.IsReady) {
                 // Parsing is pending. Make completion async.
-                _asyncSession = new AsyncCompletionSession(session);
-                _asyncSession.Dismissed += OnAsyncSessionDismissed;
-                document.EditorTree.ProcessChangesAsync(TreeUpdatedCallback);
+                CreateAsyncSession(doc, position, session, completionSets);
             } else {
-                var ast = document.EditorTree.AstRoot;
-                RCompletionContext context = new RCompletionContext(session, _textBuffer, ast, position);
-                if (RCompletionEngine.IsAsyncCompletion(context)) {
-                    _asyncSession = new AsyncCompletionSession(session);
-                    _asyncSession.Dismissed += OnAsyncSessionDismissed;
-                    RCompletionEngine.GetCompletionForLocationAsync(context, )
-                } else {
-                    PopulateCompletionList(position, session, completionSets, ast);
+                PopulateCompletionList(position, session, completionSets, doc.EditorTree.AstRoot);
+            }
+        }
+
+        private void CreateAsyncSession(IREditorDocument document, int position, ICompletionSession session, IList<CompletionSet> completionSets) {
+            _asyncSession = session;
+            _asyncSession.Properties.AddProperty(_asyncIntellisenseSession, String.Empty);
+            document.EditorTree.ProcessChangesAsync(TreeUpdatedCallback);
+        }
+        private void TreeUpdatedCallback() {
+            if (_asyncSession == null) {
+                return;
+            }
+
+            RCompletionController controller = ServiceManager.GetService<RCompletionController>(_asyncSession.TextView);
+            _asyncSession = null;
+            if (controller != null) {
+                controller.ShowCompletion(autoShownCompletion: true);
+                controller.FilterCompletionSession();
+            }
+        }
+
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+            DismissAsyncSession();
+        }
+
+        private void DismissAsyncSession() {
+           if (_asyncSession != null && _asyncSession.Properties != null && _asyncSession.Properties.ContainsProperty(_asyncIntellisenseSession) && !_asyncSession.IsDismissed) {
+                RCompletionController controller = ServiceManager.GetService<RCompletionController>(_asyncSession.TextView);
+                if (controller != null) {
+                    controller.DismissCompletionSession();
                 }
             }
-        }
-
-        private void OnAsyncSessionDismissed(object sender, EventArgs e) {
-            if(_asyncSession != null) {
-                _asyncSession.Dismissed -= OnAsyncSessionDismissed;
-                _asyncSession.Dispose();
-            }
-        }
-
-        private void TreeUpdatedCallback() {
-            _asyncSession?.Complete();
-            _asyncSession?.Dispose();
+            _asyncSession = null;
         }
 
         internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast) {

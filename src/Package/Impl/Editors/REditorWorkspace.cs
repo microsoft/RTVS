@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Host.Client;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
     internal sealed class REditorWorkspace : IREditorWorkspace {
         private IRSessionProvider _sessionProvider;
+        private IEnumerable<string> _loadedPackages = Enumerable.Empty<string>();
 
         public REditorWorkspace() {
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
@@ -38,6 +41,23 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                 if (Changed != null) {
                     Changed(this, EventArgs.Empty);
                 }
+            });
+        }
+
+        private async Task UpdateListOfLoadedPackagesAsync() {
+            if (_sessionProvider.Current != null) {
+                using (var e = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+                    REvaluationResult result = await e.EvaluateAsync("paste0(.packages(), collapse = ' ')");
+                    if (result.ParseStatus == RParseStatus.OK && result.Error == null && result.StringResult != null) {
+                        ParseSearchResponse(result.StringResult);
+                    }
+                }
+            }
+        }
+
+        private void ParseSearchResponse(string response) {
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                _loadedPackages = response.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             });
         }
 
