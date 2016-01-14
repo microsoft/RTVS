@@ -87,7 +87,7 @@ namespace Microsoft.R.Debugger {
             var libPath = Path.GetDirectoryName(typeof(DebugSession).Assembly.GetAssemblyPath());
 
             using (var eval = await RSession.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"), REvaluationKind.BaseEnv);
+                var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
 
                 if (res.ParseStatus != RParseStatus.OK) {
                     throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);
@@ -97,10 +97,10 @@ namespace Microsoft.R.Debugger {
 
                 // Re-initialize the breakpoint table.
                 foreach (var bp in _breakpoints.Values) {
-                    await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false), REvaluationKind.BaseEnv); // TODO: mark breakpoint as invalid if this fails.
+                    await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false)); // TODO: mark breakpoint as invalid if this fails.
                 }
 
-                await eval.EvaluateAsync("rtvs:::reapply_breakpoints()", REvaluationKind.BaseEnv); // TODO: mark all breakpoints as invalid if this fails.
+                await eval.EvaluateAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
             }
 
             // Attach might happen when session is already at the Browse prompt, in which case we have
@@ -137,7 +137,7 @@ namespace Microsoft.R.Debugger {
 
             REvaluationResult res;
             using (var eval = await RSession.BeginEvaluationAsync(false)) {
-                res = await eval.EvaluateAsync(expression, REvaluationKind.BaseEnv | (json ? REvaluationKind.Json : REvaluationKind.Normal));
+                res = await eval.EvaluateAsync(expression, json ? REvaluationKind.Json : REvaluationKind.Normal);
                 if (res.ParseStatus != RParseStatus.OK || res.Error != null || (json && res.JsonResult == null)) {
                     Trace.Fail(Invariant($"Internal debugger evaluation {expression} failed: {res}"));
                     throw new REvaluationException(res);
