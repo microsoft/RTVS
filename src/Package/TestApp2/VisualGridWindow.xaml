@@ -15,6 +15,7 @@
 
         <StackPanel Grid.Row="0">
             <Button x:Name="AssingDataProvider" Content="AssignDataProvider" Click="AssingDataProvider_Click" />
+            <Button x:Name="AssingSmallProvider" Content="Assign Small DataProvider" Click="AssingSmallProvider_Click" />
             <Button x:Name="ChangeForeground" Content="ChangeForeground" Click="ChangeForeground_Click" />
             <Button x:Name="ChangeGridBackground" Content="ChangeGridBackground" Click="ChangeGridBackground_Click" />
         </StackPanel>
