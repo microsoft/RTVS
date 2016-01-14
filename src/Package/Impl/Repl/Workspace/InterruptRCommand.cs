@@ -1,36 +1,21 @@
 ﻿using System;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class InterruptRCommand : PackageCommand {
-        private readonly IRSessionProvider _rSessionProvider;
-        private IRSession _session;
+        private readonly IRSession _session;
         private volatile bool _enabled;
 
-        public InterruptRCommand(IRSessionProvider rSessionProvider) :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
-            _rSessionProvider = rSessionProvider;
-            _rSessionProvider.CurrentChanged += OnCurrentSessionChanged;
-        }
-
-        private void OnCurrentSessionChanged(object sender, EventArgs e) {
-            if (_session != null) {
-                _session.Disconnected -= OnDisconnected;
-                _session.BeforeRequest -= OnBeforeRequest;
-                _session.AfterRequest -= OnAfterRequest;
-            }
-
-            _session = _rSessionProvider.Current;
-
-            if (_session != null) {
-                _session.Disconnected += OnDisconnected;
-                _session.BeforeRequest += OnBeforeRequest;
-                _session.AfterRequest += OnAfterRequest;
-            }
+        public InterruptRCommand(IRSessionProvider rSessionProvider) : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
+            _session = rSessionProvider.GetInteractiveWindowRSession();
+            _session.Disconnected += OnDisconnected;
+            _session.BeforeRequest += OnBeforeRequest;
+            _session.AfterRequest += OnAfterRequest;
         }
 
         private void OnDisconnected(object sender, EventArgs e) {
@@ -48,17 +33,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         protected override void SetStatus() {
             if (ReplWindow.Current.IsActive) {
                 Visible = true;
-                Enabled = _rSessionProvider.Current != null && _enabled;
+                Enabled = _session.IsHostRunning && _enabled;
             } else {
                 Visible = false;
             }
         }
 
-        protected override void Handle() {
-            var rSession = _rSessionProvider.Current;
-            if (rSession != null && _enabled) {
+        protected override void Handle() {;
+            if (_enabled) {
                 ReplWindow.Current.ClearPendingInputs();
-                rSession.CancelAllAsync().DoNotWait();
+                _session.CancelAllAsync().DoNotWait();
                 _enabled = false;
             }
         }

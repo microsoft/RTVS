@@ -5,6 +5,7 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
@@ -29,8 +30,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private static async Task ShowDefaultHelpPageAsync() {
             var rSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            IRSession session = rSessionProvider.Current;
-            if (session != null) {
+            var session = rSessionProvider.GetInteractiveWindowRSession();
+            if (session.IsHostRunning) {
                 try {
                     using (IRSessionEvaluation evaluation = await session.BeginEvaluationAsync(isMutating: false)) {
                         await evaluation.EvaluateAsync("help.start()" + Environment.NewLine);

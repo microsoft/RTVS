@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal class VariableChangedArgs : EventArgs {
-        public EvaluationWrapper NewVariable { get; set; }
-    }
-
     internal class VariableProvider: IDisposable {
         #region members and ctor
 
@@ -21,11 +16,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private DebugSession _debugSession;
 
         public VariableProvider() {
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
-            sessionProvider.CurrentChanged += RSessionProvider_CurrentChanged;
-
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _rSession = sessionProvider.GetInteractiveWindowRSession();
+            _rSession.Mutated += RSession_Mutated;
             IdleTimeAction.Create(() => {
-                SetRSession(sessionProvider.Current).SilenceException<Exception>().DoNotWait();
+                InitializeData().SilenceException<Exception>().DoNotWait();
             }, 10, typeof(VariableProvider));
         }
 
@@ -37,14 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <summary>
         /// Singleton
         /// </summary>
-        public static VariableProvider Current {
-            get {
-                if(_instance == null) {
-                    _instance = new VariableProvider();
-                }
-                return _instance;
-            }
-        }
+        public static VariableProvider Current => _instance ?? (_instance = new VariableProvider());
 
         public event EventHandler<VariableChangedArgs> VariableChanged;
 
@@ -80,13 +68,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void Dispose() {
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
-            if (sessionProvider != null) {
-                sessionProvider.CurrentChanged -= RSessionProvider_CurrentChanged;
-            }
-
             // Only used in tests to make sure each instance 
             // of the variable explorer uses fresh variable provider
+            _rSession.Mutated -= RSession_Mutated;
+            _rSession = null;
             _instance = null;
         }
         #endregion
@@ -97,40 +82,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RefreshVariableCollection().SilenceException<Exception>().DoNotWait();
         }
 
-        /// <summary>
-        /// IRSessionProvider.CurrentSessionChanged handler. When current session changes, this is called
-        /// </summary>
-        private void RSessionProvider_CurrentChanged(object sender, EventArgs e) {
-            var sessionProvider = sender as IRSessionProvider;
-            Debug.Assert(sessionProvider != null);
-
-            if (sessionProvider != null) {
-                SetRSession(sessionProvider.Current).SilenceException<Exception>().DoNotWait();
-            }
-        }
-
         #endregion
-
         private async Task InitializeData() {
-            var debugSessionProvider = VsAppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
+            var debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
 
             _debugSession = await debugSessionProvider.GetDebugSessionAsync(_rSession);
 
             await RefreshVariableCollection();
-        }
-
-        private async Task SetRSession(IRSession session) {
-            // cleans up old RSession
-            if (_rSession != null) {
-                _rSession.Mutated -= RSession_Mutated;
-            }
-
-            // set new RSession
-            _rSession = session;
-            if (_rSession != null) {
-                _rSession.Mutated += RSession_Mutated;
-                await InitializeData();
-            }
         }
 
         private async Task RefreshVariableCollection() {

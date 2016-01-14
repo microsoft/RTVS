@@ -5,6 +5,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.History;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
@@ -28,8 +29,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [Test]
         [Category.Repl]
-        public void ReplHistoryProvider_ExportTest() {
+        public void RHistoryProvider_ExportTest() {
             Lazy<IRHistoryProvider> provider = VsAppShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
+            provider.Should().NotBeNull();
+            provider.Value.Should().NotBeNull();
+        }
+
+        [Test]
+        [Category.Repl]
+        public void RInteractiveProvider_ExportTest() {
+            var provider = VsAppShell.Current.ExportProvider.GetExport<IRInteractiveProvider>();
             provider.Should().NotBeNull();
             provider.Value.Should().NotBeNull();
         }

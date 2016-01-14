@@ -88,12 +88,14 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var sessions = sessionProvider.GetSessions();
 
-            foreach (var s in sessions) {
-                using (IRSessionEvaluation eval = await s.Value.BeginEvaluationAsync()) {
-                    string mirrorName = RToolsSettings.Current.CranMirror;
-                    string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
-                    await eval.SetVsCranSelection(mirrorUrl);
-                }
+            foreach (var s in sessions.Where(s => s.IsHostRunning)) {
+                try {
+                    using (IRSessionEvaluation eval = await s.BeginEvaluationAsync()) {
+                        string mirrorName = RToolsSettings.Current.CranMirror;
+                        string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
+                        await eval.SetVsCranSelection(mirrorUrl);
+                    }
+                } catch(OperationCanceledException) { }
             }
         }
 

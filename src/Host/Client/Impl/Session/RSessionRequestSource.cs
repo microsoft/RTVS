@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,7 +21,13 @@ namespace Microsoft.R.Host.Client.Session {
 
         public void Request(string prompt, int maxLength, TaskCompletionSource<string> requestTcs) {
             var request = new RSessionInteraction(requestTcs, _responseTcs, prompt, maxLength, Contexts);
-            _createRequestTcs.SetResult(request);
+            if (_createRequestTcs.TrySetResult(request)) {
+                return;
+            }
+
+            if (CreateRequestTask.IsCanceled) {
+                throw new OperationCanceledException();
+            }
         }
 
         public void Fail(string text) {
@@ -32,7 +39,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public bool TryCancel() {
-            return _responseTcs.TrySetCanceled();
+            return _createRequestTcs.TrySetCanceled();
         }
     }
 }

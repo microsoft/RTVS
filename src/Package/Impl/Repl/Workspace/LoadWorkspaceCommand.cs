@@ -13,30 +13,25 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class LoadWorkspaceCommand : PackageCommand {
-        private readonly IRSessionProvider _rSessionProvider;
+        private readonly IRSession _rSession;
         private readonly IProjectServiceAccessor _projectServiceAccessor;
 
         public LoadWorkspaceCommand(IRSessionProvider rSessionProvider, IProjectServiceAccessor projectServiceAccessor) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdLoadWorkspace) {
-            _rSessionProvider = rSessionProvider;
+            _rSession = rSessionProvider.GetInteractiveWindowRSession();
             _projectServiceAccessor = projectServiceAccessor;
         }
 
         protected override void SetStatus() {
             if (ReplWindow.Current.IsActive) {
                 Visible = true;
-                Enabled = (_rSessionProvider.Current != null);
+                Enabled = _rSession.IsHostRunning;
             } else {
                 Visible = false;
             }
         }
 
         protected override void Handle() {
-            var session = _rSessionProvider.Current;
-            if (session == null) {
-                return;
-            }
-
             var projectService = _projectServiceAccessor.GetProjectService();
             var lastLoadedProject = projectService.LoadedUnconfiguredProjects.LastOrDefault();
 
@@ -46,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 return;
             }
 
-            LoadWorkspace(session, file).DoNotWait();
+            LoadWorkspace(_rSession, file).DoNotWait();
         }
 
         private async Task LoadWorkspace(IRSession session, string file) {
