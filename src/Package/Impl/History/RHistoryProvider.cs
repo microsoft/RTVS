@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Editor.ContentType;
@@ -23,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private readonly IRtfBuilderService _rtfBuilderService;
         private readonly ITextSearchService2 _textSearchService;
         private readonly IContentType _contentType;
-        private readonly ConcurrentDictionary<ITextBuffer, IRHistory> _histories;
+        private readonly Dictionary<ITextBuffer, IRHistory> _histories;
 
         [ImportingConstructor]
         public RHistoryProvider(ITextEditorFactoryService textEditorFactory, ITextBufferFactoryService textBufferFactory, IContentTypeRegistryService contentTypeRegistryService, IFileSystem fileSystem, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService) {
@@ -35,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _textSearchService = textSearchService;
             _rtfBuilderService = rtfBuilderService;
             _contentType = contentTypeRegistryService.GetContentType(RHistoryContentTypeDefinition.ContentType);
-            _histories = new ConcurrentDictionary<ITextBuffer, IRHistory>();
+            _histories = new Dictionary<ITextBuffer, IRHistory>();
         }
 
         public IRHistory GetAssociatedRHistory(ITextView textView) {
@@ -51,13 +52,12 @@ namespace Microsoft.VisualStudio.R.Package.History {
             var vsUiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             var textBuffer = _textBufferFactory.CreateTextBuffer(_contentType);
             var history = new RHistory(rInteractive, _textEditorFactory, textBuffer, _fileSystem, RToolsSettings.Current, _editorOperationsFactory, _rtfBuilderService, vsUiShell, () => RemoveRHistory(textBuffer));
-            _histories.GetOrAdd(textBuffer, history);
+            _histories[textBuffer] = history;
             return history;
         }
 
         private void RemoveRHistory(ITextBuffer textBuffer) {
-            IRHistory history;
-            _histories.TryRemove(textBuffer, out history);
+            _histories.Remove(textBuffer);
         }
     }
 }

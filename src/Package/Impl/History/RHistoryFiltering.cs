@@ -46,7 +46,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
 
             _searchPattern = searchPattern;
-
             FilterImpl(searchPattern);
         }
 
@@ -57,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             if (_settings.ClearFilterOnAddHistory) {
                 ClearFilter();
-            } else {
+            } else if (_history.HasEntries) {
                 FilterImpl(_searchPattern);
             }
         }
@@ -83,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 }
 
                 _history.Workaround169159(_elisionBuffer);
-                //Uncomment lines when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
+                //TODO: Uncomment lines when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
                 //_textView.Caret.MoveTo(new SnapshotPoint(snapshot, 0));
                 //_elisionBuffer.ElideSpans(new NormalizedSpanCollection(new Span(0, snapshot.Length)));
                 return;

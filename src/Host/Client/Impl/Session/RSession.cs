@@ -15,8 +15,8 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
         private readonly static string DefaultPrompt = "> ";
-        private readonly static Task<IRSessionEvaluation> CancelledEvaluationTask;
-        private readonly static Task<IRSessionInteraction> CancelledInteractionTask;
+        private readonly static Task<IRSessionEvaluation> CanceledEvaluationTask;
+        private readonly static Task<IRSessionInteraction> CanceledInteractionTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
@@ -39,7 +39,7 @@ namespace Microsoft.R.Host.Client.Session {
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
         private readonly IRHostClientApp _hostClientApp;
-        private readonly Action _disposeSession;
+        private readonly Action _onDispose;
         private volatile bool _isHostRunning;
 
         public int Id { get; }
@@ -50,42 +50,42 @@ namespace Microsoft.R.Host.Client.Session {
         static RSession() {
             var tcs = new CancellationTokenSource();
             tcs.Cancel();
-            CancelledEvaluationTask = Task.FromCanceled<IRSessionEvaluation>(tcs.Token);
-            CancelledInteractionTask = Task.FromCanceled<IRSessionInteraction>(tcs.Token);
+            CanceledEvaluationTask = Task.FromCanceled<IRSessionEvaluation>(tcs.Token);
+            CanceledInteractionTask = Task.FromCanceled<IRSessionInteraction>(tcs.Token);
         }
 
-        public RSession(int id, IRHostClientApp hostClientApp, Action disposeSession) {
+        public RSession(int id, IRHostClientApp hostClientApp, Action onDispose) {
             Id = id;
             _hostClientApp = hostClientApp;
-            _disposeSession = disposeSession;
+            _onDispose = onDispose;
         }
 
         public void Dispose() {
             _host?.Dispose();
             Disposed?.Invoke(this, EventArgs.Empty);
-            _disposeSession();
+            _onDispose();
         }
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true) {
             if (!_isHostRunning) {
-                return CancelledInteractionTask;
+                return CanceledInteractionTask;
             }
 
             RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, _contexts);
             _pendingRequestSources.Post(requestSource);
 
-            return _isHostRunning ? requestSource.CreateRequestTask : CancelledInteractionTask;
+            return _isHostRunning ? requestSource.CreateRequestTask : CanceledInteractionTask;
         }
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true) {
             if (!_isHostRunning) {
-                return CancelledEvaluationTask;
+                return CanceledEvaluationTask;
             }
 
             var source = new RSessionEvaluationSource(isMutating);
             _pendingEvaluationSources.Post(source);
 
-            return _isHostRunning ? source.Task : CancelledEvaluationTask;
+            return _isHostRunning ? source.Task : CanceledEvaluationTask;
         }
 
         public async Task CancelAllAsync() {

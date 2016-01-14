@@ -228,7 +228,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public IReadOnlyList<SnapshotSpan> GetAllHistoryEntrySpans() {
-            if (!HasSelectedEntries) {
+            if (!HasEntries) {
                 return new List<SnapshotSpan>();
             }
 
@@ -375,7 +375,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
         }
 
-        //Remove this method when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
+        //TODO: Remove this method when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
         public void Workaround169159(IElisionBuffer elisionBuffer) {
             _isInsideWorkaround169159 = true;
             using (EditTextBuffer()) {
