@@ -21,7 +21,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private readonly int _minimumPositionDelta = 30;
 
         public HistoryWindowPaneMouseProcessor(IWpfTextView wpfTextView, IRHistoryProvider historyProvider) {
-
             _textView = wpfTextView;
             _history = historyProvider.GetAssociatedRHistory(_textView);
 

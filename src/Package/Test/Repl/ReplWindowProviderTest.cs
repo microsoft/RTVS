@@ -23,9 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             RInteractiveWindowProvider provider = new RInteractiveWindowProvider();
             ITextBufferFactoryService svc = VsAppShell.Current.ExportProvider.GetExportedValue<ITextBufferFactoryService>();
             IContentTypeRegistryService r = VsAppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-            ITextBuffer buffer = svc.CreateTextBuffer(r.GetContentType(RContentTypeDefinition.ContentType));
-
-            var window = provider.Create(0, new TextViewMock(buffer));
+            var window = provider.Create(0);
             window.Should().NotBeNull();
         }
     }

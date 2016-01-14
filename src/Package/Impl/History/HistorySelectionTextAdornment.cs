@@ -27,7 +27,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private bool _isTextViewActive;
 
         public HistorySelectionTextAdornment(IWpfTextView textView, IEditorFormatMapService editorFormatMapService, IRHistoryProvider historyProvider) {
-
             _textView = textView;
             _layer = textView.GetAdornmentLayer("HistorySelectionTextAdornment");
 

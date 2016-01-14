@@ -12,7 +12,7 @@ namespace Microsoft.R.Host.Client.Signatures {
     /// </summary>
     [Export(typeof(IFunctionRdDataProvider))]
     internal sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
-        private const int _sessionId = 73425;
+        private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private IRSession _session;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Microsoft.R.Host.Client.Signatures {
         private async Task CreateSessionAsync() {
             if (_session == null) {
                 var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                _session = provider.Create(_sessionId, null);
+                _session = provider.GetOrCreate(SessionId, null);
                 _session.Disposed += OnSessionDisposed;
 
                 await _session.StartHostAsync(new RHostStartupInfo {

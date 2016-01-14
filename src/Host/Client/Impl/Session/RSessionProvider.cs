@@ -1,56 +1,32 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Threading;
 
 namespace Microsoft.R.Host.Client.Session {
     [Export(typeof(IRSessionProvider))]
     public class RSessionProvider : IRSessionProvider {
-        private readonly object _lock = new object();
-        private readonly Dictionary<int, IRSession> _sessions = new Dictionary<int, IRSession>();
+        private int _sessionCounter;
+        private readonly ConcurrentDictionary<Guid, IRSession> _sessions = new ConcurrentDictionary<Guid, IRSession>();
 
-        public IRSession Create(int sessionId, IRHostClientApp hostClientApp) {
-            IRSession session, oldCurrent;
-
-            lock (_lock) {
-                if (_sessions.TryGetValue(sessionId, out session)) {
-                    return session;
-                }
-
-                session = new RSession(sessionId, hostClientApp);
-                _sessions[sessionId] = session;
-
-                oldCurrent = Current;
-                if (Current == null) {
-                    Current = session;
-                }
-            }
-
-            if (oldCurrent != Current) {
-                CurrentChanged?.Invoke(this, EventArgs.Empty);
-            }
-
-            return session;
+        public IRSession GetOrCreate(Guid guid, IRHostClientApp hostClientApp) {
+            return _sessions.GetOrAdd(guid, id => new RSession(Interlocked.Increment(ref _sessionCounter), hostClientApp, () => DisposeSession(guid)));
         }
 
-        public IReadOnlyDictionary<int, IRSession> GetSessions() {
-            lock (_lock) {
-                return new Dictionary<int, IRSession>(_sessions);
-            }
+        public IEnumerable<IRSession> GetSessions() {
+            return _sessions.Values;
         }
-
-        public IRSession Current { get; private set; }
-
-        public event EventHandler CurrentChanged;
-
+        
         public void Dispose() {
-            lock (_lock) {
-                foreach (var session in _sessions.Values) {
-                    session.Dispose();
-                }
-
-                Current = null;
-                _sessions.Clear();
+            foreach (var session in _sessions.Values) {
+                session.Dispose();
             }
+        }
+
+        private void DisposeSession(Guid guid) {
+            IRSession session;
+            _sessions.TryRemove(guid, out session);
         }
     }
 }
