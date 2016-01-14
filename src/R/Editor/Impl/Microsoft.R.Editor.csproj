@@ -87,8 +87,7 @@
     <Compile Include="Comments\UncommentCommand.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
-    <Compile Include="Completion\Definitions\IREditorWorkspaceProvider.cs" />
-    <Compile Include="Completion\Definitions\IREditorWorkspace.cs" />
+    <Compile Include="Completion\Definitions\ILoadedPackagesProvider.cs" />
     <Compile Include="Completion\Definitions\IVariablesProvider.cs" />
     <Compile Include="Completion\Definitions\RCompletionProviderAttribute.cs" />
     <Compile Include="Completion\Definitions\IRQuickInfoProvider.cs" />
@@ -99,13 +98,11 @@
     <Compile Include="Completion\Providers\CompletionSourceProvider.cs" />
     <Compile Include="Completion\Providers\CompletionTypeAttribute.cs" />
     <Compile Include="Completion\Providers\FilesCompletionProvider.cs" />
-    <Compile Include="Completion\Providers\LoadedPackagesCollection.cs" />
     <Compile Include="Completion\Providers\ParameterNameCompletionProvider.cs" />
     <Compile Include="Completion\Providers\PackagesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\FunctionCompletionProvider.cs" />
     <Compile Include="Completion\Providers\KeywordCompletionProvider.cs" />
     <Compile Include="Completion\Providers\WorkspaceVariableCompletionProvider.cs" />
-    <Compile Include="Completion\Providers\ObjectMembersCompletionProvider.cs" />
     <Compile Include="Completion\RCompletionSet.cs" />
     <Compile Include="Completion\RCompletionSource.cs" />
     <Compile Include="Completion\RCompletion.cs" />

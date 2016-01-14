@@ -1,21 +1,24 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Host.Client;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.R.Package.Shell;
 
-namespace Microsoft.VisualStudio.R.Package.Editors {
-    internal sealed class REditorWorkspace : IREditorWorkspace {
+namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    [Export(typeof(ILoadedPackagesProvider))]
+    internal sealed class LoadedPackagesProvider : ILoadedPackagesProvider {
         private IRSessionProvider _sessionProvider;
         private IEnumerable<string> _loadedPackages = Enumerable.Empty<string>();
 
-        public REditorWorkspace() {
+        public LoadedPackagesProvider() {
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
             _sessionProvider.CurrentChanged += OnCurrentSessionChanged;
             ConnectToSession();
         }
+
 
         private void OnCurrentSessionChanged(object sender, EventArgs e) {
             ConnectToSession();
@@ -37,11 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         }
 
         private void OnSessionMutated(object sender, EventArgs e) {
-            VsAppShell.Current.DispatchOnUIThread(() => {
-                if (Changed != null) {
-                    Changed(this, EventArgs.Empty);
-                }
-            });
+            Task.Run(async () => await UpdateListOfLoadedPackagesAsync());
         }
 
         private async Task UpdateListOfLoadedPackagesAsync() {
@@ -61,22 +60,9 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             });
         }
 
-        #region 
-        public event EventHandler Changed;
-
-        public void EvaluateExpression(string expression, Action<string, object> resultCallback, object callbackParameter) {
-            if (_sessionProvider.Current != null) {
-                Task.Run(async () => {
-                    using (var e = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
-                        REvaluationResult result = await e.EvaluateAsync(expression);
-                        if (result.ParseStatus == RParseStatus.OK && result.Error == null && result.StringResult != null) {
-                            VsAppShell.Current.DispatchOnUIThread(() => {
-                                resultCallback(result.StringResult, callbackParameter);
-                            });
-                        }
-                    }
-                });
-            }
+        #region ILoadedPackagesProvider
+        public IEnumerable<string> GetPackageNames() {
+            return _loadedPackages;
         }
         #endregion
     }
