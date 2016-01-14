@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.VisualStudio.R.Package.History {
-    public interface IRHistory {
+    public interface IRHistory : IDisposable {
+        IWpfTextView GetOrCreateTextView();
+
         event EventHandler<EventArgs> SelectionChanged;
         event EventHandler<EventArgs> HistoryChanged;
         bool HasSelectedEntries { get; }
@@ -19,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         void NextEntry();
         void CopySelection();
 
+        IReadOnlyList<SnapshotSpan> GetAllHistoryEntrySpans();
         IReadOnlyList<SnapshotSpan> GetSelectedHistoryEntrySpans();
         string GetSelectedText();
 
@@ -31,9 +35,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         void DeleteSelectedHistoryEntries();
         void DeleteAllHistoryEntries();
-        void Filter(string searchPattern);
-        void ClearFilter();
 
         void AddToHistory(string text);
+
+        void Workaround169159(IElisionBuffer elisionBuffer);
     }
 }

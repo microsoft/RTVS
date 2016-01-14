@@ -12,6 +12,12 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RHostClientApp: IRHostClientApp {
+        private static readonly Lazy<IRHostClientApp> InstanceLazy = new Lazy<IRHostClientApp>(() => new RHostClientApp());
+
+        public static IRHostClientApp Instance => InstanceLazy.Value;
+
+        private RHostClientApp() {}
+
         /// <summary>
         /// Displays error message in the host-specific UI
         /// </summary>

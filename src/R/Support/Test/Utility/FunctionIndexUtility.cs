@@ -33,7 +33,7 @@ namespace Microsoft.R.Support.Test.Utility {
         public static async Task DisposeAsync() {
             IRSessionProvider sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             if (sessionProvider != null) {
-                await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.Value.StopHostAsync()));
+                await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));
             }
 
             FunctionIndex.Terminate();

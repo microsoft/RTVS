@@ -92,6 +92,7 @@
     <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
+    <Compile Include="DataInspect\VariableChangedArgs.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
@@ -139,10 +140,12 @@
     <Compile Include="History\HistoryWindowPaneMouseProcessorProvider.cs" />
     <Compile Include="History\IRHistory.cs" />
     <Compile Include="History\IRHistoryEntries.cs" />
+    <Compile Include="History\IRHistoryFiltering.cs" />
     <Compile Include="History\IRHistoryProvider.cs" />
     <Compile Include="History\MultilineRHistoryEntries.cs" />
     <Compile Include="History\RHistory.cs" />
     <Compile Include="History\RHistoryEntries.cs" />
+    <Compile Include="History\RHistoryFiltering.cs" />
     <Compile Include="History\RHistoryProvider.cs" />
     <Compile Include="History\IRHistoryEntry.cs" />
     <Compile Include="History\ShowHistoryWindowCommand.cs" />
@@ -193,6 +196,9 @@
     <Compile Include="Repl\Debugger\StepOverCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerWrappedCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommand.cs" />
+    <Compile Include="Repl\InteractiveWindowRSessionHelper.cs" />
+    <Compile Include="Repl\IRInteractive.cs" />
+    <Compile Include="Repl\IRInteractiveProvider.cs" />
     <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
@@ -201,6 +207,8 @@
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
     <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
+    <Compile Include="Repl\RInteractive.cs" />
+    <Compile Include="Repl\RInteractiveProvider.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
