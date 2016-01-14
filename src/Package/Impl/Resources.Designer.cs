@@ -359,6 +359,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Automatic.
+        /// </summary>
+        public static string HelpBrowser_Automatic {
+            get {
+                return ResourceManager.GetString("HelpBrowser_Automatic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External.
+        /// </summary>
+        public static string HelpBrowser_External {
+            get {
+                return ResourceManager.GetString("HelpBrowser_External", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Help.
         /// </summary>
         public static string HelpWindowCaption {
@@ -883,6 +901,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_GeneralCategory {
             get {
                 return ResourceManager.GetString("Settings_GeneralCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help Browser.
+        /// </summary>
+        public static string Settings_HelpBrowser {
+            get {
+                return ResourceManager.GetString("Settings_HelpBrowser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines if R Tools should always be using external Web browser or try and send Help pages to the Help window and other Web requests to the external default Web browser..
+        /// </summary>
+        public static string Settings_HelpBrowser_Description {
+            get {
+                return ResourceManager.GetString("Settings_HelpBrowser_Description", resourceCulture);
             }
         }
         

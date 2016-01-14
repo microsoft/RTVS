@@ -84,17 +84,7 @@ namespace Microsoft.R.Debugger {
 
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var libPath = Path.GetDirectoryName(typeof(DebugSession).Assembly.GetAssemblyPath());
-
             using (var eval = await RSession.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
-
-                if (res.ParseStatus != RParseStatus.OK) {
-                    throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);
-                } else if (res.Error != null) {
-                    throw new InvalidDataException("Failed to execute loadNamespace('rtvs'): " + res.Error);
-                }
-
                 // Re-initialize the breakpoint table.
                 foreach (var bp in _breakpoints.Values) {
                     await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false)); // TODO: mark breakpoint as invalid if this fails.

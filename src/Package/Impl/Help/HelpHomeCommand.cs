@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     internal sealed class HelpHomeCommand : Command {
-        public HelpHomeCommand(WebBrowser browser) :
+        public HelpHomeCommand(HelpWindowPane pane) :
             base(new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome)) {
         }
 

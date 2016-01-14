@@ -5,6 +5,8 @@ using Microsoft.R.Support.Settings;
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
     public class RHostScript : IDisposable {
+        bool disposed = false;
+
         public IRSessionProvider SessionProvider { get; private set; }
         public IRSession Session { get; private set; }
 
@@ -20,16 +22,30 @@ namespace Microsoft.R.Host.Client.Test.Script {
         }
 
         public void Dispose() {
-            if (Session != null) {
-                Session.StopHostAsync().Wait();
-                Session.Dispose();
-                Session = null;
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (disposed) {
+                return;
             }
 
-            if(SessionProvider != null) {
-                SessionProvider.Dispose();
-                SessionProvider = null;
+            if (disposing) {
+                if (Session != null) {
+                    Session.StopHostAsync().Wait();
+                    Session.Dispose();
+                    Session = null;
+                }
+
+                if (SessionProvider != null) {
+                    SessionProvider.Dispose();
+                    SessionProvider = null;
+                }
             }
+
+            disposed = true;
         }
     }
 }

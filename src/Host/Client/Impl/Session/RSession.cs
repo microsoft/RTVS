@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -8,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
 using Task = System.Threading.Tasks.Task;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
@@ -84,6 +87,10 @@ namespace Microsoft.R.Host.Client.Session {
 
             _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments);
             this.ScheduleEvaluation(async e => {
+                // Load RTVS R package before doing anything in R since the calls
+                // below calls may depend on functions exposed from the RTVS package
+                await LoadRtvsPackage(e);
+
                 await e.SetDefaultWorkingDirectory();
                 await e.SetRdHelpExtraction();
 
@@ -144,6 +151,17 @@ namespace Microsoft.R.Host.Client.Session {
             // If nothing worked, then just kill the host process.
             _host?.Dispose();
             await _hostRunTask;
+        }
+
+        private static async Task LoadRtvsPackage(IRSessionEvaluation eval) {
+            var libPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+            var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
+
+            if (res.ParseStatus != RParseStatus.OK) {
+                throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);
+            } else if (res.Error != null) {
+                throw new InvalidDataException("Failed to execute loadNamespace('rtvs'): " + res.Error);
+            }
         }
 
         public void FlushLog() {

@@ -7,6 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -35,7 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// <summary>
         /// Browser that displays help content
         /// </summary>
-        private WebBrowser _browser;
+        public WebBrowser Browser { get; private set; }
+
         private IRSessionProvider _sessionProvider;
         private IRSession _session;
 
@@ -106,13 +109,15 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void CreateBrowser(bool showDefaultPage = false) {
-            _browser = new WebBrowser();
-            _browser.Navigating += OnNavigating;
-            _browser.Navigated += OnNavigated;
+            if (Browser == null) {
+                Browser = new WebBrowser();
+                Browser.Navigating += OnNavigating;
+                Browser.Navigated += OnNavigated;
 
-            _windowContentControl.Content = _browser;
-            if (showDefaultPage) {
-                HelpHomeCommand.ShowDefaultHelpPage();
+                _windowContentControl.Content = Browser;
+                if (showDefaultPage) {
+                    HelpHomeCommand.ShowDefaultHelpPage();
+                }
             }
         }
 
@@ -132,15 +137,15 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void NavigateTo(string url) {
-            if (_browser != null) {
-                _browser.Navigate(url);
+            if (Browser != null) {
+                Browser.Navigate(url);
             }
         }
 
         public static void Navigate(string url) {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
-            if (IsHelpUrl(url)) {
+            if (RToolsSettings.Current.HelpBrowser == HelpBrowserType.Automatic && IsHelpUrl(url)) {
                 // When control is just being created don't navigate 
                 // to the default page since it will be replaced by
                 // the specific help page right away.
@@ -155,15 +160,19 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private static bool IsHelpUrl(string url) {
-            return url.StartsWith("http://127.0.0.1");
+            Uri uri = new Uri(url);
+            // dynamicHelp.R (startDynamicHelp function):
+            // # Choose 10 random port numbers between 10000 and 32000
+            // ports <- 10000 + 22000*((stats::runif(10) + unclass(Sys.time())/300) %% 1)
+            return uri.IsLoopback && uri.Port >= 10000 && uri.Port <= 32000 && !string.IsNullOrEmpty(uri.PathAndQuery);
         }
 
         private IEnumerable<ICommand> GetCommands() {
             List<ICommand> commands = new List<ICommand>() {
-                new HelpPreviousCommand(_browser),
-                new HelpNextCommand(_browser),
-                new HelpHomeCommand(_browser),
-                new HelpRefreshCommand(_browser)
+                new HelpPreviousCommand(this),
+                new HelpNextCommand(this),
+                new HelpHomeCommand(this),
+                new HelpRefreshCommand(this)
             };
             return commands;
         }
@@ -180,11 +189,11 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void CloseBrowser() {
             _windowContentControl.Content = null;
 
-            if (_browser != null) {
-                _browser.Navigating -= OnNavigating;
-                _browser.Navigated -= OnNavigated;
-                _browser.Dispose();
-                _browser = null;
+            if (Browser != null) {
+                Browser.Navigating -= OnNavigating;
+                Browser.Navigated -= OnNavigated;
+                Browser.Dispose();
+                Browser = null;
             }
         }
     }

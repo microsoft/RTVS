@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     if (data.ColumnNames.Count != gridRange.Columns.Count
                         || data.RowNames.Count != gridRange.Rows.Count) {
-                        throw new InvalidOperationException("The number of evaluatoin data doesn't match with what is requested");
+                        throw new InvalidOperationException("The number of evaluation data doesn't match with what is requested");
                     }
 
                     return data;
@@ -80,6 +80,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void Dispose() {
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
+            if (sessionProvider != null) {
+                sessionProvider.CurrentChanged -= RSessionProvider_CurrentChanged;
+            }
+
             // Only used in tests to make sure each instance 
             // of the variable explorer uses fresh variable provider
             _instance = null;
