@@ -85,8 +85,10 @@
     <Compile Include="Comments\CommentCommand.cs" />
     <Compile Include="Comments\RCommenter.cs" />
     <Compile Include="Comments\UncommentCommand.cs" />
+    <Compile Include="Completion\AsyncCompletionSession.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
+    <Compile Include="Completion\Definitions\CompletionCallBack.cs" />
     <Compile Include="Completion\Definitions\IRAsyncCompletionListProvider.cs" />
     <Compile Include="Completion\Definitions\IREditorWorkspaceProvider.cs" />
     <Compile Include="Completion\Definitions\IREditorWorkspace.cs" />

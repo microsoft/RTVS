@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 _workspace.EvaluateExpression(
                             string.Format(CultureInfo.InvariantCulture, "paste0(colnames({0}), collapse = ' ')", variableName),
                             ParseResponse,
-                            new CallBack() {
+                            new CompletionCallBack<IReadOnlyCollection<RCompletion>>() {
                                 Action = callback,
                                 Parameter = callbackParameter
                             });
@@ -38,18 +38,13 @@ namespace Microsoft.R.Editor.Completion.Providers {
         #endregion
 
         private void ParseResponse(string response, object p) {
-            CallBack cb = p as CallBack;
+            var cb = p as CompletionCallBack<IReadOnlyCollection<RCompletion>>;
             string[] names = response.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             List<RCompletion> completions = new List<RCompletion>();
             foreach(string n in names) {
                 completions.Add(new RCompletion(n, n, string.Empty, _glyph));
             }
             cb.Action(completions, cb.Parameter);
-        }
-
-        class CallBack {
-            public Action<IReadOnlyCollection<RCompletion>, object> Action;
-            public object Parameter;
         }
     }
 }

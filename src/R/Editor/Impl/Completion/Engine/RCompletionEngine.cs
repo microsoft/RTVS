@@ -22,6 +22,43 @@ namespace Microsoft.R.Editor.Completion.Engine {
         private static IEnumerable<Lazy<IRCompletionListProvider>> _completionProviders;
 
         /// <summary>
+        /// Determines if completion at the given location and context
+        /// requires asyncronous fetching of data. 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static bool IsAsyncCompletion(RCompletionContext context) {
+            // Completion for object members is asyncronous since it requires
+            // async calls to the R evaluation engine.
+            return IsInObjectMemberName(context.AstRoot.TextProvider, context.Position);
+        }
+
+        public static void GetCompletionForLocationAsync(RCompletionContext context, 
+                                                         Action<IReadOnlyCollection<RCompletion>, object> callback,
+                                                         object callbackParameter) {
+            if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
+                var asyncProvider = new ObjectMembersCompletionProvider();
+                asyncProvider.GetEntriesAsync(context,
+                                              OnCompletionsProvidersReady,
+                                                new CompletionCallBack<IReadOnlyCollection<RCompletion>>() {
+                                                    Action = callback,
+                                                    Parameter = callbackParameter,
+                                                    Context = context
+                                                });
+            }
+        }
+
+        private static void OnCompletionsProvidersReady(IReadOnlyCollection<RCompletion> completions, object p) {
+            var cb = p as CompletionCallBack<IReadOnlyCollection<RCompletion>>;
+            List<RCompletion> allCompletions = new List<RCompletion>(completions);
+
+            var workspaceVariablesProvider = new WorkspaceVariableCompletionProvider();
+            allCompletions.AddRange(workspaceVariablesProvider.GetEntries(cb.Context));
+
+            cb.Action(completions, cb.Parameter);
+        }
+
+        /// <summary>
         /// Provides list of completion entries for a given location in the AST.
         /// </summary>
         /// <param name="tree">Document tree</param>
@@ -50,12 +87,6 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
             if (IsInFunctionArgumentName<FunctionDefinition>(context.AstRoot, context.Position)) {
                 // No completion in function definition argument names
-                return providers;
-            }
-
-            if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
-                providers.Add(new WorkspaceVariableCompletionProvider());
-                providers.Add(new ObjectMembersCompletionProvider());
                 return providers;
             }
 
