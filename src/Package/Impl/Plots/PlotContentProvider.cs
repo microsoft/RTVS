@@ -109,35 +109,72 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             OnPlotChanged(element);
         }
 
-        public async void ExportFile(string fileName) {
+        public async void ExportAsImage(string fileName, string deviceName) {
             if (_rSession == null) {
                 return;
             }
 
-            string device = String.Empty;
-            switch (Path.GetExtension(fileName).TrimStart('.').ToLowerInvariant()) {
-                case "png":
-                    device = "png";
-                    break;
-                case "bmp":
-                    device = "bmp";
-                    break;
-                case "tif":
-                case "tiff":
-                    device = "tiff";
-                    break;
-                case "jpg":
-                case "jpeg":
-                    device = "jpeg";
-                    break;
-                default:
-                    //TODO
-                    Debug.Assert(false, "Unsupported image format.");
-                    return;
-
-            }
             using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                await eval.CopyToDevice(device, fileName);
+                await eval.ExportToBitmap(deviceName, fileName, _lastWidth, _lastHeight);
+            }
+        }
+
+        public async void CopyToClipboardAsBitmap() {
+            if (_rSession == null) {
+                return;
+            }
+
+            string fileName = Path.GetTempFileName();
+            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                await eval.ExportToBitmap("bmp", fileName, _lastWidth, _lastHeight);
+                try {
+                    var image = new BitmapImage(new Uri(fileName));
+                    Clipboard.SetImage(image);
+                } catch (IOException) {
+                    MessageBox.Show(Resources.PlotCopyToClipboardError);
+                }
+            }
+
+            SafeFileDelete(fileName);
+        }
+
+        public async void CopyToClipboardAsMetafile() {
+            if (_rSession == null) {
+                return;
+            }
+
+            string fileName = Path.GetTempFileName();
+            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                await eval.ExportToMetafile(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight));
+                try {
+                    var mf = new System.Drawing.Imaging.Metafile(fileName);
+                    Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
+                } catch (IOException) {
+                    MessageBox.Show(Resources.PlotCopyToClipboardError);
+                }
+            }
+
+            SafeFileDelete(fileName);
+        }
+
+        private static double PixelsToInches(int pixels) {
+            return pixels / 96.0;
+        }
+
+        private static void SafeFileDelete(string fileName) {
+            try {
+                File.Delete(fileName);
+            } catch (IOException) {
+            }
+        }
+
+        public async void ExportAsPdf(string fileName) {
+            if (_rSession == null) {
+                return;
+            }
+
+            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                await eval.ExportToPdf(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight), "special");
             }
         }
 

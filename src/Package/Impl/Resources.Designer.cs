@@ -106,15 +106,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to open plot file. Exception: {0}.
-        /// </summary>
-        public static string CannotOpenPlotFile {
-            get {
-                return ResourceManager.GetString("CannotOpenPlotFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Choose Directory.
         /// </summary>
         public static string ChooseDirectory {
@@ -343,9 +334,18 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Export Plot As Image.
         /// </summary>
-        public static string ExportPlotDialogTitle {
+        public static string ExportPlotAsImageDialogTitle {
             get {
-                return ResourceManager.GetString("ExportPlotDialogTitle", resourceCulture);
+                return ResourceManager.GetString("ExportPlotAsImageDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Plot As PDF.
+        /// </summary>
+        public static string ExportPlotAsPdfDialogTitle {
+            get {
+                return ResourceManager.GetString("ExportPlotAsPdfDialogTitle", resourceCulture);
             }
         }
         
@@ -513,15 +513,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open R Plot File.
-        /// </summary>
-        public static string OpenPlotDialogTitle {
-            get {
-                return ResourceManager.GetString("OpenPlotDialogTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Packages.
         /// </summary>
         public static string OutputWindowName_InstallPackages {
@@ -540,20 +531,40 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*.
+        ///   Looks up a localized string similar to Error copying plot to the clipboard..
         /// </summary>
-        public static string PlotExportFilter {
+        public static string PlotCopyToClipboardError {
             get {
-                return ResourceManager.GetString("PlotExportFilter", resourceCulture);
+                return ResourceManager.GetString("PlotCopyToClipboardError", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Plot Files (*.vsplot)|*.vsplot|All Files (*.*)|*.*.
+        ///   Looks up a localized string similar to PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*.
         /// </summary>
-        public static string PlotFileFilter {
+        public static string PlotExportAsImageFilter {
             get {
-                return ResourceManager.GetString("PlotFileFilter", resourceCulture);
+                return ResourceManager.GetString("PlotExportAsImageFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PDF (*.pdf)|*.pdf|All Files (*.*)|*.*.
+        /// </summary>
+        public static string PlotExportAsPdfFilter {
+            get {
+                return ResourceManager.GetString("PlotExportAsPdfFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File extension &apos;{0}&apos; is not supported.
+        ///
+        ///Supported formats are: jpg/jpeg, png, tif/tiff, bmp..
+        /// </summary>
+        public static string PlotExportUnsupportedImageFormat {
+            get {
+                return ResourceManager.GetString("PlotExportUnsupportedImageFormat", resourceCulture);
             }
         }
         

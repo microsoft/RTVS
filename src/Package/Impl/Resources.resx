@@ -264,17 +264,14 @@
   <data name="EmptyPlotWindowWatermark" xml:space="preserve">
     <value>Run plotting command in R Interactive Window</value>
   </data>
-  <data name="OpenPlotDialogTitle" xml:space="preserve">
-    <value>Open R Plot File</value>
+  <data name="PlotCopyToClipboardError" xml:space="preserve">
+    <value>Error copying plot to the clipboard.</value>
   </data>
-  <data name="PlotFileFilter" xml:space="preserve">
-    <value>R Plot Files (*.vsplot)|*.vsplot|All Files (*.*)|*.*</value>
-  </data>
-  <data name="PlotExportFilter" xml:space="preserve">
+  <data name="PlotExportAsImageFilter" xml:space="preserve">
     <value>PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*</value>
   </data>
-  <data name="CannotOpenPlotFile" xml:space="preserve">
-    <value>Unable to open plot file. Exception: {0}</value>
+  <data name="PlotExportAsPdfFilter" xml:space="preserve">
+    <value>PDF (*.pdf)|*.pdf|All Files (*.*)|*.*</value>
   </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
     <value>Starting R Session...</value>
@@ -282,8 +279,16 @@
   <data name="SavePlotDialogTitle" xml:space="preserve">
     <value>Save R Plot File</value>
   </data>
-  <data name="ExportPlotDialogTitle" xml:space="preserve">
+  <data name="ExportPlotAsImageDialogTitle" xml:space="preserve">
     <value>Export Plot As Image</value>
+  </data>
+  <data name="ExportPlotAsPdfDialogTitle" xml:space="preserve">
+    <value>Export Plot As PDF</value>
+  </data>
+  <data name="PlotExportUnsupportedImageFormat" xml:space="preserve">
+    <value>File extension '{0}' is not supported.
+
+Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="LoadWorkspaceIntoGlobalEnvironment" xml:space="preserve">
     <value>Do you want to load the R data file {0} into the global environment?</value>

@@ -36,20 +36,12 @@
         public const int icmdCheckForPackageUpdates = 602;
 
         // Plots
-        //public const int icmdOpenPlot = 701;
-        //public const int icmdSavePlot = 702;
-        //public const int icmdFixPlot = 703;
-        public const int icmdExportPlot = 704;
         public const int icmdPrintPlot = 705;
-        //public const int icmdCopyPlot = 707;
-        //public const int icmdZoomInPlot = 708;
-        //public const int icmdZoomOutPlot = 709;
         public const int icmdNextPlot = 710;
         public const int icmdPrevPlot = 711;
         public const int icmdClearPlots = 712;
-        public const int icmdExportPlotAsPng = 713;
+        public const int icmdExportPlotAsImage = 713;
         public const int icmdExportPlotAsPdf = 714;
-        public const int icmdExportPlotAsBitmap = 715;
         public const int icmdCopyPlotAsBitmap = 716;
         public const int icmdCopyPlotAsMetafile = 717;
 

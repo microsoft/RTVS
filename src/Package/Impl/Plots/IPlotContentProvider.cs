@@ -19,10 +19,27 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         void LoadFile(string filePath);
 
         /// <summary>
-        /// Export plot as an image
+        /// Export plot as an image.
         /// </summary>
-        /// <param name="fileName">the destination filepath</param>
-        void ExportFile(string fileName);
+        /// <param name="fileName">Destination file path.</param>
+        /// <param name="deviceName">Name of R device to use (png, bmp, tiff, jpeg).</param>
+        void ExportAsImage(string fileName, string deviceName);
+
+        /// <summary>
+        /// Export plot as a PDF.
+        /// </summary>
+        /// <param name="fileName">Destination file path.</param>
+        void ExportAsPdf(string fileName);
+
+        /// <summary>
+        /// Copy plot to clipboard in bitmap format.
+        /// </summary>
+        void CopyToClipboardAsBitmap();
+
+        /// <summary>
+        /// Copy plot to clipboard in enhanced metafile format.
+        /// </summary>
+        void CopyToClipboardAsMetafile();
 
         /// <summary>
         /// Resize the current plot or set the default size for future plots.
