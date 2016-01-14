@@ -24,16 +24,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public MatrixView() {
             InitializeComponent();
 
-            _scroller = new VisualGridScroller();
-            _scroller.ColumnHeader = ColumnHeader;
-            _scroller.RowHeader = RowHeader;
-            _scroller.DataGrid = Data;
-
             Points = new GridPoints(0, 0);
             Points.PointChanged += Points_PointChanged;
+
+            RowHeader.Owner = this;
+            ColumnHeader.Owner = this;
+            Data.Owner = this;
         }
 
         public void Initialize(IGridProvider<string> dataProvider) {
+            _scroller = new VisualGridScroller(this);
             DataProvider = dataProvider;
 
             // reset scroll bar position to zero
@@ -42,26 +42,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void Refresh() {
-            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
+            _scroller?.EnqueueCommand(ScrollType.Refresh, 0);
         }
 
-        private GridPoints _gridPoints;
-        private GridPoints Points {
-            get {
-                return _gridPoints;
-            }
-
-            set {
-                _gridPoints = value;
-                RowHeader.Points = _gridPoints;
-                ColumnHeader.Points = _gridPoints;
-                Data.Points = _gridPoints;
-                _scroller.Points = _gridPoints;
-            }
-        }
+        internal GridPoints Points { get; set; }
 
         private IGridProvider<string> _dataProvider;
-        private IGridProvider<string> DataProvider {
+        internal IGridProvider<string> DataProvider {
             get {
                 return _dataProvider;
             }
@@ -71,15 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 _dataProvider = value;
-
-                RowHeader.DataProvider = _dataProvider;
-                ColumnHeader.DataProvider = _dataProvider;
-                Data.DataProvider = _dataProvider;
-                _scroller.SetDataProvider(_dataProvider);
-
-                Points.Reset(_dataProvider.RowCount, _dataProvider.ColumnCount);
-
-                Refresh();
+                _scroller.Reset();
             }
         }
 
@@ -244,7 +223,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e) {
-            if (e.Delta > 0 || e.Delta < 0) {
+            if (_scroller != null && (e.Delta > 0 || e.Delta < 0)) {
                 _scroller.EnqueueCommand(ScrollType.MouseWheel, e.Delta);
                 e.Handled = true;
             }
@@ -271,6 +250,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void VerticalScrollBar_Scroll(object sender, ScrollEventArgs e) {
+            if (_scroller == null) {
+                return;
+            }
+
             switch (e.ScrollEventType) {
                 case ScrollEventType.EndScroll:
                     _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
@@ -305,6 +288,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void HorizontalScrollBar_Scroll(object sender, ScrollEventArgs e) {
+            if (_scroller == null) {
+                return;
+            }
+
             switch (e.ScrollEventType) {
                 case ScrollEventType.EndScroll:
                     _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);

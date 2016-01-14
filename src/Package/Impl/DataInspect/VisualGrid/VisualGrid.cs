@@ -18,39 +18,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public VisualGrid() {
             _visualChildren = new VisualCollection(this);
-            _gridLine = new GridLineVisual();
+            _gridLine = new GridLineVisual(this);
             ClipToBounds = true;
         }
 
-        private ScrollDirection _scrollDirection;
-        public ScrollDirection ScrollDirection {
+        internal MatrixView Owner { get; set; }
+
+        public ScrollDirection ScrollDirection { get; set; }
+
+        public GridPoints Points {
             get {
-                return _scrollDirection;
-            }
-            set {
-                _scrollDirection = value;
-                _gridLine.ScrollDirection = value;
+                return Owner.Points;
             }
         }
-
-        private IGridProvider<string> _dataProvider;
-        public IGridProvider<string> DataProvider {
-            get {
-                return _dataProvider;
-            }
-            set {
-                _dataProvider = value;
-                if (_dataProvider == null) {
-                    RowCount = 0;
-                    ColumnCount = 0;
-                } else {
-                    RowCount = ScrollDirection == ScrollDirection.Horizontal ? 1 : _dataProvider.RowCount;
-                    ColumnCount = ScrollDirection == ScrollDirection.Vertical ? 1 : _dataProvider.ColumnCount;
-                }
-            }
-        }
-
-        public GridPoints Points { get; set; }
 
         #region Font
 
@@ -89,15 +69,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
-        public int RowCount { get; set; }
-
-        public int ColumnCount { get; set; }
-
-        public double GridLineThickness { get { return _gridLine.GridLineThickness; } }
+        public double GridLineThickness {
+            get {
+                return _gridLine.GridLineThickness;
+            }
+        }
 
         public void SetGridLineBrush(Brush brush) {
             _gridLine.GridLineBrush = brush;
-            // TODO: refresh at setting
         }
 
         private Brush _foreground = Brushes.Black;
@@ -107,7 +86,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             set {
                 _foreground = value;
-                // TODO: refresh at setting
             }
         }
 
@@ -118,7 +96,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             set {
                 _background = value;
-                // TODO: refresh at setting
             }
         }
 
@@ -176,9 +153,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             // special handling for Row/Column header's size: this will layout system (measure/arrange) to know the size of component properly.
-            if (ScrollDirection == ScrollDirection.Horizontal && RowCount > 0) {
+            if (ScrollDirection == ScrollDirection.Horizontal) {
                 Height = GetHeight(0);
-            } else if (ScrollDirection == ScrollDirection.Vertical && ColumnCount > 0) {
+            } else if (ScrollDirection == ScrollDirection.Vertical) {
                 Width = GetWidth(0);
             }
 

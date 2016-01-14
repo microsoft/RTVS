@@ -6,7 +6,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// DrawingVisual for grid's line
     /// </summary>
     internal class GridLineVisual : DrawingVisual {
-        public ScrollDirection ScrollDirection { get; set; }
+        public GridLineVisual(VisualGrid owner) {
+            Owner = owner;
+        }
+
+        internal VisualGrid Owner { get; }
+
+        private ScrollDirection ScrollDirection {
+            get {
+                return Owner.ScrollDirection;
+            }
+        }
 
         public double GridLineThickness { get { return 1.0; } }
 

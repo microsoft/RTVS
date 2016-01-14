@@ -12,16 +12,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Handles scroll command
     /// </summary>
     internal class VisualGridScroller {
-        private TaskScheduler ui;
+        private TaskScheduler _ui;
         private BlockingCollection<ScrollCommand> _scrollCommands;
 
         private bool _continue = true;
         private CancellationTokenSource _cancellSource;
-        private IGridProvider<string> _dataProvider;
+        private MatrixView _owner;
 
-        public VisualGridScroller() {
-            ui = TaskScheduler.FromCurrentSynchronizationContext();
+        public VisualGridScroller(MatrixView owner) {
+            _ui = TaskScheduler.FromCurrentSynchronizationContext();
 
+            _owner = owner;
             _scrollCommands = new BlockingCollection<ScrollCommand>();
 
             // silence every exception and don't wait
@@ -42,12 +43,37 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             });
         }
 
-        public GridPoints Points { get; set; }
-        public VisualGrid ColumnHeader { get; set; }
-        public VisualGrid RowHeader { get; set; }
-        public VisualGrid DataGrid { get; set; }
+        public GridPoints Points {
+            get {
+                return _owner.Points;
+            }
+        }
 
-        internal void SetDataProvider(IGridProvider<string> provider) {
+        public VisualGrid ColumnHeader {
+            get {
+                return _owner.ColumnHeader;
+            }
+        }
+
+        public VisualGrid RowHeader {
+            get {
+                return _owner.RowHeader;
+            }
+        }
+
+        public VisualGrid DataGrid {
+            get {
+                return _owner.Data;
+            }
+        }
+
+        public IGridProvider<string> DataProvider {
+            get {
+                return _owner.DataProvider;
+            }
+        }
+
+        internal void Reset() {
             Debug.Assert(!TaskUtilities.IsOnBackgroundThread());
 
             if (_cancellSource != null) {
@@ -55,7 +81,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             // TODO: wait for cancellation
 
-            _dataProvider = provider;
+            Points.Reset(DataProvider.RowCount, DataProvider.ColumnCount);
+            EnqueueCommand(ScrollType.Refresh, 0);
         }
 
         internal void EnqueueCommand(ScrollType code, double param) {
@@ -175,7 +202,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 GridRange newViewport = Points.ComputeDataViewport(visualViewport);
 
                 // pull data from provider
-                var data = await _dataProvider.GetAsync(newViewport);
+                var data = await DataProvider.GetAsync(newViewport);
                 if (!data.Grid.Range.Contains(newViewport)
                     || !data.ColumnHeader.Range.Contains(newViewport.Columns)
                     || !data.RowHeader.Range.Contains(newViewport.Rows)) {
@@ -187,7 +214,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     () => DrawVisuals(newViewport, data, refresh),
                     token,
                     TaskCreationOptions.None,
-                    ui);
+                    _ui);
             }
         }
 

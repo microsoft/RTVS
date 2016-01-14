@@ -11,8 +11,6 @@ namespace Microsoft.VisualStudio.R.TestApp {
     public partial class VisualGridWindow : Window {
         public VisualGridWindow() {
             InitializeComponent();
-
-            RootGrid.Initialize(new DataProvider(1000, 1000));
         }
 
         private void AssingDataProvider_Click(object sender, RoutedEventArgs e) {
