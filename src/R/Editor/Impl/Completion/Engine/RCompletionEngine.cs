@@ -55,7 +55,6 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
                 providers.Add(new WorkspaceVariableCompletionProvider());
-                providers.Add(new ObjectMembersCompletionProvider());
                 return providers;
             }
 

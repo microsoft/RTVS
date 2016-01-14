@@ -1,55 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completion.Providers {
     /// <summary>
-    /// Provides list members of a given variable
+    /// Provides list of installed packages for completion inside 
+    /// library(...) statement. List of packages is  obtained from 
+    /// ~\Program Files\R and from ~\Documents\R folders
     /// </summary>
-    public sealed class ObjectMembersCompletionProvider : IRAsyncCompletionListProvider {
-        private IREditorWorkspace _workspace;
-        private ImageSource _glyph;
+    public sealed class ObjectMembersCompletionProvider : IRCompletionListProvider {
+        [Import]
+        IVariablesProvider _variablesProvider = null;
 
         public ObjectMembersCompletionProvider() {
-            var workspaceProvider = EditorShell.Current.ExportProvider.GetExportedValue<IREditorWorkspaceProvider>();
-            _workspace = workspaceProvider.GetWorkspace();
-            ImageSource keyWordGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupField, StandardGlyphItem.GlyphItemPublic);
+            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
         }
 
-        #region IRAsyncCompletionListProvider
-        public void GetEntriesAsync(RCompletionContext context,
-                               Action<IReadOnlyCollection<RCompletion>, object> callback, object callbackParameter) {
+        #region IRCompletionListProvider
+        public bool AllowSorting { get; } = true;
+
+        public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
+            List<RCompletion> completions = new List<RCompletion>();
+            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+            ImageSource variableGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
+
             string variableName = RCompletionContext.GetVariableName(context.Session.TextView, context.TextBuffer.CurrentSnapshot);
-            if (variableName.IndexOfAny(new char[] { '$' }) > 0) {
-                _workspace.EvaluateExpression(
-                            string.Format(CultureInfo.InvariantCulture, "paste0(colnames({0}), collapse = ' ')", variableName),
-                            ParseResponse,
-                            new CallBack() {
-                                Action = callback,
-                                Parameter = callbackParameter
-                            });
+            if (variableName.IndexOfAny(new char[] { '$', '@' }) < 0) {
+                variableName = string.Empty;
             }
+
+            int memberCount = _variablesProvider.GetMemberCount(variableName);
+            IReadOnlyCollection<INamedItemInfo> members = _variablesProvider.GetMembers(variableName, 200);
+
+            // Get list of functions in the package
+            foreach (INamedItemInfo v in members) {
+                Debug.Assert(v != null);
+
+                if (v.Name.Length > 0 && v.Name[0] != '[') {
+                    ImageSource glyph = v.ItemType == NamedItemType.Variable ? variableGlyph : functionGlyph;
+                    var completion = new RCompletion(v.Name, v.Name, v.Description, glyph);
+                    completions.Add(completion);
+                }
+            }
+
+            return completions;
         }
         #endregion
-
-        private void ParseResponse(string response, object p) {
-            CallBack cb = p as CallBack;
-            string[] names = response.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            List<RCompletion> completions = new List<RCompletion>();
-            foreach(string n in names) {
-                completions.Add(new RCompletion(n, n, string.Empty, _glyph));
-            }
-            cb.Action(completions, cb.Parameter);
-        }
-
-        class CallBack {
-            public Action<IReadOnlyCollection<RCompletion>, object> Action;
-            public object Parameter;
-        }
     }
 }
