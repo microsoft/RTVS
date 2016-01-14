@@ -9,18 +9,12 @@ using static System.FormattableString;
 namespace Microsoft.R.Debugger {
     internal enum DebugStackFrameKind {
         Normal,
-        DoTrace, // .doTrace(rtvs:::breakpoint(...))
-        DoTraceInternals, // everything between the one above and the one below
-        Breakpoint, // rtvs:::breakpoint(...)
-        TracebackAfterBreakpoint // rtvs:::describe_traceback() immediately following rtvs:::breakpoint(...)
+        DoTrace, // .doTrace(if (rtvs:::is_breakpoint(...)) browser())
     }
 
     public class DebugStackFrame {
         private static readonly Regex _doTraceRegex = new Regex(
-            @"^\.doTrace\(\s*rtvs:::breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)\s*\)$",
-            RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
-        private static readonly Regex _breakpointRegex = new Regex(
-            @"^rtvs:::breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\)$",
+            @"^\.doTrace\(.*rtvs:::is_breakpoint\((?<filename>.*),\s*(?<line_number>\d+)\).*\)$",
             RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
 
         public DebugSession Session { get; }
@@ -40,11 +34,6 @@ namespace Microsoft.R.Debugger {
         public bool IsGlobal { get; }
 
         internal DebugStackFrameKind FrameKind { get; }
-
-        public bool IsDebuggerInternal =>
-            FrameKind == DebugStackFrameKind.DoTraceInternals ||
-            FrameKind == DebugStackFrameKind.Breakpoint ||
-            FrameKind == DebugStackFrameKind.TracebackAfterBreakpoint;
 
         internal DebugStackFrame(DebugSession session, int index, DebugStackFrame callingFrame, JObject jFrame, DebugStackFrame fallbackFrame = null) {
             Session = session;
@@ -76,21 +65,7 @@ namespace Microsoft.R.Debugger {
                     // insert one. Assert in Debug to detect code changes that break our inserted .doTrace.
                     Debug.Fail(Invariant($"Couldn't parse RTVS .doTrace call: {Call}"));
                 }
-            } else if (_breakpointRegex.IsMatch(Call)) {
-                FrameKind = DebugStackFrameKind.Breakpoint;
-            } else {
-                switch (CallingFrame?.FrameKind) {
-                    case DebugStackFrameKind.DoTrace:
-                    case DebugStackFrameKind.DoTraceInternals:
-                        FrameKind = DebugStackFrameKind.DoTraceInternals;
-                        break;
-                    case DebugStackFrameKind.Breakpoint:
-                        if (Call == "rtvs:::describe_traceback()") {
-                            FrameKind = DebugStackFrameKind.TracebackAfterBreakpoint;
-                        }
-                        break;
-                }
-            }
+            } 
 
             if (fallbackFrame != null) {
                 // If we still don't have the filename and line number, use those from the fallback frame.

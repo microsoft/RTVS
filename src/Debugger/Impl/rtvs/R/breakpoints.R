@@ -4,13 +4,11 @@ locals <- as.environment(list(breakpoints_enabled = FALSE));
 # Names are filenames, values are vectors of line numbers.
 breakpoints <- new.env(parent = emptyenv())
 
-# Used to report a breakpoint. Before breaking, will check that the breakpoint is still set.
-breakpoint <- function(filename, line_number) {
+# Used to check whether a breakpoint is still valid at this location.
+is_breakpoint <- function(filename, line_number) {
   if (locals$breakpoints_enabled) {
     line_numbers <- breakpoints[[filename]];
-    if (line_number %in% line_numbers) {
-      browser();
-    }
+    return(line_number %in% line_numbers);
   }
 }
 
@@ -145,7 +143,7 @@ inject_breakpoints <- function(expr) {
         original_expr <- bp_expr;
     }
           
-    expr[[step]] <- substitute({.doTrace(rtvs:::breakpoint(FILENAME, LINE_NUMBER)); EXPR},
+    expr[[step]] <- substitute({.doTrace(if (rtvs:::is_breakpoint(FILENAME, LINE_NUMBER)) browser()); EXPR},
                                     list(FILENAME = filename, LINE_NUMBER = line_num, EXPR = original_expr));
     attr(expr[[step]], 'rtvs::original_expr') <- original_expr;
     attr(expr[[step]], 'srcref') <- attr(original_expr, 'srcref');
