@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
@@ -121,25 +122,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private double HorizontalOffset {
-            get {
-                if (ScrollDirection == ScrollDirection.Vertical) {
-                    return 0.0;
-                }
-                return Points.HorizontalOffset;
-            }
-        }
-
-        private double VerticalOffset {
-            get {
-                if (ScrollDirection == ScrollDirection.Horizontal) {
-                    return 0.0;
-                }
-                return Points.VerticalOffset;
-            }
-        }
-
         internal void MeasurePoints(GridRange newViewport, IGrid<string> data, bool refresh) {
+            Debug.Assert(newViewport.Contains(data.Range));
+
             var orgGrid = _visualGrid;
             _visualGrid = new Grid<TextVisual>(
                 newViewport,

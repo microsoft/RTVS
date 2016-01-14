@@ -19,6 +19,10 @@ namespace Microsoft.VisualStudio.R.TestApp {
             RootGrid.Initialize(new DataProvider(1000, 1000));
         }
 
+        private void AssingSmallProvider_Click(object sender, RoutedEventArgs e) {
+            RootGrid.Initialize(new DataProvider(3, 2));
+        }
+
         private void ChangeForeground_Click(object sender, RoutedEventArgs e) {
             RootGrid.Foreground = ToggleColor(RootGrid.Foreground, Brushes.White, Brushes.Yellow);
         }

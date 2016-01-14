@@ -15,13 +15,31 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private TaskScheduler ui;
         private BlockingCollection<ScrollCommand> _scrollCommands;
 
+        private bool _continue = true;
+        private CancellationTokenSource _cancellSource;
+        private IGridProvider<string> _dataProvider;
+
         public VisualGridScroller() {
             ui = TaskScheduler.FromCurrentSynchronizationContext();
 
             _scrollCommands = new BlockingCollection<ScrollCommand>();
 
             // silence every exception and don't wait
-            Task.Run(() => ScrollCommandsHandler().SilenceException<Exception>().DoNotWait());
+            Task.Run(async () => {
+                while (_continue) {
+                    try {
+                        _cancellSource = new CancellationTokenSource();
+                        await ScrollCommandsHandler(_cancellSource.Token);
+                    } catch (TaskCanceledException ex) {
+                        Trace.WriteLine(ex.Message);
+                    } catch (OperationCanceledException ex) {
+                        Trace.WriteLine(ex.Message);
+                    } catch (Exception ex) {
+                        // swallow exception
+                        Trace.WriteLine(ex.ToString());
+                    }
+                }
+            });
         }
 
         public GridPoints Points { get; set; }
@@ -29,36 +47,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VisualGrid RowHeader { get; set; }
         public VisualGrid DataGrid { get; set; }
 
-        private IGridProvider<string> _dataProvider;
-        public IGridProvider<string> DataProvider {
-            get {
-                return _dataProvider;
-            }
-            set {
-                FlushCommands();
-                _dataProvider = value;
-            }
-        }
+        internal void SetDataProvider(IGridProvider<string> provider) {
+            Debug.Assert(!TaskUtilities.IsOnBackgroundThread());
 
-        internal void FlushCommands() {
-            ScrollCommand command;
-            while (_scrollCommands.TryTake(out command)) {
+            if (_cancellSource != null) {
+                _cancellSource.Cancel();
             }
+            // TODO: wait for cancellation
+
+            _dataProvider = provider;
         }
 
         internal void EnqueueCommand(ScrollType code, double param) {
+            Debug.Assert(!TaskUtilities.IsOnBackgroundThread());
             _scrollCommands.Add(new ScrollCommand(code, param));
         }
 
         internal void EnqueueCommand(ScrollType code, Size size) {
+            Debug.Assert(!TaskUtilities.IsOnBackgroundThread());
             _scrollCommands.Add(new ScrollCommand(code, size));
         }
 
-        private async Task ScrollCommandsHandler() {
+        private async Task ScrollCommandsHandler(CancellationToken cancellatoinToken) {
             const int ScrollCommandUpperBound = 50;
             List<ScrollCommand> batch = new List<ScrollCommand>();
 
-            foreach (var command in _scrollCommands.GetConsumingEnumerable()) {
+            foreach (var command in _scrollCommands.GetConsumingEnumerable(cancellatoinToken)) {
                 try {
                     batch.Add(command);
                     if (_scrollCommands.Count > 0
@@ -68,6 +82,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         continue;
                     } else {
                         for (int i = 0; i < batch.Count; i++) {
+                            if (cancellatoinToken.IsCancellationRequested) {
+                                break;
+                            }
+
                             // if next command is same the current one, skip to next (new one) for optimization
                             if (i < (batch.Count - 1)
                                 && ((batch[i].Code == ScrollType.SizeChange && batch[i + 1].Code == ScrollType.SizeChange)
@@ -76,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                     || (batch[i].Code == ScrollType.Refresh && batch[i + 1].Code == ScrollType.Refresh))) {
                                 continue;
                             } else {
-                                await ExecuteCommand(batch[i]);
+                                await ExecuteCommandAsync(batch[i], cancellatoinToken);
                             }
                         }
                         batch.Clear();
@@ -88,75 +106,86 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private async Task ExecuteCommand(ScrollCommand cmd) {
+        private const double LineDelta = 10.0;
+        private const double PageDelta = 100.0;
+
+        private async Task ExecuteCommandAsync(ScrollCommand cmd, CancellationToken token) {
+            bool drawvisual = true;
+            bool refresh = false;
             switch (cmd.Code) {
                 case ScrollType.LineUp:
-                    await LineUpAsync();
+                    Points.VerticalOffset -= LineDelta;
                     break;
                 case ScrollType.LineDown:
-                    await LineDownAsync();
+                    Points.VerticalOffset += LineDelta;
                     break;
                 case ScrollType.LineLeft:
-                    await LineLeftAsync();
+                    Points.HorizontalOffset -= LineDelta;
                     break;
                 case ScrollType.LineRight:
-                    await LineRightAsync();
+                    Points.HorizontalOffset += LineDelta;
                     break;
                 case ScrollType.PageUp:
-                    await PageUpAsync();
+                    Points.VerticalOffset -= PageDelta;
                     break;
                 case ScrollType.PageDown:
-                    await PageDownAsync();
+                    Points.VerticalOffset += PageDelta;
                     break;
                 case ScrollType.PageLeft:
-                    await PageLeftAsync();
+                    Points.HorizontalOffset -= PageDelta;
                     break;
                 case ScrollType.PageRight:
-                    await PageRightAsync();
+                    Points.HorizontalOffset += PageDelta;
                     break;
                 case ScrollType.SetHorizontalOffset:
-                    await SetHorizontalOffsetAsync(cmd.Param);
+                    Points.HorizontalOffset = cmd.Param;
                     break;
                 case ScrollType.SetVerticalOffset:
-                    await SetVerticalOffsetAsync(cmd.Param);
+                    Points.VerticalOffset = cmd.Param;
                     break;
                 case ScrollType.MouseWheel:
-                    await SetMouseWheelAsync(cmd.Param);
+                    Points.VerticalOffset -= cmd.Param;
                     break;
                 case ScrollType.SizeChange:
-                    await DrawVisualsAsync(
-                        new Rect(
-                            Points.HorizontalOffset,
-                            Points.VerticalOffset,
-                            DataGrid.RenderSize.Width,
-                            DataGrid.RenderSize.Height),
-                        false);
+                    refresh = false;
                     break;
                 case ScrollType.Refresh:
-                    await DrawVisualsAsync(
-                        new Rect(
-                            Points.HorizontalOffset,
-                            Points.VerticalOffset,
-                            DataGrid.RenderSize.Width,
-                            DataGrid.RenderSize.Height),
-                        true);
+                    refresh = true;
                     break;
                 case ScrollType.Invalid:
+                default:
+                    drawvisual = false;
                     break;
+            }
+
+            if (drawvisual) {
+                await DrawVisualsAsync(
+                    new Rect(
+                        Points.HorizontalOffset,
+                        Points.VerticalOffset,
+                        DataGrid.RenderSize.Width,
+                        DataGrid.RenderSize.Height),
+                    refresh,
+                    token);
             }
         }
 
-        private async Task DrawVisualsAsync(Rect visualViewport, bool refresh) {
+        private async Task DrawVisualsAsync(Rect visualViewport, bool refresh, CancellationToken token) {
             using (var elapsed = new Elapsed("PullDataAndDraw:")) {
                 GridRange newViewport = Points.ComputeDataViewport(visualViewport);
 
                 // pull data from provider
-                var data = await DataProvider.GetAsync(newViewport);
+                var data = await _dataProvider.GetAsync(newViewport);
+                if (!data.Grid.Range.Contains(newViewport)
+                    || !data.ColumnHeader.Range.Contains(newViewport.Columns)
+                    || !data.RowHeader.Range.Contains(newViewport.Rows)) {
+                    throw new InvalidOperationException("Couldn't acquire enough data");
+                }
 
                 // actual drawing runs in UI thread
                 await Task.Factory.StartNew(
                     () => DrawVisuals(newViewport, data, refresh),
-                    CancellationToken.None,
+                    token,
                     TaskCreationOptions.None,
                     ui);
             }
@@ -186,66 +215,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 RowHeader?.ArrangeVisuals();
                 DataGrid?.ArrangeVisuals();
             }
-        }
-
-        private async Task SetVerticalOffsetAsync(double offset) {
-            Points.VerticalOffset = offset;
-
-            await DrawVisualsAsync(
-                new Rect(
-                    Points.HorizontalOffset,
-                    Points.VerticalOffset,
-                    DataGrid.RenderSize.Width,
-                    DataGrid.RenderSize.Height),
-                false);
-        }
-
-        private Task LineUpAsync() {
-            return SetVerticalOffsetAsync(Points.VerticalOffset - 10.0);    // TODO: do not hard-code the number here.
-        }
-
-        private Task LineDownAsync() {
-            return SetVerticalOffsetAsync(Points.VerticalOffset + 10.0);    // TODO: do not hard-code the number here.
-        }
-
-        private Task PageUpAsync() {
-            return SetVerticalOffsetAsync(Points.VerticalOffset - 100.0);    // TODO: do not hard-code the number here.
-        }
-
-        private Task PageDownAsync() {
-            return SetVerticalOffsetAsync(Points.VerticalOffset + 100.0);    // TODO: do not hard-code the number here.
-        }
-
-        private async Task SetHorizontalOffsetAsync(double offset) {
-            Points.HorizontalOffset = offset;
-
-            await DrawVisualsAsync(
-                new Rect(
-                    Points.HorizontalOffset,
-                    Points.VerticalOffset,
-                    DataGrid.RenderSize.Width,
-                    DataGrid.RenderSize.Height),
-                false);
-        }
-
-        private Task LineRightAsync() {
-            return SetHorizontalOffsetAsync(Points.HorizontalOffset + 10.0);
-        }
-
-        private Task LineLeftAsync() {
-            return SetHorizontalOffsetAsync(Points.HorizontalOffset - 10.0);
-        }
-
-        private Task PageRightAsync() {
-            return SetHorizontalOffsetAsync(Points.HorizontalOffset + 100.0);
-        }
-
-        private Task PageLeftAsync() {
-            return SetHorizontalOffsetAsync(Points.HorizontalOffset - 100.0);
-        }
-
-        private Task SetMouseWheelAsync(double delta) {
-            return SetVerticalOffsetAsync(Points.VerticalOffset - delta);
         }
     }
 
