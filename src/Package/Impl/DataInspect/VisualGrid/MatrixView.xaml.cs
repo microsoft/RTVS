@@ -24,17 +24,26 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public MatrixView() {
             InitializeComponent();
 
-            Points = new GridPoints(0, 0);
-            Points.PointChanged += Points_PointChanged;
+            Unloaded += MatrixView_Unloaded;
+        }
 
-            RowHeader.Owner = this;
-            ColumnHeader.Owner = this;
-            Data.Owner = this;
+        private void MatrixView_Unloaded(object sender, RoutedEventArgs e) {
+            _scroller?.StopScroller();
         }
 
         public void Initialize(IGridProvider<string> dataProvider) {
-            _scroller = new VisualGridScroller(this);
+            if (Points != null) {
+                Points.PointChanged -= Points_PointChanged;
+            }
+
+            Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount);
+            Points.PointChanged += Points_PointChanged;
+
             DataProvider = dataProvider;
+
+            _scroller?.StopScroller();
+            _scroller = new VisualGridScroller(this);
+            Refresh();  // initial refresh
 
             // reset scroll bar position to zero
             HorizontalScrollBar.Value = HorizontalScrollBar.Minimum;
@@ -47,32 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         internal GridPoints Points { get; set; }
 
-        private IGridProvider<string> _dataProvider;
-        internal IGridProvider<string> DataProvider {
-            get {
-                return _dataProvider;
-            }
-            set {
-                if (_dataProvider == value) {
-                    return;
-                }
-
-                _dataProvider = value;
-                _scroller.Reset();
-            }
-        }
-
-        public int RowCount {
-            get {
-                return _dataProvider.RowCount;
-            }
-        }
-
-        public int ColumnCount {
-            get {
-                return _dataProvider.ColumnCount;
-            }
-        }
+        internal IGridProvider<string> DataProvider { get; set; }
 
         #region Foreground
 

@@ -15,39 +15,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private TaskScheduler _ui;
         private BlockingCollection<ScrollCommand> _scrollCommands;
 
-        private bool _continue = true;
         private CancellationTokenSource _cancellSource;
         private MatrixView _owner;
+        private Task _handlerTask;
 
         public VisualGridScroller(MatrixView owner) {
             _ui = TaskScheduler.FromCurrentSynchronizationContext();
 
             _owner = owner;
+            Points = owner.Points;
+
+            _cancellSource = new CancellationTokenSource();
             _scrollCommands = new BlockingCollection<ScrollCommand>();
 
             // silence every exception and don't wait
-            Task.Run(async () => {
-                while (_continue) {
-                    try {
-                        _cancellSource = new CancellationTokenSource();
-                        await ScrollCommandsHandler(_cancellSource.Token);
-                    } catch (TaskCanceledException ex) {
-                        Trace.WriteLine(ex.Message);
-                    } catch (OperationCanceledException ex) {
-                        Trace.WriteLine(ex.Message);
-                    } catch (Exception ex) {
-                        // swallow exception
-                        Trace.WriteLine(ex.ToString());
-                    }
-                }
-            });
+            _handlerTask = ScrollCommandsHandler(_cancellSource.Token).SilenceException<Exception>();
         }
 
-        public GridPoints Points {
-            get {
-                return _owner.Points;
-            }
-        }
+        public GridPoints Points { get; }
 
         public VisualGrid ColumnHeader {
             get {
@@ -73,29 +58,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        internal void Reset() {
-            Debug.Assert(!TaskUtilities.IsOnBackgroundThread());
-
-            if (_cancellSource != null) {
-                _cancellSource.Cancel();
-            }
-            // TODO: wait for cancellation
-
-            Points.Reset(DataProvider.RowCount, DataProvider.ColumnCount);
-            EnqueueCommand(ScrollType.Refresh, 0);
+        internal void StopScroller() {
+            _cancellSource.Cancel();
         }
 
         internal void EnqueueCommand(ScrollType code, double param) {
-            Debug.Assert(!TaskUtilities.IsOnBackgroundThread());
             _scrollCommands.Add(new ScrollCommand(code, param));
         }
 
         internal void EnqueueCommand(ScrollType code, Size size) {
-            Debug.Assert(!TaskUtilities.IsOnBackgroundThread());
             _scrollCommands.Add(new ScrollCommand(code, size));
         }
 
         private async Task ScrollCommandsHandler(CancellationToken cancellatoinToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
             const int ScrollCommandUpperBound = 50;
             List<ScrollCommand> batch = new List<ScrollCommand>();
 
@@ -127,7 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         batch.Clear();
                     }
                 } catch (Exception ex) {
-                    Trace.WriteLine(ex.Message);    // TODO: handle exception
+                    Trace.WriteLine(ex);
                     batch.Clear();
                 }
             }
@@ -222,25 +199,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             using (var deferal = Points.DeferChangeNotification()) {
                 // measure points
                 ColumnHeader?.MeasurePoints(
-                    new GridRange(
-                        new Range(0, 1),
-                        dataViewport.Columns),
+                    Points,
+                    new GridRange(new Range(0, 1), dataViewport.Columns),
                     new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true),
                     refresh);
 
                 RowHeader?.MeasurePoints(
-                    new GridRange(
-                        dataViewport.Rows,
-                        new Range(0, 1)),
+                    Points,
+                    new GridRange(dataViewport.Rows, new Range(0, 1)),
                     new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false),
                     refresh);
 
-                DataGrid?.MeasurePoints(dataViewport, data.Grid, refresh);
+                DataGrid?.MeasurePoints(
+                    Points,
+                    dataViewport,
+                    data.Grid,
+                    refresh);
 
                 // arrange and draw gridline
-                ColumnHeader?.ArrangeVisuals();
-                RowHeader?.ArrangeVisuals();
-                DataGrid?.ArrangeVisuals();
+                ColumnHeader?.ArrangeVisuals(Points);
+                RowHeader?.ArrangeVisuals(Points);
+                DataGrid?.ArrangeVisuals(Points);
             }
         }
     }

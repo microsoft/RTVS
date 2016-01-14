@@ -165,6 +165,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public double ColumnHeight { get; set; }
+
+        public double RowWidth { get; set; }
+
         public double GetHeight(Range range) {
             return Size(range, _yPositions);
         }
@@ -196,6 +200,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             for (int i = 0; i < _rowCount; i++) {
                 _height[i] = MinItemHeight;
             }
+
+            ColumnHeight = MinItemHeight;
+            RowWidth = MinItemWidth;
 
             ComputePositions();
         }
