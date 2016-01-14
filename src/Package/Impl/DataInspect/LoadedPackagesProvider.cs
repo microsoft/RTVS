@@ -5,29 +5,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Export(typeof(ILoadedPackagesProvider))]
     internal sealed class LoadedPackagesProvider : ILoadedPackagesProvider {
-        private IRSessionProvider _sessionProvider;
+        private IRInteractiveProvider _interactiveProvider;
+        private IRSession _session;
         private IEnumerable<string> _loadedPackages = Enumerable.Empty<string>();
 
         public LoadedPackagesProvider() {
-            _sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
-            _sessionProvider.CurrentChanged += OnCurrentSessionChanged;
-            ConnectToSession();
-        }
-
-
-        private void OnCurrentSessionChanged(object sender, EventArgs e) {
+            _interactiveProvider = VsAppShell.Current.ExportProvider.GetExport<IRInteractiveProvider>().Value;
+            _session = _interactiveProvider.GetOrCreate().RSession;
+            _session.Disposed += OnSessionDisposed; ;
             ConnectToSession();
         }
 
         private void ConnectToSession() {
-            if (_sessionProvider.Current != null) {
-                _sessionProvider.Current.Mutated += OnSessionMutated;
-                _sessionProvider.Current.Disposed += OnSessionDisposed;
+            if (_session != null) {
+                _session.Mutated += OnSessionMutated;
+                _session.Disposed += OnSessionDisposed;
             }
         }
 
@@ -37,6 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 session.Mutated -= OnSessionMutated;
                 session.Disposed -= OnSessionDisposed;
             }
+            _session = null;
         }
 
         private void OnSessionMutated(object sender, EventArgs e) {
@@ -44,8 +43,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task UpdateListOfLoadedPackagesAsync() {
-            if (_sessionProvider.Current != null) {
-                using (var e = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+            if (_session != null && _session.IsHostRunning) {
+                using (var e = await _session.BeginEvaluationAsync(isMutating: false)) {
                     REvaluationResult result = await e.EvaluateAsync("paste0(.packages(), collapse = ' ')");
                     if (result.ParseStatus == RParseStatus.OK && result.Error == null && result.StringResult != null) {
                         ParseSearchResponse(result.StringResult);
