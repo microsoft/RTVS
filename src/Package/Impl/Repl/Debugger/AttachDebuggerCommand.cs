@@ -25,9 +25,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 return;
             }
 
-            // Source active file
-            ViewUtilities.SourceActiveFile();
-
             var pDebugEngines = stackalloc Guid[1];
             pDebugEngines[0] = DebuggerGuids.DebugEngine;
 
