@@ -158,7 +158,6 @@ namespace Microsoft.R.Debugger.Engine {
                 (IReadOnlyList<DebugStackFrame>)
                 Engine.DebugSession.GetStackFramesAsync()
                 .GetResultOnUIThread()
-                .Where(f => !f.IsDebuggerInternal)
                 .Reverse()
                 .ToArray());
         }
