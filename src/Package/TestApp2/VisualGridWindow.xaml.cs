@@ -13,11 +13,11 @@ namespace Microsoft.VisualStudio.R.TestApp {
             InitializeComponent();
         }
 
-        private void AssingDataProvider_Click(object sender, RoutedEventArgs e) {
+        private void AssignDataProvider_Click(object sender, RoutedEventArgs e) {
             RootGrid.Initialize(new DataProvider(1000, 1000));
         }
 
-        private void AssingSmallProvider_Click(object sender, RoutedEventArgs e) {
+        private void AssignSmallProvider_Click(object sender, RoutedEventArgs e) {
             RootGrid.Initialize(new DataProvider(3, 2));
         }
 

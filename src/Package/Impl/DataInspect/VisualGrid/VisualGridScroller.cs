@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private TaskScheduler _ui;
         private BlockingCollection<ScrollCommand> _scrollCommands;
 
-        private CancellationTokenSource _cancellSource;
+        private CancellationTokenSource _cancelSource;
         private MatrixView _owner;
         private Task _handlerTask;
 
@@ -25,11 +25,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _owner = owner;
             Points = owner.Points;
 
-            _cancellSource = new CancellationTokenSource();
+            _cancelSource = new CancellationTokenSource();
             _scrollCommands = new BlockingCollection<ScrollCommand>();
 
             // silence every exception and don't wait
-            _handlerTask = ScrollCommandsHandler(_cancellSource.Token).SilenceException<Exception>();
+            _handlerTask = ScrollCommandsHandler(_cancelSource.Token).SilenceException<Exception>();
         }
 
         public GridPoints Points { get; }
@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         internal void StopScroller() {
-            _cancellSource.Cancel();
+            _cancelSource.Cancel();
         }
 
         internal void EnqueueCommand(ScrollType code, double param) {
@@ -70,13 +70,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scrollCommands.Add(new ScrollCommand(code, size));
         }
 
-        private async Task ScrollCommandsHandler(CancellationToken cancellatoinToken) {
+        private async Task ScrollCommandsHandler(CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             const int ScrollCommandUpperBound = 50;
             List<ScrollCommand> batch = new List<ScrollCommand>();
 
-            foreach (var command in _scrollCommands.GetConsumingEnumerable(cancellatoinToken)) {
+            foreach (var command in _scrollCommands.GetConsumingEnumerable(cancellationToken)) {
                 try {
                     batch.Add(command);
                     if (_scrollCommands.Count > 0
@@ -86,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         continue;
                     } else {
                         for (int i = 0; i < batch.Count; i++) {
-                            if (cancellatoinToken.IsCancellationRequested) {
+                            if (cancellationToken.IsCancellationRequested) {
                                 break;
                             }
 
@@ -98,7 +98,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                     || (batch[i].Code == ScrollType.Refresh && batch[i + 1].Code == ScrollType.Refresh))) {
                                 continue;
                             } else {
-                                await ExecuteCommandAsync(batch[i], cancellatoinToken);
+                                await ExecuteCommandAsync(batch[i], cancellationToken);
                             }
                         }
                         batch.Clear();
@@ -114,7 +114,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private const double PageDelta = 100.0;
 
         private async Task ExecuteCommandAsync(ScrollCommand cmd, CancellationToken token) {
-            bool drawvisual = true;
+            bool drawVisual = true;
             bool refresh = false;
             switch (cmd.Code) {
                 case ScrollType.LineUp:
@@ -158,11 +158,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     break;
                 case ScrollType.Invalid:
                 default:
-                    drawvisual = false;
+                    drawVisual = false;
                     break;
             }
 
-            if (drawvisual) {
+            if (drawVisual) {
                 await DrawVisualsAsync(
                     new Rect(
                         Points.HorizontalOffset,
