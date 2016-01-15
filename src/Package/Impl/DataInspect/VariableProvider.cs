@@ -57,9 +57,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     var data = GridParser.Parse(result.StringResult);
                     data.Range = gridRange;
 
-                    if (data.ColumnNames.Count != gridRange.Columns.Count
-                        || data.RowNames.Count != gridRange.Rows.Count) {
-                        throw new InvalidOperationException("The number of evaluation data doesn't match with what is requested");
+                    if (data.ValidHeaderNames
+                        && (data.ColumnNames.Count != gridRange.Columns.Count
+                            || data.RowNames.Count != gridRange.Rows.Count)) {
+                        throw new InvalidOperationException("Header names lengths are different from data's length");
                     }
 
                     return data;

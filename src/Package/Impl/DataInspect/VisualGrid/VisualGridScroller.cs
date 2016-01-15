@@ -178,6 +178,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             using (var elapsed = new Elapsed("PullDataAndDraw:")) {
                 GridRange newViewport = Points.ComputeDataViewport(visualViewport);
 
+                if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
+                    Trace.WriteLine("Either row or column data viewport is empty");
+                    return;
+                }
+
                 // pull data from provider
                 var data = await DataProvider.GetAsync(newViewport);
                 if (!data.Grid.Range.Contains(newViewport)
