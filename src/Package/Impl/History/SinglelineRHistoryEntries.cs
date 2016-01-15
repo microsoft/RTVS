@@ -30,16 +30,18 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
         }
 
-        private IEnumerable<IRHistoryEntry> AddSinglelineEntries(ITrackingSpan entrySpan) {
+        private IList<IRHistoryEntry> AddSinglelineEntries(ITrackingSpan entrySpan) {
             var snapshot = entrySpan.TextBuffer.CurrentSnapshot;
             var snapshotEntrySpan = entrySpan.GetSpan(snapshot);
             var spans = snapshot.Lines
-                .Where(l => snapshotEntrySpan.Contains((SnapshotSpan) l.Extent))
+                .Where(l => snapshotEntrySpan.Contains(l.Extent))
                 .Select(l => snapshot.CreateTrackingSpan(l.Start, l.Length, SpanTrackingMode.EdgeExclusive));
 
+            var entries = new List<IRHistoryEntry>();
             foreach (var span in spans) {
-                yield return AddEntry(entrySpan, span);
+                entries.Add(AddEntry(entrySpan, span));
             }
+            return entries;
         }
     }
 }

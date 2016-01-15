@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Host.Client.Session {
     public static class RSessionExtensions {

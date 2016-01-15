@@ -12,6 +12,7 @@ using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -38,14 +39,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// Browser that displays help content
         /// </summary>
         public WebBrowser Browser { get; private set; }
-
-        private IRSessionProvider _sessionProvider;
         private IRSession _session;
 
         public HelpWindowPane() {
-            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _session = _sessionProvider.Current;
-            ConnectToSessionChangeEvents();
+            _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
+            _session.Disconnected += OnRSessionDisconnected;
+            _session.Connected += OnRSessionConnected;
 
             Caption = Resources.HelpWindowCaption;
             BitmapImageMoniker = KnownMonikers.StatusHelp;
@@ -60,40 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             c.AddCommandSet(GetCommands());
             this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
         }
-
-        private void ConnectToSessionChangeEvents() {
-            _sessionProvider.CurrentChanged += OnCurrentSessionChanged;
-            ConnectToSessionEvents();
-        }
-
-        private void DisconnectFromSessionChangeEvents() {
-            if (_sessionProvider != null) {
-                _sessionProvider.CurrentChanged -= OnCurrentSessionChanged;
-                _sessionProvider = null;
-            }
-        }
-
-        private void ConnectToSessionEvents() {
-            if (_session != null) {
-                _session.Disconnected += OnRSessionDisconnected;
-                _session.Connected += OnRSessionConnected;
-            }
-        }
-
-        private void DisconnectFromSessionEvents() {
-            if (_session != null) {
-                _session.Disconnected -= OnRSessionDisconnected;
-                _session.Connected -= OnRSessionConnected;
-                _session = null;
-            }
-        }
-
-        private void OnCurrentSessionChanged(object sender, EventArgs e) {
-            DisconnectFromSessionEvents();
-            _session = _sessionProvider.Current;
-            ConnectToSessionEvents();
-        }
-
+        
         private void OnRSessionConnected(object sender, EventArgs e) {
             // Event fires on a background thread
             VsAppShell.Current.DispatchOnUIThread(() => {
@@ -180,10 +146,18 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         protected override void Dispose(bool disposing) {
             if (disposing) {
                 DisconnectFromSessionEvents();
-                DisconnectFromSessionChangeEvents();
                 CloseBrowser();
             }
             base.Dispose(disposing);
+        }
+
+
+        private void DisconnectFromSessionEvents() {
+            if (_session != null) {
+                _session.Disconnected -= OnRSessionDisconnected;
+                _session.Connected -= OnRSessionConnected;
+                _session = null;
+            }
         }
 
         private void CloseBrowser() {
