@@ -21,15 +21,15 @@ grid.data <- function(x, rows, cols) {
   }
   
   x0 <- as.data.frame(x[rows, cols]);
-  x1 <- apply(x0, 2, as.character);
+  x1 <- apply(x0, 2, format);
 
   vp<-list();
 
   dn <- dimnames(x);
   if (!is.null(dn) && (length(dn)==2)) {
     vp$dimnames <- 'true';
-    vp$row.names <- row.names(x)[rows];
-    vp$col.names <- colnames(x)[cols];
+    vp$row.names <- sapply(row.names(x)[rows], format, USE.NAMES = FALSE);
+    vp$col.names <- sapply(colnames(x)[cols], format, USE.NAMES = FALSE);
   } else {
     vp$dimnames <- 'false';
     vp$row.names <- 'dummy';  # dummy required for parser
