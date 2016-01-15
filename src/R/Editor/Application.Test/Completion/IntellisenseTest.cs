@@ -1,7 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -88,6 +93,51 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_LoadedPackageFunctionCompletion() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (new RHostScript(provider)) {
+
+                    script.Type("c");
+                    script.DoIdle(200);
+                    var session = script.GetCompletionSession();
+                    session.Should().NotBeNull();
+                    script.DoIdle(500);
+
+                    var list = session.SelectedCompletionSet.Completions.ToList();
+                    var item = list.FirstOrDefault(x => x.DisplayText == "codoc");
+                    item.Should().BeNull();
+
+                    var rSession = provider.GetSessions().FirstOrDefault();
+                    rSession.Should().NotBeNull();
+
+                    REvaluationResult result;
+
+                    Task.Run(async () => {
+                        using (var eval = await rSession.BeginEvaluationAsync()) {
+                            result = await eval.EvaluateAsync("library('tools')");
+                        }
+                    }).Wait();
+
+                    script.Type("{ESC}");
+                    script.DoIdle(200);
+                    script.Backspace();
+                    script.Type("{ENTER}");
+                    script.DoIdle(100);
+                    script.Type("c");
+                    script.DoIdle(500);
+
+                    session = script.GetCompletionSession();
+                    session.Should().NotBeNull();
+                    list = session.SelectedCompletionSet.Completions.ToList();
+                    item = list.FirstOrDefault(x => x.DisplayText == "codoc");
+                    item.Should().NotBeNull();
+                }
             }
         }
     }

@@ -5,7 +5,6 @@ using Microsoft.R.Support.Settings;
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
     public class RHostScript : IDisposable {
-        private static readonly Guid InteractiveWindowRSessionGuid = new Guid("77E2BCD9-BEED-47EF-B51E-2B892260ECA7");
         private bool disposed = false;
 
         public IRSessionProvider SessionProvider { get; private set; }
@@ -13,7 +12,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public RHostScript(IRSessionProvider sessionProvider) {
             SessionProvider = sessionProvider;
-            Session = SessionProvider.GetOrCreate(InteractiveWindowRSessionGuid, new RHostClientTestApp());
+            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
             Session.StartHostAsync(new RHostStartupInfo {
                 Name = "RHostScript",
                 RBasePath = RToolsSettings.Current.RBasePath,

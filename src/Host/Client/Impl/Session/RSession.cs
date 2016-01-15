@@ -117,7 +117,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task StopHostAsync() {
-            if (_hostRunTask.IsCompleted) {
+            if (_hostRunTask == null || _hostRunTask.IsCompleted) {
                 return;
             }
 
