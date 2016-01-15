@@ -15,5 +15,9 @@
         public bool Contains(int row, int column) {
             return Rows.Contains(row) && Columns.Contains(column);
         }
+
+        public bool Contains(GridRange other) {
+            return Rows.Contains(other.Rows) && Columns.Contains(other.Columns);
+        }
     }
 }
