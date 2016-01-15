@@ -21,19 +21,21 @@ grid.data <- function(x, rows, cols) {
   }
   
   x0 <- as.data.frame(x[rows, cols]);
-  x1 <- lapply(x0, as.character);
+  x1 <- apply(x0, 2, as.character);
 
   vp<-list();
 
   dn <- dimnames(x);
   if (!is.null(dn) && (length(dn)==2)) {
     vp$dimnames <- 'true';
+    vp$row.names <- row.names(x)[rows];
+    vp$col.names <- colnames(x)[cols];
   } else {
     vp$dimnames <- 'false';
+    vp$row.names <- 'dummy';  # dummy required for parser
+    vp$col.names <- 'dummy';
   }
 
-  vp$row.names <- row.names(x0);
-  vp$col.names <- colnames(x0);
   vp$data<-x1;
 
   vp;

@@ -2,19 +2,22 @@
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class GridData : IGridData<string> {
-        public GridData() {
-            RowNames = new List<string>();
-            ColumnNames = new List<string>();
-            Values = new List<List<string>>();
+        public GridData(
+            IList<string> rowNames,
+            IList<string> columnNames,
+            IList<string> values) {
+            RowNames = rowNames;
+            ColumnNames = columnNames;
+            Values = values;
         }
 
         public bool ValidHeaderNames { get; set; }
 
-        public List<string> RowNames { get; }
+        public IList<string> RowNames { get; }
 
-        public List<string> ColumnNames { get; }
+        public IList<string> ColumnNames { get; }
 
-        public List<List<string>> Values { get; }
+        public IList<string> Values { get; }
 
         public GridRange Range { get; set; }
 
@@ -57,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 if (_grid == null) {
                     _grid = new Grid<string>(
                         Range,
-                        (r, c) => Values[c - Range.Columns.Start][r - Range.Rows.Start]);
+                        Values);
                 }
 
                 return _grid;
