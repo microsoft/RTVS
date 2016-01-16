@@ -141,5 +141,40 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 }
             }
         }
+
+        //[Test]
+        //[Category.Interactive]
+        public void R_DeclaredVariablesCompletion() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (new RHostScript(provider)) {
+                    REvaluationResult result;
+
+                    var rSession = provider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
+                    rSession.Should().NotBeNull();
+
+                    using (var eval = rSession.BeginEvaluationAsync().Result) {
+                        result = eval.EvaluateAsync("x111 <- 1; x111$y222 <- 2").Result;
+                    }
+
+                    script.DoIdle(1000);
+
+                    script.Type("x1");
+                    script.DoIdle(500);
+                    script.Type("{TAB}");
+                    script.DoIdle(500);
+                    script.Type("$");
+                    script.DoIdle(500);
+                    script.Type("y2");
+                    script.DoIdle(500);
+                    script.Type("{TAB}");
+
+                    string expected = "x111$y222";
+                    string actual = script.EditorText;
+
+                    actual.Should().Be(expected);
+                }
+            }
+        }
     }
 }
