@@ -9,7 +9,7 @@ namespace Microsoft.R.Core.Test.Formatting {
     public class FormatConditionalsTest {
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatConditionalTest01() {
+        public void FormatConditionalTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true){if(false){}}");
             string expected =
@@ -21,7 +21,7 @@ namespace Microsoft.R.Core.Test.Formatting {
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatConditionalTest02() {
+        public void FormatConditionalTest02() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(a == a+((b+c)/x)){if(func(a,b, c+2, x=2, ...)){}}");
             string expected =
@@ -33,7 +33,7 @@ namespace Microsoft.R.Core.Test.Formatting {
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatConditionalTest03() {
+        public void FormatConditionalTest03() {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
             options.IndentSize = 2;
@@ -52,7 +52,7 @@ namespace Microsoft.R.Core.Test.Formatting {
 
         [Test]
         [Category.R.Ast]
-        public void Formatter_FormatConditionalTest04() {
+        public void FormatConditionalTest04() {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
 
@@ -73,7 +73,7 @@ x <- 1";
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatConditionalTest05() {
+        public void FormatConditionalTest05() {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
 
@@ -98,7 +98,7 @@ x <- 1";
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatNoCurlyConditionalTest01() {
+        public void FormatNoCurlyConditionalTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) x<-2");
             string expected =
@@ -109,7 +109,7 @@ x <- 1";
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatNoCurlyConditionalTest02() {
+        public void FormatNoCurlyConditionalTest02() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) x<-2 else x<-1");
             string expected =
@@ -119,7 +119,7 @@ x <- 1";
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatNoCurlyConditionalTest03() {
+        public void FormatNoCurlyConditionalTest03() {
             RFormatOptions options = new RFormatOptions();
             options.IndentType = IndentType.Tabs;
 
@@ -133,7 +133,7 @@ x <- 1";
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatNoCurlyConditionalTest04() {
+        public void FormatNoCurlyConditionalTest04() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) if(false)   x<-2");
             string expected =
@@ -145,7 +145,7 @@ x <- 1";
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatNoCurlyConditionalTest05() {
+        public void FormatNoCurlyConditionalTest05() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) if(false)   x<-2 else {1}");
             string expected =
@@ -158,7 +158,7 @@ x <- 1";
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatNoCurlyConditionalTest06() {
+        public void FormatNoCurlyConditionalTest06() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) repeat { x <-1; next;} else z");
             string expected =
@@ -174,7 +174,7 @@ else
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatNoCurlyConditionalTest07() {
+        public void FormatNoCurlyConditionalTest07() {
             RFormatter f = new RFormatter();
             string actual = f.Format("if(true) if(false) {  x<-2 } else 1");
             string expected =
@@ -188,7 +188,7 @@ else
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatNoCurlyRepeatTest01() {
+        public void FormatNoCurlyRepeatTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("repeat x<-2");
             string expected =
@@ -199,7 +199,7 @@ else
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatConditionalAlignBraces01() {
+        public void FormatConditionalAlignBraces01() {
             RFormatter f = new RFormatter();
             string original =
 @"
@@ -220,7 +220,7 @@ if (intercept) {
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatConditionalAlignBraces02() {
+        public void FormatConditionalAlignBraces02() {
             RFormatter f = new RFormatter();
             string original =
 @"
@@ -252,7 +252,7 @@ if (intercept) {
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_PreserveEmptyLines() {
+        public void PreserveEmptyLines() {
             RFormatter f = new RFormatter();
             string original =
 @"
@@ -277,7 +277,7 @@ if (intercept) {
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_AlignComments() {
+        public void AlignComments() {
             RFormatter f = new RFormatter();
             string original =
 @"
@@ -306,7 +306,7 @@ if (intercept) {
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatForTest() {
+        public void FormatForTest() {
             RFormatter f = new RFormatter();
             string original = @"for (i in 1:6) x[, i] = rowMeans(fmri[[i]])";
 

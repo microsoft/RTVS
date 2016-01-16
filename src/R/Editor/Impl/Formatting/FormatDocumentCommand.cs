@@ -54,9 +54,10 @@ namespace Microsoft.R.Editor.Formatting
                 {
                     using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Resources.FormatDocument))
                     {
-                        IREditorDocument document = REditorDocument.FromTextBuffer(TargetBuffer);
-
-                        document.EditorTree.Invalidate();
+                        IREditorDocument document = REditorDocument.TryFromTextBuffer(TargetBuffer);
+                        if (document != null) {
+                            document.EditorTree.Invalidate();
+                        }
 
                         var caretPosition = TextView.Caret.Position.BufferPosition;
                         var viewPortLeft = TextView.ViewportLeft;
