@@ -12,10 +12,10 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class VaraibleExplorerTest {
+    public class VariableExplorerTest {
         private readonly TestFilesFixture _files;
 
-        public VaraibleExplorerTest(TestFilesFixture files) {
+        public VariableExplorerTest(TestFilesFixture files) {
             _files = files;
         }
 

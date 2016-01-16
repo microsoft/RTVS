@@ -204,27 +204,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             using (var deferal = Points.DeferChangeNotification()) {
                 // measure points
                 ColumnHeader?.MeasurePoints(
-                    Points,
+                    Points.GetAccessToPoints(ColumnHeader.ScrollDirection),
                     new GridRange(new Range(0, 1), dataViewport.Columns),
                     new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true),
                     refresh);
 
                 RowHeader?.MeasurePoints(
-                    Points,
+                    Points.GetAccessToPoints(RowHeader.ScrollDirection),
                     new GridRange(dataViewport.Rows, new Range(0, 1)),
                     new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false),
                     refresh);
 
                 DataGrid?.MeasurePoints(
-                    Points,
+                    Points.GetAccessToPoints(DataGrid.ScrollDirection),
                     dataViewport,
                     data.Grid,
                     refresh);
 
                 // arrange and draw gridline
-                ColumnHeader?.ArrangeVisuals(Points);
-                RowHeader?.ArrangeVisuals(Points);
-                DataGrid?.ArrangeVisuals(Points);
+                ColumnHeader?.ArrangeVisuals(Points.GetAccessToPoints(ColumnHeader.ScrollDirection));
+                RowHeader?.ArrangeVisuals(Points.GetAccessToPoints(RowHeader.ScrollDirection));
+                DataGrid?.ArrangeVisuals(Points.GetAccessToPoints(DataGrid.ScrollDirection));
             }
         }
     }

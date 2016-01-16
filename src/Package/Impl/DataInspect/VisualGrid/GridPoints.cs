@@ -11,6 +11,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public ScrollDirection Direction { get; }
     }
 
+    internal class Indexer<TValue> {
+        private Func<int, TValue> _getter;
+        private Action<int, TValue> _setter;
+
+        public Indexer(Func<int, TValue> getter, Action<int, TValue> setter) {
+            _getter = getter;
+            _setter = setter;
+        }
+
+        public TValue this[int index] {
+            get {
+                return _getter(index);
+            }
+            set {
+                _setter(index, value);
+            }
+        }
+    }
+
+    internal interface IPoints {
+        Indexer<double> xPosition { get; }
+        Indexer<double> yPosition { get; }
+        Indexer<double> Width { get; }
+        Indexer<double> Height { get; }
+    }
+
     /// <summary>
     /// A utility class that contains cell width and height in a grid
     /// </summary>
@@ -127,6 +153,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public IPoints GetAccessToPoints(ScrollDirection scrollDirection) {
+            return new PointAccessor(this, scrollDirection);
+        }
+
         public double xPosition(int xIndex) {
             EnsureXPositions();
             return _xPositions[xIndex] - HorizontalOffset;
@@ -149,10 +179,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public double GetWidth(Range range) {
-            return Size(range, _xPositions);
-        }
-
         public double GetHeight(int rowIndex) {
             return _height[rowIndex];
         }
@@ -168,14 +194,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public double ColumnHeight { get; set; }
 
         public double RowWidth { get; set; }
-
-        public double GetHeight(Range range) {
-            return Size(range, _yPositions);
-        }
-
-        private double Size(Range range, double[] positions) {
-            return positions[range.Start + range.Count] - positions[range.Start];
-        }
 
         public int xIndex(double position) {
             EnsureXPositions();
@@ -282,6 +300,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
+        #region internal utility class
+
         public class DeferNotification : IDisposable {
             private GridPoints _gridPoints;
             public DeferNotification(GridPoints gridPoints) {
@@ -296,5 +316,45 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             }
         }
+
+        class PointAccessor : IPoints {
+            public PointAccessor(GridPoints points, ScrollDirection scrollDirection) {
+                if (scrollDirection == ScrollDirection.Horizontal) {
+                    // column header
+                    xPosition = new Indexer<double>(points.xPosition, NotSupportedSetter);
+                    yPosition = new Indexer<double>((i) => (i == 0 ? 0.0 : points.ColumnHeight), NotSupportedSetter);
+                    Width = new Indexer<double>(points.GetWidth, points.SetWidth);
+                    Height = new Indexer<double>((i) => points.ColumnHeight, (i, v) => points.ColumnHeight = v);
+                } else if (scrollDirection == ScrollDirection.Vertical) {
+                    // row header
+                    xPosition = new Indexer<double>((i) => (i == 0 ? 0.0 : points.RowWidth), NotSupportedSetter);
+                    yPosition = new Indexer<double>(points.yPosition, NotSupportedSetter);
+                    Width = new Indexer<double>((i) => points.RowWidth, (i, v) => points.RowWidth = v);
+                    Height = new Indexer<double>(points.GetHeight, points.SetHeight);
+                } else if (scrollDirection == ScrollDirection.Both) {
+                    // data
+                    xPosition = new Indexer<double>(points.xPosition, NotSupportedSetter);
+                    yPosition = new Indexer<double>(points.yPosition, NotSupportedSetter);
+                    Width = new Indexer<double>(points.GetWidth, points.SetWidth);
+                    Height = new Indexer<double>(points.GetHeight, points.SetHeight);
+                } else {
+                    throw new NotSupportedException();
+                }
+            }
+
+            public Indexer<double> Width { get; }
+
+            public Indexer<double> Height { get; }
+
+            public Indexer<double> xPosition { get; }
+
+            public Indexer<double> yPosition { get; }
+
+            private static void NotSupportedSetter(int index, double value) {
+                throw new NotSupportedException("Setter is not supported");
+            }
+        }
+
+        #endregion
     }
 }
