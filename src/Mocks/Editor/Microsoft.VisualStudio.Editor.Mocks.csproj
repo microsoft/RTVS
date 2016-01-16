@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdornmentLayerMock.cs" />
+    <Compile Include="BufferGraphMock.cs" />
     <Compile Include="ClassificationTypeMock.cs" />
     <Compile Include="ClassificationTypeRegistryServiceMock.cs" />
     <Compile Include="CompletionSessionMock.cs" />
@@ -94,6 +95,8 @@
     <Compile Include="TextSelectionMock.cs" />
     <Compile Include="TextSnapshotMock.cs" />
     <Compile Include="TextVersionMock.cs" />
+    <Compile Include="TextViewLineCollectionMock.cs" />
+    <Compile Include="TextViewLineMock.cs" />
     <Compile Include="TextViewMock.cs" />
     <Compile Include="TextViewModelMock.cs" />
     <Compile Include="Helpers\TextViewTestHelper.cs" />

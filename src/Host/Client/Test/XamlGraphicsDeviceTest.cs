@@ -234,7 +234,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
             var host = new RHost("Test", callbacks);
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
             
-            await host.CreateAndRun(rhome, string.Empty);
+            await host.CreateAndRun(rhome, string.Empty, 10000);
 
             File.Exists(outputFilePath).Should().BeTrue();
             var doc = XDocument.Load(outputFilePath);

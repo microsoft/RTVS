@@ -11,21 +11,17 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Formatting
-{
-    internal class FormatSelectionCommand : EditingCommand
-    {
+namespace Microsoft.R.Editor.Formatting {
+    internal class FormatSelectionCommand : EditingCommand {
         ITextBuffer _textBuffer;
 
         internal FormatSelectionCommand(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATSELECTION))
-        {
+            : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATSELECTION)) {
             _textBuffer = textBuffer;
         }
 
         #region ICommand
-        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             SnapshotSpan selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
             var rSpans = TextView.BufferGraph.MapDownToFirstMatch(
                 selectionSpan,
@@ -53,8 +49,7 @@ namespace Microsoft.R.Editor.Formatting
             return new CommandResult(CommandStatus.Supported, 0);
         }
 
-        public override CommandStatus Status(Guid group, int id)
-        {
+        public override CommandStatus Status(Guid group, int id) {
             if (TextView.Selection.Mode == TextSelectionMode.Box)
                 return CommandStatus.NotSupported;
 

@@ -14,7 +14,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [Category.R.Formatting]
     public class RangeFormatterTest {
         [Test]
-        public void RangeFormatter_EmptyFileTest() {
+        public void EmptyFileTest() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(string.Empty, out ast);
 
@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void RangeFormatter_EmptyArgumentsTest01() {
+        public void EmptyArgumentsTest01() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c(,,)", out ast);
 
@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void RangeFormatter_EmptyArgumentsTest02() {
+        public void EmptyArgumentsTest02() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[,,]", out ast);
 
@@ -49,7 +49,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void RangeFormatter_EmptyArgumentsTest03() {
+        public void EmptyArgumentsTest03() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[[,,]]", out ast);
 
@@ -61,7 +61,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void RangeFormatter_ArgumentsTest01() {
+        public void ArgumentsTest01() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[[a,,]]", out ast);
 
@@ -73,7 +73,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void RangeFormatter_ArgumentsTest02() {
+        public void ArgumentsTest02() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[[a,b,]]", out ast);
 
@@ -85,7 +85,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void RangeFormatter_FormatConditionalTest01() {
+        public void FormatConditionalTest01() {
             AstRoot ast;
             string original = "if(true){if(false){}}";
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
@@ -102,7 +102,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void RangeFormatter_FormatConditionalTest02() {
+        public void FormatConditionalTest02() {
             AstRoot ast;
             string original =
 @"if (a==a+((b +c) /x)){ 
@@ -120,7 +120,7 @@ if(func(a,b,c +2, x =2,...)){}}";
         }
 
         [Test]
-        public void RangeFormatter_FormatConditionalTest03() {
+        public void FormatConditionalTest03() {
             AstRoot ast;
             string original =
 @"if(true){
@@ -143,7 +143,7 @@ x<-1
         }
 
         [Test]
-        public void RangeFormatter_FormatConditionalTest04() {
+        public void FormatConditionalTest04() {
             AstRoot ast;
             string original = "if (x > 1)\r\ny<-2";
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
@@ -158,7 +158,7 @@ x<-1
 
 
         [Test]
-        public void RangeFormatter_FormatOneLine() {
+        public void FormatOneLine() {
             AstRoot ast;
             string original =
 @"foo(cache=TRUE)
@@ -176,7 +176,7 @@ foo(cache=TRUE)
         }
 
         [Test]
-        public void RangeFormatter_FormatSimpleScope() {
+        public void FormatSimpleScope() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("{}", out ast);
 
@@ -187,7 +187,7 @@ foo(cache=TRUE)
         }
 
         [Test]
-        public void RangeFormatter_FormatScopeLessIf01() {
+        public void FormatScopeLessIf01() {
             string original =
 @"
 if (x != nrx) 

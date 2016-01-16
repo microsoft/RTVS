@@ -182,6 +182,19 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
+        public void R_AutoFormatOnSemicolon() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                script.Type("x<-1;");
+
+                string expected = "x <- 1;";
+                string actual = script.EditorText;
+
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatFuncionDefinition01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
