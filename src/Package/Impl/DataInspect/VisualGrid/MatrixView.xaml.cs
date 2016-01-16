@@ -309,7 +309,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private void Points_PointChanged(object sender, PointChangedEvent e) {
+        private void Points_PointChanged(object sender, PointChangedEventArgs e) {
             if (e.Direction.HasFlag(ScrollDirection.Horizontal)) {
                 double width = Data.RenderSize.Width;
                 HorizontalScrollBar.ViewportSize = width;

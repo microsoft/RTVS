@@ -90,7 +90,7 @@
     <Compile Include="DataInspect\VisualGrid\MatrixView.xaml.cs">
       <DependentUpon>MatrixView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DataInspect\VisualGrid\PointChangedEvent.cs" />
+    <Compile Include="DataInspect\VisualGrid\PointChangedEventArgs.cs" />
     <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />

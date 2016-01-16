@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using Microsoft.VisualStudio.PlatformUI;
 
@@ -46,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             InitializeWidthAndHeight();
         }
 
-        public event EventHandler<PointChangedEvent> PointChanged;
+        public event EventHandler<PointChangedEventArgs> PointChanged;
 
         private ScrollDirection _scrolledDirection = ScrollDirection.None;
         private void OnPointChanged() {
@@ -60,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     EnsureYPositions();
                 }
 
-                PointChanged(this, new PointChangedEvent(_scrolledDirection));
+                PointChanged(this, new PointChangedEventArgs(_scrolledDirection));
             }
 
             _scrolledDirection = ScrollDirection.None;
@@ -203,7 +204,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             EnsureYPositions();
             int index = Index(position, _yPositions);
 
-            // _xPositions has one more item than rows
+            // _yPositions has one more item than rows
             return Math.Min(index, _rowCount - 1);
         }
 
@@ -231,7 +232,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             int columnStart = xIndex(visualViewport.X);
             int rowStart = yIndex(visualViewport.Y);
 
-            double width = 0.0;
+            Debug.Assert(HorizontalOffset >= _xPositions[columnStart]);
+            Debug.Assert(VerticalOffset >= _yPositions[rowStart]);
+
+            double width = _xPositions[columnStart] - HorizontalOffset;
             int columnCount = 0;
             for (int c = columnStart; c < _columnCount; c++) {
                 width += GetWidth(c);
@@ -241,7 +245,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             }
 
-            double height = 0.0;
+            double height = _yPositions[rowStart] - VerticalOffset;
             int rowEnd = rowStart;
             int rowCount = 0;
             for (int r = rowStart; r < _rowCount; r++) {
