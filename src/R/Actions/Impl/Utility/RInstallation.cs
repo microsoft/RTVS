@@ -188,7 +188,8 @@ namespace Microsoft.R.Actions.Utility {
         }
 
         private static string TryFindRInProgramFiles(string folder, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion) {
-            string baseRFolder = Path.Combine(@"C:\Program Files\", folder);
+            string root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            string baseRFolder = Path.Combine(root + @"Program Files\", folder);
             List<Version> versions = new List<Version>();
             foreach (string dir in Directory.EnumerateDirectories(baseRFolder)) {
                 string subFolderName = dir.Substring(baseRFolder.Length + 1);

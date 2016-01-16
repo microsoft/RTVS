@@ -107,8 +107,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         #endregion
 
-        protected override async void SessionMutated() {
-            await UpdateList();
+        protected override void SessionMutated() {
+            UpdateList().DoNotWait();
         }
 
         private async Task UpdateList() {

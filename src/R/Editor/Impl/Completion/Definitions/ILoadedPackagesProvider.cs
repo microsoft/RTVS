@@ -6,6 +6,7 @@ namespace Microsoft.R.Editor.Completion.Definitions {
     /// Exported via MEF.
     /// </summary>
     public interface ILoadedPackagesProvider {
+        void Initialize();
         IEnumerable<string> GetPackageNames();
     }
 }

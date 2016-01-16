@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Xunit;
-using Microsoft.R.Editor.Data;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     /// <summary>
@@ -79,12 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         private static void AssertEvaluationWrapper(IRSessionDataObject v, VariableExpectation expectation) {
-            v.Name.ShouldBeEquivalentTo(expectation.Name, "Variable {0}", v.Name);
-            v.Value.ShouldBeEquivalentTo(expectation.Value, "Variable {0}", v.Name);
-            v.TypeName.ShouldBeEquivalentTo(expectation.TypeName, "Variable {0}", v.Name);
-            v.Class.ShouldBeEquivalentTo(expectation.Class, "Variable {0}", v.Name);
-            v.HasChildren.ShouldBeEquivalentTo(expectation.HasChildren, "Variable {0}", v.Name);
-            v.CanShowDetail.ShouldBeEquivalentTo(expectation.CanShowDetail, "Variable {0}", v.Name);
+            v.ShouldBeEquivalentTo(expectation, o => o.ExcludingMissingMembers());
         }
 
         private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {

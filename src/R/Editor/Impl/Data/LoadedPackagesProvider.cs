@@ -4,8 +4,10 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Common.Core;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Host.Client;
+using System.Threading;
 
 namespace Microsoft.R.Editor.Data {
     [Export(typeof(ILoadedPackagesProvider))]
@@ -13,24 +15,21 @@ namespace Microsoft.R.Editor.Data {
         private IEnumerable<string> _loadedPackages = Enumerable.Empty<string>();
 
         protected override void SessionMutated() {
-            Task.Run(async () => await UpdateListOfLoadedPackagesAsync());
+            UpdateListOfLoadedPackagesAsync().DoNotWait();
         }
 
         private async Task UpdateListOfLoadedPackagesAsync() {
-            if (Session != null && Session.IsHostRunning) {
-                using (var e = await Session.BeginEvaluationAsync(isMutating: false)) {
-                    REvaluationResult result = await e.EvaluateAsync("paste0(.packages(), collapse = ' ')");
-                    if (result.ParseStatus == RParseStatus.OK && result.Error == null && result.StringResult != null) {
-                        ParseSearchResponse(result.StringResult);
-                    }
+            using (var e = await Session.BeginEvaluationAsync(isMutating: false)) {
+                REvaluationResult result = await e.EvaluateAsync("paste0(.packages(), collapse = ' ')");
+                if (result.ParseStatus == RParseStatus.OK && result.Error == null && result.StringResult != null) {
+                    ParseSearchResponse(result.StringResult);
                 }
             }
         }
 
         private void ParseSearchResponse(string response) {
-            EditorShell.Current.DispatchOnUIThread(() => {
-                _loadedPackages = response.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            });
+            var loadedPackages = response.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            Interlocked.Exchange(ref _loadedPackages, loadedPackages);
         }
 
         #region ILoadedPackagesProvider

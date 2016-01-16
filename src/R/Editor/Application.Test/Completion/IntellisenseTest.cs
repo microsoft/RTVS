@@ -102,6 +102,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 using (new RHostScript(provider)) {
+                    REvaluationResult result;
 
                     script.Type("c");
                     script.DoIdle(200);
@@ -113,24 +114,24 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     var item = list.FirstOrDefault(x => x.DisplayText == "codoc");
                     item.Should().BeNull();
 
-                    var rSession = provider.GetSessions().FirstOrDefault();
+                    var rSession = provider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
                     rSession.Should().NotBeNull();
 
-                    REvaluationResult result;
+                    using (var eval = rSession.BeginEvaluationAsync().Result) {
+                        result = eval.EvaluateAsync("library('tools')").Result;
+                    }
 
-                    Task.Run(async () => {
-                        using (var eval = await rSession.BeginEvaluationAsync()) {
-                            result = await eval.EvaluateAsync("library('tools')");
-                        }
-                    }).Wait();
+                    script.DoIdle(1000);
 
                     script.Type("{ESC}");
                     script.DoIdle(200);
                     script.Backspace();
                     script.Type("{ENTER}");
                     script.DoIdle(100);
+
                     script.Type("c");
                     script.DoIdle(500);
+                    script.Backspace();
 
                     session = script.GetCompletionSession();
                     session.Should().NotBeNull();
