@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 Points.PointChanged -= Points_PointChanged;
             }
 
-            Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount);
+            Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount, Data.RenderSize);
             Points.PointChanged += Points_PointChanged;
 
             DataProvider = dataProvider;

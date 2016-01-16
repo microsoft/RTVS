@@ -3,40 +3,6 @@ using System.Windows;
 using Microsoft.VisualStudio.PlatformUI;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal class PointChangedEvent : EventArgs {
-        public PointChangedEvent(ScrollDirection direction) {
-            Direction = direction;
-        }
-
-        public ScrollDirection Direction { get; }
-    }
-
-    internal class Indexer<TValue> {
-        private Func<int, TValue> _getter;
-        private Action<int, TValue> _setter;
-
-        public Indexer(Func<int, TValue> getter, Action<int, TValue> setter) {
-            _getter = getter;
-            _setter = setter;
-        }
-
-        public TValue this[int index] {
-            get {
-                return _getter(index);
-            }
-            set {
-                _setter(index, value);
-            }
-        }
-    }
-
-    internal interface IPoints {
-        Indexer<double> xPosition { get; }
-        Indexer<double> yPosition { get; }
-        Indexer<double> Width { get; }
-        Indexer<double> Height { get; }
-    }
-
     /// <summary>
     /// A utility class that contains cell width and height in a grid
     /// </summary>
@@ -54,8 +20,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _xPositionValid;
         private bool _yPositionValid;
 
-        public GridPoints(int rowCount, int columnCount) {
+        public GridPoints(int rowCount, int columnCount, Size initialViewportSize) {
             Reset(rowCount, columnCount);
+
+            _viewportHeight = Math.Max(MinItemHeight, initialViewportSize.Height);
+            _viewportWidth = Math.Max(MinItemWidth, initialViewportSize.Width);
         }
 
         #endregion
@@ -112,8 +81,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             set {
                 double newOffset = value;
+
                 if (newOffset < 0) newOffset = 0;
-                if (newOffset > VerticalExtent) newOffset = VerticalExtent;
+                if (newOffset > (VerticalExtent - ViewportHeight)) {
+                    newOffset = Math.Max(0.0, VerticalExtent - ViewportHeight);
+                }
 
                 if (!_verticalOffset.AreClose(newOffset)) {
                     _verticalOffset = newOffset;
@@ -130,7 +102,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             set {
                 double newOffset = value;
                 if (newOffset < 0) newOffset = 0;
-                if (newOffset > HorizontalExtent) newOffset = HorizontalExtent;
+                if (newOffset > (HorizontalExtent - ViewportWidth)) {
+                    newOffset = Math.Max(0.0, HorizontalExtent - ViewportWidth);
+                }
 
                 if (!_horizontalOffset.AreClose(newOffset)) {
                     _horizontalOffset = newOffset;
@@ -150,6 +124,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get {
                 EnsureXPositions();
                 return _xPositions[_columnCount];
+            }
+        }
+
+        private double _viewportHeight;
+        public double ViewportHeight {
+            get {
+                return _viewportHeight;
+            }
+            set {
+                _viewportHeight = value;
+                _scrolledDirection |= ScrollDirection.Vertical;
+            }
+        }
+
+        private double _viewportWidth;
+        public double ViewportWidth {
+            get {
+                return _viewportWidth;
+            }
+            set {
+                _viewportWidth = value;
+                _scrolledDirection |= ScrollDirection.Horizontal;
             }
         }
 

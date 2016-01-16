@@ -151,6 +151,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     Points.VerticalOffset -= cmd.Param;
                     break;
                 case ScrollType.SizeChange:
+                    Points.ViewportWidth = cmd.Size.Width;
+                    Points.ViewportHeight = cmd.Size.Height;
                     refresh = false;
                     break;
                 case ScrollType.Refresh:
