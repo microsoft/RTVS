@@ -221,7 +221,7 @@ namespace Microsoft.Languages.Editor.Tasks {
 
         [Conditional("DEBUG")]
         private void AssertIsMainThread() {
-            Debug.Assert(EditorShell.IsUIThread);
+            Debug.Assert(EditorShell.Current.IsUnitTestEnvironment || EditorShell.IsUIThread);
         }
 
         private bool IsDisposed {
