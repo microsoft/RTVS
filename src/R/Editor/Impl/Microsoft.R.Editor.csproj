@@ -120,10 +120,12 @@
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstanceFactory.cs" />
     <Compile Include="Formatting\AutoFormat.cs" />
+    <Compile Include="Formatting\Data\ClipboardDataProvider.cs" />
     <Compile Include="Formatting\FormatDocumentCommand.cs" />
     <Compile Include="Formatting\FormatOperations.cs" />
     <Compile Include="Formatting\FormatSelectionCommand.cs" />
     <Compile Include="Formatting\FormatOnPasteCommand.cs" />
+    <Compile Include="Formatting\Data\IClipboardDataProvider.cs" />
     <Compile Include="Formatting\RangeFormatter.cs" />
     <Compile Include="Imaging\IImagesProvider.cs" />
     <Compile Include="Outline\ROutlineTaggerProvider.cs" />
