@@ -12,33 +12,25 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Formatting
-{
-    public class FormatOnPasteCommand : EditingCommand
-    {
+namespace Microsoft.R.Editor.Formatting {
+    public class FormatOnPasteCommand : EditingCommand {
         internal IClipboardDataProvider ClipboardDataProvider { get; set; }
 
         public FormatOnPasteCommand(ITextView textView, ITextBuffer textBuffer) :
-            base(textView, new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste))
-        {
+            base(textView, new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste)) {
             ClipboardDataProvider = new ClipboardDataProvider();
         }
 
-        public override CommandStatus Status(Guid group, int id)
-        {
+        public override CommandStatus Status(Guid group, int id) {
             if (REditorSettings.FormatOnPaste &&
-                (ClipboardDataProvider.ContainsData(DataFormats.Text) || ClipboardDataProvider.ContainsData(DataFormats.UnicodeText)))
-            {
+                (ClipboardDataProvider.ContainsData(DataFormats.Text) || ClipboardDataProvider.ContainsData(DataFormats.UnicodeText))) {
                 return CommandStatus.SupportedAndEnabled;
             }
-
             return CommandStatus.NotSupported;
         }
 
-        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
-            if (!REditorSettings.FormatOnPaste || TextView.Selection.Mode != TextSelectionMode.Stream)
-            {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            if (!REditorSettings.FormatOnPaste || TextView.Selection.Mode != TextSelectionMode.Stream) {
                 return CommandResult.NotSupported;
             }
 
@@ -59,14 +51,11 @@ namespace Microsoft.R.Editor.Formatting
                     IREditorDocument document = REditorDocument.TryFromTextBuffer(targetSpan.Snapshot.TextBuffer);
                     if (document != null) {
                         int insertionPoint = targetSpan.Start;
-
                         targetSpan.Snapshot.TextBuffer.Replace(targetSpan, text);
-
                         RangeFormatter.FormatRange(TextView, targetSpan.Snapshot.TextBuffer, new TextRange(insertionPoint, text.Length), document.EditorTree.AstRoot, REditorSettings.FormatOptions);
                     }
                 }
             }
-
             return CommandResult.Executed;
         }
     }

@@ -15,45 +15,35 @@ using Microsoft.R.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Formatting
-{
-    internal class FormatDocumentCommand : EditingCommand
-    {
+namespace Microsoft.R.Editor.Formatting {
+    internal class FormatDocumentCommand : EditingCommand {
         ITextBuffer _textBuffer;
 
         internal FormatDocumentCommand(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT))
-        {
+            : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT)) {
             _textBuffer = textBuffer;
         }
 
         public virtual ITextBuffer TargetBuffer => _textBuffer;
 
         #region ICommand
-        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             string originalText = TargetBuffer.CurrentSnapshot.GetText();
             string formattedText = string.Empty;
             var formatter = new RFormatter(REditorSettings.FormatOptions);
 
-            try
-            {
+            try {
                 formattedText = formatter.Format(originalText);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Debug.Assert(false, "Formatter exception: ", ex.Message);
             }
 
-            if (!string.IsNullOrEmpty(formattedText) && !string.Equals(formattedText, originalText, StringComparison.Ordinal))
-            {
+            if (!string.IsNullOrEmpty(formattedText) && !string.Equals(formattedText, originalText, StringComparison.Ordinal)) {
                 var selectionTracker = new RSelectionTracker(TextView, TargetBuffer);
                 selectionTracker.StartTracking(automaticTracking: false);
 
-                try
-                {
-                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Resources.FormatDocument))
-                    {
+                try {
+                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Resources.FormatDocument)) {
                         IREditorDocument document = REditorDocument.TryFromTextBuffer(TargetBuffer);
                         if (document != null) {
                             document.EditorTree.Invalidate();
@@ -68,26 +58,21 @@ namespace Microsoft.R.Editor.Formatting
                         IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
 
                         IncrementalTextChangeApplication.ApplyChangeByTokens(
-                            TargetBuffer, 
+                            TargetBuffer,
                             new TextStream(oldText), new TextStream(formattedText),
                             oldTokens, newTokens,
                             TextRange.FromBounds(0, oldText.Length),
                             Resources.FormatDocument, selectionTracker);
                     }
-                }
-                finally
-                {
+                } finally {
                     selectionTracker.EndTracking();
                 }
-
                 return new CommandResult(CommandStatus.Supported, 0);
             }
-
             return CommandResult.NotSupported;
         }
 
-        public override CommandStatus Status(Guid group, int id)
-        {
+        public override CommandStatus Status(Guid group, int id) {
             return CommandStatus.SupportedAndEnabled;
         }
         #endregion
