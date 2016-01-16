@@ -12,7 +12,7 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.AST {
     [ExcludeFromCodeCoverage]
-    public class AstSearchTes {
+    public class AstSearchTest {
         [Test]
         [Category.R.Ast]
         public void AstSearch_GetPackageNamesTest() {

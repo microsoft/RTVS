@@ -98,7 +98,7 @@ namespace Microsoft.R.Host.Client.Session {
             await cancelTask;
         }
 
-        public async Task StartHostAsync(RHostStartupInfo startupInfo) {
+        public async Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000) {
             if (_hostRunTask != null && !_hostRunTask.IsCompleted) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
@@ -109,7 +109,7 @@ namespace Microsoft.R.Host.Client.Session {
             _initializationTcs = new TaskCompletionSource<object>();
             ClearPendingRequests();
 
-            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments);
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments, timeout);
             ScheduleAfterHostStarted(startupInfo);
 
             var initializationTask = _initializationTcs.Task;

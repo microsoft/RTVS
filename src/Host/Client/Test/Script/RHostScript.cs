@@ -18,7 +18,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror
-            }).Wait();
+            }, 10000).Wait();
         }
 
         public void Dispose() {
