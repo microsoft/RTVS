@@ -1,19 +1,16 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿using System;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.TaskList.Definitions;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Tree;
+using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.R.Editor.Validation.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using Microsoft.R.Editor.Tree.Definitions;
 
-namespace Microsoft.R.Editor.Validation.Tagger
-{
+namespace Microsoft.R.Editor.Validation.Tagger {
     /// <summary>
     /// This represents an underlined syntax error in the editor
     /// </summary>
