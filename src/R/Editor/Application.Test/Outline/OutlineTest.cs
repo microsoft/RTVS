@@ -26,28 +26,27 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
         public void R_OutlineToggleAll() {
             string text = _files.LoadDestinationFile("lsfit.r");
             using (var script = new TestScript(text, RContentTypeDefinition.ContentType)) {
-                script.DoIdle(200);
-
-                var viewLines = EditorWindow.CoreEditor.View.TextViewLines;
-                viewLines.Count.Should().Be(40);
-
-                EditorWindow.ExecCommand(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL);
-                script.DoIdle(200);
-
-                viewLines = EditorWindow.CoreEditor.View.TextViewLines;
-                viewLines.Count.Should().Be(3);
-
-                EditorWindow.ExecCommand(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL);
-                script.DoIdle(200);
-
-                viewLines = EditorWindow.CoreEditor.View.TextViewLines;
-                viewLines.Count.Should().Be(40);
-
-                var tags = script.GetOutlineTagSpans();
-                tags.Count.Should().Be(20);
+                script.DoIdle(500);
 
                 IOutliningManagerService svc = EditorShell.Current.ExportProvider.GetExportedValue<IOutliningManagerService>();
                 IOutliningManager mgr = svc.GetOutliningManager(EditorWindow.CoreEditor.View);
+                var snapshot = EditorWindow.TextBuffer.CurrentSnapshot;
+
+                var viewLines = EditorWindow.CoreEditor.View.TextViewLines;
+                viewLines.Count.Should().Be(40);
+                script.DoIdle(500);
+
+                EditorWindow.ExecCommand(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL);
+                script.DoIdle(1000);
+
+                IEnumerable<ICollapsed> collapsed = mgr.GetCollapsedRegions(new SnapshotSpan(snapshot, new Span(0, snapshot.Length)));
+                collapsed.Count().Should().Be(20);
+
+                EditorWindow.ExecCommand(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL);
+                script.DoIdle(500);
+
+                viewLines = EditorWindow.CoreEditor.View.TextViewLines;
+                viewLines.Count.Should().Be(40);
 
                 EditorWindow.ExecCommand(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_STOP_HIDING_ALL);
                 script.DoIdle(200);
@@ -59,10 +58,9 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
 
                 script.MoveDown(9);
                 EditorWindow.ExecCommand(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_CURRENT);
-                script.DoIdle(200);
+                script.DoIdle(500);
 
-                var snapshot = EditorWindow.TextBuffer.CurrentSnapshot;
-                IEnumerable<ICollapsed> collapsed = mgr.GetCollapsedRegions(new SnapshotSpan(snapshot, new Span(0, snapshot.Length)));
+                collapsed = mgr.GetCollapsedRegions(new SnapshotSpan(snapshot, new Span(0, snapshot.Length)));
                 collapsed.Count().Should().Be(1);
 
                 EditorWindow.ExecCommand(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_CURRENT);
