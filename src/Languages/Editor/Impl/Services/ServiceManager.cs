@@ -335,14 +335,14 @@ namespace Microsoft.Languages.Editor.Services {
 
         private void FireServiceAdded(Type serviceType, object serviceInstance) {
             if (ServiceAdded != null) {
-                Debug.Assert(Thread.CurrentThread == EditorShell.Current.MainThread);
+                Debug.Assert(EditorShell.Current.IsUnitTestEnvironment || Thread.CurrentThread == EditorShell.Current.MainThread);
                 ServiceAdded(this, new ServiceManagerEventArgs(serviceType, serviceInstance));
             }
         }
 
         private void FireServiceRemoved(Type serviceType, object serviceInstance) {
             if (ServiceRemoved != null) {
-                Debug.Assert(Thread.CurrentThread == EditorShell.Current.MainThread);
+                Debug.Assert(EditorShell.Current.IsUnitTestEnvironment || Thread.CurrentThread == EditorShell.Current.MainThread);
                 ServiceRemoved(this, new ServiceManagerEventArgs(serviceType, serviceInstance));
             }
         }
