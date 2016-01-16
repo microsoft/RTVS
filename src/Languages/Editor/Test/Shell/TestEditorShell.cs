@@ -3,18 +3,16 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
-    internal sealed class TestEditorShell : IEditorShell {
+    internal sealed class TestEditorShell : TestShellBase, IEditorShell {
         private static TestEditorShell _instance;
         private static readonly object _lock = new object();
 
@@ -44,57 +42,15 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         #endregion
 
         #region ICoreShell
-        public Thread MainThread { get; set; }
-        public void ShowErrorMessage(string msg) { }
-
         /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
-        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
-            return MessageButtons.OK;
-        }
         public T GetGlobalService<T>(Type type = null) where T : class {
             throw new NotImplementedException();
         }
 
-        public void DoIdle() {
-            if (Idle != null) {
-                Idle(null, EventArgs.Empty);
-            }
-            DoEvents();
-        }
-
-        public void DispatchOnUIThread(Action action) {
-            if (MainThread != null && MainThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
-                var disp = Dispatcher.FromThread(MainThread);
-                if (disp != null) {
-                    disp.BeginInvoke(action, DispatcherPriority.Normal);
-                    return;
-                }
-            }
-            action();
-        }
-
-        public void DoEvents() {
-            DispatcherFrame frame = new DispatcherFrame();
-            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,
-                new DispatcherOperationCallback(ExitFrame), frame);
-            Dispatcher.PushFrame(frame);
-        }
-
-        public object ExitFrame(object f) {
-            ((DispatcherFrame)f).Continue = false;
-            return null;
-        }
-
-        public int LocaleId => 1033;
         public bool IsUnitTestEnvironment { get; set; } = true;
         public bool IsUITestEnvironment { get; set; } = false;
-
-        public event EventHandler<EventArgs> Idle;
-#pragma warning disable 0067
-        public event EventHandler<EventArgs> Terminating;
-#pragma warning restore 0067
         #endregion
 
         #region IEditorShell

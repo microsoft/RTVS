@@ -108,7 +108,6 @@
       <DependentUpon>VariableGridHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataInspect\VariableGridWindowPane.cs" />
-    <Compile Include="DataInspect\WorkspaceVariableProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\ITreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\ObservableTreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeNodeCollection.cs" />

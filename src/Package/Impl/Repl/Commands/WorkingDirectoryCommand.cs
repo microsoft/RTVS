@@ -45,12 +45,19 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _session = null;
         }
 
-        private async void OnCurrentDirectoryChanged(object sender, EventArgs e) {
-            RToolsSettings.Current.WorkingDirectory = await GetRWorkingDirectoryAsync();
+        private void OnCurrentDirectoryChanged(object sender, EventArgs e) {
+            FetchRWorkingDirectoryAsync().DoNotWait();
         }
 
-        private async void OnSessionConnected(object sender, EventArgs e) {
-            RToolsSettings.Current.WorkingDirectory = await GetRWorkingDirectoryAsync();
+        private void OnSessionConnected(object sender, EventArgs e) {
+            FetchRWorkingDirectoryAsync().DoNotWait();
+        }
+
+        private async Task FetchRWorkingDirectoryAsync() {
+            string directory = await GetRWorkingDirectoryAsync();
+            if (!string.IsNullOrEmpty(directory)) {
+                RToolsSettings.Current.WorkingDirectory = directory;
+            }
         }
 
         public override CommandStatus Status(Guid group, int id) {

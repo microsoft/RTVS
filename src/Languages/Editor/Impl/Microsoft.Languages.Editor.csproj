@@ -67,7 +67,6 @@
     <Compile Include="BraceMatch\BraceHighlighter.cs" />
     <Compile Include="BraceMatch\BraceHighlightProvider.cs" />
     <Compile Include="BraceMatch\BraceHighlightTag.cs" />
-    <Compile Include="BraceMatch\BraceMatch.cs" />
     <Compile Include="BraceMatch\BraceMatcher.cs" />
     <Compile Include="BraceMatch\Definitions\IBraceMatcher.cs" />
     <Compile Include="BraceMatch\Definitions\IBraceMatcherProvider.cs" />

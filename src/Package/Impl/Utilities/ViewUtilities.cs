@@ -40,16 +40,6 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return null;
         }
 
-        public static int ViewColumnFromString(IContentType contentType, string str) {
-            if (String.IsNullOrEmpty(str))
-                return 0;
-
-            var settings = EditorShell.GetSettings(contentType.DisplayName);
-            var tabSize = settings.GetInteger(CommonSettings.FormatterTabSizeKey, 4);
-
-            return TextHelper.ConvertTabsToSpaces(str, tabSize).Length;
-        }
-
         public static ITextView ActiveTextView {
             get {
                 IVsTextView vsTextView = null;

@@ -16,6 +16,7 @@
                 <ModulePath>.*xunit.*</ModulePath>
                 <ModulePath>.*fluent.*</ModulePath>
                 <ModulePath>.*mocks.*</ModulePath>
+                <ModulePath>.*editor.application.*</ModulePath>
               </Exclude>
             </ModulePaths>
             <Functions>

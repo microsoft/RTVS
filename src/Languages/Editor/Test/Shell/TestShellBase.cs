@@ -1,0 +1,65 @@
+﻿using System;
+using System.Threading;
+using System.Windows.Threading;
+using Microsoft.Common.Core.Shell;
+using Microsoft.UnitTests.Core.Threading;
+
+namespace Microsoft.Languages.Editor.Test.Shell {
+    public class TestShellBase {
+        public Thread MainThread { get; set; }
+        public int LocaleId => 1033;
+
+        public TestShellBase() {
+            MainThread = Thread.CurrentThread;
+        }
+
+        public void ShowErrorMessage(string msg) { }
+
+        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
+            return MessageButtons.OK;
+        }
+
+        public void DoIdle() {
+            if (Idle != null) {
+                Idle(null, EventArgs.Empty);
+            }
+            DoEvents();
+        }
+
+        public void DispatchOnUIThread(Action action) {
+            var disp = GetDispatcher();
+            if (disp != null) {
+                disp.BeginInvoke(action, DispatcherPriority.Normal);
+                return;
+            }
+            action();
+        }
+
+        public void DoEvents() {
+            var disp = GetDispatcher();
+            if (disp != null) {
+                DispatcherFrame frame = new DispatcherFrame();
+                disp.BeginInvoke(DispatcherPriority.Background,
+                        new DispatcherOperationCallback(ExitFrame), frame);
+                Dispatcher.PushFrame(frame);
+            }
+        }
+
+        public object ExitFrame(object f) {
+            ((DispatcherFrame)f).Continue = false;
+            return null;
+        }
+
+        private Dispatcher GetDispatcher() {
+            if (MainThread != null && MainThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
+                return Dispatcher.FromThread(MainThread);
+            }
+            return null;
+        }
+
+        public event EventHandler<EventArgs> Idle;
+#pragma warning disable 0067
+        public event EventHandler<EventArgs> Terminating;
+#pragma warning restore 0067
+    }
+}

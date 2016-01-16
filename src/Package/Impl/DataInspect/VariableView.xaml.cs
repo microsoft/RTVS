@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
+using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -55,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 });
         }
 
-        private void SetRootNode(EvaluationWrapper evaluation) {
+        private void SetRootNode(IRSessionDataObject evaluation) {
             _rootNode = new ObservableTreeNode(
                 new VariableNode(evaluation),
                 Comparer<ITreeNode>.Create(Comparison));

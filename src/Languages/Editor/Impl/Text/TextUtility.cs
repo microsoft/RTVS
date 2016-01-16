@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.Languages.Core.Text;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Text {
     public static class TextUtility {
@@ -70,44 +69,6 @@ namespace Microsoft.Languages.Editor.Text {
             }
 
             return list;
-        }
-
-        public static string GetBaseLineIndent(ITextBuffer textBuffer, int position) {
-            var snapshot = textBuffer.CurrentSnapshot;
-            var line = snapshot.GetLineFromPosition(position);
-            var lineText = line.GetText();
-
-            for (int i = 0; i < lineText.Length; i++) {
-                char ch = lineText[i];
-
-                if (!Char.IsWhiteSpace(ch)) {
-                    return lineText.Substring(0, i);
-                }
-            }
-
-            return String.Empty;
-        }
-
-        public static ITextRange ExcludeWhitespace(ITextBuffer textBuffer, int start, int length) {
-            int s = start;
-            int e = start + length;
-            var snapshot = textBuffer.CurrentSnapshot;
-
-            if (length > 0 && snapshot.Length > 0) {
-                for (; s < e && s < snapshot.Length; s++) {
-                    if (!Char.IsWhiteSpace(snapshot.GetText(s, 1)[0]))
-                        break;
-                }
-
-                for (e = e - 1; e >= 0 && e >= s; e--) {
-                    if (!Char.IsWhiteSpace(snapshot.GetText(e, 1)[0]))
-                        break;
-                }
-
-                e++;
-            }
-
-            return TextRange.FromBounds(s, e);
         }
     }
 }
