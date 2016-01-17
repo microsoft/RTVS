@@ -2,10 +2,12 @@
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
@@ -39,7 +41,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async Task ShowHelp(string url) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            HelpWindowPane.Navigate(url);
+            HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
+            var container = pane as IVisualComponentContainer<IHelpWindowVisualComponent>;
+            container.Component.Navigate(url);
         }
 
         /// <summary>
