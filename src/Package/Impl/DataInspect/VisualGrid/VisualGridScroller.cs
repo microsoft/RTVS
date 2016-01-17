@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -165,24 +166,33 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (drawVisual) {
-                await DrawVisualsAsync(
-                    new Rect(
-                        Points.HorizontalOffset,
-                        Points.VerticalOffset,
-                        DataGrid.RenderSize.Width,
-                        DataGrid.RenderSize.Height),
-                    refresh,
-                    token);
+                await DrawVisualsAsync(refresh, token);
             }
         }
 
-        private async Task DrawVisualsAsync(Rect visualViewport, bool refresh, CancellationToken token) {
+        private async Task DrawVisualsAsync(bool refresh, CancellationToken token) {
             using (var elapsed = new Elapsed("PullDataAndDraw:")) {
-                GridRange newViewport = Points.ComputeDataViewport(visualViewport);
+
+                ScrollDirection overflowDirection = ScrollDirection.None;
+
+                Rect visualViewport = new Rect(
+                        Points.HorizontalOffset,
+                        Points.VerticalOffset,
+                        DataGrid.RenderSize.Width,
+                        DataGrid.RenderSize.Height);
+
+                GridRange newViewport = Points.ComputeDataViewport(visualViewport, ref overflowDirection);
 
                 if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
                     Trace.WriteLine("Either row or column data viewport is empty");
                     return;
+                }
+
+                // adjust Offset in case of overflow
+                if (overflowDirection.HasFlag(ScrollDirection.Horizontal)) {
+                    Points.HorizontalOffset = Points.HorizontalExtent - visualViewport.Width;
+                } else if (overflowDirection.HasFlag(ScrollDirection.Vertical)) {
+                    Points.VerticalOffset = Points.VerticalExtent - visualViewport.Height;
                 }
 
                 // pull data from provider
@@ -195,14 +205,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 // actual drawing runs in UI thread
                 await Task.Factory.StartNew(
-                    () => DrawVisuals(newViewport, data, refresh),
+                    () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport),
                     token,
                     TaskCreationOptions.None,
                     _ui);
             }
         }
 
-        private void DrawVisuals(GridRange dataViewport, IGridData<string> data, bool refresh) {
+        private void DrawVisuals(GridRange dataViewport, IGridData<string> data, bool refresh,
+            ScrollDirection overflowDirection, Rect visualViewport) {
             using (var deferal = Points.DeferChangeNotification()) {
                 // measure points
                 ColumnHeader?.MeasurePoints(
@@ -222,6 +233,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     dataViewport,
                     data.Grid,
                     refresh);
+
+                // adjust Offset in case of overflow
+                if (overflowDirection.HasFlag(ScrollDirection.Horizontal)) {
+                    Points.HorizontalOffset = Points.HorizontalExtent - visualViewport.Width;
+                }
+                if (overflowDirection.HasFlag(ScrollDirection.Vertical)) {
+                    Points.VerticalOffset = Points.VerticalExtent - visualViewport.Height;
+                }
 
                 // arrange and draw gridline
                 ColumnHeader?.ArrangeVisuals(Points.GetAccessToPoints(ColumnHeader.ScrollDirection));
