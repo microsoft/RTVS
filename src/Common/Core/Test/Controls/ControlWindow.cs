@@ -90,6 +90,10 @@ namespace Microsoft.Common.Core.Test.Controls {
             var action = new Action(() => {
                 IDisposable disp = Window.Content as IDisposable;
                 disp?.Dispose();
+
+                disp = Component as IDisposable;
+                disp?.Dispose();
+
                 Window.Close();
             });
 

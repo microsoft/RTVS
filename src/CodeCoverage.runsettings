@@ -25,6 +25,8 @@
                 <Function>^boost::.*</Function>
                 <Function>^websocketpp::.*</Function>
                 <Function>^__sc.*</Function>
+                <Function>.*Resources.*</Function>
+                <Function>.*ClassificationFormat.*</Function>
               </Exclude>
             </Functions>
           </CodeCoverage>

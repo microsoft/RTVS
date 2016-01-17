@@ -102,7 +102,6 @@
     <Compile Include="Tokens\MarkdownToken.cs" />
     <Compile Include="Tokens\MdTokenizer.cs" />
     <Compile Include="Tokens\MarkdownTokenType.cs" />
-    <Compile Include="Tokens\RmdTokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
