@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test {
     public class InteractiveTest {
-        protected void DoIdle(int ms) {
+        public static void DoIdle(int ms) {
             UIThreadHelper.Instance.Invoke(() => {
                 int time = 0;
                 while (time < ms) {
