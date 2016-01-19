@@ -27,9 +27,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return (other.Start <= this.Start) && (other._end >= this._end);
         }
 
-        public IEnumerable<int> GetEnumerable() {
-            for (int i = Start; i < _end; i++) {
-                yield return i;
+        public IEnumerable<int> GetEnumerable(bool ascending = true) {
+            if (ascending) {
+                for (int i = Start; i < _end; i++) {
+                    yield return i;
+                }
+            } else {
+                for (int i = _end - 1; i >= Start; i--) {
+                    yield return i;
+                }
             }
         }
     }
