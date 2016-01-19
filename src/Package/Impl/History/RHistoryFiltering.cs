@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.R.Support.Settings.Definitions;
@@ -21,13 +22,14 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private string _searchPattern;
 
-        public RHistoryFiltering(IRHistory history, IRToolsSettings settings, ITextSearchService2 textSearchService) {
+        public RHistoryFiltering(IRHistory history, ITextView textView, IRToolsSettings settings, ITextSearchService2 textSearchService) {
             _history = history;
+            _history.HistoryChanging += HistoryChanging;
             _history.HistoryChanged += HistoryChanged;
 
             _settings = settings;
             _textSearchService = textSearchService;
-            _textView = _history.GetOrCreateTextView();
+            _textView = textView;
             _textBuffer = _textView.TextDataModel.DataBuffer;
 
             IElisionBuffer elisionBuffer;
@@ -49,6 +51,15 @@ namespace Microsoft.VisualStudio.R.Package.History {
             FilterImpl(searchPattern);
         }
 
+        private void HistoryChanging(object sender, EventArgs args) {
+            if (_searchPattern == null) {
+                return;
+            }
+
+            var span = new Span(0, _textBuffer.CurrentSnapshot.Length);
+            _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(span));
+        }
+
         private void HistoryChanged(object sender, EventArgs args) {
             if (_searchPattern == null) {
                 return;
@@ -63,32 +74,57 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private void FilterImpl(string searchPattern) {
             var snapshot = _textBuffer.CurrentSnapshot;
-            var entries = _history.GetAllHistoryEntrySpans();
-            var startPoints = entries.Select(e => e.Start).ToList();
-            var endPoints = startPoints.Skip(1).Append(entries[entries.Count - 1].End);
-            var spans = startPoints.Zip(endPoints, (start, end) => new SnapshotSpan(start, end));
+            var entrySpans = _history.GetAllHistoryEntrySpans();
+            Debug.Assert(entrySpans.Any());
 
-            _history.ClearHistoryEntrySelection();
-            _textView.Selection.Clear();
+            var spansToShow = new List<Span>();
+            var spansToHide = new List<Span>();
 
-            IList<Span> spansToShow;
-            IList<Span> spansToHide;
-            spans.Split(s => _textSearchService.Find(s, s.Start, searchPattern, FindOptions.Multiline).HasValue, s => new Span(s.Start, s.Length), out spansToShow,
-                out spansToHide);
+            var span = entrySpans[0];
+            var showSpan = _textSearchService.Find(span, span.Start, searchPattern, FindOptions.Multiline).HasValue;
+
+            for (var i = 1; i < entrySpans.Count; i++) {
+                var nextSpan = entrySpans[i];
+                var showNextSpan = _textSearchService.Find(nextSpan, nextSpan.Start, searchPattern, FindOptions.Multiline).HasValue;
+                if (showNextSpan) {
+                    if (showSpan) {
+                        span = new SnapshotSpan(span.Start, nextSpan.End);
+                    } else if (spansToShow.Any()) {
+                        spansToHide.Add(span);
+                        span = new SnapshotSpan(span.End, nextSpan.End);
+                    } else {
+                        spansToHide.Add(new SnapshotSpan(span.Start, nextSpan.Start));
+                        span = nextSpan;
+                    }
+                    showSpan = true;
+                } else {
+                    if (!showSpan) {
+                        span = new SnapshotSpan(span.Start, nextSpan.End);
+                    } else {
+                        spansToShow.Add(span);
+                        span = new SnapshotSpan(span.End, nextSpan.End);
+                    }
+                    showSpan = false;
+                }
+            }
+
+            // Add last span
+            if (showSpan) {
+                spansToShow.Add(span);
+            } else {
+                spansToHide.Add(span);
+            }
 
             if (spansToShow.Count == 0) {
                 if (_elisionBuffer.CurrentSnapshot.Length == 0) {
                     return;
                 }
 
-                _history.Workaround169159(_elisionBuffer);
-                //TODO: Uncomment lines when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
-                //_textView.Caret.MoveTo(new SnapshotPoint(snapshot, 0));
-                //_elisionBuffer.ElideSpans(new NormalizedSpanCollection(new Span(0, snapshot.Length)));
+                _elisionBuffer.ModifySpans(new NormalizedSpanCollection(new Span(0, snapshot.Length)), new NormalizedSpanCollection(new Span(0, 0)));
                 return;
             }
 
-            _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(new Span(0, _textBuffer.CurrentSnapshot.Length)));
+            _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(new Span(0, snapshot.Length)));
 
             MoveCaretToVisiblePoint(spansToShow, snapshot);
 
