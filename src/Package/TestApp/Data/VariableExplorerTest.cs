@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.R.Host.Client;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;
