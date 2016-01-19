@@ -95,6 +95,10 @@
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
     <Compile Include="DataInspect\VariableChangedArgs.cs" />
+    <Compile Include="Definitions\IVisualComponentContainer.cs" />
+    <Compile Include="Definitions\IVisualComponent.cs" />
+    <Compile Include="Help\HelpWindowVisualComponent.cs" />
+    <Compile Include="Help\IHelpWindowVisualComponent.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />

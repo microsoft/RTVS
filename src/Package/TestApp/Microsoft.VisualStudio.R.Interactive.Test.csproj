@@ -75,6 +75,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\VariableExplorerTest.cs" />
+    <Compile Include="Help\HelpWindowTest.cs" />
+    <Compile Include="InteractiveTest.cs" />
     <Compile Include="Utility\IdleTime.cs" />
     <Compile Include="TestFilesFixture.cs" />
     <Compile Include="Utility\ViewTreeDump.cs" />
