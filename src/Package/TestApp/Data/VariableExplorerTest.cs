@@ -10,7 +10,7 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class VaraibleExplorerTest : InteractiveTest {
+    public class VariableExplorerTest : InteractiveTest {
         private readonly TestFilesFixture _files;
 
         public VariableExplorerTest(TestFilesFixture files) {
@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void VaraibleExplorer_ConstructorTest01() {
+        public void VariableExplorer_ConstructorTest01() {
             using (var script = new ControlTestScript(typeof(VariableGridHost))) {
                 string actual = script.WriteVisualTree();
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer01");
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void VaraibleExplorer_ConstructorTest02() {
+        public void VariableExplorer_ConstructorTest02() {
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     string actual = script.WriteVisualTree();
@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void VaraibleExplorer_SimpleDataTest() {
+        public void VariableExplorer_SimpleDataTest() {
             string actual = null;
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
