@@ -265,7 +265,8 @@
     <value>Run plotting command in R Interactive Window</value>
   </data>
   <data name="PlotCopyToClipboardError" xml:space="preserve">
-    <value>Error copying plot to the clipboard.</value>
+    <value>Error copying plot to the clipboard.
+{0}</value>
   </data>
   <data name="PlotExportAsImageFilter" xml:space="preserve">
     <value>PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*</value>

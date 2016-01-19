@@ -93,8 +93,16 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (!string.IsNullOrEmpty(fileName)) {
                 try {
                     if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
+                        // Use Begin/EndInit to avoid locking the file on disk
+                        var bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.UriSource = new Uri(fileName);
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+
                         var image = new Image();
-                        image.Source = new BitmapImage(new Uri(fileName));
+                        image.Source = bmp;
+
                         element = image;
                     } else {
                         element = (UIElement)XamlServices.Load(fileName);
@@ -127,15 +135,23 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             string fileName = Path.GetTempFileName();
             using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
                 await eval.ExportToBitmap("bmp", fileName, _lastWidth, _lastHeight);
-                try {
-                    var image = new BitmapImage(new Uri(fileName));
-                    Clipboard.SetImage(image);
-                } catch (IOException) {
-                    MessageBox.Show(Resources.PlotCopyToClipboardError);
-                }
-            }
+                VsAppShell.Current.DispatchOnUIThread(
+                    () => {
+                        try {
+                            // Use Begin/EndInit to avoid locking the file on disk
+                            var image = new BitmapImage();
+                            image.BeginInit();
+                            image.UriSource = new Uri(fileName);
+                            image.CacheOption = BitmapCacheOption.OnLoad;
+                            image.EndInit();
+                            Clipboard.SetImage(image);
 
-            SafeFileDelete(fileName);
+                            SafeFileDelete(fileName);
+                        } catch (IOException e) {
+                            MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
+                        }
+                    });
+            }
         }
 
         public async void CopyToClipboardAsMetafile() {
@@ -146,15 +162,19 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             string fileName = Path.GetTempFileName();
             using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
                 await eval.ExportToMetafile(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight));
-                try {
-                    var mf = new System.Drawing.Imaging.Metafile(fileName);
-                    Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
-                } catch (IOException) {
-                    MessageBox.Show(Resources.PlotCopyToClipboardError);
-                }
-            }
 
-            SafeFileDelete(fileName);
+                VsAppShell.Current.DispatchOnUIThread(
+                    () => {
+                        try {
+                            var mf = new System.Drawing.Imaging.Metafile(fileName);
+                            Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
+
+                            SafeFileDelete(fileName);
+                        } catch (IOException e) {
+                            MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
+                        }
+                    });
+            }
         }
 
         private static double PixelsToInches(int pixels) {

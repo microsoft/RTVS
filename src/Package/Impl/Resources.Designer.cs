@@ -531,7 +531,8 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error copying plot to the clipboard..
+        ///   Looks up a localized string similar to Error copying plot to the clipboard.
+        ///{0}.
         /// </summary>
         public static string PlotCopyToClipboardError {
             get {
