@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     public class VaraibleExplorerTest : InteractiveTest {
         private readonly TestFilesFixture _files;
 
-        public VaraibleExplorerTest(TestFilesFixture files) {
+        public VariableExplorerTest(TestFilesFixture files) {
             _files = files;
         }
 

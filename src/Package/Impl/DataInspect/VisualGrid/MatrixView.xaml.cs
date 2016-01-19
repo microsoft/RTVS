@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 Points.PointChanged -= Points_PointChanged;
             }
 
-            Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount);
+            Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount, Data.RenderSize);
             Points.PointChanged += Points_PointChanged;
 
             DataProvider = dataProvider;
@@ -309,7 +309,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private void Points_PointChanged(object sender, PointChangedEvent e) {
+        private void Points_PointChanged(object sender, PointChangedEventArgs e) {
             if (e.Direction.HasFlag(ScrollDirection.Horizontal)) {
                 double width = Data.RenderSize.Width;
                 HorizontalScrollBar.ViewportSize = width;
