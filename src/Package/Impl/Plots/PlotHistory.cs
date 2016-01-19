@@ -9,6 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotHistory : IPlotHistory {
 
         public PlotHistory() {
+            ActivePlotIndex = -1;
             PlotContentProvider = new PlotContentProvider();
             PlotContentProvider.PlotChanged += OnPlotChanged;
         }
