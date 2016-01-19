@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
@@ -22,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private const int MinWidth = 150;
         private const int MinHeight = 150;
 
-        private ExportPlotCommand _exportPlotCommand;
+        private PlotWindowCommand[] _copyAndExportCommands;
         private HistoryNextPlotCommand _historyNextPlotCommand;
         private HistoryPreviousPlotCommand _historyPreviousPlotCommand;
 
@@ -51,20 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // and user will be able to use scrollbars to see the whole thing
             int width = Math.Max((int)e.NewSize.Width, MinWidth);
             int height = Math.Max((int)e.NewSize.Height, MinHeight);
-            DoNotWait(PlotContentProvider.ResizePlotAsync(width, height));
-        }
-
-        private static void DoNotWait(System.Threading.Tasks.Task task) {
-            // Errors like invalid graphics state which go to the REPL stderr will come back
-            // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
-            // as the user can see them in the REPL.
-            // TODO:
-            // See if we can fix the cause of those errors - to be
-            // determined based on the various errors we see displayed
-            // in REPL during testing.
-            task.SilenceException<MessageTransportException>()
-                .SilenceException<Microsoft.R.Host.Client.RException>()
-                .DoNotWait();
+            Microsoft.VisualStudio.R.Package.Plots.PlotContentProvider.DoNotWait(PlotContentProvider.ResizePlotAsync(width, height));
         }
 
         public override void OnToolWindowCreated() {
@@ -79,19 +67,18 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private IEnumerable<ICommand> GetCommands() {
             List<ICommand> commands = new List<ICommand>();
 
-            _exportPlotCommand = new ExportPlotCommand(this);
+            _copyAndExportCommands = new PlotWindowCommand[] {
+                new ExportPlotAsImageCommand(this),
+                new ExportPlotAsPdfCommand(this),
+                new CopyPlotAsBitmapCommand(this),
+                new CopyPlotAsMetafileCommand(this),
+            };
             _historyNextPlotCommand = new HistoryNextPlotCommand(this);
             _historyPreviousPlotCommand = new HistoryPreviousPlotCommand(this);
 
-            commands.Add(_exportPlotCommand);
+            commands.AddRange(_copyAndExportCommands);
             commands.Add(_historyNextPlotCommand);
             commands.Add(_historyPreviousPlotCommand);
-
-            //commands.Add(new FixPlotCommand(this));
-            //commands.Add(new CopyPlotCommand(this));
-            //commands.Add(new PrintPlotCommand(this));
-            //commands.Add(new ZoomInPlotCommand(this));
-            //commands.Add(new ZoomOutPlotCommand(this));
 
             return commands;
         }
@@ -117,9 +104,17 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 } else {
                     _historyPreviousPlotCommand.Disable();
                 }
+
+                foreach (var cmd in _copyAndExportCommands) {
+                    cmd.Enable();
+                }
             } else {
                 _historyNextPlotCommand.Disable();
                 _historyPreviousPlotCommand.Disable();
+
+                foreach (var cmd in _copyAndExportCommands) {
+                    cmd.Disable();
+                }
             }
 
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
@@ -130,35 +125,52 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (e.NewPlotElement == null) {
                 ClearHistoryInfo();
             } else {
-                DoNotWait(RefreshHistoryInfo());
+                Microsoft.VisualStudio.R.Package.Plots.PlotContentProvider.DoNotWait(RefreshHistoryInfo());
             }
         }
 
-        internal void ExportPlot() {
-            string destinationFilePath = GetExportFilePath();
+        internal void ExportPlotAsImage() {
+            string destinationFilePath = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsImageFilter, null, Resources.ExportPlotAsImageDialogTitle);
             if (!string.IsNullOrEmpty(destinationFilePath)) {
-                PlotContentProvider.ExportFile(destinationFilePath);
+                string device = String.Empty;
+                string extension = Path.GetExtension(destinationFilePath).TrimStart('.').ToLowerInvariant();
+                switch (extension) {
+                    case "png":
+                        device = "png";
+                        break;
+                    case "bmp":
+                        device = "bmp";
+                        break;
+                    case "tif":
+                    case "tiff":
+                        device = "tiff";
+                        break;
+                    case "jpg":
+                    case "jpeg":
+                        device = "jpeg";
+                        break;
+                    default:
+                        VsAppShell.Current.ShowErrorMessage(string.Format(Resources.PlotExportUnsupportedImageFormat, extension));
+                        return;
+                }
+
+                PlotContentProvider.ExportAsImage(destinationFilePath, device);
+            }
+        }
+
+        internal void ExportPlotAsPdf() {
+            string destinationFilePath = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsPdfFilter, null, Resources.ExportPlotAsPdfDialogTitle);
+            if (!string.IsNullOrEmpty(destinationFilePath)) {
+                PlotContentProvider.ExportAsPdf(destinationFilePath);
             }
         }
 
         internal void NextPlot() {
-            DoNotWait(PlotContentProvider.NextPlotAsync());
+            Microsoft.VisualStudio.R.Package.Plots.PlotContentProvider.DoNotWait(PlotContentProvider.NextPlotAsync());
         }
 
         internal void PreviousPlot() {
-            DoNotWait(PlotContentProvider.PreviousPlotAsync());
-        }
-
-        private string GetLoadFilePath() {
-            return VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero,
-                Resources.PlotFileFilter,
-                // TODO: open in current project folder if one is active
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\",
-                Resources.OpenPlotDialogTitle);
-        }
-
-        private string GetExportFilePath() {
-            return VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportFilter, null, Resources.ExportPlotDialogTitle);
+            Microsoft.VisualStudio.R.Package.Plots.PlotContentProvider.DoNotWait(PlotContentProvider.PreviousPlotAsync());
         }
 
         protected override void Dispose(bool disposing) {
