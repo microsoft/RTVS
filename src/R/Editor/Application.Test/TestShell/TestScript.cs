@@ -180,6 +180,22 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
             return session;
         }
 
+        public ICompletionSession GetCompletionSession() {
+            ICompletionBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+            var sessions = broker.GetSessions(EditorWindow.CoreEditor.View);
+            ICompletionSession session = sessions.FirstOrDefault();
+
+            int retries = 0;
+            while (session == null && retries < 10) {
+                this.DoIdle(1000);
+                sessions = broker.GetSessions(EditorWindow.CoreEditor.View);
+                session = sessions.FirstOrDefault();
+                retries++;
+            }
+
+            return session;
+        }
+
         public IList<IMappingTagSpan<IErrorTag>> GetErrorTagSpans() {
             var aggregatorService = EditorShell.Current.ExportProvider.GetExport<IViewTagAggregatorFactoryService>().Value;
             var tagAggregator = aggregatorService.CreateTagAggregator<IErrorTag>(EditorWindow.CoreEditor.View);

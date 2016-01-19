@@ -164,7 +164,7 @@ namespace Microsoft.R.Editor.Completion {
                 if (char.IsWhiteSpace(typedChar)) {
                     IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
                     if (document != null && document.IsTransient) {
-                        return typedChar == '\t';
+                        return CompletionSession.SelectedCompletionSet.SelectionStatus.IsSelected && typedChar == '\t';
                     }
 
                     if (typedChar == '\n' || typedChar == '\r') {
