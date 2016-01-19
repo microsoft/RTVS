@@ -52,20 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // and user will be able to use scrollbars to see the whole thing
             int width = Math.Max((int)e.NewSize.Width, MinWidth);
             int height = Math.Max((int)e.NewSize.Height, MinHeight);
-            DoNotWait(PlotContentProvider.ResizePlotAsync(width, height));
-        }
-
-        private static void DoNotWait(System.Threading.Tasks.Task task) {
-            // Errors like invalid graphics state which go to the REPL stderr will come back
-            // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
-            // as the user can see them in the REPL.
-            // TODO:
-            // See if we can fix the cause of those errors - to be
-            // determined based on the various errors we see displayed
-            // in REPL during testing.
-            task.SilenceException<MessageTransportException>()
-                .SilenceException<Microsoft.R.Host.Client.RException>()
-                .DoNotWait();
+            Microsoft.VisualStudio.R.Package.Plots.PlotContentProvider.DoNotWait(PlotContentProvider.ResizePlotAsync(width, height));
         }
 
         public override void OnToolWindowCreated() {
@@ -138,7 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (e.NewPlotElement == null) {
                 ClearHistoryInfo();
             } else {
-                DoNotWait(RefreshHistoryInfo());
+                Microsoft.VisualStudio.R.Package.Plots.PlotContentProvider.DoNotWait(RefreshHistoryInfo());
             }
         }
 
@@ -179,11 +166,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         internal void NextPlot() {
-            DoNotWait(PlotContentProvider.NextPlotAsync());
+            Microsoft.VisualStudio.R.Package.Plots.PlotContentProvider.DoNotWait(PlotContentProvider.NextPlotAsync());
         }
 
         internal void PreviousPlot() {
-            DoNotWait(PlotContentProvider.PreviousPlotAsync());
+            Microsoft.VisualStudio.R.Package.Plots.PlotContentProvider.DoNotWait(PlotContentProvider.PreviousPlotAsync());
         }
 
         protected override void Dispose(bool disposing) {

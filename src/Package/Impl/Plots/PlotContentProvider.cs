@@ -90,63 +90,73 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             OnPlotChanged(element);
         }
 
-        public async void ExportAsImage(string fileName, string deviceName) {
-            if (_rSession == null) {
-                return;
-            }
+        public void ExportAsImage(string fileName, string deviceName) {
+            DoNotWait(ExportAsImageAsync(fileName, deviceName));
+        }
 
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                await eval.ExportToBitmap(deviceName, fileName, _lastWidth, _lastHeight);
+        public void CopyToClipboardAsBitmap() {
+            DoNotWait(CopyToClipboardAsBitmapAsync());
+        }
+
+        public void CopyToClipboardAsMetafile() {
+            DoNotWait(CopyToClipboardAsMetafileAsync());
+        }
+
+        public void ExportAsPdf(string fileName) {
+            DoNotWait(ExportAsPdfAsync(fileName));
+        }
+
+        private async System.Threading.Tasks.Task ExportAsImageAsync(string fileName, string deviceName) {
+            if (_rSession != null) {
+                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                    await eval.ExportToBitmap(deviceName, fileName, _lastWidth, _lastHeight);
+                }
             }
         }
 
-        public async void CopyToClipboardAsBitmap() {
-            if (_rSession == null) {
-                return;
-            }
-
-            string fileName = Path.GetTempFileName();
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                await eval.ExportToBitmap("bmp", fileName, _lastWidth, _lastHeight);
-                VsAppShell.Current.DispatchOnUIThread(
-                    () => {
-                        try {
+        private async System.Threading.Tasks.Task CopyToClipboardAsBitmapAsync() {
+            if (_rSession != null) {
+                string fileName = Path.GetTempFileName();
+                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                    await eval.ExportToBitmap("bmp", fileName, _lastWidth, _lastHeight);
+                    VsAppShell.Current.DispatchOnUIThread(
+                        () => {
+                            try {
                             // Use Begin/EndInit to avoid locking the file on disk
                             var image = new BitmapImage();
-                            image.BeginInit();
-                            image.UriSource = new Uri(fileName);
-                            image.CacheOption = BitmapCacheOption.OnLoad;
-                            image.EndInit();
-                            Clipboard.SetImage(image);
+                                image.BeginInit();
+                                image.UriSource = new Uri(fileName);
+                                image.CacheOption = BitmapCacheOption.OnLoad;
+                                image.EndInit();
+                                Clipboard.SetImage(image);
 
-                            SafeFileDelete(fileName);
-                        } catch (IOException e) {
-                            MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
-                        }
-                    });
+                                SafeFileDelete(fileName);
+                            } catch (IOException e) {
+                                MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
+                            }
+                        });
+                }
             }
         }
 
-        public async void CopyToClipboardAsMetafile() {
-            if (_rSession == null) {
-                return;
-            }
+        private async System.Threading.Tasks.Task CopyToClipboardAsMetafileAsync() {
+            if (_rSession != null) {
+                string fileName = Path.GetTempFileName();
+                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                    await eval.ExportToMetafile(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight));
 
-            string fileName = Path.GetTempFileName();
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                await eval.ExportToMetafile(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight));
+                    VsAppShell.Current.DispatchOnUIThread(
+                        () => {
+                            try {
+                                var mf = new System.Drawing.Imaging.Metafile(fileName);
+                                Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
 
-                VsAppShell.Current.DispatchOnUIThread(
-                    () => {
-                        try {
-                            var mf = new System.Drawing.Imaging.Metafile(fileName);
-                            Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
-
-                            SafeFileDelete(fileName);
-                        } catch (IOException e) {
-                            MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
-                        }
-                    });
+                                SafeFileDelete(fileName);
+                            } catch (IOException e) {
+                                MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
+                            }
+                        });
+                }
             }
         }
 
@@ -161,13 +171,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        public async void ExportAsPdf(string fileName) {
-            if (_rSession == null) {
-                return;
-            }
-
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                await eval.ExportToPdf(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight), "special");
+        private async System.Threading.Tasks.Task ExportAsPdfAsync(string fileName) {
+            if (_rSession != null) {
+                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                    await eval.ExportToPdf(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight), "special");
+                }
             }
         }
 
@@ -240,6 +248,19 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public void Dispose() {
+        }
+
+        public static void DoNotWait(System.Threading.Tasks.Task task) {
+            // Errors like invalid graphics state which go to the REPL stderr will come back
+            // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
+            // as the user can see them in the REPL.
+            // TODO:
+            // See if we can fix the cause of those errors - to be
+            // determined based on the various errors we see displayed
+            // in REPL during testing.
+            task.SilenceException<MessageTransportException>()
+                .SilenceException<Microsoft.R.Host.Client.RException>()
+                .DoNotWait();
         }
     }
 }
