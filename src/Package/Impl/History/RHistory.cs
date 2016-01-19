@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Windows;
 using Microsoft.Common.Core.Disposables;
@@ -23,7 +24,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private readonly IRToolsSettings _settings;
         private readonly IEditorOperationsFactoryService _editorOperationsFactory;
         private readonly IRInteractive _rInteractive;
-        private readonly ITextEditorFactoryService _textEditorFactory;
         private readonly ITextBuffer _historyTextBuffer;
         private readonly CountdownDisposable _textBufferIsEditable;
         private readonly IRtfBuilderService _rtfBuilderService;
@@ -36,16 +36,15 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private IRHistoryEntries _entries;
         private IReadOnlyRegion _readOnlyRegion;
-        private bool _isInsideWorkaround169159;
         private IRHistoryEntry _currentEntry;
         private bool _isMultiline;
 
+        public event EventHandler<EventArgs> HistoryChanging;
         public event EventHandler<EventArgs> HistoryChanged;
         public event EventHandler<EventArgs> SelectionChanged;
 
-        public RHistory(IRInteractive rInteractive, ITextEditorFactoryService textEditorFactory, ITextBuffer textBuffer, IFileSystem fileSystem, IRToolsSettings settings, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, IVsUIShell vsShell, Action dispose) {
+        public RHistory(IRInteractive rInteractive, ITextBuffer textBuffer, IFileSystem fileSystem, IRToolsSettings settings, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, IVsUIShell vsShell, Action dispose) {
             _rInteractive = rInteractive;
-            _textEditorFactory = textEditorFactory;
             _historyTextBuffer = textBuffer;
             _fileSystem = fileSystem;
             _settings = settings;
@@ -93,19 +92,20 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
         }
 
-        public IWpfTextView GetOrCreateTextView() {
+        public IWpfTextView GetOrCreateTextView(ITextEditorFactoryService textEditorFactory) {
             if (_textView != null) {
                 return _textView;
             }
 
-            _textView = CreateTextView();
+            _textView = CreateTextView(textEditorFactory);
             _textViewSelection = _textView.Selection;
+            _textViewSelection.SelectionChanged += TextViewSelectionChanged;
             _editorOperations = _editorOperationsFactory.GetEditorOperations(_textView);
             return _textView;
         }
 
-        private IWpfTextView CreateTextView() {
-            var textView = _textEditorFactory.CreateTextView(_historyTextBuffer);
+        private IWpfTextView CreateTextView(ITextEditorFactoryService textEditorFactory) {
+            var textView = textEditorFactory.CreateTextView(_historyTextBuffer);
             textView.Options.SetOptionValue(DefaultTextViewHostOptions.VerticalScrollBarId, true);
             textView.Options.SetOptionValue(DefaultTextViewHostOptions.HorizontalScrollBarId, true);
             textView.Options.SetOptionValue(DefaultTextViewHostOptions.SelectionMarginId, false);
@@ -120,6 +120,12 @@ namespace Microsoft.VisualStudio.R.Package.History {
             textView.Caret.IsHidden = true;
             textView.Properties.AddProperty(typeof(IRHistory), this);
             return textView;
+        }
+
+        private void TextViewSelectionChanged(object sender, EventArgs e) {
+            if (_textView.Selection.Start != _textView.Selection.End) {
+                ClearHistoryEntrySelection();
+            }
         }
 
         public bool TryLoadFromFile(string path) {
@@ -375,20 +381,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
         }
 
-        //TODO: Remove this method when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
-        public void Workaround169159(IElisionBuffer elisionBuffer) {
-            _isInsideWorkaround169159 = true;
-            using (EditTextBuffer()) {
-                elisionBuffer.ExpandSpans(new NormalizedSpanCollection(new Span(0, _historyTextBuffer.CurrentSnapshot.Length)));
-                _historyTextBuffer.Insert(0, "\u200B"); // 200B is a zero-width space
-                _textView.Caret.MoveTo(new SnapshotPoint(_historyTextBuffer.CurrentSnapshot, 0));
-                elisionBuffer.ElideSpans(new NormalizedSpanCollection(new Span(1, _historyTextBuffer.CurrentSnapshot.Length - 1)));
-                _historyTextBuffer.Delete(new Span(0, 1));
-            }
-
-            _isInsideWorkaround169159 = false;
-        }
-
         private void CreateEntries(string[] historyLines) {
             if (_historyTextBuffer == null) {
                 return;
@@ -449,6 +441,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 }
             }
 
+            HistoryChanging?.Invoke(this, new EventArgs());
             return _textBufferIsEditable.Increment();
         }
 
@@ -460,12 +453,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
 
             _currentEntry = null;
-
-            // Don't raise event for workaround edits
-            if (_isInsideWorkaround169159) {
-                return;
-            }
-
             HistoryChanged?.Invoke(this, new EventArgs());
         }
 

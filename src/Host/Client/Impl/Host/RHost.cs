@@ -239,6 +239,9 @@ namespace Microsoft.R.Host.Client {
             if (kind.HasFlag(REvaluationKind.EmptyEnv)) {
                 nameBuilder.Append('E');
             }
+            if (kind.HasFlag(REvaluationKind.UnprotectedEnv)) {
+                nameBuilder.Append("U");
+            }
             var name = nameBuilder.ToString();
 
             _canEval = false;
