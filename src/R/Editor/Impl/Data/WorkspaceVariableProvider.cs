@@ -112,23 +112,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task UpdateList() {
-            var debugSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
+            // May be null in tests
+            var debugSessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IDebugSessionProvider>();
+            if (debugSessionProvider != null) {
+                var debugSession = await debugSessionProvider.GetDebugSessionAsync(Session);
+                if (debugSession != null) {
+                    var stackFrames = await debugSession.GetStackFramesAsync();
 
-            var debugSession = await debugSessionProvider.GetDebugSessionAsync(Session);
-            if (debugSession != null) {
-                var stackFrames = await debugSession.GetStackFramesAsync();
+                    var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
+                    if (globalStackFrame != null) {
+                        DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("environment()", "Global Environment");
+                        var e = new RSessionDataObject(-1, evaluation, false);  // root level doesn't truncate children and return every variables
 
-                var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
-                if (globalStackFrame != null) {
-                    DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("environment()", "Global Environment");
-                    var e = new RSessionDataObject(-1, evaluation, false);  // root level doesn't truncate children and return every variables
+                        _topLevelVariables.Clear();
 
-                    _topLevelVariables.Clear();
-
-                    var children = await e.GetChildrenAsync();
-                    if (children != null) {
-                        foreach (var x in children) {
-                            _topLevelVariables[x.Name] = x; // TODO: BUGBUG: this doesn't address removed variables
+                        var children = await e.GetChildrenAsync();
+                        if (children != null) {
+                            foreach (var x in children) {
+                                _topLevelVariables[x.Name] = x; // TODO: BUGBUG: this doesn't address removed variables
+                            }
                         }
                     }
                 }
