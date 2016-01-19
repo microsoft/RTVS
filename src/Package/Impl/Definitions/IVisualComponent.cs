@@ -6,7 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.Definitions {
     /// <summary>
     /// Represents visual component such a control inside a tool window
     /// </summary>
-    internal interface IVisualComponent: IDisposable {
+    public interface IVisualComponent: IDisposable {
         /// <summary>
         /// Controller to send commands to
         /// </summary>
