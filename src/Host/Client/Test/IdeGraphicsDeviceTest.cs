@@ -329,7 +329,14 @@ Sys.sleep(1)
 
             int expectedActive = 0;
             int expectedCount = 2;
-            _callbacks.Output.Should().Be($"[1] {expectedActive} {expectedCount}\n\n");
+            
+            // Make sure to account for the R startup message. Plain R REPL output is empty
+            // but RRE outputs long message like 'Revolution R version 7.5...'. 
+            string output = _callbacks.Output;
+            string[] lines = output.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            lines.Length.Should().BeGreaterThan(0);
+            lines[lines.Length-1].Should().Be($"[1] {expectedActive} {expectedCount}");
         }
 
         [Test]
@@ -392,7 +399,7 @@ Sys.sleep(1)
             _callbacks.SetInput(SetupCode + "\n" + code + "\n");
             var host = new RHost("Test", _callbacks);
             var rhome = RInstallation.GetLatestEnginePathFromRegistry();
-            host.CreateAndRun(rhome, string.Empty).GetAwaiter().GetResult();
+            host.CreateAndRun(rhome, string.Empty, 10000).GetAwaiter().GetResult();
 
             // Ensure that all plot files created by the graphics device have been deleted
             foreach (var deletedFilePath in _callbacks.OriginalPlotFilePaths) {

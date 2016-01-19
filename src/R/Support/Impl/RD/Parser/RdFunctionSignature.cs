@@ -167,51 +167,54 @@ namespace Microsoft.R.Support.RD.Parser {
             SignatureInfo info = new SignatureInfo(functionName);
             List<IArgumentInfo> signatureArguments = new List<IArgumentInfo>();
 
-            FunctionCall functionCall = new FunctionCall();
-            functionCall.Parse(context, context.AstRoot);
+            // RD data may contain function name(s) without braces
+            if (context.Tokens.CurrentToken.TokenType == RTokenType.OpenBrace) {
+                FunctionCall functionCall = new FunctionCall();
+                functionCall.Parse(context, context.AstRoot);
 
-            for (int i = 0; i < functionCall.Arguments.Count; i++) {
-                IAstNode arg = functionCall.Arguments[i];
+                for (int i = 0; i < functionCall.Arguments.Count; i++) {
+                    IAstNode arg = functionCall.Arguments[i];
 
-                string argName = null;
-                string argDefaultValue = null;
-                bool isEllipsis = false;
-                bool isOptional = false;
+                    string argName = null;
+                    string argDefaultValue = null;
+                    bool isEllipsis = false;
+                    bool isOptional = false;
 
-                ExpressionArgument expArg = arg as ExpressionArgument;
-                if (expArg != null) {
-                    argName = context.TextProvider.GetText(expArg.ArgumentValue);
-                } else {
-                    NamedArgument nameArg = arg as NamedArgument;
-                    if (nameArg != null) {
-                        argName = context.TextProvider.GetText(nameArg.NameRange);
-                        argDefaultValue = RdText.CleanRawRdText(context.TextProvider.GetText(nameArg.DefaultValue));
+                    ExpressionArgument expArg = arg as ExpressionArgument;
+                    if (expArg != null) {
+                        argName = context.TextProvider.GetText(expArg.ArgumentValue);
                     } else {
-                        MissingArgument missingArg = arg as MissingArgument;
-                        if (missingArg != null) {
-                            argName = string.Empty;
+                        NamedArgument nameArg = arg as NamedArgument;
+                        if (nameArg != null) {
+                            argName = context.TextProvider.GetText(nameArg.NameRange);
+                            argDefaultValue = RdText.CleanRawRdText(context.TextProvider.GetText(nameArg.DefaultValue));
                         } else {
-                            EllipsisArgument ellipsisArg = arg as EllipsisArgument;
-                            if (ellipsisArg != null) {
-                                argName = "...";
-                                isEllipsis = true;
+                            MissingArgument missingArg = arg as MissingArgument;
+                            if (missingArg != null) {
+                                argName = string.Empty;
+                            } else {
+                                EllipsisArgument ellipsisArg = arg as EllipsisArgument;
+                                if (ellipsisArg != null) {
+                                    argName = "...";
+                                    isEllipsis = true;
+                                }
                             }
                         }
                     }
-                }
 
-                ArgumentInfo argInfo = new ArgumentInfo(argName);
-                argInfo.DefaultValue = argDefaultValue;
-                argInfo.IsEllipsis = isEllipsis;
-                argInfo.IsOptional = isOptional; // TODO: actually parse
+                    ArgumentInfo argInfo = new ArgumentInfo(argName);
+                    argInfo.DefaultValue = argDefaultValue;
+                    argInfo.IsEllipsis = isEllipsis;
+                    argInfo.IsOptional = isOptional; // TODO: actually parse
 
-                if (argumentsDescriptions != null) {
-                    string description;
-                    if (argumentsDescriptions.TryGetValue(argName, out description)) {
-                        argInfo.Description = description;
+                    if (argumentsDescriptions != null) {
+                        string description;
+                        if (argumentsDescriptions.TryGetValue(argName, out description)) {
+                            argInfo.Description = description;
+                        }
                     }
+                    signatureArguments.Add(argInfo);
                 }
-                signatureArguments.Add(argInfo);
             }
 
             info.Arguments = signatureArguments;

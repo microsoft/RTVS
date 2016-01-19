@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Settings;
@@ -11,9 +10,15 @@ namespace Microsoft.R.Host.Client.Signatures {
     /// Provides RD data (help) on a function from the specified package.
     /// </summary>
     [Export(typeof(IFunctionRdDataProvider))]
-    internal sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
-        private const int _sessionId = 73425;
+    public sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
+        private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private IRSession _session;
+
+        /// <summary>
+        /// Timeout to allow R-Host to start. Typically only needs
+        /// different value in tests or code coverage runs.
+        /// </summary>
+        public static int HostStartTimeout { get; set; } = 3000;
 
         /// <summary>
         /// Asynchronously fetches RD data on the function from R.
@@ -44,14 +49,15 @@ namespace Microsoft.R.Host.Client.Signatures {
         private async Task CreateSessionAsync() {
             if (_session == null) {
                 var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                _session = provider.Create(_sessionId, null);
+                _session = provider.GetOrCreate(SessionId, null);
                 _session.Disposed += OnSessionDisposed;
 
+                int timeout = EditorShell.Current.IsUnitTestEnvironment ? 10000 : 3000;
                 await _session.StartHostAsync(new RHostStartupInfo {
                     Name = "RdData",
                     RBasePath = RToolsSettings.Current.RBasePath,
                     CranMirrorName = RToolsSettings.Current.CranMirror
-                });
+                }, timeout);
             }
         }
 

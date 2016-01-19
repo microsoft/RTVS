@@ -211,25 +211,26 @@ function(a) {
                 TextViewMock textView = session.TextView as TextViewMock;
                 List<ISignature> signatures = new List<ISignature>();
 
-                EditorTree tree = new EditorTree(textBuffer);
-                tree.Build();
-                var document = new EditorDocumentMock(tree);
+                using (EditorTree tree = new EditorTree(textBuffer)) {
+                    tree.Build();
+                    var document = new EditorDocumentMock(tree);
 
-                session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
+                    session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
 
-                tree.TakeThreadOwnerShip();
-                await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
+                    tree.TakeThreadOwnerShip();
+                    await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
 
-                signatures.Should().ContainSingle();
+                    signatures.Should().ContainSingle();
 
-                textView.Caret = new TextCaretMock(textView, 8);
-                SignatureHelp sh = signatures[0] as SignatureHelp;
-                int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
-                index.Should().Be(11);
+                    textView.Caret = new TextCaretMock(textView, 8);
+                    SignatureHelp sh = signatures[0] as SignatureHelp;
+                    int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+                    index.Should().Be(11);
 
-                textView.Caret = new TextCaretMock(textView, 15);
-                index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 15);
-                index.Should().Be(6);
+                    textView.Caret = new TextCaretMock(textView, 15);
+                    index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 15);
+                    index.Should().Be(6);
+                }
             }
 
             [Test]

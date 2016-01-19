@@ -10,6 +10,7 @@ using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -17,17 +18,17 @@ using Task = System.Threading.Tasks.Task;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal class OpenRDataCommandGroupHandler : IAsyncCommandGroupHandler {
         private readonly UnconfiguredProject _unconfiguredProject;
-        private readonly IRSessionProvider _sessionProvider;
         private readonly long[] _commandIds;
+        private readonly IRSession _session;
 
         public OpenRDataCommandGroupHandler(UnconfiguredProject unconfiguredProject, IRSessionProvider sessionProvider, params long[] commandIds) {
             _unconfiguredProject = unconfiguredProject;
-            _sessionProvider = sessionProvider;
+            _session = sessionProvider.GetInteractiveWindowRSession();
             _commandIds = commandIds;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus status) {
-            if (_sessionProvider.Current != null && _commandIds.Contains(commandId)) {
+            if (_session.IsHostRunning && _commandIds.Contains(commandId)) {
                 if (nodes.Any(IsRData)) {
                     status |= CommandStatus.Supported | CommandStatus.Enabled;
                     return Task.FromResult(new CommandStatusResult(true, commandText, status));
@@ -38,11 +39,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
-            var session = _sessionProvider.Current;
-            if (session == null) {
-                return false;
-            }
-
             if (!_commandIds.Contains(commandId)) {
                 return false;
             }
@@ -52,10 +48,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 return false;
             }
 
-            return await TryHandleCommandAsyncInternal(rDataNode, session);
+            return await TryHandleCommandAsyncInternal(rDataNode);
         }
 
-        protected virtual async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode, IRSession session) {
+        protected virtual async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             MessageButtons messageResult = VsAppShell.Current.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath), MessageButtons.YesNo);
@@ -63,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 return true;
             }
 
-            using (var evaluation = await session.BeginEvaluationAsync()) {
+            using (var evaluation = await _session.BeginEvaluationAsync()) {
                 var result = await evaluation.LoadWorkspace(rDataNode.FilePath);
 
                 if (result.Error != null) {

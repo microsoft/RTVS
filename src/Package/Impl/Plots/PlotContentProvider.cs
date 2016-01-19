@@ -12,6 +12,7 @@ using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 
@@ -27,34 +28,18 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _lastWidth = -1;
             _lastHeight = -1;
 
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
-            sessionProvider.CurrentChanged += RSessionProvider_CurrentChanged;
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _rSession = sessionProvider.GetInteractiveWindowRSession();
+            _rSession.Mutated += RSession_Mutated;
+            _rSession.Connected += RSession_Connected;
 
-            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
+            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
 
             IdleTimeAction.Create(() => {
-                SetRSession(sessionProvider.Current).DoNotWait();
-            }, 10, typeof(PlotContentProvider));
-        }
-
-        private async System.Threading.Tasks.Task SetRSession(IRSession session) {
-            // cleans up old RSession
-            if (_rSession != null) {
-                _rSession.Mutated -= RSession_Mutated;
-                _rSession.Connected -= RSession_Connected;
-            }
-
-            // set new RSession
-            _rSession = session;
-
-            if (_rSession != null) {
-                _rSession.Mutated += RSession_Mutated;
-                _rSession.Connected += RSession_Connected;
-
                 // debug session is created to trigger a load of the R package
                 // that has functions we need such as rtvs:::toJSON
-                var debugSession = await _debugSessionProvider.GetDebugSessionAsync(_rSession);
-            }
+                _debugSessionProvider.GetDebugSessionAsync(_rSession).DoNotWait();
+            }, 10, typeof(PlotContentProvider));
         }
 
         private void RSession_Mutated(object sender, EventArgs e) {
@@ -69,18 +54,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
 
             OnPlotChanged(null);
-        }
-
-        /// <summary>
-        /// IRSessionProvider.CurrentSessionChanged handler. When current session changes, this is called
-        /// </summary>
-        private void RSessionProvider_CurrentChanged(object sender, EventArgs e) {
-            var sessionProvider = sender as IRSessionProvider;
-            Debug.Assert(sessionProvider != null);
-
-            if (sessionProvider != null) {
-                SetRSession(sessionProvider.Current).DoNotWait();
-            }
         }
 
         #region IPlotContentProvider implementation

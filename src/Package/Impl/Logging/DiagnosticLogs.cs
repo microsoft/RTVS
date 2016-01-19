@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 var rSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var sessions = rSessionProvider.GetSessions();
                 foreach (var s in sessions) {
-                    s.Value?.FlushLog();
+                    s.FlushLog();
                 }
 
                 if (File.Exists(zipPath)) {

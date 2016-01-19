@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Editor.Data;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -13,8 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region member/ctor
 
-        private EvaluationWrapper _evaluation;
-        public VariableNode(EvaluationWrapper evaluation) {
+        private IRSessionDataObject _evaluation;
+        public VariableNode(IRSessionDataObject evaluation) {
             _evaluation = evaluation;
         }
 

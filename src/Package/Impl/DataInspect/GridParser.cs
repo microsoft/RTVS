@@ -17,8 +17,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <param name="input">serialized string from R host</param>
         /// <returns>parsed data</returns>
         public static GridData Parse(string input) {
-            GridData data = new GridData();
-
             input = CleanEscape(input);
 
             //
@@ -37,29 +35,39 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             current = input.IndexOf('=', current);
             string dimnamesValue;
             current = FirstQuotedString(input, current, out dimnamesValue);
-            data.ValidHeaderNames = bool.Parse(dimnamesValue);
+            bool validHeaderNames = bool.Parse(dimnamesValue);
 
-            current = NamedValue(input, "row.names", data.RowNames, current, true);
+            List<string> rowNames = new List<string>();
+            current = NamedValue(input, "row.names", rowNames, current, true);
             current = input.IndexOf(',', current);
 
-            current = NamedValue(input, "col.names", data.ColumnNames, current, true);
+            List<string> columnNames = new List<string>();
+            current = NamedValue(input, "col.names", columnNames, current, true);
             current = input.IndexOf(',', current);
 
             current = input.IndexOf("data", current);
             current = input.IndexOf('=', current);
+
             current = input.IndexOf("structure", current);
             current = input.IndexOf('(', current);
 
-            current = input.IndexOf("list", current);
-            current = input.IndexOf('(', current);
 
-            foreach (var colname in data.ColumnNames) {
-                List<string> columnValues = new List<string>();
-                current = NamedValue(input, colname, columnValues, current);
-                data.Values.Add(columnValues);
+            List<string> values = new List<string>();
+            current = Vector(input, values, current);
 
-                current = input.IndexOfAny(ValueDelimiter, current);
-            }
+            //while (true) {
+            //    List<string> columnValues = new List<string>();
+            //    current = Vector(input, columnValues, current);
+            //    data.Values.Add(columnValues);
+
+            //    current = input.IndexOfAny(ValueDelimiter, current);
+            //    if (input[current] == ValueDelimiter[ClosingIndex]) {
+            //        break;
+            //    }
+            //}
+
+            GridData data = new GridData(rowNames, columnNames, values);
+            data.ValidHeaderNames = validHeaderNames;
 
             return data;
         }
@@ -88,6 +96,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             current = input.IndexOf('=', current);
 
+            return Vector(input, names, current);
+        }
+
+        private static int Vector(string input, List<string> names, int current) {
             current = input.IndexOfAny(ValueStart, current);
             if (input[current] == ValueStart[VectorIndex]) {
                 // vector
@@ -100,6 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     current = input.IndexOfAny(ValueDelimiter, current);
                     if (input[current] == ValueDelimiter[ClosingIndex]) {
+                        current += 1;
                         break;
                     }
                 }

@@ -565,7 +565,8 @@
         <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="HTMLFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Preview HTML</ButtonText>
           <CommandName>Preview HTML</CommandName>
@@ -575,7 +576,8 @@
       <Button guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
         <Icon guid="pdfIconGuid" id="pdfIcon"/>
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Preview PDF</ButtonText>
           <CommandName>Preview PDF</CommandName>
@@ -586,7 +588,8 @@
         <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="OfficeWord2013"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Preview Word</ButtonText>
           <CommandName>Preview Word</CommandName>
@@ -594,7 +597,8 @@
       </Button>
 
       <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="publishPublishSubMenuGroup"/>
+        <!-- Actual publishing is not yet supported -->
+        <!--<Parent guid="guidRToolsCmdSet" id="publishPublishSubMenuGroup"/>-->
         <Icon guid="ImageCatalogGuid" id="PublishAllWebSites"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -939,7 +943,8 @@
       <!-- End Preview flyout menu items -->
 
       <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0104" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
+        <!-- Actual publishing is not yet supported -->
+        <!--<Parent guid="guidMdToolsCmdSet" id="groupPreview"/>-->
         <Icon guid="ImageCatalogGuid" id="PublishAllWebSites"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -1132,7 +1137,9 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
     <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="CMDUIGUID_R_EDITOR" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidVSStd97" key1="V" mod1="ALT SHIFT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="guidVSStd97" key1="H" mod1="ALT SHIFT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="guidVSStd97" key1="P" mod1="ALT SHIFT"/>
   </KeyBindings>
 
   <UsedCommands>

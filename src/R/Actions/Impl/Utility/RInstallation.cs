@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using Microsoft.Win32;
 
@@ -11,10 +12,20 @@ namespace Microsoft.R.Actions.Utility {
     /// settings try and find highest version.
     /// </summary>
     public static class RInstallation {
-        public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion) {
-            string path = RInstallation.GetRInstallPath(basePath);
+        public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion, bool useRegistry = true) {
+            string path = string.Empty;
+            if (useRegistry) {
+                path = RInstallation.GetRInstallPath(basePath);
+            }
+
             if (string.IsNullOrEmpty(path)) {
-                return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
+                path = TryFindRInProgramFiles("RRO", minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
+                if(string.IsNullOrEmpty(path)) {
+                    path = TryFindRInProgramFiles("R", minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
+                    if (string.IsNullOrEmpty(path)) {
+                        return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
+                    }
+                }
             }
 
             RInstallData data = new RInstallData() { Status = RInstallStatus.OK, Path = path };
@@ -31,12 +42,10 @@ namespace Microsoft.R.Actions.Utility {
 
                     if (fvi.FileMajorPart < minMajorVersion || fvi.FileMajorPart > maxMajorVersion) {
                         data.Status = RInstallStatus.UnsupportedVersion;
-                    }
-                    else if (minor < minMinorVersion || minor > maxMinorVersion) {
+                    } else if (minor < minMinorVersion || minor > maxMinorVersion) {
                         data.Status = RInstallStatus.UnsupportedVersion;
                     }
-                }
-                else {
+                } else {
                     data.Status = RInstallStatus.NoRBinaries;
                 }
             } catch (ArgumentException aex) {
@@ -62,7 +71,6 @@ namespace Microsoft.R.Actions.Utility {
             if (string.IsNullOrEmpty(basePath) || !Directory.Exists(basePath)) {
                 basePath = RInstallation.GetLatestEnginePathFromRegistry();
             }
-
             return basePath;
         }
 
@@ -165,6 +173,36 @@ namespace Microsoft.R.Actions.Utility {
                         return rKey.GetValue("InstallPath") as string;
                     }
                 }
+            }
+
+            return string.Empty;
+        }
+
+        private static Version GetRVersionFromFolderName(string folderName) {
+            if (folderName.StartsWith("R-")) {
+                try {
+                    return new Version(folderName.Substring(2));
+                } catch (Exception) { }
+            }
+            return new Version(0, 0);
+        }
+
+        private static string TryFindRInProgramFiles(string folder, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion) {
+            string root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            string baseRFolder = Path.Combine(root + @"Program Files\", folder);
+            List<Version> versions = new List<Version>();
+            foreach (string dir in Directory.EnumerateDirectories(baseRFolder)) {
+                string subFolderName = dir.Substring(baseRFolder.Length + 1);
+                Version v = GetRVersionFromFolderName(subFolderName);
+                if (v.Major >= minMajorVersion && v.Minor >= minMinorVersion && v.Major <= maxMajorVersion && v.Minor <= maxMinorVersion) {
+                    versions.Add(v);
+                }
+            }
+
+            if (versions.Count > 0) {
+                versions.Sort();
+                Version highest = versions[versions.Count - 1];
+                return Path.Combine(baseRFolder, string.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build));
             }
 
             return string.Empty;

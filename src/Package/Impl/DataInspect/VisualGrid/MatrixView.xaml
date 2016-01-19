@@ -36,7 +36,7 @@
         <!-- Row 1 -->
         <local:VisualGrid x:Name="RowHeader" ScrollDirection="Vertical"
                             Grid.Row="1" Grid.Column="0" />
-        <local:VisualGrid x:Name="Data"
+        <local:VisualGrid x:Name="Data" ScrollDirection="Both"
                         Grid.Row="1" Grid.Column="1" />
         <ScrollBar x:Name="VerticalScrollBar" Orientation="Vertical"
                    Grid.Row="1" Grid.Column="2"

@@ -18,10 +18,10 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [Category.R.AutoFormat]
+    [Category.R.Formatting]
     public class AutoFormatTest {
         [Test]
-        public void AutoFormat_TypeOneLineTest() {
+        public void TypeOneLineTest() {
             ITextView textView = TestAutoFormat(0, "x<-1\n");
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void AutoFormat_FunctionDefinitionTest01() {
+        public void FunctionDefinitionTest01() {
             ITextView textView = TestAutoFormat(16, "\n", "x<-function(x,y,");
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void AutoFormat_SmartIndentTest05() {
+        public void SmartIndentTest05() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
             var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));

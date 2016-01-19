@@ -19,15 +19,16 @@ namespace Microsoft.R.Editor.Test.Outline
         public static OutlineRegionCollection BuildOutlineRegions(string content)
         {
             TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            EditorTree tree = new EditorTree(textBuffer);
-            tree.Build();
+            using (EditorTree tree = new EditorTree(textBuffer)) {
+                tree.Build();
 
-            EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
-            ROutlineRegionBuilder ob = new ROutlineRegionBuilder(editorDocument);
-            OutlineRegionCollection rc = new OutlineRegionCollection(0);
-            ob.BuildRegions(rc);
+                EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
+                ROutlineRegionBuilder ob = new ROutlineRegionBuilder(editorDocument);
+                OutlineRegionCollection rc = new OutlineRegionCollection(0);
+                ob.BuildRegions(rc);
 
-            return rc;
+                return rc;
+            }
         }
 
         // change to true in debugger if you want all baseline tree files regenerated

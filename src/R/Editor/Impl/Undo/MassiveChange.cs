@@ -27,18 +27,21 @@ namespace Microsoft.R.Editor.Undo
 
             _transaction.AddUndo(new StartMassiveChangeUndoUnit(_textBuffer));
 
-            IREditorDocument document = REditorDocument.FromTextBuffer(_textBuffer);
-            Debug.Assert(document != null);
-
-            document.BeginMassiveChange();
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(_textBuffer);
+            if(document != null) {
+                document.BeginMassiveChange();
+            }
         }
 
         public void Dispose()
         {
-            IREditorDocument document = REditorDocument.FromTextBuffer(_textBuffer);
-            Debug.Assert(document != null);
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(_textBuffer);
+            bool changed = true;
 
-            bool changed = document.EndMassiveChange();
+            if (document != null) {
+                changed = document.EndMassiveChange();
+            }
+
             if (!changed)
             {
                 _transaction.Cancel();

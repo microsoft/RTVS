@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Microsoft.Common.Core.Enums;
 using Microsoft.R.Support.Settings.Definitions;
 
@@ -14,7 +15,16 @@ namespace Microsoft.R.Support.Test.Utility {
         }
 
         public string RBasePath {
-            get { return @"C:\Program Files\R\R-3.2.2"; }
+            get {
+                // Test settings are fixed and are unrelated to what is stored in VS.
+                // Therefore we need to look up R when it is not in the registry.
+                foreach(string dir in Directory.EnumerateDirectories(@"C:\Program Files\R")) {
+                    if(dir.Contains("R-3.2")) {
+                        return dir;
+                    }
+                }
+                return string.Empty;
+            }
             set { }
         }
 
@@ -56,5 +66,10 @@ namespace Microsoft.R.Support.Test.Utility {
         public string[] WorkingDirectoryList { get; set; } = new string[0];
 
         public string RCommandLineArguments { get; set; }
+
+        public HelpBrowserType HelpBrowser {
+            get { return HelpBrowserType.Automatic; }
+            set { }
+        }
     }
 }

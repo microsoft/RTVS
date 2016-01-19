@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Test.Controls;
+using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
@@ -12,10 +13,10 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class VaraibleExplorerTest {
+    public class VariableExplorerTest {
         private readonly TestFilesFixture _files;
 
-        public VaraibleExplorerTest(TestFilesFixture files) {
+        public VariableExplorerTest(TestFilesFixture files) {
             _files = files;
         }
 
@@ -48,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     DoIdle(100);
                     Task.Run(async () => {
                         using (var eval = await hostScript.Session.BeginEvaluationAsync()) {
-                            await eval.EvaluateAsync("x <- c(1:10)");
+                            await eval.EvaluateAsync("x <- c(1:10)", REvaluationKind.UnprotectedEnv);
                         }
                     }).Wait();
 

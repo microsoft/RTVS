@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
@@ -51,8 +52,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public string WorkingDirectory {
             get { return _workingDirectory; }
             set {
-                _workingDirectory = value;
-                UpdateWorkingDirectoryList(_workingDirectory);
+                var newDirectory = value;
+                // Trim trailing slash
+                if (newDirectory.EndsWith("\\")) {
+                    newDirectory = newDirectory.Substring(0, newDirectory.Length - 1);
+                }
+
+                _workingDirectory = newDirectory;
+                UpdateWorkingDirectoryList(newDirectory);
+
                 if (EditorShell.HasShell) {
                     EditorShell.DispatchOnUIThread(() => {
                         IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
@@ -66,6 +74,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public string RCommandLineArguments { get; set; }
 
+        public HelpBrowserType HelpBrowser { get; set; }
+
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
             // settings (if any) when settings are loaded from storage
@@ -78,22 +88,25 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var sessions = sessionProvider.GetSessions();
 
-            foreach (var s in sessions) {
-                using (IRSessionEvaluation eval = await s.Value.BeginEvaluationAsync()) {
-                    string mirrorName = RToolsSettings.Current.CranMirror;
-                    string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
-                    await eval.SetVsCranSelection(mirrorUrl);
-                }
+            foreach (var s in sessions.Where(s => s.IsHostRunning)) {
+                try {
+                    using (IRSessionEvaluation eval = await s.BeginEvaluationAsync()) {
+                        string mirrorName = RToolsSettings.Current.CranMirror;
+                        string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
+                        await eval.SetVsCranSelection(mirrorUrl);
+                    }
+                } catch(OperationCanceledException) { }
             }
         }
 
         private void UpdateWorkingDirectoryList(string newDirectory) {
             List<string> list = new List<string>(WorkingDirectoryList);
-            if (!list.Contains(newDirectory)) {
+            if (!list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
                 list.Insert(0, newDirectory);
                 if (list.Count > MaxDirectoryEntries) {
                     list.RemoveAt(list.Count - 1);
                 }
+
                 WorkingDirectoryList = list.ToArray();
             }
         }

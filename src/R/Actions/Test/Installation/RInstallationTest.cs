@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Microsoft.R.Actions.Utility;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Actions.Test.Installation {
     [ExcludeFromCodeCoverage]
@@ -10,14 +11,23 @@ namespace Microsoft.R.Actions.Test.Installation {
         [Category.R.Install]
         public void RInstallation_Test01() {
             RInstallData data = RInstallation.GetInstallationData(null, 0, 0, 0, 0);
-            data.Status.Should().Be(RInstallStatus.UnsupportedVersion);
-            data.Path.Should().StartWithEquivalent(@"C:\Program Files\R");
+            Assert.True(data.Status == RInstallStatus.PathNotSpecified || data.Status == RInstallStatus.UnsupportedVersion);
         }
 
         [Test]
         [Category.R.Install]
         public void RInstallation_Test02() {
-            RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2);
+            RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2, useRegistry: true);
+            data.Status.Should().Be(RInstallStatus.OK);
+            data.Version.Major.Should().BeGreaterOrEqualTo(3);
+            data.Version.Minor.Should().BeGreaterOrEqualTo(2);
+            data.Path.Should().StartWithEquivalent(@"C:\Program Files\R");
+        }
+
+        [Test]
+        [Category.R.Install]
+        public void RInstallation_Test03() {
+            RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2, useRegistry: false);
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
             data.Version.Minor.Should().BeGreaterOrEqualTo(2);

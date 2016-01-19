@@ -15,8 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
         }
 
         protected unsafe override void Handle() {
-            var session = _rSessionProvider.Current;
-            if (session == null) {
+            if (!RSession.IsHostRunning) {
                 return;
             }
 
@@ -25,13 +24,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 return;
             }
 
-            // Source active file
-            ViewUtilities.SourceActiveFile();
-
             var pDebugEngines = stackalloc Guid[1];
             pDebugEngines[0] = DebuggerGuids.DebugEngine;
 
-            uint pid = RDebugPortSupplier.GetProcessId(session.Id);
+            uint pid = RDebugPortSupplier.GetProcessId(RSession.Id);
 
             var debugTarget = new VsDebugTargetInfo2 {
                 cbSize = (uint)Marshal.SizeOf<VsDebugTargetInfo2>(),

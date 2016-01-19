@@ -14,11 +14,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// library(...) statement. List of packages is  obtained from 
     /// ~\Program Files\R and from ~\Documents\R folders
     /// </summary>
-    public sealed class WorkspaceVaraibleCompletionProvider : IRCompletionListProvider {
+    public sealed class WorkspaceVariableCompletionProvider : IRCompletionListProvider {
         [Import]
-        IVariablesProvider _variablesProvider = null;
+        private IVariablesProvider VariablesProvider { get; set; }
 
-        public WorkspaceVaraibleCompletionProvider() {
+        public WorkspaceVariableCompletionProvider() {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
         }
 
@@ -35,8 +35,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 variableName = string.Empty;
             }
 
-            int memberCount = _variablesProvider.GetMemberCount(variableName);
-            IReadOnlyCollection<INamedItemInfo> members = _variablesProvider.GetMembers(variableName, 200);
+            VariablesProvider.Initialize();
+            int memberCount = VariablesProvider.GetMemberCount(variableName);
+            IReadOnlyCollection<INamedItemInfo> members = VariablesProvider.GetMembers(variableName, 200);
 
             // Get list of functions in the package
             foreach (INamedItemInfo v in members) {

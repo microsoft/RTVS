@@ -6,7 +6,6 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
@@ -32,10 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             var exportProvider = VsAppShell.Current.ExportProvider;
             _completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
             _editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
-            _historyProvider = new Lazy<IRHistory>(() => {
-                var historyWindow = ToolWindowUtilities.FindWindowPane<HistoryWindowPane>(0);
-                return exportProvider.GetExportedValue<IRHistoryProvider>().GetAssociatedRHistory(historyWindow.TextView);
-            });
+            _historyProvider = new Lazy<IRHistory>(() => exportProvider.GetExportedValue<IRInteractiveProvider>().GetOrCreate().History);
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -152,8 +148,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private SnapshotPoint? MapUp(InteractiveWindow.IInteractiveWindow window, SnapshotPoint point) {
             return window.TextView.BufferGraph.MapUpToBuffer(
                 point,
-                Text.PointTrackingMode.Positive,
-                Text.PositionAffinity.Successor,
+                PointTrackingMode.Positive,
+                PositionAffinity.Successor,
                 TextView.TextBuffer
             );
         }

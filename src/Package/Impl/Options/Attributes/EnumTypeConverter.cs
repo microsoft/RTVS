@@ -9,39 +9,28 @@ namespace Microsoft.VisualStudio.R.Package.Options.Attributes {
         private readonly List<T> _enumValues;
         private readonly List<string> _displayNames;
 
-        protected EnumTypeConverter(params string[] localizableDisplayNames)
-            : this(0, localizableDisplayNames) {
+        protected EnumTypeConverter(params string[] localizedDisplayNames)
+            : this(0, localizedDisplayNames) {
         }
 
-        protected EnumTypeConverter(int startIndex, string[] localizableDisplayNames) {
+        protected EnumTypeConverter(int startIndex, string[] localizedDisplayNames) {
             Array values = Enum.GetValues(typeof(T));
-            int nameCount = localizableDisplayNames.Length;
+            int nameCount = localizedDisplayNames.Length;
 
             if (startIndex < 0 || startIndex >= values.Length) {
                 throw new ArgumentException("Start index is out of range", nameof(startIndex));
             }
 
             if (startIndex + nameCount > values.Length) {
-                throw new ArgumentException("Wrong number of localized display names", nameof(localizableDisplayNames));
+                throw new ArgumentException("Wrong number of localized display names", nameof(localizedDisplayNames));
             }
 
             _enumValues = new List<T>(nameCount);
             _displayNames = new List<string>(nameCount);
 
             for (int i = 0; i < nameCount; i++) {
-                // There might be holes in the list of names, that's OK just skip them
-                if (string.IsNullOrEmpty(localizableDisplayNames[i])) {
-
-                    continue;
-                }
-                ResourceManager resourceManager = Resources.ResourceManager;
-                string name = resourceManager.GetString(localizableDisplayNames[i]);
-                if (name == null) {
-                    throw new ArgumentException("Invalid localized display name", nameof(localizableDisplayNames));
-                }
-
                 _enumValues.Add((T)values.GetValue(i + startIndex));
-                _displayNames.Add(name);
+                _displayNames.Add(localizedDisplayNames[i + startIndex]);
             }
         }
 

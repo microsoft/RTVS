@@ -159,81 +159,11 @@ namespace Microsoft.Languages.Editor.Composition {
             return ImportMany(EditorShell.Current.CompositionService, contentType);
         }
 
-        /// <summary>
-        /// Locates all components exported with a given content type exactly
-        /// </summary>
-        public static IEnumerable<Lazy<TComponent, TMetadata>> ImportManyExact(IContentType contentType) {
-            return ImportManyExact(EditorShell.Current.CompositionService, contentType);
-        }
-
-        /// <summary>
-        /// Locates first available component that matches content type name or any of its base types
-        /// </summary>
-        public static Lazy<TComponent, TMetadata> ImportOne(string contentTypeName) {
-            var contentTypeRegistry = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
-            var contentType = contentTypeRegistry.GetContentType(contentTypeName);
-
-            return ImportOne(contentType);
-        }
-
-        /// <summary>
-        /// Locates first available component that matches content type name or any of its base types
-        /// </summary>
-        public static Lazy<TComponent, TMetadata> ImportOne(IContentType contentType) {
-            var providers = ImportMany(contentType);
-
-#if DEBUG
-            int count = 0;
-            foreach (var provider in providers)
-                count++;
-
-            Debug.Assert(count < 2, String.Format(CultureInfo.CurrentCulture,
-                "ComponentLocatorForContentType.ImportOne: More than one export of type {0} found for content type {1}",
-                typeof(TComponent),
-                contentType.TypeName));
-#endif
-            foreach (var provider in providers) {
-                return provider;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Locates first available component that matches content type name exactly
-        /// </summary>
-        public static Lazy<TComponent, TMetadata> ImportOneExact(IContentType contentType) {
-            var providers = ImportManyExact(contentType);
-
-#if DEBUG
-            int count = 0;
-            foreach (var provider in providers)
-                count++;
-
-            Debug.Assert(count < 2, String.Format(CultureInfo.CurrentCulture,
-                "ComponentLocatorForContentType.ImportOneExact: More than one export of type {0} found for content type {1}",
-                typeof(TComponent),
-                contentType.TypeName));
-#endif
-            foreach (var provider in providers) {
-                return provider;
-            }
-
-            return null;
-        }
-
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(ICompositionService compositionService, IContentType contentType) {
             IEnumerable<Lazy<TComponent, TMetadata>> components =
                 ComponentLocatorWithMetadata<TComponent, TMetadata>.ImportMany(compositionService);
 
             return FilterByContentType(contentType, components);
-        }
-
-        public static IEnumerable<Lazy<TComponent, TMetadata>> ImportManyExact(ICompositionService compositionService, IContentType contentType) {
-            IEnumerable<Lazy<TComponent, TMetadata>> components =
-                ComponentLocatorWithMetadata<TComponent, TMetadata>.ImportMany(compositionService);
-
-            return FilterByContentTypeExact(contentType, components);
         }
 
         //// The resultant enumerable has the more specific content type matches before less specific ones

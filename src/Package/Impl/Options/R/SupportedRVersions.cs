@@ -8,15 +8,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
     internal static class SupportedRVersions {
         // TODO: this probably needs configuration file
         // or another dynamic source of supported versions.
-        private const int _minMajorVersion = 3;
-        private const int _minMinorVersion = 2;
-        private const int _maxMajorVersion = 3;
-        private const int _maxMinorVersion = 2;
 
         public static bool VerifyRIsInstalled(string path, bool showErrors) {
 
             RInstallData data = RInstallation.GetInstallationData(path,
-                        _minMajorVersion, _minMinorVersion, _maxMajorVersion, _maxMinorVersion);
+                        SupportedRVersionList.MinMajorVersion, SupportedRVersionList.MinMinorVersion,
+                        SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion);
 
             if (data.Status != RInstallStatus.OK && showErrors) {
                 string message = FormatMessage(data);
@@ -38,8 +35,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 case RInstallStatus.UnsupportedVersion:
                     return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion, 
                         data.Version.Major, data.Version.Minor, data.Version.Build,
-                        _minMajorVersion, _minMinorVersion, "*",
-                        _maxMajorVersion, _maxMinorVersion, "*");
+                        SupportedRVersionList.MinMajorVersion, SupportedRVersionList.MinMinorVersion, "*",
+                        SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion, "*");
 
                 case RInstallStatus.ExceptionAccessingPath:
                     return string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, data.Path, data.Exception.Message);

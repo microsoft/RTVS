@@ -4,8 +4,11 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Editor.Data;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Utilities;
 
@@ -15,15 +18,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// </summary>
     [Export(typeof(IVariablesProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal sealed class WorkspaceVariableProvider : IVariablesProvider {
+    internal sealed class WorkspaceVariableProvider : RSessionChangeWatcher, IVariablesProvider {
         /// <summary>
         /// Collection of top-level variables
         /// </summary>
-        private Dictionary<string, EvaluationWrapper> _topLevelVariables = new Dictionary<string, EvaluationWrapper>();
-
-        public WorkspaceVariableProvider() {
-            VariableProvider.Current.VariableChanged += OnVariableChanged;
-        }
+        private Dictionary<string, IRSessionDataObject> _topLevelVariables = new Dictionary<string, IRSessionDataObject>();
 
         #region IVariablesProvider
         /// <summary>
@@ -56,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 string[] parts = variableName.Split(new char[] { '$', '@' });
 
                 if (parts.Length == 0 || parts[0].Length == 0) {
-                    if(variableName.Length > 0) {
+                    if (variableName.Length > 0) {
                         // Something odd like $$ or $@ so we got empty parts
                         // and yet variable name is not empty. Don't show anything.
                         return new INamedItemInfo[0];
@@ -72,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 // in abc$def$ or in abc$def$g we need to retrieve members of 'def' 
                 // so the last part doesn't matter.
                 int partCount = parts.Length - 1;
-                EvaluationWrapper eval;
+                IRSessionDataObject eval;
 
                 // Go by parts and drill into members
                 if (_topLevelVariables.TryGetValue(parts[0], out eval)) {
@@ -108,26 +107,36 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         #endregion
 
-        private void OnVariableChanged(object sender, VariableChangedArgs e) {
-            UpdateList(e.NewVariable).DoNotWait();
+        protected override void SessionMutated() {
+            UpdateList().DoNotWait();
         }
 
-        private async Task UpdateList(EvaluationWrapper e) {
-            _topLevelVariables.Clear();
-            if (e == null) {
-                return;
-            }
+        private async Task UpdateList() {
+            var debugSessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
 
-            var children = await e.GetChildrenAsync();
-            if (children != null) {
-                foreach (var x in children) {
-                    _topLevelVariables[x.Name] = x; // TODO: BUGBUG: this doesn't address removed variables
+            var debugSession = await debugSessionProvider.GetDebugSessionAsync(Session);
+            if (debugSession != null) {
+                var stackFrames = await debugSession.GetStackFramesAsync();
+
+                var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
+                if (globalStackFrame != null) {
+                    DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("environment()", "Global Environment");
+                    var e = new RSessionDataObject(-1, evaluation, false);  // root level doesn't truncate children and return every variables
+
+                    _topLevelVariables.Clear();
+
+                    var children = await e.GetChildrenAsync();
+                    if (children != null) {
+                        foreach (var x in children) {
+                            _topLevelVariables[x.Name] = x; // TODO: BUGBUG: this doesn't address removed variables
+                        }
+                    }
                 }
             }
         }
 
         class VariableInfo : INamedItemInfo {
-            public VariableInfo(EvaluationWrapper e) {
+            public VariableInfo(IRSessionDataObject e) {
                 this.Name = e.Name;
                 if (e.TypeName == "closure") {
                     ItemType = NamedItemType.Function;

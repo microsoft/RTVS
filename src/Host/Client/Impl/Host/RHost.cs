@@ -239,6 +239,9 @@ namespace Microsoft.R.Host.Client {
             if (kind.HasFlag(REvaluationKind.EmptyEnv)) {
                 nameBuilder.Append('E');
             }
+            if (kind.HasFlag(REvaluationKind.UnprotectedEnv)) {
+                nameBuilder.Append("U");
+            }
             var name = nameBuilder.ToString();
 
             _canEval = false;
@@ -487,7 +490,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task CreateAndRun(string rHome, string rCommandLineArguments, CancellationToken ct = default(CancellationToken)) {
+        public async Task CreateAndRun(string rHome, string rCommandLineArguments, int timeout = 3000, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath()), RHostExe);
@@ -564,7 +567,7 @@ namespace Microsoft.R.Host.Client {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
 
                     // Timeout increased to allow more time in test and code coverage runs.
-                    await Task.WhenAny(_transportTcs.Task, Task.Delay(3000)).Unwrap();
+                    await Task.WhenAny(_transportTcs.Task, Task.Delay(timeout)).Unwrap();
                     if (!_transportTcs.Task.IsCompleted) {
                         _log.FailedToConnectToRHost();
                         throw new RHostTimeoutException("Timed out waiting for R host process to connect");

@@ -60,6 +60,7 @@
     <Compile Include="Utility\RInstallation.cs" />
     <Compile Include="Utility\RInstallData.cs" />
     <Compile Include="Utility\RInstallStatus.cs" />
+    <Compile Include="Utility\SupportedRVersionList.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">

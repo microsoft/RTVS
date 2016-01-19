@@ -6,12 +6,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
     internal abstract class DebuggerCommand : PackageCommand {
-        protected readonly IRSessionProvider _rSessionProvider;
-        private DebuggerCommandVisibility _visibility;
+        protected readonly IRSession RSession;
+        private readonly DebuggerCommandVisibility _visibility;
 
-        public DebuggerCommand(IRSessionProvider rSessionProvider, int cmdId, DebuggerCommandVisibility visibility)
+        protected DebuggerCommand(IRSessionProvider rSessionProvider, int cmdId, DebuggerCommandVisibility visibility)
             : base(RGuidList.RCmdSetGuid, cmdId) {
-            _rSessionProvider = rSessionProvider;
+            RSession = rSessionProvider.GetInteractiveWindowRSession();
             _visibility = visibility;
         }
 
@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
             Enabled = false;
             Visible = false;
 
-            if (_rSessionProvider.Current == null) {
+            if (!RSession.IsHostRunning) {
                 return;
             }
 

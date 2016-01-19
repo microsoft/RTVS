@@ -12,60 +12,52 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudioTools;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command, IDisposable {
-        private const int MaxDirectoryEntries = 8;
-        private IRSessionProvider _sessionProvider;
         private string _userDirectory;
+        private IRSession _session;
 
-        public Task InitializationTask { get; private set; }
+        public Task InitializationTask { get; }
 
         public WorkingDirectoryCommand() :
-            base(new CommandId[] {
+            base(new [] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGetDirectoryList),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory)
             }, false) {
 
-            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _sessionProvider.CurrentChanged += OnSessionProviderChanged;
-            ConnectToSessionProvider();
-        }
+            _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
+            _session.Connected += OnSessionConnected;
+            _session.DirectoryChanged += OnCurrentDirectoryChanged;
 
-        private void ConnectToSessionProvider() {
-            if (_sessionProvider.Current != null) {
-                _sessionProvider.Current.Connected += OnSessionConnected;
-                _sessionProvider.Current.DirectoryChanged += OnCurrentDirectoryChanged;
-                if (InitializationTask == null) {
-                    InitializationTask = GetRUserDirectoryAsync();
-                }
+            if (InitializationTask == null) {
+                InitializationTask = GetRUserDirectoryAsync();
             }
         }
 
         public void Dispose() {
-            if (_sessionProvider != null) {
-                _sessionProvider.CurrentChanged -= OnSessionProviderChanged;
-                if (_sessionProvider.Current != null) {
-                    _sessionProvider.Current.Connected -= OnSessionConnected;
-                    _sessionProvider.Current.DirectoryChanged -= OnCurrentDirectoryChanged;
-                }
-                _sessionProvider = null;
+            if (_session != null) {
+                _session.Connected -= OnSessionConnected;
+                _session.DirectoryChanged -= OnCurrentDirectoryChanged;
             }
+            _session = null;
         }
 
-        private void OnSessionProviderChanged(object sender, EventArgs e) {
-            ConnectToSessionProvider();
+        private void OnCurrentDirectoryChanged(object sender, EventArgs e) {
+            FetchRWorkingDirectoryAsync().DoNotWait();
         }
 
-        private async void OnCurrentDirectoryChanged(object sender, EventArgs e) {
-            RToolsSettings.Current.WorkingDirectory = await GetRWorkingDirectoryAsync();
+        private void OnSessionConnected(object sender, EventArgs e) {
+            FetchRWorkingDirectoryAsync().DoNotWait();
         }
 
-        private async void OnSessionConnected(object sender, EventArgs e) {
-            RToolsSettings.Current.WorkingDirectory = await GetRWorkingDirectoryAsync();
+        private async Task FetchRWorkingDirectoryAsync() {
+            string directory = await GetRWorkingDirectoryAsync();
+            if (!string.IsNullOrEmpty(directory)) {
+                RToolsSettings.Current.WorkingDirectory = directory;
+            }
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -77,16 +69,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             switch (id) {
-                case (int)RPackageCommandId.icmdSelectWorkingDirectory:
+                case RPackageCommandId.icmdSelectWorkingDirectory:
                     SelectDirectory();
                     break;
 
-                case (int)RPackageCommandId.icmdGetDirectoryList:
+                case RPackageCommandId.icmdGetDirectoryList:
                     // Return complete list
                     outputArg = GetFriendlyDirectoryNames();
                     break;
 
-                case (int)RPackageCommandId.icmdSetWorkingDirectory:
+                case RPackageCommandId.icmdSetWorkingDirectory:
                     if (inputArg == null) {
                         // Return currently selected item
                         if (!string.IsNullOrEmpty(RToolsSettings.Current.WorkingDirectory)) {
@@ -106,10 +98,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             string newDirectory = GetFullPathName(friendlyName);
             if (newDirectory != null && currentDirectory != newDirectory) {
                 RToolsSettings.Current.WorkingDirectory = newDirectory;
-                IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 return Task.Run(async () => {
                     await TaskUtilities.SwitchToBackgroundThread();
-                    sessionProvider.Current.ScheduleEvaluation(async (e) => {
+                    _session.ScheduleEvaluation(async e => {
                         await e.SetWorkingDirectory(newDirectory);
                     });
                 });
@@ -167,7 +158,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         internal async Task<string> GetRWorkingDirectoryAsync() {
             try {
-                using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+                using (IRSessionEvaluation eval = await _session.BeginEvaluationAsync(false)) {
                     REvaluationResult result = await eval.EvaluateAsync("getwd()");
                     return ToWindowsPath(result.StringResult);
                 }
@@ -177,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         internal Task GetRUserDirectoryAsync() {
             return Task.Run(async () => {
-                using (IRSessionEvaluation eval = await _sessionProvider.Current.BeginEvaluationAsync(isMutating: false)) {
+                using (IRSessionEvaluation eval = await _session.BeginEvaluationAsync(false)) {
                     REvaluationResult result = await eval.EvaluateAsync("Sys.getenv('R_USER')");
                     _userDirectory = ToWindowsPath(result.StringResult);
                 }

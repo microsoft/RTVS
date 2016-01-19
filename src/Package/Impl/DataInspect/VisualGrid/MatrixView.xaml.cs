@@ -24,17 +24,26 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public MatrixView() {
             InitializeComponent();
 
-            _scroller = new VisualGridScroller();
-            _scroller.ColumnHeader = ColumnHeader;
-            _scroller.RowHeader = RowHeader;
-            _scroller.DataGrid = Data;
+            Unloaded += MatrixView_Unloaded;
+        }
 
-            Points = new GridPoints(0, 0);
-            Points.PointChanged += Points_PointChanged;
+        private void MatrixView_Unloaded(object sender, RoutedEventArgs e) {
+            _scroller?.StopScroller();
         }
 
         public void Initialize(IGridProvider<string> dataProvider) {
+            if (Points != null) {
+                Points.PointChanged -= Points_PointChanged;
+            }
+
+            Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount, Data.RenderSize);
+            Points.PointChanged += Points_PointChanged;
+
             DataProvider = dataProvider;
+
+            _scroller?.StopScroller();
+            _scroller = new VisualGridScroller(this);
+            Refresh();  // initial refresh
 
             // reset scroll bar position to zero
             HorizontalScrollBar.Value = HorizontalScrollBar.Minimum;
@@ -42,58 +51,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void Refresh() {
-            _scroller.EnqueueCommand(ScrollType.Refresh, 0);
+            _scroller?.EnqueueCommand(ScrollType.Refresh, 0);
         }
 
-        private GridPoints _gridPoints;
-        private GridPoints Points {
-            get {
-                return _gridPoints;
-            }
+        internal GridPoints Points { get; set; }
 
-            set {
-                _gridPoints = value;
-                RowHeader.Points = _gridPoints;
-                ColumnHeader.Points = _gridPoints;
-                Data.Points = _gridPoints;
-                _scroller.Points = _gridPoints;
-            }
-        }
-
-        private IGridProvider<string> _dataProvider;
-        private IGridProvider<string> DataProvider {
-            get {
-                return _dataProvider;
-            }
-            set {
-                if (_dataProvider == value) {
-                    return;
-                }
-
-                _dataProvider = value;
-
-                RowHeader.DataProvider = _dataProvider;
-                ColumnHeader.DataProvider = _dataProvider;
-                Data.DataProvider = _dataProvider;
-                _scroller.DataProvider = _dataProvider;
-
-                Points.Reset(_dataProvider.RowCount, _dataProvider.ColumnCount);
-
-                Refresh();
-            }
-        }
-
-        public int RowCount {
-            get {
-                return _dataProvider.RowCount;
-            }
-        }
-
-        public int ColumnCount {
-            get {
-                return _dataProvider.ColumnCount;
-            }
-        }
+        internal IGridProvider<string> DataProvider { get; set; }
 
         #region Foreground
 
@@ -244,7 +207,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e) {
-            if (e.Delta > 0 || e.Delta < 0) {
+            if (_scroller != null && (e.Delta > 0 || e.Delta < 0)) {
                 _scroller.EnqueueCommand(ScrollType.MouseWheel, e.Delta);
                 e.Handled = true;
             }
@@ -271,6 +234,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void VerticalScrollBar_Scroll(object sender, ScrollEventArgs e) {
+            if (_scroller == null) {
+                return;
+            }
+
             switch (e.ScrollEventType) {
                 case ScrollEventType.EndScroll:
                     _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
@@ -305,6 +272,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void HorizontalScrollBar_Scroll(object sender, ScrollEventArgs e) {
+            if (_scroller == null) {
+                return;
+            }
+
             switch (e.ScrollEventType) {
                 case ScrollEventType.EndScroll:
                     _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
@@ -338,7 +309,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private void Points_PointChanged(object sender, PointChangedEvent e) {
+        private void Points_PointChanged(object sender, PointChangedEventArgs e) {
             if (e.Direction.HasFlag(ScrollDirection.Horizontal)) {
                 double width = Data.RenderSize.Width;
                 HorizontalScrollBar.ViewportSize = width;

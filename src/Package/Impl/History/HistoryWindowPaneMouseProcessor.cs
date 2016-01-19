@@ -21,23 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private readonly int _minimumPositionDelta = 30;
 
         public HistoryWindowPaneMouseProcessor(IWpfTextView wpfTextView, IRHistoryProvider historyProvider) {
-
             _textView = wpfTextView;
             _history = historyProvider.GetAssociatedRHistory(_textView);
-
-            _textView.Selection.SelectionChanged += SelectionChanged;
-            _textView.Closed += TextViewClosed;
-        }
-
-        private void TextViewClosed(object sender, EventArgs e) {
-            _textView.Selection.SelectionChanged -= SelectionChanged;
-            _textView.Closed -= TextViewClosed;
-        }
-
-        private void SelectionChanged(object sender, EventArgs args) {
-            if (_textView.Selection.Start != _textView.Selection.End) {
-                _history.ClearHistoryEntrySelection();
-            }
         }
 
         #region IMouseProcessorProvider Member Implementations
