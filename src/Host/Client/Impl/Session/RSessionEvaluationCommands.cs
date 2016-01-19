@@ -78,17 +78,17 @@ options(device='.rtvs.vsgd')
         }
 
         public static Task<REvaluationResult> ExportToBitmap(this IRSessionEvaluation evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels) {
-            string script = string.Format(".rtvs.vsgdexportimage('{0}', {1}, {2}, {3})", outputFilePath.Replace("\\", "/"), deviceName, widthInPixels, heightInPixels);
+            string script = string.Format(".rtvs.vsgdexportimage(\"{0}\", {1}, {2}, {3})", outputFilePath.Replace("\\", "/"), deviceName, widthInPixels, heightInPixels);
             return evaluation.EvaluateAsync(script);
         }
 
         public static Task<REvaluationResult> ExportToMetafile(this IRSessionEvaluation evaluation, string outputFilePath, double widthInInches, double heightInInches) {
-            string script = string.Format(".rtvs.vsgdexportimage('{0}', win.metafile, {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
+            string script = string.Format(".rtvs.vsgdexportimage(\"{0}\", win.metafile, {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
             return evaluation.EvaluateAsync(script);
         }
 
         public static Task<REvaluationResult> ExportToPdf(this IRSessionEvaluation evaluation, string outputFilePath, double widthInInches, double heightInInches, string paper) {
-            string script = string.Format(".rtvs.vsgdexportpdf('{0}', {1}, {2}, '{3}')", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches, paper);
+            string script = string.Format(".rtvs.vsgdexportpdf(\"{0}\", {1}, {2}, '{3}')", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches, paper);
             return evaluation.EvaluateAsync(script);
         }
 
