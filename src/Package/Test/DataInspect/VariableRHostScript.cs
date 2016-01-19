@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 _mre = new ManualResetEventSlim();
                 _variableProvider.VariableChanged += VariableProvider_VariableChanged;
                 using (var evaluation = await base.Session.BeginEvaluationAsync()) {
-                    await evaluation.EvaluateAsync(rScript);
+                    await evaluation.EvaluateAsync(rScript, REvaluationKind.UnprotectedEnv);
                 }
 
                 if (!_mre.Wait(TimeSpan.FromMilliseconds(1000))) {
