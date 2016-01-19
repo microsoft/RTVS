@@ -25,30 +25,30 @@ namespace Microsoft.R.Host.Client.Session {
 
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
             var script = @"
-.rtvs.vsgdresize <- function(width, height) {
+.GlobalEnv$.rtvs.vsgdresize <- function(width, height) {
    invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_resize', width, height))
 }
-.rtvs.vsgd <- function() {
+.GlobalEnv$.rtvs.vsgd <- function() {
    invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_new'))
 }
-.rtvs.vsgdexportimage <- function(filename, device) {
+.GlobalEnv$.rtvs.vsgdexportimage <- function(filename, device) {
     dev.copy(device=device,filename=filename)
     dev.off()
 }
-.rtvs.vsgdexportpdf <- function(filename) {
+.GlobalEnv$.rtvs.vsgdexportpdf <- function(filename) {
     dev.copy(device=pdf,file=filename)
     dev.off()
 }
-.rtvs.vsgdnextplot <- function() {
+.GlobalEnv$.rtvs.vsgdnextplot <- function() {
    invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_next_plot'))
 }
-.rtvs.vsgdpreviousplot <- function() {
+.GlobalEnv$.rtvs.vsgdpreviousplot <- function() {
    invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_previous_plot'))
 }
-.rtvs.vsgdhistoryinfo <- function() {
+.GlobalEnv$.rtvs.vsgdhistoryinfo <- function() {
    .External('Microsoft.R.Host::External.ide_graphicsdevice_history_info')
 }
-xaml <- function(filename, width, height) {
+.GlobalEnv$xaml <- function(filename, width, height) {
    invisible(.External('Microsoft.R.Host::External.xaml_graphicsdevice_new', filename, width, height))
 }
 options(device='.rtvs.vsgd')
@@ -111,13 +111,13 @@ options(device='.rtvs.vsgd')
 
         public static Task<REvaluationResult> SetRdHelpExtraction(this IRSessionEvaluation evaluation) {
             var script =
-@" .rtvs.signature.help2 <- function(f, p) {
+@" .GlobalEnv$.rtvs.signature.help2 <- function(f, p) {
         x <- help(paste(f), paste(p))
         y <- utils:::.getHelpFile(x)
         paste0(y, collapse = '')
     }
 
-    .rtvs.signature.help1 <- function(f) {
+    .GlobalEnv$.rtvs.signature.help1 <- function(f) {
         x <- help(paste(f))
         y <- utils:::.getHelpFile(x)
         paste0(y, collapse = '')
