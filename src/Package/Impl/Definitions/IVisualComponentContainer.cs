@@ -7,7 +7,7 @@ namespace Microsoft.VisualStudio.R.Package.Definitions {
     /// Represents UI element that holds visual component
     /// (typically a tool window)
     /// </summary>
-    internal interface IVisualComponentContainer<T> where T : IVisualComponent {
+    public interface IVisualComponentContainer<T> where T : IVisualComponent {
         T Component { get; }
     }
 }
