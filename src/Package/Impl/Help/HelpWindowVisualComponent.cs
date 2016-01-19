@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
-    internal sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
+    public sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
         private static bool _showDefaultPage;
 
         /// <summary>

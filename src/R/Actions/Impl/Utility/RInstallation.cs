@@ -191,12 +191,19 @@ namespace Microsoft.R.Actions.Utility {
             string root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
             string baseRFolder = Path.Combine(root + @"Program Files\", folder);
             List<Version> versions = new List<Version>();
-            foreach (string dir in Directory.EnumerateDirectories(baseRFolder)) {
-                string subFolderName = dir.Substring(baseRFolder.Length + 1);
-                Version v = GetRVersionFromFolderName(subFolderName);
-                if (v.Major >= minMajorVersion && v.Minor >= minMinorVersion && v.Major <= maxMajorVersion && v.Minor <= maxMinorVersion) {
-                    versions.Add(v);
+            try {
+                foreach (string dir in Directory.EnumerateDirectories(baseRFolder)) {
+                    string subFolderName = dir.Substring(baseRFolder.Length + 1);
+                    Version v = GetRVersionFromFolderName(subFolderName);
+                    if (v.Major >= minMajorVersion &&
+                        v.Minor >= minMinorVersion &&
+                        v.Major <= maxMajorVersion &&
+                        v.Minor <= maxMinorVersion) {
+                        versions.Add(v);
+                    }
                 }
+            } catch (IOException) {
+                // Don't do anything if there is no RRO installed
             }
 
             if (versions.Count > 0) {
