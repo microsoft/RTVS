@@ -165,6 +165,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public double ColumnHeight { get; set; }
+
+        public double RowWidth { get; set; }
+
         public double GetHeight(Range range) {
             return Size(range, _yPositions);
         }
@@ -175,12 +179,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public int xIndex(double position) {
             EnsureXPositions();
-            return Index(position, _xPositions);
+            int index = Index(position, _xPositions);
+
+            // _xPositions has one more item than columns
+            return Math.Min(index, _columnCount - 1);
         }
 
         public int yIndex(double position) {
             EnsureYPositions();
-            return Index(position, _yPositions);
+            int index = Index(position, _yPositions);
+
+            // _xPositions has one more item than rows
+            return Math.Min(index, _rowCount - 1);
         }
 
         private int Index(double position, double[] positions) {
@@ -196,6 +206,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             for (int i = 0; i < _rowCount; i++) {
                 _height[i] = MinItemHeight;
             }
+
+            ColumnHeight = MinItemHeight;
+            RowWidth = MinItemWidth;
 
             ComputePositions();
         }

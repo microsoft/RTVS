@@ -19,7 +19,7 @@ namespace Microsoft.R.Host.Client {
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true);
         Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true);
         Task CancelAllAsync();
-        Task StartHostAsync(RHostStartupInfo startupInfo);
+        Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000);
         Task StopHostAsync();
 
         void FlushLog();

@@ -125,10 +125,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
         /// <returns></returns>
         private IEnumerable<IPackageInfo> GetAllFilePackages(RCompletionContext context) {
             List<IPackageInfo> packages = new List<IPackageInfo>();
+            LoadedPackagesProvider?.Initialize();
 
-            IEnumerable<string> loadedPackages = LoadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
+            IEnumerable <string> loadedPackages = LoadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
-            IEnumerable<string> allPackageNames = Enumerable.Union(_preloadPackages, Enumerable.Union(filePackageNames, loadedPackages)).Distinct();
+            IEnumerable<string> allPackageNames = Enumerable.Union(_preloadPackages, Enumerable.Union(filePackageNames, loadedPackages));
 
             foreach (string packageName in allPackageNames) {
                 IPackageInfo p = PackageIndex.GetPackageByName(packageName);

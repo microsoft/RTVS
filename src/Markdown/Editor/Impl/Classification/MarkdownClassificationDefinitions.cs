@@ -21,6 +21,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Heading")]
         [Name("Markdown Heading")]
+        [ExcludeFromCodeCoverage]
         internal sealed class MdHeadingClassificationFormat : ClassificationFormatDefinition {
             public MdHeadingClassificationFormat() {
                 ForegroundColor = Colors.Blue;
@@ -39,6 +40,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Blockquote")]
         [Name("Markdown Blockquote")]
+        [ExcludeFromCodeCoverage]
         internal sealed class MdBlockquoteClassificationFormat : ClassificationFormatDefinition {
             public MdBlockquoteClassificationFormat() {
                 ForegroundColor = Colors.DarkGreen;
@@ -57,6 +59,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Bold Text")]
         [Name("Markdown Bold Text")]
+        [ExcludeFromCodeCoverage]
         internal sealed class MdBoldClassificationFormat : ClassificationFormatDefinition {
             public MdBoldClassificationFormat() {
                 ForegroundColor = Colors.Magenta;
@@ -76,6 +79,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Italic Text")]
         [Name("Markdown Italic Text")]
+        [ExcludeFromCodeCoverage]
         internal sealed class MdItalicClassificationFormat : ClassificationFormatDefinition {
             public MdItalicClassificationFormat() {
                 ForegroundColor = Colors.Magenta;
@@ -92,6 +96,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Bold Italic Text")]
         [Name("Markdown Bold Italic Text")]
+        [ExcludeFromCodeCoverage]
         internal sealed class MdBoldItalicClassificationFormat : ClassificationFormatDefinition {
             public MdBoldItalicClassificationFormat() {
                 ForegroundColor = Colors.Magenta;
@@ -114,6 +119,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown List Item")]
         [Name("Markdown List Item")]
+        [ExcludeFromCodeCoverage]
         internal sealed class MdListItemClassificationFormat : ClassificationFormatDefinition {
             public MdListItemClassificationFormat() {
                 ForegroundColor = Colors.YellowGreen;
@@ -132,6 +138,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Monospace")]
         [Name("Markdown Monospace")]
+        [ExcludeFromCodeCoverage]
         internal sealed class MdMonospaceClassificationFormat : ClassificationFormatDefinition {
             public MdMonospaceClassificationFormat() {
                 ForegroundColor = Color.FromArgb(0xFF, 0x60, 0x60, 0x60);
@@ -150,6 +157,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Code")]
         [Name("Markdown Code")]
+        [ExcludeFromCodeCoverage]
         internal sealed class MdCodeClassificationFormat : ClassificationFormatDefinition {
             public MdCodeClassificationFormat() {
                 ForegroundColor = Colors.DarkGray;
@@ -168,6 +176,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = "Markdown Alt Text")]
         [Name("Markdown Alt Text")]
+        [ExcludeFromCodeCoverage]
         internal sealed class MdAltTextClassificationFormat : ClassificationFormatDefinition {
             public MdAltTextClassificationFormat() {
                 ForegroundColor = Colors.DarkMagenta;

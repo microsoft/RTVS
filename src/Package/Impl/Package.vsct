@@ -1334,7 +1334,9 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
     <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="CMDUIGUID_R_EDITOR" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidVSStd97" key1="V" mod1="ALT SHIFT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="guidVSStd97" key1="H" mod1="ALT SHIFT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="guidVSStd97" key1="P" mod1="ALT SHIFT"/>
   </KeyBindings>
 
   <UsedCommands>

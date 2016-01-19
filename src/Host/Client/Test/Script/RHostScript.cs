@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Support.Settings;
+using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
     public class RHostScript : IDisposable {
-        private static readonly Guid InteractiveWindowRSessionGuid = new Guid("77E2BCD9-BEED-47EF-B51E-2B892260ECA7");
         private bool disposed = false;
 
         public IRSessionProvider SessionProvider { get; private set; }
         public IRSession Session { get; private set; }
 
-        public RHostScript(IRSessionProvider sessionProvider) {
+        public RHostScript(IRSessionProvider sessionProvider, IRHostClientApp clientApp = null) {
             SessionProvider = sessionProvider;
-            Session = SessionProvider.GetOrCreate(InteractiveWindowRSessionGuid, new RHostClientTestApp());
+            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, clientApp ?? new RHostClientTestApp());
             Session.StartHostAsync(new RHostStartupInfo {
                 Name = "RHostScript",
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror
-            }).Wait();
+            }, 10000).Wait();
         }
 
         public void Dispose() {

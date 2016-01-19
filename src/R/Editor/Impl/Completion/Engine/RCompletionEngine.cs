@@ -87,7 +87,6 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 if (_completionProviders == null) {
                     _completionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany();
                 }
-
                 return _completionProviders;
             }
         }

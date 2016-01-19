@@ -45,12 +45,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _session = null;
         }
 
-        private async void OnCurrentDirectoryChanged(object sender, EventArgs e) {
-            await FetchRWorkingDirectoryAsync();
+        private void OnCurrentDirectoryChanged(object sender, EventArgs e) {
+            FetchRWorkingDirectoryAsync().DoNotWait();
         }
 
-        private async void OnSessionConnected(object sender, EventArgs e) {
-            await FetchRWorkingDirectoryAsync();
+        private void OnSessionConnected(object sender, EventArgs e) {
+            FetchRWorkingDirectoryAsync().DoNotWait();
         }
 
         private async Task FetchRWorkingDirectoryAsync() {

@@ -17,6 +17,7 @@ namespace Microsoft.R.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = TypeFunctionClassificationFormatName)]
         [Name(TypeFunctionClassificationFormatName)]
+        [ExcludeFromCodeCoverage]
         internal sealed class TypeFunctionClassificationFormat : ClassificationFormatDefinition {
             public TypeFunctionClassificationFormat() {
                 ForegroundColor = Colors.Teal;
@@ -34,6 +35,7 @@ namespace Microsoft.R.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = FunctionDefaultParameterClassificationFormatName)]
         [Name(FunctionDefaultParameterClassificationFormatName)]
+        [ExcludeFromCodeCoverage]
         internal sealed class FunctionDefaultParameterClassificationFormat : ClassificationFormatDefinition {
             public FunctionDefaultParameterClassificationFormat() {
                 ForegroundColor = Colors.DarkGray;
@@ -51,6 +53,7 @@ namespace Microsoft.R.Editor.Classification {
         [UserVisible(true)]
         [ClassificationType(ClassificationTypeNames = FunctionReferenceClassificationFormatName)]
         [Name(FunctionReferenceClassificationFormatName)]
+        [ExcludeFromCodeCoverage]
         internal sealed class FunctionReferenceClassificationFormat : ClassificationFormatDefinition {
             public FunctionReferenceClassificationFormat() {
                 ForegroundColor = Colors.Maroon;

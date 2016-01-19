@@ -11,12 +11,14 @@ namespace Microsoft.VisualStudio.R.TestApp {
     public partial class VisualGridWindow : Window {
         public VisualGridWindow() {
             InitializeComponent();
+        }
 
+        private void AssignDataProvider_Click(object sender, RoutedEventArgs e) {
             RootGrid.Initialize(new DataProvider(1000, 1000));
         }
 
-        private void AssingDataProvider_Click(object sender, RoutedEventArgs e) {
-            RootGrid.Initialize(new DataProvider(1000, 1000));
+        private void AssignSmallProvider_Click(object sender, RoutedEventArgs e) {
+            RootGrid.Initialize(new DataProvider(3, 2));
         }
 
         private void ChangeForeground_Click(object sender, RoutedEventArgs e) {

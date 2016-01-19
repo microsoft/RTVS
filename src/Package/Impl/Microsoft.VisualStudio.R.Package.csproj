@@ -82,7 +82,6 @@
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridParser.cs" />
-    <Compile Include="DataInspect\LoadedPackagesProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
@@ -93,6 +92,10 @@
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
     <Compile Include="DataInspect\VariableChangedArgs.cs" />
+    <Compile Include="Definitions\IVisualComponentContainer.cs" />
+    <Compile Include="Definitions\IVisualComponent.cs" />
+    <Compile Include="Help\HelpWindowVisualComponent.cs" />
+    <Compile Include="Help\IHelpWindowVisualComponent.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
@@ -109,7 +112,6 @@
       <DependentUpon>VariableGridHost.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataInspect\VariableGridWindowPane.cs" />
-    <Compile Include="DataInspect\WorkspaceVariableProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\ITreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\ObservableTreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeNodeCollection.cs" />

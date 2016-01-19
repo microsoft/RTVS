@@ -49,6 +49,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -74,6 +75,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\VariableExplorerTest.cs" />
+    <Compile Include="Help\HelpWindowTest.cs" />
+    <Compile Include="InteractiveTest.cs" />
     <Compile Include="Utility\IdleTime.cs" />
     <Compile Include="TestFilesFixture.cs" />
     <Compile Include="Utility\ViewTreeDump.cs" />

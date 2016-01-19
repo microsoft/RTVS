@@ -6,22 +6,22 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     internal sealed class HelpPreviousCommand : Command {
-        private HelpWindowPane _pane;
+        private IHelpWindowVisualComponent _component;
 
-        public HelpPreviousCommand(HelpWindowPane pane) :
+        public HelpPreviousCommand(IHelpWindowVisualComponent component) :
             base(new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpPrevious)) {
-            _pane = pane;
+            _component = component;
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            if (_pane.Browser != null && _pane.Browser.CanGoBack) {
+            if (_component.Browser != null && _component.Browser.CanGoBack) {
                 return CommandStatus.SupportedAndEnabled;
             }
             return CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            _pane.Browser.GoBack();
+            _component.Browser.GoBack();
             return CommandResult.Executed;
         }
     }
