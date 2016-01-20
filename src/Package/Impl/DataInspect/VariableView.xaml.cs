@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 EnvironmentName.Text = GlobalEnvironmentName;
             }
 
-            _globalEnvSubscription = VariableProvider.Current.Subscribe(0, "environment()", SubscribeGlobalEnvironment);
+            _globalEnvSubscription = VariableProvider.Current.Subscribe(0, VariableProvider.GlobalEnvironmentExpression, OnGlobalEnvironmentEvaluation);
 
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
         }
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             e.Handled = true;
         }
 
-        void SubscribeGlobalEnvironment(DebugEvaluationResult result) {
+        private void OnGlobalEnvironmentEvaluation(DebugEvaluationResult result) {
             var wrapper = new EvaluationWrapper(-1, result, false);
 
             var rootNodeModel = new VariableNode(wrapper);

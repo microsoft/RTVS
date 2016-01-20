@@ -37,6 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         public static VariableProvider Current => _instance ?? (_instance = new VariableProvider());
 
+        public const string GlobalEnvironmentExpression = "environment()";
+
         public EvaluationWrapper GlobalEnvironment { get; private set; }
 
         public async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange gridRange) {
@@ -95,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 _globalEnvSubscription = null;
             }
 
-            _globalEnvSubscription = Subscribe(0, "environment()", (r) => GlobalEnvironment = new EvaluationWrapper(-1, r, false));
+            _globalEnvSubscription = Subscribe(0, GlobalEnvironmentExpression, (r) => GlobalEnvironment = new EvaluationWrapper(-1, r, false));
 
             await PublishAllAsync();
         }
@@ -173,7 +175,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 foreach (var sub in subscriptions) {
                     try {
                         var action = sub.GetExecuteAction();
-                        action(evaluation);
+                        if (action != null) {
+                            action(evaluation);
+                        }
                     } catch (Exception e) {
                         Debug.Fail(e.ToString());
                         // swallow exception and continue

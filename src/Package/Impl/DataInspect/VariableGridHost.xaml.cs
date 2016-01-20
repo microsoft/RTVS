@@ -1,11 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    /// <summary>
+    /// Control that shows two dimensional R object
+    /// </summary>
     public partial class VariableGridHost : UserControl {
         private EvaluationWrapper _evaluation;
         private VariableSubscription _subscription;
@@ -15,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         
         internal void SetEvaluation(EvaluationWrapper evaluation) {
-            VariableGrid.Initialize(new DataProvider(evaluation));
+            VariableGrid.Initialize(new GridProvider(evaluation));
 
             _evaluation = evaluation;
 
@@ -34,6 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             VsAppShell.Current.DispatchOnUIThread(
                 () => {
                     if (evaluation is DebugErrorEvaluationResult) {
+                        // evaluation error, this could happen if R object is removed
                         var error = (DebugErrorEvaluationResult)evaluation;
                         SetError(error.ErrorText);
                         return;
@@ -70,29 +72,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ErrorTextBlock.Visibility = Visibility.Collapsed;
 
             VariableGrid.Visibility = Visibility.Visible;
-        }
-    }
-
-    internal class DataProvider : IGridProvider<string> {
-        private EvaluationWrapper _evaluation;
-
-        public DataProvider(EvaluationWrapper evaluation) {
-            _evaluation = evaluation;
-
-            RowCount = evaluation.Dimensions[0];
-            ColumnCount = evaluation.Dimensions[1];
-        }
-
-        public int ColumnCount { get; }
-
-        public int RowCount { get; }
-
-        public Task<IGridData<string>> GetAsync(GridRange gridRange) {
-            return VariableProvider.Current.GetGridDataAsync(_evaluation.Expression, gridRange);
-        }
-
-        public Task<IGrid<string>> GetRangeAsync(GridRange gridRange) {
-            throw new NotImplementedException();
         }
     }
 }

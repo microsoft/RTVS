@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -6,7 +7,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Variable subscription from <see cref="VariableProvider"/>
     /// </summary>
     internal sealed class VariableSubscription : IDisposable {
-        Action<DebugEvaluationResult> _execute;
+        WeakReference _weakReference;
+        private readonly MethodInfo _method;
+        private readonly Type _delegateType;
+
         Action<VariableSubscription> _unsubscribe;
 
         public VariableSubscription(
@@ -15,7 +19,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Action<VariableSubscription> unsubscribeAction) {
 
             Token = token;
-            _execute = executeAction;   // TODO: use weak reference
+
+            _weakReference = new WeakReference(executeAction.Target);
+            _method = executeAction.Method;
+            _delegateType = executeAction.GetType();
+
             _unsubscribe = unsubscribeAction;
         }
 
@@ -40,7 +48,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public Action<DebugEvaluationResult> GetExecuteAction() {
-            return _execute;
+            if (_method.IsStatic) {
+                return (Action<DebugEvaluationResult>)Delegate.CreateDelegate(_delegateType, null, _method);
+            }
+            object target = _weakReference.Target;
+            if (target != null) {
+                return (Action<DebugEvaluationResult>)Delegate.CreateDelegate(_delegateType, target, _method, false);
+            }
+            return null;
         }
     }
 }

@@ -82,6 +82,7 @@
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridParser.cs" />
+    <Compile Include="DataInspect\GridProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="DataInspect\VariableSubscription.cs" />
     <Compile Include="DataInspect\VariableSubscriptionToken.cs" />

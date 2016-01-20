@@ -1,12 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Script;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
