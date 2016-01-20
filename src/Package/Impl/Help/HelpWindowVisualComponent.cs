@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using System.Windows.Controls;
-using System.Windows.Navigation;
+using System.Windows.Forms;
+using System.Windows.Forms.Integration;
 using System.Windows.Threading;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Host.Client;
@@ -12,6 +12,7 @@ using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using ContentControl = System.Windows.Controls.ContentControl;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     public sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
@@ -34,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _session.Disconnected += OnRSessionDisconnected;
             _session.Connected += OnRSessionConnected;
 
-            _windowContentControl = new ContentControl();
+            _windowContentControl = new System.Windows.Controls.ContentControl();
             this.Control = _windowContentControl;
             _creatorThread = Thread.CurrentThread;
 
@@ -55,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         #region IVisualComponent
         public ICommandTarget Controller { get; }
 
-        public Control Control { get; }
+        public System.Windows.Controls.Control Control { get; }
         #endregion
 
         #region IHelpWindowVisualComponent
@@ -89,25 +90,32 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void CreateBrowser(bool showDefaultPage = false) {
             if (Browser == null) {
                 Browser = new WebBrowser();
+
+                Browser.WebBrowserShortcutsEnabled = true;
+                Browser.IsWebBrowserContextMenuEnabled = true;
+
                 Browser.Navigating += OnNavigating;
                 Browser.Navigated += OnNavigated;
 
-                _windowContentControl.Content = Browser;
+                var host = new WindowsFormsHost();
+                host.Child = Browser;
+
+                _windowContentControl.Content = host;
                 if (showDefaultPage) {
                     HelpHomeCommand.ShowDefaultHelpPage();
                 }
             }
         }
 
-        private void OnNavigating(object sender, NavigatingCancelEventArgs e) {
-            string url = e.Uri.ToString();
+        private void OnNavigating(object sender, WebBrowserNavigatingEventArgs e) {
+            string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
                 Process.Start(url);
             }
         }
 
-        private void OnNavigated(object sender, NavigationEventArgs e) {
+        private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
             // Upon vavigation we need to ask VS to update UI so 
             // Back /Forward buttons become properly enabled or disabled.
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using System.Windows.Navigation;
+using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Controls;
@@ -85,9 +85,9 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
             }
             public bool Ready { get; set; }
             public Uri Uri { get; private set; }
-            private void Browser_Navigated(object sender, NavigationEventArgs e) {
+            private void Browser_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
                 Ready = true;
-                Uri = _component.Browser.Source;
+                Uri = _component.Browser.Url;
             }
 
             public override Task ShowHelp(string url) {
