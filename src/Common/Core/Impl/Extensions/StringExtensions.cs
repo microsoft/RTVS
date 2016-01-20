@@ -73,8 +73,6 @@ namespace Microsoft.Common.Core {
                 isWhiteSpaceOnly = isWhiteSpaceOnly && char.IsWhiteSpace(ch);
             }
 
-
-
             return sb.ToString();
         }
 
