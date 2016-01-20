@@ -333,6 +333,12 @@
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
+    <Compile Include="Telemetry\Data\FolderUtility.cs" />
+    <Compile Include="Telemetry\Data\RPackageData.cs" />
+    <Compile Include="Telemetry\Data\RPackageType.cs" />
+    <Compile Include="Telemetry\Data\ToolWindowData.cs" />
+    <Compile Include="Telemetry\Definitions\ITelemetry.cs" />
+    <Compile Include="Telemetry\Telemetry.cs" />
     <Compile Include="Telemetry\TelemetryActvityWrapper.cs" />
     <Compile Include="Telemetry\TelemetryEvents.cs" />
     <Compile Include="Telemetry\TelemetryProperties.cs" />
