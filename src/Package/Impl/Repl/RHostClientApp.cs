@@ -2,10 +2,13 @@
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Plots;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
@@ -39,7 +42,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async Task ShowHelp(string url) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            HelpWindowPane.Navigate(url);
+            HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
+            var container = pane as IVisualComponentContainer<IHelpWindowVisualComponent>;
+            container.Component.Navigate(url);
         }
 
         /// <summary>
@@ -47,18 +52,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async Task Plot(string filePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-
-            var frame = FindPlotWindow(__VSFINDTOOLWIN.FTW_fFindFirst | __VSFINDTOOLWIN.FTW_fForceCreate);  // TODO: acquire plot content provider through service
-            if (frame != null) {
-                object docView;
-                ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView));
-                if (docView != null) {
-                    PlotWindowPane pane = (PlotWindowPane)docView;
-                    pane.PlotContentProvider.LoadFile(filePath);
-
-                    frame.ShowNoActivate();
-                }
-            }
+            IPlotHistory history = VsAppShell.Current.ExportProvider.GetExportedValue<IPlotHistory>();
+            history.PlotContentProvider.LoadFile(filePath);
         }
 
         /// <summary>

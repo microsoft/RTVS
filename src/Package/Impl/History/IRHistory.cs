@@ -6,9 +6,10 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     public interface IRHistory : IDisposable {
-        IWpfTextView GetOrCreateTextView();
+        IWpfTextView GetOrCreateTextView(ITextEditorFactoryService textEditorFactory);
 
         event EventHandler<EventArgs> SelectionChanged;
+        event EventHandler<EventArgs> HistoryChanging;
         event EventHandler<EventArgs> HistoryChanged;
         bool HasSelectedEntries { get; }
         bool HasEntries { get; }
@@ -37,7 +38,5 @@ namespace Microsoft.VisualStudio.R.Package.History {
         void DeleteAllHistoryEntries();
 
         void AddToHistory(string text);
-
-        void Workaround169159(IElisionBuffer elisionBuffer);
     }
 }

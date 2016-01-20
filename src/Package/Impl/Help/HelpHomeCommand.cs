@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     internal sealed class HelpHomeCommand : Command {
-        public HelpHomeCommand(HelpWindowPane pane) :
+        public HelpHomeCommand(IHelpWindowVisualComponent component) :
             base(new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome)) {
         }
 

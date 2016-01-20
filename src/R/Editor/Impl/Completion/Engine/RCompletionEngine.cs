@@ -30,7 +30,6 @@ namespace Microsoft.R.Editor.Completion.Engine {
         /// <returns>List of completion entries for a given location in the AST</returns>
         public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion) {
             List<IRCompletionListProvider> providers = new List<IRCompletionListProvider>();
-            IREditorDocument document = REditorDocument.FindInProjectedBuffers(context.Session.TextView.TextBuffer);
 
             if (context.AstRoot.Comments.Contains(context.Position)) {
                 // No completion in comments
@@ -74,9 +73,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 }
             }
 
-            if (document != null && document.IsTransient) {
-                providers.Add(new WorkspaceVariableCompletionProvider());
-            }
+            providers.Add(new WorkspaceVariableCompletionProvider());
 
             return providers;
         }

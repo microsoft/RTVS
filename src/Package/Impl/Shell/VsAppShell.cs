@@ -308,6 +308,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             VSSAVEFILENAMEW[] saveInfo = new VSSAVEFILENAMEW[1];
             saveInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
+            saveInfo[0].dwFlags = 0x00000002; // OFN_OVERWRITEPROMPT
             saveInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
             saveInfo[0].hwndOwner = owner;
             saveInfo[0].pwzDlgTitle = title;

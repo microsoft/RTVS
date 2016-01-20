@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
@@ -12,7 +11,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -32,12 +30,12 @@ namespace Microsoft.R.Host.Client.Test {
 .rtvs.vsgd <- function() {
    invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_new'))
 }
-.rtvs.vsgdexportimage <- function(filename, device) {
-    dev.copy(device=device,filename=filename)
+.rtvs.vsgdexportimage <- function(filename, device, width, height) {
+    dev.copy(device=device,filename=filename,width=width,height=height)
     dev.off()
 }
-.rtvs.vsgdexportpdf <- function(filename) {
-    dev.copy(device=pdf,file=filename)
+.rtvs.vsgdexportpdf <- function(filename, width, height, paper) {
+    dev.copy(device=pdf,file=filename,width=width,height=height,paper=paper)
     dev.off()
 }
 .rtvs.vsgdnextplot <- function() {
@@ -145,7 +143,7 @@ plot(5:15)
 plot(0:10)
 plot(5:15)
 ";
-            GraphicsTest(code).Should().ContainSingle();
+            GraphicsTest(code).Should().HaveCount(2);
         }
 
         [Test]
@@ -214,15 +212,17 @@ Sys.sleep(1)
             var code = string.Format(@"
 plot(0:10)
 Sys.sleep(1)
-.rtvs.vsgdexportimage('{0}', bmp)
-.rtvs.vsgdexportimage('{1}', png)
-.rtvs.vsgdexportimage('{2}', jpeg)
-.rtvs.vsgdexportimage('{3}', tiff)
+.rtvs.vsgdexportimage('{0}', bmp, {4}, {5})
+.rtvs.vsgdexportimage('{1}', png, {4}, {5})
+.rtvs.vsgdexportimage('{2}', jpeg, {4}, {5})
+.rtvs.vsgdexportimage('{3}', tiff, {4}, {5})
 ",
                 exportedBmpFilePath.Replace("\\", "/"),
                 exportedPngFilePath.Replace("\\", "/"),
                 exportedJpegFilePath.Replace("\\", "/"),
-                exportedTiffFilePath.Replace("\\", "/"));
+                exportedTiffFilePath.Replace("\\", "/"),
+                DefaultExportWidth,
+                DefaultExportHeight);
 
             var actualPlotFilePaths = GraphicsTest(code).ToArray();
             actualPlotFilePaths.Should().ContainSingle();
@@ -250,14 +250,36 @@ Sys.sleep(1)
 
         [Test]
         [Category.Plots]
+        public void ExportPreviousPlotToImage() {
+            var exportedBmpFilePath = _files.ExportPreviousPlotToImageResultPath;
+
+            var code = string.Format(@"
+plot(0:10)
+plot(10:20)
+Sys.sleep(1)
+.rtvs.vsgdpreviousplot()
+.rtvs.vsgdexportimage('{0}', bmp, {1}, {2})
+",
+                exportedBmpFilePath.Replace("\\", "/"),
+                DefaultWidth,
+                DefaultHeight);
+
+            var actualPlotFilePaths = GraphicsTest(code).ToArray();
+            actualPlotFilePaths.Should().HaveCount(3);
+
+            File.ReadAllBytes(exportedBmpFilePath).Should().Equal(File.ReadAllBytes(_files.ExpectedExportPreviousPlotToImagePath));
+        }
+
+        [Test]
+        [Category.Plots]
         public void ExportToPdf() {
             var exportedFilePath = _files.ExportToPdfResultPath;
 
             var code = string.Format(@"
 plot(0:10)
 Sys.sleep(1)
-.rtvs.vsgdexportpdf('{0}')
-", exportedFilePath.Replace("\\", "/"));
+.rtvs.vsgdexportpdf('{0}', {1}, {2}, '{3}')
+", exportedFilePath.Replace("\\", "/"), 7, 7, "special");
 
             var actualPlotFilePaths = GraphicsTest(code).ToArray();
             actualPlotFilePaths.Should().ContainSingle();
@@ -266,7 +288,7 @@ Sys.sleep(1)
             bmp.Width.Should().Be(DefaultWidth);
             bmp.Height.Should().Be(DefaultHeight);
 
-            File.Exists(exportedFilePath).Should().BeTrue();
+            PdfComparer.ComparePdfFiles(exportedFilePath, _files.ExpectedExportToPdfPath);
         }
 
         [Test]
