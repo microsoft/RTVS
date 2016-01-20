@@ -65,6 +65,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
         private System.Threading.Tasks.Task _indexBuildingTask;
         private IDisposable _activeTextViewTrackerToken;
+        private IDisposable _activeRInteractiveWindowTrackerToken;
 
         public static IRPackage Current { get; private set; }
 
@@ -76,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             base.Initialize();
 
-            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) {
+            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage))) {
                 p.LoadSettingsFromStorage();
             }
 
@@ -86,7 +87,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
-            InitializeActiveWpfTextViewTracker();
+            _activeTextViewTrackerToken = AdviseWindowFrameEvents<ActiveWpfTextViewTracker>();
+            _activeRInteractiveWindowTrackerToken = AdviseWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
         }
 
         protected override void Dispose(bool disposing) {
@@ -96,6 +98,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             }
 
             _activeTextViewTrackerToken?.Dispose();
+            _activeRInteractiveWindowTrackerToken?.Dispose();
 
             LogCleanup.Cancel();
             ReplShortcutSetting.Close();
@@ -141,11 +144,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return base.CreateToolWindow(ref toolWindowType, id);
         }
 
-        private void InitializeActiveWpfTextViewTracker() {
-            var activeTextViewTracker = VsAppShell.Current.ExportProvider.GetExportedValue<ActiveWpfTextViewTracker>();
+        private IDisposable AdviseWindowFrameEvents<T>() where T : IVsWindowFrameEvents {
+            var windowFrameEvents = VsAppShell.Current.ExportProvider.GetExportedValue<T>();
             var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
-            var cookie = shell.AdviseWindowFrameEvents(activeTextViewTracker);
-            _activeTextViewTrackerToken = Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie));
+            var cookie = shell.AdviseWindowFrameEvents(windowFrameEvents);
+            return Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie));
         }
     }
 }

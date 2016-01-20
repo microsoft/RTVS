@@ -17,14 +17,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript)
         };
 
-        private readonly ReplWindow _replWindow;
         private readonly IVsMonitorSelection _monitorSelection;
         private readonly uint _debugUIContextCookie;
+        private readonly IRInteractiveSession _interactiveSession;
 
-        public SourceRScriptCommand(ITextView textView)
+        public SourceRScriptCommand(ITextView textView, IRInteractiveSession interactiveSession)
             : base(textView, Commands, false) {
+            _interactiveSession = interactiveSession;
             ReplWindow.EnsureReplWindow().DoNotWait();
-            _replWindow = ReplWindow.Current;
 
             _monitorSelection = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
             if (_monitorSelection != null) {
@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             // Save file before sourcing
             TextView.SaveFile();
 
-            _replWindow.ExecuteCode($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
+            _interactiveSession.ExecuteExpression($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
             return CommandResult.Executed;
         }
     }

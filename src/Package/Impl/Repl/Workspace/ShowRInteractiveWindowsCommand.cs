@@ -6,8 +6,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         public ShowRInteractiveWindowsCommand() :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdShowReplWindow) {
         }
+
         protected override void Handle() {
-            RPackage.Current.InteractiveWindowProvider.Open(instanceId: 0, focus: true);
+            if (!ReplWindow.ReplWindowExists()) {
+                var window = RPackage.Current.InteractiveWindowProvider.Create(0);
+                window.Show(true);
+            } else {
+                ReplWindow.Show();
+            }
         }
     }
 }

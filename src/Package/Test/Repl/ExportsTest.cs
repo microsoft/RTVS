@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Test]
         [Category.Repl]
         public void RInteractiveProvider_ExportTest() {
-            var provider = VsAppShell.Current.ExportProvider.GetExport<IRInteractiveProvider>();
+            var provider = VsAppShell.Current.ExportProvider.GetExport<IRInteractiveSessionProvider>();
             provider.Should().NotBeNull();
             provider.Value.Should().NotBeNull();
         }

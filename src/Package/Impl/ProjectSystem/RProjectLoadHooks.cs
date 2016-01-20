@@ -29,15 +29,19 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
         private readonly IRSession _session;
+        private readonly IRHistory _history;
         private readonly IRToolsSettings _toolsSettings;
         private readonly IFileSystem _fileSystem;
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
 
         [ImportingConstructor]
-        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRSessionProvider sessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveSessionProvider interactiveSessionSessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
+            var interactiveSession = interactiveSessionSessionProvider.GetOrCreate();
+
             _unconfiguredProject = unconfiguredProject;
-            _session = sessionProvider.GetInteractiveWindowRSession();
+            _session = interactiveSession.RSession;
+            _history = interactiveSession.History;
             _toolsSettings = toolsSettings;
             _fileSystem = fileSystem;
             _threadHandling = threadHandling;
@@ -75,8 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await _threadHandling.SwitchToUIThread();
 
             _toolsSettings.WorkingDirectory = _projectDirectory;
-            var history = GetRHistory();
-            history?.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+            _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
@@ -97,8 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
                 await _threadHandling.SwitchToUIThread();
-                var history = GetRHistory();
-                history?.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+                _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
             }
         }
 
@@ -128,14 +130,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 default:
                     return false;
             }
-        }
-
-        private static IRHistory GetRHistory() {
-            return GetRInteractiveEvaluator()?.History;
-        }
-
-        private static RInteractiveEvaluator GetRInteractiveEvaluator() {
-            return ReplWindow.Current.GetInteractiveWindow()?.InteractiveWindow.Evaluator as RInteractiveEvaluator;
         }
     }
 }

@@ -12,11 +12,12 @@ using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class HistoryNavigationCommand : ViewCommand {
+        private readonly IRInteractiveSession _interactiveSession;
         private readonly ICompletionBroker _completionBroker;
         private readonly IEditorOperationsFactoryService _editorFactory;
-        private readonly Lazy<IRHistory> _historyProvider;
+        private readonly IRHistory _history;
 
-        public HistoryNavigationCommand(ITextView textView) :
+        public HistoryNavigationCommand(ITextView textView, IRInteractiveSession interactiveSession, ICompletionBroker completionBroker, IEditorOperationsFactoryService editorFactory) :
             base(textView, new[] {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UP),
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.DOWN),
@@ -27,11 +28,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.LEFT_EXT),
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.RIGHT_EXT)
             }, false) {
-
-            var exportProvider = VsAppShell.Current.ExportProvider;
-            _completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
-            _editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
-            _historyProvider = new Lazy<IRHistory>(() => exportProvider.GetExportedValue<IRInteractiveProvider>().GetOrCreate().History);
+            _completionBroker = completionBroker;
+            _editorFactory = editorFactory;
+            _interactiveSession = interactiveSession;
+            _history = _interactiveSession.History;
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (_completionBroker.IsCompletionActive(TextView)) {
                 return CommandResult.NotSupported;
             }
-            var window = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow;
+            var window = _interactiveSession.InteractiveWindow;
             var curPoint = window.TextView.MapDownToBuffer(
                 window.TextView.Caret.Position.BufferPosition,
                 window.CurrentLanguageBuffer
@@ -65,13 +65,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     case VSConstants.VSStd2KCmdID.UP:
                         if (curLine.LineNumber == 0) {
                             // this leaves the caret at the end which is what we want for up/down to work nicely
-                            _historyProvider.Value.PreviousEntry();
+                            _history.PreviousEntry();
                             return CommandResult.Executed;
                         }
                         break;
                     case VSConstants.VSStd2KCmdID.DOWN:
                         if (curLine.LineNumber == curPoint.Value.Snapshot.LineCount - 1) {
-                            _historyProvider.Value.NextEntry();
+                            _history.NextEntry();
 
                             // move the caret to the 1st line in history so down/up works nicely
                             var firstLine = window.CurrentLanguageBuffer.CurrentSnapshot.GetLineFromLineNumber(0);
@@ -108,7 +108,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
                                 // Home would be nice here, but it goes to the beginning of the first non-whitespace char
                                 if (extend) {
-                                    Text.VirtualSnapshotPoint anchor = TextView.Selection.AnchorPoint;
+                                    VirtualSnapshotPoint anchor = TextView.Selection.AnchorPoint;
                                     TextView.Caret.MoveTo(MapUp(window, start).Value);
                                     TextView.Selection.Select(anchor.TranslateTo(TextView.TextSnapshot), TextView.Caret.Position.VirtualBufferPosition);
                                 } else {

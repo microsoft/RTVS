@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         protected override void SetStatus() {
-            if (ReplWindow.Current.IsActive) {
+            if (ReplWindow.IsActive) {
                 Visible = true;
                 Enabled = _rSession.IsHostRunning;
             } else {

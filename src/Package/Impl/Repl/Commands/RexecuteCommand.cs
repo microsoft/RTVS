@@ -8,12 +8,15 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
-    class RexecuteCommand : ViewCommand {
-        public RexecuteCommand(ITextView textView, CommandId id) : base(textView, id, false) {
+    class RExecuteCommand : ViewCommand {
+        protected IRInteractiveSession InteractiveSession { get; }
+
+        public RExecuteCommand(ITextView textView, IRInteractiveSession interactiveSession, CommandId id) : base(textView, id, false) {
+            InteractiveSession = interactiveSession;
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            var window = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow;
+            IInteractiveWindow window = InteractiveSession.InteractiveWindow;
             if (window != null && !window.IsRunning) {
                 var text = GetText(window);
                 if (text != null) {

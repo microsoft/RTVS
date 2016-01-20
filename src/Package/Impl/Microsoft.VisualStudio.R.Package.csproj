@@ -200,8 +200,8 @@
     <Compile Include="Repl\Debugger\DebuggerWrappedCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommand.cs" />
     <Compile Include="Repl\InteractiveWindowRSessionHelper.cs" />
-    <Compile Include="Repl\IRInteractive.cs" />
-    <Compile Include="Repl\IRInteractiveProvider.cs" />
+    <Compile Include="Repl\IRInteractiveSession.cs" />
+    <Compile Include="Repl\IRInteractiveSessionProvider.cs" />
     <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
@@ -210,8 +210,8 @@
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
     <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
-    <Compile Include="Repl\RInteractive.cs" />
-    <Compile Include="Repl\RInteractiveProvider.cs" />
+    <Compile Include="Repl\RInteractiveSession.cs" />
+    <Compile Include="Repl\RInteractiveSessionProvider.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
@@ -336,6 +336,7 @@
     <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
     <Compile Include="Telemetry\VsTelemetryService.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />
+    <Compile Include="Utilities\IActiveRInteractiveWindowTracker.cs" />
     <Compile Include="Utilities\IActiveWpfTextViewTracker.cs" />
     <Compile Include="Utilities\LongOperationNotification.cs" />
     <Compile Include="Utilities\Navigation.cs" />
@@ -345,6 +346,7 @@
     <Compile Include="Utilities\ToolWindowUtilities.cs" />
     <Compile Include="Utilities\ViewUtilities.cs" />
     <Compile Include="Utilities\ActiveWpfTextViewTracker.cs" />
+    <Compile Include="Utilities\VsActiveRInteractiveWindowTracker.cs" />
     <Compile Include="Workspace\VsFileInfo.cs" />
     <Compile Include="Workspace\IVsWorkspaceItem.cs" />
     <Compile Include="Workspace\VsFile.cs" />

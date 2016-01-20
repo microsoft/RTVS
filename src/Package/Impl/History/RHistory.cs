@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Windows;
 using Microsoft.Common.Core.Disposables;
@@ -13,7 +12,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     internal sealed class RHistory : IRHistory {
@@ -23,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private readonly IFileSystem _fileSystem;
         private readonly IRToolsSettings _settings;
         private readonly IEditorOperationsFactoryService _editorOperationsFactory;
-        private readonly IRInteractive _rInteractive;
+        private readonly IRInteractiveSession _interactiveSession;
         private readonly ITextBuffer _historyTextBuffer;
         private readonly CountdownDisposable _textBufferIsEditable;
         private readonly IRtfBuilderService _rtfBuilderService;
@@ -43,8 +41,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public event EventHandler<EventArgs> HistoryChanged;
         public event EventHandler<EventArgs> SelectionChanged;
 
-        public RHistory(IRInteractive rInteractive, ITextBuffer textBuffer, IFileSystem fileSystem, IRToolsSettings settings, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, IVsUIShell vsShell, Action dispose) {
-            _rInteractive = rInteractive;
+        public RHistory(IRInteractiveSession interactiveSession, ITextBuffer textBuffer, IFileSystem fileSystem, IRToolsSettings settings, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, IVsUIShell vsShell, Action dispose) {
+            _interactiveSession = interactiveSession;
             _historyTextBuffer = textBuffer;
             _fileSystem = fileSystem;
             _settings = settings;
@@ -163,7 +161,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         public void SendSelectedToRepl() {
             var selectedText = GetSelectedText();
-            ReplWindow.Current.ReplaceCurrentExpression(selectedText);
+            _interactiveSession.ReplaceCurrentExpression(selectedText);
         }
 
         public void SendSelectedToTextView(ITextView textView) {
@@ -190,7 +188,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
 
             if (_currentEntry != null) {
-                ReplWindow.Current.ReplaceCurrentExpression(_currentEntry.Span.GetText(_historyTextBuffer.CurrentSnapshot));
+                _interactiveSession.ReplaceCurrentExpression(_currentEntry.Span.GetText(_historyTextBuffer.CurrentSnapshot));
             }
         }
 
@@ -207,7 +205,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
 
             if (_currentEntry != null) {
-                ReplWindow.Current.ReplaceCurrentExpression(_currentEntry.Span.GetText(_historyTextBuffer.CurrentSnapshot));
+                _interactiveSession.ReplaceCurrentExpression(_currentEntry.Span.GetText(_historyTextBuffer.CurrentSnapshot));
             }
         }
 

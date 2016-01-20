@@ -10,14 +10,14 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
-    class PasteCurrentCodeCommand : RexecuteCommand {
+    class PasteCurrentCodeCommand : RExecuteCommand {
 
-        public PasteCurrentCodeCommand(ITextView textView) :
-            base(textView, new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPasteReplCmd)) {
+        public PasteCurrentCodeCommand(ITextView textView, IRInteractiveSession interactiveSession) :
+            base(textView, interactiveSession, new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPasteReplCmd)) {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            var window = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow;
+            var window = InteractiveSession.InteractiveWindow;
             if (window != null) {
                 string text = GetText(window);
 

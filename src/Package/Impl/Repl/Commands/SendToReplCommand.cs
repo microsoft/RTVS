@@ -10,16 +10,16 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class SendToReplCommand : ViewCommand {
-        private ReplWindow _replWindow;
+        private readonly IRInteractiveSession _interactiveSession;
 
-        public SendToReplCommand(ITextView textView) :
-            base(textView, new[]
-            {
+        public SendToReplCommand(ITextView textView, IRInteractiveSession interactiveSession) :
+            base(textView, new[] {
                 new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteLineInInteractive),
                 new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteSelectionInInteractive)
             }, false) {
+
+            _interactiveSession = interactiveSession;
             ReplWindow.EnsureReplWindow().DoNotWait();
-            _replWindow = ReplWindow.Current;
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -29,36 +29,29 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             ITextSelection selection = TextView.Selection;
             ITextSnapshot snapshot = TextView.TextBuffer.CurrentSnapshot;
-            ReplWindow replWindow = ReplWindow.Current;
             int position = selection.Start.Position;
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
 
-            if (replWindow == null)
-            {
+            if (_interactiveSession.InteractiveWindow == null) {
                 return CommandResult.Disabled;
             }
 
             string text;
-            if (selection.StreamSelectionSpan.Length == 0)
-            {
+            if (selection.StreamSelectionSpan.Length == 0) {
                 text = line.GetText();
-            }
-            else
-            {
+            } else {
                 text = TextView.Selection.StreamSelectionSpan.GetText();
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
             ReplWindow.Show();
-            replWindow.EnqueueCode(text, addNewLine: true);
+            _interactiveSession.EnqueueExpression(text, addNewLine: true);
 
             var targetLine = line;
-            while (targetLine.LineNumber < snapshot.LineCount - 1)
-            {
+            while (targetLine.LineNumber < snapshot.LineCount - 1) {
                 targetLine = snapshot.GetLineFromLineNumber(targetLine.LineNumber + 1);
                 // skip over blank lines, unless it's the last line, in which case we want to land on it no matter what
-                if (!String.IsNullOrWhiteSpace(targetLine.GetText()) || targetLine.LineNumber == snapshot.LineCount - 1)
-                {
+                if (!string.IsNullOrWhiteSpace(targetLine.GetText()) || targetLine.LineNumber == snapshot.LineCount - 1) {
                     TextView.Caret.MoveTo(new SnapshotPoint(snapshot, targetLine.Start));
                     TextView.Caret.EnsureVisible();
                     break;
@@ -66,23 +59,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             // Take focus back if REPL window has stolen it
-            if (!TextView.HasAggregateFocus)
-            {
+            if (!TextView.HasAggregateFocus) {
                 IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
                 IVsTextView tv = adapterService.GetViewAdapter(TextView);
                 tv.SendExplicitFocus();
             }
-            
+
             return CommandResult.Executed;
-        }
-
-        protected override void Dispose(bool disposing) {
-            if (_replWindow != null) {
-                _replWindow.Dispose();
-                _replWindow = null;
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

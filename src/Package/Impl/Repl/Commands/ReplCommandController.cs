@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer) {
-            ServiceManager.AddService<ReplCommandController>(this, textView);
+            ServiceManager.AddService(this, textView);
         }
 
         public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer) {
@@ -106,7 +106,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             controller.DismissAllSessions();
-            ReplWindow.Current.ExecuteCurrentExpression(TextView);
+            var interactiveSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveSessionProvider>();
+            interactiveSessionProvider.GetOrCreate().ExecuteCurrentExpression(TextView);
             return CommandResult.Executed;
         }
 

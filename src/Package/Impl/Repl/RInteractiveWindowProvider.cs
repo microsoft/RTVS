@@ -19,17 +19,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private IVsInteractiveWindowFactory VsInteractiveWindowFactory { get; set; }
 
         [Import]
-        private IRInteractiveProvider RInteractiveProvider { get; set; }
+        private IRInteractiveSessionProvider RInteractiveSessionProvider { get; set; }
 
         public RInteractiveWindowProvider() {
             VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
         }
 
         public IVsInteractiveWindow Create(int instanceId) {
-            var interactive = RInteractiveProvider.GetOrCreate();
+            var interactive = RInteractiveSessionProvider.GetOrCreate();
             var evaluator = interactive.GetOrCreateEvaluator(instanceId);
 
-            EventHandler<EventArgs> clearPendingInputsHandler = (sender, args) => ReplWindow.Current.ClearPendingInputs();
+            EventHandler<EventArgs> clearPendingInputsHandler = (sender, args) => interactive.ClearPendingInputs();
             interactive.RSession.Disconnected += clearPendingInputsHandler;
             EventHandler textViewOnClosed = (_, __) => {
                 interactive.RSession.Disconnected -= clearPendingInputsHandler;
@@ -50,15 +50,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             await window.InitializeAsync();
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(1);
-        }
-
-        public void Open(int instanceId, bool focus) {
-            if (!ReplWindow.ReplWindowExists()) {
-                var window = Create(instanceId);
-                window.Show(focus);
-            } else {
-                ReplWindow.Show();
-            }
         }
     }
 }

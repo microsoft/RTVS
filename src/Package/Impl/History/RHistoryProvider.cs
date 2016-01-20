@@ -51,10 +51,10 @@ namespace Microsoft.VisualStudio.R.Package.History {
             return history.GetOrCreateTextView(_textEditorFactory);
         }
 
-        public IRHistory CreateRHistory(IRInteractive rInteractive) {
+        public IRHistory CreateRHistory(IRInteractiveSession interactiveSession) {
             var vsUiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             var textBuffer = _textBufferFactory.CreateTextBuffer(_contentType);
-            var history = new RHistory(rInteractive, textBuffer, _fileSystem, RToolsSettings.Current, _editorOperationsFactory, _rtfBuilderService, vsUiShell, () => RemoveRHistory(textBuffer));
+            var history = new RHistory(interactiveSession, textBuffer, _fileSystem, RToolsSettings.Current, _editorOperationsFactory, _rtfBuilderService, vsUiShell, () => RemoveRHistory(textBuffer));
             _histories[textBuffer] = history;
             return history;
         }
