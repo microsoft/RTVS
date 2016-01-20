@@ -46,13 +46,21 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new InstallPackagesCommand(),
                 new CheckForPackageUpdatesCommand(),
 
+                // Window commands
                 new ShowPlotWindowsCommand(),
                 new ShowRInteractiveWindowsCommand(),
-
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
                 new ShowHelpOnCurrentCommand(),
-                new ShowHistoryWindowCommand()
+                new ShowHistoryWindowCommand(),
+
+                // Plot commands
+                new ExportPlotAsImageCommand(),
+                new ExportPlotAsPdfCommand(),
+                new CopyPlotAsBitmapCommand(),
+                new CopyPlotAsMetafileCommand(),
+                new HistoryNextPlotCommand(),
+                new HistoryPreviousPlotCommand()
             };
         }
     }
