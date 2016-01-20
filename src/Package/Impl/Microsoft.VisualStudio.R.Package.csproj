@@ -168,7 +168,7 @@
     <Compile Include="Options\R\Tools\ImportRSettingsCommand.cs" />
     <Compile Include="Packages\Definitions\IPackage.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
-    <Compile Include="Packages\DefaultIndentAttribute.cs" />
+    <Compile Include="Packages\LanguageEditorOptionsAttribute.cs" />
     <Compile Include="Packages\Definitions\IRPackage.cs" />
     <Compile Include="Packages\ProvideNewFileTemplatesAttribute.cs" />
     <Compile Include="Plots\Commands\CopyPlotAsMetafileCommand.cs" />
