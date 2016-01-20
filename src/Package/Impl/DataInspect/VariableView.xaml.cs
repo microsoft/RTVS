@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
+using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.R.Package.Shell;
 
@@ -14,13 +15,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             SortDirection = ListSortDirection.Ascending;
 
-            if (VariableProvider.Current.LastEvaluation == null) {
+            if (VariableProvider.Current.GlobalEnvironment == null) {
                 SetRootNode(EvaluationWrapper.Ellipsis);
             } else {
-                SetRootNode(VariableProvider.Current.LastEvaluation);
-                EnvironmentName.Text = VariableProvider.Current.LastEvaluation.Name;
+                SetRootNode(VariableProvider.Current.GlobalEnvironment);
+                EnvironmentName.Text = VariableProvider.Current.GlobalEnvironment.Name;
             }
-            VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
+            //VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
+
+            VariableProvider.Current.Subscribe(".GlobalEnv", "environment()", SubscribeGlobalEnvironment);
 
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
         }
@@ -44,6 +47,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             e.Handled = true;
         }
 
+        void SubscribeGlobalEnvironment(DebugEvaluationResult result) {
+            var wrapper = new EvaluationWrapper(-1, result, false);
+            var rootNodeModel = new VariableNode(wrapper);
+            VsAppShell.Current.DispatchOnUIThread(
+                () => {
+                    EnvironmentName.Text = wrapper.Name;
+                    _rootNode.Model = rootNodeModel;
+                });
+        }
+
         private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
             VariableChanged(e.NewVariable);
         }
@@ -56,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 });
         }
 
-        private void SetRootNode(IRSessionDataObject evaluation) {
+        private void SetRootNode(EvaluationWrapper evaluation) {
             _rootNode = new ObservableTreeNode(
                 new VariableNode(evaluation),
                 Comparer<ITreeNode>.Create(Comparison));

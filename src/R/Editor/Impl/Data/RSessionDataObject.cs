@@ -12,31 +12,26 @@ namespace Microsoft.R.Editor.Data {
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
     public class RSessionDataObject : IRSessionDataObject {
-        private readonly DebugEvaluationResult _evaluation;
-
         private static readonly char[] NameTrimChars = new char[] { '$' };
         private static readonly string HiddenVariablePrefix = ".";
         private static readonly char[] NewLineDelimiter = new char[] { '\r', '\n' };
 
-        private readonly bool _truncateChildren;
         private readonly object syncObj = new object();
         private Task<IReadOnlyList<IRSessionDataObject>> _getChildrenTask = null;
 
-        protected RSessionDataObject() { Index = -1; }
+        protected RSessionDataObject() { }
 
         /// <summary>
         /// Create new instance of <see cref="DataEvaluation"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
-        /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public RSessionDataObject(int index, DebugEvaluationResult evaluation, bool truncateChildren) {
-            _evaluation = evaluation;
-            _truncateChildren = truncateChildren;
+        public RSessionDataObject(DebugEvaluationResult evaluation) {
+            DebugEvaluation = evaluation;
 
-            Name = _evaluation.Name.TrimStart(NameTrimChars);
+            Name = DebugEvaluation.Name.TrimStart(NameTrimChars);
 
-            if (_evaluation is DebugValueEvaluationResult) {
-                var valueEvaluation = (DebugValueEvaluationResult)_evaluation;
+            if (DebugEvaluation is DebugValueEvaluationResult) {
+                var valueEvaluation = (DebugValueEvaluationResult)DebugEvaluation;
 
                 Value = GetValue(valueEvaluation).Trim();
                 ValueDetail = valueEvaluation.Representation.DPut;
@@ -45,14 +40,11 @@ namespace Microsoft.R.Editor.Data {
                 Class = string.Join(", ", escaped); // TODO: escape ',' in class names
                 HasChildren = valueEvaluation.HasChildren;
 
-                CanShowDetail = ComputeDetailAvailability(valueEvaluation);
-                if (CanShowDetail) {
-                    Dimensions = valueEvaluation.Dim;
-                } else {
-                    Dimensions = new List<int>();
-                }
+                Dimensions = valueEvaluation.Dim ?? new List<int>();
             }
         }
+
+        protected DebugEvaluationResult DebugEvaluation { get; }
 
         public Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsync() {
             if (_getChildrenTask == null) {
@@ -66,12 +58,12 @@ namespace Microsoft.R.Editor.Data {
             return _getChildrenTask;
         }
 
-        private async Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsyncInternal() {
+        protected virtual async Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsyncInternal() {
             List<IRSessionDataObject> result = null;
 
-            var valueEvaluation = _evaluation as DebugValueEvaluationResult;
+            var valueEvaluation = DebugEvaluation as DebugValueEvaluationResult;
             if (valueEvaluation == null) {
-                Debug.Assert(false, $"EvaluationWrapper result type is not {typeof(DebugValueEvaluationResult)}");
+                Debug.Assert(false, $"{nameof(RSessionDataObject)} result type is not {typeof(DebugValueEvaluationResult)}");
                 return result;
             }
 
@@ -82,17 +74,17 @@ namespace Microsoft.R.Editor.Data {
                         DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
 
                 // assumption: DebugEvaluationResult returns children in ascending order
-                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, _truncateChildren ? (int?)20 : null, 100);    // TODO: consider exception propagation such as OperationCanceledException
-                result = EvaluateChildren(children, _truncateChildren);
+                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, null, 100);    // TODO: consider exception propagation such as OperationCanceledException
+                result = EvaluateChildren(children);
             }
 
             return result;
         }
 
-        protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<DebugEvaluationResult> children, bool truncateChildren) {
+        protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<DebugEvaluationResult> children) {
             var result = new List<IRSessionDataObject>();
             for (int i = 0; i < children.Count; i++) {
-                result.Add(new RSessionDataObject(i, children[i], _truncateChildren));
+                result.Add(new RSessionDataObject(children[i]));
             }
             return result;
         }
@@ -109,21 +101,7 @@ namespace Microsoft.R.Editor.Data {
             return value;
         }
 
-        private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
-        private bool ComputeDetailAvailability(DebugValueEvaluationResult evaluation) {
-            if (evaluation.Classes.Any(t => detailClasses.Contains(t))) {
-                if (evaluation.Dim != null && evaluation.Dim.Count == 2) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         #region IRSessionDataObject
-        /// <summary>
-        /// Index returned from evaluation provider, Sort is based on this, and assumes that DebugEvaluationResult returns in ascending order
-        /// </summary>
-        public int Index { get; }
 
         public string Name { get; protected set; }
 
@@ -145,11 +123,10 @@ namespace Microsoft.R.Editor.Data {
 
         public string Expression {
             get {
-                return _evaluation.Expression;
+                return DebugEvaluation.Expression;
             }
         }
 
-        public bool CanShowDetail { get; protected set; }
         #endregion
     }
 }

@@ -3,12 +3,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Editor.Data {
     public interface IRSessionDataObject {
-        /// <summary>
-        /// Index returned from the evaluation provider. 
-        /// DebugEvaluationResult returns in ascending order
-        /// </summary>
-        int Index { get; }
-
         string Name { get; }
 
         string Value { get; }
@@ -26,8 +20,6 @@ namespace Microsoft.R.Editor.Data {
         bool IsHidden { get; }
 
         string Expression { get; }
-
-        bool CanShowDetail { get; }
 
         Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsync();
     }

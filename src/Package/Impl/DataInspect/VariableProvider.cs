@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -36,15 +38,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public event EventHandler<VariableChangedArgs> VariableChanged;
 
-        public EvaluationWrapper LastEvaluation { get; private set; }
+        public EvaluationWrapper GlobalEnvironment { get; private set; }
 
         public async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange gridRange) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var rSession = _rSession;
 
-            string rows = RangeToRString(gridRange.Rows);
-            string columns = RangeToRString(gridRange.Columns);
+            string rows = gridRange.Rows.ToRString();
+            string columns = gridRange.Columns.ToRString();
 
             using (var elapsed = new Elapsed("Data:Evaluate:")) {
                 using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
@@ -81,6 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void RSession_Mutated(object sender, EventArgs e) {
             RefreshVariableCollection().SilenceException<Exception>().DoNotWait();
+            PublishAllAsync().SilenceException<Exception>().DoNotWait();
         }
 
         #endregion
@@ -103,18 +106,94 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (globalStackFrame != null) {
                 DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("environment()", "Global Environment");
 
-                LastEvaluation = new EvaluationWrapper(-1, evaluation, false);  // root level doesn't truncate children and return every variables
+                GlobalEnvironment = new EvaluationWrapper(-1, evaluation, false);  // root level doesn't truncate children and return every variables
 
                 if (VariableChanged != null) {
                     VariableChanged(
                         this,
-                    new VariableChangedArgs() { NewVariable = LastEvaluation });
+                    new VariableChangedArgs() { NewVariable = GlobalEnvironment });
                 }
             }
         }
 
-        private static string RangeToRString(Range range) {
-            return $"{range.Start + 1}:{range.Start + range.Count}";
+        #region variable subscription model
+
+        private readonly Dictionary<VariableSubscriptionToken, List<VariableSubscription>> _subscribers = new Dictionary<VariableSubscriptionToken, List<VariableSubscription>>();
+
+        public string GlobalEnvironmentExpression {
+            get {
+                return "sys.frame(0)";
+            }
         }
+
+        public VariableSubscription Subscribe(
+            string environmentExpression,
+            string variableExpression,
+            Action<DebugEvaluationResult> executeAction) {
+
+            var token = new VariableSubscriptionToken(environmentExpression, variableExpression);
+
+            var subscription = new VariableSubscription(
+                token,
+                executeAction,
+                Unsubscribe);
+
+            lock (_subscribers) {
+                List<VariableSubscription> subscriptions;
+                if (_subscribers.TryGetValue(subscription.Token, out subscriptions)) {
+                    subscriptions.Add(subscription);
+                } else {
+                    _subscribers.Add(
+                        token,
+                        new List<VariableSubscription>() { subscription });
+                }
+            }
+
+            return subscription;
+        }
+
+        public void Unsubscribe(VariableSubscription subscription) {
+            lock (_subscribers) {
+                List<VariableSubscription> subscriptions;
+                if (_subscribers.TryGetValue(subscription.Token, out subscriptions)) {
+                    if (!subscriptions.Remove(subscription)) {
+                        Debug.Fail("Subscription is not found");
+                    }
+                    if (subscriptions.Count == 0) {
+                        _subscribers.Remove(subscription.Token);
+                    }
+                }
+            }
+        }
+
+        private async Task PublishAllAsync() {
+            List<Task> subsribeTasks = new List<Task>();
+            lock (_subscribers) {
+                foreach (var kv in _subscribers) {
+                    subsribeTasks.Add(PublishAsync(kv.Key, kv.Value));
+                }
+            }
+
+            await Task.WhenAll(subsribeTasks);
+        }
+
+        private async Task PublishAsync(VariableSubscriptionToken token, IList<VariableSubscription> subscriptions) {
+            if (subscriptions.Count == 0) {
+                return;
+            }
+
+            if (_debugSession == null) {
+                return;
+            }
+
+            var result = await _debugSession.EvaluateAsync(null, token.Expression, "Global Environment" /* BUG BUG */, token.Environment, DebugEvaluationResultFields.All);
+
+            foreach (var sub in subscriptions) {
+                var action = sub.GetExecuteAction();
+                action(result);
+            }
+        }
+
+        #endregion
     }
 }

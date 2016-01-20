@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -54,17 +55,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             List<string> values = new List<string>();
             current = Vector(input, values, current);
-
-            //while (true) {
-            //    List<string> columnValues = new List<string>();
-            //    current = Vector(input, columnValues, current);
-            //    data.Values.Add(columnValues);
-
-            //    current = input.IndexOfAny(ValueDelimiter, current);
-            //    if (input[current] == ValueDelimiter[ClosingIndex]) {
-            //        break;
-            //    }
-            //}
 
             GridData data = new GridData(rowNames, columnNames, values);
             data.ValidHeaderNames = validHeaderNames;

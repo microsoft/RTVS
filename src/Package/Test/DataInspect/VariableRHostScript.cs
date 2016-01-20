@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         public EvaluationWrapper GlobalEnvironment {
             get {
-                return _variableProvider.LastEvaluation;
+                return _variableProvider.GlobalEnvironment;
             }
         }
 
