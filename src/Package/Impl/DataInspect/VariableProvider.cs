@@ -16,6 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private IRSession _rSession;
         private DebugSession _debugSession;
+        private VariableSubscription _globalEnvSubscription;
 
         public VariableProvider() {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
@@ -35,8 +36,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// Singleton
         /// </summary>
         public static VariableProvider Current => _instance ?? (_instance = new VariableProvider());
-
-        public event EventHandler<VariableChangedArgs> VariableChanged;
 
         public EvaluationWrapper GlobalEnvironment { get; private set; }
 
@@ -82,7 +81,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #region RSession related event handler
 
         private void RSession_Mutated(object sender, EventArgs e) {
-            RefreshVariableCollection().SilenceException<Exception>().DoNotWait();
             PublishAllAsync().SilenceException<Exception>().DoNotWait();
         }
 
@@ -92,46 +90,26 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             _debugSession = await debugSessionProvider.GetDebugSessionAsync(_rSession);
 
-            await RefreshVariableCollection();
-        }
-
-        private async Task RefreshVariableCollection() {
-            if (_debugSession == null) {
-                return;
+            if (_globalEnvSubscription != null) {
+                Unsubscribe(_globalEnvSubscription);
+                _globalEnvSubscription = null;
             }
 
-            var stackFrames = await _debugSession.GetStackFramesAsync();
+            _globalEnvSubscription = Subscribe(0, "environment()", (r) => GlobalEnvironment = new EvaluationWrapper(-1, r, false));
 
-            var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
-            if (globalStackFrame != null) {
-                DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("environment()", "Global Environment");
-
-                GlobalEnvironment = new EvaluationWrapper(-1, evaluation, false);  // root level doesn't truncate children and return every variables
-
-                if (VariableChanged != null) {
-                    VariableChanged(
-                        this,
-                    new VariableChangedArgs() { NewVariable = GlobalEnvironment });
-                }
-            }
+            await PublishAllAsync();
         }
 
         #region variable subscription model
 
         private readonly Dictionary<VariableSubscriptionToken, List<VariableSubscription>> _subscribers = new Dictionary<VariableSubscriptionToken, List<VariableSubscription>>();
 
-        public string GlobalEnvironmentExpression {
-            get {
-                return "sys.frame(0)";
-            }
-        }
-
         public VariableSubscription Subscribe(
-            string environmentExpression,
+            int frameIndex,
             string variableExpression,
             Action<DebugEvaluationResult> executeAction) {
 
-            var token = new VariableSubscriptionToken(environmentExpression, variableExpression);
+            var token = new VariableSubscriptionToken(frameIndex, variableExpression);
 
             var subscription = new VariableSubscription(
                 token,
@@ -186,11 +164,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return;
             }
 
-            var result = await _debugSession.EvaluateAsync(null, token.Expression, "Global Environment" /* BUG BUG */, token.Environment, DebugEvaluationResultFields.All);
+            var stackFrames = await _debugSession.GetStackFramesAsync();
+            var stackFrame = stackFrames.FirstOrDefault(f => f.Index == token.FrameIndex);
 
-            foreach (var sub in subscriptions) {
-                var action = sub.GetExecuteAction();
-                action(result);
+            if (stackFrame != null) {
+                DebugEvaluationResult evaluation = await stackFrame.EvaluateAsync(token.Expression);
+
+                foreach (var sub in subscriptions) {
+                    try {
+                        var action = sub.GetExecuteAction();
+                        action(evaluation);
+                    } catch (Exception e) {
+                        Debug.Fail(e.ToString());
+                        // swallow exception and continue
+                    }
+                }
             }
         }
 

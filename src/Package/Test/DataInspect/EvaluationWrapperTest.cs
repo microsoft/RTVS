@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 await hostScript.EvaluateAsync("ls()"); // run anything
 
                 var target = hostScript.GlobalEnvironment;
-                target.Name.Should().BeEquivalentTo("Global Environment");
+                target.Expression.ShouldBeEquivalentTo("environment()");
             }
         }
 

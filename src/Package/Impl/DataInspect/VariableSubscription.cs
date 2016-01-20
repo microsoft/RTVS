@@ -22,15 +22,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         internal VariableSubscriptionToken Token { get; }
 
         /// <summary>
-        /// R expression to evaluate environment.
-        /// </summary>
-        public string Environment {
-            get {
-                return Token.Environment;
-            }
-        }
-
-        /// <summary>
         /// R expression to evaluate variable in environment 
         /// </summary>
         public string Expression {

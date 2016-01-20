@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
 using Microsoft.R.Debugger;
-using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, IDisposable {
         ObservableTreeNode _rootNode;
+        VariableSubscription _globalEnvSubscription;
+
+        const string GlobalEnvironmentName = "Global Environment";
 
         public VariableView() {
             InitializeComponent();
@@ -19,20 +21,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 SetRootNode(EvaluationWrapper.Ellipsis);
             } else {
                 SetRootNode(VariableProvider.Current.GlobalEnvironment);
-                EnvironmentName.Text = VariableProvider.Current.GlobalEnvironment.Name;
+                EnvironmentName.Text = GlobalEnvironmentName;
             }
-            //VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
 
-            VariableProvider.Current.Subscribe(".GlobalEnv", "environment()", SubscribeGlobalEnvironment);
+            _globalEnvSubscription = VariableProvider.Current.Subscribe(0, "environment()", SubscribeGlobalEnvironment);
 
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
         }
 
         public void Dispose() {
-            // Used in tests only
-            VariableProvider.Current.VariableChanged -= VariableProvider_VariableChanged;
+            if (_globalEnvSubscription != null) {
+                _globalEnvSubscription.Dispose();
+                _globalEnvSubscription = null;
+            }
+
             RootTreeGrid.Sorting -= RootTreeGrid_Sorting;
-            VariableProvider.Current.Dispose();
         }
 
         private void RootTreeGrid_Sorting(object sender, DataGridSortingEventArgs e) {
@@ -49,23 +52,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         void SubscribeGlobalEnvironment(DebugEvaluationResult result) {
             var wrapper = new EvaluationWrapper(-1, result, false);
+
             var rootNodeModel = new VariableNode(wrapper);
+
             VsAppShell.Current.DispatchOnUIThread(
                 () => {
-                    EnvironmentName.Text = wrapper.Name;
+                    EnvironmentName.Text = GlobalEnvironmentName;
                     _rootNode.Model = rootNodeModel;
-                });
-        }
-
-        private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
-            VariableChanged(e.NewVariable);
-        }
-
-        private void VariableChanged(EvaluationWrapper variable) {
-            VsAppShell.Current.DispatchOnUIThread(
-                () => {
-                    EnvironmentName.Text = variable.Name;
-                    _rootNode.Model = new VariableNode(variable);
                 });
         }
 

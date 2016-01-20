@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Data {
         public RSessionDataObject(DebugEvaluationResult evaluation) {
             DebugEvaluation = evaluation;
 
-            Name = DebugEvaluation.Name.TrimStart(NameTrimChars);
+            Name = DebugEvaluation.Name?.TrimStart(NameTrimChars);
 
             if (DebugEvaluation is DebugValueEvaluationResult) {
                 var valueEvaluation = (DebugValueEvaluationResult)DebugEvaluation;

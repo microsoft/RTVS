@@ -1,35 +1,75 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Common.Core;
-using Newtonsoft.Json.Linq;
+using Microsoft.R.Debugger;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableGridHost : UserControl {
+        private EvaluationWrapper _evaluation;
+        private VariableSubscription _subscription;
+
         public VariableGridHost() {
             InitializeComponent();
-
-            Loaded += VariableGridHost_Loaded;
-            Unloaded += VariableGridHost_Unloaded;
         }
         
         internal void SetEvaluation(EvaluationWrapper evaluation) {
             VariableGrid.Initialize(new DataProvider(evaluation));
+
+            _evaluation = evaluation;
+
+            if (_subscription != null) {
+                VariableProvider.Current.Unsubscribe(_subscription);
+                _subscription = null;
+            }
+
+            _subscription = VariableProvider.Current.Subscribe(
+                evaluation.FrameIndex,
+                evaluation.Expression,
+                SubscribeAction);
         }
 
-        private void VariableGridHost_Loaded(object sender, System.Windows.RoutedEventArgs e) {
-            VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
+        private void SubscribeAction(DebugEvaluationResult evaluation) {
+            VsAppShell.Current.DispatchOnUIThread(
+                () => {
+                    if (evaluation is DebugErrorEvaluationResult) {
+                        var error = (DebugErrorEvaluationResult)evaluation;
+                        SetError(error.ErrorText);
+                        return;
+                    }
+
+                    var wrapper = new EvaluationWrapper(-1, evaluation, true);
+
+                    if (wrapper.Dimensions.Count != 2) {
+                        // the same evaluation changed to non-matrix
+                        SetError($"object '{evaluation.Expression}' is not two dimensional.");
+                    } else if (wrapper.Dimensions[0] != _evaluation.Dimensions[0]
+                        || wrapper.Dimensions[1] != _evaluation.Dimensions[1]) {
+                        ClearError();
+
+                        // matrix size changed. Reset the evaluation
+                        SetEvaluation(wrapper);
+                    } else {
+                        ClearError();
+                        
+                        // size stays same. Refresh
+                        VariableGrid.Refresh();
+                    }
+                });
         }
 
-        private void VariableGridHost_Unloaded(object sender, System.Windows.RoutedEventArgs e) {
-            VariableProvider.Current.VariableChanged -= VariableProvider_VariableChanged;
+        private void SetError(string text) {
+            ErrorTextBlock.Text = text;
+            ErrorTextBlock.Visibility = Visibility.Visible;
+
+            VariableGrid.Visibility = Visibility.Collapsed;
         }
 
-        private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
-            VariableGrid.Refresh();
+        private void ClearError() {
+            ErrorTextBlock.Visibility = Visibility.Collapsed;
+
+            VariableGrid.Visibility = Visibility.Visible;
         }
     }
 

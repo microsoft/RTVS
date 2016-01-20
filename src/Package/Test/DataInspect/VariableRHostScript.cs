@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task EvaluateAsync(string rScript) {
             try {
                 _mre = new ManualResetEventSlim();
-                _variableProvider.VariableChanged += VariableProvider_VariableChanged;
+                Session.Mutated += Session_Mutated;
                 using (var evaluation = await base.Session.BeginEvaluationAsync()) {
                     await evaluation.EvaluateAsync(rScript, REvaluationKind.UnprotectedEnv);
                 }
@@ -57,8 +57,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                     throw new TimeoutException("Evaluate time out");
                 }
             } finally {
-                _variableProvider.VariableChanged -= VariableProvider_VariableChanged;
+                Session.Mutated -= Session_Mutated;
             }
+        }
+
+        private void Session_Mutated(object sender, EventArgs e) {
+            _mre.Set();
         }
 
         /// <summary>
@@ -79,10 +83,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         private static void AssertEvaluationWrapper(IRSessionDataObject v, VariableExpectation expectation) {
             v.ShouldBeEquivalentTo(expectation, o => o.ExcludingMissingMembers());
-        }
-
-        private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
-            _mre.Set();
         }
 
         protected override void Dispose(bool disposing) {

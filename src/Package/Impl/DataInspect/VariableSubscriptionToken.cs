@@ -4,28 +4,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Token to distinguish variable subscription
     /// </summary>
-    internal class VariableSubscriptionToken : IEquatable<VariableSubscription> {
-        public VariableSubscriptionToken(string environmentExpression, string variableExpression) {
-            Environment = environmentExpression;
+    internal class VariableSubscriptionToken : IEquatable<VariableSubscriptionToken> {
+        public VariableSubscriptionToken(int frameIndex, string variableExpression) {
+            FrameIndex = frameIndex;
             Expression = variableExpression;
         }
 
         /// <summary>
-        /// R expression to evaluate environment.
+        /// frame index, global environment is 0
         /// </summary>
-        public string Environment { get; }
+        public int FrameIndex { get; }
 
         /// <summary>
         /// R expression to evaluate variable in environment 
         /// </summary>
         public string Expression { get; }
 
-        public bool Equals(VariableSubscription other) {
+        public bool Equals(VariableSubscriptionToken other) {
             if (other == null) {
                 return false;
             }
 
-            return Environment == other.Environment && Expression == other.Expression;
+            return FrameIndex == other.FrameIndex && Expression == other.Expression;
         }
     }
 }
