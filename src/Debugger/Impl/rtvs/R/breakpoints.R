@@ -107,9 +107,7 @@ steps_for_line_num <- function(expr, line, have_srcrefs = FALSE) {
       # If there was no subdivision, then this is the exact instruction, but only if there was an srcref,
       # and this is not a breakpoint. However, if this is an opening curly brace for a block, and parent
       # had an srcref, then match the parent (which will be the whole block).
-      is_breakpoint <- attr(expr[[i]], 'rtvs::is_breakpoint');
-      is_breakpoint <- !is.null(is_breakpoint) && is_breakpoint;
-      if (!is.null(srcref) && !is_breakpoint && (!have_srcrefs || !is_brace(expr[[i]]))) {
+      if (!is.null(srcref) && !isTRUE(attr(expr[[i]], 'rtvs::is_breakpoint')) && (!have_srcrefs || !is_brace(expr[[i]]))) {
         return(i)
       }
     }
@@ -144,9 +142,7 @@ inject_breakpoints <- function(expr) {
      target_expr <- expr[[step]];
 
       # If there's already an injected breakpoint there, nothing to do for this line.
-      at_breakpoint <- attr(target_expr, 'rtvs::at_breakpoint');
-      at_breakpoint <- !is.null(at_breakpoint) && at_breakpoint;
-      if (at_breakpoint) {
+      if (isTRUE(attr(target_expr, 'rtvs::at_breakpoint'))) {
         next;
       }
 
