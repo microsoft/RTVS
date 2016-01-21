@@ -43,8 +43,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 _unsubscribe(this);
                 _unsubscribe = null;
             }
-
-            GC.SuppressFinalize(this);
         }
 
         public Action<DebugEvaluationResult> GetExecuteAction() {

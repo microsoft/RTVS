@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
 using Microsoft.R.Debugger;
+using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -17,14 +18,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             SortDirection = ListSortDirection.Ascending;
 
-            if (VariableProvider.Current.GlobalEnvironment == null) {
-                SetRootNode(EvaluationWrapper.Ellipsis);
-            } else {
-                SetRootNode(VariableProvider.Current.GlobalEnvironment);
-                EnvironmentName.Text = GlobalEnvironmentName;
-            }
+            var variableProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IVariableDataProvider>();
 
-            _globalEnvSubscription = VariableProvider.Current.Subscribe(0, VariableProvider.GlobalEnvironmentExpression, OnGlobalEnvironmentEvaluation);
+            SetRootNode(EvaluationWrapper.Ellipsis);
+
+            _globalEnvSubscription = variableProvider.Subscribe(0, VariableProvider.GlobalEnvironmentExpression, OnGlobalEnvironmentEvaluation);
 
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
         }

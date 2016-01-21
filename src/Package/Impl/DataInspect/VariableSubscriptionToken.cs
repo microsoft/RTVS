@@ -6,6 +6,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// </summary>
     internal class VariableSubscriptionToken : IEquatable<VariableSubscriptionToken> {
         public VariableSubscriptionToken(int frameIndex, string variableExpression) {
+            if (variableExpression == null) {
+                throw new ArgumentNullException("variableExpression");
+            }
             FrameIndex = frameIndex;
             Expression = variableExpression;
         }
@@ -26,6 +29,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             return FrameIndex == other.FrameIndex && Expression == other.Expression;
+        }
+
+        public override bool Equals(object obj) {
+            if (ReferenceEquals(this, obj)) return true;
+            return Equals(obj as VariableSubscriptionToken);
+        }
+
+        public override int GetHashCode() {
+            return FrameIndex.GetHashCode() ^ Expression.GetHashCode();
         }
     }
 }

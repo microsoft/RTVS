@@ -8,21 +8,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class EvaluationWrapperTest {
-
-        public EvaluationWrapperTest() {
-        }
-
-        [Test]
-        [Category.Variable.Explorer]
-        public async Task GlobalEnvironmentTest() {
-            using (var hostScript = new VariableRHostScript()) {
-                await hostScript.EvaluateAsync("ls()"); // run anything
-
-                var target = hostScript.GlobalEnvironment;
-                target.Expression.ShouldBeEquivalentTo("environment()");
-            }
-        }
-
         // TODO: RStudio difference
         //    value.integer.1   RS 1L                    RTVS just 1
         //    value.numeric.big RS 98765432109876543210  RTVS 9.88e+19
