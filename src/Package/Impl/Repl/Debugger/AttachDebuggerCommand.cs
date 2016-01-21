@@ -9,9 +9,13 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
-    internal sealed class AttachDebuggerCommand : DebuggerCommand {
+    internal class AttachDebuggerCommand : DebuggerCommand {
         public AttachDebuggerCommand(IRSessionProvider rSessionProvider)
             : base(rSessionProvider, RPackageCommandId.icmdAttachDebugger, DebuggerCommandVisibility.DesignMode) {
+        }
+
+        protected AttachDebuggerCommand(IRSessionProvider rSessionProvider, int cmdId, DebuggerCommandVisibility visibility)
+            : base(rSessionProvider, cmdId, visibility) {
         }
 
         protected unsafe override void Handle() {

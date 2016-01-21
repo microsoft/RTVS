@@ -5,6 +5,8 @@
   <Extern href="vsshlids.h" />
   <Extern href="vsshell\shellicons.h" />
   <Extern href="sharedids.h"/>
+  <Extern href="VSDbgCmd.h"/>
+  <Extern href="VsDebugGuids.h"/>
 
   <!-- ImageCatalog icons from the ImageService-->
   <!-- See http://glyphlist.azurewebsites.net/knownmonikers -->
@@ -344,10 +346,23 @@
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>IconAndText</CommandFlag>
         <Strings>
           <ButtonText>Attach Debugger</ButtonText>
           <MenuText>A&amp;ttach Debugger</MenuText>
           <CommandName>Attach Debugger</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdAttachToRInteractive" priority="0x0500" type="Button">
+        <Icon guid="ImageCatalogGuid" id="RemoteDebugger"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Attach to R Interactive</ButtonText>
+          <MenuText>Attach to R I&amp;nteractive</MenuText>
+          <CommandName>Attach to R Interactive</CommandName>
         </Strings>
       </Button>
 
@@ -1099,6 +1114,10 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachToRInteractive" priority="0x0E01">
+      <Parent guid="guidVSDebugGroup" id="IDG_EXECUTION"/>
+    </CommandPlacement>
+    
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdContinueDebugging" priority="0x0460">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
@@ -1221,6 +1240,7 @@
       <IDSymbol name="icmdStepInto" value="513" />
       <IDSymbol name="icmdStepOut" value="514" />
       <IDSymbol name="icmdStepOver" value="515" />
+      <IDSymbol name="icmdAttachToRInteractive" value="516" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
