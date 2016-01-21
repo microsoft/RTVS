@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -20,7 +22,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public int RowCount { get; }
 
         public Task<IGridData<string>> GetAsync(GridRange gridRange) {
-            return VariableProvider.Current.GetGridDataAsync(_evaluation.Expression, gridRange);
+            var t = _evaluation.GetGridDataAsync(_evaluation.Expression, gridRange);
+            if (t == null) {
+                Debug.Fail(Invariant($"{nameof(EvaluationWrapper)} returned null grid data"));
+                return Task.FromResult<IGridData<string>>(null);
+            }
+
+            return t;
         }
 
         public Task<IGrid<string>> GetRangeAsync(GridRange gridRange) {

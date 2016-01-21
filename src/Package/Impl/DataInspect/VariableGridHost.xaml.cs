@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.R.Debugger;
+using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -10,9 +11,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableGridHost : UserControl {
         private EvaluationWrapper _evaluation;
         private VariableSubscription _subscription;
+        private IVariableDataProvider _variableProvider;
 
         public VariableGridHost() {
             InitializeComponent();
+
+            _variableProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IVariableDataProvider>();
         }
         
         internal void SetEvaluation(EvaluationWrapper evaluation) {
@@ -21,11 +25,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _evaluation = evaluation;
 
             if (_subscription != null) {
-                VariableProvider.Current.Unsubscribe(_subscription);
+                _variableProvider.Unsubscribe(_subscription);
                 _subscription = null;
             }
 
-            _subscription = VariableProvider.Current.Subscribe(
+            _subscription = _variableProvider.Subscribe(
                 evaluation.FrameIndex,
                 evaluation.Expression,
                 SubscribeAction);
