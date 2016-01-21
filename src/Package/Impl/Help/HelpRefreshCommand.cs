@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            if (_component.Browser != null && _component.Browser.Source != null) {
+            if (_component.Browser != null && _component.Browser.Url != null) {
                 return CommandStatus.SupportedAndEnabled;
             }
             return CommandStatus.Supported;
