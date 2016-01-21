@@ -41,8 +41,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             DoIdle(100);
         }
 
+        public EvaluationWrapper GlobalEnvrionment {
+            get {
+                return _globalEnv;
+            }
+        }
+
         private void OnGlobalEnvironmentEvaluated(DebugEvaluationResult result) {
-            _globalEnv = new EvaluationWrapper(-1, result, false);
+            _globalEnv = new EvaluationWrapper(result);
             _mre.Set();
         }
 
