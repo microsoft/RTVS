@@ -14,7 +14,8 @@ namespace SetupCustomActions {
             string exceptionMessage = null;
             bool resetKeyboard = false;
 
-            MessageBox.Show("Custom Action", "Begin!");
+            // Uncomment for debugging
+            //MessageBox.Show("Custom Action", "Begin!");
             session.Log("Begin Data Science profile import action");
 
             string ideFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft Visual Studio 14.0\Common7\IDE\");
@@ -51,12 +52,6 @@ namespace SetupCustomActions {
 
             session.Log("End Data Science profile import action");
             return actionResult;
-        }
-
-        private static ActionResult RunVs(Session session, string ideFolder, string settingsFilePath) {
-            ActionResult result = ActionResult.Success;
-
-            return result;
         }
     }
 }
