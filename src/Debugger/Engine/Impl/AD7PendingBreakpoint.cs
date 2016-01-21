@@ -79,6 +79,10 @@ namespace Microsoft.R.Debugger.Engine {
                 return VSConstants.E_FAIL;
             }
 
+            if (_boundBreakpoint != null) {
+                Marshal.ThrowExceptionForHR(((IDebugBoundBreakpoint2)_boundBreakpoint).Enable(fEnable));
+            }
+
             _state = fEnable == 0 ? enum_PENDING_BP_STATE.PBPS_DISABLED : enum_PENDING_BP_STATE.PBPS_ENABLED;
             return VSConstants.S_OK;
         }
