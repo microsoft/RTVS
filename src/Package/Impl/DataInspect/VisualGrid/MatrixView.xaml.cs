@@ -23,12 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public MatrixView() {
             InitializeComponent();
-
-            Unloaded += MatrixView_Unloaded;
-        }
-
-        private void MatrixView_Unloaded(object sender, RoutedEventArgs e) {
-            _scroller?.StopScroller();
         }
 
         public void Initialize(IGridProvider<string> dataProvider) {
