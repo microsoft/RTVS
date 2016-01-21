@@ -538,4 +538,7 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   <data name="Settings_HelpBrowser_Description" xml:space="preserve">
     <value>Determines if R Tools should always be using external Web browser or try and send Help pages to the Help window and other Web requests to the external default Web browser.</value>
   </data>
+  <data name="VariableExplorer_Truncated" xml:space="preserve">
+    <value>[truncated]</value>
+  </data>
 </root>

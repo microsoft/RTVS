@@ -8,7 +8,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Implementation of <see cref="INotifyPropertyChanged"/> to simplify models.
     /// </summary>
-    public abstract class BindableBase : INotifyPropertyChanged // TODO: move to common
+    public abstract class BindableBase : INotifyPropertyChanged
     {
         /// <summary>
         /// Occurs when a property value changes.
