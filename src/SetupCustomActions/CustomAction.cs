@@ -6,7 +6,9 @@ namespace SetupCustomActions {
         [CustomAction]
         public static ActionResult DSProfilePromptAction(Session session) {
             session.Log("Begin DSProfilePromptAction");
-            MessageBox.Show("Would you like to set Data Scientist profile?", "R Tools for Visual Studio");
+            var form = new DSProfilePromptForm();
+            DialogResult result = form.ShowDialog();
+            //MessageBox.Show("Would you like to set Data Scientist profile?", "R Tools for Visual Studio");
             return ActionResult.Success;
         }
     }
