@@ -23,12 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public MatrixView() {
             InitializeComponent();
-
-            Unloaded += MatrixView_Unloaded;
-        }
-
-        private void MatrixView_Unloaded(object sender, RoutedEventArgs e) {
-            _scroller?.StopScroller();
         }
 
         public void Initialize(IGridProvider<string> dataProvider) {
@@ -196,6 +190,33 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         #endregion
+
+        protected override void OnKeyDown(KeyEventArgs e) {
+            e.Handled = true;
+            if (e.Key == Key.Up) {
+                _scroller?.EnqueueCommand(ScrollType.LineUp, 0);
+            } else if (e.Key == Key.Down) {
+                _scroller?.EnqueueCommand(ScrollType.LineDown, 0);
+            } else if (e.Key == Key.Right) {
+                _scroller?.EnqueueCommand(ScrollType.LineRight, 0);
+            } else if (e.Key == Key.Left) {
+                _scroller?.EnqueueCommand(ScrollType.LineLeft, 0);
+            } else if (e.Key == Key.PageUp) {
+                _scroller?.EnqueueCommand(ScrollType.PageUp, 0);
+            } else if (e.Key == Key.PageDown) {
+                _scroller?.EnqueueCommand(ScrollType.PageDown, 0);
+            } else if (e.Key == Key.Home) {
+                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 0);
+            } else if (e.Key == Key.End) {
+                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, double.PositiveInfinity);
+            } else {
+                e.Handled = false;
+            }
+
+            if (!e.Handled) {
+                base.OnKeyDown(e);
+            }
+        }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
             base.OnRenderSizeChanged(sizeInfo);

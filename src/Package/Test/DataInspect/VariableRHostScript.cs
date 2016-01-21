@@ -11,6 +11,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.DataInspect;
+using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
@@ -29,11 +30,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
     [ExcludeFromCodeCoverage]
     class VariableRHostScript : RHostScript {
-        private VariableProvider _variableProvider;
+        private IVariableDataProvider _variableProvider;
 
         public VariableRHostScript() :
             base(VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>()) {
-
             _variableProvider = VariableProvider.Current;
             DoIdle(100);
         }

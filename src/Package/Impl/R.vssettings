@@ -3,6 +3,35 @@
   <ApplicationIdentity version="14.0"/>
   <ToolsOptions>
     <ToolsOptionsCategory name="Environment" RegisteredName="Environment"/>
+    <ToolsOptionsCategory name="TextEditor" RegisteredName="TextEditor">
+      <ToolsOptionsSubCategory name="R" RegisteredName="Basic" PackageName="Text Management Package">
+        <PropertyValue name="TabSize">4</PropertyValue>
+        <PropertyValue name="ShowChanges">true</PropertyValue>
+        <PropertyValue name="AutoListMembers">true</PropertyValue>
+        <PropertyValue name="ShowPreview">true</PropertyValue>
+        <PropertyValue name="ShowMarks">true</PropertyValue>
+        <PropertyValue name="IndentStyle">2</PropertyValue>
+        <PropertyValue name="ShowCaretPosition">true</PropertyValue>
+        <PropertyValue name="HideAdvancedMembers">false</PropertyValue>
+        <PropertyValue name="ShowNavigationBar">false</PropertyValue>
+        <PropertyValue name="UseMapMode">false</PropertyValue>
+        <PropertyValue name="VirtualSpace">false</PropertyValue>
+        <PropertyValue name="ShowAnnotations">true</PropertyValue>
+        <PropertyValue name="ShowVerticalScrollBar">true</PropertyValue>
+        <PropertyValue name="InsertTabs">false</PropertyValue>
+        <PropertyValue name="WordWrapGlyphs">true</PropertyValue>
+        <PropertyValue name="EnableLeftClickForURLs">true</PropertyValue>
+        <PropertyValue name="ShowErrors">true</PropertyValue>
+        <PropertyValue name="OverviewWidth">58</PropertyValue>
+        <PropertyValue name="ShowLineNumbers">true</PropertyValue>
+        <PropertyValue name="WordWrap">false</PropertyValue>
+        <PropertyValue name="IndentSize">4</PropertyValue>
+        <PropertyValue name="BraceCompletion">true</PropertyValue>
+        <PropertyValue name="ShowHorizontalScrollBar">true</PropertyValue>
+        <PropertyValue name="CutCopyBlankLines">true</PropertyValue>
+        <PropertyValue name="AutoListParams">true</PropertyValue>
+      </ToolsOptionsSubCategory>
+    </ToolsOptionsCategory>
   </ToolsOptions>
   <Category name="Environment_Group" RegisteredName="Environment_Group">
     <Category name="Environment_TabsAndWindows" Category="{CCF27946-63D9-4806-91BA-EEBF5F3DFA4A}" Package="{5E56B3DB-7964-4588-8D49-D3523AB7BDB9}" RegisteredName="Environment_TabsAndWindows" PackageName="Environment Package Window Management">

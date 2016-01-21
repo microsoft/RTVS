@@ -1277,7 +1277,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compable with the RStudio where possible?.
+        ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?.
         /// </summary>
         public static string Warning_RStudioKeyboardShortcuts {
             get {

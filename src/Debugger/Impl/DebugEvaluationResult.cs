@@ -100,6 +100,20 @@ namespace Microsoft.R.Debugger {
 
             return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0);
         }
+
+        public Task<DebugEvaluationResult> EvaluateAsync(
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
+            int? reprMaxLength = null
+        ) {
+            if (StackFrame == null) {
+                throw new InvalidOperationException("Cannot re-evaluate an evaluation result that is not tied to a frame.");
+            }
+            if (Expression == null) {
+                throw new InvalidOperationException("Cannot re-evaluate an evaluation result that does not have an associated expression.");
+            }
+
+            return StackFrame.EvaluateAsync(Expression, Name, fields, reprMaxLength);
+        }
     }
 
     public class DebugErrorEvaluationResult : DebugEvaluationResult {
@@ -203,20 +217,22 @@ namespace Microsoft.R.Debugger {
                     throw new InvalidDataException(Invariant($"Invalid kind '{kind}' in:\n\n{json}"));
             }
 
-            var flags = json.Value<JArray>("flags").Select(v => v.Value<string>());
-            foreach (var flag in flags) {
-                switch (flag) {
-                    case "atomic":
-                        Flags |= DebugValueEvaluationResultFlags.Atomic;
-                        break;
-                    case "recursive":
-                        Flags |= DebugValueEvaluationResultFlags.Recursive;
-                        break;
-                    case "has_parent_env":
-                        Flags |= DebugValueEvaluationResultFlags.HasParentEnvironment;
-                        break;
-                    default:
-                        throw new InvalidDataException(Invariant($"Unrecognized flag '{flag}' in:\n\n{json}"));
+            var flags = json.Value<JArray>("flags")?.Select(v => v.Value<string>());
+            if (flags != null) {
+                foreach (var flag in flags) {
+                    switch (flag) {
+                        case "atomic":
+                            Flags |= DebugValueEvaluationResultFlags.Atomic;
+                            break;
+                        case "recursive":
+                            Flags |= DebugValueEvaluationResultFlags.Recursive;
+                            break;
+                        case "has_parent_env":
+                            Flags |= DebugValueEvaluationResultFlags.HasParentEnvironment;
+                            break;
+                        default:
+                            throw new InvalidDataException(Invariant($"Unrecognized flag '{flag}' in:\n\n{json}"));
+                    }
                 }
             }
         }
@@ -230,6 +246,9 @@ namespace Microsoft.R.Debugger {
 
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
+            }
+            if (Expression == null) {
+                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated expression.");
             }
 
             var call = Invariant($@"rtvs:::toJSON(rtvs:::describe_children(
