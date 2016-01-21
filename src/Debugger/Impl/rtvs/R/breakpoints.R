@@ -241,5 +241,5 @@ debug_parse <- function(filename, encoding = getOption('encoding')) {
 }
 
 debug_source <- function(file, encoding = getOption('encoding')) {
-  eval.parent(debug_parse(file, encoding))
+  safe_eval(debug_parse(file, encoding), parent.frame(1))
 }
