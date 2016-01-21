@@ -2,6 +2,10 @@ call_embedded <- function(name, ...) {
   .Call(paste0('Microsoft.R.Host::Call.', name, collapse = ''), ..., PACKAGE = '(embedding)')
 }
 
+external_embedded <- function(name, ...) {
+  .External(paste0('Microsoft.R.Host::External.', name, collapse = ''), ..., PACKAGE = '(embedding)')
+}
+
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
   call_embedded('memory_connection', max_length, expected_length, overflow_suffix, eof_marker)
 }
