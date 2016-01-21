@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         ShowMatchingBrace = true, MatchBraces = true, MatchBracesAtCaret = true, ShowCompletion = true, EnableLineNumbers = true,
         EnableFormatSelection = true, DefaultToInsertSpaces = true, RequestStockColors = true)]
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
-    [DefaultIndentAttribute(RContentTypeDefinition.LanguageName, 2, true)]
+    [LanguageEditorOptionsAttribute(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]

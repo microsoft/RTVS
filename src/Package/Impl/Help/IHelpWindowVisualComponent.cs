@@ -1,4 +1,4 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows.Forms;
 using Microsoft.VisualStudio.R.Package.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
