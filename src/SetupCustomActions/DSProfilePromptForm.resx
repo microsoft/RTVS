@@ -2591,4 +2591,10 @@
         1xERERERt9auIyIiIiJurV1HRERERNzUn3/0/2QrjKIFfM9lAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="PromptText.Text" xml:space="preserve">
+    <value>The Data Scientist Profile, provides a window layout and keyboard shortcuts similar
+to other IDE’s.  Would you like activate this profile? If you want to keep existing 
+keyboard shotcuts, set the checkbox below to on.
+</value>
+  </data>
 </root>

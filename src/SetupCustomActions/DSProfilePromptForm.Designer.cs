@@ -28,7 +28,7 @@
             this.buttonNo = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.PromptText = new System.Windows.Forms.Label();
-            this.resetKeyboard = new System.Windows.Forms.CheckBox();
+            this.keepShortcuts = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -39,7 +39,7 @@
             this.buttonYes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonYes.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.buttonYes.ForeColor = System.Drawing.Color.Silver;
-            this.buttonYes.Location = new System.Drawing.Point(344, 415);
+            this.buttonYes.Location = new System.Drawing.Point(344, 426);
             this.buttonYes.Name = "buttonYes";
             this.buttonYes.Size = new System.Drawing.Size(86, 30);
             this.buttonYes.TabIndex = 0;
@@ -54,7 +54,7 @@
             this.buttonNo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonNo.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.buttonNo.ForeColor = System.Drawing.Color.Silver;
-            this.buttonNo.Location = new System.Drawing.Point(465, 415);
+            this.buttonNo.Location = new System.Drawing.Point(465, 426);
             this.buttonNo.Name = "buttonNo";
             this.buttonNo.Size = new System.Drawing.Size(89, 30);
             this.buttonNo.TabIndex = 1;
@@ -80,34 +80,31 @@
             this.PromptText.ForeColor = System.Drawing.Color.Silver;
             this.PromptText.Location = new System.Drawing.Point(15, 365);
             this.PromptText.Name = "PromptText";
-            this.PromptText.Size = new System.Drawing.Size(518, 34);
+            this.PromptText.Size = new System.Drawing.Size(492, 51);
             this.PromptText.TabIndex = 3;
-            this.PromptText.Text = "Data Scientist profile provides window layout and keyboard shorcuts similar to RS" +
-    "tudio.\r\nWould you like setup to apply this profile to the Visual Studio?";
+            this.PromptText.Text = resources.GetString("PromptText.Text");
             // 
-            // resetKeyboard
+            // keepShortcuts
             // 
-            this.resetKeyboard.AutoSize = true;
-            this.resetKeyboard.Checked = true;
-            this.resetKeyboard.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.resetKeyboard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.resetKeyboard.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.resetKeyboard.ForeColor = System.Drawing.Color.Silver;
-            this.resetKeyboard.Location = new System.Drawing.Point(18, 420);
-            this.resetKeyboard.Name = "resetKeyboard";
-            this.resetKeyboard.Size = new System.Drawing.Size(172, 21);
-            this.resetKeyboard.TabIndex = 4;
-            this.resetKeyboard.Text = "Reset keyboard shortcuts";
-            this.resetKeyboard.UseVisualStyleBackColor = true;
-            this.resetKeyboard.CheckedChanged += new System.EventHandler(this.resetKeyboard_CheckedChanged);
+            this.keepShortcuts.AutoSize = true;
+            this.keepShortcuts.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.keepShortcuts.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.keepShortcuts.ForeColor = System.Drawing.Color.Silver;
+            this.keepShortcuts.Location = new System.Drawing.Point(18, 430);
+            this.keepShortcuts.Name = "keepShortcuts";
+            this.keepShortcuts.Size = new System.Drawing.Size(281, 21);
+            this.keepShortcuts.TabIndex = 4;
+            this.keepShortcuts.Text = "Keep existing keyboard shotcuts unchanged";
+            this.keepShortcuts.UseVisualStyleBackColor = true;
+            this.keepShortcuts.CheckedChanged += new System.EventHandler(this.keepShorcuts_CheckedChanged);
             // 
             // DSProfilePromptForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(574, 464);
-            this.Controls.Add(this.resetKeyboard);
+            this.ClientSize = new System.Drawing.Size(574, 476);
+            this.Controls.Add(this.keepShortcuts);
             this.Controls.Add(this.PromptText);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.buttonNo);
@@ -126,6 +123,6 @@
         private System.Windows.Forms.Button buttonNo;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label PromptText;
-        private System.Windows.Forms.CheckBox resetKeyboard;
+        private System.Windows.Forms.CheckBox keepShortcuts;
     }
 }

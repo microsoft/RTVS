@@ -20,8 +20,8 @@ namespace SetupCustomActions {
             this.Close();
         }
 
-        private void resetKeyboard_CheckedChanged(object sender, EventArgs e) {
-            this.ResetKeyboardShortcuts = this.resetKeyboard.Checked;
+        private void keepShorcuts_CheckedChanged(object sender, EventArgs e) {
+            this.ResetKeyboardShortcuts = !this.keepShortcuts.Checked;
         }
     }
 }
