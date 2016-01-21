@@ -59,6 +59,14 @@
     <Content Include="RFile.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Package\Impl\Microsoft.VisualStudio.R.Package.csproj">
+      <Name>Microsoft.VisualStudio.R.Package</Name>
+      <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\SetupCustomActions\SetupCustomActions.csproj">
       <Name>SetupCustomActions</Name>
       <Project>{f2149709-a88b-4f36-abca-307ca96e9fd1}</Project>
