@@ -99,7 +99,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 ITextSnapshotLine prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
 
                 string prevLineText = prevLine.GetText();
-                int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
+                int nonWsPosition = prevLine.Start + prevLineText.Length - prevLineText.TrimStart().Length;
 
                 IAstNodeWithScope scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
                 if (scopeStatement != null) {
