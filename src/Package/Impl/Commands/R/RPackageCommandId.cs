@@ -27,6 +27,7 @@
         public const int icmdStepInto = 513;
         public const int icmdStepOut = 514;
         public const int icmdStepOver = 515;
+        public const int icmdAttachToRInteractive = 516;
 
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;

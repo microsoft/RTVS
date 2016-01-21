@@ -70,8 +70,10 @@ namespace Microsoft.R.Debugger {
             return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength);
         }
 
-        public Task<DebugEvaluationResult> GetEnvironmentAsync() {
-            return EvaluateAsync("environment()");
+        public Task<DebugEvaluationResult> GetEnvironmentAsync(
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length
+        ) {
+            return EvaluateAsync("environment()", fields: fields);
         }
     }
 }

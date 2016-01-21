@@ -20,6 +20,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _visualChildren = new VisualCollection(this);
             _gridLine = new GridLineVisual(this);
             ClipToBounds = true;
+
+            Focusable = true;
         }
 
         public ScrollDirection ScrollDirection { get; set; }
