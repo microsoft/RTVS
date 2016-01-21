@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Languages.Editor.EditorHelpers;
@@ -138,7 +139,12 @@ namespace Microsoft.VisualStudio.R.Package.History {
             var raiseEvent = _entries.HasSelectedEntries;
 
             DeleteAllEntries();
-            CreateEntries(historyLines);
+            try {
+                CreateEntries(historyLines);
+            } catch (Exception) {
+                // Don't crash if history file is corrupted. Just exit.
+                return false;
+            }
 
             if (raiseEvent) {
                 OnSelectionChanged();
@@ -359,8 +365,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public void AddToHistory(string text) {
-            text = text.TrimEnd('\r', '\n');
-            if (string.IsNullOrWhiteSpace(text)) {
+            text = text.RemoveWhiteSpaceLines();
+            if (string.IsNullOrEmpty(text)) {
                 return;
             }
 

@@ -48,23 +48,6 @@ namespace Microsoft.R.Debugger {
             var match = _doTraceRegex.Match(Call);
             if (match.Success) {
                 FrameKind = DebugStackFrameKind.DoTrace;
-                try {
-                    // When setBreakpoint injects .doTrace calls, it does not inject source information for them.
-                    // Consequently, then such a call is on the stack - i.e. when a breakpoint is hit - there is
-                    // no information about which filename and line number we're on in the call object.
-                    // To work around that, we use our own special wrapper function for tracer instead of just
-                    // plain browser(), and we pass this data as arguments to that function. The function itself
-                    // does not actually use them, but they appear as part of the calling expression, and we can
-                    // extract them from here.
-                    // In case setBreakpoint is changed in the future to correctly adjust the source info for the
-                    // function, only make use of the parsed data if the values couldn't be properly obtained. 
-                    FileName = FileName ?? match.Groups["filename"].Value.FromRStringLiteral();
-                    LineNumber = LineNumber ?? int.Parse(match.Groups["line_number"].Value);
-                } catch (FormatException) {
-                    // This should never happen with .doTrace calls that we insert, but the user can always manually
-                    // insert one. Assert in Debug to detect code changes that break our inserted .doTrace.
-                    Debug.Fail(Invariant($"Couldn't parse RTVS .doTrace call: {Call}"));
-                }
             } 
 
             if (fallbackFrame != null) {
@@ -87,8 +70,10 @@ namespace Microsoft.R.Debugger {
             return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength);
         }
 
-        public Task<DebugEvaluationResult> GetEnvironmentAsync() {
-            return EvaluateAsync("environment()");
+        public Task<DebugEvaluationResult> GetEnvironmentAsync(
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length
+        ) {
+            return EvaluateAsync("environment()", fields: fields);
         }
     }
 }

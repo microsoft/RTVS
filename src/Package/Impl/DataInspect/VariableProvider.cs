@@ -5,37 +5,39 @@ using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal class VariableProvider: IDisposable {
-        #region members and ctor
-
+    internal class VariableProvider: IVariableDataProvider {
+        #region Members and ctor
         private IRSession _rSession;
+        private IDebugSessionProvider _debugSessionProvider;
         private DebugSession _debugSession;
 
         public VariableProvider() {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             _rSession = sessionProvider.GetInteractiveWindowRSession();
             _rSession.Mutated += RSession_Mutated;
+
+            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
             IdleTimeAction.Create(() => {
-                InitializeData().SilenceException<Exception>().DoNotWait();
+                RefreshVariableCollection().SilenceException<Exception>().DoNotWait();
             }, 10, typeof(VariableProvider));
         }
-
         #endregion
 
         #region Public
 
-        private static VariableProvider _instance;
+        private static Lazy<VariableProvider> _instance = Lazy.Create(() => new VariableProvider());
         /// <summary>
         /// Singleton
         /// </summary>
-        public static VariableProvider Current => _instance ?? (_instance = new VariableProvider());
+        public static IVariableDataProvider Current => _instance.Value;
 
+        #region IVariableDataProvider
         public event EventHandler<VariableChangedArgs> VariableChanged;
-
         public EvaluationWrapper LastEvaluation { get; private set; }
 
         public async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange gridRange) {
@@ -67,6 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             }
         }
+        #endregion
 
         public void Dispose() {
             // Only used in tests to make sure each instance 
@@ -84,31 +87,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         #endregion
-        private async Task InitializeData() {
-            var debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
-
-            _debugSession = await debugSessionProvider.GetDebugSessionAsync(_rSession);
-
-            await RefreshVariableCollection();
-        }
 
         private async Task RefreshVariableCollection() {
-            if (_debugSession == null) {
-                return;
-            }
+            if (_rSession != null) {
+                if (_debugSession == null) {
+                    _debugSession = await _debugSessionProvider.GetDebugSessionAsync(_rSession);
+                }
 
-            var stackFrames = await _debugSession.GetStackFramesAsync();
+                var stackFrames = await _debugSession.GetStackFramesAsync();
+                var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
+                if (globalStackFrame != null) {
+                    DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("environment()", "Global Environment");
 
-            var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
-            if (globalStackFrame != null) {
-                DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("environment()", "Global Environment");
-
-                LastEvaluation = new EvaluationWrapper(-1, evaluation, false);  // root level doesn't truncate children and return every variables
-
-                if (VariableChanged != null) {
-                    VariableChanged(
-                        this,
-                    new VariableChangedArgs() { NewVariable = LastEvaluation });
+                    LastEvaluation = new EvaluationWrapper(-1, evaluation, false);  // root level doesn't truncate children and return every variables
+                    VariableChanged?.Invoke(this, new VariableChangedArgs() { NewVariable = LastEvaluation });
                 }
             }
         }

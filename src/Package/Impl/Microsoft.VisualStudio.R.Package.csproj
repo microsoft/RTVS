@@ -70,6 +70,7 @@
     <Compile Include="DataInspect\DataSource\PageManager.cs" />
     <Compile Include="DataInspect\DataSource\PageNumber.cs" />
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
+    <Compile Include="DataInspect\Definitions\IVariableDataProvider.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGrid.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCell.cs" />
     <Compile Include="DataInspect\DynamicGrid\DynamicGridCellsPanel.cs" />
@@ -167,7 +168,7 @@
     <Compile Include="Options\R\Tools\ImportRSettingsCommand.cs" />
     <Compile Include="Packages\Definitions\IPackage.cs" />
     <Compile Include="Packages\PackageCommand.cs" />
-    <Compile Include="Packages\DefaultIndentAttribute.cs" />
+    <Compile Include="Packages\LanguageEditorOptionsAttribute.cs" />
     <Compile Include="Packages\Definitions\IRPackage.cs" />
     <Compile Include="Packages\ProvideNewFileTemplatesAttribute.cs" />
     <Compile Include="Plots\Commands\CopyPlotAsMetafileCommand.cs" />
@@ -175,8 +176,10 @@
     <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
     <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
+    <Compile Include="Plots\Definitions\IPlotHistory.cs" />
     <Compile Include="Plots\IPlotContentProvider.cs" />
     <Compile Include="Plots\PlotContentProvider.cs" />
+    <Compile Include="Plots\PlotHistory.cs" />
     <Compile Include="ProjectSystem\ExcludeFromProjectCommand.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />
@@ -192,6 +195,7 @@
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Commands\RexecuteCommand.cs" />
+    <Compile Include="Repl\Debugger\AttachToRInteractiveCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommandVisibility.cs" />
     <Compile Include="Repl\Debugger\StepIntoCommand.cs" />
     <Compile Include="Repl\Debugger\StopDebuggingCommand.cs" />
