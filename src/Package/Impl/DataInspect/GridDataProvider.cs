@@ -5,10 +5,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// grid data provider to control
     /// </summary>
-    internal class GridProvider : IGridProvider<string> {
+    internal class GridDataProvider : IGridProvider<string> {
         private EvaluationWrapper _evaluation;
 
-        public GridProvider(EvaluationWrapper evaluation) {
+        public GridDataProvider(EvaluationWrapper evaluation) {
             _evaluation = evaluation;
 
             RowCount = evaluation.Dimensions[0];

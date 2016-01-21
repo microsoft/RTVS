@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private static Lazy<EvaluationWrapper> _ellipsis = Lazy.Create(() => {
             var instance = new EvaluationWrapper();
             instance.Name = string.Empty;
-            instance.Value = "[truncated]";
+            instance.Value = Resources.VariableExplorer_Truncated;
             instance.HasChildren = false;
             return instance;
         });

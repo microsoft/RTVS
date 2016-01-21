@@ -7,18 +7,19 @@ using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal class VariableProvider: IDisposable {
+    internal class VariableProvider: IVariableDataProvider, IDisposable {
         #region members and ctor
 
         private IRSession _rSession;
         private DebugSession _debugSession;
         private VariableSubscription _globalEnvSubscription;
 
-        public VariableProvider() {
+        internal VariableProvider() {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             _rSession = sessionProvider.GetInteractiveWindowRSession();
             _rSession.Mutated += RSession_Mutated;

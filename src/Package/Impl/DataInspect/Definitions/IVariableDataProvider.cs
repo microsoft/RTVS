@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Definitions {
-    internal interface IVariableDataProvider : IDisposable {
-        event EventHandler<VariableChangedArgs> VariableChanged;
-        EvaluationWrapper LastEvaluation { get; }
+    internal interface IVariableDataProvider {
+        EvaluationWrapper GlobalEnvironment { get; }
         Task<IGridData<string>> GetGridDataAsync(string expression, GridRange gridRange);
     }
 }

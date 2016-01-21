@@ -30,11 +30,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
     [ExcludeFromCodeCoverage]
     class VariableRHostScript : RHostScript {
-        private IVariableDataProvider _variableProvider;
+        private VariableProvider _variableProvider;
 
         public VariableRHostScript() :
             base(VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>()) {
-            _variableProvider = VariableProvider.Current;
+            _variableProvider = new VariableProvider();
             DoIdle(100);
         }
 
@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                     await evaluation.EvaluateAsync(rScript, REvaluationKind.UnprotectedEnv);
                 }
 
-                if (!_mre.Wait(TimeSpan.FromMilliseconds(1000))) {
+                if (!System.Diagnostics.Debugger.IsAttached && !_mre.Wait(TimeSpan.FromMilliseconds(1000))) {
                     throw new TimeoutException("Evaluate time out");
                 }
             } finally {
