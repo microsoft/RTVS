@@ -32,6 +32,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SaveWorkspaceCommand(rSessionProvider, projectServiceAccessor),
 
                 new AttachDebuggerCommand(rSessionProvider),
+                new AttachToRInteractiveCommand(rSessionProvider),
                 new StopDebuggingCommand(rSessionProvider),
                 new ContinueDebuggingCommand(rSessionProvider),
                 new StepOverCommand(rSessionProvider),
