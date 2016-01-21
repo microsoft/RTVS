@@ -1,10 +1,24 @@
 ﻿using System;
-using System.Threading.Tasks;
+using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Definitions {
-    internal interface IVariableDataProvider : IDisposable {
-        event EventHandler<VariableChangedArgs> VariableChanged;
-        EvaluationWrapper LastEvaluation { get; }
-        Task<IGridData<string>> GetGridDataAsync(string expression, GridRange gridRange);
+    /// <summary>
+    /// provides evaluation from R Host
+    /// </summary>
+    internal interface IVariableDataProvider {
+        /// <summary>
+        /// register a callback when evaluation is available
+        /// </summary>
+        /// <param name="frameIndex">frame index to evaluation the expression</param>
+        /// <param name="expression">expression to evaluate</param>
+        /// <param name="executeAction">callback when evaluation is avilable</param>
+        /// <returns>a subscription</returns>
+        VariableSubscription Subscribe(int frameIndex, string expression, Action<DebugEvaluationResult> executeAction);
+
+        /// <summary>
+        /// unregister the subscription
+        /// </summary>
+        /// <param name="subscription">the subscription to quit</param>
+        void Unsubscribe(VariableSubscription subscription);
     }
 }

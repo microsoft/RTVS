@@ -2,34 +2,38 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
-using Microsoft.R.Editor.Data;
+using Microsoft.R.Debugger;
+using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, IDisposable {
         ObservableTreeNode _rootNode;
+        VariableSubscription _globalEnvSubscription;
+
+        const string GlobalEnvironmentName = "Global Environment";
 
         public VariableView() {
             InitializeComponent();
 
             SortDirection = ListSortDirection.Ascending;
 
-            if (VariableProvider.Current.LastEvaluation == null) {
-                SetRootNode(EvaluationWrapper.Ellipsis);
-            } else {
-                SetRootNode(VariableProvider.Current.LastEvaluation);
-                EnvironmentName.Text = VariableProvider.Current.LastEvaluation.Name;
-            }
-            VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
+            var variableProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IVariableDataProvider>();
+
+            SetRootNode(EvaluationWrapper.Ellipsis);
+
+            _globalEnvSubscription = variableProvider.Subscribe(0, VariableProvider.GlobalEnvironmentExpression, OnGlobalEnvironmentEvaluation);
 
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
         }
 
         public void Dispose() {
-            // Used in tests only
-            VariableProvider.Current.VariableChanged -= VariableProvider_VariableChanged;
+            if (_globalEnvSubscription != null) {
+                _globalEnvSubscription.Dispose();
+                _globalEnvSubscription = null;
+            }
+
             RootTreeGrid.Sorting -= RootTreeGrid_Sorting;
-            VariableProvider.Current.Dispose();
         }
 
         private void RootTreeGrid_Sorting(object sender, DataGridSortingEventArgs e) {
@@ -44,19 +48,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             e.Handled = true;
         }
 
-        private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
-            VariableChanged(e.NewVariable);
-        }
+        private void OnGlobalEnvironmentEvaluation(DebugEvaluationResult result) {
+            var wrapper = new EvaluationWrapper(-1, result, false);
 
-        private void VariableChanged(EvaluationWrapper variable) {
+            var rootNodeModel = new VariableNode(wrapper);
+
             VsAppShell.Current.DispatchOnUIThread(
                 () => {
-                    EnvironmentName.Text = variable.Name;
-                    _rootNode.Model = new VariableNode(variable);
+                    EnvironmentName.Text = GlobalEnvironmentName;
+                    _rootNode.Model = rootNodeModel;
                 });
         }
 
-        private void SetRootNode(IRSessionDataObject evaluation) {
+        private void SetRootNode(EvaluationWrapper evaluation) {
             _rootNode = new ObservableTreeNode(
                 new VariableNode(evaluation),
                 Comparer<ITreeNode>.Create(Comparison));

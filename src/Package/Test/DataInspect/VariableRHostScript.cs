@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
@@ -30,34 +31,43 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
     [ExcludeFromCodeCoverage]
     class VariableRHostScript : RHostScript {
-        private IVariableDataProvider _variableProvider;
+        private VariableProvider _variableProvider;
+        private EvaluationWrapper _globalEnv;
 
         public VariableRHostScript() :
             base(VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>()) {
-            _variableProvider = VariableProvider.Current;
+            _variableProvider = new VariableProvider(base.SessionProvider, VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>());
+
             DoIdle(100);
         }
 
-        public EvaluationWrapper GlobalEnvironment {
-            get {
-                return _variableProvider.LastEvaluation;
-            }
+        private void OnGlobalEnvironmentEvaluated(DebugEvaluationResult result) {
+            _globalEnv = new EvaluationWrapper(-1, result, false);
+            _mre.Set();
         }
 
         private ManualResetEventSlim _mre;
         public async Task EvaluateAsync(string rScript) {
+            VariableSubscription subscription = null;
             try {
                 _mre = new ManualResetEventSlim();
-                _variableProvider.VariableChanged += VariableProvider_VariableChanged;
+
+                _globalEnv = null;
+                subscription = _variableProvider.Subscribe(0, "environment()", OnGlobalEnvironmentEvaluated);
+
                 using (var evaluation = await base.Session.BeginEvaluationAsync()) {
                     await evaluation.EvaluateAsync(rScript, REvaluationKind.UnprotectedEnv);
                 }
 
-                if (!_mre.Wait(TimeSpan.FromMilliseconds(1000))) {
-                    throw new TimeoutException("Evaluate time out");
+                if (System.Diagnostics.Debugger.IsAttached) {
+                    _mre.Wait();
+                } else {
+                    if (!_mre.Wait(TimeSpan.FromSeconds(10))) {
+                        throw new TimeoutException("Evaluate time out");
+                    }
                 }
             } finally {
-                _variableProvider.VariableChanged -= VariableProvider_VariableChanged;
+                _variableProvider.Unsubscribe(subscription);
             }
         }
 
@@ -70,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task EvaluateAndAssert(string rScript, VariableExpectation expectation) {
             await EvaluateAsync(rScript);
 
-            var children = await GlobalEnvironment.GetChildrenAsync();
+            var children = await _globalEnv.GetChildrenAsync();
 
             // must contain one and only expectation in result
             var evaluation = children.First(v => v.Name == expectation.Name);
@@ -79,10 +89,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         private static void AssertEvaluationWrapper(IRSessionDataObject v, VariableExpectation expectation) {
             v.ShouldBeEquivalentTo(expectation, o => o.ExcludingMissingMembers());
-        }
-
-        private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
-            _mre.Set();
         }
 
         protected override void Dispose(bool disposing) {

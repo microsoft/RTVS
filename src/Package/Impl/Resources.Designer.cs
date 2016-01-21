@@ -1250,6 +1250,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [truncated].
+        /// </summary>
+        public static string VariableExplorer_Truncated {
+            get {
+                return ResourceManager.GetString("VariableExplorer_Truncated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
         public static string VariableExplorer_TypeHeader {

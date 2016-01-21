@@ -14,8 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region member/ctor
 
-        private IRSessionDataObject _evaluation;
-        public VariableNode(IRSessionDataObject evaluation) {
+        private EvaluationWrapper _evaluation;
+        public VariableNode(EvaluationWrapper evaluation) {
             _evaluation = evaluation;
         }
 
@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 foreach (var child in children) {
                     if (!child.IsHidden) {
-                        result.Add(new VariableNode(child));
+                        result.Add(new VariableNode(child as EvaluationWrapper));
                     }
                 }
             }

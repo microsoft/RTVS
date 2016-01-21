@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             }
         }
 
-        [Test]
+        [Test(Skip = "UIThreadHelper and TetVsAppShell has different main thread")]
         [Category.Interactive]
         public void VariableExplorer_SimpleDataTest() {
             string actual = null;

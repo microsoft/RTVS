@@ -83,7 +83,10 @@
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridParser.cs" />
+    <Compile Include="DataInspect\GridDataProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
+    <Compile Include="DataInspect\VariableSubscription.cs" />
+    <Compile Include="DataInspect\VariableSubscriptionToken.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
     <Compile Include="DataInspect\VisualGrid\Indexer.cs" />
@@ -228,7 +231,7 @@
     <Compile Include="Commands\R\VsRCommandFactory.cs" />
     <Compile Include="Commands\R\VsRTextViewConnectionListener.cs" />
     <Compile Include="Plots\PlotWindowPane.cs" />
-    <Compile Include="DataInspect\Variable.cs" />
+    <Compile Include="DataInspect\VariableNode.cs" />
     <Compile Include="DataInspect\VariableProvider.cs" />
     <Compile Include="DataInspect\VariableView.xaml.cs">
       <DependentUpon>VariableView.xaml</DependentUpon>

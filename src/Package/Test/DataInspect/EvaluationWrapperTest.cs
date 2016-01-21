@@ -1,33 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Script;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class EvaluationWrapperTest {
-
-        public EvaluationWrapperTest() {
-        }
-
-        [Test]
-        [Category.Variable.Explorer]
-        public async Task GlobalEnvironmentTest() {
-            using (var hostScript = new VariableRHostScript()) {
-                await hostScript.EvaluateAsync("ls()"); // run anything
-
-                var target = hostScript.GlobalEnvironment;
-                target.Name.Should().BeEquivalentTo("Global Environment");
-            }
-        }
-
         // TODO: RStudio difference
         //    value.integer.1   RS 1L                    RTVS just 1
         //    value.numeric.big RS 98765432109876543210  RTVS 9.88e+19
