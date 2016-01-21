@@ -195,6 +195,7 @@
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Commands\RexecuteCommand.cs" />
+    <Compile Include="Repl\Debugger\AttachToRInteractiveCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommandVisibility.cs" />
     <Compile Include="Repl\Debugger\StepIntoCommand.cs" />
     <Compile Include="Repl\Debugger\StopDebuggingCommand.cs" />
