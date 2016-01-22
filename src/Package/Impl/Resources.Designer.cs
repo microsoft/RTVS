@@ -1277,7 +1277,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Variable Grid.
+        ///   Looks up a localized string similar to R Data.
         /// </summary>
         public static string VariableGrid_Caption {
             get {
