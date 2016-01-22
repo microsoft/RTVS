@@ -9,14 +9,6 @@
              HorizontalAlignment="Stretch"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="DynamicGrid\DynamicGridStyle.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
-
     <Grid>
         <TextBlock x:Name="ErrorTextBlock" Visibility="Collapsed" />
         <local:MatrixView x:Name="VariableGrid"
