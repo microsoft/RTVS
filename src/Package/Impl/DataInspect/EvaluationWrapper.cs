@@ -86,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 result = new List<IRSessionDataObject>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new EvaluationWrapper(children[i], i, DefaultMaxGrandChildren));
+                    result.Add(new EvaluationWrapper(children[i], index: i, maxChildrenCount: DefaultMaxGrandChildren));
                 }
 
                 if (valueEvaluation.Length > result.Count) {
