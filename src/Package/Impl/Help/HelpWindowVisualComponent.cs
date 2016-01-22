@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Threading;
@@ -26,18 +25,16 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// control changing so instead we keed content control 
         /// unchanged and only replace browser that is inside it.
         /// </summary>
-        private ContentControl _windowContentControl;
+        private readonly ContentControl _windowContentControl;
         private IRSession _session;
-        Thread _creatorThread;
 
         public HelpWindowVisualComponent() {
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Disconnected += OnRSessionDisconnected;
             _session.Connected += OnRSessionConnected;
 
-            _windowContentControl = new System.Windows.Controls.ContentControl();
+            _windowContentControl = new ContentControl();
             this.Control = _windowContentControl;
-            _creatorThread = Thread.CurrentThread;
 
             CreateBrowser(_showDefaultPage);
 
@@ -48,8 +45,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionConnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            Dispatcher.FromThread(_creatorThread).InvokeAsync(() => { 
-                CreateBrowser(showDefaultPage: false);
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                CreateBrowser();
             });
         }
 
@@ -82,9 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            Dispatcher.FromThread(_creatorThread).InvokeAsync(() => {
-                CloseBrowser();
-            });
+            VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
         }
 
         private void CreateBrowser(bool showDefaultPage = false) {

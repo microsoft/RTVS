@@ -7,6 +7,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -14,7 +15,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
     internal sealed class TestEditorShell : TestShellBase, IEditorShell {
         private static TestEditorShell _instance;
-        private static readonly object _lock = new object();
 
         private TestEditorShell(ICompositionCatalog catalog) {
             CompositionService = catalog.CompositionService;
@@ -27,13 +27,13 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// in test scenarios
         /// </summary>
         public static void Create() {
-            lock (_lock) {
-                // Called via reflection in test cases. Creates instance
-                // of the test shell that editor code can access during
-                // test run.
+            // Called via reflection in test cases. Creates instance
+            // of the test shell that editor code can access during
+            // test run.
+            UIThreadHelper.Instance.Invoke(() => {
                 _instance = new TestEditorShell(EditorTestCompositionCatalog.Current);
                 EditorShell.Current = _instance;
-            }
+            });
         }
 
         #region ICompositionCatalog
