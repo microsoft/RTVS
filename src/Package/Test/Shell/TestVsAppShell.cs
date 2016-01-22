@@ -37,9 +37,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             // replacements. For example, interactive editor tests
             // need smaller MEF catalog which excludes certain 
             // VS-specific implementations.
-            _instance = new TestVsAppShell();
-            VsAppShell.Current = _instance;
-            RToolsSettings.Current = new TestRToolsSettings();
+            UIThreadHelper.Instance.Invoke(() => {
+                _instance = new TestVsAppShell();
+                VsAppShell.Current = _instance;
+                RToolsSettings.Current = new TestRToolsSettings();
+            });
         }
 
         #region ICompositionCatalog
