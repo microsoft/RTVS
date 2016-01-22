@@ -1277,6 +1277,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Variable Grid.
+        /// </summary>
+        public static string VariableGrid_Caption {
+            get {
+                return ResourceManager.GetString("VariableGrid_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Variable Explorer.
         /// </summary>
         public static string VariableWindowCaption {

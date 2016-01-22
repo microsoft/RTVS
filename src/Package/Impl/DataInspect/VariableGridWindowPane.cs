@@ -8,10 +8,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private VariableGridHost _gridHost;
 
         public VariableGridWindowPane() {
-            Caption = "Variable Grid";  // TODO: temporary value
+            Caption = Resources.VariableGrid_Caption;
             Content = _gridHost = new VariableGridHost();
 
-            BitmapImageMoniker = KnownMonikers.VariableProperty;    // TODO: same icon as Variable Explorer. Is it O.K.? This appears on the tab
+            BitmapImageMoniker = KnownMonikers.VariableProperty;
         }
 
         internal void SetEvaluation(EvaluationWrapper evaluation) {
