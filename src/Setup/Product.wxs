@@ -45,6 +45,8 @@
       </Component>
     </Feature>
 
+    <!--<Binary Id="DSProfilePromptCA" SourceFile="$(var.OutDir)\SetupCustomActions.CA.dll" />-->
+    
     <CustomAction Id='VS2015UpdateConfiguration'
               Directory='CommonIdeFolder'
               Execute="deferred"
@@ -59,14 +61,24 @@
               ExeCommand='[CommonIdeFolder]devenv.exe /InstallVSTemplates'
               Return='ignore'/>
 
+    <!--<CustomAction Id='AssignVsVersion'
+                  Property='VsVersion'
+                  Value='$(var.VSRegVer)'/>
+    
+    <CustomAction Id='DSProfilePrompt'
+          BinaryKey='DSProfilePromptCA'
+          DllEntry='DSProfilePromptAction'
+          Execute="deferred"
+          Return='ignore'/>-->
+
     <UI>
       <ProgressText Action="VS2015InstallTemplates">Updating Visual Studio project templates... (this may take a few minutes).</ProgressText>
     </UI>
 
     <InstallExecuteSequence>
-      <!--<RemoveExistingProducts Before="InstallInitialize" />-->
       <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
       <Custom Action="VS2015UpdateConfiguration" Before="InstallFinalize" />
+      <!--<Custom Action="DSProfilePrompt" Before="InstallFinalize">NOT Installed</Custom>-->
     </InstallExecuteSequence>
 
     <?include Feature.wxi ?>
@@ -117,7 +129,6 @@
                     <?endforeach?>
                   </Directory>
                 </Directory>
-                <Directory Id="ProfilesFolder" Name="Profiles" />
               </Directory>
             </Directory>
           </Directory>
