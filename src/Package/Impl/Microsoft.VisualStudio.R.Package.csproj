@@ -652,6 +652,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
+    <Content Include="RCombined.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="RStudioKeyboard.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
