@@ -11,3 +11,4 @@ namespace Microsoft.VisualStudio.R.Package.Definitions {
         T Component { get; }
     }
 }
+

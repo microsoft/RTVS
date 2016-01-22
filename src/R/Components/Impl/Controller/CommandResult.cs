@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Microsoft.R.Components {
+namespace Microsoft.R.Components.Controller {
     [SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     [DebuggerDisplay("Status={Status}, Result={Result}")]
     public struct CommandResult {
