@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
@@ -76,6 +77,21 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Category.Variable.Explorer]
         public Task ListTest() {
             return RunTest(listTestData);
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task TruncateGrandChildrenTest() {
+            using (var hostScript = new VariableRHostScript()) {
+                await hostScript.EvaluateAsync("x.truncate.children<-1:100");
+                var children = await hostScript.GlobalEnvrionment.GetChildrenAsync();
+                var child = children.First(c => c.Name == "x.truncate.children");
+
+                var grandChildren = await child.GetChildrenAsync();
+
+                grandChildren.Count.ShouldBeEquivalentTo(21);   // truncate 20 + ellipsis
+                grandChildren[20].Value.ShouldBeEquivalentTo(Resources.VariableExplorer_Truncated);
+            }
         }
 
         private static async Task RunTest(object[,] testData) {
