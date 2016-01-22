@@ -70,7 +70,10 @@ namespace Microsoft.R.Debugger.Engine {
 
             IsDisposed = true;
 
-            ExitBrowserAsync(rSession).SilenceException<MessageTransportException>().DoNotWait();
+            ExitBrowserAsync(rSession)
+                .SilenceException<MessageTransportException>()
+                .SilenceException<RException>()
+                .DoNotWait();
         }
 
         private void ThrowIfDisposed() {
