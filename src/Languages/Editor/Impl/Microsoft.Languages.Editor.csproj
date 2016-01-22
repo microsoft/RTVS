@@ -94,8 +94,6 @@
     <Compile Include="Composition\ImportComposer.cs" />
     <Compile Include="Controller\Command\Command.cs" />
     <Compile Include="Controller\Command\CommandId.cs" />
-    <Compile Include="Controller\Command\CommandResult.cs" />
-    <Compile Include="Controller\Command\CommandStatus.cs" />
     <Compile Include="Controller\Command\DisabledCommand.cs" />
     <Compile Include="Controller\Command\EditingCommand.cs" />
     <Compile Include="Controller\Command\InvisibleCommand.cs" />
@@ -106,7 +104,6 @@
     <Compile Include="Controller\Controller.cs" />
     <Compile Include="Controller\ICommand.cs" />
     <Compile Include="Controller\ICommandFactory.cs" />
-    <Compile Include="Controller\ICommandTarget.cs" />
     <Compile Include="Controller\IControllerFactory.cs" />
     <Compile Include="Controller\IFileSpecificTextViewCreationListener.cs" />
     <Compile Include="Controller\ITextViewCreationListener.cs" />

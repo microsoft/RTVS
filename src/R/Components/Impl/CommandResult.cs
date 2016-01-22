@@ -1,13 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Microsoft.Languages.Editor {
+namespace Microsoft.R.Components {
     [SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     [DebuggerDisplay("Status={Status}, Result={Result}")]
     public struct CommandResult {
         public CommandStatus Status { get; set; }
         public int Result { get; set; }
-        private const CommandStatus _successStatus = CommandStatus.Supported;
+        private const CommandStatus SuccessStatus = CommandStatus.Supported;
 
         /// <summary>
         /// If you are returning Executed/Disabled/Not Supported command results
@@ -33,12 +33,7 @@ namespace Microsoft.Languages.Editor {
         /// <summary>
         /// returns true if the result._status was both Enabled and Supported
         /// </summary>
-        /// <param name="result"></param>
         /// <returns></returns>
-        public bool WasExecuted {
-            get {
-                return ((Status & _successStatus) == _successStatus);
-            }
-        }
+        public bool WasExecuted => ((Status & SuccessStatus) == SuccessStatus);
     }
 }

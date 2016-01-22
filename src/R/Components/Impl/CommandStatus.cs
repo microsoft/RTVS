@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Microsoft.Languages.Editor {
+namespace Microsoft.R.Components {
     [Flags]
-    public enum CommandStatus : int {
+    public enum CommandStatus {
         NotSupported = 0,
         Supported = 1,
         Enabled = 2,

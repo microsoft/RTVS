@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.Languages.Editor.Controller {
+namespace Microsoft.R.Components {
     /// <summary>
     /// Command target: an object that can provide command status as well as execute commands
     /// </summary>
