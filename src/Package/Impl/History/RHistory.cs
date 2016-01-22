@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     internal sealed class RHistory : IRHistory {
+        public const string TextViewRole = "TextViewRole";
         private const string BlockSeparator = "\r\n";
         private const string LineSeparator = "\u00a0";
 
@@ -104,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private IWpfTextView CreateTextView(ITextEditorFactoryService textEditorFactory) {
-            var textView = textEditorFactory.CreateTextView(_historyTextBuffer);
+            var textView = textEditorFactory.CreateTextView(_historyTextBuffer, textEditorFactory.DefaultRoles.UnionWith(textEditorFactory.CreateTextViewRoleSet(TextViewRole)));
             textView.Options.SetOptionValue(DefaultTextViewHostOptions.VerticalScrollBarId, true);
             textView.Options.SetOptionValue(DefaultTextViewHostOptions.HorizontalScrollBarId, true);
             textView.Options.SetOptionValue(DefaultTextViewHostOptions.SelectionMarginId, false);
