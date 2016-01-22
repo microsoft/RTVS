@@ -8,12 +8,12 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.R.Package.History {
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType(RHistoryContentTypeDefinition.ContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
+    [TextViewRole(RHistory.TextViewRole)]
     internal sealed class HistorySelectionTextAdornmentFactory : IWpfTextViewCreationListener {
         [Export(typeof(AdornmentLayerDefinition))]
         [Name("HistorySelectionTextAdornment")]
         [Order(Before = PredefinedAdornmentLayers.Outlining)]
-        [TextViewRole(PredefinedTextViewRoles.Document)]
+        [TextViewRole(RHistory.TextViewRole)]
         public AdornmentLayerDefinition HistorySelectionTextAdornmentLayer { get; set; }
 
         private readonly IEditorFormatMapService _editorFormatMapService;
