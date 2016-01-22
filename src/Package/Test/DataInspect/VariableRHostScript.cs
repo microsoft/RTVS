@@ -16,21 +16,8 @@ using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
-    /// <summary>
-    /// contains expectation for EvaluationWrapper
-    /// </summary>
     [ExcludeFromCodeCoverage]
-    class VariableExpectation {
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public string Class { get; set; }
-        public string TypeName { get; set; }
-        public bool HasChildren { get; set; }
-        public bool CanShowDetail { get; set; }
-    }
-
-    [ExcludeFromCodeCoverage]
-    class VariableRHostScript : RHostScript {
+    internal class VariableRHostScript : RHostScript {
         private VariableProvider _variableProvider;
         private EvaluationWrapper _globalEnv;
 
@@ -80,20 +67,23 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         /// <summary>
         /// evaluate R script and assert if the expectation is not found in global environment
         /// </summary>
-        /// <param name="rScript"></param>
-        /// <param name="expectation"></param>
-        /// <returns></returns>
-        public async Task EvaluateAndAssert(string rScript, VariableExpectation expectation) {
+        public async Task<IRSessionDataObject> EvaluateAndAssert(
+            string rScript,
+            VariableExpectation expectation,
+            Action<IRSessionDataObject, VariableExpectation> assertAction) {
+
             await EvaluateAsync(rScript);
 
             var children = await _globalEnv.GetChildrenAsync();
 
             // must contain one and only expectation in result
             var evaluation = children.First(v => v.Name == expectation.Name);
-            AssertEvaluationWrapper(evaluation, expectation);
+            assertAction(evaluation, expectation);
+
+            return evaluation;
         }
 
-        private static void AssertEvaluationWrapper(IRSessionDataObject v, VariableExpectation expectation) {
+        public static void AssertEvaluationWrapper(IRSessionDataObject v, VariableExpectation expectation) {
             v.ShouldBeEquivalentTo(expectation, o => o.ExcludingMissingMembers());
         }
 
