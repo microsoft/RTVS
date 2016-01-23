@@ -57,7 +57,7 @@ namespace Microsoft.R.Debugger {
             }
 
             var fieldNames = _mapping.Where(kv => fields.HasFlag(kv.Key)).Select(kv => "'" + kv.Value + "'");
-            return Invariant($"c({string.Join(", ", fieldNames)})");
+            return Invariant($"base::c({string.Join(", ", fieldNames)})");
         }
     }
 
@@ -169,9 +169,9 @@ namespace Microsoft.R.Debugger {
 
         public bool IsAtomic => Flags.HasFlag(DebugValueEvaluationResultFlags.Atomic);
         public bool IsRecursive => Flags.HasFlag(DebugValueEvaluationResultFlags.Recursive);
-        public bool HasAttributes => AttributeCount != 0;
-        public bool HasSlots => SlotCount != 0;
-        public bool HasChildren => HasSlots || Length > (IsAtomic || TypeName == "closure" ? 1 : 0);
+        public bool HasAttributes => AttributeCount != null && AttributeCount != 0;
+        public bool HasSlots => SlotCount != null && SlotCount != 0;
+        public bool HasChildren => HasSlots || (Length != null && (Length > (IsAtomic || TypeName == "closure" ? 1 : 0)));
 
         internal DebugValueEvaluationResult(DebugStackFrame stackFrame, string expression, string name, JObject json)
             : base(stackFrame, expression, name) {

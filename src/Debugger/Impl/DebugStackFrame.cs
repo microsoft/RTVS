@@ -71,9 +71,9 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task<DebugEvaluationResult> GetEnvironmentAsync(
-            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length | DebugEvaluationResultFields.AttrCount
         ) {
-            return EvaluateAsync("environment()", fields: fields);
+            return EvaluateAsync("base::environment()", fields: fields);
         }
     }
 }
