@@ -54,10 +54,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private Typeface Typeface {
             get {
                 if (_typeFace == null) {
-                    // TODO: fall back when the specific typeface is not found
-                    _typeFace = FontFamily.GetTypefaces().First(tf => tf.Style == FontStyles.Normal && tf.Weight == FontWeights.Normal && tf.Stretch == FontStretches.Normal);
+                    _typeFace = ChooseTypeface();
                 }
                 return _typeFace;
+            }
+        }
+
+        private Typeface ChooseTypeface() {
+            if (ScrollDirection == ScrollDirection.Vertical
+                || ScrollDirection == ScrollDirection.Horizontal) {
+                // TODO: fall back
+                return FontFamily.GetTypefaces().First(tf => tf.Style == FontStyles.Normal && tf.Weight == FontWeights.DemiBold && tf.Stretch == FontStretches.Normal);
+            } else {
+                return FontFamily.GetTypefaces().First(tf => tf.Style == FontStyles.Normal && tf.Weight == FontWeights.Normal && tf.Stretch == FontStretches.Normal);
             }
         }
 
