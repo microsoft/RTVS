@@ -860,8 +860,9 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="Run"/>
+        <Icon guid="ImageCatalogGuid" id="DownloadDocument"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Source R Script</ButtonText>
           <MenuText>&amp;Source R Script</MenuText>
@@ -1102,11 +1103,11 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x0410">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x410">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0410">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0420">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
@@ -1153,7 +1154,7 @@
   </CommandPlacements>
 
   <KeyBindings>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
     <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidVSStd97" key1="V" mod1="ALT SHIFT"/>
