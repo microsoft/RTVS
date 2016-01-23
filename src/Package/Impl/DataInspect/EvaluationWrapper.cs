@@ -88,7 +88,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     result.Add(new EvaluationWrapper(children[i], index: i, maxChildrenCount: DefaultMaxGrandChildren));
                 }
 
-                if (valueEvaluation.Length > result.Count) {
+                // return children can be less than value's length in some cases e.g. missing parameter
+                if (valueEvaluation.Length > result.Count
+                    && (valueEvaluation.Length > MaxChildrenCount)) {
                     result.Add(EvaluationWrapper.Ellipsis); // insert dummy child to indicate truncation in UI
                 }
             }

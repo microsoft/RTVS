@@ -292,6 +292,29 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             }
         }
 
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task PromiseTest() {
+            var script = "e <- (function(x, y, z) environment())(1,,3)";
+            var expectation = new VariableExpectation() { Name = "e", Value = "<environment:", TypeName = "environment", Class = "environment", HasChildren = true, CanShowDetail = false };
+
+            var x_expectation = new VariableExpectation() { Name = "x", Value = "1", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
+            var y_expectation = new VariableExpectation() { Name = "z", Value = "3", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
+
+            using (var hostScript = new VariableRHostScript()) {
+                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
+                    script,
+                    expectation,
+                    VariableRHostScript.AssertEvaluationWrapper_ValueStartWith);
+
+                var children = await evaluation.GetChildrenAsync();
+
+                children.Count.ShouldBeEquivalentTo(2);
+                VariableRHostScript.AssertEvaluationWrapper(children[0], x_expectation);
+                VariableRHostScript.AssertEvaluationWrapper(children[1], y_expectation);
+            }
+        }
+
         private static async Task RunTest(object[,] testData) {
             using (var hostScript = new VariableRHostScript()) {
                 int testCount = testData.GetLength(0);

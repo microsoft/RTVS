@@ -83,8 +83,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             return evaluation;
         }
 
-        public static void AssertEvaluationWrapper(IRSessionDataObject v, VariableExpectation expectation) {
+        public static void AssertEvaluationWrapper(IRSessionDataObject rdo, VariableExpectation expectation) {
+            var v = (EvaluationWrapper)rdo;
             v.ShouldBeEquivalentTo(expectation, o => o.ExcludingMissingMembers());
+        }
+
+        public static void AssertEvaluationWrapper_ValueStartWith(IRSessionDataObject rdo, VariableExpectation expectation) {
+            var v = (EvaluationWrapper)rdo;
+            v.Name.ShouldBeEquivalentTo(expectation.Name);
+            v.Value.Should().StartWith(expectation.Value);
+            v.Class.ShouldBeEquivalentTo(expectation.Class);
+            v.TypeName.ShouldBeEquivalentTo(expectation.TypeName);
+            v.HasChildren.ShouldBeEquivalentTo(expectation.HasChildren);
         }
 
         protected override void Dispose(bool disposing) {
