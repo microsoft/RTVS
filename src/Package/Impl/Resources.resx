@@ -541,4 +541,7 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   <data name="VariableExplorer_Truncated" xml:space="preserve">
     <value>[truncated]</value>
   </data>
+  <data name="VariableGrid_Caption" xml:space="preserve">
+    <value>R Data</value>
+  </data>
 </root>
