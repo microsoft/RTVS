@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.R.Components {
+namespace Microsoft.R.Components.Controller {
     [Flags]
     public enum CommandStatus {
         NotSupported = 0,

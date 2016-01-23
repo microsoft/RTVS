@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Formatting;

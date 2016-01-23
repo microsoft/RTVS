@@ -4,6 +4,7 @@ using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Editor;

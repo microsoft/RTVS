@@ -1,9 +1,8 @@
-﻿using System;
-using System.ComponentModel.Design;
+﻿using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
@@ -22,8 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _component = new HelpWindowVisualComponent();
             Content = _component.Control;
 
-            this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
-            this.ToolBarCommandTarget = new CommandTargetToOleShim(null, _component.Controller);
+            ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
+            ToolBarCommandTarget = new CommandTargetToOleShim(null, _component.Controller);
         }
 
         public IHelpWindowVisualComponent Component => _component;

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Completion;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.BraceCompletion;
 using Microsoft.VisualStudio.Text.Editor;

@@ -633,6 +633,10 @@
       <Project>{b68d4ad2-2dc2-473e-ab06-408172c4fb92}</Project>
       <Name>Microsoft.R.Actions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>

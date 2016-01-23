@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;

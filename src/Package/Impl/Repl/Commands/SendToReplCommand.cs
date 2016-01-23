@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;

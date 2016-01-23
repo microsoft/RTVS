@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using Microsoft.R.Components.Controller;
 
 namespace Microsoft.R.Components.View {
     /// <summary>

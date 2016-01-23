@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Microsoft.Languages.Editor;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 

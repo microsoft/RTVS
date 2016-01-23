@@ -1,6 +1,6 @@
 ﻿using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

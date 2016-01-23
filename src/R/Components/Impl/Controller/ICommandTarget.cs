@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.R.Components.Controller;
 
-namespace Microsoft.R.Components {
+namespace Microsoft.R.Components.Controller {
     /// <summary>
     /// Command target: an object that can provide command status as well as execute commands
     /// </summary>

@@ -79,7 +79,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
             Window.Width = 800;
             Window.Height = 600;
 
-            Window.Title = "R Editor - " + (a.FileName != null ? a.FileName : "Untitled");
+            Window.Title = "R Editor - " + (a.FileName ?? "Untitled");
             Window.Content = CoreEditor.Control;
 
             evt.Set();

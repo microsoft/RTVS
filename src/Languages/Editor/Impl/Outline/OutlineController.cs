@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;

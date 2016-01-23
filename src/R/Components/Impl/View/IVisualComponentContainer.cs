@@ -1,13 +1,9 @@
-﻿using System;
-using System.Windows.Controls;
-using Microsoft.Languages.Editor.Controller;
-
-namespace Microsoft.VisualStudio.R.Package.Definitions {
+﻿namespace Microsoft.R.Components.View {
     /// <summary>
     /// Represents UI element that holds visual component
     /// (typically a tool window)
     /// </summary>
-    internal interface IVisualComponentContainer<T> where T : IVisualComponent {
+    public interface IVisualComponentContainer<out T> where T : IVisualComponent {
         T Component { get; }
     }
 }

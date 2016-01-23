@@ -164,6 +164,10 @@
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
+      <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>

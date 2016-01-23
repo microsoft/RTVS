@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Help;
@@ -43,8 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public async Task ShowHelp(string url) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
-            var container = pane as IVisualComponentContainer<IHelpWindowVisualComponent>;
-            container.Component.Navigate(url);
+            pane.Component.Navigate(url);
         }
 
         /// <summary>

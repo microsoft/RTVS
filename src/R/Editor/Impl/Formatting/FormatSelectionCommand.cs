@@ -3,6 +3,8 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.R.Components;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;

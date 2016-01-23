@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;

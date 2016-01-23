@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
-using System.Windows.Threading;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using ContentControl = System.Windows.Controls.ContentControl;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
-    public sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
+    internal sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
         private static bool _showDefaultPage;
 
         /// <summary>

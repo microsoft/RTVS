@@ -2,9 +2,9 @@
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;

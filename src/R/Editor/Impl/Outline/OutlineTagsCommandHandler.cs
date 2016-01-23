@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
@@ -18,8 +18,7 @@ namespace Microsoft.R.Editor.Outline
     /// </summary>
     internal sealed class ROutlineTagsCommandHandler : ViewCommand
     {
-        private static CommandId[] _commandIds = new CommandId[]
-        {
+        private static CommandId[] _commandIds = {
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COLLAPSETAG),
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UNCOLLAPSETAG),
         };

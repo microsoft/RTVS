@@ -2,9 +2,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;

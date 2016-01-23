@@ -70,6 +70,10 @@
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
+    <ProjectReference Include="..\R\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
+      <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
