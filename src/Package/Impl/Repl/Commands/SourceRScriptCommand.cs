@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using Microsoft.Common.Core;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
@@ -24,9 +25,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private readonly IVsMonitorSelection _monitorSelection;
         private readonly uint _debugUIContextCookie;
 
-        public SourceRScriptCommand()
+        public SourceRScriptCommand(ICompositionService cs)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript) {
-            VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
+           cs.SatisfyImportsOnce(this);
 
             ReplWindow.EnsureReplWindow().DoNotWait();
             _replWindow = ReplWindow.Current;
