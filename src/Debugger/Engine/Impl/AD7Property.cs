@@ -70,7 +70,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
             if (valueResult != null && valueResult.HasAttributes == true) {
-                string attrExpr = Invariant($"attributes({valueResult.Expression})");
+                string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
                 var attrResult = StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", reprMaxLength: ReprMaxLength).GetResultOnUIThread();
                 if (!(attrResult is DebugErrorEvaluationResult)) {
                     var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);

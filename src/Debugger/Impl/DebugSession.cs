@@ -18,7 +18,7 @@ namespace Microsoft.R.Debugger {
         private readonly object _initializeLock = new object();
 
         private CancellationTokenSource _initialPromptCts = new CancellationTokenSource();
-        private TaskCompletionSource<object> _stepTcs;
+        private TaskCompletionSource<bool> _stepTcs;
         private DebugStackFrame _bpHitFrame;
         private volatile EventHandler<DebugBrowseEventArgs> _browse;
         private volatile DebugBrowseEventArgs _currentBrowseEventArgs;
@@ -75,39 +75,43 @@ namespace Microsoft.R.Debugger {
                 if (_initializeTask == null) {
                     _initializeTask = InitializeWorkerAsync();
                 }
+
                 return _initializeTask;
             }
         }
 
         private async Task InitializeWorkerAsync() {
             ThrowIfDisposed();
-
             await TaskUtilities.SwitchToBackgroundThread();
-
-            using (var eval = await RSession.BeginEvaluationAsync()) {
-                // Re-initialize the breakpoint table.
-                foreach (var bp in _breakpoints.Values) {
-                    await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false)); // TODO: mark breakpoint as invalid if this fails.
-                }
-
-                await eval.EvaluateAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
-            }
-
-            // Attach might happen when session is already at the Browse prompt, in which case we have
-            // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
-            // grab an interaction and check the prompt.
-            RSession.BeginInteractionAsync().ContinueWith(async t => {
-                using (var inter = await t) {
-                    // If we got AfterRequest before we got here, then that has already taken care of
-                    // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.'
-                    if (_initialPromptCts.IsCancellationRequested) {
-                        return;
+            try {
+                using (var eval = await RSession.BeginEvaluationAsync()) {
+                    // Re-initialize the breakpoint table.
+                    foreach (var bp in _breakpoints.Values) {
+                        await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false)); // TODO: mark breakpoint as invalid if this fails.
                     }
 
-                    // Otherwise, treat it the same as if AfterRequest just happened.
-                    ProcessBrowsePrompt(inter.Contexts);
+                    await eval.EvaluateAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
                 }
-            }).DoNotWait();
+
+                // Attach might happen when session is already at the Browse prompt, in which case we have
+                // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
+                // grab an interaction and check the prompt.
+                RSession.BeginInteractionAsync().ContinueWith(async t => {
+                    using (var inter = await t) {
+                        // If we got AfterRequest before we got here, then that has already taken care of
+                        // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.'
+                        if (_initialPromptCts.IsCancellationRequested) {
+                            return;
+                        }
+
+                        // Otherwise, treat it the same as if AfterRequest just happened.
+                        ProcessBrowsePrompt(inter.Contexts);
+                    }
+                }).DoNotWait();
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                Dispose();
+                throw;
+            }
         }
 
         public async Task ExecuteBrowserCommandAsync(string command) {
@@ -190,25 +194,29 @@ namespace Microsoft.R.Debugger {
                 .DoNotWait();
         }
 
-        public Task StepIntoAsync() {
+        public Task<bool> StepIntoAsync() {
             return StepAsync("s");
         }
 
-        public Task StepOverAsync() {
+        public Task<bool> StepOverAsync() {
             return StepAsync("n");
         }
 
-        public Task StepOutAsync() {
+        public Task<bool> StepOutAsync() {
             return StepAsync("browserSetDebug()", "c");
         }
 
-        private async Task StepAsync(params string[] commands) {
+        /// <returns>
+        /// <c>true</c> if step completed successfully, and <c>false</c> if it was interrupted midway by something
+        /// else pausing the process, such as a breakpoint.
+        /// </returns>
+        private async Task<bool> StepAsync(params string[] commands) {
             Trace.Assert(commands.Length > 0);
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
 
-            _stepTcs = new TaskCompletionSource<object>();
+            _stepTcs = new TaskCompletionSource<bool>();
             for (int i = 0; i < commands.Length - 1; ++i) {
                 await ExecuteBrowserCommandAsync(commands[i]);
             }
@@ -220,7 +228,7 @@ namespace Microsoft.R.Debugger {
                 .SilenceException<RException>()
                 .DoNotWait();
 
-            await _stepTcs.Task;
+            return await _stepTcs.Task;
         }
 
         public bool CancelStep() {
@@ -352,7 +360,7 @@ namespace Microsoft.R.Debugger {
             if (_stepTcs != null) {
                 var stepTcs = _stepTcs;
                 _stepTcs = null;
-                stepTcs.TrySetResult(null);
+                stepTcs.TrySetResult(breakpointsHit == null || breakpointsHit.Count == 0);
                 isStepCompleted = true;
             }
 

@@ -19,7 +19,6 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotContentProvider : IPlotContentProvider {
         private IRSession _rSession;
-        private IDebugSessionProvider _debugSessionProvider;
         private string _lastLoadFile;
         private int _lastWidth;
         private int _lastHeight;
@@ -32,14 +31,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _rSession = sessionProvider.GetInteractiveWindowRSession();
             _rSession.Mutated += RSession_Mutated;
             _rSession.Connected += RSession_Connected;
-
-            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
-
-            IdleTimeAction.Create(() => {
-                // debug session is created to trigger a load of the R package
-                // that has functions we need such as rtvs:::toJSON
-                _debugSessionProvider.GetDebugSessionAsync(_rSession).DoNotWait();
-            }, 10, typeof(PlotContentProvider));
         }
 
         private void RSession_Mutated(object sender, EventArgs e) {
