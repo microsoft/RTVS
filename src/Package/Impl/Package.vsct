@@ -1146,7 +1146,11 @@
       <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
     
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
+    <CommandPlacement guid="guidVSStd97" id="cmdidLocalsWindow" priority="0x04B0">
+      <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
+    </CommandPlacement>
+
+  <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
 
