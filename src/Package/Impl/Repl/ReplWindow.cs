@@ -2,7 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
+using System.Windows.Threading;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Tokens;
@@ -23,11 +25,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     /// <summary>
     /// Tracks most recently active REPL window
     /// </summary>
-    internal sealed class ReplWindow : IVsWindowFrameEvents, IDisposable {
+    internal sealed class ReplWindow : IVsWindowFrameEvents, IVsDebuggerEvents, IDisposable {
         private uint _windowFrameEventsCookie;
         private IVsInteractiveWindow _lastUsedReplWindow;
         private ConcurrentQueue<PendingSubmission> _pendingInputs = new ConcurrentQueue<PendingSubmission>();
         private static readonly Lazy<ReplWindow> Instance = new Lazy<ReplWindow>(() => new ReplWindow());
+        private uint _debuggerEventsCookie;
+        private bool _replLostFocus;
+        private bool _enteredBreakMode;
 
         class PendingSubmission {
             public string Code;
@@ -35,9 +40,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public ReplWindow() {
-            IVsUIShell7 shell = VsAppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
-            if (shell != null) {
-                _windowFrameEventsCookie = shell.AdviseWindowFrameEvents(this);
+            IVsUIShell7 shell7 = VsAppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
+            if (shell7 != null) {
+                _windowFrameEventsCookie = shell7.AdviseWindowFrameEvents(this);
+            }
+            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+            if (debugger != null) {
+                debugger.AdviseDebuggerEvents(this, out _debuggerEventsCookie);
             }
         }
 
@@ -295,7 +304,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void OnFrameDestroyed(IVsWindowFrame frame) {
-            
+
         }
 
         public void OnFrameIsVisibleChanged(IVsWindowFrame frame, bool newIsVisible) {
@@ -305,9 +314,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) {
+            _replLostFocus = false;
             // Track last recently used REPL window
             if (!CheckReplFrame(oldFrame)) {
                 CheckReplFrame(newFrame);
+            } else {
+                _replLostFocus = true;
+                VsAppShell.Current.DispatchOnUIThread(() => CheckPossibleBreakModeFocusChange());
             }
         }
         #endregion
@@ -318,6 +331,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 IVsUIShell7 shell = VsAppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
                 shell.UnadviseWindowFrameEvents(_windowFrameEventsCookie);
                 _windowFrameEventsCookie = 0;
+            }
+
+            if (_debuggerEventsCookie != 0) {
+                var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+                debugger.UnadviseDebuggerEvents(_debuggerEventsCookie);
+                _debuggerEventsCookie = 0;
             }
 
             _lastUsedReplWindow = null;
@@ -346,5 +365,26 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
             return false;
         }
+
+        private void CheckPossibleBreakModeFocusChange() {
+            if (_enteredBreakMode && _replLostFocus) {
+                // When debugger hits a breakpoint it typically activates the editor.
+                // This is not desirable when focus was in the interactive window
+                // i.e. user worked in the REPL and not in the editor. Pull 
+                // the focus back here. 
+                IVsWindowFrame frame = Current.GetToolWindow();
+                frame.Show();
+
+                _replLostFocus = false;
+                _enteredBreakMode = false;
+            }
+        }
+
+        #region IVsDebuggerEvents
+        public int OnModeChange(DBGMODE dbgmodeNew) {
+            _enteredBreakMode = dbgmodeNew == DBGMODE.DBGMODE_Break;
+            return VSConstants.S_OK;
+        }
+        #endregion
     }
 }

@@ -208,7 +208,7 @@
     <Compile Include="Repl\RHostClientApp.cs" />
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
     <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
-    <Compile Include="Commands\R\SourceRScriptCommand.cs" />
+    <Compile Include="Repl\Commands\SourceRScriptCommand.cs" />
     <Compile Include="Repl\RInteractive.cs" />
     <Compile Include="Repl\RInteractiveProvider.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />

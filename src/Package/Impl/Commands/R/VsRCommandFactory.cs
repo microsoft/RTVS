@@ -17,7 +17,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
 
             commands.Add(new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int)RContextMenuId.R));
             commands.Add(new SendToReplCommand(textView));
-            commands.Add(new SourceRScriptCommand(textView));
             commands.Add(new GoToFormattingOptionsCommand(textView, textBuffer));
             commands.Add(new WorkingDirectoryCommand());
 
