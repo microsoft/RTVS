@@ -19,7 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
     internal sealed class EvaluationWrapper : RSessionDataObject, IIndexedItem {
-        private readonly bool _truncateChildren;
 
         public EvaluationWrapper() { Index = -1; }
 
@@ -28,12 +27,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public EvaluationWrapper(int index, DebugEvaluationResult evaluation, bool truncateChildren) :
-            base(evaluation) {
+        public EvaluationWrapper(DebugEvaluationResult evaluation, int index = -1, int? maxChildrenCount = null) :
+            base(evaluation, maxChildrenCount) {
 
             Index = index;
-
-            _truncateChildren = truncateChildren;
 
             CanShowDetail = ComputeDetailAvailability(DebugEvaluation as DebugValueEvaluationResult);
             if (CanShowDetail) {
@@ -84,11 +81,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
 
                 // assumption: DebugEvaluationResult returns children in ascending order
-                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, _truncateChildren ? (int?)20 : null, 100);    // TODO: consider exception propagation such as OperationCanceledException
+                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, 100);
 
                 result = new List<IRSessionDataObject>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new EvaluationWrapper(i, children[i], _truncateChildren));
+                    result.Add(new EvaluationWrapper(children[i], index: i, maxChildrenCount: DefaultMaxGrandChildren));
                 }
 
                 if (valueEvaluation.Length > result.Count) {

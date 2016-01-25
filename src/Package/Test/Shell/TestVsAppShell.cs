@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.Text;
@@ -26,6 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             CompositionService = VsTestCompositionCatalog.Current.CompositionService;
             ExportProvider = VsTestCompositionCatalog.Current.ExportProvider;
             _sp = new TestServiceProvider();
+            MainThread = UIThreadHelper.Instance.Thread;
         }
 
         public static void Create() {
@@ -35,9 +37,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             // replacements. For example, interactive editor tests
             // need smaller MEF catalog which excludes certain 
             // VS-specific implementations.
-            _instance = new TestVsAppShell();
-            VsAppShell.Current = _instance;
-            RToolsSettings.Current = new TestRToolsSettings();
+            UIThreadHelper.Instance.Invoke(() => {
+                _instance = new TestVsAppShell();
+                VsAppShell.Current = _instance;
+                RToolsSettings.Current = new TestRToolsSettings();
+            });
         }
 
         #region ICompositionCatalog

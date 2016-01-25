@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Windows;
+using System.Xml.Serialization;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
@@ -19,6 +21,12 @@ namespace Microsoft.Common.Core.Test.Controls {
 
         public void Dispose() {
             ControlWindow.Close();
+        }
+
+        public DependencyObject Control {
+            get {
+                return ControlWindow.Control;
+            }
         }
 
         public string WriteVisualTree(bool writeProperties = true) {

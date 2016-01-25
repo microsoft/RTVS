@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         return;
                     }
 
-                    var wrapper = new EvaluationWrapper(-1, evaluation, true);
+                    var wrapper = new EvaluationWrapper(evaluation);
 
                     if (wrapper.Dimensions.Count != 2) {
                         // the same evaluation changed to non-matrix

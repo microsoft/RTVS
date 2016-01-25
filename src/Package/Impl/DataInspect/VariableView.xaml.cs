@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OnGlobalEnvironmentEvaluation(DebugEvaluationResult result) {
-            var wrapper = new EvaluationWrapper(-1, result, false);
+            var wrapper = new EvaluationWrapper(result);
 
             var rootNodeModel = new VariableNode(wrapper);
 

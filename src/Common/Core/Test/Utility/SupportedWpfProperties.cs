@@ -6,7 +6,7 @@ namespace Microsoft.Common.Core.Test.Utility {
     /// Properties written by the <see cref="VisualTreeWriter"/>
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal static class SupportedWpfProperties {
+    public static class SupportedWpfProperties {
         private static HashSet<string> _hashset;
 
         public static bool IsSupported(string name) {

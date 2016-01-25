@@ -71,14 +71,7 @@
     <Compile Include="DataInspect\DataSource\PageNumber.cs" />
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
     <Compile Include="DataInspect\Definitions\IVariableDataProvider.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGrid.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridCell.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridCellsPanel.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridRow.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridRowHeader.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridRowsPanel.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
-    <Compile Include="DataInspect\DynamicGrid\DynamicGridUtilities.cs" />
     <Compile Include="DataInspect\Elapsed.cs" />
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
@@ -111,7 +104,6 @@
     <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
-    <Compile Include="DataInspect\DynamicGrid\MaxDouble.cs" />
     <Compile Include="DataInspect\DataSource\Range.cs" />
     <Compile Include="DataInspect\EvaluationWrapper.cs" />
     <Compile Include="DataInspect\MultiplyConverter.cs" />
@@ -652,6 +644,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
+    <Content Include="RCombined.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="RStudioKeyboard.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -791,10 +788,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="DataInspect\DynamicGrid\DynamicGridStyle.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="DataInspect\VariableGridHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
