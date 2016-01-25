@@ -4,6 +4,9 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
+    /// <summary>
+    /// Data on a tool window as reported in the telemetry
+    /// </summary>
     internal class ToolWindowData {
         public string Caption { get; private set; }
         public int X { get; private set; }

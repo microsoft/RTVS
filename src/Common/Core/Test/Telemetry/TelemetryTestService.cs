@@ -9,7 +9,7 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         public static readonly string PropertyNamePrefixString = "Test.RTVS.";
 
         public TelemetryTestService(string eventNamePrefix, string propertyNamePrefix) :
-            base(eventNamePrefix, propertyNamePrefix, new StringTelemetryRecorder()) {
+            base(eventNamePrefix, propertyNamePrefix, new TestTelemetryRecorder()) {
 
         }
 

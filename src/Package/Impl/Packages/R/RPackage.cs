@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Editor.ContentType;
@@ -25,6 +28,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -87,6 +91,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
             InitializeActiveWpfTextViewTracker();
+            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 
         protected override void Dispose(bool disposing) {
@@ -100,6 +105,18 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             LogCleanup.Cancel();
             ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
+
+            var telemetryLog = VsTelemetryService.Current as ITelemetryLog;
+            if (telemetryLog != null) {
+                try {
+                    var fileName = Path.Combine(Path.GetTempPath(), string.Format(CultureInfo.InvariantCulture, "RTVS_Telemetry_{0}.log", DateTime.Now.ToFileTimeUtc()));
+                    var log = telemetryLog?.SessionLog;
+                    using (var sw = new StreamWriter(fileName)) {
+                        sw.Write(log);
+                    }
+                } catch (IOException) { }
+            }
+
             base.Dispose(disposing);
         }
 

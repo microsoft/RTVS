@@ -10,7 +10,7 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         [CompositeTest]
         [InlineData("event")]
         public void StringTelemetryRecorder_SimpleEventTest(string eventName) {
-            var telemetryRecorder = new StringTelemetryRecorder();
+            var telemetryRecorder = new TestTelemetryRecorder();
             telemetryRecorder.RecordEvent(eventName);
 
             string log = telemetryRecorder.SessionLog;
@@ -20,7 +20,7 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         [CompositeTest]
         [InlineData("event", "parameter1", "value1", "parameter2", "value2")]
         public void StringTelemetryRecorder_EventWithDictionaryTest(string eventName, string parameter1, string value1, string parameter2, string value2) {
-            var telemetryRecorder = new StringTelemetryRecorder();
+            var telemetryRecorder = new TestTelemetryRecorder();
             telemetryRecorder.RecordEvent(eventName, new Dictionary<string, object>() { { parameter1, value1 }, { parameter2, value2 } });
 
             string log = telemetryRecorder.SessionLog;
@@ -30,7 +30,7 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         [CompositeTest]
         [InlineData("event")]
         public void StringTelemetryRecorder_EventWithAnonymousCollectionTest(string eventName) {
-            var telemetryRecorder = new StringTelemetryRecorder();
+            var telemetryRecorder = new TestTelemetryRecorder();
             telemetryRecorder.RecordEvent(eventName, new { parameter1 = "value1", parameter2 = "value2" });
 
             string log = telemetryRecorder.SessionLog;

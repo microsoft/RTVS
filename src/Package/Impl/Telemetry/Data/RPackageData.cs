@@ -8,6 +8,9 @@ using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
+    /// <summary>
+    /// Represents R package data as reported in telemetry
+    /// </summary>
     internal static class RPackageData {
         /// <summary>
         /// Retrieves hashes for all R package names in a given folder
@@ -19,13 +22,12 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
             if (!string.IsNullOrEmpty(rInstallPath)) {
                 IEnumerable<string> packageNames = Enumerable.Empty<string>();
                 if (packageType == RPackageType.Base) {
-                    packageNames = FolderUtility.GetSubfolderNames(Path.Combine(rInstallPath, @"\library"));
+                    packageNames = FolderUtility.GetSubfolderNames(Path.Combine(rInstallPath, "library"));
                 } else {
-                    Version v = RInstallation.GetRVersionFromFolderName(rInstallPath.Substring(rInstallPath.LastIndexOf('\\')));
-                    if (v.MajorRevision > 0) {
+                    Version v = RInstallation.GetRVersionFromFolderName(rInstallPath.Substring(rInstallPath.LastIndexOf('\\') + 1));
+                    if (v.Major > 0) {
                         string userLibraryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                                                              @"\R\win-library\",
-                                                              v.MajorRevision.ToString() + "." + v.MinorRevision.ToString());
+                                                              @"R\win-library\", v.Major.ToString() + "." + v.Minor.ToString());
 
                         packageNames = FolderUtility.GetSubfolderNames(userLibraryPath);
                     }

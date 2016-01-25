@@ -12,13 +12,16 @@ using Microsoft.VisualStudio.R.Package.Telemetry.Data;
 using Microsoft.VisualStudio.R.Package.Telemetry.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry {
-    internal class Telemetry : ITelemetry {
-        private static ITelemetry _instance;
+    /// <summary>
+    /// Represents telemetry operations in RTVS
+    /// </summary>
+    internal class RtvsTelemetry : IRtvsTelemetry {
+        private static IRtvsTelemetry _instance;
 
-        public ITelemetry Current {
+        public static IRtvsTelemetry Current {
             get {
                 if (_instance == null) {
-                    _instance = new Telemetry();
+                    _instance = new RtvsTelemetry();
                 }
                 return _instance;
             }
