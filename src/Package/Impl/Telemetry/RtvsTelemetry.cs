@@ -35,6 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string RInstallPath = "R Install Path";
             public const string REngine = "R Engine";
             public const string RROEngine = "RRO Engine";
+            public const string MROEngine = "MRO Engine";
             public const string RBasePackages = "R Base Package";
             public const string RUserPackages = "R User Package";
         }
@@ -64,6 +65,12 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     var rroEngines = GetRSubfolders("RRO");
                     foreach (var s in rroEngines) {
                         VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RROEngine, s);
+                    }
+
+                    var mroEngines = GetRSubfolders("MRO");
+                    foreach (var s in mroEngines)
+                    {
+                        VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.MROEngine, s);
                     }
 
                     var hashes = RPackageData.GetInstalledPackageHashes(RPackageType.Base);
@@ -124,7 +131,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         }
 
         /// <summary>
-        /// Retrieves all subfolders under R or RRO
+        /// Retrieves all subfolders under R, RRO or MRO
         /// </summary>
         /// <param name="directory"></param>
         /// <returns></returns>

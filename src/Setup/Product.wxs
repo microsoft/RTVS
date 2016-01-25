@@ -129,6 +129,7 @@
                     <?endforeach?>
                   </Directory>
                 </Directory>
+                <Directory Id="ProfilesFolder" Name="Profiles" />
               </Directory>
             </Directory>
           </Directory>
