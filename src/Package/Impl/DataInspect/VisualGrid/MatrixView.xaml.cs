@@ -42,6 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // reset scroll bar position to zero
             HorizontalScrollBar.Value = HorizontalScrollBar.Minimum;
             VerticalScrollBar.Value = VerticalScrollBar.Minimum;
+            SetScrollBar(ScrollDirection.Both);
         }
 
         public void Refresh() {
@@ -331,14 +332,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void Points_PointChanged(object sender, PointChangedEventArgs e) {
-            if (e.Direction.HasFlag(ScrollDirection.Horizontal)) {
+            SetScrollBar(e.Direction);
+        }
+
+        private void SetScrollBar(ScrollDirection direction) {
+            if (direction.HasFlag(ScrollDirection.Horizontal)) {
                 double width = Data.RenderSize.Width;
                 HorizontalScrollBar.ViewportSize = width;
                 HorizontalScrollBar.Maximum = Points.HorizontalExtent - width;
                 HorizontalScrollBar.Value = Points.HorizontalOffset;
             }
 
-            if (e.Direction.HasFlag(ScrollDirection.Vertical)) {
+            if (direction.HasFlag(ScrollDirection.Vertical)) {
                 double height = Data.RenderSize.Height;
                 VerticalScrollBar.ViewportSize = height;
                 VerticalScrollBar.Maximum = Points.VerticalExtent - height;
