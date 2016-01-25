@@ -259,6 +259,73 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Variable.Explorer]
+        public async Task MatrixOnlyRowNameTest() {
+            var script = "matrix.rowname.na <- matrix(c(1,2,3,4), nrow=2, ncol=2);rownames(matrix.rowname.na)<-c(NA, 'row2');";
+            var expectation = new VariableExpectation() { Name = "matrix.rowname.na", Value = "num [1:2, 1:2] 1 2 3 4", TypeName = "double", Class = "matrix", HasChildren = true, CanShowDetail = true };
+
+            using (var hostScript = new VariableRHostScript()) {
+                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
+                    script,
+                    expectation,
+                    VariableRHostScript.AssertEvaluationWrapper);
+
+                Range rowRange = new Range(0, 2);
+                Range columnRange = new Range(0, 2);
+                var grid = await evaluation.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+
+                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+                grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
+                grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
+
+                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+                grid.RowHeader[0].ShouldBeEquivalentTo("NA");
+                grid.RowHeader[1].ShouldBeEquivalentTo("row2");
+
+                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+                grid.Grid[0, 0].ShouldBeEquivalentTo("1");
+                grid.Grid[0, 1].ShouldBeEquivalentTo("3");
+                grid.Grid[1, 0].ShouldBeEquivalentTo("2");
+                grid.Grid[1, 1].ShouldBeEquivalentTo("4");
+            }
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task MatrixOnlyColumnNameTest() {
+            var script = "matrix.colname.na <- matrix(1:6, nrow=2, ncol=3);colnames(matrix.colname.na)<-c('col1',NA,'col3');";
+            var expectation = new VariableExpectation() { Name = "matrix.colname.na", Value = "int [1:2, 1:3] 1 2 3 4 5 6", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
+
+            using (var hostScript = new VariableRHostScript()) {
+                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
+                    script,
+                    expectation,
+                    VariableRHostScript.AssertEvaluationWrapper);
+
+                Range rowRange = new Range(0, 2);
+                Range columnRange = new Range(0, 3);
+                var grid = await evaluation.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+
+                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+                grid.ColumnHeader[0].ShouldBeEquivalentTo("col1");
+                grid.ColumnHeader[1].ShouldBeEquivalentTo("NA");
+                grid.ColumnHeader[2].ShouldBeEquivalentTo("col3");
+
+                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+                grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
+                grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
+
+                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+                grid.Grid[0, 0].ShouldBeEquivalentTo("1");
+                grid.Grid[0, 1].ShouldBeEquivalentTo("3");
+                grid.Grid[0, 2].ShouldBeEquivalentTo("5");
+                grid.Grid[1, 0].ShouldBeEquivalentTo("2");
+                grid.Grid[1, 1].ShouldBeEquivalentTo("4");
+                grid.Grid[1, 2].ShouldBeEquivalentTo("6");
+            }
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
         public async Task DataFrameTest() {
             var script = "df.test <- data.frame(101:103, c('a', 'b', 'c'))";
             var expectation = new VariableExpectation() { Name = "df.test", Value = "3 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };

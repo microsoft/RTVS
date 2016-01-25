@@ -27,11 +27,24 @@ grid.data <- function(x, rows, cols) {
 
   dn <- dimnames(x);
   if (!is.null(dn) && (length(dn)==2)) {
-    vp$dimnames <- 'true';
-    vp$row.names <- sapply(row.names(x)[rows], format, USE.NAMES = FALSE);
-    vp$col.names <- sapply(colnames(x)[cols], format, USE.NAMES = FALSE);
+    dnvalue <- 0;
+    vp$dimnames <- dnvalue;
+    if (!is.null(dn[[1]])) {
+      vp$row.names <- sapply(row.names(x)[rows], format, USE.NAMES = FALSE);
+      dnvalue <- dnvalue + 1;
+    } else {
+      vp$row.names <- 'dummy';
+    }
+    
+    if (!is.null(dn[[2]])) {
+      vp$col.names <- sapply(colnames(x)[cols], format, USE.NAMES = FALSE);
+      dnvalue <- dnvalue + 2;
+    } else {
+      vp$col.names <- 'dummy';
+    }
+    vp$dimnames <- format(dnvalue);
   } else {
-    vp$dimnames <- 'false';
+    vp$dimnames <- '0';
     vp$row.names <- 'dummy';  # dummy required for parser
     vp$col.names <- 'dummy';
   }

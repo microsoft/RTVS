@@ -151,9 +151,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     var data = GridParser.Parse(result.StringResult);
                     data.Range = gridRange;
 
-                    if (data.ValidHeaderNames
-                        && (data.ColumnNames.Count != gridRange.Columns.Count
-                            || data.RowNames.Count != gridRange.Rows.Count)) {
+                    if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != gridRange.Rows.Count)
+                        || (data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Column) && data.ColumnNames.Count != gridRange.Columns.Count)) {
                         throw new InvalidOperationException("Header names lengths are different from data's length");
                     }
 
