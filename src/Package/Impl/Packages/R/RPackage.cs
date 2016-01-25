@@ -106,16 +106,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
 
-            var telemetryLog = VsTelemetryService.Current as ITelemetryLog;
-            if (telemetryLog != null) {
-                try {
-                    var fileName = Path.Combine(Path.GetTempPath(), string.Format(CultureInfo.InvariantCulture, "RTVS_Telemetry_{0}.log", DateTime.Now.ToFileTimeUtc()));
-                    var log = telemetryLog?.SessionLog;
-                    using (var sw = new StreamWriter(fileName)) {
-                        sw.Write(log);
-                    }
-                } catch (IOException) { }
-            }
+            VsTelemetryService.Current.Dispose();
 
             base.Dispose(disposing);
         }

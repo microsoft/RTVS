@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.Common.Core.Telemetry {
     /// <summary>
     /// Base telemetry service implementation, common to production code and test cases.
     /// </summary>
-    public abstract class TelemetryServiceBase : ITelemetryService {
+    public abstract class TelemetryServiceBase : ITelemetryService, IDisposable {
         public string EventNamePrefix { get; private set; }
         public string PropertyNamePrefix { get; private set; }
 
@@ -76,5 +77,12 @@ namespace Microsoft.Common.Core.Telemetry {
         /// </summary>
         public abstract ITelemetryActivity StartActivity(TelemetryArea area, string eventName);
         #endregion
+
+        protected virtual void Dispose(bool disposing) { }
+
+        public void Dispose() {
+            Dispose(true);
+            (TelemetryRecorder as IDisposable)?.Dispose();
+        }
     }
 }
