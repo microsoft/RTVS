@@ -47,11 +47,19 @@ namespace Microsoft.R.Editor.Data {
 
                 Dimensions = valueEvaluation.Dim ?? new List<int>();
             } else if (DebugEvaluation is DebugPromiseEvaluationResult) {
+                const string PromiseVaue = "<promise>";
                 var promise = (DebugPromiseEvaluationResult)DebugEvaluation;
 
                 Value = promise.Code;
-                TypeName = "<promise>";
-                Class = "<promise>";
+                TypeName = PromiseVaue;
+                Class = PromiseVaue;
+            } else if (DebugEvaluation is DebugActiveBindingEvaluationResult) {
+                const string ActiveBindingValue = "<active binding>";
+                var activeBinding = (DebugActiveBindingEvaluationResult)DebugEvaluation;
+
+                Value = ActiveBindingValue;
+                TypeName = ActiveBindingValue;
+                Class = ActiveBindingValue;
             }
 
             if (Dimensions == null) Dimensions = new List<int>();
