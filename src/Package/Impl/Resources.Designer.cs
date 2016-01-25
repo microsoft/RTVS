@@ -1250,6 +1250,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [truncated].
+        /// </summary>
+        public static string VariableExplorer_Truncated {
+            get {
+                return ResourceManager.GetString("VariableExplorer_Truncated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
         public static string VariableExplorer_TypeHeader {
@@ -1268,6 +1277,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Data.
+        /// </summary>
+        public static string VariableGrid_Caption {
+            get {
+                return ResourceManager.GetString("VariableGrid_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Variable Explorer.
         /// </summary>
         public static string VariableWindowCaption {
@@ -1277,7 +1295,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compable with the RStudio where possible?.
+        ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?.
         /// </summary>
         public static string Warning_RStudioKeyboardShortcuts {
             get {

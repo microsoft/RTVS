@@ -9,10 +9,12 @@ using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
+using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
@@ -31,7 +33,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new LoadWorkspaceCommand(rSessionProvider, projectServiceAccessor),
                 new SaveWorkspaceCommand(rSessionProvider, projectServiceAccessor),
 
+                new SourceRScriptCommand(VsAppShell.Current.CompositionService),
+
                 new AttachDebuggerCommand(rSessionProvider),
+                new AttachToRInteractiveCommand(rSessionProvider),
                 new StopDebuggingCommand(rSessionProvider),
                 new ContinueDebuggingCommand(rSessionProvider),
                 new StepOverCommand(rSessionProvider),

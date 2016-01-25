@@ -38,5 +38,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             }
         }
+
+        public string ToRString() {
+            return $"{Start + 1}:{Start + Count}";
+        }
     }
 }

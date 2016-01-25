@@ -11,10 +11,23 @@ namespace Microsoft.R.Debugger.Engine {
         internal const int ChildrenMaxLength = 100;
         internal const int ReprMaxLength = 100;
 
+        private const DebugEvaluationResultFields _prefetchedFields =
+            DebugEvaluationResultFields.Expression |
+            DebugEvaluationResultFields.Kind |
+            DebugEvaluationResultFields.Repr |
+            DebugEvaluationResultFields.ReprDPut |
+            DebugEvaluationResultFields.TypeName |
+            DebugEvaluationResultFields.Classes |
+            DebugEvaluationResultFields.Length |
+            DebugEvaluationResultFields.SlotCount |
+            DebugEvaluationResultFields.AttrCount |
+            DebugEvaluationResultFields.Flags;
+
         private IDebugProperty2 IDebugProperty2 => this;
         private IDebugProperty3 IDebugProperty3 => this;
 
         private Lazy<IReadOnlyList<DebugEvaluationResult>> _children;
+        private Lazy<string> _reprToString;
 
         public AD7Property Parent { get; }
         public AD7StackFrame StackFrame { get; }
@@ -35,9 +48,16 @@ namespace Microsoft.R.Debugger.Engine {
 
             _children = Lazy.Create(() =>
                 (EvaluationResult as DebugValueEvaluationResult)
-                ?.GetChildrenAsync(maxLength: ChildrenMaxLength, reprMaxLength: ReprMaxLength)
+                ?.GetChildrenAsync(_prefetchedFields, ChildrenMaxLength, ReprMaxLength)
                 ?.GetResultOnUIThread()
                 ?? new DebugEvaluationResult[0]);
+
+            _reprToString = Lazy.Create(() => 
+                (EvaluationResult
+                 .EvaluateAsync(DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprToString)
+                 .GetResultOnUIThread()
+                 as DebugValueEvaluationResult
+                )?.Representation.ToString);
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
@@ -50,7 +70,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
             if (valueResult != null && valueResult.HasAttributes == true) {
-                string attrExpr = Invariant($"attributes({valueResult.Expression})");
+                string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
                 var attrResult = StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", reprMaxLength: ReprMaxLength).GetResultOnUIThread();
                 if (!(attrResult is DebugErrorEvaluationResult)) {
                     var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
@@ -168,25 +188,23 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugProperty3.GetStringCharLength(out uint pLen) {
             pLen = 0;
 
-            var valueResult = EvaluationResult as DebugValueEvaluationResult;
-            if (valueResult == null || valueResult.Representation.ToString == null) {
+            if (_reprToString.Value == null) {
                 return VSConstants.E_FAIL;
             }
 
-            pLen = (uint)valueResult.Representation.ToString.Length;
+            pLen = (uint)_reprToString.Value.Length;
             return VSConstants.S_OK;
         }
 
         int IDebugProperty3.GetStringChars(uint buflen, ushort[] rgString, out uint pceltFetched) {
             pceltFetched = 0;
 
-            var valueResult = EvaluationResult as DebugValueEvaluationResult;
-            if (valueResult == null || valueResult.Representation.ToString == null) {
+            if (_reprToString.Value == null) {
                 return VSConstants.E_FAIL;
             }
 
             for (int i = 0; i < buflen; ++i) {
-                rgString[i] = valueResult.Representation.ToString[i];
+                rgString[i] = _reprToString.Value[i];
             }
             return VSConstants.S_OK;
         }

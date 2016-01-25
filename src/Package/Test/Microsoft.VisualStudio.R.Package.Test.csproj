@@ -149,6 +149,10 @@
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Debugger\Impl\Microsoft.R.Debugger.csproj">
+      <Project>{17e155bf-351c-4253-b9b1-36eeea35fe3c}</Project>
+      <Name>Microsoft.R.Debugger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client</Name>
@@ -216,6 +220,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataInspect\EvaluationWrapperTest.cs" />
+    <Compile Include="DataInspect\VariableExpectation.cs" />
     <Compile Include="DataInspect\VariableRHostScript.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\CommandFactoryTest.cs" />

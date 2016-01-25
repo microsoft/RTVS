@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Host.Client;
@@ -70,7 +71,10 @@ namespace Microsoft.R.Debugger.Engine {
 
             IsDisposed = true;
 
-            ExitBrowserAsync(rSession).SilenceException<MessageTransportException>().DoNotWait();
+            ExitBrowserAsync(rSession)
+                .SilenceException<MessageTransportException>()
+                .SilenceException<RException>()
+                .DoNotWait();
         }
 
         private void ThrowIfDisposed() {
@@ -396,7 +400,7 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugProgram2.Step(IDebugThread2 pThread, enum_STEPKIND sk, enum_STEPUNIT Step) {
             ThrowIfDisposed();
 
-            Task step;
+            Task<bool> step;
             switch (sk) {
                 case enum_STEPKIND.STEP_OVER:
                     step = DebugSession.StepOverAsync();
@@ -412,7 +416,20 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             step.ContinueWith(t => {
-                Send(new AD7SteppingCompleteEvent(), AD7SteppingCompleteEvent.IID);
+                // If step was interrupted midway (e.g. by a breakpoint), we have already reported breakpoint
+                // hit event, and so we must not report step complete. Note that interrupting is not the same
+                // as canceling, and if step was canceled, we must report step completion.
+
+                bool completed = true;
+                try {
+                    completed = t.GetAwaiter().GetResult();
+                } catch (OperationCanceledException) {
+                } catch (MessageTransportException) {
+                }
+
+                if (completed) {
+                    Send(new AD7SteppingCompleteEvent(), AD7SteppingCompleteEvent.IID);
+                }
             });
 
             return VSConstants.S_OK;

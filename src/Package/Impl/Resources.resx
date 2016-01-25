@@ -521,7 +521,7 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
     <value>History</value>
   </data>
   <data name="Warning_RStudioKeyboardShortcuts" xml:space="preserve">
-    <value>Do you want to reset keyboard shortcuts to be compable with the RStudio where possible?</value>
+    <value>Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?</value>
   </data>
   <data name="Warning_SettingsReset" xml:space="preserve">
     <value>This will reset Visual Studio window layout to the Data Scientist profile. Proceed?</value>
@@ -537,5 +537,11 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   </data>
   <data name="Settings_HelpBrowser_Description" xml:space="preserve">
     <value>Determines if R Tools should always be using external Web browser or try and send Help pages to the Help window and other Web requests to the external default Web browser.</value>
+  </data>
+  <data name="VariableExplorer_Truncated" xml:space="preserve">
+    <value>[truncated]</value>
+  </data>
+  <data name="VariableGrid_Caption" xml:space="preserve">
+    <value>R Data</value>
   </data>
 </root>

@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return new DeferNotification(this);
         }
 
-        public static double MinItemWidth { get { return 20.0; } }
+        public static double MinItemWidth { get { return 40.0; } }
 
         public static double MinItemHeight { get { return 10.0; } }
 

@@ -8,7 +8,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
     [Name("HistoryWindowPaneMouseProcessor")]
     [Order(Before = "WordSelection")]
     [ContentType(RHistoryContentTypeDefinition.ContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Interactive)]
+    [TextViewRole(RHistory.TextViewRole)]
     internal sealed class HistoryWindowPaneMouseProcessorProvider : IMouseProcessorProvider {
         private readonly IRHistoryProvider _historyProvider;
 

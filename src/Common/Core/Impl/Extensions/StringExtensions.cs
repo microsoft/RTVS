@@ -46,5 +46,35 @@ namespace Microsoft.Common.Core {
                 .Replace(oldValue, newValue, start, length)
                 .ToString();
         }
+
+        public static string RemoveWhiteSpaceLines(this string text) {
+            var sb = new StringBuilder(text);
+            var lineBreakIndex = sb.Length;
+            var isWhiteSpaceOnly = true;
+            for (var i = sb.Length - 1; i >= 0; i--) {
+                var ch = sb[i];
+                if (ch == '\r' || ch == '\n') {
+                    if (ch == '\n' && i > 0 && sb[i - 1] == '\r') {
+                        i--;
+                    }
+
+                    if (isWhiteSpaceOnly) {
+                        sb.Remove(i, lineBreakIndex - i);
+                    } else if (i == 0) {
+                        var rn = sb.Length > 1 && sb[0] == '\r' && sb[1] == '\n';
+                        sb.Remove(0, rn ? 2 : 1);
+                        break;
+                    }
+
+                    lineBreakIndex = i;
+                    isWhiteSpaceOnly = true;
+                }
+
+                isWhiteSpaceOnly = isWhiteSpaceOnly && char.IsWhiteSpace(ch);
+            }
+
+            return sb.ToString();
+        }
+
     }
 }

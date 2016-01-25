@@ -48,9 +48,6 @@ namespace Microsoft.R.Host.Client.Session {
 .GlobalEnv$.rtvs.vsgdhistoryinfo <- function() {
    .External('Microsoft.R.Host::External.ide_graphicsdevice_history_info')
 }
-.GlobalEnv$xaml <- function(filename, width, height) {
-   invisible(.External('Microsoft.R.Host::External.xaml_graphicsdevice_new', filename, width, height))
-}
 options(device='.rtvs.vsgd')
 ";
 

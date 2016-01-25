@@ -52,6 +52,8 @@ namespace Microsoft.R.Editor.Formatting {
                     if (document != null) {
                         int insertionPoint = targetSpan.Start;
                         targetSpan.Snapshot.TextBuffer.Replace(targetSpan, text);
+                        document.EditorTree.EnsureTreeReady();
+
                         RangeFormatter.FormatRange(TextView, targetSpan.Snapshot.TextBuffer, new TextRange(insertionPoint, text.Length), document.EditorTree.AstRoot, REditorSettings.FormatOptions);
                     }
                 }
