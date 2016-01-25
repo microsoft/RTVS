@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Telemetry;
 namespace Microsoft.Common.Core.Test.Telemetry {
 
     [ExcludeFromCodeCoverage]
-    public sealed class StringTelemetryRecorder : ITelemetryRecorder, ITelemetryTestSupport {
+    public sealed class TestTelemetryRecorder : ITelemetryRecorder, ITelemetryTestSupport {
         private StringBuilder stringBuilder = new StringBuilder();
 
         #region ITelemetryRecorder
@@ -22,7 +22,11 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         public void RecordEvent(string eventName, object parameters = null) {
             this.stringBuilder.AppendLine(eventName);
             if (parameters != null) {
-                WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
+                if (parameters is IDictionary<string, object>) {
+                    WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
+                } else {
+                    WriteProperty("Value", parameters.ToString());
+                }
             }
         }
 
@@ -32,13 +36,6 @@ namespace Microsoft.Common.Core.Test.Telemetry {
             if (activity.HasProperties) {
                 WriteDictionary(activity.Properties);
             }
-        }
-
-        public string SerializeSession() {
-            return string.Empty;
-        }
-
-        public void Dispose() {
         }
         #endregion
 

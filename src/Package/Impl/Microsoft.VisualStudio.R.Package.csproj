@@ -329,9 +329,15 @@
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
+    <Compile Include="Telemetry\Data\FolderUtility.cs" />
+    <Compile Include="Telemetry\Data\RPackageData.cs" />
+    <Compile Include="Telemetry\Data\RPackageType.cs" />
+    <Compile Include="Telemetry\Data\ToolWindowData.cs" />
+    <Compile Include="Telemetry\Definitions\IRtvsTelemetry.cs" />
+    <Compile Include="Telemetry\Definitions\ITelemetryLog.cs" />
+    <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
+    <Compile Include="Telemetry\RtvsTelemetry.cs" />
     <Compile Include="Telemetry\TelemetryActvityWrapper.cs" />
-    <Compile Include="Telemetry\TelemetryEvents.cs" />
-    <Compile Include="Telemetry\TelemetryProperties.cs" />
     <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
     <Compile Include="Telemetry\VsTelemetryService.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />

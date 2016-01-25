@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.Common.Core.Telemetry {
     /// <summary>
     /// Base telemetry service implementation, common to production code and test cases.
     /// </summary>
-    public abstract class TelemetryServiceBase : ITelemetryService {
+    public abstract class TelemetryServiceBase : ITelemetryService, IDisposable {
         public string EventNamePrefix { get; private set; }
         public string PropertyNamePrefix { get; private set; }
 
@@ -51,17 +52,24 @@ namespace Microsoft.Common.Core.Telemetry {
         public void ReportEvent(TelemetryArea area, string eventName, object parameters = null) {
             Check.ArgumentStringNullOrEmpty("eventName", eventName);
 
-            IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
-            IDictionary<string, object> dictWithPrefix = new Dictionary<string, object>();
+            if (parameters is IDictionary<string, object>) {
+                IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
+                IDictionary<string, object> dictWithPrefix = new Dictionary<string, object>();
 
-            foreach (KeyValuePair<string, object> kvp in dict) {
-                Check.ArgumentStringNullOrEmpty("parameterName", kvp.Key);
-                Check.ArgumentNull("parameterValue", kvp.Value);
+                foreach (KeyValuePair<string, object> kvp in dict) {
+                    Check.ArgumentStringNullOrEmpty("parameterName", kvp.Key);
+                    Check.ArgumentNull("parameterValue", kvp.Value);
 
-                dictWithPrefix[this.PropertyNamePrefix + area.ToString() + "." + kvp.Key] = kvp.Value;
+                    dictWithPrefix[this.PropertyNamePrefix + area.ToString() + "." + kvp.Key] = kvp.Value;
+                }
+
+                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, dictWithPrefix);
+            } else if (parameters != null) {
+                string s = parameters.ToString();
+                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, s);
+            } else {
+                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName);
             }
-
-            this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, dictWithPrefix);
         }
 
         /// <summary>
@@ -69,5 +77,12 @@ namespace Microsoft.Common.Core.Telemetry {
         /// </summary>
         public abstract ITelemetryActivity StartActivity(TelemetryArea area, string eventName);
         #endregion
+
+        protected virtual void Dispose(bool disposing) { }
+
+        public void Dispose() {
+            Dispose(true);
+            (TelemetryRecorder as IDisposable)?.Dispose();
+        }
     }
 }

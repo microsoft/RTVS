@@ -178,7 +178,7 @@ namespace Microsoft.R.Actions.Utility {
             return string.Empty;
         }
 
-        private static Version GetRVersionFromFolderName(string folderName) {
+        public static Version GetRVersionFromFolderName(string folderName) {
             if (folderName.StartsWith("R-")) {
                 try {
                     return new Version(folderName.Substring(2));
