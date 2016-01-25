@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             current = input.IndexOf('=', current);
             string dimnamesValue;
             current = FirstQuotedString(input, current, out dimnamesValue);
-            bool validHeaderNames = bool.Parse(dimnamesValue);
+            var validHeaderNames = (GridData.HeaderNames) Enum.Parse(typeof(GridData.HeaderNames), dimnamesValue);
 
             List<string> rowNames = new List<string>();
             current = NamedValue(input, "row.names", rowNames, current, true);

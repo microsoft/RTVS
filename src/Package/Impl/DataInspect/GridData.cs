@@ -1,7 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class GridData : IGridData<string> {
+        [Flags]
+        public enum HeaderNames {
+            None = 0,
+            Row = 1,
+            Column = 2,
+        }
+
+
         public GridData(
             IList<string> rowNames,
             IList<string> columnNames,
@@ -11,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Values = values;
         }
 
-        public bool ValidHeaderNames { get; set; }
+        public HeaderNames ValidHeaderNames { get; set; }
 
         public IList<string> RowNames { get; }
 
@@ -25,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public IRange<string> ColumnHeader {
             get {
                 if (_columnHeader == null) {
-                    if (ValidHeaderNames) {
+                    if (ValidHeaderNames.HasFlag(HeaderNames.Column)) {
                         _columnHeader = new ListToRange<string>(
                             Range.Columns,
                             ColumnNames);
@@ -41,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public IRange<string> RowHeader {
             get {
                 if (_rowHeader == null) {
-                    if (ValidHeaderNames) {
+                    if (ValidHeaderNames.HasFlag(HeaderNames.Row)) {
                         _rowHeader = new ListToRange<string>(
                             Range.Rows,
                             RowNames);

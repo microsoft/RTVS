@@ -46,7 +46,15 @@ namespace Microsoft.R.Editor.Data {
                 HasChildren = valueEvaluation.HasChildren;
 
                 Dimensions = valueEvaluation.Dim ?? new List<int>();
+            } else if (DebugEvaluation is DebugPromiseEvaluationResult) {
+                var promise = (DebugPromiseEvaluationResult)DebugEvaluation;
+
+                Value = promise.Code;
+                TypeName = "<promise>";
+                Class = "<promise>";
             }
+
+            if (Dimensions == null) Dimensions = new List<int>();
 
             MaxChildrenCount = maxChildrenCount;
         }
