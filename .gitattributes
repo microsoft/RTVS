@@ -1,0 +1,18 @@
+# Set the default behavior (used when a rule below doesn't match)
+* text=auto
+
+*.dll -text
+*.lib -text
+*.sln -text
+*.ico -text
+*.bmp -text
+*.png -text
+*.snk -text
+*.mht -text
+*.pickle -text
+*.Rdata -text
+*.Rhistory -text
+
+# Some Windows-specific files should always be CRLF
+*.bat eol=crlf
+*.cmd eol=crlf
