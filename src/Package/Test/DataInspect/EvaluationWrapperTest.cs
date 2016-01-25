@@ -50,6 +50,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             { "list.length1 <- list(c(1, 2, 3))", new VariableExpectation() { Name = "list.length1", Value = "List of 1", TypeName = "list", Class = "list", HasChildren = true, CanShowDetail = false } },
         };
 
+        object[,] activeBindingTestData = new object[,] {
+            { "makeActiveBinding('z.activebinding1', function() 123, .GlobalEnv);", new VariableExpectation() { Name = "z.activebinding1", Value = "<active binding>", TypeName = "<active binding>", Class = "<active binding>", HasChildren = false, CanShowDetail = false } },
+        };
+
         [Test]
         [Category.Variable.Explorer]
         public Task ValuesTest() {
@@ -78,6 +82,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Category.Variable.Explorer]
         public Task ListTest() {
             return RunTest(listTestData);
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
+        public Task ActiveBindingTest() {
+            return RunTest(activeBindingTestData);
         }
 
         [Test]
