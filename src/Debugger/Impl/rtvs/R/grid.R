@@ -14,14 +14,26 @@ grid.header <- function(obj, range, isRow) {
   vp;
 }
 
+grid.trim <- function(str, max_length = 100) {
+  if (nchar(str) > (100 - 3)) {
+    x <- paste(substr(str, 1, 97), '...', sep='');
+  } else {
+    str;
+  }
+}
+
+grid.format <- function(x) {
+    y <- sapply(format(x), grid.trim);
+}
+
 grid.data <- function(x, rows, cols) {
   d <- dim(x);
   if (is.null(d) || (length(d) != 2)) {
     stop('grid.data requires two dimensional object');
   }
-  
+
   x0 <- as.data.frame(x[rows, cols]);
-  x1 <- apply(x0, 2, format);
+  x1 <- apply(x0, 2, grid.format);
 
   vp<-list();
 
