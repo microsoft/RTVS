@@ -1,12 +1,12 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="us-ascii"?>
 <UserSettings>
   <ApplicationIdentity version="14.0"/>
   <DisplayName>
-    <ResourceID>#7000</ResourceID>
+    <ResourceID>#7002</ResourceID>
     <ResourcePackage>{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}</ResourcePackage>
   </DisplayName>
   <Description>
-    <ResourceID>#7001</ResourceID>
+    <ResourceID>#7012</ResourceID>
     <ResourcePackage>{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}</ResourcePackage>
   </Description>
   <ToolsOptions/>
