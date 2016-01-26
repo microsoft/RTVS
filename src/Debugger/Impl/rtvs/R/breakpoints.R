@@ -136,7 +136,7 @@ inject_breakpoints <- function(expr) {
   result <- expr;
   changed <- FALSE;
 
-  for (line_num in line_numbers) {
+  for (line_num in sort(line_numbers)) {
     step <- steps_for_line_num(expr, line_num);
     if (length(step) > 0) {
      target_expr <- expr[[step]];
