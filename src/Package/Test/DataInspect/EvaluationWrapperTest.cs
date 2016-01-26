@@ -336,6 +336,30 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Variable.Explorer]
+        public async Task MatrixLargeCellTest() {
+            var script = "matrix.largecell <- matrix(list(as.double(1:5000), 2, 3, 4), nrow = 2, ncol = 2);";
+            var expectation = new VariableExpectation() { Name = "matrix.largecell", Value = "List of 4", TypeName = "list", Class = "matrix", HasChildren = true, CanShowDetail = true };
+
+            using (var hostScript = new VariableRHostScript()) {
+                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
+                    script,
+                    expectation,
+                    VariableRHostScript.AssertEvaluationWrapper);
+
+                Range rowRange = new Range(0, 1);
+                Range columnRange = new Range(0, 1);
+                var grid = await evaluation.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+
+                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+
+                grid.Grid[0, 0].ShouldBeEquivalentTo("1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27...");
+            }
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
         public async Task DataFrameTest() {
             var script = "df.test <- data.frame(101:103, c('a', 'b', 'c'))";
             var expectation = new VariableExpectation() { Name = "df.test", Value = "3 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
