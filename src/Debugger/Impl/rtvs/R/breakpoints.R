@@ -133,20 +133,21 @@ inject_breakpoints <- function(expr) {
     return(NULL);
   }
 
-  result <- expr;
+  original_expr <- expr;
   changed <- FALSE;
 
   for (line_num in sort(line_numbers)) {
     step <- steps_for_line_num(expr, line_num);
     if (length(step) > 0) {
-     target_expr <- expr[[step]];
+      new_expr <- expr;
+      target_expr <- expr[[step]];
 
       # If there's already an injected breakpoint there, nothing to do for this line.
       if (isTRUE(attr(target_expr, 'rtvs::at_breakpoint'))) {
         next;
       }
 
-      result[[step]] <- substitute({
+      new_expr[[step]] <- substitute({
         .doTrace(if (rtvs:::is_breakpoint(FILENAME, LINE_NUMBER)) browser());
         EXPR
       }, list(
@@ -155,10 +156,11 @@ inject_breakpoints <- function(expr) {
         EXPR = target_expr
       ));
      
-      attr(result[[step]], 'rtvs::original_expr') <- target_expr;
-      attr(result[[step]][[2]], 'rtvs::is_breakpoint') <- TRUE;
-      attr(result[[step]][[3]], 'rtvs::at_breakpoint') <- TRUE;
+      attr(new_expr[[step]], 'rtvs::original_expr') <- target_expr;
+      attr(new_expr[[step]][[2]], 'rtvs::is_breakpoint') <- TRUE;
+      attr(new_expr[[step]][[3]], 'rtvs::at_breakpoint') <- TRUE;
 
+      expr <- new_expr;
       changed <- TRUE;
     }
   }
@@ -169,7 +171,7 @@ inject_breakpoints <- function(expr) {
 
   # Recursively copy srcrefs from the original expression to the new one with injected breakpoints,
   # synthesizing them for injected breakpoint expressions from original expressions that they replace
-  result <- (function(before, after) {
+  expr <- (function(before, after) {
     if (is.symbol(before) || is.symbol(after)) {
       return(after);
     }
@@ -187,6 +189,9 @@ inject_breakpoints <- function(expr) {
         # Copy srcrefs from the original, replicating them such that they apply to the entirety of
         # the replacement expression, so that the same line is considered current for all of it.
         attr(after[[i]], 'srcref') <- rep(list(before_srcref[[i]]), length(after[[i]]));
+
+        # Recurse into the original expression, in case it has more breakpoints inside.
+        after[[i]][[3]] <- Recall(before[[i]], after[[i]][[3]]);
       } else if (is.language(after[[i]])) {
         # Otherwise, if this is not a literal, keep recursing down in case injected breakpoints
         # are in the subexpressions of this expression.
@@ -195,9 +200,9 @@ inject_breakpoints <- function(expr) {
     }
 
     after
-  })(expr, result);
+  })(original_expr, expr);
 
-  result
+  expr
 }
 
 # Enables or disables instrumentation that makes breakpoints work.
