@@ -18,11 +18,9 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
         /// Retrieves captions and positions of all active tool windows
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<ToolWindowData> GetToolWindowData() {
+        public static IEnumerable<ToolWindowData> GetToolWindowData(IVsUIShell shell) {
             var data = new List<ToolWindowData>();
             try {
-                IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-
                 IEnumWindowFrames e;
                 shell.GetToolWindowEnum(out e);
                 e.Reset();

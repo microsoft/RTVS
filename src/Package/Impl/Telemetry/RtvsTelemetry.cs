@@ -11,6 +11,7 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Telemetry.Data;
 using Microsoft.VisualStudio.R.Package.Telemetry.Definitions;
 using Microsoft.VisualStudio.R.Package.Telemetry.Windows;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// <summary>
@@ -80,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                         VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RUserPackages, s);
                     }
                 } catch (Exception ex) {
-                    Debug.Assert(false, "Telemetry exception: " + ex.Message);
+                    Trace.Fail("Telemetry exception: " + ex.Message);
                 }
             }
         }
@@ -108,21 +109,21 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 PartialArgumentNameMatch = REditorSettings.PartialArgumentNameMatch,
                             });
                 } catch (Exception ex) {
-                    Debug.Assert(false, "Telemetry exception: " + ex.Message);
+                    Trace.Fail("Telemetry exception: " + ex.Message);
                 }
             }
         }
 
-        public void ReportWindowLayout() {
+        public void ReportWindowLayout(IVsUIShell shell) {
             if (VsTelemetryService.Current.IsEnabled) {
                 try {
-                    var windows = ToolWindowData.GetToolWindowData();
+                    var windows = ToolWindowData.GetToolWindowData(shell);
                     foreach (var w in windows) {
                         VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, WindowEvents.ToolWindow,
                                 new { Caption = w.Caption, Left = w.X, Top = w.Y, Width = w.Width, Height = w.Height });
                     }
                 } catch (Exception ex) {
-                    Debug.Assert(false, "Telemetry exception: " + ex.Message);
+                    Trace.Fail("Telemetry exception: " + ex.Message);
                 }
             }
         }

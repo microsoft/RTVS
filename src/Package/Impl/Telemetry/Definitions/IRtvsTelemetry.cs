@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry.Definitions {
     /// <summary>
@@ -7,6 +8,6 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Definitions {
     internal interface IRtvsTelemetry : IDisposable {
         void ReportConfiguration();
         void ReportSettings();
-        void ReportWindowLayout();
+        void ReportWindowLayout(IVsUIShell shell);
     }
 }
