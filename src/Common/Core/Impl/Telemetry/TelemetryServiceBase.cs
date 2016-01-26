@@ -52,10 +52,11 @@ namespace Microsoft.Common.Core.Telemetry {
         public void ReportEvent(TelemetryArea area, string eventName, object parameters = null) {
             Check.ArgumentStringNullOrEmpty("eventName", eventName);
 
+            string completeEventName = MakeEventName(area, eventName);
             if (parameters == null) {
-                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName);
+                this.TelemetryRecorder.RecordEvent(completeEventName);
             } else if (parameters is string) {
-                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, parameters as string);
+                this.TelemetryRecorder.RecordEvent(completeEventName, parameters as string);
             } else {
                 IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
                 IDictionary<string, object> dictWithPrefix = new Dictionary<string, object>();
@@ -64,7 +65,7 @@ namespace Microsoft.Common.Core.Telemetry {
                     Check.ArgumentStringNullOrEmpty("parameterName", kvp.Key);
                     dictWithPrefix[this.PropertyNamePrefix + area.ToString() + "." + kvp.Key] = kvp.Value ?? string.Empty;
                 }
-                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, dictWithPrefix);
+                this.TelemetryRecorder.RecordEvent(completeEventName, dictWithPrefix);
             }
         }
 
@@ -73,6 +74,10 @@ namespace Microsoft.Common.Core.Telemetry {
         /// </summary>
         public abstract ITelemetryActivity StartActivity(TelemetryArea area, string eventName);
         #endregion
+
+        private string MakeEventName(TelemetryArea area, string eventName) {
+            return this.EventNamePrefix + area.ToString() + "/" + eventName;
+        }
 
         protected virtual void Dispose(bool disposing) { }
 
