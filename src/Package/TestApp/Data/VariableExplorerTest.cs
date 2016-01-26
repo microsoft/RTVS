@@ -24,15 +24,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void VariableExplorer_ConstructorTest01() {
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
-                var actual = VisualTreeObject.Create(script.Control);
-                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer01");
-            }
-        }
-
-        [Test]
-        [Category.Interactive]
         public void VariableExplorer_ConstructorTest02() {
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {

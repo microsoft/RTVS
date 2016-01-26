@@ -5,7 +5,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Definitions {
     /// <summary>
     /// provides evaluation from R Host
     /// </summary>
-    internal interface IVariableDataProvider {
+    public interface IVariableDataProvider {
         /// <summary>
         /// register a callback when evaluation is available
         /// </summary>

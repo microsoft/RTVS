@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
-    internal sealed class EvaluationWrapper : RSessionDataObject, IIndexedItem {
+    public sealed class EvaluationWrapper : RSessionDataObject, IIndexedItem {
 
         public EvaluationWrapper() { Index = -1; }
 

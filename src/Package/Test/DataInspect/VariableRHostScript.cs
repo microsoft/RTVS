@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
-    internal class VariableRHostScript : RHostScript {
+    public class VariableRHostScript : RHostScript {
         private VariableProvider _variableProvider;
         private EvaluationWrapper _globalEnv;
 
@@ -26,6 +26,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             _variableProvider = new VariableProvider(base.SessionProvider, VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>());
 
             DoIdle(100);
+        }
+
+        public IVariableDataProvider VariableProvider {
+            get {
+                return _variableProvider;
+            }
         }
 
         public EvaluationWrapper GlobalEnvrionment {
