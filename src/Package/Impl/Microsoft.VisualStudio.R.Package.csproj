@@ -63,12 +63,6 @@
     <Compile Include="DataInspect\DataSource\IListProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
     <Compile Include="DataInspect\DataSource\ListToRange.cs" />
-    <Compile Include="DataInspect\DataSource\Page.cs" />
-    <Compile Include="DataInspect\DataSource\Page2D.cs" />
-    <Compile Include="DataInspect\DataSource\Page2DManager.cs" />
-    <Compile Include="DataInspect\DataSource\PageItem.cs" />
-    <Compile Include="DataInspect\DataSource\PageManager.cs" />
-    <Compile Include="DataInspect\DataSource\PageNumber.cs" />
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
     <Compile Include="DataInspect\Definitions\IVariableDataProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
