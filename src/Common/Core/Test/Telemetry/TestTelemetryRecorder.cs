@@ -22,10 +22,10 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         public void RecordEvent(string eventName, object parameters = null) {
             this.stringBuilder.AppendLine(eventName);
             if (parameters != null) {
-                if (parameters is IDictionary<string, object>) {
-                    WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
+                if (parameters is string) {
+                    WriteProperty("Value", parameters as string);
                 } else {
-                    WriteProperty("Value", parameters.ToString());
+                    WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
                 }
             }
         }
