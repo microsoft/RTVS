@@ -33,8 +33,9 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             if (this.IsEnabled) {
                 TelemetryEvent telemetryEvent = new TelemetryEvent(eventName);
                 if (parameters != null) {
-                    if (parameters is string) {
-                        telemetryEvent.Properties["Value"] = parameters as string;
+                    var stringParameter = parameters as string;
+                    if (stringParameter != null) {
+                        telemetryEvent.Properties["Value"] = stringParameter;
                     } else {
                         IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
                         foreach (KeyValuePair<string, object> kvp in dict) {
