@@ -78,7 +78,7 @@ namespace Microsoft.Common.Core.Telemetry {
 
         public void Dispose() {
             Dispose(true);
-            (TelemetryRecorder as IDisposable)?.Dispose();
+            TelemetryRecorder?.Dispose();
             TelemetryRecorder = null;
         }
     }

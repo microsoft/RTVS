@@ -23,7 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
             try {
                 IEnumWindowFrames e;
                 shell.GetToolWindowEnum(out e);
-                e.Reset();
 
                 IVsWindowFrame[] frame = new IVsWindowFrame[1];
                 uint fetched = 0;

@@ -67,5 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             }
         }
         #endregion
+
+        public void Dispose() { }
     }
 }

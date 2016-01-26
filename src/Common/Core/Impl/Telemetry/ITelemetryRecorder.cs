@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace Microsoft.Common.Core.Telemetry {
     /// <summary>
@@ -6,7 +6,7 @@ namespace Microsoft.Common.Core.Telemetry {
     /// the telemetry service. In Visual Studio environment maps to IVsTelemetryService
     /// whereas in tests can be replaced by an object that writes events to a string.
     /// </summary>
-    public interface ITelemetryRecorder {
+    public interface ITelemetryRecorder : IDisposable {
         /// <summary>
         /// True if telemetry is actually being recorded
         /// </summary>

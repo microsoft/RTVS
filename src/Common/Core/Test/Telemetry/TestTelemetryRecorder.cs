@@ -49,6 +49,8 @@ namespace Microsoft.Common.Core.Test.Telemetry {
         }
         #endregion
 
+        public void Dispose() { }
+
         private void WriteDictionary(IDictionary<string, object> dict) {
             foreach (KeyValuePair<string, object> kvp in dict) {
                 WriteProperty(kvp.Key, kvp.Value);

@@ -41,15 +41,11 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
         }
 
         private static string CalculateMD5Hash(string input) {
-            MD5 md5 = MD5.Create();
+            SHA512 sha = SHA512.Create();
             byte[] inputBytes = Encoding.Unicode.GetBytes(input);
-            byte[] hash = md5.ComputeHash(inputBytes);
+            byte[] hash = sha.ComputeHash(inputBytes);
 
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hash.Length; i++) {
-                sb.Append(hash[i].ToString("X2"));
-            }
-            return sb.ToString();
+            return BitConverter.ToString(hash);
         }
     }
 }
