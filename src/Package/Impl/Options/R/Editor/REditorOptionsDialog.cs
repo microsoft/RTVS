@@ -136,10 +136,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
             base.ResetSettings();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            RtvsTelemetry.Current.ReportSettings();
-            base.Dispose(disposing);
+        protected override void OnApply(PageApplyEventArgs e) {
+            if (e.ApplyBehavior == ApplyKind.Apply) {
+                RtvsTelemetry.Current.ReportSettings();
+            }
+            base.OnApply(e);
         }
     }
 }
