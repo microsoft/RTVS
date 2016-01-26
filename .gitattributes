@@ -1,5 +1,11 @@
 # Set the default behavior (used when a rule below doesn't match)
 * text=auto
+*.cs text
+*.R text
+*.*proj text
+*.targets text
+*.settings text
+*.vssettings text
 
 *.dll -text
 *.lib -text
