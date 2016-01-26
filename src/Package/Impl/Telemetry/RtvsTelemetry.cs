@@ -137,7 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             string root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
             string baseRFolder = Path.Combine(root + @"Program Files\", directory);
             try {
-                return FolderUtility.GetSubfolderNames(baseRFolder);
+                return FolderUtility.GetSubfolderRelativePaths(baseRFolder);
             } catch (IOException) {
                 // Don't do anything if there is no RRO installed
             }

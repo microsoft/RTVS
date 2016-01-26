@@ -22,14 +22,14 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
             if (!string.IsNullOrEmpty(rInstallPath)) {
                 IEnumerable<string> packageNames = Enumerable.Empty<string>();
                 if (packageType == RPackageType.Base) {
-                    packageNames = FolderUtility.GetSubfolderNames(Path.Combine(rInstallPath, "library"));
+                    packageNames = FolderUtility.GetSubfolderRelativePaths(Path.Combine(rInstallPath, "library"));
                 } else {
                     Version v = RInstallation.GetRVersionFromFolderName(rInstallPath.Substring(rInstallPath.LastIndexOf('\\') + 1));
                     if (v.Major > 0) {
                         string userLibraryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                                                               @"R\win-library\", v.Major.ToString() + "." + v.Minor.ToString());
 
-                        packageNames = FolderUtility.GetSubfolderNames(userLibraryPath);
+                        packageNames = FolderUtility.GetSubfolderRelativePaths(userLibraryPath);
                     }
                 }
 

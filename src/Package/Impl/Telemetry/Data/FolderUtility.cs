@@ -4,7 +4,12 @@ using System.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
     internal static class FolderUtility {
-        public static IEnumerable<string> GetSubfolderNames(string directory) {
+        /// <summary>
+        /// Returns names of subfolders (relative paths) in a given directory.
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetSubfolderRelativePaths(string directory) {
             if (Directory.Exists(directory)) {
                 return Directory.EnumerateDirectories(directory).Select(x => x.Substring(directory.Length + 1));
             }
