@@ -46,7 +46,23 @@ namespace Microsoft.R.Editor.Data {
                 HasChildren = valueEvaluation.HasChildren;
 
                 Dimensions = valueEvaluation.Dim ?? new List<int>();
+            } else if (DebugEvaluation is DebugPromiseEvaluationResult) {
+                const string PromiseVaue = "<promise>";
+                var promise = (DebugPromiseEvaluationResult)DebugEvaluation;
+
+                Value = promise.Code;
+                TypeName = PromiseVaue;
+                Class = PromiseVaue;
+            } else if (DebugEvaluation is DebugActiveBindingEvaluationResult) {
+                const string ActiveBindingValue = "<active binding>";
+                var activeBinding = (DebugActiveBindingEvaluationResult)DebugEvaluation;
+
+                Value = ActiveBindingValue;
+                TypeName = ActiveBindingValue;
+                Class = ActiveBindingValue;
             }
+
+            if (Dimensions == null) Dimensions = new List<int>();
 
             MaxChildrenCount = maxChildrenCount;
         }

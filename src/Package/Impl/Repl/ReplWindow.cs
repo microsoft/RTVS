@@ -160,6 +160,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
             if (current != null && !current.InteractiveWindow.IsInitializing && !string.IsNullOrWhiteSpace(code)) {
                 current.InteractiveWindow.AddInput(code);
+
+                var buffer = current.InteractiveWindow.CurrentLanguageBuffer;
+                var endPoint = current.InteractiveWindow.TextView.MapUpToBuffer(buffer.CurrentSnapshot.Length, buffer);
+                if (endPoint != null) {
+                    current.InteractiveWindow.TextView.Caret.MoveTo(endPoint.Value);
+                }
                 current.InteractiveWindow.Operations.ExecuteInput();
             }
         }

@@ -45,7 +45,7 @@
       </Component>
     </Feature>
 
-    <!--<Binary Id="DSProfilePromptCA" SourceFile="$(var.OutDir)\SetupCustomActions.CA.dll" />-->
+    <Binary Id="DSProfilePromptCA" SourceFile="$(var.OutDir)\SetupCustomActions.CA.dll" />
     
     <CustomAction Id='VS2015UpdateConfiguration'
               Directory='CommonIdeFolder'
@@ -61,7 +61,7 @@
               ExeCommand='[CommonIdeFolder]devenv.exe /InstallVSTemplates'
               Return='ignore'/>
 
-    <!--<CustomAction Id='AssignVsVersion'
+    <CustomAction Id='AssignVsVersion'
                   Property='VsVersion'
                   Value='$(var.VSRegVer)'/>
     
@@ -69,7 +69,7 @@
           BinaryKey='DSProfilePromptCA'
           DllEntry='DSProfilePromptAction'
           Execute="deferred"
-          Return='ignore'/>-->
+          Return='ignore'/>
 
     <UI>
       <ProgressText Action="VS2015InstallTemplates">Updating Visual Studio project templates... (this may take a few minutes).</ProgressText>
@@ -78,7 +78,7 @@
     <InstallExecuteSequence>
       <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
       <Custom Action="VS2015UpdateConfiguration" Before="InstallFinalize" />
-      <!--<Custom Action="DSProfilePrompt" Before="InstallFinalize">NOT Installed</Custom>-->
+      <Custom Action="DSProfilePrompt" Before="InstallFinalize">NOT Installed</Custom>
     </InstallExecuteSequence>
 
     <?include Feature.wxi ?>

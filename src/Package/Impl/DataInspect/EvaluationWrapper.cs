@@ -88,7 +88,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     result.Add(new EvaluationWrapper(children[i], index: i, maxChildrenCount: DefaultMaxGrandChildren));
                 }
 
-                if (valueEvaluation.Length > result.Count) {
+                // return children can be less than value's length in some cases e.g. missing parameter
+                if (valueEvaluation.Length > result.Count
+                    && (valueEvaluation.Length > MaxChildrenCount)) {
                     result.Add(EvaluationWrapper.Ellipsis); // insert dummy child to indicate truncation in UI
                 }
             }
@@ -149,9 +151,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     var data = GridParser.Parse(result.StringResult);
                     data.Range = gridRange;
 
-                    if (data.ValidHeaderNames
-                        && (data.ColumnNames.Count != gridRange.Columns.Count
-                            || data.RowNames.Count != gridRange.Rows.Count)) {
+                    if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != gridRange.Rows.Count)
+                        || (data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Column) && data.ColumnNames.Count != gridRange.Columns.Count)) {
                         throw new InvalidOperationException("Header names lengths are different from data's length");
                     }
 

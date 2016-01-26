@@ -63,7 +63,10 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
             IEnumerable<DebugEvaluationResult> children = _children.Value;
             if (IsFrameEnvironment) {
-                children = children.OrderBy(v => v.Name);
+                // TODO: make hiding dotted members a user option in Tools -> Options and in Locals context menu.
+                children = children
+                    .Where(v => v.Name != null && !v.Name.StartsWith("."))
+                    .OrderBy(v => v.Name);
             }
 
             var infos = children.Select(v => new AD7Property(this, v).GetDebugPropertyInfo(dwRadix, dwFields));
