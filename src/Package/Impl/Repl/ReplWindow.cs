@@ -87,23 +87,34 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             PendingSubmission current;
             while (_pendingInputs.TryDequeue(out current)) {
                 var curLangBuffer = interactive.InteractiveWindow.CurrentLanguageBuffer;
+                SnapshotPoint? curLangPoint = null;
 
-                var curLangPoint = view.MapDownToBuffer(
-                    interactive.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.Length,
-                    curLangBuffer
-                );
+                // If anything is selected we need to clear it before inserting new code
+                view.Selection.Clear();
+
+                // Find out if caret position is where code can be inserted.
+                // Caret must be in the area mappable to the language buffer.
+                if (!view.Caret.InVirtualSpace) {
+                    curLangPoint = view.MapDownToBuffer(view.Caret.Position.BufferPosition, curLangBuffer);
+                }
+
                 if (curLangPoint == null) {
-                    // ensure the caret is in the input buffer, otherwise inserting code does nothing
-                    view.Caret.MoveTo(
-                        view.BufferGraph.MapUpToBuffer(
-                            new SnapshotPoint(
-                                curLangBuffer.CurrentSnapshot, curLangBuffer.CurrentSnapshot.Length
-                            ),
-                            PointTrackingMode.Positive,
-                            PositionAffinity.Successor,
-                            view.TextBuffer
-                        ).Value
-                    );
+                    // Ensure the caret is in the input buffer, otherwise inserting code does nothing.
+                    SnapshotPoint? viewPoint = view.BufferGraph.MapUpToBuffer(
+                        new SnapshotPoint(curLangBuffer.CurrentSnapshot, curLangBuffer.CurrentSnapshot.Length),
+                        PointTrackingMode.Positive,
+                        PositionAffinity.Predecessor,
+                        view.TextBuffer);
+
+                    if (!viewPoint.HasValue) {
+                        // Unable to map language buffer to view.
+                        // Try moving caret to the end of the view then.
+                        viewPoint = new SnapshotPoint(view.TextBuffer.CurrentSnapshot, view.TextBuffer.CurrentSnapshot.Length);
+                    }
+
+                    if (viewPoint.HasValue) {
+                        view.Caret.MoveTo(viewPoint.Value);
+                    }
                 }
 
                 window.InsertCode(current.Code);
