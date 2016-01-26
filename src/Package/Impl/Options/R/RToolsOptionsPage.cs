@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.R.Package.Telemetry;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
@@ -158,6 +159,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
 
             return path;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            RtvsTelemetry.Current.ReportSettings();
+            base.Dispose(disposing);
         }
     }
 }

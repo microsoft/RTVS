@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.R.Package.Telemetry;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
     public class REditorOptionsDialog : DialogPage {
@@ -133,6 +134,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         public override void ResetSettings() {
             REditorSettings.ResetSettings();
             base.ResetSettings();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            RtvsTelemetry.Current.ReportSettings();
+            base.Dispose(disposing);
         }
     }
 }

@@ -52,23 +52,19 @@ namespace Microsoft.Common.Core.Telemetry {
         public void ReportEvent(TelemetryArea area, string eventName, object parameters = null) {
             Check.ArgumentStringNullOrEmpty("eventName", eventName);
 
-            if (parameters is IDictionary<string, object>) {
+            if (parameters == null) {
+                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName);
+            } else if (parameters is string) {
+                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, parameters as string);
+            } else {
                 IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
                 IDictionary<string, object> dictWithPrefix = new Dictionary<string, object>();
 
                 foreach (KeyValuePair<string, object> kvp in dict) {
                     Check.ArgumentStringNullOrEmpty("parameterName", kvp.Key);
-                    Check.ArgumentNull("parameterValue", kvp.Value);
-
-                    dictWithPrefix[this.PropertyNamePrefix + area.ToString() + "." + kvp.Key] = kvp.Value;
+                    dictWithPrefix[this.PropertyNamePrefix + area.ToString() + "." + kvp.Key] = kvp.Value ?? string.Empty;
                 }
-
                 this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, dictWithPrefix);
-            } else if (parameters != null) {
-                string s = parameters.ToString();
-                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName, s);
-            } else {
-                this.TelemetryRecorder.RecordEvent(this.EventNamePrefix + area.ToString() + "/" + eventName);
             }
         }
 

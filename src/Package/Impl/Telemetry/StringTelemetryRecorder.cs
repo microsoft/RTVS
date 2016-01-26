@@ -29,10 +29,10 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         public void RecordEvent(string eventName, object parameters = null) {
             _stringBuilder.AppendLine(eventName);
             if (parameters != null) {
-                if (parameters is IDictionary<string, object>) {
-                    WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
-                } else {
+                if (parameters is string) {
                     WriteProperty("Value", parameters.ToString());
+                } else {
+                    WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
                 }
             }
         }

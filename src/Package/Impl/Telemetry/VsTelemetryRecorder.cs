@@ -31,10 +31,16 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         /// </summary>
         public void RecordEvent(string eventName, object parameters = null) {
             if (this.IsEnabled) {
-                IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
                 TelemetryEvent telemetryEvent = new TelemetryEvent(eventName);
-                foreach (KeyValuePair<string, object> kvp in dict) {
-                    telemetryEvent.Properties[kvp.Key] = kvp.Value;
+                if (parameters != null) {
+                    if (parameters is string) {
+                        telemetryEvent.Properties["Value"] = parameters as string;
+                    } else {
+                        IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
+                        foreach (KeyValuePair<string, object> kvp in dict) {
+                            telemetryEvent.Properties[kvp.Key] = kvp.Value;
+                        }
+                    }
                 }
                 _session.PostEvent(telemetryEvent);
             }
