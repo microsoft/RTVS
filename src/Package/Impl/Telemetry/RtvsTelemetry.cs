@@ -10,25 +10,16 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Telemetry.Data;
 using Microsoft.VisualStudio.R.Package.Telemetry.Definitions;
+using Microsoft.VisualStudio.R.Package.Telemetry.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// <summary>
     /// Represents telemetry operations in RTVS
     /// </summary>
-    internal class RtvsTelemetry : IRtvsTelemetry {
-        private static IRtvsTelemetry _instance;
+    internal sealed class RtvsTelemetry : IRtvsTelemetry {
+        private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker();
 
-        public static IRtvsTelemetry Current {
-            get {
-                if (_instance == null) {
-                    _instance = new RtvsTelemetry();
-                }
-                return _instance;
-            }
-            set {
-                _instance = value;
-            }
-        }
+        public static IRtvsTelemetry Current { get; set; }
 
         class ConfigurationEvents {
             public const string RtvsVersion = "RTVS Version";
@@ -46,6 +37,12 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
 
         class WindowEvents {
             public const string ToolWindow = "Tool Window";
+        }
+
+        public static void Initialize() {
+            if (Current == null) {
+                Current = new RtvsTelemetry();
+            }
         }
 
         public void ReportConfiguration() {
@@ -144,6 +141,12 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                 // Don't do anything if there is no RRO installed
             }
             return Enumerable.Empty<string>();
+        }
+
+        public void Dispose() {
+            _toolWindowTracker?.Dispose();
+            _toolWindowTracker = null;
+            VsTelemetryService.Current.Dispose();
         }
     }
 }

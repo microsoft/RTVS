@@ -91,6 +91,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
             InitializeActiveWpfTextViewTracker();
+
+            RtvsTelemetry.Initialize();
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 
@@ -106,7 +108,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
 
-            VsTelemetryService.Current.Dispose();
+            RtvsTelemetry.Current.Dispose();
 
             base.Dispose(disposing);
         }

@@ -340,6 +340,7 @@
     <Compile Include="Telemetry\TelemetryActvityWrapper.cs" />
     <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
     <Compile Include="Telemetry\VsTelemetryService.cs" />
+    <Compile Include="Telemetry\Windows\ToolWindowTracker.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />
     <Compile Include="Utilities\IActiveWpfTextViewTracker.cs" />
     <Compile Include="Utilities\LongOperationNotification.cs" />

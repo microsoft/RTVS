@@ -45,6 +45,8 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
                         Width = cx,
                         Height = cy
                     };
+
+                    data.Add(d);
                 }
             } catch (Exception) { }
 
