@@ -85,7 +85,6 @@
     <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
-    <Compile Include="DataInspect\VariableChangedArgs.cs" />
     <Compile Include="Definitions\IVisualComponentContainer.cs" />
     <Compile Include="Definitions\IVisualComponent.cs" />
     <Compile Include="Help\HelpWindowVisualComponent.cs" />
