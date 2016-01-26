@@ -38,11 +38,12 @@ namespace SetupCustomActions {
                     ProcessStartInfo psi = new ProcessStartInfo();
                     psi.FileName = Path.Combine(ideFolder, "devenv.exe");
                     psi.Arguments = string.Format(CultureInfo.InvariantCulture, "/ResetSettings \"{0}\"", settingsFilePath);
-                    Process.Start(psi);
+                    Process process = Process.Start(psi);
                     actionResult = ActionResult.Success;
                 } catch (Exception ex) {
                     exceptionMessage = ex.Message;
                     actionResult = ActionResult.Failure;
+                    MessageBox.Show(exceptionMessage, "Custom Action");
                 }
             }
 

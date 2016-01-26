@@ -68,7 +68,7 @@
     <CustomAction Id='DSProfilePrompt'
           BinaryKey='DSProfilePromptCA'
           DllEntry='DSProfilePromptAction'
-          Execute="deferred"
+          Execute="immediate"
           Return='ignore'/>
 
     <UI>
@@ -78,7 +78,7 @@
     <InstallExecuteSequence>
       <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
       <Custom Action="VS2015UpdateConfiguration" Before="InstallFinalize" />
-      <Custom Action="DSProfilePrompt" Before="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="DSProfilePrompt" After="InstallFinalize">NOT Installed</Custom>
     </InstallExecuteSequence>
 
     <?include Feature.wxi ?>
