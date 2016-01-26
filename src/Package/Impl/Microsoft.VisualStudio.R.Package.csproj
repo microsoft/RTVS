@@ -650,12 +650,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
-    <Content Include="RCombined.vssettings">
+    <Content Include="Profiles\RCombined.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="RStudioKeyboard.vssettings">
+    <Content Include="Profiles\RStudioKeyboard.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -671,7 +671,7 @@
     <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
-    <Content Include="R.vssettings">
+    <Content Include="Profiles\R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

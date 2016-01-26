@@ -33,7 +33,7 @@ namespace SetupCustomActions {
             if (result == DialogResult.Yes && actionResult == ActionResult.Success) {
                 try {
                     session.Log("Begin importing window layout");
-                    string settingsFilePath = Path.Combine(installFolder, @"Profiles\", resetKeyboard ? "RCombined.vssettings" : "R.vssettings");
+                    string settingsFilePath = Path.Combine(ideFolder, @"Profiles\", resetKeyboard ? "RCombined.vssettings" : "R.vssettings");
 
                     ProcessStartInfo psi = new ProcessStartInfo();
                     psi.FileName = Path.Combine(ideFolder, "devenv.exe");
