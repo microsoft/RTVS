@@ -180,9 +180,10 @@ inject_breakpoints <- function(expr) {
     attr(after, 'srcref') <- before_srcref;
 
     for (i in 1:length(after)) {
-      if (!is.null(attr(after[[i]], 'rtvs::original_expr'))) {
-        # If it has the original_expr attribute, it's an injected breakpoint expression that replaced
-        # the original expression at the point where the breakpoint was set. It looks like this:
+      if (is.null(attr(before[[i]], 'rtvs::original_expr')) && !is.null(attr(after[[i]], 'rtvs::original_expr'))) {
+        # If it has the original_expr attribute that wasn't there before, it's an breakpoint expression that 
+        # was freshly injected, replacing the original expression at the point where the breakpoint was set.
+        # It looks like this:
         #
         # {.doTrace(...); <original expression>}
         #
