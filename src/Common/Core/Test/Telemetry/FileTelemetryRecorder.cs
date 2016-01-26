@@ -65,5 +65,7 @@ namespace Microsoft.Common.Core.Test.Telemetry {
                 }
             }
         }
+
+        public void Dispose() { }
     }
 }

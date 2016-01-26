@@ -178,16 +178,28 @@
   <data name="6001" xml:space="preserve">
     <value>Options for checking language syntax, automatic formatting.</value>
   </data>
-  <data name="7000" xml:space="preserve">
-    <value>Data Science (R)</value>
-  </data>
-  <data name="7001" xml:space="preserve">
-    <value>Customizes the environment to improve the visibility of commands and options that are most relevant to doing data science and machine learning work using R.</value>
-  </data>
   <data name="7002" xml:space="preserve">
     <value>R Tools for Visual Studio</value>
   </data>
   <data name="7003" xml:space="preserve">
     <value>Provides project system, R Interactive window, plotting, and more for the R programming language.</value>
+  </data>
+  <data name="8000" xml:space="preserve">
+    <value>Data Science (R)</value>
+  </data>
+  <data name="8001" xml:space="preserve">
+    <value>Data Science (R) - RStudio shortcuts</value>
+  </data>
+  <data name="8002" xml:space="preserve">
+    <value>Data Science (R) with RStudio shortcuts</value>
+  </data>
+  <data name="8010" xml:space="preserve">
+    <value>Customizes the environment to improve the visibility of commands and options that are most relevant to doing data science and machine learning work using R.</value>
+  </data>
+  <data name="8011" xml:space="preserve">
+    <value>Provides RStudio-compatible keyboard shortcuts for many functions in R Tools for Visual Studio.</value>
+  </data>
+  <data name="8012" xml:space="preserve">
+    <value>Customizes the environment to improve the visibility of commands and options that are most relevant to doing data science and machine learning work using R. Includes RStudio-compatible keyboard shortcuts.</value>
   </data>
 </root>
