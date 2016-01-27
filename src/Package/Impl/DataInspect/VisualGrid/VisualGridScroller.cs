@@ -102,7 +102,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                     || (batch[i].Code == ScrollType.SetVerticalOffset && batch[i + 1].Code == ScrollType.SetVerticalOffset)
                                     || (batch[i].Code == ScrollType.Refresh && batch[i + 1].Code == ScrollType.Refresh)) {
                                     execute = false;
-                                } else if (batch[i].Code == ScrollType.MouseWheel && batch[i + 1].Code == ScrollType.MouseWheel) {
+                                } else if ((batch[i].Code == ScrollType.MouseWheel && batch[i + 1].Code == ScrollType.MouseWheel)
+                                    || (batch[i].Code == ScrollType.LineUp && batch[i + 1].Code == ScrollType.LineUp)
+                                    || (batch[i].Code == ScrollType.LineDown && batch[i + 1].Code == ScrollType.LineDown)
+                                    || (batch[i].Code == ScrollType.PageUp && batch[i + 1].Code == ScrollType.PageUp)
+                                    || (batch[i].Code == ScrollType.PageDown && batch[i + 1].Code == ScrollType.PageDown)
+                                    || (batch[i].Code == ScrollType.LineLeft && batch[i + 1].Code == ScrollType.LineLeft)
+                                    || (batch[i].Code == ScrollType.LineRight && batch[i + 1].Code == ScrollType.LineRight)
+                                    || (batch[i].Code == ScrollType.PageLeft && batch[i + 1].Code == ScrollType.PageLeft)
+                                    || (batch[i].Code == ScrollType.PageRight && batch[i + 1].Code == ScrollType.PageRight)) {
                                     batch[i + 1].Param = (double)batch[i + 1].Param + (double)batch[i].Param;
                                     execute = false;
                                 }
@@ -130,28 +138,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             bool suppress = false;
             switch (cmd.Code) {
                 case ScrollType.LineUp:
-                    Points.VerticalOffset -= LineDelta;
+                    Points.VerticalOffset -= LineDelta * (double)cmd.Param;
                     break;
                 case ScrollType.LineDown:
-                    Points.VerticalOffset += LineDelta;
+                    Points.VerticalOffset += LineDelta * (double)cmd.Param;
                     break;
                 case ScrollType.LineLeft:
-                    Points.HorizontalOffset -= LineDelta;
+                    Points.HorizontalOffset -= LineDelta * (double)cmd.Param;
                     break;
                 case ScrollType.LineRight:
-                    Points.HorizontalOffset += LineDelta;
+                    Points.HorizontalOffset += LineDelta * (double)cmd.Param;
                     break;
                 case ScrollType.PageUp:
-                    Points.VerticalOffset -= PageDelta;
+                    Points.VerticalOffset -= PageDelta * (double)cmd.Param;
                     break;
                 case ScrollType.PageDown:
-                    Points.VerticalOffset += PageDelta;
+                    Points.VerticalOffset += PageDelta * (double)cmd.Param;
                     break;
                 case ScrollType.PageLeft:
-                    Points.HorizontalOffset -= PageDelta;
+                    Points.HorizontalOffset -= PageDelta * (double)cmd.Param;
                     break;
                 case ScrollType.PageRight:
-                    Points.HorizontalOffset += PageDelta;
+                    Points.HorizontalOffset += PageDelta * (double)cmd.Param;
                     break;
                 case ScrollType.SetHorizontalOffset: {
                         var args = (Tuple<double, ThumbTrack>)cmd.Param;

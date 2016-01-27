@@ -196,17 +196,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnKeyDown(KeyEventArgs e) {
             e.Handled = true;
             if (e.Key == Key.Up) {
-                _scroller?.EnqueueCommand(ScrollType.LineUp, 0);
+                _scroller?.EnqueueCommand(ScrollType.LineUp, 1);
             } else if (e.Key == Key.Down) {
-                _scroller?.EnqueueCommand(ScrollType.LineDown, 0);
+                _scroller?.EnqueueCommand(ScrollType.LineDown, 1);
             } else if (e.Key == Key.Right) {
-                _scroller?.EnqueueCommand(ScrollType.LineRight, 0);
+                _scroller?.EnqueueCommand(ScrollType.LineRight, 1);
             } else if (e.Key == Key.Left) {
-                _scroller?.EnqueueCommand(ScrollType.LineLeft, 0);
+                _scroller?.EnqueueCommand(ScrollType.LineLeft, 1);
             } else if (e.Key == Key.PageUp) {
-                _scroller?.EnqueueCommand(ScrollType.PageUp, 0);
+                _scroller?.EnqueueCommand(ScrollType.PageUp, 1);
             } else if (e.Key == Key.PageDown) {
-                _scroller?.EnqueueCommand(ScrollType.PageDown, 0);
+                _scroller?.EnqueueCommand(ScrollType.PageDown, 1);
             } else if (e.Key == Key.Home) {
                 _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 0, ThumbTrack.None);
             } else if (e.Key == Key.End) {
@@ -266,18 +266,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             switch (e.ScrollEventType) {
                 // page up/down
                 case ScrollEventType.LargeDecrement:
-                    _scroller.EnqueueCommand(ScrollType.PageUp, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.PageUp, 1);
                     break;
                 case ScrollEventType.LargeIncrement:
-                    _scroller.EnqueueCommand(ScrollType.PageDown, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.PageDown, 1);
                     break;
 
                 // line up/down
                 case ScrollEventType.SmallDecrement:
-                    _scroller.EnqueueCommand(ScrollType.LineUp, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.LineUp, 1);
                     break;
                 case ScrollEventType.SmallIncrement:
-                    _scroller.EnqueueCommand(ScrollType.LineDown, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.LineDown, 1);
                     break;
 
                 // scroll to here
@@ -316,18 +316,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             switch (e.ScrollEventType) {
                 // page left/right
                 case ScrollEventType.LargeDecrement:
-                    _scroller.EnqueueCommand(ScrollType.PageLeft, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.PageLeft, 1);
                     break;
                 case ScrollEventType.LargeIncrement:
-                    _scroller.EnqueueCommand(ScrollType.PageRight, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.PageRight, 1);
                     break;
 
                 // line left/right
                 case ScrollEventType.SmallDecrement:
-                    _scroller.EnqueueCommand(ScrollType.LineLeft, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.LineLeft, 1);
                     break;
                 case ScrollEventType.SmallIncrement:
-                    _scroller.EnqueueCommand(ScrollType.LineRight, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.LineRight, 1);
                     break;
 
                 // scroll to here
