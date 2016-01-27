@@ -58,13 +58,21 @@ namespace SetupCustomActions {
         [CustomAction]
         public static ActionResult RDetectAction(Session session) {
             ActionResult actionResult = ActionResult.Success;
+            DialogResult ds = DialogResult.No;
+
             session.Log("Begin R detection action");
+
             RInstallData data = RInstallation.GetInstallationData(null,
                         SupportedRVersionList.MinMajorVersion, SupportedRVersionList.MinMinorVersion,
                         SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion);
-            if(data.Status != RInstallStatus.OK) {
 
+            if (data.Status != RInstallStatus.OK) {
+                using(var form = new InstallMROForm()) {
+                    ds = form.ShowDialog();
+                }
             }
+            session["InstallMRO"] = ds == DialogResult.Yes ? "Yes" : "No";
+
             session.Log("End R detection action");
             return actionResult;
         }
