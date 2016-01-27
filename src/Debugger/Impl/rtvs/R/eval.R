@@ -179,7 +179,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
       });
 
       item_expr <-
-        if (expr == 'environment()') {
+        if (expr == 'base::environment()') {
           dput_symbol(name)
         } else {
           paste0(expr, '$', dput_symbol(name), collapse = '')
