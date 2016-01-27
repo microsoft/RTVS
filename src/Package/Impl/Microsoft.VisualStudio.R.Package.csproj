@@ -82,7 +82,10 @@
       <DependentUpon>MatrixView.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataInspect\VisualGrid\PointChangedEventArgs.cs" />
+    <Compile Include="DataInspect\VisualGrid\ScrollCommand.cs" />
+    <Compile Include="DataInspect\VisualGrid\ScrollType.cs" />
     <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
+    <Compile Include="DataInspect\VisualGrid\ThumbTrack.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
     <Compile Include="Definitions\IVisualComponentContainer.cs" />
