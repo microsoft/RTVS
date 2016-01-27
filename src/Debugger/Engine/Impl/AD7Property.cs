@@ -260,7 +260,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE)) {
                 if (valueResult != null) {
                     dpi.bstrType = valueResult.TypeName;
-                    if (valueResult.Classes.Count > 0) {
+                    if (valueResult.Classes != null && valueResult.Classes.Count > 0) {
                         dpi.bstrType += " (" + string.Join(", ", valueResult.Classes) + ")";
                     }
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
