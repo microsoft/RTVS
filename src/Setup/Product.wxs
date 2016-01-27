@@ -22,7 +22,7 @@
 
     <!-- Uninstall Current MSI -->
     <Upgrade Id="{A33F0FD0-820C-4846-BB8C-4B40D4015A70}">
-      <UpgradeVersion IncludeMinimum="yes" Minimum="1.0.0.0" Property="VS_R_TOOLS" RemoveFeatures="ALL" />
+      <UpgradeVersion IncludeMinimum="yes" Minimum="0.1.0.0" Property="VS_R_TOOLS" RemoveFeatures="ALL" />
     </Upgrade>
 
     <MediaTemplate EmbedCab="yes" />
