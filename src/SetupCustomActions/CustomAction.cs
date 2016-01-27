@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using Microsoft.Deployment.WindowsInstaller;
+using Microsoft.R.Actions.Utility;
 
 namespace SetupCustomActions {
     public class CustomActions {
@@ -51,6 +52,20 @@ namespace SetupCustomActions {
             }
 
             session.Log("End Data Science profile import action");
+            return actionResult;
+        }
+
+        [CustomAction]
+        public static ActionResult RDetectAction(Session session) {
+            ActionResult actionResult = ActionResult.Success;
+            session.Log("Begin R detection action");
+            RInstallData data = RInstallation.GetInstallationData(null,
+                        SupportedRVersionList.MinMajorVersion, SupportedRVersionList.MinMinorVersion,
+                        SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion);
+            if(data.Status != RInstallStatus.OK) {
+
+            }
+            session.Log("End R detection action");
             return actionResult;
         }
     }

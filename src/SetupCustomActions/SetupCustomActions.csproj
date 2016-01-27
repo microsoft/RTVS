@@ -37,6 +37,18 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\R\Actions\Impl\Utility\RInstallation.cs">
+      <Link>R\RInstallation.cs</Link>
+    </Compile>
+    <Compile Include="..\R\Actions\Impl\Utility\RInstallData.cs">
+      <Link>R\RInstallData.cs</Link>
+    </Compile>
+    <Compile Include="..\R\Actions\Impl\Utility\RInstallStatus.cs">
+      <Link>R\RInstallStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\R\Actions\Impl\Utility\SupportedRVersionList.cs">
+      <Link>R\SupportedRVersionList.cs</Link>
+    </Compile>
     <Compile Include="CustomAction.cs" />
     <Compile Include="DSProfilePromptForm.cs">
       <SubType>Form</SubType>
