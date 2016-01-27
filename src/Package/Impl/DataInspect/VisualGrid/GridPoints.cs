@@ -114,6 +114,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public double VerticalComputedOffset {
+            get {
+                return VerticalOffset;
+            }
+            set {
+                VerticalOffset = value;
+            }
+        }
+
+        public double HorizontalComputedOffset {
+            get {
+                return HorizontalOffset;
+            }
+            set {
+                HorizontalOffset = value;
+            }
+        }
+
         public double VerticalExtent {
             get {
                 EnsureYPositions();
@@ -156,12 +174,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public double xPosition(int xIndex) {
             EnsureXPositions();
-            return _xPositions[xIndex] - HorizontalOffset;
+            return _xPositions[xIndex] - HorizontalComputedOffset;
         }
 
         public double yPosition(int yIndex) {
             EnsureYPositions();
-            return _yPositions[yIndex] - VerticalOffset;
+            return _yPositions[yIndex] - VerticalComputedOffset;
         }
 
         public double GetWidth(int columnIndex) {
@@ -232,10 +250,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             int columnStart = xIndex(visualViewport.X);
             int rowStart = yIndex(visualViewport.Y);
 
-            Debug.Assert(HorizontalOffset >= _xPositions[columnStart]);
-            Debug.Assert(VerticalOffset >= _yPositions[rowStart]);
+            Debug.Assert(HorizontalComputedOffset >= _xPositions[columnStart]);
+            Debug.Assert(VerticalComputedOffset >= _yPositions[rowStart]);
 
-            double width = _xPositions[columnStart] - HorizontalOffset;
+            double width = _xPositions[columnStart] - HorizontalComputedOffset;
             int columnCount = 0;
             for (int c = columnStart; c < _columnCount; c++) {
                 width += GetWidth(c);
@@ -255,7 +273,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             }
 
-            double height = _yPositions[rowStart] - VerticalOffset;
+            double height = _yPositions[rowStart] - VerticalComputedOffset;
             int rowEnd = rowStart;
             int rowCount = 0;
             for (int r = rowStart; r < _rowCount; r++) {

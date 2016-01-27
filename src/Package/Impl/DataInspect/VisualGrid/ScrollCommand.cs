@@ -20,12 +20,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Param = size;
         }
 
-        public ScrollCommand(ScrollType code, double offset, ThumbTrack? thumbtrack) {
+        public ScrollCommand(ScrollType code, double offset, ThumbTrack thumbtrack) {
             Debug.Assert(code == ScrollType.SetHorizontalOffset
                 || code == ScrollType.SetVerticalOffset);
 
             Code = code;
-            Param = new Tuple<double, ThumbTrack?>(offset, thumbtrack);
+            Param = new Tuple<double, ThumbTrack>(offset, thumbtrack);
         }
 
         public ScrollType Code { get; set; }
