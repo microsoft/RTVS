@@ -94,18 +94,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                 break;
                             }
 
+                            bool execute = true;
                             // if next command is same the current one, skip to next (new one) for optimization
                             if (i < (batch.Count - 1)) {
                                 if ((batch[i].Code == ScrollType.SizeChange && batch[i + 1].Code == ScrollType.SizeChange)
                                     || (batch[i].Code == ScrollType.SetHorizontalOffset && batch[i + 1].Code == ScrollType.SetHorizontalOffset)
                                     || (batch[i].Code == ScrollType.SetVerticalOffset && batch[i + 1].Code == ScrollType.SetVerticalOffset)
                                     || (batch[i].Code == ScrollType.Refresh && batch[i + 1].Code == ScrollType.Refresh)) {
-                                    continue;
+                                    execute = false;
                                 } else if (batch[i].Code == ScrollType.MouseWheel && batch[i + 1].Code == ScrollType.MouseWheel) {
                                     batch[i + 1].Param = (double)batch[i + 1].Param + (double)batch[i].Param;
-                                    continue;
+                                    execute = false;
                                 }
-                            } else {
+                            }
+
+                            if (execute) {
                                 await ExecuteCommandAsync(batch[i], cancellationToken);
                             }
                         }
@@ -159,7 +162,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 case ScrollType.SetVerticalOffset: {
                         var args = (Tuple<double, ThumbTrack>)cmd.Param;
                         Points.VerticalOffset = args.Item1;
-                        suppress = args.Item2 == ThumbTrack.End;
+                        suppress = args.Item2 == ThumbTrack.Track;
                     }
                     break;
                 case ScrollType.MouseWheel:
