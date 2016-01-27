@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -260,34 +261,46 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return;
             }
 
+            Trace.WriteLine(string.Format("Scroll:Vertical:{0} {1}", e.ScrollEventType, e.NewValue));
+
             switch (e.ScrollEventType) {
-                case ScrollEventType.EndScroll:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
-                    break;
-                case ScrollEventType.First:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
-                    break;
+                // page up/down
                 case ScrollEventType.LargeDecrement:
                     _scroller.EnqueueCommand(ScrollType.PageUp, e.NewValue);
                     break;
                 case ScrollEventType.LargeIncrement:
                     _scroller.EnqueueCommand(ScrollType.PageDown, e.NewValue);
                     break;
-                case ScrollEventType.Last:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
-                    break;
+
+                // line up/down
                 case ScrollEventType.SmallDecrement:
                     _scroller.EnqueueCommand(ScrollType.LineUp, e.NewValue);
                     break;
                 case ScrollEventType.SmallIncrement:
                     _scroller.EnqueueCommand(ScrollType.LineDown, e.NewValue);
                     break;
+
+                // scroll to here
                 case ScrollEventType.ThumbPosition:
                     _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
                     break;
+
+                // thumb drag
                 case ScrollEventType.ThumbTrack:
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue, ThumbTrack.Track);
+                    break;
+                case ScrollEventType.EndScroll:
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue, ThumbTrack.End);
+                    break;
+
+                // home/end (scroll to limit)
+                case ScrollEventType.First:
                     _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
                     break;
+                case ScrollEventType.Last:
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
+                    break;
+
                 default:
                     break;
             }
@@ -298,40 +311,53 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return;
             }
 
+            Trace.WriteLine(string.Format("Scroll:Horizontal:{0} {1}", e.ScrollEventType, e.NewValue));
+
             switch (e.ScrollEventType) {
-                case ScrollEventType.EndScroll:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
-                    break;
-                case ScrollEventType.First:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
-                    break;
+                // page left/right
                 case ScrollEventType.LargeDecrement:
                     _scroller.EnqueueCommand(ScrollType.PageLeft, e.NewValue);
                     break;
                 case ScrollEventType.LargeIncrement:
                     _scroller.EnqueueCommand(ScrollType.PageRight, e.NewValue);
                     break;
-                case ScrollEventType.Last:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
-                    break;
+
+                // line left/right
                 case ScrollEventType.SmallDecrement:
                     _scroller.EnqueueCommand(ScrollType.LineLeft, e.NewValue);
                     break;
                 case ScrollEventType.SmallIncrement:
                     _scroller.EnqueueCommand(ScrollType.LineRight, e.NewValue);
                     break;
+
+                // scroll to here
                 case ScrollEventType.ThumbPosition:
                     _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
                     break;
+
+                // thumb drag
                 case ScrollEventType.ThumbTrack:
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue, ThumbTrack.Track);
+                    break;
+                case ScrollEventType.EndScroll:
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue, ThumbTrack.End);
+                    break;
+
+                // home/end (scroll to limit)
+                case ScrollEventType.First:
                     _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
                     break;
+                case ScrollEventType.Last:
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
+                    break;
+
                 default:
                     break;
             }
         }
 
         private void Points_PointChanged(object sender, PointChangedEventArgs e) {
+            Trace.WriteLine(string.Format("Scroll:PointChanged:{0}", e.Direction));
             SetScrollBar(e.Direction);
         }
 

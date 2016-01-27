@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Range of integers
     /// </summary>
+    [DebuggerDisplay("[{Start},{_end})")]
     public struct Range {
         int _end;
 

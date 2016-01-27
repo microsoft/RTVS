@@ -67,6 +67,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scrollCommands.Add(new ScrollCommand(code, param));
         }
 
+        internal void EnqueueCommand(ScrollType code, double offset, ThumbTrack? track) {
+            _scrollCommands.Add(new ScrollCommand(code, offset, track));
+        }
+
         internal void EnqueueCommand(ScrollType code, Size size) {
             _scrollCommands.Add(new ScrollCommand(code, size));
         }
@@ -117,6 +121,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task ExecuteCommandAsync(ScrollCommand cmd, CancellationToken token) {
             bool drawVisual = true;
             bool refresh = false;
+            bool suppress = false;
             switch (cmd.Code) {
                 case ScrollType.LineUp:
                     Points.VerticalOffset -= LineDelta;
@@ -142,18 +147,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 case ScrollType.PageRight:
                     Points.HorizontalOffset += PageDelta;
                     break;
-                case ScrollType.SetHorizontalOffset:
-                    Points.HorizontalOffset = cmd.Param;
+                case ScrollType.SetHorizontalOffset: {
+                        var args = (Tuple<double, ThumbTrack?>)cmd.Param;
+                        Points.HorizontalOffset = args.Item1;
+                        suppress = !(args.Item2.HasValue && args.Item2.Value == ThumbTrack.End);
+                    }
                     break;
-                case ScrollType.SetVerticalOffset:
-                    Points.VerticalOffset = cmd.Param;
+                case ScrollType.SetVerticalOffset: {
+                        var args = (Tuple<double, ThumbTrack?>)cmd.Param;
+                        Points.VerticalOffset = args.Item1;
+                        suppress = !(args.Item2.HasValue && args.Item2.Value == ThumbTrack.End);
+                    }
                     break;
                 case ScrollType.MouseWheel:
-                    Points.VerticalOffset -= cmd.Param;
+                    Points.VerticalOffset -= (double)cmd.Param;
                     break;
                 case ScrollType.SizeChange:
-                    Points.ViewportWidth = cmd.Size.Width;
-                    Points.ViewportHeight = cmd.Size.Height;
+                    Points.ViewportWidth = ((Size)cmd.Param).Width;
+                    Points.ViewportHeight = ((Size)cmd.Param).Height;
                     refresh = false;
                     break;
                 case ScrollType.Refresh:
@@ -166,11 +177,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (drawVisual) {
-                await DrawVisualsAsync(refresh, token);
+                await DrawVisualsAsync(refresh, suppress, token);
             }
         }
 
-        private async Task DrawVisualsAsync(bool refresh, CancellationToken token) {
+        private async Task DrawVisualsAsync(bool refresh, bool suppressNotification, CancellationToken token) {
             using (var elapsed = new Elapsed("PullDataAndDraw:")) {
 
                 ScrollDirection overflowDirection = ScrollDirection.None;
@@ -205,16 +216,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 // actual drawing runs in UI thread
                 await Task.Factory.StartNew(
-                    () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport),
+                    () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport, suppressNotification),
                     token,
                     TaskCreationOptions.None,
                     _ui);
             }
         }
 
-        private void DrawVisuals(GridRange dataViewport, IGridData<string> data, bool refresh,
-            ScrollDirection overflowDirection, Rect visualViewport) {
-            using (var deferal = Points.DeferChangeNotification()) {
+        private void DrawVisuals(
+            GridRange dataViewport,
+            IGridData<string> data,
+            bool refresh,
+            ScrollDirection overflowDirection,
+            Rect visualViewport,
+            bool suppressNotification) {
+
+            using (var deferal = Points.DeferChangeNotification(suppressNotification)) {
                 // measure points
                 ColumnHeader?.MeasurePoints(
                     Points.GetAccessToPoints(ColumnHeader.ScrollDirection),
@@ -267,28 +284,39 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         Refresh,
     }
 
-    internal struct ScrollCommand {
-        private static Lazy<ScrollCommand> _empty = new Lazy<ScrollCommand>(() => new ScrollCommand(ScrollType.Invalid, 0));
-        public static ScrollCommand Empty { get { return _empty.Value; } }
+    internal enum ThumbTrack {
+        Track,
+        End,
+    }
 
-        internal ScrollCommand(ScrollType code, double param) {
-            Debug.Assert(code != ScrollType.SizeChange);
+
+    internal class ScrollCommand {
+        public ScrollCommand(ScrollType code, double param) {
+            Debug.Assert(code != ScrollType.SizeChange
+                && code != ScrollType.SetHorizontalOffset
+                && code != ScrollType.SetVerticalOffset);
 
             Code = code;
             Param = param;
-            Size = Size.Empty;
         }
 
-        internal ScrollCommand(ScrollType code, Size size) {
+        public ScrollCommand(ScrollType code, Size size) {
+            Debug.Assert(code == ScrollType.SizeChange);
+
             Code = code;
-            Param = double.NaN;
-            Size = size;
+            Param = size;
+        }
+
+        public ScrollCommand(ScrollType code, double offset, ThumbTrack? thumbtrack) {
+            Debug.Assert(code == ScrollType.SetHorizontalOffset
+                || code == ScrollType.SetVerticalOffset);
+
+            Code = code;
+            Param = new Tuple<double, ThumbTrack?>(offset, thumbtrack);
         }
 
         public ScrollType Code { get; set; }
 
-        public double Param { get; set; }
-
-        public Size Size { get; set; }
+        public object Param { get; set; }
     }
 }

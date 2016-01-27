@@ -67,8 +67,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scrolledDirection = ScrollDirection.None;
         }
 
-        public DeferNotification DeferChangeNotification() {
-            return new DeferNotification(this);
+        public DeferNotification DeferChangeNotification(bool suppressNotification) {
+            return new DeferNotification(this, suppressNotification);
         }
 
         public static double MinItemWidth { get { return 40.0; } }
@@ -324,12 +324,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public class DeferNotification : IDisposable {
             private GridPoints _gridPoints;
-            public DeferNotification(GridPoints gridPoints) {
+            private bool _suppressNotification;
+
+            public DeferNotification(GridPoints gridPoints, bool suppressNotification) {
                 _gridPoints = gridPoints;
+                _suppressNotification = suppressNotification;
             }
 
             public void Dispose() {
-                if (_gridPoints != null) {
+                if (!_suppressNotification && _gridPoints != null) {
                     _gridPoints.OnPointChanged();
 
                     _gridPoints = null;

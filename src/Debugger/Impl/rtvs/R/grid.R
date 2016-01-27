@@ -32,7 +32,7 @@ grid.data <- function(x, rows, cols) {
     stop('grid.data requires two dimensional object');
   }
 
-  if ((length(rows) == 1) && (length(cols) == 1)) {
+  if ((length(rows) == 1) || (length(cols) == 1)) {
       x1 <- grid.format(x[rows, cols]);
   } else {
       x0 <- as.data.frame(x[rows, cols]);
