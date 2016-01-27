@@ -12,6 +12,8 @@ namespace Microsoft.R.Actions.Utility {
     /// settings try and find highest version.
     /// </summary>
     public static class RInstallation {
+        private static string[] rFolders = new string[] { "MRO", "RRO", "R" };
+
         public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion, bool useRegistry = true) {
             string path = string.Empty;
             if (useRegistry) {
@@ -19,13 +21,16 @@ namespace Microsoft.R.Actions.Utility {
             }
 
             if (string.IsNullOrEmpty(path)) {
-                path = TryFindRInProgramFiles("RRO", minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
-                if(string.IsNullOrEmpty(path)) {
-                    path = TryFindRInProgramFiles("R", minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
-                    if (string.IsNullOrEmpty(path)) {
-                        return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
+                foreach (var f in rFolders) {
+                    path = TryFindRInProgramFiles(f, minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
+                    if (!string.IsNullOrEmpty(path)) {
+                        break;
                     }
                 }
+            }
+
+            if (string.IsNullOrEmpty(path)) {
+                return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
             }
 
             RInstallData data = new RInstallData() { Status = RInstallStatus.OK, Path = path };
@@ -178,7 +183,7 @@ namespace Microsoft.R.Actions.Utility {
             return string.Empty;
         }
 
-        private static Version GetRVersionFromFolderName(string folderName) {
+        public static Version GetRVersionFromFolderName(string folderName) {
             if (folderName.StartsWith("R-")) {
                 try {
                     return new Version(folderName.Substring(2));

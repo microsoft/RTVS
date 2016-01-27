@@ -325,11 +325,18 @@
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
+    <Compile Include="Telemetry\Data\FolderUtility.cs" />
+    <Compile Include="Telemetry\Data\RPackageData.cs" />
+    <Compile Include="Telemetry\Data\RPackageType.cs" />
+    <Compile Include="Telemetry\Data\ToolWindowData.cs" />
+    <Compile Include="Telemetry\Definitions\IRtvsTelemetry.cs" />
+    <Compile Include="Telemetry\Definitions\ITelemetryLog.cs" />
+    <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
+    <Compile Include="Telemetry\RtvsTelemetry.cs" />
     <Compile Include="Telemetry\TelemetryActvityWrapper.cs" />
-    <Compile Include="Telemetry\TelemetryEvents.cs" />
-    <Compile Include="Telemetry\TelemetryProperties.cs" />
     <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
     <Compile Include="Telemetry\VsTelemetryService.cs" />
+    <Compile Include="Telemetry\Windows\ToolWindowTracker.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />
     <Compile Include="Utilities\IActiveWpfTextViewTracker.cs" />
     <Compile Include="Utilities\LongOperationNotification.cs" />
@@ -640,12 +647,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\ReplWindowIcon.png" />
-    <Content Include="RCombined.vssettings">
+    <Content Include="Profiles\RCombined.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="RStudioKeyboard.vssettings">
+    <Content Include="Profiles\RStudioKeyboard.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -661,7 +668,7 @@
     <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
-    <Content Include="R.vssettings">
+    <Content Include="Profiles\R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

@@ -16,12 +16,14 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             if (window != null) {
                 var frame = window.Frame as IVsWindowFrame;
                 if (frame != null) {
-                    ErrorHandler.ThrowOnFailure(frame.Show());
-                }
-                if (focus) {
-                    var content = window.Content as System.Windows.UIElement;
-                    if (content != null) {
-                        content.Focus();
+                    if (focus) {
+                        ErrorHandler.ThrowOnFailure(frame.Show());
+                        var content = window.Content as System.Windows.UIElement;
+                        if (content != null) {
+                            content.Focus();
+                        }
+                    } else {
+                        ErrorHandler.ThrowOnFailure(frame.ShowNoActivate());
                     }
                 }
             }

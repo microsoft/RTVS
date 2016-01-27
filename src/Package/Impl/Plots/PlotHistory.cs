@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 // We need to push creation of the tool window
                 // so it appears on the first plot
                 if (!VsAppShell.Current.IsUnitTestEnvironment) {
-                    ToolWindowUtilities.ShowWindowPane<PlotWindowPane>(0, true);
+                    ToolWindowUtilities.ShowWindowPane<PlotWindowPane>(0, false);
                 }
                 HistoryChanged?.Invoke(this, EventArgs.Empty);
             });

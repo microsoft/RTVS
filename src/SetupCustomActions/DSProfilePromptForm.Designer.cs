@@ -80,7 +80,7 @@
             this.PromptText.ForeColor = System.Drawing.Color.Silver;
             this.PromptText.Location = new System.Drawing.Point(15, 365);
             this.PromptText.Name = "PromptText";
-            this.PromptText.Size = new System.Drawing.Size(492, 51);
+            this.PromptText.Size = new System.Drawing.Size(489, 51);
             this.PromptText.TabIndex = 3;
             this.PromptText.Text = resources.GetString("PromptText.Text");
             // 

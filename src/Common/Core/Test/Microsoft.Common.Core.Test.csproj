@@ -111,7 +111,7 @@
     <Compile Include="Telemetry\FileTelemetryRecorder.cs" />
     <Compile Include="Telemetry\ITelemetryTestSupport.cs" />
     <Compile Include="Telemetry\SimpleTelemetryEvent.cs" />
-    <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
+    <Compile Include="Telemetry\TestTelemetryRecorder.cs" />
     <Compile Include="Telemetry\StringTelemetryRecorderTests.cs" />
     <Compile Include="Telemetry\TelemetryTestService.cs" />
     <Compile Include="Telemetry\TelemetryTestServiceTests.cs" />
