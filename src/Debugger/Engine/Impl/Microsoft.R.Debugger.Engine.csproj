@@ -71,6 +71,7 @@
     <Reference Include="Microsoft.VisualStudio.Shell.14.0">
       <Private>True</Private>
     </Reference>
+    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
@@ -91,6 +92,7 @@
     <Compile Include="AD7Thread.cs" />
     <Compile Include="DebuggerConstants.cs" />
     <Compile Include="DebuggerGuids.cs" />
+    <Compile Include="DTEDebuggerExtensions.cs" />
     <Compile Include="PortSupplier\RDebugPortPicker.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.DebugPort.cs" />

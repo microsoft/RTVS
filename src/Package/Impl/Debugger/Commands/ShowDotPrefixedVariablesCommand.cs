@@ -30,10 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.Commands {
 
         protected override void Handle() {
            _settings.ShowDotPrefixedVariables = !_settings.ShowDotPrefixedVariables;
-
-            // A hackish way to force debugger to refresh its views, so that our EE is requeried and can use the new option value.
-            var debugger = VsAppShell.Current.GetGlobalService<DTE>().Debugger;
-            debugger.HexDisplayMode = debugger.HexDisplayMode;
+            VsAppShell.Current.GetGlobalService<DTE>().Debugger.RefreshVariableViews();
         }
     }
 }
