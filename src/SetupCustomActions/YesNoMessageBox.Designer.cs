@@ -58,8 +58,7 @@
             this.messageText.Name = "messageText";
             this.messageText.Size = new System.Drawing.Size(323, 68);
             this.messageText.TabIndex = 2;
-            this.messageText.Text = "Setup was unable to locate the R language engine. \r\nWould you like to setup to op" +
-    "en a Web page where\r\nyou can download and install Microsoft R Open?";
+            this.messageText.Text = "Sample message";
             // 
             // YesNoMessageBox
             // 

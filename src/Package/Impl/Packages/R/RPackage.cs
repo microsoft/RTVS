@@ -77,12 +77,13 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         protected override void Initialize() {
             Current = this;
             CranMirrorList.Download();
-
-            base.Initialize();
+            RtvsTelemetry.Initialize();
 
             using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) {
                 p.LoadSettingsFromStorage();
             }
+
+            base.Initialize();
 
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
@@ -92,7 +93,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             InitializeActiveWpfTextViewTracker();
 
-            RtvsTelemetry.Initialize();
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 
