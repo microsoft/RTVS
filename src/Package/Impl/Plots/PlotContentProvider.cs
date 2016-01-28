@@ -122,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                                 Clipboard.SetImage(image);
 
                                 SafeFileDelete(fileName);
-                            } catch (IOException e) {
+                            } catch (Exception e) when (!e.IsCriticalException()) {
                                 MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
                             }
                         });
@@ -143,7 +143,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                                 Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
 
                                 SafeFileDelete(fileName);
-                            } catch (IOException e) {
+                            } catch (Exception e) when (!e.IsCriticalException()) {
                                 MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
                             }
                         });
