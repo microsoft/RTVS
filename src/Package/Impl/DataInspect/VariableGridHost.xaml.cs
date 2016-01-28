@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -49,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     if (wrapper.Dimensions.Count != 2) {
                         // the same evaluation changed to non-matrix
-                        SetError($"object '{evaluation.Expression}' is not two dimensional.");
+                        SetError(Invariant($"object '{evaluation.Expression}' is not two dimensional."));
                     } else if (wrapper.Dimensions[0] != _evaluation.Dimensions[0]
                         || wrapper.Dimensions[1] != _evaluation.Dimensions[1]) {
                         ClearError();

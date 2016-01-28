@@ -4,7 +4,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Token to distinguish variable subscription
     /// </summary>
-    internal class VariableSubscriptionToken : IEquatable<VariableSubscriptionToken> {
+    public class VariableSubscriptionToken : IEquatable<VariableSubscriptionToken> {
         public VariableSubscriptionToken(int frameIndex, string variableExpression) {
             if (variableExpression == null) {
                 throw new ArgumentNullException("variableExpression");

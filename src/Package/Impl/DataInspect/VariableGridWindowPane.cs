@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Guid("3F6855E6-E2DB-46F2-9820-EDC794FE8AFE")]
@@ -16,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         internal void SetEvaluation(EvaluationWrapper evaluation) {
             if (!string.IsNullOrWhiteSpace(evaluation.Expression)) {
-                Caption = string.Format("{0}: {1}", Resources.VariableGrid_Caption, evaluation.Expression);
+                Caption = Invariant($"{Resources.VariableGrid_Caption}: {evaluation.Expression}");
             }
 
             _gridHost.SetEvaluation(evaluation);

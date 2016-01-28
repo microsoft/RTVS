@@ -67,8 +67,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scrolledDirection = ScrollDirection.None;
         }
 
-        public DeferNotification DeferChangeNotification() {
-            return new DeferNotification(this);
+        public DeferNotification DeferChangeNotification(bool suppressNotification) {
+            return new DeferNotification(this, suppressNotification);
         }
 
         public static double MinItemWidth { get { return 40.0; } }
@@ -114,6 +114,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public double VerticalComputedOffset {
+            get {
+                return VerticalOffset;
+            }
+            set {
+                VerticalOffset = value;
+            }
+        }
+
+        public double HorizontalComputedOffset {
+            get {
+                return HorizontalOffset;
+            }
+            set {
+                HorizontalOffset = value;
+            }
+        }
+
         public double VerticalExtent {
             get {
                 EnsureYPositions();
@@ -134,8 +152,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return _viewportHeight;
             }
             set {
-                _viewportHeight = value;
-                _scrolledDirection |= ScrollDirection.Vertical;
+                if (!LayoutDoubleUtil.AreClose(_viewportHeight, value)) {
+                    _viewportHeight = value;
+                    _scrolledDirection |= ScrollDirection.Vertical;
+                }
             }
         }
 
@@ -145,8 +165,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return _viewportWidth;
             }
             set {
-                _viewportWidth = value;
-                _scrolledDirection |= ScrollDirection.Horizontal;
+                if (!LayoutDoubleUtil.AreClose(_viewportWidth, value)) {
+                    _viewportWidth = value;
+                    _scrolledDirection |= ScrollDirection.Horizontal;
+                }
             }
         }
 
@@ -156,12 +178,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public double xPosition(int xIndex) {
             EnsureXPositions();
-            return _xPositions[xIndex] - HorizontalOffset;
+            return _xPositions[xIndex] - HorizontalComputedOffset;
         }
 
         public double yPosition(int yIndex) {
             EnsureYPositions();
-            return _yPositions[yIndex] - VerticalOffset;
+            return _yPositions[yIndex] - VerticalComputedOffset;
         }
 
         public double GetWidth(int columnIndex) {
@@ -232,10 +254,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             int columnStart = xIndex(visualViewport.X);
             int rowStart = yIndex(visualViewport.Y);
 
-            Debug.Assert(HorizontalOffset >= _xPositions[columnStart]);
-            Debug.Assert(VerticalOffset >= _yPositions[rowStart]);
+            Debug.Assert(HorizontalComputedOffset >= _xPositions[columnStart]);
+            Debug.Assert(VerticalComputedOffset >= _yPositions[rowStart]);
 
-            double width = _xPositions[columnStart] - HorizontalOffset;
+            double width = _xPositions[columnStart] - HorizontalComputedOffset;
             int columnCount = 0;
             for (int c = columnStart; c < _columnCount; c++) {
                 width += GetWidth(c);
@@ -255,7 +277,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             }
 
-            double height = _yPositions[rowStart] - VerticalOffset;
+            double height = _yPositions[rowStart] - VerticalComputedOffset;
             int rowEnd = rowStart;
             int rowCount = 0;
             for (int r = rowStart; r < _rowCount; r++) {
@@ -324,12 +346,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public class DeferNotification : IDisposable {
             private GridPoints _gridPoints;
-            public DeferNotification(GridPoints gridPoints) {
+            private bool _suppressNotification;
+
+            public DeferNotification(GridPoints gridPoints, bool suppressNotification) {
                 _gridPoints = gridPoints;
+                _suppressNotification = suppressNotification;
             }
 
             public void Dispose() {
-                if (_gridPoints != null) {
+                if (!_suppressNotification && _gridPoints != null) {
                     _gridPoints.OnPointChanged();
 
                     _gridPoints = null;

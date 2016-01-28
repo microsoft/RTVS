@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Range of integers
     /// </summary>
+    [DebuggerDisplay("[{Start},{_end})")]
     public struct Range {
         int _end;
 
@@ -40,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public string ToRString() {
-            return $"{Start + 1}:{Start + Count}";
+            return Invariant($"{Start + 1}:{Start + Count}");
         }
     }
 }

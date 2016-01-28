@@ -27,7 +27,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             CompositionService = VsTestCompositionCatalog.Current.CompositionService;
             ExportProvider = VsTestCompositionCatalog.Current.ExportProvider;
             _sp = new TestServiceProvider();
-            MainThread = UIThreadHelper.Instance.Thread;
         }
 
         public static void Create() {
@@ -39,6 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             // VS-specific implementations.
             UIThreadHelper.Instance.Invoke(() => {
                 _instance = new TestVsAppShell();
+                _instance.MainThread = UIThreadHelper.Instance.Thread;
                 VsAppShell.Current = _instance;
                 RToolsSettings.Current = new TestRToolsSettings();
             });
