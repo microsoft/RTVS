@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 result = new List<ITreeNode>();
 
                 foreach (var child in children) {
-                    if (_settings.ShowDotPrefixedVariables || !child.IsHidden) {
+                    if ((_settings != null && _settings.ShowDotPrefixedVariables) || !child.IsHidden) {
                         result.Add(new VariableNode(_settings, child as EvaluationWrapper));
                     }
                 }

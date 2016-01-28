@@ -15,6 +15,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         const string GlobalEnvironmentName = "Global Environment";
 
+        public VariableView() : this(null) { }
+
         public VariableView(IRToolsSettings settings) {
             _settings = settings;
 
