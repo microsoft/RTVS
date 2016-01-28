@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 _mre = new ManualResetEventSlim();
 
                 _globalEnv = null;
-                subscription = _variableProvider.Subscribe(0, "environment()", OnGlobalEnvironmentEvaluated);
+                subscription = _variableProvider.Subscribe(0, VariableProvider.GlobalEnvironmentExpression, OnGlobalEnvironmentEvaluated);
 
                 using (var evaluation = await base.Session.BeginEvaluationAsync()) {
                     await evaluation.EvaluateAsync(rScript, REvaluationKind.UnprotectedEnv);

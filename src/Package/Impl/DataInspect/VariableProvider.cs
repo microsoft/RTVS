@@ -54,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region Public
 
-        public const string GlobalEnvironmentExpression = "environment()";
+        public const string GlobalEnvironmentExpression = "base::.GlobalEnv";
 
         public IRSession RSession { get; }
 
