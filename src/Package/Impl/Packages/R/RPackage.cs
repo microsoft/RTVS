@@ -74,11 +74,13 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             Current = this;
             CranMirrorList.Download();
 
-            base.Initialize();
-
+            // This must happen ASAP so async creation of REPL window
+            // will get appropriate settings on R base path.
             using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) {
                 p.LoadSettingsFromStorage();
             }
+
+            base.Initialize();
 
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
