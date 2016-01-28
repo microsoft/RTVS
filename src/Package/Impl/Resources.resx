@@ -544,4 +544,13 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   <data name="VariableGrid_Caption" xml:space="preserve">
     <value>R Data</value>
   </data>
+  <data name="Settings_DebuggingCategory" xml:space="preserve">
+    <value>Debugging</value>
+  </data>
+  <data name="Settings_ShowDotPrefixedVariables" xml:space="preserve">
+    <value>Show dot-prefixed variables</value>
+  </data>
+  <data name="Settings_ShowDotPrefixedVariables_Description" xml:space="preserve">
+    <value>Show variables that have names beginning with "." in Variable Explorer and debugger tool windows.</value>
+  </data>
 </root>

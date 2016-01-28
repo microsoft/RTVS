@@ -863,6 +863,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Debugging.
+        /// </summary>
+        public static string Settings_DebuggingCategory {
+            get {
+                return ResourceManager.GetString("Settings_DebuggingCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show syntax errors.
         /// </summary>
         public static string Settings_EnableSyntaxCheck {
@@ -1102,6 +1111,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_SendToRepl_Description {
             get {
                 return ResourceManager.GetString("Settings_SendToRepl_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show dot-prefixed variables.
+        /// </summary>
+        public static string Settings_ShowDotPrefixedVariables {
+            get {
+                return ResourceManager.GetString("Settings_ShowDotPrefixedVariables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show variables that have names beginning with &quot;.&quot; in Variable Explorer and debugger tool windows..
+        /// </summary>
+        public static string Settings_ShowDotPrefixedVariables_Description {
+            get {
+                return ResourceManager.GetString("Settings_ShowDotPrefixedVariables_Description", resourceCulture);
             }
         }
         

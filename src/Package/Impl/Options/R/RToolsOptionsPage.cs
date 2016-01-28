@@ -120,6 +120,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.HelpBrowser = value; }
         }
 
+        [LocCategory("Settings_DebuggingCategory")]
+        [CustomLocDisplayName("Settings_ShowDotPrefixedVariables")]
+        [LocDescription("Settings_ShowDotPrefixedVariables_Description")]
+        [DefaultValue(false)]
+        public bool ShowDotPrefixedVariables
+        {
+            get { return RToolsSettings.Current.ShowDotPrefixedVariables; }
+            set { RToolsSettings.Current.ShowDotPrefixedVariables = value; }
+        }
+
         /// <summary>
         /// REPL working directory: not exposed in Tools | Options dialog,
         /// only saved along with other settings.
