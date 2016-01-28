@@ -2,8 +2,10 @@
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
+using Microsoft.VisualStudio.R.Package.Debugger.Commands;
 using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
@@ -65,7 +67,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new CopyPlotAsBitmapCommand(),
                 new CopyPlotAsMetafileCommand(),
                 new HistoryNextPlotCommand(),
-                new HistoryPreviousPlotCommand()
+                new HistoryPreviousPlotCommand(),
+
+                // Debugger commands
+                new ShowDotPrefixedVariablesCommand(RToolsSettings.Current),
             };
         }
     }

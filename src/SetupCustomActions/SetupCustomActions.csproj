@@ -2,6 +2,9 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\R.Settings.targets" />
+  <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
+  <Import Project="$(RootDirectory)\src\R.Wix.Settings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -15,9 +18,7 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <OutputName>SetupCustomActions</OutputName>
-    <WixCATargetsPath Condition=" '$(WixCATargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.CA.targets</WixCATargetsPath>
   </PropertyGroup>
-  <Import Project="..\R.Settings.targets" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(RootDirectory)\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>$(RootDirectory)\bin\</BaseOutputPath>
@@ -31,6 +32,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Deployment.WindowsInstaller">
+      <HintPath>$(WixInstallPath)\sdk\Microsoft.Deployment.WindowsInstaller.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -67,8 +69,6 @@
     </FilesToSign>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
-  <Import Project="$(RootDirectory)\src\R.Wix.Settings.targets" />
   <Import Project="$(WixCATargetsPath)" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
