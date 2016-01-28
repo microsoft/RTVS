@@ -173,7 +173,6 @@ namespace Microsoft.R.Host.Client.Session {
                 await LoadRtvsPackage(evaluation);
 
                 await evaluation.SetDefaultWorkingDirectory();
-                await evaluation.SetRdHelpExtraction();
 
                 if (_hostClientApp != null) {
                     await evaluation.SetVsGraphicsDevice();
