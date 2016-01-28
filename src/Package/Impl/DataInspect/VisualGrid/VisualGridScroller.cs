@@ -196,44 +196,41 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task DrawVisualsAsync(bool refresh, bool suppressNotification, CancellationToken token) {
-            using (var elapsed = new Elapsed("PullDataAndDraw:")) {
+            ScrollDirection overflowDirection = ScrollDirection.None;
 
-                ScrollDirection overflowDirection = ScrollDirection.None;
+            Rect visualViewport = new Rect(
+                    Points.HorizontalOffset,
+                    Points.VerticalOffset,
+                    DataGrid.RenderSize.Width,
+                    DataGrid.RenderSize.Height);
 
-                Rect visualViewport = new Rect(
-                        Points.HorizontalOffset,
-                        Points.VerticalOffset,
-                        DataGrid.RenderSize.Width,
-                        DataGrid.RenderSize.Height);
+            GridRange newViewport = Points.ComputeDataViewport(visualViewport, ref overflowDirection);
 
-                GridRange newViewport = Points.ComputeDataViewport(visualViewport, ref overflowDirection);
-
-                if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
-                    return;
-                }
-
-                // adjust Offset in case of overflow
-                if (overflowDirection.HasFlag(ScrollDirection.Horizontal)) {
-                    Points.HorizontalOffset = Points.HorizontalExtent - visualViewport.Width;
-                } else if (overflowDirection.HasFlag(ScrollDirection.Vertical)) {
-                    Points.VerticalOffset = Points.VerticalExtent - visualViewport.Height;
-                }
-
-                // pull data from provider
-                var data = await DataProvider.GetAsync(newViewport);
-                if (!data.Grid.Range.Contains(newViewport)
-                    || !data.ColumnHeader.Range.Contains(newViewport.Columns)
-                    || !data.RowHeader.Range.Contains(newViewport.Rows)) {
-                    throw new InvalidOperationException("Couldn't acquire enough data");
-                }
-
-                // actual drawing runs in UI thread
-                await Task.Factory.StartNew(
-                    () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport, suppressNotification),
-                    token,
-                    TaskCreationOptions.None,
-                    _ui);
+            if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
+                return;
             }
+
+            // adjust Offset in case of overflow
+            if (overflowDirection.HasFlag(ScrollDirection.Horizontal)) {
+                Points.HorizontalOffset = Points.HorizontalExtent - visualViewport.Width;
+            } else if (overflowDirection.HasFlag(ScrollDirection.Vertical)) {
+                Points.VerticalOffset = Points.VerticalExtent - visualViewport.Height;
+            }
+
+            // pull data from provider
+            var data = await DataProvider.GetAsync(newViewport);
+            if (!data.Grid.Range.Contains(newViewport)
+                || !data.ColumnHeader.Range.Contains(newViewport.Columns)
+                || !data.RowHeader.Range.Contains(newViewport.Rows)) {
+                throw new InvalidOperationException("Couldn't acquire enough data");
+            }
+
+            // actual drawing runs in UI thread
+            await Task.Factory.StartNew(
+                () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport, suppressNotification),
+                token,
+                TaskCreationOptions.None,
+                _ui);
         }
 
         private void DrawVisuals(
