@@ -5,17 +5,20 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Editor.Data;
+using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Model adapter to <see cref="ObservableTreeNode"/>
     /// </summary>
     internal class VariableNode : ITreeNode {
-
         #region member/ctor
 
+        private readonly IRToolsSettings _settings;
         private EvaluationWrapper _evaluation;
-        public VariableNode(EvaluationWrapper evaluation) {
+
+        public VariableNode(IRToolsSettings settings, EvaluationWrapper evaluation) {
+            _settings = settings;
             _evaluation = evaluation;
         }
 
@@ -39,8 +42,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 result = new List<ITreeNode>();
 
                 foreach (var child in children) {
-                    if (!child.IsHidden) {
-                        result.Add(new VariableNode(child as EvaluationWrapper));
+                    if (_settings.ShowDotPrefixedVariables || !child.IsHidden) {
+                        result.Add(new VariableNode(_settings, child as EvaluationWrapper));
                     }
                 }
             }
