@@ -43,7 +43,7 @@
             this.buttonYes.Name = "buttonYes";
             this.buttonYes.Size = new System.Drawing.Size(86, 30);
             this.buttonYes.TabIndex = 0;
-            this.buttonYes.Text = "Yes";
+            this.buttonYes.Text = "&Yes";
             this.buttonYes.UseVisualStyleBackColor = false;
             this.buttonYes.Click += new System.EventHandler(this.buttonYes_Click);
             // 
@@ -58,7 +58,7 @@
             this.buttonNo.Name = "buttonNo";
             this.buttonNo.Size = new System.Drawing.Size(89, 30);
             this.buttonNo.TabIndex = 1;
-            this.buttonNo.Text = "No";
+            this.buttonNo.Text = "&No";
             this.buttonNo.UseVisualStyleBackColor = false;
             this.buttonNo.Click += new System.EventHandler(this.buttonNo_Click);
             // 
@@ -94,7 +94,7 @@
             this.keepShortcuts.Name = "keepShortcuts";
             this.keepShortcuts.Size = new System.Drawing.Size(281, 21);
             this.keepShortcuts.TabIndex = 4;
-            this.keepShortcuts.Text = "Keep existing keyboard shotcuts unchanged";
+            this.keepShortcuts.Text = "&Keep existing keyboard shotcuts unchanged";
             this.keepShortcuts.UseVisualStyleBackColor = true;
             this.keepShortcuts.CheckedChanged += new System.EventHandler(this.keepShorcuts_CheckedChanged);
             // 

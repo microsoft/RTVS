@@ -45,7 +45,7 @@
       </Component>
     </Feature>
 
-    <Binary Id="DSProfilePromptCA" SourceFile="$(var.OutDir)\SetupCustomActions.CA.dll" />
+    <Binary Id="CustomActions" SourceFile="$(var.OutDir)\SetupCustomActions.CA.dll" />
     
     <CustomAction Id='VS2015UpdateConfiguration'
               Directory='CommonIdeFolder'
@@ -66,18 +66,32 @@
                   Value='$(var.VSRegVer)'/>
     
     <CustomAction Id='DSProfilePrompt'
-          BinaryKey='DSProfilePromptCA'
+          BinaryKey='CustomActions'
           DllEntry='DSProfilePromptAction'
           Execute="immediate"
           Return='ignore'/>
+
+    <CustomAction Id='MROInstallPrompt'
+          BinaryKey='CustomActions'
+          DllEntry='MROInstallPromptAction'
+          Execute="immediate"
+          Return='ignore'/>
+
+    <CustomAction Id='VsCommunityInstallPrompt'
+          BinaryKey='CustomActions'
+          DllEntry='VsCommunityInstallAction'
+          Execute="immediate"
+          Return='check'/>
 
     <UI>
       <ProgressText Action="VS2015InstallTemplates">Updating Visual Studio project templates... (this may take a few minutes).</ProgressText>
     </UI>
 
     <InstallExecuteSequence>
+      <Custom Action="VsCommunityInstallPrompt" Before="InstallFiles">NOT Installed</Custom>
       <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
       <Custom Action="VS2015UpdateConfiguration" Before="InstallFinalize" />
+      <Custom Action="MROInstallPrompt" After="InstallFinalize">NOT Installed</Custom>
       <Custom Action="DSProfilePrompt" After="InstallFinalize">NOT Installed</Custom>
     </InstallExecuteSequence>
 
