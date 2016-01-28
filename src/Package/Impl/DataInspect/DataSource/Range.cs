@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -42,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public string ToRString() {
-            return $"{Start + 1}:{Start + Count}";
+            return Invariant($"{Start + 1}:{Start + Count}");
         }
     }
 }

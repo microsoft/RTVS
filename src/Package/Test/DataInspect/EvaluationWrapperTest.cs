@@ -396,7 +396,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task PromiseTest() {
-            var script = "e <- (function(x, y, z) environment())(1,,3)";
+            var script = "e <- (function(x, y, z) base::environment())(1,,3)";
             var expectation = new VariableExpectation() { Name = "e", Value = "<environment:", TypeName = "environment", Class = "environment", HasChildren = true, CanShowDetail = false };
 
             var x_expectation = new VariableExpectation() { Name = "x", Value = "1", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };

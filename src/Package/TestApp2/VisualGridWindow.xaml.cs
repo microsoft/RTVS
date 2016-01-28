@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.R.Package.DataInspect;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.TestApp {
     /// <summary>
@@ -46,7 +47,7 @@ namespace Microsoft.VisualStudio.R.TestApp {
 
             RowHeader = new DefaultHeaderData(range.Rows, DefaultHeaderData.Mode.Row);
 
-            Grid = new Grid<string>(range, (r, c) => string.Format("{0}:{1}", r, c));
+            Grid = new Grid<string>(range, (r, c) => Invariant($"{r}:{c}"));
         }
 
         public IRange<string> ColumnHeader { get; private set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -10,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class DelegateList<T> : IList<T>, IList, IIndexedItem where T : IIndexedItem {
         #region field and ctor
 
-        private readonly string ReadOnlyExceptionMessage = $"{typeof(DelegateList<T>)} is read only";
+        private readonly string ReadOnlyExceptionMessage = Invariant($"{typeof(DelegateList<T>)} is read only");
         private Func<int, T> _getItem;
 
         public DelegateList(
