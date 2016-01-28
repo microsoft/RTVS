@@ -11,12 +11,14 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
 
         public ToolWindowTracker() {
             var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
-            debugger.AdviseDebuggerEvents(this, out _debuggerEventCookie);
+            if (debugger != null) {
+                debugger.AdviseDebuggerEvents(this, out _debuggerEventCookie);
 
-            _timer.Interval = new TimeSpan(0, 0, 10).TotalMilliseconds;
-            _timer.AutoReset = true;
-            _timer.Elapsed += OnElapsed;
-            _timer.Start();
+                _timer.Interval = new TimeSpan(0, 0, 10).TotalMilliseconds;
+                _timer.AutoReset = true;
+                _timer.Elapsed += OnElapsed;
+                _timer.Start();
+            }
         }
 
         private void OnElapsed(object sender, ElapsedEventArgs e) {

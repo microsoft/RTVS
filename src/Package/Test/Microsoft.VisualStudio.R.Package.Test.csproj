@@ -237,6 +237,7 @@
     <Compile Include="Repl\ExportsTest.cs" />
     <Compile Include="Repl\ReplWindowProviderTest.cs" />
     <Compile Include="Shell\TestVsAppShell.cs" />
+    <Compile Include="Telemetry\TelemetryTest.cs" />
     <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\VsRHostScript.cs" />
     <Compile Include="Utility\TestInstanceFactory.cs" />

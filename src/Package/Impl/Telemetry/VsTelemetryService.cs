@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
 
         private static Lazy<VsTelemetryService> _instance = Lazy.Create(() => new VsTelemetryService());
 
-        public VsTelemetryService()
+        public VsTelemetryService(ITelemetryRecorder recorder = null)
             : base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, new StringTelemetryRecorder()) {
 //            : base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, VsTelemetryRecorder.Current) {
         }
