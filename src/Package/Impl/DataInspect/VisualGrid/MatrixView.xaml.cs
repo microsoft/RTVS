@@ -261,8 +261,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return;
             }
 
-            Trace.WriteLine(string.Format("Scroll:Vertical:{0} {1}", e.ScrollEventType, e.NewValue));
-
             switch (e.ScrollEventType) {
                 // page up/down
                 case ScrollEventType.LargeDecrement:
@@ -311,8 +309,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return;
             }
 
-            Trace.WriteLine(string.Format("Scroll:Horizontal:{0} {1}", e.ScrollEventType, e.NewValue));
-
             switch (e.ScrollEventType) {
                 // page left/right
                 case ScrollEventType.LargeDecrement:
@@ -357,7 +353,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void Points_PointChanged(object sender, PointChangedEventArgs e) {
-            Trace.WriteLine(string.Format("Scroll:PointChanged:{0}", e.Direction));
             SetScrollBar(e.Direction);
         }
 

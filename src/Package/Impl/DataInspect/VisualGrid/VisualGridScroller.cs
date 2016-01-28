@@ -209,7 +209,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 GridRange newViewport = Points.ComputeDataViewport(visualViewport, ref overflowDirection);
 
                 if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
-                    Trace.WriteLine("Either row or column data viewport is empty");
                     return;
                 }
 
