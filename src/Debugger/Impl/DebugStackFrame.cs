@@ -21,7 +21,7 @@ namespace Microsoft.R.Debugger {
 
         public int Index { get; }
 
-        internal string SysFrame => Invariant($"sys.frame({Index})");
+        internal string SysFrame => Invariant($"base::sys.frame({Index})");
 
         public DebugStackFrame CallingFrame { get; }
 
