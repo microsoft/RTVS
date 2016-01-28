@@ -208,9 +208,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             } else if (e.Key == Key.PageDown) {
                 _scroller?.EnqueueCommand(ScrollType.PageDown, 1);
             } else if (e.Key == Key.Home) {
-                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 0, ThumbTrack.None);
+                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 0.0, ThumbTrack.None);
             } else if (e.Key == Key.End) {
-                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, double.PositiveInfinity, ThumbTrack.None);
+                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 1.0, ThumbTrack.None);
             } else {
                 e.Handled = false;
             }
@@ -280,23 +280,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 // scroll to here
                 case ScrollEventType.ThumbPosition:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue, ThumbTrack.None);
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
                     break;
 
                 // thumb drag
                 case ScrollEventType.ThumbTrack:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue, ThumbTrack.Track);
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.Track);
                     break;
                 case ScrollEventType.EndScroll:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue, ThumbTrack.End);
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.End);
                     break;
 
                 // home/end (scroll to limit)
                 case ScrollEventType.First:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue, ThumbTrack.None);
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
                     break;
                 case ScrollEventType.Last:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue, ThumbTrack.None);
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
                     break;
 
                 default:
@@ -328,23 +328,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 // scroll to here
                 case ScrollEventType.ThumbPosition:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue, ThumbTrack.None);
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
                     break;
 
                 // thumb drag
                 case ScrollEventType.ThumbTrack:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue, ThumbTrack.Track);
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.Track);
                     break;
                 case ScrollEventType.EndScroll:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue, ThumbTrack.End);
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.End);
                     break;
 
                 // home/end (scroll to limit)
                 case ScrollEventType.First:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue, ThumbTrack.None);
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
                     break;
                 case ScrollEventType.Last:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue, ThumbTrack.None);
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
                     break;
 
                 default:
@@ -356,18 +356,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             SetScrollBar(e.Direction);
         }
 
+        private double ComputeVerticalOffset(ScrollEventArgs e) {
+            return e.NewValue / VerticalScrollBar.Maximum;
+        }
+
+        private double ComputeHorizontalOffset(ScrollEventArgs e) {
+            return e.NewValue / HorizontalScrollBar.Maximum;
+        }
+
         private void SetScrollBar(ScrollDirection direction) {
             if (direction.HasFlag(ScrollDirection.Horizontal)) {
-                double width = Data.RenderSize.Width;
-                HorizontalScrollBar.ViewportSize = width;
-                HorizontalScrollBar.Maximum = Points.HorizontalExtent - width;
+                HorizontalScrollBar.ViewportSize = Points.ViewportWidth;
+                HorizontalScrollBar.Maximum = Points.HorizontalExtent - Points.ViewportWidth;
                 HorizontalScrollBar.Value = Points.HorizontalOffset;
             }
 
             if (direction.HasFlag(ScrollDirection.Vertical)) {
-                double height = Data.RenderSize.Height;
-                VerticalScrollBar.ViewportSize = height;
-                VerticalScrollBar.Maximum = Points.VerticalExtent - height;
+                VerticalScrollBar.ViewportSize = Points.ViewportHeight;
+                VerticalScrollBar.Maximum = Points.VerticalExtent - Points.ViewportHeight;
                 VerticalScrollBar.Value = Points.VerticalOffset;
             }
         }

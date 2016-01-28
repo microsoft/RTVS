@@ -152,8 +152,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return _viewportHeight;
             }
             set {
-                _viewportHeight = value;
-                _scrolledDirection |= ScrollDirection.Vertical;
+                if (!LayoutDoubleUtil.AreClose(_viewportHeight, value)) {
+                    _viewportHeight = value;
+                    _scrolledDirection |= ScrollDirection.Vertical;
+                }
             }
         }
 
@@ -163,8 +165,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return _viewportWidth;
             }
             set {
-                _viewportWidth = value;
-                _scrolledDirection |= ScrollDirection.Horizontal;
+                if (!LayoutDoubleUtil.AreClose(_viewportWidth, value)) {
+                    _viewportWidth = value;
+                    _scrolledDirection |= ScrollDirection.Horizontal;
+                }
             }
         }
 

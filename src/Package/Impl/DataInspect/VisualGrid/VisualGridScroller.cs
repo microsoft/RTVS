@@ -160,13 +160,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     break;
                 case ScrollType.SetHorizontalOffset: {
                         var args = (Tuple<double, ThumbTrack>)cmd.Param;
-                        Points.HorizontalOffset = args.Item1;
+                        Points.HorizontalOffset = args.Item1 * (Points.HorizontalExtent - Points.ViewportWidth);
                         suppress = args.Item2 == ThumbTrack.Track;
                     }
                     break;
                 case ScrollType.SetVerticalOffset: {
                         var args = (Tuple<double, ThumbTrack>)cmd.Param;
-                        Points.VerticalOffset = args.Item1;
+                        Points.VerticalOffset = args.Item1 * (Points.VerticalExtent - Points.ViewportHeight);
                         suppress = args.Item2 == ThumbTrack.Track;
                     }
                     break;
@@ -198,20 +198,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Rect visualViewport = new Rect(
                     Points.HorizontalOffset,
                     Points.VerticalOffset,
-                    DataGrid.RenderSize.Width,
-                    DataGrid.RenderSize.Height);
+                    Points.ViewportWidth,
+                    Points.ViewportHeight);
 
             GridRange newViewport = Points.ComputeDataViewport(visualViewport, ref overflowDirection);
 
             if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
                 return;
-            }
-
-            // adjust Offset in case of overflow
-            if (overflowDirection.HasFlag(ScrollDirection.Horizontal)) {
-                Points.HorizontalOffset = Points.HorizontalExtent - visualViewport.Width;
-            } else if (overflowDirection.HasFlag(ScrollDirection.Vertical)) {
-                Points.VerticalOffset = Points.VerticalExtent - visualViewport.Height;
             }
 
             // pull data from provider
@@ -270,6 +263,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 ColumnHeader?.ArrangeVisuals(Points.GetAccessToPoints(ColumnHeader.ScrollDirection));
                 RowHeader?.ArrangeVisuals(Points.GetAccessToPoints(RowHeader.ScrollDirection));
                 DataGrid?.ArrangeVisuals(Points.GetAccessToPoints(DataGrid.ScrollDirection));
+
+                Points.ViewportHeight = DataGrid.RenderSize.Height;
+                Points.ViewportWidth = DataGrid.RenderSize.Width;
             }
         }
     }
