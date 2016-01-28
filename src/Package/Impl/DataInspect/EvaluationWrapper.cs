@@ -140,24 +140,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             string rows = gridRange.Rows.ToRString();
             string columns = gridRange.Columns.ToRString();
 
-            using (var elapsed = new Elapsed("Data:Evaluate:")) {
-                using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
-                    var result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
+            using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
+                var result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
 
-                    if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
-                        throw new InvalidOperationException($"Grid data evaluation failed:{result}");
-                    }
-
-                    var data = GridParser.Parse(result.StringResult);
-                    data.Range = gridRange;
-
-                    if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != gridRange.Rows.Count)
-                        || (data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Column) && data.ColumnNames.Count != gridRange.Columns.Count)) {
-                        throw new InvalidOperationException("Header names lengths are different from data's length");
-                    }
-
-                    return data;
+                if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
+                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
                 }
+
+                var data = GridParser.Parse(result.StringResult);
+                data.Range = gridRange;
+
+                if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != gridRange.Rows.Count)
+                    || (data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Column) && data.ColumnNames.Count != gridRange.Columns.Count)) {
+                    throw new InvalidOperationException("Header names lengths are different from data's length");
+                }
+
+                return data;
             }
         }
 

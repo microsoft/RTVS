@@ -42,5 +42,7 @@ namespace Microsoft.R.Support.Settings.Definitions {
         /// to the external default Web browser.
         /// </summary>
         HelpBrowserType HelpBrowser { get; set; }
+
+        bool ShowDotPrefixedVariables { get; set; }
     }
 }

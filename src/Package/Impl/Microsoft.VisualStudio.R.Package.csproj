@@ -66,7 +66,6 @@
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
     <Compile Include="DataInspect\Definitions\IVariableDataProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
-    <Compile Include="DataInspect\Elapsed.cs" />
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridParser.cs" />
@@ -88,6 +87,7 @@
     <Compile Include="DataInspect\VisualGrid\ThumbTrack.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
+    <Compile Include="Debugger\Commands\ShowDotPrefixedVariablesCommand.cs" />
     <Compile Include="Definitions\IVisualComponentContainer.cs" />
     <Compile Include="Definitions\IVisualComponent.cs" />
     <Compile Include="Help\HelpWindowVisualComponent.cs" />
