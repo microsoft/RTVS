@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Tasks;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using Xunit;
 
 namespace Microsoft.Languages.Editor.Test.BraceMatch {
     [ExcludeFromCodeCoverage]

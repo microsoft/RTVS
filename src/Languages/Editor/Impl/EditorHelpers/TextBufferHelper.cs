@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Shell;
 
 namespace Microsoft.Languages.Editor.EditorHelpers {
     public class TextChangeExtent {
