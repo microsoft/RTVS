@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -202,6 +203,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     Points.ViewportHeight);
 
             GridRange newViewport = Points.ComputeDataViewport(visualViewport, ref overflowDirection);
+            if (LayoutDoubleUtil.AreClose(Points.HorizontalOffset + Points.ViewportWidth, Points.HorizontalExtent)) {
+                overflowDirection |= ScrollDirection.Horizontal;
+            }
+            if (LayoutDoubleUtil.AreClose(Points.VerticalOffset + Points.ViewportHeight, Points.VerticalExtent)) {
+                overflowDirection |= ScrollDirection.Vertical;
+            }
 
             if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
                 return;
