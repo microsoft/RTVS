@@ -19,10 +19,11 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// </summary>
     internal sealed class RtvsTelemetry : IRtvsTelemetry {
         private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker();
+        private ITelemetryService _telemetryService;
 
         public static IRtvsTelemetry Current { get; set; }
 
-        class ConfigurationEvents {
+        internal class ConfigurationEvents {
             public const string RtvsVersion = "RTVS Version";
             public const string RInstallPath = "R Install Path";
             public const string REngine = "R Engine";
@@ -32,53 +33,56 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string RUserPackages = "R User Package";
         }
 
-        class SettingEvents {
+        internal class SettingEvents {
             public const string Settings = "Settings";
         }
 
-        class WindowEvents {
+        internal class WindowEvents {
             public const string ToolWindow = "Tool Window";
         }
 
-        public static void Initialize() {
+        public static void Initialize(ITelemetryService service = null) {
             if (Current == null) {
-                Current = new RtvsTelemetry();
+                Current = new RtvsTelemetry(service);
             }
         }
 
+        public RtvsTelemetry(ITelemetryService service = null) {
+            _telemetryService = service ?? VsTelemetryService.Current;
+        }
+
         public void ReportConfiguration() {
-            if (VsTelemetryService.Current.IsEnabled) {
+            if (_telemetryService.IsEnabled) {
                 try {
                     Assembly thisAssembly = Assembly.GetExecutingAssembly();
-                    VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RtvsVersion, thisAssembly.GetName().Version.ToString());
+                    _telemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RtvsVersion, thisAssembly.GetName().Version.ToString());
 
                     string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath);
-                    VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, rInstallPath);
+                    _telemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, rInstallPath);
 
                     var rEngines = GetRSubfolders("R");
                     foreach (var s in rEngines) {
-                        VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.REngine, s);
+                        _telemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.REngine, s);
                     }
 
                     var rroEngines = GetRSubfolders("RRO");
                     foreach (var s in rroEngines) {
-                        VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RROEngine, s);
+                        _telemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RROEngine, s);
                     }
 
                     var mroEngines = GetRSubfolders("MRO");
-                    foreach (var s in mroEngines)
-                    {
-                        VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.MROEngine, s);
+                    foreach (var s in mroEngines) {
+                        _telemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.MROEngine, s);
                     }
 
                     var hashes = RPackageData.GetInstalledPackageHashes(RPackageType.Base);
                     foreach (var s in hashes) {
-                        VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RBasePackages, s);
+                        _telemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RBasePackages, s);
                     }
 
                     hashes = RPackageData.GetInstalledPackageHashes(RPackageType.User);
                     foreach (var s in hashes) {
-                        VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RUserPackages, s);
+                        _telemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RUserPackages, s);
                     }
                 } catch (Exception ex) {
                     Trace.Fail("Telemetry exception: " + ex.Message);
@@ -87,9 +91,9 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         }
 
         public void ReportSettings() {
-            if (VsTelemetryService.Current.IsEnabled) {
+            if (_telemetryService.IsEnabled) {
                 try {
-                    VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, SettingEvents.Settings,
+                    _telemetryService.ReportEvent(TelemetryArea.Configuration, SettingEvents.Settings,
                             new {
                                 Cran = RToolsSettings.Current.CranMirror,
                                 LoadRData = RToolsSettings.Current.LoadRDataOnProjectLoad,
@@ -115,11 +119,11 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         }
 
         public void ReportWindowLayout(IVsUIShell shell) {
-            if (VsTelemetryService.Current.IsEnabled) {
+            if (_telemetryService.IsEnabled) {
                 try {
                     var windows = ToolWindowData.GetToolWindowData(shell);
                     foreach (var w in windows) {
-                        VsTelemetryService.Current.ReportEvent(TelemetryArea.Configuration, WindowEvents.ToolWindow,
+                        _telemetryService.ReportEvent(TelemetryArea.Configuration, WindowEvents.ToolWindow,
                                 new { Caption = w.Caption, Left = w.X, Top = w.Y, Width = w.Width, Height = w.Height });
                     }
                 } catch (Exception ex) {
@@ -147,7 +151,9 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         public void Dispose() {
             _toolWindowTracker?.Dispose();
             _toolWindowTracker = null;
-            VsTelemetryService.Current.Dispose();
+
+            var disp = _telemetryService as IDisposable;
+            disp?.Dispose();
         }
     }
 }

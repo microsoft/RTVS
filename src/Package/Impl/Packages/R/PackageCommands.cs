@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
@@ -21,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
             var rSessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
+            var plotHistory = exportProvider.GetExportedValue<IPlotHistory>();
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -60,12 +62,12 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowHistoryWindowCommand(),
 
                 // Plot commands
-                new ExportPlotAsImageCommand(),
-                new ExportPlotAsPdfCommand(),
-                new CopyPlotAsBitmapCommand(),
-                new CopyPlotAsMetafileCommand(),
-                new HistoryNextPlotCommand(),
-                new HistoryPreviousPlotCommand()
+                new ExportPlotAsImageCommand(plotHistory),
+                new ExportPlotAsPdfCommand(plotHistory),
+                new CopyPlotAsBitmapCommand(plotHistory),
+                new CopyPlotAsMetafileCommand(plotHistory),
+                new HistoryNextPlotCommand(plotHistory),
+                new HistoryPreviousPlotCommand(plotHistory)
             };
         }
     }

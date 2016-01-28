@@ -39,6 +39,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class TelemetryAttribute : CategoryAttribute {
+            public TelemetryAttribute() : base("Telemetry") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public static class Project {
             [ExcludeFromCodeCoverage]
             public class ServicesAttribute : CategoryAttribute {

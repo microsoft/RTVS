@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
             : base(rSessionProvider, cmdId, visibility) {
         }
 
-        protected unsafe override void Handle() {
+        internal unsafe override void Handle() {
             if (!RSession.IsHostRunning) {
                 return;
             }

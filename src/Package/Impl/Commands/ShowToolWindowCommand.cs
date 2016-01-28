@@ -10,12 +10,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             : base(RGuidList.RCmdSetGuid, id) {}
 
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             Visible = true;
             Enabled = true;
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             ToolWindowUtilities.ShowWindowPane<T>(0, true);
         }
     }
