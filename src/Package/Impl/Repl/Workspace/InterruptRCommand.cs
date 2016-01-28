@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             _enabled = true;
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             if (ReplWindow.Current.IsActive) {
                 Visible = true;
                 Enabled = _session.IsHostRunning && _enabled;
@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             }
         }
 
-        protected override void Handle() {;
+        internal override void Handle() {;
             if (_enabled) {
                 ReplWindow.Current.ClearPendingInputs();
                 _session.CancelAllAsync().DoNotWait();

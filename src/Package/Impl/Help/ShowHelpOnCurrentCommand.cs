@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public ShowHelpOnCurrentCommand() :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent) { }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             string item = GetItemUnderCaret();
             if (!string.IsNullOrEmpty(item)) {
                 Enabled = true;
@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
         }
 
-        protected override async void Handle() {
+        internal override async void Handle() {
             try {
                 var rSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 IRSession session = rSessionProvider.GetInteractiveWindowRSession();

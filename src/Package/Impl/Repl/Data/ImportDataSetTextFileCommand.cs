@@ -7,7 +7,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Data {
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetTextFile) {
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             this.Enabled = false; // ReplWindow.ReplWindowExists();
         }
     }
