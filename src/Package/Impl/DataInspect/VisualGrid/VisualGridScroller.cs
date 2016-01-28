@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -74,6 +75,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scrollCommands.Add(new ScrollCommand(code, size));
         }
 
+        private static ScrollType[] RepeatSkip = new ScrollType[] { ScrollType.SizeChange, ScrollType.SetHorizontalOffset, ScrollType.SetVerticalOffset, ScrollType.Refresh };
+        private static ScrollType[] RepeatAccum = new ScrollType[] { ScrollType.MouseWheel, ScrollType.LineUp, ScrollType.LineDown, ScrollType.PageUp, ScrollType.PageDown, ScrollType.LineLeft, ScrollType.LineRight, ScrollType.PageLeft, ScrollType.PageRight };
+
         private async Task ScrollCommandsHandler(CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -97,20 +101,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             bool execute = true;
                             // if next command is same the current one, skip to next (new one) for optimization
                             if (i < (batch.Count - 1)) {
-                                if ((batch[i].Code == ScrollType.SizeChange && batch[i + 1].Code == ScrollType.SizeChange)
-                                    || (batch[i].Code == ScrollType.SetHorizontalOffset && batch[i + 1].Code == ScrollType.SetHorizontalOffset)
-                                    || (batch[i].Code == ScrollType.SetVerticalOffset && batch[i + 1].Code == ScrollType.SetVerticalOffset)
-                                    || (batch[i].Code == ScrollType.Refresh && batch[i + 1].Code == ScrollType.Refresh)) {
+                                if (IsRepeating(batch, i, RepeatSkip)) {
                                     execute = false;
-                                } else if ((batch[i].Code == ScrollType.MouseWheel && batch[i + 1].Code == ScrollType.MouseWheel)
-                                    || (batch[i].Code == ScrollType.LineUp && batch[i + 1].Code == ScrollType.LineUp)
-                                    || (batch[i].Code == ScrollType.LineDown && batch[i + 1].Code == ScrollType.LineDown)
-                                    || (batch[i].Code == ScrollType.PageUp && batch[i + 1].Code == ScrollType.PageUp)
-                                    || (batch[i].Code == ScrollType.PageDown && batch[i + 1].Code == ScrollType.PageDown)
-                                    || (batch[i].Code == ScrollType.LineLeft && batch[i + 1].Code == ScrollType.LineLeft)
-                                    || (batch[i].Code == ScrollType.LineRight && batch[i + 1].Code == ScrollType.LineRight)
-                                    || (batch[i].Code == ScrollType.PageLeft && batch[i + 1].Code == ScrollType.PageLeft)
-                                    || (batch[i].Code == ScrollType.PageRight && batch[i + 1].Code == ScrollType.PageRight)) {
+                                } else if (IsRepeating(batch, i, RepeatAccum)) {
                                     batch[i + 1].Param = (double)batch[i + 1].Param + (double)batch[i].Param;
                                     execute = false;
                                 }
@@ -127,6 +120,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     batch.Clear();
                 }
             }
+        }
+
+        private bool IsRepeating(List<ScrollCommand> commands, int index, ScrollType[] scrollTypes) {
+            return commands[index].Code == commands[index + 1].Code && scrollTypes.Contains(commands[index].Code);
         }
 
         private const double LineDelta = 10.0;
