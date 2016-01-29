@@ -238,6 +238,24 @@ namespace Microsoft.VisualStudio.R.Package.History {
             Clipboard.SetDataObject(data, false);
         }
 
+        public void ScrollToTop() {
+            var snapshotPoint = new SnapshotPoint(_historyTextBuffer.CurrentSnapshot, 0);
+            _textView?.DisplayTextLineContainingBufferPosition(snapshotPoint, 0, ViewRelativePosition.Top);
+        }
+
+        public void ScrollPageUp() {
+            _editorOperations.ScrollPageUp();
+        }
+
+        public void ScrollPageDown() {
+            _editorOperations.ScrollPageDown();
+        }
+
+        public void ScrollToBottom() {
+            var snapshotPoint = new SnapshotPoint(_historyTextBuffer.CurrentSnapshot, _historyTextBuffer.CurrentSnapshot.Length);
+            _textView?.DisplayTextLineContainingBufferPosition(snapshotPoint, 0, ViewRelativePosition.Top);
+        }
+
         public IReadOnlyList<SnapshotSpan> GetAllHistoryEntrySpans() {
             if (!HasEntries) {
                 return new List<SnapshotSpan>();
@@ -286,7 +304,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public SnapshotSpan SelectHistoryEntry(int lineNumber) {
-            var entry = GetHistoryBlockFromLineNumber(lineNumber);
+            var entry = GetHistoryEntryFromLineNumber(lineNumber);
             if (!entry.IsSelected) {
                 entry.IsSelected = true;
                 OnSelectionChanged();
@@ -297,7 +315,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         public void SelectHistoryEntries(IEnumerable<int> lineNumbers) {
             var entriesToSelect = lineNumbers
-                .Select(GetHistoryBlockFromLineNumber)
+                .Select(GetHistoryEntryFromLineNumber)
                 .Where(entry => !entry.IsSelected)
                 .ToList();
 
@@ -311,7 +329,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public SnapshotSpan DeselectHistoryEntry(int lineNumber) {
-            var entry = GetHistoryBlockFromLineNumber(lineNumber);
+            var entry = GetHistoryEntryFromLineNumber(lineNumber);
             if (!entry.IsSelected) {
                 entry.IsSelected = false;
                 OnSelectionChanged();
@@ -321,10 +339,78 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public SnapshotSpan ToggleHistoryEntrySelection(int lineNumber) {
-            var entry = GetHistoryBlockFromLineNumber(lineNumber);
+            var entry = GetHistoryEntryFromLineNumber(lineNumber);
             entry.IsSelected = !entry.IsSelected;
             OnSelectionChanged();
             return entry.Span.GetSpan(_historyTextBuffer.CurrentSnapshot);
+        }
+
+        public void SelectNextHistoryEntry() {
+            if (!HasEntries) {
+                return;
+            }
+
+            if (HasSelectedEntries) {
+                var lastSelectedEntry = _entries.GetSelectedEntries().Last();
+                if (lastSelectedEntry.Next == null) {
+                    return;
+                }
+
+                ClearHistoryEntrySelection();
+                lastSelectedEntry.Next.IsSelected = true;
+            } else {
+                if (_textView == null) {
+                    return;
+                }
+
+                if (_textView.Selection.IsEmpty) {
+                    _entries.FirstOrDefault().IsSelected = true;
+                } else {
+                    var entry = GetHistoryEntryFromPosition(_textView.Selection.End.Position);
+                    if (entry.Next == null) {
+                        return;
+                    }
+
+                    _textView.Selection.Clear();
+                    entry.Next.IsSelected = true;
+                }
+            }
+
+            OnSelectionChanged();
+        }
+
+        public void SelectPreviousHistoryEntry() {
+            if (!HasEntries) {
+                return;
+            }
+
+            if (HasSelectedEntries) {
+                var firstSelectedEntry = _entries.GetSelectedEntries().First();
+                if (firstSelectedEntry.Previous == null) {
+                    return;
+                }
+
+                ClearHistoryEntrySelection();
+                firstSelectedEntry.Previous.IsSelected = true;
+            } else {
+                if (_textView == null) {
+                    return;
+                }
+
+                if (_textView.Selection.IsEmpty) {
+                    _entries.LastOrDefault().IsSelected = true;
+                } else {
+                    var entry = GetHistoryEntryFromPosition(_textView.Selection.Start.Position);
+                    if (entry.Previous == null) {
+                        return;
+                    }
+
+                    _textView.Selection.Clear();
+                    entry.Previous.IsSelected = true;
+                }
+            }
+
+            OnSelectionChanged();
         }
 
         public void SelectAllEntries() {
@@ -374,6 +460,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             var hasEntries = _entries.HasEntries;
             var snapshot = _historyTextBuffer.CurrentSnapshot;
 
+            using (AdjustAddToHistoryScrolling())
             using (EditTextBuffer()) {
                 if (hasEntries) {
                     snapshot = _historyTextBuffer.Insert(snapshot.Length, BlockSeparator);
@@ -381,9 +468,33 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
                 var position = snapshot.Length;
                 snapshot = _historyTextBuffer.Insert(position, text);
-
                 _entries.Add(snapshot.CreateTrackingSpan(new Span(position, text.Length), SpanTrackingMode.EdgeExclusive));
             }
+        }
+
+        private IDisposable AdjustAddToHistoryScrolling() {
+            if (_textView == null) {
+                return Disposable.Empty;
+            }
+
+            var firstVisibleLine = _textView.TextViewLines.FirstOrDefault(l => l.VisibilityState == VisibilityState.FullyVisible);
+            var lastLine = _textView.TextViewLines.LastOrDefault();
+            var moveScrollingToLastLine = firstVisibleLine == null || lastLine == null || lastLine.VisibilityState == VisibilityState.FullyVisible;
+            if (moveScrollingToLastLine) {
+                return Disposable.Create(() => {
+                    var last = _textView.TextViewLines.LastOrDefault();
+                    if (last == null || last.VisibilityState == VisibilityState.FullyVisible) {
+                        return;
+                    }
+                    var snapshotPoint = new SnapshotPoint(_historyTextBuffer.CurrentSnapshot, _historyTextBuffer.CurrentSnapshot.Length);
+                    _textView.DisplayTextLineContainingBufferPosition(snapshotPoint, 0, ViewRelativePosition.Bottom);
+                });
+            }
+
+            var offset = firstVisibleLine.Top - _textView.ViewportTop;
+            return Disposable.Create(() => {
+                _textView.DisplayTextLineContainingBufferPosition(firstVisibleLine.Start, offset, ViewRelativePosition.Top);
+            });
         }
 
         private void CreateEntries(string[] historyLines) {
@@ -466,7 +577,13 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _vsUiShell.UpdateCommandUI(0);
         }
 
-        private IRHistoryEntry GetHistoryBlockFromLineNumber(int lineNumber) {
+        private IRHistoryEntry GetHistoryEntryFromPosition(int position) {
+            var snapshot = _historyTextBuffer.CurrentSnapshot;
+            var line = snapshot.GetLineFromPosition(position);
+            return _entries.Find(b => b.Span != null && b.Span.GetSpan(snapshot).Contains(line.Extent));
+        }
+
+        private IRHistoryEntry GetHistoryEntryFromLineNumber(int lineNumber) {
             var snapshot = _historyTextBuffer.CurrentSnapshot;
             var line = snapshot.GetLineFromLineNumber(lineNumber);
             return _entries.Find(b => b.Span != null && b.Span.GetSpan(snapshot).Contains(line.Extent));

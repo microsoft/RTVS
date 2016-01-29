@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     public interface IRHistory : IDisposable {
@@ -23,6 +22,11 @@ namespace Microsoft.VisualStudio.R.Package.History {
         void NextEntry();
         void CopySelection();
 
+        void ScrollToTop();
+        void ScrollPageUp();
+        void ScrollPageDown();
+        void ScrollToBottom();
+
         IReadOnlyList<SnapshotSpan> GetAllHistoryEntrySpans();
         IReadOnlyList<SnapshotSpan> GetSelectedHistoryEntrySpans();
         string GetSelectedText();
@@ -30,6 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         SnapshotSpan SelectHistoryEntry(int lineNumber);
         SnapshotSpan DeselectHistoryEntry(int lineNumber);
         SnapshotSpan ToggleHistoryEntrySelection(int lineNumber);
+        void SelectNextHistoryEntry();
+        void SelectPreviousHistoryEntry();
         void SelectHistoryEntries(IEnumerable<int> lineNumbers);
         void SelectAllEntries();
         void ClearHistoryEntrySelection();
