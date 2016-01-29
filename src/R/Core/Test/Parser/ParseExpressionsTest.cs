@@ -168,5 +168,99 @@ namespace Microsoft.R.Core.Test.Parser {
   (c+1)";
             ParserTest.VerifyParse(expected, content);
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseMultipleTilde() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x ~ ~ ~ y]
+        Expression  [x ~ ~ ~ y]
+            TokenOperator  [~ [2...3)]
+                Variable  [x]
+                TokenNode  [~ [2...3)]
+                TokenOperator  [~ [4...5)]
+                    TokenNode  [~ [4...5)]
+                    Expression  [~ y]
+                        TokenOperator  [~ [6...7)]
+                            TokenNode  [~ [6...7)]
+                            Variable  [y]
+";
+            string content = "x ~ ~ ~ y";
+
+            ParserTest.VerifyParse(expected, content);
+        }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseMultipleUnary01() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [!!!TRUE]
+        Expression  [!!!TRUE]
+            TokenOperator  [! [0...1)]
+                TokenNode  [! [0...1)]
+                Expression  [!!TRUE]
+                    TokenOperator  [! [1...2)]
+                        TokenNode  [! [1...2)]
+                        Expression  [!TRUE]
+                            TokenOperator  [! [2...3)]
+                                TokenNode  [! [2...3)]
+                                LogicalValue  [TRUE [3...7)]
+";
+            string content = "!!!TRUE";
+
+            ParserTest.VerifyParse(expected, content);
+        }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseMultipleUnary02() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [1-+-+-3]
+        Expression  [1-+-+-3]
+            TokenOperator  [- [1...2)]
+                NumericalValue  [1 [0...1)]
+                TokenNode  [- [1...2)]
+                TokenOperator  [+ [2...3)]
+                    TokenNode  [+ [2...3)]
+                    Expression  [-+-3]
+                        TokenOperator  [- [3...4)]
+                            TokenNode  [- [3...4)]
+                            Expression  [+-3]
+                                TokenOperator  [+ [4...5)]
+                                    TokenNode  [+ [4...5)]
+                                    NumericalValue  [-3 [5...7)]
+";
+            string content = "1-+-+-3";
+
+            ParserTest.VerifyParse(expected, content);
+        }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseMultipleUnary03() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [1/+-+-3]
+        Expression  [1/+-+-3]
+            TokenOperator  [/ [1...2)]
+                NumericalValue  [1 [0...1)]
+                TokenNode  [/ [1...2)]
+                TokenOperator  [+ [2...3)]
+                    TokenNode  [+ [2...3)]
+                    Expression  [-+-3]
+                        TokenOperator  [- [3...4)]
+                            TokenNode  [- [3...4)]
+                            Expression  [+-3]
+                                TokenOperator  [+ [4...5)]
+                                    TokenNode  [+ [4...5)]
+                                    NumericalValue  [-3 [5...7)]
+";
+            string content = "1/+-+-3";
+
+            ParserTest.VerifyParse(expected, content);
+        }
     }
 }
