@@ -400,7 +400,11 @@ namespace Microsoft.R.Core.Formatting {
             }
 
             string text = _textProvider.GetText(_tokens.CurrentToken);
-            _tb.AppendText(text);
+            if (text.IndexOfAny(new char[] { '\r', '\n' }) >= 0) {
+                _tb.AppendPreformattedText(text);
+            } else {
+                _tb.AppendText(text);
+            }
 
             HandleBrace();
             _tokens.MoveToNextToken();
