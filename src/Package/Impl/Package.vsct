@@ -25,7 +25,7 @@
       </Menu>
       <!-- End R code editor context menu -->
       
-      <!-- R code editor context menu -->
+      <!-- R history context menu -->
       <Menu guid="guidRToolsCmdSet" id="rHistoryContextMenu" type="Context">
         <CommandFlag>DontCache</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
@@ -34,7 +34,7 @@
           <ButtonText>R History Context</ButtonText>
         </Strings>
       </Menu>
-      <!-- End R code editor context menu -->
+      <!-- End R history context context menu -->
       
       <!-- R debugger Autos/Locals/Watch context menu -->
       <Menu guid="guidRToolsCmdSet" id="debuggerRContextMenu" priority="0x0301" type="Context">

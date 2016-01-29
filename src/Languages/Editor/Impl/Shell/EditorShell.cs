@@ -46,9 +46,7 @@ namespace Microsoft.Languages.Editor.Shell {
             }
         }
 
-        public static bool IsUIThread {
-            get { return Current != null ? Current.MainThread == Thread.CurrentThread : true; }
-        }
+        public static bool IsUIThread => Current == null || Current.MainThread == Thread.CurrentThread;
 
         /// <summary>
         /// Provides a way to execute action on UI thread while

@@ -81,7 +81,7 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
   }
 
   if (field('flags')) {
-    res$flags <- c(
+    res$flags <- list(
       if (is.atomic(obj)) "atomic" else NA,
       if (is.recursive(obj)) "recursive" else NA,
       if (has_parent_env) "has_parent_env" else NA

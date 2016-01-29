@@ -165,7 +165,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _searchPattern = null;
             var span = new Span(0, _textBuffer.CurrentSnapshot.Length);
             _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(span));
-            _textView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_textView.TextSnapshot, new Span(0, 0)));
         }
     }
 }
