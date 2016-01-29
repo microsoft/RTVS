@@ -1,15 +1,15 @@
 # Produces JSON from an R object according to the following mappings:
 #
-# NULL -> null
+# NULL, NA, empty vector -> null
 # TRUE -> true
 # FALSE -> false
-# Vector of a single non-NA number -> numeric literal
+# Vector of a single non-NA integer or double -> numeric literal
 # Vector of a single non-NA string -> string literal
-# Empty or multiple-element vector -> array (recursively)
 # List with all elements unnamed -> array (recursively)
 # List with all elements named, or environment -> object (recursively)
 #
-# If any element of a vector, list or environment is NA, that element is skipped.
+# If any element of a list or environment is NA, that element is skipped.
+# Any input not covered by the rules above is considered invalid.
 toJSON <- function(data, con) {
   if (missing(con)) {
     con <- memory_connection(NA, 0x10000);
@@ -21,18 +21,21 @@ toJSON <- function(data, con) {
   to_literal_or_array <- function() {
     if (length(data) == 0) {
       cat('null', file = con, sep = '');
-    } else if (length(data) == 1 && !is.na(data)) {
-      # Atomic vector of length 1 is a boolean, number, or string literal.
-      if (is.logical(data)) {
+    } else if (length(data) == 1) {
+      # Atomic vector of length 1 is NA, boolean, number, or string literal.
+      if (is.na(data)) {
+        cat('null', file = con, sep = '');
+      } else if (is.logical(data)) {
         cat((if (data) 'true' else 'false'), file = con, sep = '');
+      } else if (is.double(data)) {
+        dput(data, con);
       } else if (is.integer(data)) {
         dput(as.double(data), con);
       } else {
         dput(data, con);
       }
     } else {
-      # If it's 0 or more than 1 element, treat it as an array.
-      toJSON(as.list(data), con);
+      stop("vector must have 0 or 1 element to be convertible to JSON");
     }
   }
 
