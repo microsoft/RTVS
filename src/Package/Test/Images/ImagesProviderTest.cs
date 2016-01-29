@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Images {
     [ExcludeFromCodeCoverage]
@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Images {
         [Test]
         [Category.Project.Services]
         public void ImagesProvider_Test() {
-            IImagesProvider p = EditorShell.Current.ExportProvider.GetExportedValue<IImagesProvider>();
+            IImagesProvider p = VsAppShell.Current.ExportProvider.GetExportedValue<IImagesProvider>();
             p.Should().NotBeNull();
 
             p.GetFileIcon("foo.R").Should().NotBeNull();

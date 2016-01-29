@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// Provides list of files and folder in the current directory
     /// </summary>
     public class FilesCompletionProvider : IRCompletionListProvider {
-        [Import]
+        [Import(AllowDefault = true)]
         private IImagesProvider ImagesProvider { get; set; }
 
         private string _directory;
@@ -53,7 +53,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     foreach (string file in Directory.GetFiles(directory)) {
                         FileInfo di = new FileInfo(file);
                         if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
-                            ImageSource fileGlyph = ImagesProvider.GetFileIcon(file);
+                            ImageSource fileGlyph = ImagesProvider?.GetFileIcon(file);
                             string fileName = Path.GetFileName(file);
                             completions.Add(new RCompletion(fileName, fileName, string.Empty, fileGlyph));
                         }

@@ -33,7 +33,6 @@
     <Compile Include="Core\WaitIndicator.cs" />
     <Compile Include="Host\EditorInstanceFactory.cs" />
     <Compile Include="Host\WorkspaceItem.cs" />
-    <Compile Include="Images\ImagesProvider.cs" />
     <Compile Include="Packages\TextPackage.cs" />
     <Compile Include="Packages\RPackage.cs" />
     <Compile Include="Packages\SettingsStorage.cs" />
