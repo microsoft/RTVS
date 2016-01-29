@@ -74,6 +74,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             Current = this;
             CranMirrorList.Download();
 
+            // Force shell initialization
+            var shell = VsAppShell.Current;
+
             // This must happen ASAP so async creation of REPL window
             // will get appropriate settings on R base path.
             using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) {
