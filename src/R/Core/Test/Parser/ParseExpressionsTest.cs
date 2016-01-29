@@ -237,5 +237,30 @@ namespace Microsoft.R.Core.Test.Parser {
 
             ParserTest.VerifyParse(expected, content);
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseMultipleUnary03() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [1/+-+-3]
+        Expression  [1/+-+-3]
+            TokenOperator  [/ [1...2)]
+                NumericalValue  [1 [0...1)]
+                TokenNode  [/ [1...2)]
+                TokenOperator  [+ [2...3)]
+                    TokenNode  [+ [2...3)]
+                    Expression  [-+-3]
+                        TokenOperator  [- [3...4)]
+                            TokenNode  [- [3...4)]
+                            Expression  [+-3]
+                                TokenOperator  [+ [4...5)]
+                                    TokenNode  [+ [4...5)]
+                                    NumericalValue  [-3 [5...7)]
+";
+            string content = "1/+-+-3";
+
+            ParserTest.VerifyParse(expected, content);
+        }
     }
 }
