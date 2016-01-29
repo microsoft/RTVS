@@ -231,6 +231,10 @@ namespace Microsoft.R.Core.AST.Expressions {
                         context.AddError(new ParseError(ParseErrorType.OperatorExpected, ErrorLocation.Token, GetOperandErrorRange(context)));
                         break;
 
+                    case OperationType.UnaryOperator:
+                        // 'unary unary' and 'binary unary' are OK
+                        return true;
+
                     default:
                         // 'operator operator' sequence is an error
                         context.AddError(new ParseError(ParseErrorType.RightOperandExpected, ErrorLocation.Token, GetOperatorErrorRange(context)));
@@ -462,7 +466,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         private ParseErrorType HandleOperator(ParseContext context, IAstNode parent, out bool isUnary) {
             ParseErrorType errorType = ParseErrorType.None;
 
-            // If operands stack is empty operator is unary.
+            // If operands stack is empty the operator is unary.
             // If operator is preceded by another operator, 
             // it is interpreted as unary.
 
@@ -472,6 +476,17 @@ namespace Microsoft.R.Core.AST.Expressions {
             isUnary = currentOperator.IsUnary;
 
             IOperator lastOperator = _operators.Peek();
+            if (isUnary && lastOperator != null && lastOperator.IsUnary) {
+                // !!!x is treated as !(!(!x)))
+                // Step back and re-parse as expression
+                context.Tokens.Position -= 1;
+                var exp = new Expression(inGroup: false);
+                if (exp.Parse(context, null)) {
+                    _operands.Push(exp);
+                    return ParseErrorType.None;
+                }
+            }
+
             if (currentOperator.Precedence <= lastOperator.Precedence &&
                 !(currentOperator.OperatorType == lastOperator.OperatorType && currentOperator.Association == Association.Right)) {
                 // New operator has lower or equal precedence. We need to make a tree from
