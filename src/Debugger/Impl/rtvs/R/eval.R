@@ -68,7 +68,7 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
   if (field('dim')) {
     dim <- NA_if_error(dim(obj));
     if (is.integer(dim) && !anyNA(dim)) {
-      res$dim <- dim;
+      res$dim <- as.list(dim);
     }
   }
     
