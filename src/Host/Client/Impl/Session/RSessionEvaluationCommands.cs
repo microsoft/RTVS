@@ -101,7 +101,8 @@ options(device='.rtvs.vsgd')
 
         public static Task<REvaluationResult> SetVsHelpRedirection(this IRSessionEvaluation evaluation) {
             var script =
-@"options(browser = function(url) { 
+@"options(help_type = 'html')
+options(browser = function(url) { 
       .Call('Microsoft.R.Host::Call.send_message', 'Browser', rtvs:::toJSON(url)) 
   })";
             return evaluation.EvaluateAsync(script);
