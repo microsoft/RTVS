@@ -77,6 +77,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         protected override void Initialize() {
             Current = this;
             CranMirrorList.Download();
+
+            // Force app shell creation before everything else
+            var shell = VsAppShell.Current;
+
             RtvsTelemetry.Initialize();
 
             using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) {
