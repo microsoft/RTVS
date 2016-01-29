@@ -80,11 +80,29 @@ namespace SetupCustomActions {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Setup was unable to locate the R language engine. Would you like setup to open a Web page where you can download and install Microsoft R Open?.
+        /// </summary>
+        internal static string MicrosoftROpenQuestion {
+            get {
+                return ResourceManager.GetString("MicrosoftROpenQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
         internal static string No {
             get {
                 return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Setup was unable to locate Visual Studio 2015 which is required. Would you like setup to open a Web page where you can download and install free Visual Studio 2015 Community?.
+        /// </summary>
+        internal static string VsCommunityQuestion {
+            get {
+                return ResourceManager.GetString("VsCommunityQuestion", resourceCulture);
             }
         }
         

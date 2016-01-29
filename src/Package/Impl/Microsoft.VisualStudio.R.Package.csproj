@@ -207,6 +207,7 @@
     <Compile Include="Repl\Commands\SourceRScriptCommand.cs" />
     <Compile Include="Repl\RInteractive.cs" />
     <Compile Include="Repl\RInteractiveProvider.cs" />
+    <Compile Include="Repl\Workspace\ResetReplCommand.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />

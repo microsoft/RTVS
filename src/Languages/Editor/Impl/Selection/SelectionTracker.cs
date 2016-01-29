@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using Microsoft.Languages.Editor.Text;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 
@@ -82,14 +83,12 @@ namespace Microsoft.Languages.Editor.Selection {
         #endregion
 
         protected virtual void MoveCaretTo(SnapshotPoint position, int virtualSpaces) {
-            var viewPosition = TextView.BufferGraph.MapUpToBuffer(position, PointTrackingMode.Positive, PositionAffinity.Successor, TextView.TextBuffer);
-
+            SnapshotPoint? viewPosition = TextView.MapUpToBuffer(position.Position, position.Snapshot.TextBuffer);
             if (viewPosition.HasValue) {
                 TextView.Caret.MoveTo(new VirtualSnapshotPoint(viewPosition.Value, virtualSpaces));
 
                 if (TextView.Caret.ContainingTextViewLine.VisibilityState != VisibilityState.FullyVisible) {
                     TextView.Caret.EnsureVisible();
-
                     TextView.DisplayTextLineContainingBufferPosition(viewPosition.Value, _offsetFromTop, ViewRelativePosition.Top);
                 }
             }

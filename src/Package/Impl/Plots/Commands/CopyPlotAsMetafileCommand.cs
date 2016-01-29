@@ -1,16 +1,17 @@
 ﻿using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
     internal sealed class CopyPlotAsMetafileCommand : PlotWindowCommand {
-        public CopyPlotAsMetafileCommand() :
-            base(RPackageCommandId.icmdCopyPlotAsMetafile) {
+        public CopyPlotAsMetafileCommand(IPlotHistory plotHistory) :
+            base(plotHistory, RPackageCommandId.icmdCopyPlotAsMetafile) {
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             Enabled = PlotHistory.ActivePlotIndex >= 0;
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             PlotHistory.PlotContentProvider.CopyToClipboardAsMetafile();
         }
     }

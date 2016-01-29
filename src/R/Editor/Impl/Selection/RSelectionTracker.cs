@@ -5,18 +5,22 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Projection;
 
-namespace Microsoft.R.Editor.Selection
-{
+namespace Microsoft.R.Editor.Selection {
     /// <summary>
     /// JScript selection tracker. Helps preserve selection and correct
     /// caret position during script autoformatting. Uses tokenizer to
     /// calculate where caret should be after autoatic formatting.
     /// </summary>
-    internal sealed class RSelectionTracker : SelectionTracker
-    {
+    internal sealed class RSelectionTracker : SelectionTracker {
+        /// <summary>
+        /// Index of token that is nearest to the caret
+        /// </summary>
         private int _index;
+        
+        /// <summary>
+        /// Offset from token to the caret position
+        /// </summary>
         private int _offset;
 
         /// <summary>
@@ -25,8 +29,7 @@ namespace Microsoft.R.Editor.Selection
         /// <param name="textView">Text view</param>
         /// <param name="textBuffer">Editor text buffer (may be different from one attached to text view)</param>
         public RSelectionTracker(ITextView textView, ITextBuffer textBuffer)
-            : base(textView)
-        {
+            : base(textView) {
             TextBuffer = textBuffer;
         }
 
@@ -40,35 +43,31 @@ namespace Microsoft.R.Editor.Selection
         /// <summary>
         /// Saves current selection
         /// </summary>
-        public override void StartTracking(bool automaticTracking)
-        {
+        public override void StartTracking(bool automaticTracking) {
             int position = TextView.Caret.Position.BufferPosition;
-            VirtualSpaces = TextView.Caret.Position.VirtualSpaces;
-            TokenFromPosition(TextBuffer.CurrentSnapshot, position, out _index, out _offset);
-
+            SnapshotPoint? documentPosition = TextView.MapDownToBuffer(position, TextBuffer);
+            if (documentPosition.HasValue) {
+                VirtualSpaces = TextView.Caret.Position.VirtualSpaces;
+                TokenFromPosition(TextBuffer.CurrentSnapshot, documentPosition.Value, out _index, out _offset);
+            }
             base.StartTracking(false);
         }
 
         /// <summary>
         /// Restores saved selection
         /// </summary>
-        public override void EndTracking()
-        {
+        public override void EndTracking() {
             int position = PositionFromTokens(TextBuffer.CurrentSnapshot, _index, _offset);
-            if (position >= 0)
-            {
+            if (position >= 0) {
                 PositionAfterChanges = new SnapshotPoint(TextBuffer.CurrentSnapshot, position);
             }
-
             MoveToAfterChanges(VirtualSpaces);
         }
         #endregion
 
-        private static void TokenFromPosition(ITextSnapshot snapshot, int position, out int itemIndex, out int offset)
-        {
+        private static void TokenFromPosition(ITextSnapshot snapshot, int position, out int itemIndex, out int offset) {
             // Normally token stream does not change after formatting so we can simply rely on the fact 
             // that caret position is going to remain relative to the same token index
-
             itemIndex = -1;
             offset = 0;
 
@@ -77,22 +76,19 @@ namespace Microsoft.R.Editor.Selection
 
             // Check if position is adjacent to previous token
             int prevItemIndex = tokens.GetFirstItemBeforePosition(position);
-            if (prevItemIndex >= 0 && tokens[prevItemIndex].End == position)
-            {
+            if (prevItemIndex >= 0 && tokens[prevItemIndex].End == position) {
                 itemIndex = prevItemIndex;
                 offset = -tokens[itemIndex].Length;
                 return;
             }
 
             int nextItemIndex = tokens.GetFirstItemAfterOrAtPosition(position);
-            if (nextItemIndex >= 0)
-            {
+            if (nextItemIndex >= 0) {
                 // If two tokens are adjacent, gravity is negative, i.e. caret travels
                 // with preceding token so it won't just to aniother line if, say, 
                 // formatter decides to insert a new line between tokens.
 
-                if (nextItemIndex > 0 && tokens[nextItemIndex - 1].End == tokens[nextItemIndex].Start)
-                {
+                if (nextItemIndex > 0 && tokens[nextItemIndex - 1].End == tokens[nextItemIndex].Start) {
                     nextItemIndex--;
                 }
 
@@ -102,25 +98,20 @@ namespace Microsoft.R.Editor.Selection
             }
 
             // We are past last token
-            if(tokens.Count > 0)
-            {
+            if (tokens.Count > 0) {
                 itemIndex = tokens.Count - 1;
                 offset = tokens[itemIndex].Start - position;
-            }
-            else
-            {
+            } else {
                 itemIndex = -1;
                 offset = position;
             }
         }
 
-        private static int PositionFromTokens(ITextSnapshot snapshot, int itemIndex, int offset)
-        {
+        private static int PositionFromTokens(ITextSnapshot snapshot, int itemIndex, int offset) {
             var tokenizer = new RTokenizer();
             var tokens = tokenizer.Tokenize(new TextProvider(snapshot), 0, snapshot.Length, true);
 
-            if (itemIndex >= 0 && itemIndex < tokens.Count)
-            {
+            if (itemIndex >= 0 && itemIndex < tokens.Count) {
                 int position = tokens[itemIndex].Start - offset;
 
                 position = Math.Min(position, snapshot.Length);

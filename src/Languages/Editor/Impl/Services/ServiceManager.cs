@@ -130,21 +130,6 @@ namespace Microsoft.Languages.Editor.Services {
             }
         }
 
-        /// <summary>
-        ///  Retrieves service from a service manager for this Property owner given service type and content type
-        /// </summary>
-        /// <typeparam name="T">Service type</typeparam>
-        /// <param name="propertyOwner">Property owner</param>
-        /// <param name="contentType">Content type</param>
-        /// <returns>Service instance</returns>
-        public static T GetService<T>(IPropertyOwner propertyOwner, IContentType contentType) where T : class {
-            var sm = ServiceManager.FromPropertyOwner(propertyOwner);
-            if (sm != null)
-                return sm.GetService<T>(contentType);
-
-            return null;
-        }
-
         public static ICollection<T> GetAllServices<T>(IPropertyOwner propertyOwner) where T : class {
             var sm = ServiceManager.FromPropertyOwner(propertyOwner);
             if (sm != null)
@@ -166,20 +151,6 @@ namespace Microsoft.Languages.Editor.Services {
             sm.AddService<T>(serviceInstance);
         }
 
-        /// <summary>
-        /// Add content type specific service to a service manager associated with a particular Property owner
-        /// </summary>
-        /// <typeparam name="T">Service type</typeparam>
-        /// <param name="serviceInstance">Service instance</param>
-        /// <param name="propertyOwner">Property owner</param>
-        /// <param name="contentType">Content type of the service</param>
-        public static void AddService<T>(T serviceInstance, IPropertyOwner propertyOwner, IContentType contentType) where T : class {
-            var sm = ServiceManager.FromPropertyOwner(propertyOwner);
-            Debug.Assert(sm != null);
-
-            sm.AddService<T>(serviceInstance, contentType);
-        }
-
         public static void RemoveService<T>(IPropertyOwner propertyOwner) where T : class {
             if (propertyOwner != null) {
                 var sm = ServiceManager.FromPropertyOwner(propertyOwner);
@@ -187,13 +158,6 @@ namespace Microsoft.Languages.Editor.Services {
 
                 sm.RemoveService<T>();
             }
-        }
-
-        public static void RemoveService<T>(IPropertyOwner propertyOwner, IContentType contentType) where T : class {
-            var sm = ServiceManager.FromPropertyOwner(propertyOwner);
-            Debug.Assert(sm != null);
-
-            sm.RemoveService<T>(contentType);
         }
 
         private T GetService<T>() where T : class {
@@ -212,35 +176,6 @@ namespace Microsoft.Languages.Editor.Services {
                         if (service != null)
                             break;
                     }
-                }
-
-                return service as T;
-            }
-        }
-
-        private T GetService<T>(IContentType contentType) where T : class {
-            lock (_lock) {
-                object service = null;
-
-                _servicesByContentType.TryGetValue(Tuple.Create(typeof(T), contentType.TypeName), out service);
-                if (service != null)
-                    return service as T;
-
-                // Try walking through and cast. Perhaps someone is asking for IFoo
-                // that is implemented on class Bar but Bar was added as Bar, not as IFoo
-                foreach (var kvp in _servicesByContentType) {
-                    if (String.Compare(kvp.Key.Item2, contentType.TypeName, StringComparison.OrdinalIgnoreCase) == 0) {
-                        service = kvp.Value as T;
-                        if (service != null)
-                            return service as T;
-                    }
-                }
-
-                // iterate through base types since Razor, PHP and ASP.NET content type derive from HTML
-                foreach (var ct in contentType.BaseTypes) {
-                    service = GetService<T>(ct);
-                    if (service != null)
-                        break;
                 }
 
                 return service as T;
@@ -267,22 +202,6 @@ namespace Microsoft.Languages.Editor.Services {
             lock (_lock) {
                 if (GetService<T>(false) == null) {
                     _servicesByType.Add(typeof(T), serviceInstance);
-                    added = true;
-                }
-            }
-
-            Debug.Assert(added);
-            if (added) {
-                FireServiceAdded(typeof(T), serviceInstance);
-            }
-        }
-
-        private void AddService<T>(T serviceInstance, IContentType contentType) where T : class {
-            bool added = false;
-
-            lock (_lock) {
-                if (GetService<T>(contentType) == null) {
-                    _servicesByContentType.Add(Tuple.Create(typeof(T), contentType.TypeName), serviceInstance);
                     added = true;
                 }
             }

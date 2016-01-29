@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
@@ -11,7 +9,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         private readonly IRSession _session;
         private volatile bool _enabled;
 
-        public InterruptRCommand(IRSessionProvider rSessionProvider) : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
+        public InterruptRCommand(IRSessionProvider rSessionProvider) : 
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
             _session = rSessionProvider.GetInteractiveWindowRSession();
             _session.Disconnected += OnDisconnected;
             _session.BeforeRequest += OnBeforeRequest;
@@ -30,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             _enabled = true;
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             if (ReplWindow.Current.IsActive) {
                 Visible = true;
                 Enabled = _session.IsHostRunning && _enabled;
@@ -39,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             }
         }
 
-        protected override void Handle() {;
+        internal override void Handle() {;
             if (_enabled) {
                 ReplWindow.Current.ClearPendingInputs();
                 _session.CancelAllAsync().DoNotWait();

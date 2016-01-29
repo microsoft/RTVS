@@ -6,7 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         public ShowRInteractiveWindowsCommand() :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdShowReplWindow) {
         }
-        protected override void Handle() {
+        internal override void Handle() {
             RPackage.Current.InteractiveWindowProvider.Open(instanceId: 0, focus: true);
         }
     }

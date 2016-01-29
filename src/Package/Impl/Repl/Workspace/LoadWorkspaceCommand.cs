@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             _projectServiceAccessor = projectServiceAccessor;
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             if (ReplWindow.Current.IsActive) {
                 Visible = true;
                 Enabled = _rSession.IsHostRunning;
@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             }
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             var projectService = _projectServiceAccessor.GetProjectService();
             var lastLoadedProject = projectService.LoadedUnconfiguredProjects.LastOrDefault();
 

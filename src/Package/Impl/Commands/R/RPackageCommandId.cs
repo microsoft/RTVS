@@ -16,7 +16,7 @@
         public const int icmdLoadWorkspace = 502;
         public const int icmdSaveWorkspace = 503;
         public const int icmdSelectWorkingDirectory = 504;
-        public const int icmdRestartR = 505;
+        public const int icmdResetRepl = 505;
         public const int icmdInterruptR = 506;
         public const int icmdAttachDebugger = 507;
         public const int icmdSourceRScript = 508;

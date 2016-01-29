@@ -78,11 +78,16 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             Current = this;
             CranMirrorList.Download();
 
-            base.Initialize();
+            // Force app shell creation before everything else
+            var shell = VsAppShell.Current;
+
+            RtvsTelemetry.Initialize();
 
             using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) {
                 p.LoadSettingsFromStorage();
             }
+
+            base.Initialize();
 
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
@@ -92,7 +97,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             InitializeActiveWpfTextViewTracker();
 
-            RtvsTelemetry.Initialize();
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 

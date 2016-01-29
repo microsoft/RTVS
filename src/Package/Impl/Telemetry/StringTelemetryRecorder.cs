@@ -56,10 +56,12 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         }
         #endregion
 
+        public string FileName { get; private set; }
+
         public void Dispose() {
             try {
-                var fileName = Path.Combine(Path.GetTempPath(), string.Format(CultureInfo.InvariantCulture, "RTVS_Telemetry_{0}.log", DateTime.Now.ToFileTimeUtc()));
-                using (var sw = new StreamWriter(fileName)) {
+                FileName = Path.Combine(Path.GetTempPath(), string.Format(CultureInfo.InvariantCulture, "RTVS_Telemetry_{0}.log", DateTime.Now.ToFileTimeUtc()));
+                using (var sw = new StreamWriter(FileName)) {
                     sw.Write(_stringBuilder.ToString());
                 }
             } catch (IOException) { }

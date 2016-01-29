@@ -24,5 +24,4 @@
         Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\enterprise"
         Value="Install"/>-->
 
-    <?define VS_Installed = ((Professional_DetectKey = 1) OR (Premium_DetectKey = 1) OR (Ultimate_DetectKey = 1) OR (Community_DetectKey = 1) OR (Enterprise_DetectKey = 1)) ?>
 </Include>
