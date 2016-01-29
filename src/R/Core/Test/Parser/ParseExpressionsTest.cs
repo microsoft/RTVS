@@ -168,5 +168,22 @@ namespace Microsoft.R.Core.Test.Parser {
   (c+1)";
             ParserTest.VerifyParse(expected, content);
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseMultipleTilde() {
+            string expected = 
+@"GlobalScope  [Global]
+    ExpressionStatement  [x ~ ~ ~ y]
+        Expression  [x ~ ~ ~ y]
+            TokenOperator  [~ [2...3)]
+                Variable  [x]
+                TokenNode  [~ [2...3)]
+                Variable  [y]
+";
+            string content = "x ~ ~ ~ y";
+
+            ParserTest.VerifyParse(expected, content);
+        }
     }
 }

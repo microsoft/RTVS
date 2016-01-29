@@ -38,7 +38,6 @@ namespace Microsoft.R.Core.AST.Operators {
 
             _operatorType = TokenOperator.GetOperatorType(context.TextProvider.GetText(context.Tokens.CurrentToken));
             this.OperatorToken = RParser.ParseToken(context, this);
-
             this.Association = OperatorAssociation.GetAssociation(_operatorType);
 
             bool isUnary;
@@ -48,6 +47,16 @@ namespace Microsoft.R.Core.AST.Operators {
                 _isUnary = isUnary;
             }
 
+            // http://www.inside-r.org/r-doc/stats/formula
+            // Handle multiple ~ by simply skipping over the remaining ones.
+            // This will change when actual formula object will need to be built.
+            while(!context.Tokens.IsEndOfStream() && context.Tokens.CurrentToken.TokenType == RTokenType.Operator) {
+                string operatorText = context.TextProvider.GetText(context.Tokens.CurrentToken);
+                if(operatorText != "~") {
+                    break;
+                }
+                context.Tokens.MoveToNextToken();
+            }
 
             return base.Parse(context, parent);
         }
