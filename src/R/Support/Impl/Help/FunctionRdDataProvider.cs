@@ -70,9 +70,9 @@ namespace Microsoft.R.Host.Client.Signatures {
 
         private string GetCommandText(string functionName, string packageName) {
             if (string.IsNullOrEmpty(packageName)) {
-                return ".rtvs.signature.help1('" + functionName + "')";
+                return "rtvs:::signature.help1('" + functionName + "')";
             }
-            return ".rtvs.signature.help2('" + functionName + "', '" + packageName + "')";
+            return "rtvs:::signature.help2('" + functionName + "', '" + packageName + "')";
         }
     }
 }

@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
 using Microsoft.R.Debugger;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, IDisposable {
+        private readonly IRToolsSettings _settings;
         ObservableTreeNode _rootNode;
         VariableSubscription _globalEnvSubscription;
 
         const string GlobalEnvironmentName = "Global Environment";
 
-        public VariableView() {
+        public VariableView() : this(null) { }
+
+        public VariableView(IRToolsSettings settings) {
+            _settings = settings;
+
             InitializeComponent();
 
             SortDirection = ListSortDirection.Ascending;
@@ -51,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void OnGlobalEnvironmentEvaluation(DebugEvaluationResult result) {
             var wrapper = new EvaluationWrapper(result);
 
-            var rootNodeModel = new VariableNode(wrapper);
+            var rootNodeModel = new VariableNode(_settings, wrapper);
 
             VsAppShell.Current.DispatchOnUIThread(
                 () => {
@@ -62,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void SetRootNode(EvaluationWrapper evaluation) {
             _rootNode = new ObservableTreeNode(
-                new VariableNode(evaluation),
+                new VariableNode(_settings, evaluation),
                 Comparer<ITreeNode>.Create(Comparison));
 
             RootTreeGrid.ItemsSource = new TreeNodeCollection(_rootNode).ItemList;

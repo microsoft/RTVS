@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
@@ -62,11 +63,13 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
             IEnumerable<DebugEvaluationResult> children = _children.Value;
+
+            if (!RToolsSettings.Current.ShowDotPrefixedVariables) {
+                children = children.Where(v => v.Name != null && !v.Name.StartsWith("."));
+            }
+
             if (IsFrameEnvironment) {
-                // TODO: make hiding dotted members a user option in Tools -> Options and in Locals context menu.
-                children = children
-                    .Where(v => v.Name != null && !v.Name.StartsWith("."))
-                    .OrderBy(v => v.Name);
+                children = children.OrderBy(v => v.Name);
             }
 
             var infos = children.Select(v => new AD7Property(this, v).GetDebugPropertyInfo(dwRadix, dwFields));

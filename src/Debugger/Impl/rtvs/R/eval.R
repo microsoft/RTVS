@@ -270,7 +270,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
     # avoid presenting an infinitely recursive model (a vector of size 1 has the only child,
     # which is another vector of size 1 etc). However, we do want to show the only child if
     # it is named, so that the name is exposed.
-    if (n != 1 || !is.atomic(obj) || !(is.null(names[[1]]) || is.na(names[[1]]) || names[[1]] == '')) {
+    if (n != 1 || !is.atomic(obj) || (length(names) >= 1 && !(is.null(names[[1]]) || is.na(names[[1]]) || names[[1]] == ''))) {
       if (!is.null(count)) {
         n <- min(n, count);
         count <<- count - n;
@@ -285,7 +285,12 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
         # if this item corresponds to the first mention of that name - i.e. if we have
         # c(1,2,3), and names() is c('x','y','x'), then c[[1]] is named 'x', but c[[3]]
         # is effectively unnamed, because there's no way to address it by name.
-        name <- force_toString(names[[i]]);
+        name <- tryCatch({
+            names[[i]]
+        }, error = function(e) {
+            NULL
+        });
+        name <- force_toString(name);
         if (name != '' && match(name, names, -1) == i) {
           kind <- '$';
           # Named items can be accessed with '$' in lists, but other types require brackets.

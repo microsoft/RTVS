@@ -71,5 +71,7 @@ namespace Microsoft.R.Support.Test.Utility {
             get { return HelpBrowserType.Automatic; }
             set { }
         }
+
+        public bool ShowDotPrefixedVariables { get; set; }
     }
 }

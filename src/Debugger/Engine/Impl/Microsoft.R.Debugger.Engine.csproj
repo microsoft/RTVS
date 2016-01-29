@@ -71,6 +71,7 @@
     <Reference Include="Microsoft.VisualStudio.Shell.14.0">
       <Private>True</Private>
     </Reference>
+    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
@@ -91,6 +92,7 @@
     <Compile Include="AD7Thread.cs" />
     <Compile Include="DebuggerConstants.cs" />
     <Compile Include="DebuggerGuids.cs" />
+    <Compile Include="DTEDebuggerExtensions.cs" />
     <Compile Include="PortSupplier\RDebugPortPicker.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.DebugPort.cs" />
@@ -111,6 +113,10 @@
     <ProjectReference Include="..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
       <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
+      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
+      <Name>Microsoft.R.Support</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Impl\Microsoft.R.Debugger.csproj">
       <Project>{17e155bf-351c-4253-b9b1-36eeea35fe3c}</Project>

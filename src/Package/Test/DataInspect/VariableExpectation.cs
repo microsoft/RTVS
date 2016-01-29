@@ -5,7 +5,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     /// contains expectation for EvaluationWrapper
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class VariableExpectation {
+    public class VariableExpectation {
         public string Name { get; set; }
         public string Value { get; set; }
         public string Class { get; set; }

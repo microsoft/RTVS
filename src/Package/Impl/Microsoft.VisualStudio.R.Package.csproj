@@ -63,16 +63,9 @@
     <Compile Include="DataInspect\DataSource\IListProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
     <Compile Include="DataInspect\DataSource\ListToRange.cs" />
-    <Compile Include="DataInspect\DataSource\Page.cs" />
-    <Compile Include="DataInspect\DataSource\Page2D.cs" />
-    <Compile Include="DataInspect\DataSource\Page2DManager.cs" />
-    <Compile Include="DataInspect\DataSource\PageItem.cs" />
-    <Compile Include="DataInspect\DataSource\PageManager.cs" />
-    <Compile Include="DataInspect\DataSource\PageNumber.cs" />
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
     <Compile Include="DataInspect\Definitions\IVariableDataProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
-    <Compile Include="DataInspect\Elapsed.cs" />
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridParser.cs" />
@@ -88,10 +81,13 @@
       <DependentUpon>MatrixView.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataInspect\VisualGrid\PointChangedEventArgs.cs" />
+    <Compile Include="DataInspect\VisualGrid\ScrollCommand.cs" />
+    <Compile Include="DataInspect\VisualGrid\ScrollType.cs" />
     <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
+    <Compile Include="DataInspect\VisualGrid\ThumbTrack.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
-    <Compile Include="DataInspect\VariableChangedArgs.cs" />
+    <Compile Include="Debugger\Commands\ShowDotPrefixedVariablesCommand.cs" />
     <Compile Include="Definitions\IVisualComponentContainer.cs" />
     <Compile Include="Definitions\IVisualComponent.cs" />
     <Compile Include="Help\HelpWindowVisualComponent.cs" />

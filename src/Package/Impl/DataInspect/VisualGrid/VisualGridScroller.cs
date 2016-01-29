@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -67,9 +68,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scrollCommands.Add(new ScrollCommand(code, param));
         }
 
+        internal void EnqueueCommand(ScrollType code, double offset, ThumbTrack track) {
+            _scrollCommands.Add(new ScrollCommand(code, offset, track));
+        }
+
         internal void EnqueueCommand(ScrollType code, Size size) {
             _scrollCommands.Add(new ScrollCommand(code, size));
         }
+
+        private static ScrollType[] RepeatSkip = new ScrollType[] { ScrollType.SizeChange, ScrollType.SetHorizontalOffset, ScrollType.SetVerticalOffset, ScrollType.Refresh };
+        private static ScrollType[] RepeatAccum = new ScrollType[] { ScrollType.MouseWheel, ScrollType.LineUp, ScrollType.LineDown, ScrollType.PageUp, ScrollType.PageDown, ScrollType.LineLeft, ScrollType.LineRight, ScrollType.PageLeft, ScrollType.PageRight };
 
         private async Task ScrollCommandsHandler(CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
@@ -91,24 +99,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                 break;
                             }
 
+                            bool execute = true;
                             // if next command is same the current one, skip to next (new one) for optimization
-                            if (i < (batch.Count - 1)
-                                && ((batch[i].Code == ScrollType.SizeChange && batch[i + 1].Code == ScrollType.SizeChange)
-                                    || (batch[i].Code == ScrollType.SetHorizontalOffset && batch[i + 1].Code == ScrollType.SetHorizontalOffset)
-                                    || (batch[i].Code == ScrollType.SetVerticalOffset && batch[i + 1].Code == ScrollType.SetVerticalOffset)
-                                    || (batch[i].Code == ScrollType.Refresh && batch[i + 1].Code == ScrollType.Refresh))) {
-                                continue;
-                            } else {
+                            if (i < (batch.Count - 1)) {
+                                if (IsRepeating(batch, i, RepeatSkip)) {
+                                    execute = false;
+                                } else if (IsRepeating(batch, i, RepeatAccum)) {
+                                    batch[i + 1].Param = (double)batch[i + 1].Param + (double)batch[i].Param;
+                                    execute = false;
+                                }
+                            }
+
+                            if (execute) {
                                 await ExecuteCommandAsync(batch[i], cancellationToken);
                             }
                         }
                         batch.Clear();
                     }
                 } catch (Exception ex) {
-                    Trace.WriteLine(ex);
+                    Debug.Fail(ex.ToString());
                     batch.Clear();
                 }
             }
+        }
+
+        private bool IsRepeating(List<ScrollCommand> commands, int index, ScrollType[] scrollTypes) {
+            return commands[index].Code == commands[index + 1].Code && scrollTypes.Contains(commands[index].Code);
         }
 
         private const double LineDelta = 10.0;
@@ -117,43 +133,50 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task ExecuteCommandAsync(ScrollCommand cmd, CancellationToken token) {
             bool drawVisual = true;
             bool refresh = false;
+            bool suppress = false;
             switch (cmd.Code) {
                 case ScrollType.LineUp:
-                    Points.VerticalOffset -= LineDelta;
+                    Points.VerticalOffset -= LineDelta * (double)cmd.Param;
                     break;
                 case ScrollType.LineDown:
-                    Points.VerticalOffset += LineDelta;
+                    Points.VerticalOffset += LineDelta * (double)cmd.Param;
                     break;
                 case ScrollType.LineLeft:
-                    Points.HorizontalOffset -= LineDelta;
+                    Points.HorizontalOffset -= LineDelta * (double)cmd.Param;
                     break;
                 case ScrollType.LineRight:
-                    Points.HorizontalOffset += LineDelta;
+                    Points.HorizontalOffset += LineDelta * (double)cmd.Param;
                     break;
                 case ScrollType.PageUp:
-                    Points.VerticalOffset -= PageDelta;
+                    Points.VerticalOffset -= PageDelta * (double)cmd.Param;
                     break;
                 case ScrollType.PageDown:
-                    Points.VerticalOffset += PageDelta;
+                    Points.VerticalOffset += PageDelta * (double)cmd.Param;
                     break;
                 case ScrollType.PageLeft:
-                    Points.HorizontalOffset -= PageDelta;
+                    Points.HorizontalOffset -= PageDelta * (double)cmd.Param;
                     break;
                 case ScrollType.PageRight:
-                    Points.HorizontalOffset += PageDelta;
+                    Points.HorizontalOffset += PageDelta * (double)cmd.Param;
                     break;
-                case ScrollType.SetHorizontalOffset:
-                    Points.HorizontalOffset = cmd.Param;
+                case ScrollType.SetHorizontalOffset: {
+                        var args = (Tuple<double, ThumbTrack>)cmd.Param;
+                        Points.HorizontalOffset = args.Item1 * (Points.HorizontalExtent - Points.ViewportWidth);
+                        suppress = args.Item2 == ThumbTrack.Track;
+                    }
                     break;
-                case ScrollType.SetVerticalOffset:
-                    Points.VerticalOffset = cmd.Param;
+                case ScrollType.SetVerticalOffset: {
+                        var args = (Tuple<double, ThumbTrack>)cmd.Param;
+                        Points.VerticalOffset = args.Item1 * (Points.VerticalExtent - Points.ViewportHeight);
+                        suppress = args.Item2 == ThumbTrack.Track;
+                    }
                     break;
                 case ScrollType.MouseWheel:
-                    Points.VerticalOffset -= cmd.Param;
+                    Points.VerticalOffset -= (double)cmd.Param;
                     break;
                 case ScrollType.SizeChange:
-                    Points.ViewportWidth = cmd.Size.Width;
-                    Points.ViewportHeight = cmd.Size.Height;
+                    Points.ViewportWidth = ((Size)cmd.Param).Width;
+                    Points.ViewportHeight = ((Size)cmd.Param).Height;
                     refresh = false;
                     break;
                 case ScrollType.Refresh:
@@ -166,55 +189,56 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (drawVisual) {
-                await DrawVisualsAsync(refresh, token);
+                await DrawVisualsAsync(refresh, suppress, token);
             }
         }
 
-        private async Task DrawVisualsAsync(bool refresh, CancellationToken token) {
-            using (var elapsed = new Elapsed("PullDataAndDraw:")) {
+        private async Task DrawVisualsAsync(bool refresh, bool suppressNotification, CancellationToken token) {
+            ScrollDirection overflowDirection = ScrollDirection.None;
 
-                ScrollDirection overflowDirection = ScrollDirection.None;
+            Rect visualViewport = new Rect(
+                    Points.HorizontalOffset,
+                    Points.VerticalOffset,
+                    Points.ViewportWidth,
+                    Points.ViewportHeight);
 
-                Rect visualViewport = new Rect(
-                        Points.HorizontalOffset,
-                        Points.VerticalOffset,
-                        DataGrid.RenderSize.Width,
-                        DataGrid.RenderSize.Height);
-
-                GridRange newViewport = Points.ComputeDataViewport(visualViewport, ref overflowDirection);
-
-                if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
-                    Trace.WriteLine("Either row or column data viewport is empty");
-                    return;
-                }
-
-                // adjust Offset in case of overflow
-                if (overflowDirection.HasFlag(ScrollDirection.Horizontal)) {
-                    Points.HorizontalOffset = Points.HorizontalExtent - visualViewport.Width;
-                } else if (overflowDirection.HasFlag(ScrollDirection.Vertical)) {
-                    Points.VerticalOffset = Points.VerticalExtent - visualViewport.Height;
-                }
-
-                // pull data from provider
-                var data = await DataProvider.GetAsync(newViewport);
-                if (!data.Grid.Range.Contains(newViewport)
-                    || !data.ColumnHeader.Range.Contains(newViewport.Columns)
-                    || !data.RowHeader.Range.Contains(newViewport.Rows)) {
-                    throw new InvalidOperationException("Couldn't acquire enough data");
-                }
-
-                // actual drawing runs in UI thread
-                await Task.Factory.StartNew(
-                    () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport),
-                    token,
-                    TaskCreationOptions.None,
-                    _ui);
+            GridRange newViewport = Points.ComputeDataViewport(visualViewport, ref overflowDirection);
+            if (LayoutDoubleUtil.AreClose(Points.HorizontalOffset + Points.ViewportWidth, Points.HorizontalExtent)) {
+                overflowDirection |= ScrollDirection.Horizontal;
             }
+            if (LayoutDoubleUtil.AreClose(Points.VerticalOffset + Points.ViewportHeight, Points.VerticalExtent)) {
+                overflowDirection |= ScrollDirection.Vertical;
+            }
+
+            if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
+                return;
+            }
+
+            // pull data from provider
+            var data = await DataProvider.GetAsync(newViewport);
+            if (!data.Grid.Range.Contains(newViewport)
+                || !data.ColumnHeader.Range.Contains(newViewport.Columns)
+                || !data.RowHeader.Range.Contains(newViewport.Rows)) {
+                throw new InvalidOperationException("Couldn't acquire enough data");
+            }
+
+            // actual drawing runs in UI thread
+            await Task.Factory.StartNew(
+                () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport, suppressNotification),
+                token,
+                TaskCreationOptions.None,
+                _ui);
         }
 
-        private void DrawVisuals(GridRange dataViewport, IGridData<string> data, bool refresh,
-            ScrollDirection overflowDirection, Rect visualViewport) {
-            using (var deferal = Points.DeferChangeNotification()) {
+        private void DrawVisuals(
+            GridRange dataViewport,
+            IGridData<string> data,
+            bool refresh,
+            ScrollDirection overflowDirection,
+            Rect visualViewport,
+            bool suppressNotification) {
+
+            using (var deferal = Points.DeferChangeNotification(suppressNotification)) {
                 // measure points
                 ColumnHeader?.MeasurePoints(
                     Points.GetAccessToPoints(ColumnHeader.ScrollDirection),
@@ -246,49 +270,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 ColumnHeader?.ArrangeVisuals(Points.GetAccessToPoints(ColumnHeader.ScrollDirection));
                 RowHeader?.ArrangeVisuals(Points.GetAccessToPoints(RowHeader.ScrollDirection));
                 DataGrid?.ArrangeVisuals(Points.GetAccessToPoints(DataGrid.ScrollDirection));
+
+                Points.ViewportHeight = DataGrid.RenderSize.Height;
+                Points.ViewportWidth = DataGrid.RenderSize.Width;
             }
         }
-    }
-
-    internal enum ScrollType {
-        Invalid,
-        LineUp,
-        LineDown,
-        LineLeft,
-        LineRight,
-        PageUp,
-        PageDown,
-        PageLeft,
-        PageRight,
-        SetHorizontalOffset,
-        SetVerticalOffset,
-        MouseWheel,
-        SizeChange,
-        Refresh,
-    }
-
-    internal struct ScrollCommand {
-        private static Lazy<ScrollCommand> _empty = new Lazy<ScrollCommand>(() => new ScrollCommand(ScrollType.Invalid, 0));
-        public static ScrollCommand Empty { get { return _empty.Value; } }
-
-        internal ScrollCommand(ScrollType code, double param) {
-            Debug.Assert(code != ScrollType.SizeChange);
-
-            Code = code;
-            Param = param;
-            Size = Size.Empty;
-        }
-
-        internal ScrollCommand(ScrollType code, Size size) {
-            Code = code;
-            Param = double.NaN;
-            Size = size;
-        }
-
-        public ScrollType Code { get; set; }
-
-        public double Param { get; set; }
-
-        public Size Size { get; set; }
     }
 }

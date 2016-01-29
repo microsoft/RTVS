@@ -32,8 +32,12 @@ grid.data <- function(x, rows, cols) {
     stop('grid.data requires two dimensional object');
   }
 
-  x0 <- as.data.frame(x[rows, cols]);
-  x1 <- apply(x0, 2, grid.format);
+  if ((length(rows) == 1) || (length(cols) == 1)) {
+      x1 <- grid.format(x[rows, cols]);
+  } else {
+      x0 <- as.data.frame(x[rows, cols]);
+      x1 <- apply(x0, 2, grid.format);
+  }
 
   vp<-list();
 
