@@ -16,8 +16,8 @@
     <Icon Id ="ControlPanelIcon" SourceFile="RFile.ico" />
     <Property Id="ARPPRODUCTICON" Value="ControlPanelIcon" />
 
-    <MajorUpgrade AllowDowngrades="no" RemoveFeatures="ALL" 
-                  Schedule="afterInstallInitialize" 
+    <MajorUpgrade AllowDowngrades="no" RemoveFeatures="ALL"
+                  Schedule="afterInstallInitialize"
                   DowngradeErrorMessage="A later version of $(var.ProductName) is already installed. Setup will now exit."/>
 
     <!-- Uninstall Current MSI -->
@@ -46,7 +46,7 @@
     </Feature>
 
     <Binary Id="CustomActions" SourceFile="$(var.OutDir)\SetupCustomActions.CA.dll" />
-    
+
     <CustomAction Id='VS2015UpdateConfiguration'
               Directory='CommonIdeFolder'
               Execute="deferred"
@@ -64,7 +64,7 @@
     <CustomAction Id='AssignVsVersion'
                   Property='VsVersion'
                   Value='$(var.VSRegVer)'/>
-    
+
     <CustomAction Id='DSProfilePrompt'
           BinaryKey='CustomActions'
           DllEntry='DSProfilePromptAction'
@@ -125,6 +125,10 @@
                       <Directory Id="RUS_Satellites" Name="ru" />
                       <Directory Id="TRK_Satellites" Name="tr" />
                       <?endif?>
+
+                      <Directory Id="TemplatesFolder" Name="Templates">
+                        <Directory Id="NewItemTemplatesFolder" Name="NewItem" />
+                      </Directory>
 
                     </Directory>
                   </Directory>
