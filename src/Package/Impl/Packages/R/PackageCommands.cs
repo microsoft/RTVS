@@ -48,6 +48,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepIntoCommand(rSessionProvider),
 
                 new InterruptRCommand(rSessionProvider),
+                new ResetReplCommand(),
 
                 new ImportDataSetTextFileCommand(),
                 new ImportDataSetUrlCommand(),
