@@ -2,6 +2,8 @@
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Plots;
@@ -42,9 +44,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async Task ShowHelp(string url) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
-            var container = pane as IVisualComponentContainer<IHelpWindowVisualComponent>;
-            container.Component.Navigate(url);
+            if (RToolsSettings.Current.HelpBrowser != HelpBrowserType.External) {
+                HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
+                var container = pane as IVisualComponentContainer<IHelpWindowVisualComponent>;
+                container.Component.Navigate(url);
+            }
         }
 
         /// <summary>
