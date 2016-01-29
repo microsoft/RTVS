@@ -1,4 +1,5 @@
 using System.ComponentModel.Composition;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -18,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView wpfTextView) {
-            return wpfTextView.Properties.GetOrCreateSingletonProperty(() => new HistoryWindowPaneMouseProcessor(wpfTextView, _historyProvider));
+            return wpfTextView.Properties.GetOrCreateSingletonProperty(() => new HistoryWindowPaneMouseProcessor(wpfTextView, _historyProvider, EditorShell.Current));
         }
     }
 }

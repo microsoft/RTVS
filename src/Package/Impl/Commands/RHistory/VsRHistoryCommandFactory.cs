@@ -40,7 +40,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, _contentTypeRegistry, _textViewTracker);
 
             return new ICommand[] {
-                new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int)RContextMenuId.RHistory),
                 new LoadHistoryCommand(textView, _historyProvider),
                 new SaveHistoryCommand(textView, _historyProvider),
                 sendToReplCommand,
@@ -49,6 +48,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                 new DeleteAllHistoryEntriesCommand(textView, _historyProvider),
                 new HistoryWindowVsStd2KCmdIdReturnCommand(textView, sendToReplCommand, sendToSourceCommand),
                 new HistoryWindowVsStd97CmdIdSelectAllCommand(textView, _historyProvider),
+                new HistoryWindowVsStd2KCmdIdUp(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdDown(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdHome(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdEnd(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdPageUp(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdPageDown(textView, _historyProvider), 
                 new ToggleMultilineHistorySelectionCommand(textView, _historyProvider, RToolsSettings.Current), 
                 new CopySelectedHistoryCommand(textView, _historyProvider, _editorOperationsService)
             };
