@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.Commands {
         }
 
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             Checked = _settings.ShowDotPrefixedVariables;
 
             // Only show it in the debugger context menu when debugging R code to avoid clutter.
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.Commands {
             Enabled = Visible = debugger.CurrentStackFrame?.Language == RContentTypeDefinition.LanguageName;
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
            _settings.ShowDotPrefixedVariables = !_settings.ShowDotPrefixedVariables;
             VsAppShell.Current.GetGlobalService<DTE>().Debugger.RefreshVariableViews();
         }
