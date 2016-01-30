@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 var window = Create(instanceId);
                 window.Show(focus);
             } else {
-                ReplWindow.Show();
+                ReplWindow.ShowWindow();
             }
         }
     }

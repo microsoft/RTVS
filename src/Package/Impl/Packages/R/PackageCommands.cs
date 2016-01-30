@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
@@ -49,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepOutCommand(rSessionProvider),
                 new StepIntoCommand(rSessionProvider),
 
-                new InterruptRCommand(rSessionProvider, debugger),
+                new InterruptRCommand(ReplWindow.Current, rSessionProvider, debugger),
                 new ResetReplCommand(),
 
                 new ImportDataSetTextFileCommand(),

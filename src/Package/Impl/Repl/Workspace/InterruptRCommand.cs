@@ -7,12 +7,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class InterruptRCommand : PackageCommand {
+        private IReplWindow _replWindow;
         private readonly IRSession _session;
         private IVsDebugger _debugger;
         private volatile bool _enabled;
 
-        public InterruptRCommand(IRSessionProvider rSessionProvider, IVsDebugger debugger) : 
+        public InterruptRCommand(IReplWindow replWindow, IRSessionProvider rSessionProvider, IVsDebugger debugger) : 
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
+            _replWindow = replWindow;
             _debugger = debugger;
             _session = rSessionProvider.GetInteractiveWindowRSession();
             _session.Disconnected += OnDisconnected;
@@ -36,17 +38,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             DBGMODE[] mode = new DBGMODE[1];
             _debugger.GetMode(mode);
 
-            if (ReplWindow.Current.IsActive) {
+            if (_replWindow.IsActive) {
                 Visible = true;
                 Enabled = _session.IsHostRunning && _enabled && mode[0] != DBGMODE.DBGMODE_Break;
             } else {
                 Visible = false;
+                Enabled = false;
             }
         }
 
-        internal override void Handle() {;
+        internal override void Handle() {
             if (_enabled) {
-                ReplWindow.Current.ClearPendingInputs();
+                _replWindow.ClearPendingInputs();
                 _session.CancelAllAsync().DoNotWait();
                 _enabled = false;
             }

@@ -207,6 +207,7 @@
     <Compile Include="ToolWindowPaneMock.cs" />
     <Compile Include="VsCodeWindowMock.cs" />
     <Compile Include="VSConstants.cs" />
+    <Compile Include="VsDebuggerMock.cs" />
     <Compile Include="VsEditorAdaptersFactoryServiceMock.cs" />
     <Compile Include="VsImageMonikerImageListMock.cs" />
     <Compile Include="VsImageServiceMock.cs" />

@@ -201,9 +201,10 @@
     <Compile Include="Repl\Debugger\StepOverCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerWrappedCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommand.cs" />
+    <Compile Include="Repl\Definitions\IReplWindow.cs" />
     <Compile Include="Repl\InteractiveWindowRSessionHelper.cs" />
-    <Compile Include="Repl\IRInteractive.cs" />
-    <Compile Include="Repl\IRInteractiveProvider.cs" />
+    <Compile Include="Repl\Definitions\IRInteractive.cs" />
+    <Compile Include="Repl\Definitions\IRInteractiveProvider.cs" />
     <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
@@ -303,7 +304,7 @@
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Commands\SendToReplCommand.cs" />
-    <Compile Include="Repl\IVsInteractiveWindowProvider.cs" />
+    <Compile Include="Repl\Definitions\IVsInteractiveWindowProvider.cs" />
     <Compile Include="Repl\RInteractiveEvaluator.cs" />
     <Compile Include="Repl\RInteractiveWindowProvider.cs" />
     <Compile Include="Resources.Designer.cs">
