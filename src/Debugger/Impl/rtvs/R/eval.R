@@ -23,8 +23,8 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
   if (field('repr')) {
     repr <- new.env();
     
-    if (field('repr.dput')) {
-      repr$dput <- paste0(collapse = '', NA_if_error(
+    if (field('repr.deparse')) {
+      repr$deparse <- paste0(collapse = '', NA_if_error(
         if (is.na(repr_max_length))
             deparse(obj)
         else
