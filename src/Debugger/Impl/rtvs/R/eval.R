@@ -24,7 +24,11 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
     repr <- new.env();
     
     if (field('repr.dput')) {
-      repr$dput <- NA_if_error(dput_str(obj, repr_max_length, 0x100));
+      repr$dput <- paste0(collapse = '', NA_if_error(
+        if (is.na(repr_max_length))
+            deparse(obj)
+        else
+            deparse(obj, width.cutoff = repr_max_length, nlines = 1)))
     }
     
     if (field('repr.toString')) {
@@ -180,14 +184,14 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
 
       item_expr <-
         if (expr == 'base::environment()') {
-          dput_symbol(name)
+          deparse_symbol(name)
         } else {
-          paste0(expr, '$', dput_symbol(name), collapse = '')
+          paste0(expr, '$', deparse_symbol(name), collapse = '')
         };
 
       if (!is.null(code)) {
         # It's a promise - we don't want to force it as it could affect the debugged code.
-        value <- list(promise = dput_str(code), expression = item_expr);
+        value <- list(promise = deparse(code), expression = item_expr);
       } else if (bindingIsActive(name, obj)) {
         # It's an active binding - we don't want to read it to avoid inadvertently changing program state.
         value <- list(active_binding = TRUE, expression = item_expr);
@@ -237,11 +241,11 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
       
       # For S4 objects, slots can be accessed with '@'. For other objects, we have to
       # use slot(). Still, always use '@' as accessor name to show to the user.
-      accessor <- paste0('@', dput_symbol(name), collapse = '');
+      accessor <- paste0('@', deparse_symbol(name), collapse = '');
       if (is_S4) {
         slot_expr <- paste0('(', expr, ')', accessor, collapse = '')
       } else {
-        slot_expr <- paste0('methods::slot((', expr, '), ', dput_str(name), ')', collapse = '')
+        slot_expr <- paste0('methods::slot((', expr, '), ', deparse(name), ')', collapse = '')
       }
       
       value <- eval_and_describe(slot_expr, environment(), '@', fields, slot(obj, name), repr_max_length);
@@ -295,9 +299,9 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
           kind <- '$';
           # Named items can be accessed with '$' in lists, but other types require brackets.
           if (is.list(obj)) {
-            accessor <- paste0('$', dput_symbol(name), collapse = '');
+            accessor <- paste0('$', deparse_symbol(name), collapse = '');
           } else {
-            accessor <- paste0('[[', dput_str(name), ']]', collapse = '');
+            accessor <- paste0('[[', deparse(name), ']]', collapse = '');
           }
         }
         
