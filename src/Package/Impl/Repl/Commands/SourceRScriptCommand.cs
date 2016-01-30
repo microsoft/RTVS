@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
-using Microsoft.Common.Core;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;

@@ -226,7 +226,6 @@
     <Compile Include="Mocks\ReplWindowMock.cs" />
     <Compile Include="Plots\PlotCommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Commands\CommandFactoryTest.cs" />
     <Compile Include="Commands\ReplCommandTest.cs" />
     <Compile Include="Repl\CurrentDirectoryTest.cs" />
     <Compile Include="Shell\VsTestCompositionCatalog.cs" />

@@ -114,11 +114,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
-            public class ReplAttribute : CategoryAttribute {
-                public ReplAttribute() : base("R.Repl") { }
-            }
-
-            [ExcludeFromCodeCoverage]
             public class SettingsAttribute : CategoryAttribute {
                 public SettingsAttribute() : base("R.Settings") {}
             }
