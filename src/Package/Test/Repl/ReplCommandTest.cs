@@ -11,7 +11,6 @@ using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Mocks;
@@ -114,12 +113,5 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             command.Invoke(group, id, null, ref o);
             rw.EnqueuedCode.Should().Be("x");
         }
-
-        [Test]
-        [Category.Repl]
-        public void SourceRScript() {
-            var command = new SourceRScriptCommand(VsAppShell.Current.CompositionService);
-            command.
-        }
-        }
     }
+}

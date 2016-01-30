@@ -193,6 +193,7 @@
     <Compile Include="ConnectionPointMock.cs" />
     <Compile Include="EnumWindowFramesMock.cs" />
     <Compile Include="ImageHandleMock.cs" />
+    <Compile Include="InteractiveEvaluatorMock.cs" />
     <Compile Include="InteractiveWindowMock.cs" />
     <Compile Include="MenuCommandServiceMock.cs" />
     <Compile Include="OleComponentManagerMock.cs" />

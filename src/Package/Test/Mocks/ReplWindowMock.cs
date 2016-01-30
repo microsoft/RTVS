@@ -42,7 +42,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
         }
 
         public void ReplaceCurrentExpression(string replaceWith) {
-            throw new NotImplementedException();
+            ExecutedCode = replaceWith;
+            EnqueuedCode = replaceWith;
         }
     }
 }

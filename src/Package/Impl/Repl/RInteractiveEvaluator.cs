@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.History;
-using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 
@@ -37,13 +35,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public async Task<ExecutionResult> InitializeAsync() {
             try {
-                await Session.StartHostAsync(new RHostStartupInfo {
-                    Name = "REPL",
-                    RBasePath = _toolsSettings.RBasePath,
-                    RCommandLineArguments = _toolsSettings.RCommandLineArguments,
-                    CranMirrorName = _toolsSettings.CranMirror
-                });
-
+                if (!Session.IsHostRunning) {
+                    await Session.StartHostAsync(new RHostStartupInfo {
+                        Name = "REPL",
+                        RBasePath = _toolsSettings.RBasePath,
+                        RCommandLineArguments = _toolsSettings.RCommandLineArguments,
+                        CranMirrorName = _toolsSettings.CranMirror
+                    });
+                }
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);

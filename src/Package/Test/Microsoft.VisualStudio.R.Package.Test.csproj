@@ -226,8 +226,10 @@
     <Compile Include="Mocks\ReplWindowMock.cs" />
     <Compile Include="Plots\PlotCommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Commands\ReplCommandTest.cs" />
+    <Compile Include="Repl\ReplCommandTest.cs" />
     <Compile Include="Repl\CurrentDirectoryTest.cs" />
+    <Compile Include="Repl\ReplHistoryTest.cs" />
+    <Compile Include="Repl\RInteractiveEvaluatorTest.cs" />
     <Compile Include="Shell\VsTestCompositionCatalog.cs" />
     <Compile Include="Cran\CranMirrorListTest.cs" />
     <Compile Include="DataInspect\ObservableTreeNodeTest.cs" />
