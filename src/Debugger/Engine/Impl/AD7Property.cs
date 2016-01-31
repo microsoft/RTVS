@@ -22,6 +22,7 @@ namespace Microsoft.R.Debugger.Engine {
             DebugEvaluationResultFields.Length |
             DebugEvaluationResultFields.SlotCount |
             DebugEvaluationResultFields.AttrCount |
+            DebugEvaluationResultFields.Dim |
             DebugEvaluationResultFields.Flags;
 
         private IDebugProperty2 IDebugProperty2 => this;
@@ -53,7 +54,7 @@ namespace Microsoft.R.Debugger.Engine {
                 ?.GetResultOnUIThread()
                 ?? new DebugEvaluationResult[0]);
 
-            _reprToString = Lazy.Create(() => 
+            _reprToString = Lazy.Create(() =>
                 (EvaluationResult
                  .EvaluateAsync(DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprToString)
                  .GetResultOnUIThread()
@@ -154,12 +155,23 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProperty3.GetCustomViewerCount(out uint pcelt) {
-            pcelt = 0;
+            pcelt = StackFrame.Engine.GridViewProvider?.CanShowDataGrid(EvaluationResult) == true ? 1u : 0u;
             return VSConstants.S_OK;
         }
 
         int IDebugProperty3.GetCustomViewerList(uint celtSkip, uint celtRequested, DEBUG_CUSTOM_VIEWER[] rgViewers, out uint pceltFetched) {
-            pceltFetched = 0;
+            if (celtSkip > 0 || celtRequested == 0) {
+                pceltFetched = 0;
+            } else {
+                pceltFetched = 1;
+                rgViewers[0] = new DEBUG_CUSTOM_VIEWER {
+                    bstrMenuName = "Grid Visualizer",
+                    bstrMetric = "CustomViewerCLSID",
+                    guidLang = DebuggerGuids.LanguageGuid,
+                    guidVendor = DebuggerGuids.VendorGuid,
+                    dwID = 0
+                };
+            }
             return VSConstants.S_OK;
         }
 
@@ -297,12 +309,15 @@ namespace Microsoft.R.Debugger.Engine {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_METHOD | enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_TYPE_VIRTUAL;
                 }
 
+                if (StackFrame.Engine.GridViewProvider?.CanShowDataGrid(EvaluationResult) == true) {
+                    dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_CUSTOM_VIEWER;
+                }
+
                 if (valueResult?.HasChildren == true || valueResult?.HasAttributes == true) {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_OBJ_IS_EXPANDABLE;
                 }
 
                 if (valueResult != null) {
-                    dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_RAW_STRING;
                     switch (valueResult.TypeName) {
                         case "logical":
                             dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN;
@@ -312,6 +327,12 @@ namespace Microsoft.R.Debugger.Engine {
                             break;
                         case "closure":
                             dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_METHOD;
+                            break;
+                        case "character":
+                        case "symbol":
+                            if (valueResult.Length == 1) {
+                                dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_RAW_STRING;
+                            }
                             break;
                     }
                 } else if (errorResult != null) {

@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="AD7BoundBreakpoint.cs" />
     <Compile Include="AD7BreakpointResolution.cs" />
+    <Compile Include="AD7CustomViewer.cs" />
     <Compile Include="AD7Document.cs" />
     <Compile Include="AD7DocumentContext.cs" />
     <Compile Include="AD7Engine.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="DebuggerConstants.cs" />
     <Compile Include="DebuggerGuids.cs" />
     <Compile Include="DTEDebuggerExtensions.cs" />
+    <Compile Include="IDebugGridViewProvider.cs" />
     <Compile Include="PortSupplier\RDebugPortPicker.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.DebugPort.cs" />
