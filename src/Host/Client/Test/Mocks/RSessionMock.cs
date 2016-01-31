@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         }
 
         public void Dispose() {
-            StopHostAsync().Wait();
+            StopHostAsync().Wait(5000);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 

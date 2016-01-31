@@ -22,7 +22,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror
-            }, 10000).Wait();
+            }, 50000).Wait();
         }
 
         public void Dispose() {
@@ -38,7 +38,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
             if (disposing) {
                 if (Session != null) {
-                    Session.StopHostAsync().Wait();
+                    Session.StopHostAsync().Wait(5000);
                     Session.Dispose();
                     Session = null;
                 }

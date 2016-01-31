@@ -104,6 +104,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         protected override void Dispose(bool disposing) {
+            DoIdle(2000);
+
             base.Dispose(disposing);
 
             if (disposing) {

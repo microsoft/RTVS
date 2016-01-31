@@ -359,8 +359,6 @@
     <Compile Include="Utilities\ActiveWpfTextViewTracker.cs" />
     <Compile Include="Workspace\VsFileInfo.cs" />
     <Compile Include="Workspace\IVsWorkspaceItem.cs" />
-    <Compile Include="Workspace\VsFile.cs" />
-    <Compile Include="Workspace\VsFolder.cs" />
     <Compile Include="Workspace\VsWorkspace.cs" />
     <Compile Include="Workspace\VsWorkspaceItem.cs" />
     <Compile Include="Wpf\Commands.cs" />

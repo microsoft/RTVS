@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.R.Editor.ContentType;
+﻿using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.Repl;
