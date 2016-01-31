@@ -223,7 +223,7 @@
     <Compile Include="DataInspect\EvaluationWrapperTest.cs" />
     <Compile Include="DataInspect\VariableExpectation.cs" />
     <Compile Include="DataInspect\VariableRHostScript.cs" />
-    <Compile Include="Debug\DebugSessionTest.cs" />
+    <Compile Include="Debugger\BreakpointsTest.cs" />
     <Compile Include="Mocks\ReplWindowMock.cs" />
     <Compile Include="Plots\PlotCommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
