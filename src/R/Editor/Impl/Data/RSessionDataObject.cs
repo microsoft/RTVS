@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Data {
                 var valueEvaluation = (DebugValueEvaluationResult)DebugEvaluation;
 
                 Value = GetValue(valueEvaluation).Trim();
-                ValueDetail = valueEvaluation.Representation.DPut;
+                ValueDetail = valueEvaluation.Representation.Deparse;
                 TypeName = valueEvaluation.TypeName;
                 var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
                 Class = string.Join(", ", escaped); // TODO: escape ',' in class names

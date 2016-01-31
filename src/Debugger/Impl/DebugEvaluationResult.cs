@@ -16,10 +16,10 @@ namespace Microsoft.R.Debugger {
         Expression = 1 << 1,
         Kind = 1 << 2,
         Repr = 1 << 3,
-        ReprDPut = 1 << 4,
+        ReprDeparse = 1 << 4,
         ReprToString = 1 << 5,
         ReprStr = 1 << 6,
-        ReprAll = Repr | ReprDPut | ReprStr | ReprToString,
+        ReprAll = Repr | ReprDeparse | ReprStr | ReprToString,
         TypeName = 1 << 7,
         Classes = 1 << 8,
         Length = 1 << 9,
@@ -37,7 +37,7 @@ namespace Microsoft.R.Debugger {
             [DebugEvaluationResultFields.Expression] = "expression",
             [DebugEvaluationResultFields.Kind] = "kind",
             [DebugEvaluationResultFields.Repr] = "repr",
-            [DebugEvaluationResultFields.ReprDPut] = "repr.dput",
+            [DebugEvaluationResultFields.ReprDeparse] = "repr.deparse",
             [DebugEvaluationResultFields.ReprToString] = "repr.toString",
             [DebugEvaluationResultFields.ReprStr] = "repr.str",
             [DebugEvaluationResultFields.TypeName] = "type",
@@ -144,12 +144,12 @@ namespace Microsoft.R.Debugger {
     }
 
     public struct DebugValueEvaluationResultRepresentation {
-        public readonly string DPut;
+        public readonly string Deparse;
         public readonly new string ToString;
         public readonly string Str;
 
         public DebugValueEvaluationResultRepresentation(JObject repr) {
-            DPut = repr.Value<string>("dput");
+            Deparse = repr.Value<string>("deparse");
             ToString = repr.Value<string>("toString");
             Str = repr.Value<string>("str");
         }
@@ -277,7 +277,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override string ToString() {
-            return Invariant($"VALUE: {TypeName} {Representation.DPut}");
+            return Invariant($"VALUE: {TypeName} {Representation.Deparse}");
         }
     }
 

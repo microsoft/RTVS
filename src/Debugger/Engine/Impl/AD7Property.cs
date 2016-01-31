@@ -16,7 +16,7 @@ namespace Microsoft.R.Debugger.Engine {
             DebugEvaluationResultFields.Expression |
             DebugEvaluationResultFields.Kind |
             DebugEvaluationResultFields.Repr |
-            DebugEvaluationResultFields.ReprDPut |
+            DebugEvaluationResultFields.ReprDeparse |
             DebugEvaluationResultFields.TypeName |
             DebugEvaluationResultFields.Classes |
             DebugEvaluationResultFields.Length |
@@ -279,7 +279,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE)) {
                 if (valueResult != null) {
                     // TODO: handle radix
-                    dpi.bstrValue = valueResult.Representation.DPut;
+                    dpi.bstrValue = valueResult.Representation.Deparse;
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
                 } else if (promiseResult != null) {
                     dpi.bstrValue = promiseResult.Code;
@@ -306,7 +306,7 @@ namespace Microsoft.R.Debugger.Engine {
                     switch (valueResult.TypeName) {
                         case "logical":
                             dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN;
-                            if (valueResult.Representation.DPut == "TRUE") {
+                            if (valueResult.Representation.Deparse == "TRUE") {
                                 dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN_TRUE;
                             }
                             break;
