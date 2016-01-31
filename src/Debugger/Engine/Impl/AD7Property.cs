@@ -165,7 +165,7 @@ namespace Microsoft.R.Debugger.Engine {
             } else {
                 pceltFetched = 1;
                 rgViewers[0] = new DEBUG_CUSTOM_VIEWER {
-                    bstrMenuName = "Grid View",
+                    bstrMenuName = "Grid Visualizer",
                     bstrMetric = "CustomViewerCLSID",
                     guidLang = DebuggerGuids.LanguageGuid,
                     guidVendor = DebuggerGuids.VendorGuid,
