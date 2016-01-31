@@ -4,24 +4,22 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Script;
-using Microsoft.R.Debugger;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.R.Package.Repl;
-using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Xunit;
 
-namespace Microsoft.VisualStudio.R.Package.Test.Images {
+namespace Microsoft.R.Debugger.Test {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class BreakpointsTest {
         [Test]
         [Category.R.Debugger]
         public async Task SetRemoveBreakpoint() {
-            using (new VsRHostScript()) {
-                var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                IRSession session = sessionProvider.GetInteractiveWindowRSession();
+            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            using (new RHostScript(sessionProvider)) {
+                IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
                 using (var debugSession = new DebugSession(session)) {
                     string content =
 @"x <- 1
@@ -55,9 +53,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Images {
         [Test]
         [Category.R.Debugger]
         public async Task HitBreakpoint() {
-            using (new VsRHostScript()) {
-                var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                IRSession session = sessionProvider.GetInteractiveWindowRSession();
+            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            using (new RHostScript(sessionProvider)) {
+                IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
                 using (var debugSession = new DebugSession(session)) {
                     string content =
 @"x <- 1
@@ -76,6 +74,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Images {
                         };
 
                         await sf.Source(session);
+
+                        // Allow pending thread transitions and async/awaits to complete
                         EventsPump.DoEvents(3000);
 
                         eventCount.Should().Be(1);
