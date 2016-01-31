@@ -63,6 +63,7 @@
     <Compile Include="DataInspect\DataSource\IListProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
     <Compile Include="DataInspect\DataSource\ListToRange.cs" />
+    <Compile Include="DataInspect\DebugGridViewProvider.cs" />
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
     <Compile Include="DataInspect\Definitions\IVariableDataProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
@@ -256,7 +257,7 @@
     <Compile Include="Packages\ProvideDebugEngineAttribute.cs" />
     <Compile Include="Packages\ProvideDebugExceptionAttribute.cs" />
     <Compile Include="Packages\ProvideDebugLanguageAttribute.cs" />
-    <Compile Include="Packages\ProvideDebugPortPickerAttribute.cs" />
+    <Compile Include="Packages\ProvideComClassAttribute.cs" />
     <Compile Include="Packages\ProvideDebugPortSupplierAttribute.cs" />
     <Compile Include="Packages\ShowBraceCompletionAttribute.cs" />
     <Compile Include="DataInspect\VariableWindowPane.cs" />
