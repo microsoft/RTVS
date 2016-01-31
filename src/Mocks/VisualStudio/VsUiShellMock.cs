@@ -35,8 +35,13 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         public int FindToolWindow(uint grfFTW, ref Guid rguidPersistenceSlot, out IVsWindowFrame ppWindowFrame) {
             VsWindowFrameMock mock;
             _frames.TryGetValue(rguidPersistenceSlot, out mock);
-            ppWindowFrame = mock;
-            return mock != null ? VSConstants.S_OK : VSConstants.E_FAIL;
+            if (mock == null && grfFTW == (uint)__VSFINDTOOLWIN.FTW_fForceCreate) {
+                Guid g = Guid.Empty;
+                CreateToolWindow(0, 1, null, ref g, ref rguidPersistenceSlot, ref g, null, string.Empty, null, out ppWindowFrame);
+            } else {
+                ppWindowFrame = mock;
+            }
+            return ppWindowFrame != null ? VSConstants.S_OK : VSConstants.E_FAIL;
         }
 
         public int FindToolWindowEx(uint grfFTW, ref Guid rguidPersistenceSlot, uint dwToolWinId, out IVsWindowFrame ppWindowFrame) {

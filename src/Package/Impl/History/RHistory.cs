@@ -330,7 +330,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         public SnapshotSpan DeselectHistoryEntry(int lineNumber) {
             var entry = GetHistoryEntryFromLineNumber(lineNumber);
-            if (!entry.IsSelected) {
+            if (entry.IsSelected) {
                 entry.IsSelected = false;
                 OnSelectionChanged();
             }

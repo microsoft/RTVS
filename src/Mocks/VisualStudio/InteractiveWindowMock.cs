@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -33,27 +32,15 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
 
         public IInteractiveEvaluator Evaluator {
             get {
-                throw new NotImplementedException();
+                return new InteractiveEvaluatorMock(this);
             }
         }
 
-        public bool IsInitializing {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public bool IsInitializing => false;
 
-        public bool IsResetting {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public bool IsResetting => false;
 
-        public bool IsRunning {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public bool IsRunning => true;
 
         public IInteractiveWindowOperations Operations {
             get {
@@ -61,11 +48,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
             }
         }
 
-        public ITextBuffer OutputBuffer {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public ITextBuffer OutputBuffer => _textBuffer;
 
         public TextWriter OutputWriter {
             get {
@@ -90,15 +73,12 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public void Close() {
-            throw new NotImplementedException();
         }
 
         public void Dispose() {
-            throw new NotImplementedException();
         }
 
         public void FlushOutput() {
-            throw new NotImplementedException();
         }
 
         public System.Threading.Tasks.Task<ExecutionResult> InitializeAsync() {
@@ -122,19 +102,20 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public Span Write(string text) {
-            throw new NotImplementedException();
+            InsertCode(text);
+            return new Span(0, _textBuffer.CurrentSnapshot.Length);
         }
 
         public Span WriteError(string text) {
-            throw new NotImplementedException();
+            return Write(text);
         }
 
         public Span WriteErrorLine(string text) {
-            throw new NotImplementedException();
+            return Write(text);
         }
 
         public Span WriteLine(string text) {
-            throw new NotImplementedException();
+            return Write(text);
         }
     }
 }

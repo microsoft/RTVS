@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Support.Settings;
-using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
@@ -13,7 +13,10 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public RHostScript(IRSessionProvider sessionProvider, IRHostClientApp clientApp = null) {
             SessionProvider = sessionProvider;
+
             Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, clientApp ?? new RHostClientTestApp());
+            Session.IsHostRunning.Should().BeFalse();
+
             Session.StartHostAsync(new RHostStartupInfo {
                 Name = "RHostScript",
                 RBasePath = RToolsSettings.Current.RBasePath,

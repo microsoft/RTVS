@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
-using Microsoft.Common.Core;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -21,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         [Import]
         private IContentTypeRegistryService ContentTypeRegistryService { get; set; }
 
-        private readonly ReplWindow _replWindow;
+        private readonly IReplWindow _replWindow;
         private readonly IVsMonitorSelection _monitorSelection;
         private readonly uint _debugUIContextCookie;
 
@@ -29,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript) {
            cs.SatisfyImportsOnce(this);
 
-            ReplWindow.EnsureReplWindow().DoNotWait();
+            ReplWindow.EnsureReplWindow();
             _replWindow = ReplWindow.Current;
 
             _monitorSelection = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));

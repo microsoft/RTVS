@@ -193,6 +193,7 @@
     <Compile Include="ConnectionPointMock.cs" />
     <Compile Include="EnumWindowFramesMock.cs" />
     <Compile Include="ImageHandleMock.cs" />
+    <Compile Include="InteractiveEvaluatorMock.cs" />
     <Compile Include="InteractiveWindowMock.cs" />
     <Compile Include="MenuCommandServiceMock.cs" />
     <Compile Include="OleComponentManagerMock.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="ToolWindowPaneMock.cs" />
     <Compile Include="VsCodeWindowMock.cs" />
     <Compile Include="VSConstants.cs" />
+    <Compile Include="VsDebuggerMock.cs" />
     <Compile Include="VsEditorAdaptersFactoryServiceMock.cs" />
     <Compile Include="VsImageMonikerImageListMock.cs" />
     <Compile Include="VsImageServiceMock.cs" />
