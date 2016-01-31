@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Settings;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -14,7 +11,6 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     public static class ViewUtilities {
@@ -38,21 +34,6 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             }
 
             return null;
-        }
-
-        public static ITextView ActiveTextView {
-            get {
-                IVsTextView vsTextView = null;
-                ITextView activeTextView = null;
-
-                IVsTextManager2 textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
-
-                if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)(_VIEWFRAMETYPE.vftCodeWindow), out vsTextView))) {
-                    activeTextView = AdaptersFactoryService.GetWpfTextView(vsTextView);
-                }
-
-                return activeTextView;
-            }
         }
 
         public static T GetService<T>(this ITextView textView, Type type = null) where T : class {
@@ -98,17 +79,6 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
             string filePath = VsFileInfo.GetFileName(textView);
             rdt.SaveFileIfDirty(filePath);
-        }
-
-        public static void SourceActiveFile() {
-            var activeView = ViewUtilities.ActiveTextView;
-            if (activeView != null) {
-                var controller = RMainController.FromTextView(activeView);
-                if (controller != null) {
-                    object o = null;
-                    controller.Invoke(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript, null, ref o);
-                }
-            }
         }
     }
 }

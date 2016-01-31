@@ -53,8 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private ITextView GetActiveTextView() {
-            IContentType contentType = ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType);
-            return TextViewTracker.GetLastActiveTextView(contentType);
+            return TextViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
         }
 
         private string GetFilePath() {

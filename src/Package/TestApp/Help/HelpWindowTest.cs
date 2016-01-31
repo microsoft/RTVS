@@ -1,12 +1,8 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -71,30 +67,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         private void WaitForAppReady(RHostClientHelpTestApp clientApp) {
             for (int i = 0; i < 100 && !clientApp.Ready; i++) {
                 DoIdle(200);
-            }
-        }
-
-        class RHostClientHelpTestApp : RHostClientTestApp {
-            IHelpWindowVisualComponent _component;
-            public IHelpWindowVisualComponent Component {
-                get { return _component; }
-                set {
-                    _component = value;
-                    _component.Browser.Navigated += Browser_Navigated;
-                }
-            }
-            public bool Ready { get; set; }
-            public Uri Uri { get; private set; }
-            private void Browser_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
-                Ready = true;
-                Uri = _component.Browser.Url;
-            }
-
-            public override Task ShowHelp(string url) {
-                UIThreadHelper.Instance.Invoke(() => {
-                    Component.Navigate(url);
-                });
-                return Task.CompletedTask;
             }
         }
     }

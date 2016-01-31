@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
@@ -28,6 +29,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
             var plotHistory = exportProvider.GetExportedValue<IPlotHistory>();
             var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+            var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -64,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowRInteractiveWindowsCommand(),
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
-                new ShowHelpOnCurrentCommand(),
+                new ShowHelpOnCurrentCommand(rSessionProvider, textViewTracker),
                 new ShowHistoryWindowCommand(),
 
                 // Plot commands
