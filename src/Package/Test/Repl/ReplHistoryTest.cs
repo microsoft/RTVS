@@ -147,23 +147,34 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     text = history.GetSelectedText();
                     text.Should().Be("x <- c(1:10)\r\nx <- c(1:20)");
 
+                    var spans = history.GetSelectedHistoryEntrySpans();
+                    spans.Count.Should().Be(1);
+
+                    spans[0].Start.Position.Should().Be(0);
+                    spans[0].End.Position.Should().Be(26);
+
+                    history.DeselectHistoryEntry(0);
+                    history.DeselectHistoryEntry(1);
+                    history.HasSelectedEntries.Should().BeFalse();
+
+                    history.SelectAllEntries();
                     history.ToggleHistoryEntrySelection(1);
+
                     history.DeleteSelectedHistoryEntries();
                     history.SelectAllEntries();
+
                     text = history.GetSelectedText();
                     text.Should().Be("x <- c(1:20)");
 
                     history.DeleteAllHistoryEntries();
+
                     history.HasEntries.Should().BeFalse();
                     history.HasSelectedEntries.Should().BeFalse();
+
                     text = history.GetSelectedText();
                     text.Should().Be(string.Empty);
                 }
             }
-        }
-
-        private void History_SelectionChanged(object sender, System.EventArgs e) {
-            throw new System.NotImplementedException();
         }
     }
 }
