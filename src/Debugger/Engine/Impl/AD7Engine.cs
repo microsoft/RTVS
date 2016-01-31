@@ -40,6 +40,9 @@ namespace Microsoft.R.Debugger.Engine {
         [Import]
         private IDebugSessionProvider DebugSessionProvider { get; set; }
 
+        [Import]
+        internal IDebugGridViewProvider GridViewProvider { get; set; }
+
         public AD7Engine() {
             var compModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
             if (compModel == null) {

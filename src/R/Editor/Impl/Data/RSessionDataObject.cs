@@ -38,11 +38,15 @@ namespace Microsoft.R.Editor.Data {
             if (DebugEvaluation is DebugValueEvaluationResult) {
                 var valueEvaluation = (DebugValueEvaluationResult)DebugEvaluation;
 
-                Value = GetValue(valueEvaluation).Trim();
+                Value = GetValue(valueEvaluation)?.Trim();
                 ValueDetail = valueEvaluation.Representation.Deparse;
                 TypeName = valueEvaluation.TypeName;
-                var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
-                Class = string.Join(", ", escaped); // TODO: escape ',' in class names
+
+                if (valueEvaluation.Classes != null) {
+                    var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
+                    Class = string.Join(", ", escaped); // TODO: escape ',' in class names
+                }
+
                 HasChildren = valueEvaluation.HasChildren;
 
                 Dimensions = valueEvaluation.Dim ?? new List<int>();
