@@ -14,7 +14,7 @@ namespace Microsoft.R.Host.Client {
         BaseEnv = 1 << 3,
         EmptyEnv = 1 << 4,
         Cancelable = 1 << 5,
-        UnprotectedEnv = 1 << 6,
+        NewEnv = 1 << 6,
     }
 
     public interface IRExpressionEvaluator {
