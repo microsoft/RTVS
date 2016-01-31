@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Workspace;
 using Microsoft.VisualStudio.R.Packages.R;
