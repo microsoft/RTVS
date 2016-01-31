@@ -101,19 +101,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
                     history.SelectPreviousHistoryEntry();
                     eventCount.Should().Be(3); // event fires twice?
-
-                    tb.Clear();
-                    history.SendSelectedToTextView(tv);
-                    string text = tb.CurrentSnapshot.GetText();
-                    text.Should().Be("x <- c(1:10)");
+                    VerifyHistoryText(history, tb, tv, "x <- c(1:10)");
 
                     history.SelectNextHistoryEntry();
                     eventCount.Should().Be(5);
-
-                    tb.Clear();
-                    history.SendSelectedToTextView(tv);
-                    text = tb.CurrentSnapshot.GetText();
-                    text.Should().Be("x <- c(1:20)");
+                    VerifyHistoryText(history, tb, tv, "x <- c(1:20)");
 
                     history.PreviousEntry();
                     rw.EnqueuedCode.Should().Be("x <- c(1:20)");
@@ -124,18 +116,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     history.NextEntry();
                     rw.EnqueuedCode.Should().Be("x <- c(1:20)");
 
-                    tb.Clear();
                     history.SelectHistoryEntries(new int[] { 0, 1 });
-                    history.SendSelectedToTextView(tv);
-                    text = tb.CurrentSnapshot.GetText();
-                    text.Should().Be("x <- c(1:10)\r\nx <- c(1:20)");
+                    VerifyHistoryText(history, tb, tv, "x <- c(1:10)\r\nx <- c(1:20)");
                     eventCount.Should().Be(6);
 
                     history.ToggleHistoryEntrySelection(1);
-                    tb.Clear();
-                    history.SendSelectedToTextView(tv);
-                    text = tb.CurrentSnapshot.GetText();
-                    text.Should().Be("x <- c(1:10)");
+                    VerifyHistoryText(history, tb, tv, "x <- c(1:10)");
                     eventCount.Should().Be(7);
 
                     history.DeselectHistoryEntry(0);
@@ -144,7 +130,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
                     history.SelectAllEntries();
                     history.HasSelectedEntries.Should().BeTrue();
-                    text = history.GetSelectedText();
+                    string text = history.GetSelectedText();
                     text.Should().Be("x <- c(1:10)\r\nx <- c(1:20)");
 
                     var spans = history.GetSelectedHistoryEntrySpans();
@@ -175,6 +161,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     text.Should().Be(string.Empty);
                 }
             }
+        }
+
+        private void VerifyHistoryText(IRHistory history, TextBufferMock tb, TextViewMock tv, string expected) {
+            tb.Clear();
+            history.SendSelectedToTextView(tv);
+            string text = tb.CurrentSnapshot.GetText();
+            text.Should().Be(expected);
         }
     }
 }
