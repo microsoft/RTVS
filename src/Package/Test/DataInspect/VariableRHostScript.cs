@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 subscription = _variableProvider.Subscribe(0, "base::environment()", OnGlobalEnvironmentEvaluated);
 
                 using (var evaluation = await base.Session.BeginEvaluationAsync()) {
-                    await evaluation.EvaluateAsync(rScript, REvaluationKind.UnprotectedEnv);
+                    await evaluation.EvaluateAsync(rScript, REvaluationKind.Normal);
                 }
 
                 if (System.Diagnostics.Debugger.IsAttached) {
@@ -104,6 +104,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         protected override void Dispose(bool disposing) {
+            DoIdle(2000);
+
             base.Dispose(disposing);
 
             if (disposing) {

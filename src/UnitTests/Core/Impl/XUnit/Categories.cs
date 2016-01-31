@@ -114,6 +114,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public class DebuggerAttribute : CategoryAttribute {
+                public DebuggerAttribute() : base("R.Debugger") { }
+            }
+
+
+            [ExcludeFromCodeCoverage]
             public class SettingsAttribute : CategoryAttribute {
                 public SettingsAttribute() : base("R.Settings") {}
             }

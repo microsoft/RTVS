@@ -98,6 +98,7 @@
     <Compile Include="Disposables\CountdownDisposableTest.cs" />
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
+    <Compile Include="Script\EventsPump.cs" />
     <Compile Include="IO\SubstituteFactories\DirectoryInfoFactory.cs" />
     <Compile Include="IO\SubstituteFactories\FileInfoFactory.cs" />
     <Compile Include="Script\TestScript.cs" />

@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     DoIdle(100);
                     Task.Run(async () => {
                         using (var eval = await hostScript.Session.BeginEvaluationAsync()) {
-                            await eval.EvaluateAsync("x <- c(1:10)", REvaluationKind.UnprotectedEnv);
+                            await eval.EvaluateAsync("x <- c(1:10)", REvaluationKind.Normal);
                         }
                     }).Wait();
 
