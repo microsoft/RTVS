@@ -46,11 +46,19 @@
 
     </dd:UxConfiguration>
 
-    <!--<?include VSDetection.wxi?>
+    <?include VSDetection.wxi?>
+    
+    <!-- Require VS 2015 Update 1 -->
+    <dd:Blocker ShortName="VsEntUpdateBlock" Type="Stop" Condition="Enterprise_VersionKey &lt; v14.0.24720"
+                DisplayText="R Tools require Visual Studio 2015 Update 1 or higher." />
+    <dd:Blocker ShortName="VsProUpdateBlock" Type="Stop" Condition="Professional_VersionKey &lt; v14.0.24720"
+                DisplayText="R Tools require Visual Studio 2015 Update 1 or higher." />
+    <dd:Blocker ShortName="VsCommUpdateBlock" Type="Stop" Condition="Community_VersionKey &lt; v14.0.24720"
+                DisplayText="R Tools require Visual Studio 2015 Update 1 or higher." />
 
-    <dd:Blocker ShortName="VsInstalledBlock" Type="Stop" Condition="( NOT ((Professional_DetectKey = 1) OR (Community_DetectKey = 1) OR (Enterprise_DetectKey = 1)) ) AND (CurrentOperation = &quot;Install&quot;)"
-                DisplayText="R Tools require Visual Studio 2015." />
-    <dd:Blocker ShortName="MinimumOSLevel" Type="Stop" Condition="(VersionNT &lt; v6.1)" DisplayText="R Tools for Visual Studio require Windows 7 or higher." />-->
+    <!--<dd:Blocker ShortName="MinimumOSLevel" Type="Stop" Condition="(VersionNT &lt; v6.1)" DisplayText="R Tools for Visual Studio require Windows 7 or higher." />-->
+    <!--<dd:Blocker ShortName="VsInstalledBlock" Type="Stop" Condition="( NOT ((Professional_DetectKey = 1) OR (Community_DetectKey = 1) OR (Enterprise_DetectKey = 1)) ) AND (CurrentOperation = &quot;Install&quot;)"
+                DisplayText="R Tools require Visual Studio 2015." />-->
 
     <Chain>
       <MsiPackage SourceFile="$(var.BinDir)\RTVS.msi" />
