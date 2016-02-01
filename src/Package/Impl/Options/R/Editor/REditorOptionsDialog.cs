@@ -1,10 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
     public class REditorOptionsDialog : DialogPage {
