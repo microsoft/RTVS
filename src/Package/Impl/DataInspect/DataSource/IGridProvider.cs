@@ -25,11 +25,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         int ColumnCount { get; }
 
-        /// <summary>
-        /// Returns portion of data
-        /// </summary>
-        Task<IGrid<TData>> GetRangeAsync(GridRange gridRange);
-
         Task<IGridData<TData>> GetAsync(GridRange range);
     }
 }

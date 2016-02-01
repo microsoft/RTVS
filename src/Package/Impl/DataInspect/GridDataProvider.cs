@@ -30,9 +30,5 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             return t;
         }
-
-        public Task<IGrid<string>> GetRangeAsync(GridRange gridRange) {
-            throw new NotImplementedException();
-        }
     }
 }
