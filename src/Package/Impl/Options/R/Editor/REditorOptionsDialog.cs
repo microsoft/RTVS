@@ -142,5 +142,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
             }
             base.OnApply(e);
         }
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+        }
     }
 }
