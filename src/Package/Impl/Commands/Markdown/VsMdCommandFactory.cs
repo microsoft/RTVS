@@ -4,6 +4,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.R.Package.Commands.Markdown;
 using Microsoft.VisualStudio.R.Package.Publishing.Commands;
+using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Packages.Markdown;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -19,6 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
             commands.Add(new PreviewHtmlCommand(textView));
             commands.Add(new PreviewPdfCommand(textView));
             commands.Add(new PreviewWordCommand(textView));
+            commands.Add(new SendToReplCommand(textView));
             commands.Add(new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int)MarkdownContextMenuId.MD));
             return commands;
         }
