@@ -245,7 +245,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugEngineLaunch2.CanTerminateProcess(IDebugProcess2 pProcess) {
             ThrowIfDisposed();
-            return VSConstants.S_FALSE;
+            return VSConstants.S_OK;
         }
 
         int IDebugEngineLaunch2.LaunchSuspended(string pszServer, IDebugPort2 pPort, string pszExe, string pszArgs, string pszDir, string bstrEnv, string pszOptions, enum_LAUNCH_FLAGS dwLaunchFlags, uint hStdInput, uint hStdOutput, uint hStdError, IDebugEventCallback2 pCallback, out IDebugProcess2 ppProcess) {
@@ -258,7 +258,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngineLaunch2.TerminateProcess(IDebugProcess2 pProcess) {
-            return VSConstants.E_NOTIMPL;
+            return IDebugProgram2.Detach();
         }
 
         int IDebugProgram2.Attach(IDebugEventCallback2 pCallback) {
