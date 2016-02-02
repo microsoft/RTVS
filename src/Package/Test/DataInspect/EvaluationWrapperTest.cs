@@ -416,6 +416,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             }
         }
 
+        object[,] arrayTestData = new object[,] {
+            { "array.empty <- array();", new VariableExpectation() { Name = "array.empty", Value = "NA", TypeName = "logical", Class = "array", HasChildren = false, CanShowDetail = false } },
+            { "array.10 <- array(1:10);", new VariableExpectation() { Name = "array.10", Value = "int [1:10(1d)] 1 2 3 4 5 6 7 8 9 10", TypeName = "integer", Class = "array", HasChildren = true, CanShowDetail = false } },
+            { "array.2x2 <- array(c('z', 'y', 'x', 'w'), dim = c(2, 2));", new VariableExpectation() { Name = "array.2x2", Value = "chr [1:2, 1:2] \"z\" \"y\" \"x\" \"w\"", TypeName = "character", Class = "matrix", HasChildren = true, CanShowDetail = true } },
+            { "array.2x3x4 <- array(as.double(101:124), dim=c(2,3,4));", new VariableExpectation() { Name = "array.2x3x4", Value = "num [1:2, 1:3, 1:4] 101 102 103 104 105 106 107 108 109 110 ...", TypeName = "double", Class = "array", HasChildren = true, CanShowDetail = false } },
+        };
+
+        [Test]
+        [Category.Variable.Explorer]
+        public Task ArrayTest() {
+            return RunTest(arrayTestData);
+        }
+
         private static async Task RunTest(object[,] testData) {
             using (var hostScript = new VariableRHostScript()) {
                 int testCount = testData.GetLength(0);
