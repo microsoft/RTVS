@@ -88,7 +88,7 @@
     </UI>
 
     <InstallExecuteSequence>
-      <Custom Action="VsCommunityInstallPrompt" Before="InstallFiles">NOT Installed</Custom>
+      <!--<Custom Action="VsCommunityInstallPrompt" Before="InstallFiles">NOT Installed</Custom>-->
       <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
       <Custom Action="VS2015UpdateConfiguration" Before="InstallFinalize" />
       <!--<Custom Action="MROInstallPrompt" After="InstallFinalize">NOT Installed</Custom>-->
