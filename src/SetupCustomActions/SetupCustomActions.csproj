@@ -110,6 +110,7 @@
   <Target Name="PackAfterSign" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'" AfterTargets="SignFiles" >
     <CallTarget Targets="PackCustomAction" />
     <Copy SourceFiles="@(IntermediateAssembly)" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="$(IntermediateOutputPath)$(TargetCAFileName)" DestinationFolder="$(OutputPath)" />
   </Target>
   <Target Name="PackNoSign" Condition="'$(SignType)' != 'real' AND '$(SignType)' != 'test'" AfterTargets="AfterCompile" >
     <CallTarget Targets="PackCustomAction" />
