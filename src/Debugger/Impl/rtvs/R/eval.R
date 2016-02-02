@@ -25,10 +25,13 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
     
     if (field('repr.deparse')) {
       repr$deparse <- paste0(collapse = '', NA_if_error(
-        if (is.na(repr_max_length))
+        if (is.na(repr_max_length)) {
             deparse(obj)
-        else
-            deparse(obj, width.cutoff = repr_max_length, nlines = 1)))
+        } else {
+            # Force max length into range permitted by deparse
+            cutoff <- min(max(repr_max_length, 20), 500);
+            deparse(obj, width.cutoff = cutoff, nlines = 1)
+        }))
     }
     
     if (field('repr.toString')) {
