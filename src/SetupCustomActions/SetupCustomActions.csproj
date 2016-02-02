@@ -94,7 +94,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
+    <!--Sign intermediate assembly instead of output so it can be used by Wix.CA-->
+    <FilesToSign Include="$(IntermediateOutputPath)\$(AssemblyName).dll">
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
@@ -107,10 +108,11 @@
   <!--Reset AfterCompile to default-->
   <Target Name="AfterCompile" />
   <Target Name="PackAfterSign" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'" AfterTargets="SignFiles" >
-    <CallTarget Targets="PackCustomAction"  />
+    <CallTarget Targets="PackCustomAction" />
+    <Copy SourceFiles="@(IntermediateAssembly)" DestinationFolder="$(OutputPath)" />
   </Target>
   <Target Name="PackNoSign" Condition="'$(SignType)' != 'real' AND '$(SignType)' != 'test'" AfterTargets="AfterCompile" >
-    <CallTarget Targets="PackCustomAction"  />
+    <CallTarget Targets="PackCustomAction" />
   </Target>
       
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
