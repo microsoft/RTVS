@@ -82,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task ScrollCommandsHandler(CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            const int ScrollCommandUpperBound = 50;
+            const int ScrollCommandUpperBound = 100;
             List<ScrollCommand> batch = new List<ScrollCommand>();
 
             foreach (var command in _scrollCommands.GetConsumingEnumerable(cancellationToken)) {
@@ -127,37 +127,34 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return commands[index].Code == commands[index + 1].Code && scrollTypes.Contains(commands[index].Code);
         }
 
-        private const double LineDelta = 10.0;
-        private const double PageDelta = 100.0;
-
         private async Task ExecuteCommandAsync(ScrollCommand cmd, CancellationToken token) {
             bool drawVisual = true;
             bool refresh = false;
             bool suppress = false;
             switch (cmd.Code) {
                 case ScrollType.LineUp:
-                    Points.VerticalOffset -= LineDelta * (double)cmd.Param;
+                    Points.VerticalOffset -= Points.AverageItemHeight * (double)cmd.Param;
                     break;
                 case ScrollType.LineDown:
-                    Points.VerticalOffset += LineDelta * (double)cmd.Param;
+                    Points.VerticalOffset += Points.AverageItemHeight * (double)cmd.Param;
                     break;
                 case ScrollType.LineLeft:
-                    Points.HorizontalOffset -= LineDelta * (double)cmd.Param;
+                    Points.HorizontalOffset -= Points.AverageItemHeight * (double)cmd.Param;    // for horizontal line increment, use vertical size
                     break;
                 case ScrollType.LineRight:
-                    Points.HorizontalOffset += LineDelta * (double)cmd.Param;
+                    Points.HorizontalOffset += Points.AverageItemHeight * (double)cmd.Param;    // for horizontal line increment, use vertical size
                     break;
                 case ScrollType.PageUp:
-                    Points.VerticalOffset -= PageDelta * (double)cmd.Param;
+                    Points.VerticalOffset -= Points.ViewportHeight * (double)cmd.Param;
                     break;
                 case ScrollType.PageDown:
-                    Points.VerticalOffset += PageDelta * (double)cmd.Param;
+                    Points.VerticalOffset += Points.ViewportHeight * (double)cmd.Param;
                     break;
                 case ScrollType.PageLeft:
-                    Points.HorizontalOffset -= PageDelta * (double)cmd.Param;
+                    Points.HorizontalOffset -= Points.ViewportWidth * (double)cmd.Param;
                     break;
                 case ScrollType.PageRight:
-                    Points.HorizontalOffset += PageDelta * (double)cmd.Param;
+                    Points.HorizontalOffset += Points.ViewportWidth * (double)cmd.Param;
                     break;
                 case ScrollType.SetHorizontalOffset: {
                         var args = (Tuple<double, ThumbTrack>)cmd.Param;
