@@ -191,6 +191,10 @@ inject_breakpoints <- function(expr) {
         # the replacement expression, so that the same line is considered current for all of it.
         attr(after[[i]], 'srcref') <- rep(list(before_srcref[[i]]), length(after[[i]]));
 
+        # Auto-step over '{' and '.doTrace', so that stepping skips to the original expression.
+        attr(attr(after, 'srcref')[[i]], 'Microsoft.R.Host::auto_step_over') <- TRUE;
+        attr(attr(after[[i]], 'srcref')[[2]], 'Microsoft.R.Host::auto_step_over') <- TRUE;
+
         # Recurse into the original expression, in case it has more breakpoints inside.
         after[[i]][[3]] <- Recall(before[[i]], after[[i]][[3]]);
       } else if (is.language(after[[i]])) {
