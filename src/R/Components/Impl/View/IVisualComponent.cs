@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Windows.Controls;
+using System.Windows;
 using Microsoft.R.Components.Controller;
 
 namespace Microsoft.R.Components.View {
@@ -15,6 +15,11 @@ namespace Microsoft.R.Components.View {
         /// <summary>
         /// WPF control to embed in the tool window
         /// </summary>
-        Control Control { get; }
+        FrameworkElement Control { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        IVisualComponentContainer<IVisualComponent> Container { get; }
     }
 }

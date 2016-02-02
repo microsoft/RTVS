@@ -32,9 +32,35 @@
       <HintPath>..\..\..\..\NugetPackages\FluentAssertions.4.1.1\lib\net45\FluentAssertions.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.CoreUtility.14.1.24720\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Data, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.Data.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.Logic.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.UI.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.UI.Wpf.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
       <Private>True</Private>
@@ -51,9 +77,29 @@
       <HintPath>..\..\..\..\NugetPackages\xunit.extensibility.execution.2.2.0-beta1-build3239\lib\net45\xunit.execution.desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fakes\Undo\AutoEnclose.cs" />
+    <Compile Include="Fakes\Undo\CatchOperationsFromHistoryForDelegatedPrimitive.cs" />
+    <Compile Include="Fakes\Undo\DelegatedUndoPrimitiveImpl.cs" />
+    <Compile Include="Fakes\Undo\DelegatedUndoPrimitiveState.cs" />
+    <Compile Include="Fakes\Undo\NullMergeUndoTransactionPolicy.cs" />
+    <Compile Include="Fakes\Undo\UndoableOperationCurried.cs" />
+    <Compile Include="Fakes\Undo\UndoHistoryImpl.cs" />
+    <Compile Include="Fakes\Undo\UndoHistoryRegistryImpl.cs" />
+    <Compile Include="Fakes\Undo\UndoTransactionImpl.cs" />
+    <Compile Include="Fakes\Undo\WeakReferenceForKey.cs" />
+    <Compile Include="History\RHistoryProviderTests.cs" />
+    <Compile Include="History\RHistoryTests.cs" />
+    <Compile Include="RComponentsMefCatalogFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StubBuilders\InteractiveWorkflowBuilder.cs" />
+    <Compile Include="StubBuilders\RtfBuilderServiceBuilder.cs" />
+    <Compile Include="StubBuilders\TextSearchServiceBuilder.cs" />
+    <Compile Include="Stubs\RSettingsStub.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
@@ -68,11 +114,24 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
+      <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
+      <Name>Microsoft.Common.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
+      <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

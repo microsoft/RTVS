@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -11,9 +11,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
     [Export]
     [Export(typeof(IActiveRInteractiveWindowTracker))]
     internal class VsActiveRInteractiveWindowTracker : IActiveRInteractiveWindowTracker, IVsWindowFrameEvents {
-        private IInteractiveWindow _lastActiveWindow;
+        private IInteractiveWindowVisualComponent _lastActiveWindow;
 
-        public IInteractiveWindow LastActiveWindow => _lastActiveWindow;
+        public IInteractiveWindowVisualComponent LastActiveWindow => _lastActiveWindow;
         public event EventHandler<InteractiveWindowChangedEventArgs> LastActiveWindowChanged;
 
         public void OnFrameCreated(IVsWindowFrame frame) {
@@ -29,18 +29,18 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) {
-            var interactiveWindow = GetInteractiveWindow(oldFrame);
+            var interactiveWindow = GetComponent(oldFrame);
             if (interactiveWindow != null) {
                 UpdateInteractiveWindowIfRequired(interactiveWindow);
             }
 
-            interactiveWindow = GetInteractiveWindow(newFrame);
+            interactiveWindow = GetComponent(newFrame);
             if (interactiveWindow != null) {
                 UpdateInteractiveWindowIfRequired(interactiveWindow);
             }
         }
 
-        private void UpdateInteractiveWindowIfRequired(IInteractiveWindow newInteractiveWindow) {
+        private void UpdateInteractiveWindowIfRequired(IInteractiveWindowVisualComponent newInteractiveWindow) {
             var oldInteractiveWindow = Interlocked.Exchange(ref _lastActiveWindow, newInteractiveWindow);
             if (oldInteractiveWindow == newInteractiveWindow) {
                 return;
@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             shell.UpdateCommandUI(1);
         }
 
-        private IInteractiveWindow GetInteractiveWindow(IVsWindowFrame frame) {
+        private IInteractiveWindowVisualComponent GetComponent(IVsWindowFrame frame) {
             if (frame == null) {
                 return null;
             }
@@ -67,15 +67,21 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 return null;
             }
 
-            return (docView as IVsInteractiveWindow)?.InteractiveWindow;
+            var interactiveWindow = (docView as IVsInteractiveWindow)?.InteractiveWindow;
+            if (interactiveWindow == null) {
+                return null;
+            }
+
+            IInteractiveWindowVisualComponent component;
+            return interactiveWindow.Properties.TryGetProperty(typeof(IInteractiveWindowVisualComponent), out component) ? component : null;
         }
     }
 
     public class InteractiveWindowChangedEventArgs {
-        public IInteractiveWindow Old { get; set; }
-        public IInteractiveWindow New { get; set; }
+        public IInteractiveWindowVisualComponent Old { get; set; }
+        public IInteractiveWindowVisualComponent New { get; set; }
 
-        public InteractiveWindowChangedEventArgs(IInteractiveWindow oldWindow, IInteractiveWindow newWindow) {
+        public InteractiveWindowChangedEventArgs(IInteractiveWindowVisualComponent oldWindow, IInteractiveWindowVisualComponent newWindow) {
             Old = oldWindow;
             New = newWindow;
         }

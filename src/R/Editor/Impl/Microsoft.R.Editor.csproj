@@ -112,7 +112,6 @@
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />
     <Compile Include="ContentType\RContentTypeDefinition.cs" />
-    <Compile Include="ContentType\RHistoryContentTypeDefinition.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
     <Compile Include="Document\Definitions\IREditorDocument.cs" />

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -20,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public const string WindowGuid = "62ACEA29-91C7-4BFC-B76F-550E7B3DE234";
 
         private readonly ITextEditorFactoryService _textEditorFactory;
-        private readonly IRInteractiveSessionProvider _interactiveSessionProvider;
+        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
         private readonly IRHistoryProvider _historyProvider;
         private IOleCommandTarget _commandTarget;
         private IRHistory _history;
@@ -28,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         public HistoryWindowPane() {
             _textEditorFactory = VsAppShell.Current.ExportProvider.GetExportedValue<ITextEditorFactoryService>();
-            _interactiveSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveSessionProvider>();
+            _interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
 
             Caption = Resources.HistoryWindowCaption;
@@ -36,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         protected override void OnCreate() {
-            _history = _interactiveSessionProvider.GetOrCreate().History;
+            _history = _interactiveWorkflowProvider.GetOrCreate().History;
             _history.HistoryChanged += OnHistoryChanged;
             _historyFiltering = _historyProvider.CreateFiltering(_history);
 

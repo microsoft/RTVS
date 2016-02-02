@@ -19,6 +19,13 @@ namespace Microsoft.Common.Core.Test {
         }
 
         [CompositeTest]
+        [InlineData(" ", "")]
+        [InlineData(" \n", "")]
+        [InlineData(" \r\n", "")]
+        [InlineData(" \r\r\n", "")]
+        [InlineData("  \n  ", "")]
+        [InlineData("  \r\n  ", "")]
+        [InlineData("  \r\r\n  ", "")]
         [InlineData("\n", "")]
         [InlineData("\r\n", "")]
         [InlineData("\r\r\n", "")]

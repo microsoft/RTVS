@@ -140,23 +140,8 @@
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
-    <Compile Include="History\HistorySelectionTextAdornment.cs" />
-    <Compile Include="History\HistorySelectionTextAdornmentFactory.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
-    <Compile Include="History\HistoryWindowPaneMouseProcessor.cs" />
-    <Compile Include="History\HistoryWindowPaneMouseProcessorProvider.cs" />
-    <Compile Include="History\IRHistory.cs" />
-    <Compile Include="History\IRHistoryEntries.cs" />
-    <Compile Include="History\IRHistoryFiltering.cs" />
-    <Compile Include="History\IRHistoryProvider.cs" />
-    <Compile Include="History\MultilineRHistoryEntries.cs" />
-    <Compile Include="History\RHistory.cs" />
-    <Compile Include="History\RHistoryEntries.cs" />
-    <Compile Include="History\RHistoryFiltering.cs" />
-    <Compile Include="History\RHistoryProvider.cs" />
-    <Compile Include="History\IRHistoryEntry.cs" />
-    <Compile Include="History\ShowHistoryWindowCommand.cs" />
-    <Compile Include="History\SinglelineRHistoryEntries.cs" />
+    <Compile Include="History\Commands\ShowHistoryWindowCommand.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />
     <Compile Include="Interop\MailUtility.cs" />
     <Compile Include="Logging\LogCleanup.cs" />
@@ -204,9 +189,10 @@
     <Compile Include="Repl\Debugger\StepOverCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerWrappedCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommand.cs" />
+    <Compile Include="Repl\RInteractiveWindowVisualComponent.cs" />
+    <Compile Include="Repl\RInteractiveWorkflowOperations.cs" />
+    <Compile Include="Repl\VsRInteractiveWindowComponentFactory.cs" />
     <Compile Include="Repl\InteractiveWindowRSessionHelper.cs" />
-    <Compile Include="Repl\IRInteractiveSession.cs" />
-    <Compile Include="Repl\IRInteractiveSessionProvider.cs" />
     <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
@@ -215,8 +201,8 @@
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
     <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
     <Compile Include="Commands\R\SourceRScriptCommand.cs" />
-    <Compile Include="Repl\RInteractiveSession.cs" />
-    <Compile Include="Repl\RInteractiveSessionProvider.cs" />
+    <Compile Include="Repl\RInteractiveWorkflow.cs" />
+    <Compile Include="Repl\RInteractiveWorkflowProvider.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
     <Compile Include="Commands\Markdown\VsMdCommandFactory.cs" />
@@ -305,9 +291,7 @@
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Commands\SendToReplCommand.cs" />
-    <Compile Include="Repl\IVsInteractiveWindowProvider.cs" />
     <Compile Include="Repl\RInteractiveEvaluator.cs" />
-    <Compile Include="Repl\RInteractiveWindowProvider.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -320,6 +304,8 @@
     <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
     <Compile Include="RtvsProductInfo.cs" />
     <Compile Include="Shell\AppEventsSource.cs" />
+    <Compile Include="Shell\VisualComponentToolWindow.cs" />
+    <Compile Include="Shell\VisualComponentToolWindowAdapter.cs" />
     <Compile Include="Shell\VsAppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
     <Compile Include="Shell\IApplicationShell.cs" />

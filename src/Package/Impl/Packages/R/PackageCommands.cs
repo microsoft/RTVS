@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
@@ -18,9 +19,8 @@ using Microsoft.VisualStudio.R.Package.RPackages.Commands;
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
         public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
-            var rInteractiveSessionProvider = exportProvider.GetExportedValue<IRInteractiveSessionProvider>();
-            var rInteractiveSession = rInteractiveSessionProvider.GetOrCreate();
-            var rSessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
+            var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
 
             return new List<MenuCommand> {
@@ -31,18 +31,18 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SendSmileCommand(),
                 new SendFrownCommand(),
 
-                new LoadWorkspaceCommand(rSessionProvider, projectServiceAccessor),
-                new SaveWorkspaceCommand(rSessionProvider, projectServiceAccessor),
+                new LoadWorkspaceCommand(interactiveWorkflow, projectServiceAccessor),
+                new SaveWorkspaceCommand(interactiveWorkflow, projectServiceAccessor),
 
-                new AttachDebuggerCommand(rSessionProvider),
-                new AttachToRInteractiveCommand(rSessionProvider),
-                new StopDebuggingCommand(rSessionProvider),
-                new ContinueDebuggingCommand(rSessionProvider),
-                new StepOverCommand(rSessionProvider),
-                new StepOutCommand(rSessionProvider),
-                new StepIntoCommand(rSessionProvider),
+                new AttachDebuggerCommand(interactiveWorkflow),
+                new AttachToRInteractiveCommand(interactiveWorkflow),
+                new StopDebuggingCommand(interactiveWorkflow),
+                new ContinueDebuggingCommand(interactiveWorkflow),
+                new StepOverCommand(interactiveWorkflow),
+                new StepOutCommand(interactiveWorkflow),
+                new StepIntoCommand(interactiveWorkflow),
 
-                new InterruptRCommand(rInteractiveSession),
+                new InterruptRCommand(interactiveWorkflow),
 
                 new ImportDataSetTextFileCommand(),
                 new ImportDataSetUrlCommand(),
@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 // Window commands
                 new ShowPlotWindowsCommand(),
-                new ShowRInteractiveWindowsCommand(),
+                new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider),
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
                 new ShowHelpOnCurrentCommand(),

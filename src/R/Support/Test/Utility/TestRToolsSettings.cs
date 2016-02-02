@@ -1,12 +1,13 @@
-﻿using System;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Common.Core.Enums;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
+    [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
     public sealed class TestRToolsSettings : IRToolsSettings {
         public string CranMirror {

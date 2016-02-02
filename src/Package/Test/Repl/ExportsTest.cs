@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.History;
@@ -38,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Test]
         [Category.Repl]
         public void RInteractiveProvider_ExportTest() {
-            var provider = VsAppShell.Current.ExportProvider.GetExport<IRInteractiveSessionProvider>();
+            var provider = VsAppShell.Current.ExportProvider.GetExport<IRInteractiveWorkflowProvider>();
             provider.Should().NotBeNull();
             provider.Value.Should().NotBeNull();
         }

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.R.Actions.Utility;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace Microsoft.R.Actions.Test.Installation {
         [Category.R.Install]
         public void RInstallation_Test01() {
             RInstallData data = RInstallation.GetInstallationData(null, 0, 0, 0, 0);
-            Assert.True(data.Status == RInstallStatus.PathNotSpecified || data.Status == RInstallStatus.UnsupportedVersion);
+            data.Status.Should().BeEither(RInstallStatus.PathNotSpecified, RInstallStatus.UnsupportedVersion);
         }
 
         [Test]

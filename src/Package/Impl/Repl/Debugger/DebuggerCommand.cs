@@ -1,4 +1,5 @@
-﻿using Microsoft.R.Host.Client;
+﻿using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -9,9 +10,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
         protected readonly IRSession RSession;
         private readonly DebuggerCommandVisibility _visibility;
 
-        protected DebuggerCommand(IRSessionProvider rSessionProvider, int cmdId, DebuggerCommandVisibility visibility)
+        protected DebuggerCommand(IRInteractiveWorkflow interactiveWorkflow, int cmdId, DebuggerCommandVisibility visibility)
             : base(RGuidList.RCmdSetGuid, cmdId) {
-            RSession = rSessionProvider.GetInteractiveWindowRSession();
+            RSession = interactiveWorkflow.RSession;
             _visibility = visibility;
         }
 

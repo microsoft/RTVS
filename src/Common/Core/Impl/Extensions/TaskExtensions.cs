@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core {
     public static class TaskExtensions {
+        public static Task ContinueOnRanToCompletion<TResult>(this Task<TResult> task, Action<TResult> action) {
+            return task.ContinueWith(t => action(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
+
         /// <summary>
         /// Suppresses warnings about unawaited tasks and ensures that unhandled
         /// errors will cause the process to terminate.

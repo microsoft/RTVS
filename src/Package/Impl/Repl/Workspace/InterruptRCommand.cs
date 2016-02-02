@@ -1,18 +1,22 @@
 ﻿using System;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class InterruptRCommand : PackageCommand {
-        private readonly IRInteractiveSession _interactiveSession;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _session;
+        private readonly IRInteractiveWorkflowOperations _operations;
+
         private volatile bool _enabled;
 
-        public InterruptRCommand(IRInteractiveSession interactiveSession) : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
-            _interactiveSession = interactiveSession;
-            _session = interactiveSession.RSession;
+        public InterruptRCommand(IRInteractiveWorkflow interactiveWorkflow) : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
+            _interactiveWorkflow = interactiveWorkflow;
+            _operations = interactiveWorkflow.Operations;
+            _session = interactiveWorkflow.RSession;
             _session.Disconnected += OnDisconnected;
             _session.BeforeRequest += OnBeforeRequest;
             _session.AfterRequest += OnAfterRequest;
@@ -31,7 +35,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         protected override void SetStatus() {
-            if (ReplWindow.IsActive) {
+            var window = _interactiveWorkflow.ActiveWindow;
+            if (window != null && window.Container.IsOnScreen) {
                 Visible = true;
                 Enabled = _session.IsHostRunning && _enabled;
             } else {
@@ -41,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
 
         protected override void Handle() {
             if (_enabled) {
-                _interactiveSession.ClearPendingInputs();
+                _operations.ClearPendingInputs();
                 _session.CancelAllAsync().DoNotWait();
                 _enabled = false;
             }

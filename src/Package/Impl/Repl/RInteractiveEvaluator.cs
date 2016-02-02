@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.History;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;

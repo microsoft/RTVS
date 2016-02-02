@@ -2,6 +2,7 @@
 using System.Text;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text.Editor;
@@ -9,26 +10,23 @@ using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     class RExecuteCommand : ViewCommand {
-        protected IRInteractiveSession InteractiveSession { get; }
+        protected IRInteractiveWorkflow InteractiveWorkflow { get; }
 
-        public RExecuteCommand(ITextView textView, IRInteractiveSession interactiveSession, CommandId id) : base(textView, id, false) {
-            InteractiveSession = interactiveSession;
+        public RExecuteCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow, CommandId id) : base(textView, id, false) {
+            InteractiveWorkflow = interactiveWorkflow;
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            IInteractiveWindow window = InteractiveSession.InteractiveWindow;
-            if (window != null && !window.IsRunning) {
-                var text = GetText(window);
-                if (text != null) {
-                    return CommandStatus.SupportedAndEnabled;
-                }
-
-                return CommandStatus.Supported;
+            var window = InteractiveWorkflow.ActiveWindow;
+            if (window == null ||
+                InteractiveWorkflow.ActiveWindow.IsRunning) {
+                return CommandStatus.NotSupported;
             }
-            return CommandStatus.NotSupported;
+
+            return GetText(window) != null ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
         }
 
-        protected string GetText(IInteractiveWindow window) {
+        protected string GetText(IInteractiveWindowVisualComponent window) {
             string text = null;
             if (TextView.Selection.IsActive && !TextView.Selection.IsEmpty) {
                 // If the user has a selection, we want to use it..

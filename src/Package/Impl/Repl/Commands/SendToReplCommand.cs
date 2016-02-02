@@ -2,6 +2,7 @@
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
@@ -10,16 +11,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class SendToReplCommand : ViewCommand {
-        private readonly IRInteractiveSession _interactiveSession;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
-        public SendToReplCommand(ITextView textView, IRInteractiveSession interactiveSession) :
+        public SendToReplCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow) :
             base(textView, new[] {
                 new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteLineInInteractive),
                 new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteSelectionInInteractive)
             }, false) {
 
-            _interactiveSession = interactiveSession;
-            ReplWindow.EnsureReplWindow().DoNotWait();
+            _interactiveWorkflow = interactiveWorkflow;
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -32,7 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             int position = selection.Start.Position;
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
 
-            if (_interactiveSession.InteractiveWindow == null) {
+            var window = _interactiveWorkflow.ActiveWindow;
+            if (window == null) {
                 return CommandResult.Disabled;
             }
 
@@ -44,8 +45,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
-            ReplWindow.Show();
-            _interactiveSession.EnqueueExpression(text, addNewLine: true);
+            window.Container.Show(true);
+            _interactiveWorkflow.Operations.EnqueueExpression(text, true);
 
             var targetLine = line;
             while (targetLine.LineNumber < snapshot.LineCount - 1) {

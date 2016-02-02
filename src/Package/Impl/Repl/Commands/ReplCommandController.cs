@@ -3,6 +3,7 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Settings;
@@ -107,8 +108,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             controller.DismissAllSessions();
-            var interactiveSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveSessionProvider>();
-            interactiveSessionProvider.GetOrCreate().ExecuteCurrentExpression(TextView);
+            var interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            interactiveWorkflowProvider.GetOrCreate().Operations.ExecuteCurrentExpression(TextView);
             return CommandResult.Executed;
         }
 

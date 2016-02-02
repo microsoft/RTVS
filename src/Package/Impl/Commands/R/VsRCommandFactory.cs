@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
@@ -16,15 +18,21 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
     internal class VsRCommandFactory : ICommandFactory {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var exportProvider = VsAppShell.Current.ExportProvider;
-            var interactiveSessionProvider = exportProvider.GetExportedValue<IRInteractiveSessionProvider>();
-            var interactiveSession = interactiveSessionProvider.GetOrCreate();
+            var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
+
+            if (interactiveWorkflow.ActiveWindow == null) {
+                interactiveWorkflowProvider
+                    .CreateInteractiveWindowAsync(interactiveWorkflow)
+                    .ContinueOnRanToCompletion(w => w.Container.Show(false));
+            }
 
             return new ICommand[] {
                 new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int) RContextMenuId.R),
-                new SendToReplCommand(textView, interactiveSession),
-                new SourceRScriptCommand(textView, interactiveSession),
+                new SendToReplCommand(textView, interactiveWorkflow),
+                new SourceRScriptCommand(textView, interactiveWorkflow),
                 new GoToFormattingOptionsCommand(textView, textBuffer),
-                new WorkingDirectoryCommand()
+                new WorkingDirectoryCommand(interactiveWorkflow)
             };
         }
     }

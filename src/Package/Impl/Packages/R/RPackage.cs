@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Editor.ContentType;
@@ -42,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         ShowMatchingBrace = true, MatchBraces = true, MatchBracesAtCaret = true, ShowCompletion = true, EnableLineNumbers = true,
         EnableFormatSelection = true, DefaultToInsertSpaces = true, RequestStockColors = true)]
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
-    [LanguageEditorOptionsAttribute(RContentTypeDefinition.LanguageName, 2, true, true)]
+    [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
@@ -58,18 +59,15 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideDebugPortPicker(typeof(RDebugPortPicker))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
-    [ProvideNewFileTemplatesAttribute(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
+    [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 
-        private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
         private System.Threading.Tasks.Task _indexBuildingTask;
         private IDisposable _activeTextViewTrackerToken;
         private IDisposable _activeRInteractiveWindowTrackerToken;
 
         public static IRPackage Current { get; private set; }
-
-        public RInteractiveWindowProvider InteractiveWindowProvider => _interactiveWindowProvider.Value;
 
         protected override void Initialize() {
             Current = this;
@@ -137,8 +135,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
-                IVsInteractiveWindow result = _interactiveWindowProvider.Value.Create(id);
-                return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;
+                var workflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+                try {
+                    var workflow = workflowProvider.GetOrCreate();
+                    workflowProvider.CreateInteractiveWindowAsync(workflow, id);
+                    return VSConstants.S_OK;
+                } catch (Exception) {
+                    return VSConstants.E_FAIL;
+                }
             }
 
             return base.CreateToolWindow(ref toolWindowType, id);

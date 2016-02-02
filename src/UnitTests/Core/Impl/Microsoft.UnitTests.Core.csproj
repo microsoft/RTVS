@@ -79,9 +79,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FluentAssertions\FluentAssertionExtensions.cs" />
+    <Compile Include="FluentAssertions\ObjectAssertionsExtensions.cs" />
+    <Compile Include="Mef\CatalogFactory.cs" />
     <Compile Include="NSubstitute\SubstituteExtensions.cs" />
     <Compile Include="NSubstitute\SubstituteHelper.cs" />
-    <Compile Include="NSubstitute\Mef\FactoryReflectionComposablePart.cs" />
     <Compile Include="NSubstitute\Mef\MefSubstituteBuilder.AddValueFactory.cs" />
     <Compile Include="NSubstitute\Mef\ImportDefinitionConstraintAnalyser.cs" />
     <Compile Include="NSubstitute\Mef\MefSubstitute.cs" />
@@ -105,11 +106,13 @@
     <Compile Include="XUnit\IAssemblyFixture.cs" />
     <Compile Include="XUnit\InlineArrayAttribute.cs" />
     <Compile Include="XUnit\InlineArrayDiscoverer.cs" />
+    <Compile Include="XUnit\MefCatalogFixture.cs" />
     <Compile Include="XUnit\MessageBusInjections\ExecuteBeforeAfterAttributesMessageBusInjection.cs" />
     <Compile Include="XUnit\MessageBusInjections\ITestAfterStartingBeforeFinishedInjection.cs" />
     <Compile Include="XUnit\MessageBusInjections\ITestCaseAfterStartingBeforeFinishedInjection.cs" />
     <Compile Include="XUnit\MessageBusInjections\VerifyGlobalProviderMessageBusInjection.cs" />
     <Compile Include="XUnit\MessageBusOverride.cs" />
+    <Compile Include="XUnit\AssemblyMefCatalogFixture.cs" />
     <Compile Include="XUnit\TestAttribute.cs" />
     <Compile Include="XUnit\TestDiscoverer.cs" />
     <Compile Include="XUnit\TestForTypesAttribute.cs" />
@@ -146,6 +149,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

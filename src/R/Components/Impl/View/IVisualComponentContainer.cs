@@ -5,6 +5,10 @@
     /// </summary>
     public interface IVisualComponentContainer<out T> where T : IVisualComponent {
         T Component { get; }
+        bool IsOnScreen { get; }
+
+        void Show(bool focus);
+        void UpdateCommandStatus(bool immediate);
     }
 }
 

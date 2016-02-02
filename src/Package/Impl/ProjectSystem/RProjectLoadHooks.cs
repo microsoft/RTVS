@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings.Definitions;
@@ -34,14 +36,16 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly IFileSystem _fileSystem;
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
+        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
         [ImportingConstructor]
-        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveSessionProvider interactiveSessionSessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
-            var interactiveSession = interactiveSessionSessionProvider.GetOrCreate();
-
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveWorkflowProvider interactiveWorkflowProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
             _unconfiguredProject = unconfiguredProject;
-            _session = interactiveSession.RSession;
-            _history = interactiveSession.History;
+            _interactiveWorkflowProvider = interactiveWorkflowProvider;
+            _interactiveWorkflow = _interactiveWorkflowProvider.GetOrCreate();
+            _session = _interactiveWorkflow.RSession;
+            _history = _interactiveWorkflow.History;
             _toolsSettings = toolsSettings;
             _fileSystem = fileSystem;
             _threadHandling = threadHandling;
@@ -59,7 +63,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _fileWatcher.Start();
 
             // Force REPL window up
-            await ReplWindow.EnsureReplWindow();
+            await _threadHandling.SwitchToUIThread();
+            if (_interactiveWorkflow.ActiveWindow == null) {
+                var window = await _interactiveWorkflowProvider.CreateInteractiveWindowAsync(_interactiveWorkflow);
+                window.Container.Show(true);
+            }
 
             if (!_session.IsHostRunning) {
                 return;
@@ -75,8 +83,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
                 await evaluation.SetWorkingDirectory(_projectDirectory);
             }
-
-            await _threadHandling.SwitchToUIThread();
 
             _toolsSettings.WorkingDirectory = _projectDirectory;
             _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));

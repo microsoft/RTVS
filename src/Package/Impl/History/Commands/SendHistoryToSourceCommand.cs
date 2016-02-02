@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -11,21 +13,22 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SendHistoryToSourceCommand : ViewCommand {
-       
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IActiveWpfTextViewTracker _textViewTracker;
         private readonly IContentType _contentType;
         private readonly IRHistory _history;
 
-        public SendHistoryToSourceCommand(ITextView textView, IRHistoryProvider historyProvider, IContentTypeRegistryService contentTypeRegistry, IActiveWpfTextViewTracker textViewTracker)
+        public SendHistoryToSourceCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow, IContentTypeRegistryService contentTypeRegistry, IActiveWpfTextViewTracker textViewTracker)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendHistoryToSource, false) {
 
             _textViewTracker = textViewTracker;
+            _interactiveWorkflow = interactiveWorkflow;
             _contentType = contentTypeRegistry.GetContentType(RContentTypeDefinition.ContentType);
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 
         public override CommandStatus Status(Guid guid, int id) {
-            return ReplWindow.ReplWindowExists() && (_history.HasSelectedEntries || !TextView.Selection.IsEmpty) && GetLastActiveRTextView() != null
+            return _interactiveWorkflow.ActiveWindow != null && (_history.HasSelectedEntries || !TextView.Selection.IsEmpty) && GetLastActiveRTextView() != null
                 ? CommandStatus.SupportedAndEnabled
                 : CommandStatus.Supported;
         }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
@@ -16,19 +17,21 @@ using Microsoft.VisualStudioTools;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command, IDisposable {
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private string _userDirectory;
         private IRSession _session;
 
         public Task InitializationTask { get; }
 
-        public WorkingDirectoryCommand() :
+        public WorkingDirectoryCommand(IRInteractiveWorkflow interactiveWorkflow) :
             base(new [] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGetDirectoryList),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory)
             }, false) {
 
-            _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
+            _interactiveWorkflow = interactiveWorkflow;
+            _session = interactiveWorkflow.RSession;
             _session.Connected += OnSessionConnected;
             _session.DirectoryChanged += OnCurrentDirectoryChanged;
 
@@ -61,10 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            if (ReplWindow.ReplWindowExists()) {
-                return CommandStatus.SupportedAndEnabled;
-            }
-            return CommandStatus.Supported;
+            return _interactiveWorkflow.ActiveWindow != null ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {

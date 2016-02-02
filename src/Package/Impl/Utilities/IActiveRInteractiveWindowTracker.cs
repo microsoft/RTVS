@@ -1,9 +1,10 @@
 using System;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     public interface IActiveRInteractiveWindowTracker {
-        IInteractiveWindow LastActiveWindow { get; }
+        IInteractiveWindowVisualComponent LastActiveWindow { get; }
         event EventHandler<InteractiveWindowChangedEventArgs> LastActiveWindowChanged;
     }
 }

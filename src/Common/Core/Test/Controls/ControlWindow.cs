@@ -40,7 +40,6 @@ namespace Microsoft.Common.Core.Test.Controls {
         public static Window Window { get; private set; }
 
         /// <summary>
-        /// <summary>
         /// Creates WPF window and control instance then hosts control in the window.
         /// </summary>
         public static void Create(Type controlType) {
@@ -50,34 +49,33 @@ namespace Microsoft.Common.Core.Test.Controls {
         }
 
         private static void CreateWindowInstance(ControlTestRequest request, ManualResetEventSlim evt) {
+            try {
+                Window = new Window();
 
-            Window = new Window();
+                if (Screen.AllScreens.Length == 1) {
+                    Window.Left = 0;
+                    Window.Top = 50;
+                } else {
+                    Screen secondary = Screen.AllScreens.FirstOrDefault(x => !x.Primary);
+                    Window.Left = secondary.WorkingArea.Left;
+                    Window.Top = secondary.WorkingArea.Top + 50;
+                }
 
-            if (Screen.AllScreens.Length == 1) {
-                Window.Left = 0;
-                Window.Top = 50;
+                Window.Width = 800;
+                Window.Height = 600;
+
+                Component = Activator.CreateInstance(request.ControlType);
+                if (Component is Control) {
+                    Control = Component as Control;
+                } else {
+                    Control = Component.GetType().GetProperty("Control").GetValue(Component) as Control;
+                }
+
+                Window.Title = "Control - " + request.ControlType;
+                Window.Content = Control;
+            } finally {
+                evt.Set();
             }
-            else {
-                Screen secondary = Screen.AllScreens.FirstOrDefault(x => !x.Primary);
-                Window.Left = secondary.WorkingArea.Left;
-                Window.Top = secondary.WorkingArea.Top + 50;
-            }
-
-            Window.Width = 800;
-            Window.Height = 600;
-
-            Component = Activator.CreateInstance(request.ControlType);
-            if(Component is Control) {
-                Control = Component as Control;
-            }
-            else {
-                Control = Component.GetType().GetProperty("Control").GetValue(Component) as Control;
-            }
-
-            Window.Title = "Control - " + request.ControlType.ToString();
-            Window.Content = Control;
-
-            evt.Set();
 
             Window.Topmost = true;
             Window.ShowDialog();

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
@@ -28,19 +30,21 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private readonly ContentControl _windowContentControl;
         private IRSession _session;
 
-        public HelpWindowVisualComponent() {
+        public HelpWindowVisualComponent(IVisualComponentContainer<IHelpWindowVisualComponent> container) {
+            Container = container;
+
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Disconnected += OnRSessionDisconnected;
             _session.Connected += OnRSessionConnected;
 
             _windowContentControl = new ContentControl();
-            this.Control = _windowContentControl;
+            Control = _windowContentControl;
 
             CreateBrowser(_showDefaultPage);
 
             var c = new Controller();
             c.AddCommandSet(GetCommands());
-            this.Controller = c;
+            Controller = c;
         }
 
         private void OnRSessionConnected(object sender, EventArgs e) {
@@ -53,7 +57,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         #region IVisualComponent
         public ICommandTarget Controller { get; }
 
-        public System.Windows.Controls.Control Control { get; }
+        public FrameworkElement Control { get; }
+        public IVisualComponentContainer<IVisualComponent> Container { get; }
+
         #endregion
 
         #region IHelpWindowVisualComponent

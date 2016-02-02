@@ -102,6 +102,7 @@
     <Compile Include="IO\SubstituteFactories\FileInfoFactory.cs" />
     <Compile Include="Script\TestScript.cs" />
     <Compile Include="StackExtensionsTest.cs" />
+    <Compile Include="StubBuilders\FileSystemBuilder.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
     <Compile Include="Utility\TestFiles.cs" />

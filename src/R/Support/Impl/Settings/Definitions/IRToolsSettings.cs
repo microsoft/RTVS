@@ -1,7 +1,8 @@
 ﻿using Microsoft.Common.Core.Enums;
+using Microsoft.R.Components.Settings;
 
 namespace Microsoft.R.Support.Settings.Definitions {
-    public interface IRToolsSettings {
+    public interface IRToolsSettings : IRSettings {
         /// <summary>
         /// Path to 64-bit R installation such as 
         /// 'C:\Program Files\R\R-3.2.2' without bin\x64
@@ -15,10 +16,6 @@ namespace Microsoft.R.Support.Settings.Definitions {
 
         YesNoAsk LoadRDataOnProjectLoad { get; set; }
         YesNoAsk SaveRDataOnProjectUnload { get; set; }
-
-        bool AlwaysSaveHistory { get; set; }
-        bool ClearFilterOnAddHistory { get; set; }
-        bool MultilineHistorySelection { get; set; }
 
         /// <summary>
         /// Current working directory for REPL

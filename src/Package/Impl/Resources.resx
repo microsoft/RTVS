@@ -166,7 +166,7 @@
     <value>Reformat code as you type</value>
   </data>
   <data name="SaveAsFilterR" xml:space="preserve">
-    <value>R Language Files (*.r)|*.r|All Files (*.*)|*.*</value>
+    <value>R Language Files (*.r)|*.r|</value>
   </data>
   <data name="Settings_IntellisenseCategory" xml:space="preserve">
     <value>IntelliSense</value>
@@ -220,7 +220,7 @@
     <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>
   </data>
   <data name="SaveAsFilterMD" xml:space="preserve">
-    <value>Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|All Files (*.*)|*.*</value>
+    <value>Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|</value>
   </data>
   <data name="CtrlECtrlE" xml:space="preserve">
     <value>Control+E, Control+E</value>
