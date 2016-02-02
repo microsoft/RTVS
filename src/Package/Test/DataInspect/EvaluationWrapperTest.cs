@@ -168,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
                 grid.Grid[0, 2].ShouldBeEquivalentTo("5");
                 grid.Grid[0, 3].ShouldBeEquivalentTo("7");
-                grid.Grid[0, 4].ShouldBeEquivalentTo(" 9"); // TODO: R returns with space
+                grid.Grid[0, 4].ShouldBeEquivalentTo("9");
                 grid.Grid[1, 2].ShouldBeEquivalentTo("6");
                 grid.Grid[1, 3].ShouldBeEquivalentTo("8");
                 grid.Grid[1, 4].ShouldBeEquivalentTo("10");
@@ -201,9 +201,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 grid.RowHeader[1].ShouldBeEquivalentTo("NA");
 
                 grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 2].ShouldBeEquivalentTo(" NA");    // TODO: R returns with space
+                grid.Grid[0, 2].ShouldBeEquivalentTo("NA");
                 grid.Grid[0, 3].ShouldBeEquivalentTo("7");
-                grid.Grid[0, 4].ShouldBeEquivalentTo(" 9");     // TODO: R returns with space
+                grid.Grid[0, 4].ShouldBeEquivalentTo("9");
                 grid.Grid[1, 2].ShouldBeEquivalentTo("NaN");
                 grid.Grid[1, 3].ShouldBeEquivalentTo("8");
                 grid.Grid[1, 4].ShouldBeEquivalentTo("10");
