@@ -1,44 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <!-- Detect if Professional is installed -->
-  <!--<util:RegistrySearch
-      Id="Professional_DetectKey"
-      Variable="Professional_DetectKey"
-      Root="HKLM"
-      Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\professional"
-      Value="Install"/>-->
-
-  <!-- Detect if Community is installed -->
-  <!--<util:RegistrySearch
+    <!-- Detect if Community is installed. Pro and Enterprise 
+      are supersets so we only have to detect Community -->
+  <util:RegistrySearch
       Id="Community_DetectKey"
       Variable="Community_DetectKey"
       Root="HKLM"
       Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\community"
-      Value="Install"/>-->
+      Value="Install"/>
 
-  <!-- Detect if Enterprise is installed -->
-  <!--<util:RegistrySearch
-      Id="Enterprise_DetectKey"
-      Variable="Enterprise_DetectKey"
-      Root="HKLM"
-      Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\enterprise"
-      Value="Install"/>-->
-
-  <util:RegistrySearch
-      Id="Enterprise_VersionKey"
-      Variable="Enterprise_VersionKey"
-      Root="HKLM"
-      Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\enterprise"
-      Value="UpdateVersion"/>
-
-  <util:RegistrySearch
-      Id="Professional_VersionKey"
-      Variable="Professional_VersionKey"
-      Root="HKLM"
-      Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\professional"
-      Value="UpdateVersion"/>
-
-  <!-- Detect if Community is installed -->
+  <!-- Detect Community update version -->
   <util:RegistrySearch
       Id="Community_VersionKey"
       Variable="Community_VersionKey"
