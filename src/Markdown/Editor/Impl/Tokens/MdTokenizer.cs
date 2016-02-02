@@ -146,6 +146,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
             ticksLength = block ? 3 : 1;
             _cs.Advance(ticksLength);
 
+            // block in R: '''{r qplot, x=y, ...}
             bool rLanguage = block && (_cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R'));
             rLanguage |= !block && (_cs.CurrentChar == 'r' || _cs.CurrentChar == 'R');
 
@@ -154,30 +155,34 @@ namespace Microsoft.Markdown.Editor.Tokens {
             int codeStart = _cs.Position;
 
             while (!_cs.IsEndOfStream()) {
+                // End of R block: <line_break>```
                 bool endOfBlock = block && _cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`';
+
                 if (endOfBlock) {
                     _cs.SkipLineBreak();
                 } else {
+                    // inline code `r 1 + 1`
                     endOfBlock = !block && _cs.CurrentChar == '`';
                 }
 
-                // Find end of the block (closing ```)
                 if (endOfBlock) {
                     int codeEnd = _cs.Position;
-                    _cs.Advance(ticksLength);
+                    _cs.Advance(ticksLength); // past the end of block now
 
+                    // Opening ticks
+                    AddToken(MarkdownTokenType.CodeStart, ticksStart, ticksLength);
                     if (rLanguage) {
-                        // code is inside ``` and after the language name.
+                        // Code is inside ``` and after the language name.
                         // We still want to colorize numbers in ```{r, x = 1.0, ...}
-                        AddToken(MarkdownTokenType.Code, ticksStart, ticksLength);
 
                         var token = new MarkdownRCodeToken(codeStart, codeEnd - codeStart, _cs.Text);
                         _tokens.Add(token);
 
-                        AddToken(MarkdownTokenType.Code, codeEnd, _cs.Position - codeEnd);
                     } else {
-                        AddToken(MarkdownTokenType.Code, ticksStart, _cs.Position - ticksStart);
+                        AddToken(MarkdownTokenType.CodeContent, codeStart, codeEnd - codeStart);
                     }
+
+                    AddToken(MarkdownTokenType.CodeEnd, _cs.Position - ticksLength, ticksLength);
                     return true;
                 }
 

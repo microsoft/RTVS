@@ -952,6 +952,10 @@
       <Group guid="guidMdToolsCmdSet" id="groupPreview" priority="0x0200">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
+      
+      <Group guid="guidMdToolsCmdSet" id="groupRmdRepl" priority="0x0210">
+        <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
+      </Group>
 
       <Group guid="guidMdToolsCmdSet" id="groupPreviewSubMenu" priority="0x0100">
         <Parent guid="guidMdToolsCmdSet" id="previewSubMenu"/>
@@ -1035,7 +1039,7 @@
     <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
-
+   
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
@@ -1044,8 +1048,13 @@
     <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
     </CommandPlacement>
-
     <!-- End R code editor context menu -->
+
+    <!-- RMD context menu -->   
+    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
+      <Parent guid="guidMdToolsCmdSet" id="groupRmdRepl"/>
+    </CommandPlacement>
+    <!-- End RMD context menu -->
     
     <!-- R history context menu -->
     <CommandPlacement guid="guidRToolsCmdSet" id="historyCopySelectedGroup" priority="0x100">
@@ -1247,6 +1256,7 @@
       <IDSymbol name="mdEditorContextMenu" value="300" />
       <IDSymbol name="previewSubMenu" value="130" />
       <IDSymbol name="groupPreview" value="135" />
+      <IDSymbol name="groupRmdRepl" value="136" />
       <IDSymbol name="groupPublish" value="145" />
       <IDSymbol name="groupPreviewSubMenu" value="200" />
 

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Editor.ContentType;
@@ -84,8 +81,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             RtvsTelemetry.Initialize();
 
-            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) {
-                p.LoadSettingsFromStorage();
+            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p.LoadSettings();
             }
 
             base.Initialize();
@@ -114,6 +111,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.Close();
 
             RtvsTelemetry.Current.Dispose();
+
+            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p.SaveSettings();
+            }
 
             base.Dispose(disposing);
         }

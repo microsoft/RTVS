@@ -34,6 +34,10 @@ set_rdebug <- function(obj, debug) {
   call_embedded("set_rdebug", obj, debug)
 }
 
+browser_set_debug <- function(n = 1) {
+  call_embedded("browser_set_debug", n)
+}
+
 NA_if_error <- function(expr) {
   tryCatch(expr, error = function(e) { NA })
 }

@@ -989,7 +989,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Single click in R history window selects the entire fragment that was sent to R.\r\nUp/Down arrows in the R Interactive Window navigate through chunks instead of single lines..
+        ///   Looks up a localized string similar to Single click in R history window selects the entire fragment that was sent to R. Up/Down arrows in the R Interactive Window navigate through chunks instead of single lines..
         /// </summary>
         public static string Settings_MultilineHistorySelection_Description {
             get {
