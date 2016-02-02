@@ -8,16 +8,14 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 
-namespace Microsoft.R.Editor.Validation.Tagger
-{
+namespace Microsoft.R.Editor.Validation.Tagger {
     /// <summary>
     /// Represents collection of HTML validation errors and tasks. Tag collection
     /// is a primary source for validation squiggles in the editor as well as
     /// source of the corresponsing messages for the application task list.
     /// Collection is thread safe.
     /// </summary>
-    internal sealed class ErrorTagCollection
-    {
+    internal sealed class ErrorTagCollection {
         /// <summary>
         /// Queue of tags removed in async operations. Typically used
         /// by task list item sources to update the task list.
@@ -59,8 +57,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// </summary>
         private long _taskRunning = 0;
 
-        public ErrorTagCollection(IEditorTree editorTree)
-        {
+        public ErrorTagCollection(IEditorTree editorTree) {
             RemovedTags = new ConcurrentQueue<EditorErrorTag>();
 
             _editorTree = editorTree;
@@ -70,12 +67,10 @@ namespace Microsoft.R.Editor.Validation.Tagger
             _editorTree.UpdateCompleted += OnUpdateCompleted;
         }
 
-        public EditorErrorTag[] ToArray()
-        {
+        public EditorErrorTag[] ToArray() {
             EditorErrorTag[] array;
 
-            lock (_lockObj)
-            {
+            lock (_lockObj) {
                 array = _tags.ToArray();
             }
 
@@ -83,24 +78,19 @@ namespace Microsoft.R.Editor.Validation.Tagger
 
         }
 
-        public IReadOnlyList<EditorErrorTag> ItemsInRange(ITextRange range)
-        {
+        public IReadOnlyList<EditorErrorTag> ItemsInRange(ITextRange range) {
             IReadOnlyList<EditorErrorTag> list;
 
-            lock (_lockObj)
-            {
+            lock (_lockObj) {
                 list = _tags.ItemsInRange(range);
             }
 
             return list;
         }
 
-        public void Clear()
-        {
-            lock (_lockObj)
-            {
-                foreach (var tag in _tags)
-                {
+        public void Clear() {
+            lock (_lockObj) {
+                foreach (var tag in _tags) {
                     RemovedTags.Enqueue(tag);
                 }
 
@@ -108,31 +98,30 @@ namespace Microsoft.R.Editor.Validation.Tagger
             }
         }
 
-        public void ReflectTextChange(int start, int oldLength, int newLength)
-        {
-            lock (_lockObj)
-            {
+        public void ReflectTextChange(int start, int oldLength, int newLength, bool trivialChange) {
+            lock (_lockObj) {
                 // Remove items first. This is different from default ReflectTextChange
                 // implementation since ReflectTextChange does not remove item
                 // that fully contains the change and rather expands it. We don't 
-                // want this behavior since changed element or attribute needs to be
-                // revalidated and hence expanding squiggle does not make sense.
-
-                var removed = _tags.RemoveInRange(new TextRange(start, oldLength), true);
+                // want this behavior since changed elementneeds to be revalidated
+                // and hence expanding squiggle does not make sense.
+                ICollection<EditorErrorTag> removed = null;
+                if (!trivialChange) {
+                    removed = _tags.RemoveInRange(new TextRange(start, oldLength), true);
+                }
 
                 _tags.ReflectTextChange(start, oldLength, newLength);
 
-                foreach (var tag in removed)
-                {
-                    RemovedTags.Enqueue(tag);
+                if (!trivialChange) {
+                    foreach (var tag in removed) {
+                        RemovedTags.Enqueue(tag);
+                    }
                 }
             }
         }
 
-        internal void Add(EditorErrorTag tag)
-        {
-            lock (_lockObj)
-            {
+        internal void Add(EditorErrorTag tag) {
+            lock (_lockObj) {
                 _tags.Add(tag);
             }
         }
@@ -143,18 +132,14 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// calculated span of changes in the text buffer.
         /// </summary>
         /// <returns></returns>
-        public ITextRange BeginUpdate()
-        {
+        public ITextRange BeginUpdate() {
             ITextRange range = TextRange.EmptyRange;
 
-            if (_editorTree != null)
-            {
+            if (_editorTree != null) {
                 SpinWait.SpinUntil(() => Interlocked.Read(ref _taskRunning) == 0);
 
-                lock (_lockObj)
-                {
-                    if (_removedRange != null)
-                    {
+                lock (_lockObj) {
+                    if (_removedRange != null) {
                         // Removed range may be out of current snapshot boundaries if, say, 
                         // a lot of elements were removed. Clip it appropriately.
 
@@ -172,12 +157,9 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// Signals that collection update has been completed.
         /// </summary>
         /// <param name="modified">True if collection was indeed modified since BeginUpdate was called</param>
-        public void EndUpdate(bool modified)
-        {
-            if (modified)
-            {
-                lock (_lockObj)
-                {
+        public void EndUpdate(bool modified) {
+            if (modified) {
+                lock (_lockObj) {
                     _tags.Sort();
                 }
             }
@@ -188,19 +170,15 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// </summary>
         /// <param name="node">Node in the AST</param>
         /// <returns>Text range that encloses removed tag spans</returns>
-        public ITextRange RemoveTagsForNode(IAstNode node)
-        {
+        public ITextRange RemoveTagsForNode(IAstNode node) {
             int start = _editorTree.TextBuffer.CurrentSnapshot.Length;
             ITextRange range = TextRange.EmptyRange;
             int end = 0;
 
-            lock (_lockObj)
-            {
+            lock (_lockObj) {
                 // Remove all tags for this node
-                for (int i = 0; i < _tags.Count; i++)
-                {
-                    if (TextRange.ContainsInclusiveEnd(node, _tags[i]))
-                    {
+                for (int i = 0; i < _tags.Count; i++) {
+                    if (TextRange.ContainsInclusiveEnd(node, _tags[i])) {
                         start = Math.Min(start, _tags[i].Start);
                         end = Math.Max(end, _tags[i].End);
 
@@ -217,10 +195,8 @@ namespace Microsoft.R.Editor.Validation.Tagger
             return range;
         }
 
-        private void OnTreeClosing(object sender, EventArgs e)
-        {
-            if (_editorTree != null)
-            {
+        private void OnTreeClosing(object sender, EventArgs e) {
+            if (_editorTree != null) {
                 _editorTree.Closing -= OnTreeClosing;
                 _editorTree.NodesRemoved -= OnNodesRemoved;
                 _editorTree.UpdateCompleted -= OnUpdateCompleted;
@@ -229,59 +205,44 @@ namespace Microsoft.R.Editor.Validation.Tagger
             }
         }
 
-        private void OnNewTree(object sender, EventArgs e)
-        {
+        private void OnNewTree(object sender, EventArgs e) {
             Clear();
         }
 
-        private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e)
-        {
-            foreach (var node in e.Nodes)
-            {
+        private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e) {
+            foreach (var node in e.Nodes) {
                 StoreRemovedNodes(node);
             }
         }
 
-        private void OnUpdateCompleted(object sender, TreeUpdatedEventArgs e)
-        {
-            if (_nodesPendingRemoval.Count > 0)
-            {
-                if (Interlocked.CompareExchange(ref _taskRunning, 1, 0) == 0)
-                {
+        private void OnUpdateCompleted(object sender, TreeUpdatedEventArgs e) {
+            if (_nodesPendingRemoval.Count > 0) {
+                if (Interlocked.CompareExchange(ref _taskRunning, 1, 0) == 0) {
                     Task.Run(() => ProcessPendingNodeRemoval());
                 }
             }
         }
 
-        private void StoreRemovedNodes(IAstNode node)
-        {
-            foreach (var child in node.Children)
-            {
+        private void StoreRemovedNodes(IAstNode node) {
+            foreach (var child in node.Children) {
                 StoreRemovedNodes(child);
             }
 
             _nodesPendingRemoval.Enqueue(node);
         }
 
-        private void ProcessPendingNodeRemoval()
-        {
+        private void ProcessPendingNodeRemoval() {
             int start = Int32.MaxValue;
             int end = 0;
 
-            try
-            {
-                if (_nodesPendingRemoval.Count > 0)
-                {
-                    lock (_lockObj)
-                    {
+            try {
+                if (_nodesPendingRemoval.Count > 0) {
+                    lock (_lockObj) {
                         IAstNode node;
 
-                        while (_nodesPendingRemoval.TryDequeue(out node))
-                        {
-                            for (int j = 0; j < _tags.Count; j++)
-                            {
-                                if (TextRange.ContainsInclusiveEnd(node, _tags[j]) || node.Parent == null)
-                                {
+                        while (_nodesPendingRemoval.TryDequeue(out node)) {
+                            for (int j = 0; j < _tags.Count; j++) {
+                                if (TextRange.ContainsInclusiveEnd(node, _tags[j]) || node.Parent == null) {
                                     start = Math.Min(start, _tags[j].Start);
                                     end = Math.Max(end, _tags[j].End);
 
@@ -293,8 +254,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                             }
                         }
 
-                        if (start != Int32.MaxValue)
-                        {
+                        if (start != Int32.MaxValue) {
                             if (_removedRange != null)
                                 _removedRange = TextRange.Union(_removedRange, start, end - start);
                             else
@@ -302,9 +262,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                         }
                     }
                 }
-            }
-            finally
-            {
+            } finally {
                 Interlocked.Exchange(ref _taskRunning, 0);
             }
         }

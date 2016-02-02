@@ -1,13 +1,10 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Utility;
-using Xunit;
 
 namespace Microsoft.R.Core.Test.Utility {
     [ExcludeFromCodeCoverage]

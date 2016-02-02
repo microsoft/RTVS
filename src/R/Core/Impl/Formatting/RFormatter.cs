@@ -145,8 +145,9 @@ namespace Microsoft.R.Core.Formatting {
             if (SuppressLineBreakCount == 0 && !_tokens.IsEndOfStream()) {
                 // We insert line break after } unless next token is comma 
                 // (scope is in the argument list) or a closing brace 
-                // (last parameter in a function or indexer).
-                if (!IsClosingToken(_tokens.CurrentToken.TokenType) && !IsInArguments()) {
+                // (last parameter in a function or indexer) or it is followed by 'else'
+                // so 'else' does not get separated from 'if'.
+                if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
                     _tb.SoftLineBreak();
                 }
             }
@@ -369,14 +370,17 @@ namespace Microsoft.R.Core.Formatting {
             return false;
         }
 
-        private static bool IsClosingToken(RTokenType tokenType) {
-            switch (tokenType) {
+        private bool IsClosingToken(RToken token) {
+            switch (token.TokenType) {
                 case RTokenType.Comma:
                 case RTokenType.CloseBrace:
                 case RTokenType.CloseSquareBracket:
                 case RTokenType.CloseDoubleSquareBracket:
                 case RTokenType.Semicolon:
                     return true;
+
+                case RTokenType.Keyword:
+                    return _textProvider.GetText(token) == "else";
             }
 
             return false;
@@ -621,7 +625,7 @@ namespace Microsoft.R.Core.Formatting {
 
         private void AppendComma() {
             bool trailingSpace;
-            if (IsClosingToken(_tokens.NextToken.TokenType)) {
+            if (IsClosingToken(_tokens.NextToken)) {
                 trailingSpace = false;
             } else {
                 trailingSpace = _options.SpaceAfterComma;
@@ -631,7 +635,7 @@ namespace Microsoft.R.Core.Formatting {
         }
 
         private bool ShouldAppendTextBeforeToken() {
-            if (IsClosingToken(_tokens.CurrentToken.TokenType)) {
+            if (IsClosingToken(_tokens.CurrentToken)) {
                 return false;
             }
 
