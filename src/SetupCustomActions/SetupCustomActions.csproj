@@ -99,8 +99,16 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
+
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
+  <Import Project="$(WixCATargetsPath)" />
+
+  <Target Name="AfterCompile" >
+    <CallTarget Targets="SignFiles" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'"  />
+    <CallTarget Targets="PackCustomAction"  />
+  </Target>
+      
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
@@ -109,6 +117,4 @@
     <Error Condition="!Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets'))" />
   </Target>
   <Import Project="..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" />
-  <Import Project="$(WixCATargetsPath)" />
-  <Target Name="PackAfterSigning" AfterTargets="SignFiles" BeforeTargets="PackCustomAction" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'" />
 </Project>
