@@ -110,5 +110,25 @@
   </Target>
   <Import Project="..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" />
   <Import Project="$(WixCATargetsPath)" />
-  <Target Name="PackAfterSigning" AfterTargets="SignFiles" BeforeTargets="PackCustomAction" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'" />
+  <!--
+  ==================================================================================================
+  AfterCompile (redefinition when files are getting fully signed)
+    Prevents Wix PackCustomAction from excution before custom actions assembly is signed.
+    Calls the PackCustomAction target only after files are signed by the lab build.
+    Overrides the AfterCompile target from WIX CA targets.
+  ==================================================================================================
+  -->
+  <!-- Uncomment for local machine testing -->
+  <!--
+    <PropertyGroup>
+      <SignType>real</SignType>
+    </PropertyGroup>
+  <Target Name="SignFiles" />
+  -->
+  <Target Name="PackSignedCustomAction" DependsOnTargets="SignFiles" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'">
+    <Message Text="Before calling PackCustomAction" />
+    <CallTarget Targets="PackCustomAction" />
+    <Message Text="After calling PackCustomAction" />
+  </Target>
+  <Target Name="AfterCompile" DependsOnTargets="PackSignedCustomAction" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'"/>
 </Project>
