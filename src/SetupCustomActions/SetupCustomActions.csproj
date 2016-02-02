@@ -103,9 +103,13 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
   <Import Project="$(WixCATargetsPath)" />
-
-  <Target Name="AfterCompile" >
-    <CallTarget Targets="SignFiles" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'"  />
+  
+  <!--Reset AfterCompile to default-->
+  <Target Name="AfterCompile" />
+  <Target Name="PackAfterSign" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'" AfterTargets="SignFiles" >
+    <CallTarget Targets="PackCustomAction"  />
+  </Target>
+  <Target Name="PackNoSign" Condition="'$(SignType)' != 'real' AND '$(SignType)' != 'test'" AfterTargets="AfterCompile" >
     <CallTarget Targets="PackCustomAction"  />
   </Target>
       
