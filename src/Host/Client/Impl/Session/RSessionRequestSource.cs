@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -11,9 +12,10 @@ namespace Microsoft.R.Host.Client.Session {
         public bool IsVisible { get; }
         public IReadOnlyList<IRContext> Contexts { get; }
 
-        public RSessionRequestSource(bool isVisible, IReadOnlyList<IRContext> contexts) {
+        public RSessionRequestSource(bool isVisible, IReadOnlyList<IRContext> contexts, CancellationToken ct) {
             _createRequestTcs = new TaskCompletionSource<IRSessionInteraction>();
             _responseTcs = new TaskCompletionSource<object>();
+            ct.Register(() => _createRequestTcs.TrySetCanceled(ct));
 
             IsVisible = isVisible;
             Contexts = contexts ?? new[] { RHost.TopLevelContext };
@@ -22,6 +24,7 @@ namespace Microsoft.R.Host.Client.Session {
         public void Request(string prompt, int maxLength, TaskCompletionSource<string> requestTcs) {
             var request = new RSessionInteraction(requestTcs, _responseTcs, prompt, maxLength, Contexts);
             if (_createRequestTcs.TrySetResult(request)) {
+                request.Dispose();
                 return;
             }
 
