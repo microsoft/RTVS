@@ -143,7 +143,7 @@ inject_breakpoints <- function(expr) {
       target_expr <- expr[[step]];
 
       # If there's already an injected breakpoint there, nothing to do for this line.
-      if (isTRUE(attr(target_expr, 'rtvs::at_breakpoint'))) {
+      if (isTRUE(attr(target_expr, 'rtvs::at_breakpoint')) || !is.null(attr(target_expr, 'rtvs::original_expr'))) {
         next;
       }
 
