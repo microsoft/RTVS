@@ -98,8 +98,8 @@ namespace SetupCustomActions {
             session["InstallVS"] = "No";
 
             using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
-                try {
-                    foreach (var vsk in vsKeys) {
+                foreach (var vsk in vsKeys) {
+                    try {
                         using (var key = hklm.OpenSubKey(vsServicingKeyName + vsk)) {
                             object value = key.GetValue("Install");
                             if (value != null && ((int)value) == 1) {
@@ -108,8 +108,8 @@ namespace SetupCustomActions {
                                 break;
                             }
                         }
-                    }
-                } catch (Exception) { }
+                    } catch (Exception) { }
+                }
             }
 
             if (!vsInstalled) {
