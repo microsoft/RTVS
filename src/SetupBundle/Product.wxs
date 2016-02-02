@@ -49,10 +49,6 @@
     <?include VSDetection.wxi?>
     
     <!-- Require VS 2015 Update 1 -->
-    <dd:Blocker ShortName="VsEntUpdateBlock" Type="Stop" Condition="Enterprise_VersionKey &lt; v14.0.24720"
-                DisplayText="R Tools require Visual Studio 2015 Update 1 or higher." />
-    <dd:Blocker ShortName="VsProUpdateBlock" Type="Stop" Condition="Professional_VersionKey &lt; v14.0.24720"
-                DisplayText="R Tools require Visual Studio 2015 Update 1 or higher." />
     <dd:Blocker ShortName="VsCommUpdateBlock" Type="Stop" Condition="Community_VersionKey &lt; v14.0.24720"
                 DisplayText="R Tools require Visual Studio 2015 Update 1 or higher." />
 
