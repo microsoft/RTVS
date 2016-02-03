@@ -14,15 +14,19 @@ namespace Microsoft.R.Host.Client.Test {
         public string ExportPreviousPlotToImageResultPath { get; }
         public string ExpectedExportPreviousPlotToImagePath { get; }
         public string ExpectedExportToPdfPath { get; }
+        public string ActualFolderPath { get; }
 
         public GraphicsDeviceTestFilesFixture() : base(@"Host\Client\Test\Files", "Files") {
+            ActualFolderPath = Path.Combine(DestinationPath, "Actual");
+            Directory.CreateDirectory(ActualFolderPath);
+
             // Path to files that are generated when tests are executed
-            ExportToPdfResultPath = Path.Combine(DestinationPath, "ExportToPdfResult.pdf");
-            ExportToBmpResultPath = Path.Combine(DestinationPath, "ExportToBmpResult.bmp");
-            ExportToPngResultPath = Path.Combine(DestinationPath, "ExportToPngResult.png");
-            ExportToJpegResultPath = Path.Combine(DestinationPath, "ExportToJpegResult.jpg");
-            ExportToTiffResultPath = Path.Combine(DestinationPath, "ExportToTiffResult.tif");
-            ExportPreviousPlotToImageResultPath = Path.Combine(DestinationPath, "ExportPreviousPlotToImageResultPath.bmp");
+            ExportToPdfResultPath = Path.Combine(ActualFolderPath, "ExportToPdfResult.pdf");
+            ExportToBmpResultPath = Path.Combine(ActualFolderPath, "ExportToBmpResult.bmp");
+            ExportToPngResultPath = Path.Combine(ActualFolderPath, "ExportToPngResult.png");
+            ExportToJpegResultPath = Path.Combine(ActualFolderPath, "ExportToJpegResult.jpg");
+            ExportToTiffResultPath = Path.Combine(ActualFolderPath, "ExportToTiffResult.tif");
+            ExportPreviousPlotToImageResultPath = Path.Combine(ActualFolderPath, "ExportPreviousPlotToImageResultPath.bmp");
 
             // Path to files that are compared against and are included as part of test sources
             ExpectedExportPreviousPlotToImagePath = Path.Combine(DestinationPath, "ExportPreviousPlotToImageExpectedResult.bmp");
