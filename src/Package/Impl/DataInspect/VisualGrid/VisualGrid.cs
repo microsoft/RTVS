@@ -174,6 +174,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             drawingContext.DrawRectangle(Background, null, new Rect(RenderSize));
         }
 
+        public void Clear() {
+            _visualChildren.Clear();
+        }
+
         protected override int VisualChildrenCount {
             get {
                 if (_visualChildren.Count == 0) return 0;
