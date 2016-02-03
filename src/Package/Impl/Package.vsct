@@ -231,12 +231,16 @@
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
-
+      
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0300">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0310">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuResetGroup" priority="0x0320">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
@@ -1157,11 +1161,11 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x410">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdResetRepl" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuResetGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdResetRepl" priority="0x0415">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x410">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
@@ -1318,6 +1322,7 @@
       <IDSymbol name="sessionSubMenuEditorGroup" value="555"/>
       <IDSymbol name="sessionToolbarDirectoryGroup" value="556"/>
       <IDSymbol name="sessionRDebugGroup" value="557"/>
+      <IDSymbol name="sessionSubMenuResetGroup" value="558"/>
 
       <IDSymbol name="interactiveWindowContextGroup" value="570"/>
       <IDSymbol name="icmdRexecuteReplCmd" value="571"/>

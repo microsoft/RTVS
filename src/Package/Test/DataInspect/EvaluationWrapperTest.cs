@@ -168,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
                 grid.Grid[0, 2].ShouldBeEquivalentTo("5");
                 grid.Grid[0, 3].ShouldBeEquivalentTo("7");
-                grid.Grid[0, 4].ShouldBeEquivalentTo(" 9"); // TODO: R returns with space
+                grid.Grid[0, 4].ShouldBeEquivalentTo("9");
                 grid.Grid[1, 2].ShouldBeEquivalentTo("6");
                 grid.Grid[1, 3].ShouldBeEquivalentTo("8");
                 grid.Grid[1, 4].ShouldBeEquivalentTo("10");
@@ -201,9 +201,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 grid.RowHeader[1].ShouldBeEquivalentTo("NA");
 
                 grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 2].ShouldBeEquivalentTo(" NA");    // TODO: R returns with space
+                grid.Grid[0, 2].ShouldBeEquivalentTo("NA");
                 grid.Grid[0, 3].ShouldBeEquivalentTo("7");
-                grid.Grid[0, 4].ShouldBeEquivalentTo(" 9");     // TODO: R returns with space
+                grid.Grid[0, 4].ShouldBeEquivalentTo("9");
                 grid.Grid[1, 2].ShouldBeEquivalentTo("NaN");
                 grid.Grid[1, 3].ShouldBeEquivalentTo("8");
                 grid.Grid[1, 4].ShouldBeEquivalentTo("10");
@@ -414,6 +414,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 VariableRHostScript.AssertEvaluationWrapper(children[0], x_expectation);
                 VariableRHostScript.AssertEvaluationWrapper(children[1], y_expectation);
             }
+        }
+
+        object[,] arrayTestData = new object[,] {
+            { "array.empty <- array();", new VariableExpectation() { Name = "array.empty", Value = "NA", TypeName = "logical", Class = "array", HasChildren = false, CanShowDetail = false } },
+            { "array.10 <- array(1:10);", new VariableExpectation() { Name = "array.10", Value = "int [1:10(1d)] 1 2 3 4 5 6 7 8 9 10", TypeName = "integer", Class = "array", HasChildren = true, CanShowDetail = false } },
+            { "array.2x2 <- array(c('z', 'y', 'x', 'w'), dim = c(2, 2));", new VariableExpectation() { Name = "array.2x2", Value = "chr [1:2, 1:2] \"z\" \"y\" \"x\" \"w\"", TypeName = "character", Class = "matrix", HasChildren = true, CanShowDetail = true } },
+            { "array.2x3x4 <- array(as.double(101:124), dim=c(2,3,4));", new VariableExpectation() { Name = "array.2x3x4", Value = "num [1:2, 1:3, 1:4] 101 102 103 104 105 106 107 108 109 110 ...", TypeName = "double", Class = "array", HasChildren = true, CanShowDetail = false } },
+        };
+
+        [Test]
+        [Category.Variable.Explorer]
+        public Task ArrayTest() {
+            return RunTest(arrayTestData);
         }
 
         private static async Task RunTest(object[,] testData) {

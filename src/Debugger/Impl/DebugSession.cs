@@ -203,7 +203,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task<bool> StepOutAsync() {
-            return StepAsync("browserSetDebug()", "c");
+            return StepAsync("rtvs:::browser_set_debug()", "c");
         }
 
         /// <returns>

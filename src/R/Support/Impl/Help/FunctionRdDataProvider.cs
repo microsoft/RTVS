@@ -51,7 +51,9 @@ namespace Microsoft.R.Host.Client.Signatures {
                 var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 _session = provider.GetOrCreate(SessionId, null);
                 _session.Disposed += OnSessionDisposed;
+            }
 
+            if (!_session.IsHostRunning) { 
                 int timeout = EditorShell.Current.IsUnitTestEnvironment ? 10000 : 3000;
                 await _session.StartHostAsync(new RHostStartupInfo {
                     Name = "RdData",

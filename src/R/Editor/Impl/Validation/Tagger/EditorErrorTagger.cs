@@ -17,14 +17,12 @@ using Microsoft.R.Editor.Validation.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace Microsoft.R.Editor.Validation.Tagger
-{
+namespace Microsoft.R.Editor.Validation.Tagger {
     /// <summary>
     /// This gives the editor a list of ranges that need to be underlined with red squiggles.
     /// As the stylesheet changes, this class keeps the list of syntax errors up to date.
     /// </summary>
-    public class EditorErrorTagger : ITagger<IErrorTag>, IEditorTaskListItemSource
-    {
+    public class EditorErrorTagger : ITagger<IErrorTag>, IEditorTaskListItemSource {
         [Import(AllowDefault = true)]
         internal IEditorTaskList TaskList { get; set; }
 
@@ -43,8 +41,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
         ErrorTagCollection _errorTags;
         private bool _fireCodeMarkerUponCompletion;
 
-        public EditorErrorTagger(ITextBuffer textBuffer)
-        {
+        public EditorErrorTagger(ITextBuffer textBuffer) {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             _document = REditorDocument.FromTextBuffer(textBuffer);
@@ -61,8 +58,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
             // Don't push syntax errors to the Error List in transient
             // documents such as in document attached to a projected buffer
             // in the R interactive window
-            if (TaskList != null && _document.WorkspaceItem != null && _document.WorkspaceItem.Path.Length > 0)
-            {
+            if (TaskList != null && _document.WorkspaceItem != null && _document.WorkspaceItem.Path.Length > 0) {
                 TaskList.AddTaskSource(this);
             }
 
@@ -79,63 +75,51 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// Retriever error (squiggly) tagger associated with the text buffer
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
-        public static EditorErrorTagger FromTextBuffer(ITextBuffer textBuffer)
-        {
+        public static EditorErrorTagger FromTextBuffer(ITextBuffer textBuffer) {
             return ServiceManager.GetService<EditorErrorTagger>(textBuffer);
         }
 
-        private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e)
-        {
-            foreach(IAstNode node in e.Nodes)
-            {
+        private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e) {
+            foreach (IAstNode node in e.Nodes) {
                 _errorTags.RemoveTagsForNode(node);
             }
         }
 
-        private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e)
-        {
-            if (e.UpdateType != TreeUpdateType.PositionsOnly)
-            {
+        private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e) {
+            if (e.UpdateType != TreeUpdateType.PositionsOnly) {
                 RemoveAllTags();
             }
         }
 
-        private void OnCleared(object sender, EventArgs e)
-        {
+        private void OnCleared(object sender, EventArgs e) {
             RemoveAllTags();
         }
 
-        private void RemoveAllTags()
-        {
+        private void RemoveAllTags() {
             _errorTags.Clear();
 
             if (TasksCleared != null)
                 TasksCleared(this, EventArgs.Empty);
 
-            if (TagsChanged != null)
-            {
+            if (TagsChanged != null) {
                 TagsChanged(this, new SnapshotSpanEventArgs(
                                     new SnapshotSpan(_textBuffer.CurrentSnapshot, 0, _textBuffer.CurrentSnapshot.Length)));
             }
         }
 
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
-        {
-            if (REditorSettings.SyntaxCheck && e.Changes.Count > 0)
-            {
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+            if (REditorSettings.SyntaxCheck && e.Changes.Count > 0) {
                 var changes = TextUtility.ConvertToRelative(e);
-                foreach (var change in changes)
-                {
-                    _errorTags.ReflectTextChange(change.Start, change.OldLength, change.NewLength);
+                foreach (var change in changes) {
+                    _errorTags.ReflectTextChange(change.Start, change.OldLength, change.NewLength,
+                                                 trivialChange: !_document.EditorTree.IsReady);
                 }
 
-                if ((_errorTags.RemovedTags.Count > 0) && (TagsChanged != null))
-                {
+                if ((_errorTags.RemovedTags.Count > 0) && (TagsChanged != null)) {
                     int start = Int32.MaxValue;
                     int end = Int32.MinValue;
 
-                    foreach(var errorTag in _errorTags.RemovedTags)
-                    {
+                    foreach (var errorTag in _errorTags.RemovedTags) {
                         start = Math.Min(start, errorTag.Start);
                         end = Math.Max(end, errorTag.End);
                     }
@@ -156,10 +140,8 @@ namespace Microsoft.R.Editor.Validation.Tagger
         }
 
         #region Tree event handlers
-        private void OnDocumentClosing(object sender, EventArgs e)
-        {
-            if (_textBuffer != null)
-            {
+        private void OnDocumentClosing(object sender, EventArgs e) {
+            if (_textBuffer != null) {
                 EditorShell.Current.Idle -= OnIdle;
 
                 _document.EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
@@ -190,12 +172,9 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="eventArgs"></param>
-        private void OnIdle(object sender, EventArgs eventArgs)
-        {
-            if (REditorSettings.SyntaxCheck && _textBuffer != null)
-            {
-                if (ResultsQueue.Count > 0)
-                {
+        private void OnIdle(object sender, EventArgs eventArgs) {
+            if (REditorSettings.SyntaxCheck && _textBuffer != null) {
+                if (ResultsQueue.Count > 0) {
                     _fireCodeMarkerUponCompletion = true;
 
                     List<IEditorTaskListItem> addedTags = new List<IEditorTaskListItem>();
@@ -206,43 +185,30 @@ namespace Microsoft.R.Editor.Validation.Tagger
                     var timer = Stopwatch.StartNew();
                     timer.Reset();
 
-                    while (timer.ElapsedMilliseconds < 100)
-                    {
+                    while (timer.ElapsedMilliseconds < 100) {
                         IValidationError error;
-                        if (!ResultsQueue.TryDequeue(out error))
-                        {
+                        if (!ResultsQueue.TryDequeue(out error)) {
                             break;
                         }
 
-                        if (String.IsNullOrEmpty(error.Message))
-                        {
+                        if (String.IsNullOrEmpty(error.Message)) {
                             // Empty message means remove all error for the element.
                             ITextRange removedRange = TextRange.EmptyRange; // _errorTags.RemoveTagsForNode(error.NodeKey);
 
                             // Only update changedRange if there were errors removed
-                            if (removedRange.End > 0)
-                            {
-                                if (changedRange.End == 0)
-                                {
+                            if (removedRange.End > 0) {
+                                if (changedRange.End == 0) {
                                     changedRange = removedRange;
-                                }
-                                else
-                                {
+                                } else {
                                     changedRange = TextRange.Union(changedRange, removedRange);
                                 }
                             }
-                        }
-                        else
-                        {
+                        } else {
                             EditorErrorTag tag = new EditorErrorTag(_document.EditorTree, error);
-                            if (tag.Length > 0)
-                            {
-                                if (changedRange.End == 0)
-                                {
+                            if (tag.Length > 0) {
+                                if (changedRange.End == 0) {
                                     changedRange = tag;
-                                }
-                                else
-                                {
+                                } else {
                                     changedRange = TextRange.Union(changedRange, tag);
                                 }
 
@@ -265,20 +231,16 @@ namespace Microsoft.R.Editor.Validation.Tagger
                     if (BeginUpdatingTasks != null)
                         BeginUpdatingTasks(this, EventArgs.Empty);
 
-                    try
-                    {
+                    try {
                         if (addedTags.Count > 0 && TasksAdded != null)
                             TasksAdded(this, new TasksListItemsChangedEventArgs(addedTags));
 
-                        if (_errorTags.RemovedTags.Count > 0)
-                        {
+                        if (_errorTags.RemovedTags.Count > 0) {
                             List<IEditorTaskListItem> removedTags = new List<IEditorTaskListItem>();
-                            while (_errorTags.RemovedTags.Count > 0)
-                            {
+                            while (_errorTags.RemovedTags.Count > 0) {
                                 EditorErrorTag tag;
 
-                                if (_errorTags.RemovedTags.TryDequeue(out tag))
-                                {
+                                if (_errorTags.RemovedTags.TryDequeue(out tag)) {
                                     removedTags.Add(tag);
                                 }
                             }
@@ -286,9 +248,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                             if (TasksRemoved != null && removedTags.Count > 0)
                                 TasksRemoved(this, new TasksListItemsChangedEventArgs(removedTags));
                         }
-                    }
-                    finally
-                    {
+                    } finally {
                         if (EndUpdatingTasks != null)
                             EndUpdatingTasks(this, EventArgs.Empty);
                     }
@@ -296,8 +256,7 @@ namespace Microsoft.R.Editor.Validation.Tagger
                     timer.Stop();
                 }
 
-                if (_fireCodeMarkerUponCompletion && (ResultsQueue.Count == 0))
-                {
+                if (_fireCodeMarkerUponCompletion && (ResultsQueue.Count == 0)) {
                     // Use this flag so we don't incessantly fire this code marker on every idle.
                     // TODO: Even this isn't quite correct, as it's possible that a validator
                     //  yet pushed all it's entries into the results queue. There should really
@@ -311,14 +270,11 @@ namespace Microsoft.R.Editor.Validation.Tagger
         /// <summary>
         /// Provides the list of squiggles to the editor
         /// </summary>
-        public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
-        {
+        public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             List<ITagSpan<IErrorTag>> tags = new List<ITagSpan<IErrorTag>>();
 
-            if (REditorSettings.SyntaxCheck && _errorTags != null)
-            {
-                foreach (var span in spans)
-                {
+            if (REditorSettings.SyntaxCheck && _errorTags != null) {
+                foreach (var span in spans) {
                     // Force the input span to cover at least one character
                     // (this helps make tooltips work where the input span is empty)
                     int spanAfterEnd = (span.Length == 0) ? span.Start.Position + 1 : span.End.Position;
@@ -340,10 +296,8 @@ namespace Microsoft.R.Editor.Validation.Tagger
 #pragma warning restore 67
         public event EventHandler<EventArgs> TasksUpdated;
 
-        public IReadOnlyCollection<IEditorTaskListItem> Tasks
-        {
-            get
-            {
+        public IReadOnlyCollection<IEditorTaskListItem> Tasks {
+            get {
                 var array = _errorTags.ToArray();
                 var tasks = new List<IEditorTaskListItem>();
 
@@ -352,10 +306,8 @@ namespace Microsoft.R.Editor.Validation.Tagger
             }
         }
 
-        public ITextBuffer TextBuffer
-        {
-            get
-            {
+        public ITextBuffer TextBuffer {
+            get {
                 return _textBuffer;
             }
         }

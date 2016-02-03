@@ -143,7 +143,7 @@ inject_breakpoints <- function(expr) {
       target_expr <- expr[[step]];
 
       # If there's already an injected breakpoint there, nothing to do for this line.
-      if (isTRUE(attr(target_expr, 'rtvs::at_breakpoint'))) {
+      if (isTRUE(attr(target_expr, 'rtvs::at_breakpoint')) || !is.null(attr(target_expr, 'rtvs::original_expr'))) {
         next;
       }
 
@@ -190,6 +190,10 @@ inject_breakpoints <- function(expr) {
         # Copy srcrefs from the original, replicating them such that they apply to the entirety of
         # the replacement expression, so that the same line is considered current for all of it.
         attr(after[[i]], 'srcref') <- rep(list(before_srcref[[i]]), length(after[[i]]));
+
+        # Auto-step over '{' and '.doTrace', so that stepping skips to the original expression.
+        attr(attr(after, 'srcref')[[i]], 'Microsoft.R.Host::auto_step_over') <- TRUE;
+        attr(attr(after[[i]], 'srcref')[[2]], 'Microsoft.R.Host::auto_step_over') <- TRUE;
 
         # Recurse into the original expression, in case it has more breakpoints inside.
         after[[i]][[3]] <- Recall(before[[i]], after[[i]][[3]]);

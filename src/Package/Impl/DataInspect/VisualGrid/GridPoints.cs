@@ -75,6 +75,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public static double MinItemHeight { get { return 10.0; } }
 
+
+        public double AverageItemHeight {
+            get {
+                Debug.Assert(_rowCount != 0);
+                return VerticalExtent / _rowCount;
+            }
+        }
+
         private double _verticalOffset;
         public double VerticalOffset {
             get {

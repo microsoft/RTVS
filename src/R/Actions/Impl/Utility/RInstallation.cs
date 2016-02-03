@@ -65,7 +65,7 @@ namespace Microsoft.R.Actions.Utility {
         }
 
         public static void GoToRInstallPage() {
-            Process.Start("https://cran.r-project.org/");
+            Process.Start("https://mran.revolutionanalytics.com/download/#download");
         }
 
         /// <summary>

@@ -60,7 +60,6 @@
     <Compile Include="DataInspect\DataSource\Grid.cs" />
     <Compile Include="DataInspect\DataSource\IGrid.cs" />
     <Compile Include="DataInspect\DataSource\IGridProvider.cs" />
-    <Compile Include="DataInspect\DataSource\IListProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
     <Compile Include="DataInspect\DataSource\ListToRange.cs" />
     <Compile Include="DataInspect\DebugGridViewProvider.cs" />

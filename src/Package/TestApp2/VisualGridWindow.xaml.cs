@@ -74,12 +74,5 @@ namespace Microsoft.VisualStudio.R.TestApp {
                 return (IGridData<string>)new MockGridData(range);
             });
         }
-
-        public Task<IGrid<string>> GetRangeAsync(GridRange gridRange) {
-            return Task.Run(async () => {
-                await Task.Delay(TimeSpan.FromMilliseconds(100));
-                return (IGrid<string>)new Grid<string>(gridRange, (r, c) => string.Format("{0}:{1}", r, c));
-            });
-        }
     }
 }

@@ -28,11 +28,18 @@ namespace Microsoft.R.Editor.Formatting {
             if (rPoint.HasValue) {
                 ITextBuffer subjectBuffer = rPoint.Value.Snapshot.TextBuffer;
                 if (typedChar == '\r' || typedChar == '\n') {
-                    bool formatScope = ShouldFormatScope(textView, subjectBuffer, -1);
-                    if (formatScope) {
-                        FormatOperations.FormatCurrentNode<IStatement>(textView, subjectBuffer);
-                    } else {
-                        FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, -1);
+                    // Special case for hitting caret after } and before 'else'. We do want to format
+                    // the construct as '} else {' but if user types Enter after } and we auto-format
+                    // it will look as if the editor just eats the Enter. Instead, we will not be
+                    // autoformatting in this specific case. User can always format either the document
+                    // or select the block and reformat it.
+                    if (!IsBetweenCurlyAndElse(subjectBuffer, rPoint.Value.Position)) {
+                        bool formatScope = ShouldFormatScope(textView, subjectBuffer, -1);
+                        if (formatScope) {
+                            FormatOperations.FormatCurrentNode<IStatement>(textView, subjectBuffer);
+                        } else {
+                            FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, -1);
+                        }
                     }
                 } else if (typedChar == ';') {
                     // Verify we are at the end of the string and not in a middle
@@ -47,6 +54,29 @@ namespace Microsoft.R.Editor.Formatting {
                     FormatOperations.FormatNode<IStatement>(textView, subjectBuffer, Math.Max(rPoint.Value - 1, 0));
                 }
             }
+        }
+
+        private static bool IsBetweenCurlyAndElse(ITextBuffer textBuffer, int position) {
+            // Note that this is post-typing to the construct is now '}<line_break>else'
+            int lineNum = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
+            if (lineNum < 1) {
+                return false;
+            }
+
+            ITextSnapshotLine prevLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum-1);
+
+            string leftSide = prevLine.GetText().TrimEnd();
+            if (!leftSide.EndsWith("}", StringComparison.Ordinal)) {
+                return false;
+            }
+
+            ITextSnapshotLine currentLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum);
+            string rightSide = currentLine.GetText().TrimStart();
+            if (!rightSide.StartsWith("else", StringComparison.Ordinal)) {
+                return false;
+            }
+
+            return true;
         }
 
         private static SnapshotPoint? GetCaretPointInBuffer(ITextView textView, out IEditorTree tree) {
