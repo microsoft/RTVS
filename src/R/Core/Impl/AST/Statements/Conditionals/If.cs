@@ -60,7 +60,6 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals {
             return true;
         }
 
-
         private bool AllowLineBreakBeforeElse(ParseContext context) {
             if (context.Scopes.Count > 1) {
                 return true;
