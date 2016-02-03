@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -39,7 +40,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // and user will be able to use scrollbars to see the whole thing
             int width = Math.Max((int)e.NewSize.Width, MinWidth);
             int height = Math.Max((int)e.NewSize.Height, MinHeight);
-            PlotContentProvider.DoNotWait(PlotHistory.PlotContentProvider.ResizePlotAsync(width, height));
+
+            // Throttle resize requests since we get a lot of size changed events when the tool window is undocked
+            IdleTimeAction.Cancel(this);
+            IdleTimeAction.Create(() => {
+                PlotContentProvider.DoNotWait(PlotHistory.PlotContentProvider.ResizePlotAsync(width, height));
+            }, 100, this);
         }
 
         private void OnPlotHistoryHistoryChanged(object sender, EventArgs e) {
