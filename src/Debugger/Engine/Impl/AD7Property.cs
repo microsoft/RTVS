@@ -48,18 +48,18 @@ namespace Microsoft.R.Debugger.Engine {
             IsSynthetic = isSynthetic;
             IsFrameEnvironment = isFrameEnvironment;
 
-            _children = Lazy.Create(() =>
-                (EvaluationResult as DebugValueEvaluationResult)
-                ?.GetChildrenAsync(_prefetchedFields, ChildrenMaxLength, ReprMaxLength)
-                ?.GetResultOnUIThread()
-                ?? new DebugEvaluationResult[0]);
+            _children = Lazy.Create(CreateChildren);
+            _reprToString = Lazy.Create(CreateReprToString);
+        }
 
-            _reprToString = Lazy.Create(() =>
-                (EvaluationResult
-                 .EvaluateAsync(DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprToString)
-                 .GetResultOnUIThread()
-                 as DebugValueEvaluationResult
-                )?.Representation.ToString);
+        private IReadOnlyList<DebugEvaluationResult> CreateChildren() {
+            return TaskExtensions.Run(ct => (EvaluationResult as DebugValueEvaluationResult)?.GetChildrenAsync(_prefetchedFields, ChildrenMaxLength, ReprMaxLength, ct))
+                ?? new DebugEvaluationResult[0];
+        }
+
+        private string CreateReprToString() {
+            var ev = TaskExtensions.Run(ct => EvaluationResult.EvaluateAsync(DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprToString, cancellationToken: ct));
+            return (ev as DebugValueEvaluationResult)?.Representation.ToString;
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
@@ -78,7 +78,7 @@ namespace Microsoft.R.Debugger.Engine {
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
             if (valueResult != null && valueResult.HasAttributes == true) {
                 string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
-                var attrResult = StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", reprMaxLength: ReprMaxLength).GetResultOnUIThread();
+                var attrResult = TaskExtensions.Run(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", reprMaxLength: ReprMaxLength, cancellationToken:ct));
                 if (!(attrResult is DebugErrorEvaluationResult)) {
                     var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                     infos = new[] { attrInfo }.Concat(infos);
@@ -239,7 +239,7 @@ namespace Microsoft.R.Debugger.Engine {
             errorString = null;
 
             // TODO: dwRadix
-            var setResult = EvaluationResult.SetValueAsync(pszValue).GetResultOnUIThread() as DebugErrorEvaluationResult;
+            var setResult = TaskExtensions.Run(ct => EvaluationResult.SetValueAsync(pszValue, ct)) as DebugErrorEvaluationResult;
             if (setResult != null) {
                 errorString = setResult.ErrorText;
                 return VSConstants.E_FAIL;

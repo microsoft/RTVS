@@ -20,28 +20,28 @@ namespace Microsoft.R.Debugger.Engine {
             return twdf;
         });
 
-        public static void GetResultOnUIThread(this Task task, int delay = 1) {
-            var syncContext = SynchronizationContext.Current;
-            if (syncContext == null) {
-                var err = Invariant($"{nameof(GetResultOnUIThread)} called from a background thread");
-                Trace.Fail(err);
-                throw new InvalidOperationException(err);
+        public static void Run(Func<CancellationToken, Task> method, double delayToShowDialog = 1) {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            
+            using (var session = StartWaitDialog(delayToShowDialog)) {
+                var ct = session.UserCancellationToken;
+                ThreadHelper.JoinableTaskFactory.Run(() => method(ct));
             }
-
-            var twdf = _twdf.Value;
-            IVsThreadedWaitDialog2 twd;
-            Marshal.ThrowExceptionForHR(twdf.CreateInstance(out twd));
-
-            // Post EndWaitDialog rather than invoking directly, so that it is guaranteed to be invoked after StartWaitDialog.
-            task.ContinueWith(delegate { syncContext.Post(delegate { twd.EndWaitDialog(); }, null); });
-            twd.StartWaitDialog(null, "Debugger operation is in progress...", null, null, null, delay, false, true);
-
-            task.GetAwaiter().GetResult();
         }
 
-        public static TResult GetResultOnUIThread<TResult>(this Task<TResult> task, int delay = 1) {
-            GetResultOnUIThread((Task)task, delay);
-            return task.GetAwaiter().GetResult();
+        public static T Run<T>(Func<CancellationToken, Task<T>> method, double delayToShowDialog = 1) {
+            T result;
+            using (var session = StartWaitDialog(delayToShowDialog)) {
+                var ct = session.UserCancellationToken;
+                result = ThreadHelper.JoinableTaskFactory.Run(() => method(ct));
+            }
+
+            return result;
+        }
+
+        private static ThreadedWaitDialogHelper.Session StartWaitDialog(double delayToShowDialog) {
+            var initialProgress = new ThreadedWaitDialogProgressData("Debugger operation is in progress...", isCancelable: true);
+            return _twdf.Value.StartWaitDialog(null, initialProgress, TimeSpan.FromSeconds(delayToShowDialog));
         }
     }
 }

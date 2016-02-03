@@ -16,7 +16,7 @@ namespace Microsoft.R.Debugger.Engine {
             Engine = engine;
             StackFrame = stackFrame;
 
-            _property = Lazy.Create(() => new AD7Property(this, StackFrame.GetEnvironmentAsync().GetResultOnUIThread(), isFrameEnvironment: true));
+            _property = Lazy.Create(() => new AD7Property(this, TaskExtensions.Run(ct => StackFrame.GetEnvironmentAsync(cancellationToken:ct)), isFrameEnvironment: true));
         }
 
         int IDebugStackFrame2.EnumProperties(enum_DEBUGPROP_INFO_FLAGS dwFields, uint nRadix, ref Guid guidFilter, uint dwTimeout, out uint pcelt, out IEnumDebugPropertyInfo2 ppEnum) {

@@ -24,10 +24,10 @@ namespace Microsoft.R.Host.Client.Session {
         public void Request(string prompt, int maxLength, TaskCompletionSource<string> requestTcs) {
             var request = new RSessionInteraction(requestTcs, _responseTcs, prompt, maxLength, Contexts);
             if (_createRequestTcs.TrySetResult(request)) {
-                request.Dispose();
                 return;
             }
 
+            request.Dispose();
             if (CreateRequestTask.IsCanceled) {
                 throw new OperationCanceledException();
             }

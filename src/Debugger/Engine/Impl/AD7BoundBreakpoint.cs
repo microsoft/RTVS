@@ -72,13 +72,13 @@ namespace Microsoft.R.Debugger.Engine {
                     if (DebugBreakpoint != null) {
                         DebugBreakpoint.BreakpointHit -= DebugBreakpoint_BreakpointHit;
                         if (Engine.IsConnected) {
-                            DebugBreakpoint.DeleteAsync().GetResultOnUIThread();
+                            TaskExtensions.Run(ct => DebugBreakpoint.DeleteAsync(ct));
                         }
                     }
                 }
             } else {
                 if (state == enum_BP_STATE.BPS_ENABLED) {
-                    DebugBreakpoint = Engine.DebugSession.CreateBreakpointAsync(Location).GetResultOnUIThread();
+                    DebugBreakpoint = TaskExtensions.Run(ct => Engine.DebugSession.CreateBreakpointAsync(Location, ct));
                     DebugBreakpoint.BreakpointHit += DebugBreakpoint_BreakpointHit;
                 }
             }
