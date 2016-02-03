@@ -7,6 +7,7 @@ namespace SetupCustomActions {
 
         public DSProfilePromptForm() {
             InitializeComponent();
+            this.TopMost = true;
             this.CenterToScreen();
         }
 

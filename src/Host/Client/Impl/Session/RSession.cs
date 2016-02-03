@@ -105,7 +105,7 @@ namespace Microsoft.R.Host.Client.Session {
 
             await TaskUtilities.SwitchToBackgroundThread();
 
-            _host = new RHost(startupInfo.Name, this);
+            _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this);
             _initializationTcs = new TaskCompletionSource<object>();
             ClearPendingRequests();
 
