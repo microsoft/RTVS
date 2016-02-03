@@ -142,12 +142,12 @@ namespace Microsoft.R.Debugger.Engine {
             Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
             _events = pCallback;
-            DebugSession = TaskExtensions.Run(ct => DebugSessionProvider.GetDebugSessionAsync(_program.Session, ct));
+            DebugSession = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSessionProvider.GetDebugSessionAsync(_program.Session, ct));
             MainThread = new AD7Thread(this);
             IsConnected = true;
 
             // Enable breakpoint instrumentation.
-            TaskExtensions.Run(ct => DebugSession.EnableBreakpoints(true, ct));
+            TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.EnableBreakpoints(true, ct));
 
             // Send notification after acquiring the session - we need it in case there were any breakpoints pending before
             // the attach, in which case we'll immediately get breakpoint creation requests as soon as we send these, and
@@ -281,7 +281,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             try {
                 // Disable breakpoint instrumentation.
-                TaskExtensions.Run(ct => DebugSession.EnableBreakpoints(false, ct));
+                TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.EnableBreakpoints(false, ct));
             } finally {
                 // Detach should never fail, even if something above didn't work.
                 Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
@@ -309,7 +309,7 @@ namespace Microsoft.R.Debugger.Engine {
                 }
 
                 if (continueMethod != null) {
-                    TaskExtensions.Run(continueMethod);
+                    TaskExtensions.RunSynchronouslyOnUIThread(continueMethod);
                 }
             }
 
@@ -411,13 +411,13 @@ namespace Microsoft.R.Debugger.Engine {
             try {
                 switch (sk) {
                     case enum_STEPKIND.STEP_OVER:
-                        completed = TaskExtensions.Run(ct => DebugSession.StepOverAsync(ct));
+                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepOverAsync(ct));
                         break;
                     case enum_STEPKIND.STEP_INTO:
-                        completed = TaskExtensions.Run(ct => DebugSession.StepIntoAsync(ct));
+                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepIntoAsync(ct));
                         break;
                     case enum_STEPKIND.STEP_OUT:
-                        completed = TaskExtensions.Run(ct => DebugSession.StepOutAsync(ct));
+                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepOutAsync(ct));
                         break;
                     default:
                         return VSConstants.E_NOTIMPL;

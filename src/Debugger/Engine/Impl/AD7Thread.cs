@@ -156,7 +156,7 @@ namespace Microsoft.R.Debugger.Engine {
         private void ResetStackFrames() {
             _stackFrames = Lazy.Create(() =>
                 (IReadOnlyList<DebugStackFrame>)
-                TaskExtensions.Run(ct => Engine.DebugSession.GetStackFramesAsync(ct))
+                TaskExtensions.RunSynchronouslyOnUIThread(ct => Engine.DebugSession.GetStackFramesAsync(ct))
                 .Reverse()
                 .ToArray());
         }

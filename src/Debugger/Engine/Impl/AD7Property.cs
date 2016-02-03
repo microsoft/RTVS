@@ -53,12 +53,12 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private IReadOnlyList<DebugEvaluationResult> CreateChildren() {
-            return TaskExtensions.Run(ct => (EvaluationResult as DebugValueEvaluationResult)?.GetChildrenAsync(_prefetchedFields, ChildrenMaxLength, ReprMaxLength, ct))
+            return TaskExtensions.RunSynchronouslyOnUIThread(ct => (EvaluationResult as DebugValueEvaluationResult)?.GetChildrenAsync(_prefetchedFields, ChildrenMaxLength, ReprMaxLength, ct))
                 ?? new DebugEvaluationResult[0];
         }
 
         private string CreateReprToString() {
-            var ev = TaskExtensions.Run(ct => EvaluationResult.EvaluateAsync(DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprToString, cancellationToken: ct));
+            var ev = TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.EvaluateAsync(DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprToString, cancellationToken: ct));
             return (ev as DebugValueEvaluationResult)?.Representation.ToString;
         }
 
@@ -78,7 +78,7 @@ namespace Microsoft.R.Debugger.Engine {
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
             if (valueResult != null && valueResult.HasAttributes == true) {
                 string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
-                var attrResult = TaskExtensions.Run(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", reprMaxLength: ReprMaxLength, cancellationToken:ct));
+                var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", reprMaxLength: ReprMaxLength, cancellationToken:ct));
                 if (!(attrResult is DebugErrorEvaluationResult)) {
                     var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                     infos = new[] { attrInfo }.Concat(infos);
@@ -239,7 +239,7 @@ namespace Microsoft.R.Debugger.Engine {
             errorString = null;
 
             // TODO: dwRadix
-            var setResult = TaskExtensions.Run(ct => EvaluationResult.SetValueAsync(pszValue, ct)) as DebugErrorEvaluationResult;
+            var setResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.SetValueAsync(pszValue, ct)) as DebugErrorEvaluationResult;
             if (setResult != null) {
                 errorString = setResult.ErrorText;
                 return VSConstants.E_FAIL;

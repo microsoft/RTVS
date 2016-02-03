@@ -20,7 +20,7 @@ namespace Microsoft.R.Debugger.Engine {
             return twdf;
         });
 
-        public static void Run(Func<CancellationToken, Task> method, double delayToShowDialog = 1) {
+        public static void RunSynchronouslyOnUIThread(Func<CancellationToken, Task> method, double delayToShowDialog = 2) {
             ThreadHelper.ThrowIfNotOnUIThread();
             
             using (var session = StartWaitDialog(delayToShowDialog)) {
@@ -29,7 +29,7 @@ namespace Microsoft.R.Debugger.Engine {
             }
         }
 
-        public static T Run<T>(Func<CancellationToken, Task<T>> method, double delayToShowDialog = 1) {
+        public static T RunSynchronouslyOnUIThread<T>(Func<CancellationToken, Task<T>> method, double delayToShowDialog = 2) {
             T result;
             using (var session = StartWaitDialog(delayToShowDialog)) {
                 var ct = session.UserCancellationToken;
@@ -40,7 +40,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private static ThreadedWaitDialogHelper.Session StartWaitDialog(double delayToShowDialog) {
-            var initialProgress = new ThreadedWaitDialogProgressData("Debugger operation is in progress...", isCancelable: true);
+            var initialProgress = new ThreadedWaitDialogProgressData(Resources.DebuggerInProgress, isCancelable: true);
             return _twdf.Value.StartWaitDialog(null, initialProgress, TimeSpan.FromSeconds(delayToShowDialog));
         }
     }
