@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Tree {
 
             if (string.IsNullOrWhiteSpace(context.OldText) && string.IsNullOrWhiteSpace(context.NewText)) {
                 // In R there is no line continuation so expression may change when user adds or deletes line breaks.
-                bool lineBreakSensitive = (node is If) && ((If)node).LineBreakSensitive;
+                bool lineBreakSensitive = node is If;
                 if (lineBreakSensitive) {
                     string oldLineText = context.OldTextProvider.GetText(new TextRange(context.OldStart, context.OldLength));
                     string newLineText = context.NewTextProvider.GetText(new TextRange(context.NewStart, context.NewLength));

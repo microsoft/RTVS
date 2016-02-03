@@ -3,7 +3,6 @@ using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
 using Microsoft.R.Core.AST.Operands;
-using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
@@ -33,12 +32,6 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals {
 
         public KeywordScopeStatement Else { get; private set; }
 
-        /// <summary>
-        /// If true then if/else construct is sensitive to
-        /// changes in line breaks before 'else'.
-        /// </summary>
-        public bool LineBreakSensitive { get; private set; }
-
         public override bool Parse(ParseContext context, IAstNode parent) {
             // First parse base which should pick up keyword, braces, inner
             // expression and either full or simple (single statement) scope
@@ -51,36 +44,14 @@ namespace Microsoft.R.Core.AST.Statements.Conditionals {
             TokenStream<RToken> tokens = context.Tokens;
 
             if (tokens.CurrentToken.IsKeywordText(context.TextProvider, "else")) {
-                // Language spec says:
-                // <quote>
-                //      When the if statement is not in a block the else, if present, 
-                //      must appear on the same line as the end of statement2. Otherwise 
-                //      the new line at the end of statement2 completes the if and yields 
-                //      a syntactically complete statement that is evaluated. 
-                // </quote>.
-                //
-                // However, this appears only to be applicable when conditinal is in
-                // global scope (i.e. not inside any { } block). Such as in the R
-                // console command line or in script that looks like
-                //
-                // x <- if(y < 0) 1
-                // else 0
-                //
-                // in which case 'else' is dangling.
-
-                bool isSimpleScope = this.Scope.OpenCurlyBrace == null;
                 bool allowLineBreak = AllowLineBreakBeforeElse(context);
-
-                if (isSimpleScope && !allowLineBreak) {
-                    LineBreakSensitive = true;
-
+                if (!allowLineBreak) {
                     // Verify that there is no line break before the 'else'
                     if (context.Tokens.IsLineBreakAfter(context.TextProvider, tokens.Position - 1)) {
                         context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, tokens.CurrentToken));
                         return true;
                     }
                 }
-
                 this.Else = new KeywordScopeStatement(allowsSimpleScope: true);
                 return this.Else.Parse(context, this);
             }
