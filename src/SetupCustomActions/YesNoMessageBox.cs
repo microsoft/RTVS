@@ -6,6 +6,7 @@ namespace SetupCustomActions {
         public YesNoMessageBox(string messageText) {
             InitializeComponent();
             this.messageText.Text = messageText;
+            this.TopMost = true;
             this.CenterToScreen();
         }
 
