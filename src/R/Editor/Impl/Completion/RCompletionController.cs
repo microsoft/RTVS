@@ -14,7 +14,10 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
+    using System.Threading.Tasks;
     using Core.Tokens;
+    using Host.Client;
+    using Languages.Editor.Shell;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>
@@ -333,6 +336,18 @@ namespace Microsoft.R.Editor.Completion {
             }
         }
 
+        protected override void OnCompletionSessionCommitted(object sender, EventArgs eventArgs) {
+            if (CompletionSession != null) {
+                if (CompletionSession.CompletionSets.Count > 0) {
+                    Completion completion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
+                    string name = completion.InsertionText;
+                    SnapshotPoint position = CompletionSession.TextView.Caret.Position.BufferPosition;
+                    Task.Run(async () => await InsertFunctionBraces(position, name));
+                }
+            }
+            base.OnCompletionSessionCommitted(sender, eventArgs);
+        }
+
         /// <summary>
         /// Overrides default session since we want to track signature as caret moves.
         /// Default signature session dismisses when caret changes position.
@@ -343,6 +358,34 @@ namespace Microsoft.R.Editor.Completion {
             if (point.HasValue) {
                 ITrackingPoint trackingPoint = _textBuffer.CurrentSnapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
                 SignatureBroker.TriggerSignatureHelp(TextView, trackingPoint, trackCaret: false);
+            }
+        }
+
+        private async Task<bool> IsFunction(string name) {
+            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
+            if (session != null) {
+                using (IRSessionEvaluation eval = await session.BeginEvaluationAsync(isMutating: false)) {
+                    REvaluationResult result = await eval.EvaluateAsync($"mode({name})");
+                    if (result.ParseStatus == RParseStatus.OK &&
+                        !string.IsNullOrEmpty(result.StringResult) &&
+                        result.StringResult == "function") {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private async Task InsertFunctionBraces(SnapshotPoint position, string name) {
+            bool function = await IsFunction(name);
+            if (function) {
+                EditorShell.DispatchOnUIThread(() => {
+                    if (TextView.TextBuffer.CurrentSnapshot.Version.VersionNumber == position.Snapshot.Version.VersionNumber) {
+                        TextView.TextBuffer.Insert(position.Position, "()");
+                        TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position.Position + 1));
+                    }
+                });
             }
         }
     }
