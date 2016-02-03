@@ -276,8 +276,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (width.LessThan(visualViewport.Width)) {
+                overflow |= ScrollDirection.Horizontal;
                 for (int c = columnStart - 1; c >= 0; c--) {
-                    overflow |= ScrollDirection.Horizontal;
                     width += GetWidth(c);
                     if (width.GreaterThanOrClose(visualViewport.Width)) {
                         break;
@@ -297,8 +297,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (height.LessThan(visualViewport.Height)) {
+                overflow |= ScrollDirection.Vertical;
                 for (int r = rowStart - 1; r >= 0; r--) {
-                    overflow |= ScrollDirection.Vertical;
                     height += GetHeight(r);
                     if (height.GreaterThanOrClose(visualViewport.Height)) {
                         break;
