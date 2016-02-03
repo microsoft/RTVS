@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Script;
@@ -28,7 +29,7 @@ namespace Microsoft.R.Debugger.Test {
 ";
                     using (var sf = new SourceFile(content)) {
                         var bpl1 = new DebugBreakpointLocation(sf.FilePath, 1);
-                        DebugBreakpoint bp1 = await debugSession.CreateBreakpointAsync(bpl1);
+                        DebugBreakpoint bp1 = await debugSession.CreateBreakpointAsync(bpl1, default(CancellationToken));
 
                         bp1.Location.Should().Be(bpl1);
                         bp1.Session.Should().Be(debugSession);
@@ -36,14 +37,14 @@ namespace Microsoft.R.Debugger.Test {
                         debugSession.Breakpoints.Count.Should().Be(1);
 
                         var bpl2 = new DebugBreakpointLocation(sf.FilePath, 3);
-                        DebugBreakpoint bp2 = await debugSession.CreateBreakpointAsync(bpl2);
+                        DebugBreakpoint bp2 = await debugSession.CreateBreakpointAsync(bpl2, default(CancellationToken));
 
                         bp2.Location.Should().Be(bpl2);
                         bp2.Session.Should().Be(debugSession);
 
                         debugSession.Breakpoints.Count.Should().Be(2);
 
-                        await bp1.DeleteAsync();
+                        await bp1.DeleteAsync(default(CancellationToken));
                         debugSession.Breakpoints.Count.Should().Be(1);
                     }
                 }
@@ -63,10 +64,10 @@ namespace Microsoft.R.Debugger.Test {
   z <- 3
 ";
                     using (var sf = new SourceFile(content)) {
-                        await debugSession.EnableBreakpoints(true);
+                        await debugSession.EnableBreakpoints(true, default(CancellationToken));
 
                         var bpl = new DebugBreakpointLocation(sf.FilePath, 2);
-                        DebugBreakpoint bp = await debugSession.CreateBreakpointAsync(bpl);
+                        DebugBreakpoint bp = await debugSession.CreateBreakpointAsync(bpl, default(CancellationToken));
 
                         int eventCount = 0;
                         bp.BreakpointHit += (s, e) => {

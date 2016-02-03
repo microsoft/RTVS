@@ -66,23 +66,23 @@ namespace Microsoft.R.Host.Client.Session {
             _onDispose();
         }
 
-        public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true) {
+        public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken)) {
             if (!_isHostRunning) {
                 return CanceledInteractionTask;
             }
 
-            RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, _contexts);
+            RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, _contexts, cancellationToken);
             _pendingRequestSources.Post(requestSource);
 
             return _isHostRunning ? requestSource.CreateRequestTask : CanceledInteractionTask;
         }
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true) {
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken)) {
             if (!_isHostRunning) {
                 return CanceledEvaluationTask;
             }
 
-            var source = new RSessionEvaluationSource(isMutating);
+            var source = new RSessionEvaluationSource(isMutating, cancellationToken);
             _pendingEvaluationSources.Post(source);
 
             return _isHostRunning ? source.Task : CanceledEvaluationTask;
@@ -161,7 +161,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private void ScheduleAfterHostStarted(RHostStartupInfo startupInfo) {
-            var afterHostStartedEvaluationSource = new RSessionEvaluationSource(true);
+            var afterHostStartedEvaluationSource = new RSessionEvaluationSource(true, CancellationToken.None);
             _pendingEvaluationSources.Post(afterHostStartedEvaluationSource);
             AfterHostStarted(afterHostStartedEvaluationSource, startupInfo).DoNotWait();
         }
