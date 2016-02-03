@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
@@ -18,7 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public VisualGrid() {
             _visualChildren = new VisualCollection(this);
+
             _gridLine = new GridLineVisual(this);
+            AddLogicalChild(_gridLine);
+            AddVisualChild(_gridLine);
+
             ClipToBounds = true;
 
             Focusable = true;

@@ -76,13 +76,5 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             Draw(Size);
         }
-
-        protected override GeometryHitTestResult HitTestCore(GeometryHitTestParameters hitTestParameters) {
-            return base.HitTestCore(hitTestParameters);
-        }
-
-        protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters) {
-            return base.HitTestCore(hitTestParameters);
-        }
     }
 }
