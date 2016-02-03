@@ -123,23 +123,21 @@ namespace Microsoft.R.Actions.Utility {
 
             foreach (string name in installedEngines) {
                 // Protect from random key name format changes
-                try {
-                    if (!string.IsNullOrEmpty(name)) {
-                        string versionString = ExtractVersionString(name);
-                        Version v;
-                        if (Version.TryParse(versionString, out v)) {
-                            if (highest != null) {
-                                if (v > highest) {
-                                    highest = v;
-                                    highestVersionName = name;
-                                }
-                            } else {
+                if (!string.IsNullOrEmpty(name)) {
+                    string versionString = ExtractVersionString(name);
+                    Version v;
+                    if (Version.TryParse(versionString, out v)) {
+                        if (highest != null) {
+                            if (v > highest) {
                                 highest = v;
                                 highestVersionName = name;
                             }
+                        } else {
+                            highest = v;
+                            highestVersionName = name;
                         }
                     }
-                } catch (Exception) { }
+                }
             }
 
             return GetRVersionInstallPathFromRegistry(highestVersionName);
@@ -177,23 +175,11 @@ namespace Microsoft.R.Actions.Utility {
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core\R64\3.3.0 Pre-release
             using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                RegistryKey rKey = null;
-
                 try {
-                    rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R");
-                    if (rKey == null) {
-                        // Possibly 64-bit machine with only 32-bit R installed
-                        // This is not supported as we require 64-bit R.
-                        // rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R");
-                    }
-                    if (rKey != null) {
+                    using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R")) {
                         return rKey.GetSubKeyNames();
                     }
-                } catch (Exception) { } finally {
-                    if (rKey != null) {
-                        rKey.Dispose();
-                    }
-                }
+                } catch (Exception) { }
             }
 
             return new string[0];
@@ -202,13 +188,14 @@ namespace Microsoft.R.Actions.Utility {
         private static string GetRVersionInstallPathFromRegistry(string version) {
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version)) {
-                    if (rKey != null) {
-                        return rKey.GetValue("InstallPath") as string;
+                try {
+                    using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version)) {
+                        if (rKey != null) {
+                            return rKey.GetValue("InstallPath") as string;
+                        }
                     }
-                }
+                } catch(Exception) { }
             }
-
             return string.Empty;
         }
 
@@ -216,7 +203,7 @@ namespace Microsoft.R.Actions.Utility {
             if (folderName.StartsWith("R-")) {
                 try {
                     Version v;
-                    if(Version.TryParse(folderName.Substring(2), out v)) {
+                    if (Version.TryParse(folderName.Substring(2), out v)) {
                         return v;
                     }
                 } catch (Exception) { }
