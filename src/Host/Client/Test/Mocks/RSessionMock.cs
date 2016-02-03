@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
@@ -12,7 +13,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public string Prompt { get; set; } = ">";
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true) {
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken)) {
             _eval = new RSessionEvaluationMock();
 
             BeforeRequest?.Invoke(this, new RRequestEventArgs(_eval.Contexts, Prompt, 4096, true));
@@ -22,7 +23,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.FromResult(_eval);
         }
 
-        public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true) {
+        public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default (CancellationToken)) {
             _inter = new RSessionInteractionMock();
             BeforeRequest?.Invoke(this, new RRequestEventArgs(_inter.Contexts, Prompt, 4096, true));
             return Task.FromResult(_inter);

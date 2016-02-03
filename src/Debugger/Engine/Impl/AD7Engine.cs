@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger.Engine.PortSupplier;
@@ -141,12 +142,12 @@ namespace Microsoft.R.Debugger.Engine {
             Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
             _events = pCallback;
-            DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetResultOnUIThread();
+            DebugSession = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSessionProvider.GetDebugSessionAsync(_program.Session, ct));
             MainThread = new AD7Thread(this);
             IsConnected = true;
 
             // Enable breakpoint instrumentation.
-            DebugSession.EnableBreakpoints(true).GetResultOnUIThread();
+            TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.EnableBreakpoints(true, ct));
 
             // Send notification after acquiring the session - we need it in case there were any breakpoints pending before
             // the attach, in which case we'll immediately get breakpoint creation requests as soon as we send these, and
@@ -280,7 +281,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             try {
                 // Disable breakpoint instrumentation.
-                DebugSession.EnableBreakpoints(false).GetResultOnUIThread();
+                TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.EnableBreakpoints(false, ct));
             } finally {
                 // Detach should never fail, even if something above didn't work.
                 Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
@@ -299,16 +300,16 @@ namespace Microsoft.R.Debugger.Engine {
                 // debugger that user has explicitly entered something at the Browse prompt, and
                 // we don't actually need to issue the command to R debugger.
 
-                Task continueTask = null;
+                Func<CancellationToken, Task> continueMethod = null;
                 lock (_browseLock) {
                     if (_sentContinue != true) {
                         _sentContinue = true;
-                        continueTask = DebugSession.Continue();
+                        continueMethod = ct => DebugSession.Continue(ct);
                     }
                 }
 
-                if (continueTask != null) {
-                    continueTask.GetResultOnUIThread();
+                if (continueMethod != null) {
+                    TaskExtensions.RunSynchronouslyOnUIThread(continueMethod);
                 }
             }
 
@@ -403,37 +404,31 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugProgram2.Step(IDebugThread2 pThread, enum_STEPKIND sk, enum_STEPUNIT Step) {
             ThrowIfDisposed();
 
-            Task<bool> step;
-            switch (sk) {
-                case enum_STEPKIND.STEP_OVER:
-                    step = DebugSession.StepOverAsync();
-                    break;
-                case enum_STEPKIND.STEP_INTO:
-                    step = DebugSession.StepIntoAsync();
-                    break;
-                case enum_STEPKIND.STEP_OUT:
-                    step = DebugSession.StepOutAsync();
-                    break;
-                default:
-                    return VSConstants.E_NOTIMPL;
+            // If step was interrupted midway (e.g. by a breakpoint), we have already reported breakpoint
+            // hit event, and so we must not report step complete. Note that interrupting is not the same
+            // as canceling, and if step was canceled, we must report step completion.
+            bool completed = true;
+            try {
+                switch (sk) {
+                    case enum_STEPKIND.STEP_OVER:
+                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepOverAsync(ct));
+                        break;
+                    case enum_STEPKIND.STEP_INTO:
+                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepIntoAsync(ct));
+                        break;
+                    case enum_STEPKIND.STEP_OUT:
+                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepOutAsync(ct));
+                        break;
+                    default:
+                        return VSConstants.E_NOTIMPL;
+                }
+            } catch (OperationCanceledException) {
+            } catch (MessageTransportException) {
             }
 
-            step.ContinueWith(t => {
-                // If step was interrupted midway (e.g. by a breakpoint), we have already reported breakpoint
-                // hit event, and so we must not report step complete. Note that interrupting is not the same
-                // as canceling, and if step was canceled, we must report step completion.
-
-                bool completed = true;
-                try {
-                    completed = t.GetAwaiter().GetResult();
-                } catch (OperationCanceledException) {
-                } catch (MessageTransportException) {
-                }
-
-                if (completed) {
-                    Send(new AD7SteppingCompleteEvent(), AD7SteppingCompleteEvent.IID);
-                }
-            });
+            if (completed) {
+                Send(new AD7SteppingCompleteEvent(), AD7SteppingCompleteEvent.IID);
+            }
 
             return VSConstants.S_OK;
         }

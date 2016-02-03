@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
 using Newtonsoft.Json;
@@ -46,10 +47,12 @@ namespace Microsoft.R.Host.Client {
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
         public RHost(string name, IRCallbacks callbacks) {
+            Check.ArgumentStringNullOrEmpty(nameof(name), name);
+
             _callbacks = callbacks;
             _name = name;
 
-            _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client" + (name != null ? "_" + name : ""));
+            _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client" + "_" + name);
             _log = new LinesLog(_fileLogWriter);
         }
 

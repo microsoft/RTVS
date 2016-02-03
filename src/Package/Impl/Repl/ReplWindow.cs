@@ -419,6 +419,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             // to move caret to the prompt after view finishes its
             // mouse processing.
             VsAppShell.Current.DispatchOnUIThread(() => {
+                textView.Selection.Clear();
                 ITextSnapshot snapshot = textView.TextBuffer.CurrentSnapshot;
                 SnapshotPoint caretPosition = new SnapshotPoint(snapshot, snapshot.Length);
                 textView.Caret.MoveTo(caretPosition);

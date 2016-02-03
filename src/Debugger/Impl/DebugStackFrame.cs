@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
@@ -65,15 +66,17 @@ namespace Microsoft.R.Debugger {
             string expression,
             string name = null,
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
-            int? reprMaxLength = null
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength);
+            return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength, cancellationToken);
         }
 
         public Task<DebugEvaluationResult> GetEnvironmentAsync(
-            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length | DebugEvaluationResultFields.AttrCount
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length | DebugEvaluationResultFields.AttrCount,
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            return EvaluateAsync("base::environment()", fields: fields);
+            return EvaluateAsync("base::environment()", fields: fields, cancellationToken:cancellationToken);
         }
     }
 }

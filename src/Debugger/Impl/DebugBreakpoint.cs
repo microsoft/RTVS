@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
@@ -56,16 +57,16 @@ namespace Microsoft.R.Debugger {
             return Invariant($"rtvs:::add_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber}, {(reapply ? "TRUE" : "FALSE")})");
         }
 
-        internal async Task SetBreakpointAsync() {
+        internal async Task SetBreakpointAsync(CancellationToken cancellationToken) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await Session.InvokeDebugHelperAsync(GetAddBreakpointExpression(true));
+            await Session.InvokeDebugHelperAsync(GetAddBreakpointExpression(true), cancellationToken);
             ++UseCount;
         }
 
-        public async Task DeleteAsync() {
+        public async Task DeleteAsync(CancellationToken cancellationToken) {
             Trace.Assert(UseCount > 0);
             await TaskUtilities.SwitchToBackgroundThread();
-            await Session.InitializeAsync();
+            await Session.InitializeAsync(cancellationToken);
 
             string fileName = null;
             try {
@@ -77,7 +78,7 @@ namespace Microsoft.R.Debugger {
             if (--UseCount == 0) {
                 Session.RemoveBreakpoint(this);
 
-                var res = await Session.EvaluateAsync(Invariant($"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})"));
+                var res = await Session.EvaluateAsync(Invariant($"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})"), cancellationToken);
                 if (res is DebugErrorEvaluationResult) {
                     throw new InvalidOperationException(Invariant($"{res.Expression}: {res}"));
                 }
