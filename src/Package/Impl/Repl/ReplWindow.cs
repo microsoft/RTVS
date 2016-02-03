@@ -8,6 +8,7 @@ using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
+using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -50,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public static IReplWindow Current {
             get {
-                if(_instance == null) {
+                if (_instance == null) {
                     _instance = new ReplWindow();
                 }
                 return _instance;
@@ -273,7 +274,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
                 if (frame != null) {
                     frame.Show();
-                    CheckReplFrame(frame);
+                    CheckReplFrame(frame, gettingFocus: true);
                 }
             }
 
@@ -330,8 +331,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) {
             _replLostFocus = false;
             // Track last recently used REPL window
-            if (!CheckReplFrame(oldFrame)) {
-                CheckReplFrame(newFrame);
+            if (!CheckReplFrame(oldFrame, gettingFocus: false)) {
+                CheckReplFrame(newFrame, gettingFocus: true);
             } else {
                 _replLostFocus = true;
                 VsAppShell.Current.DispatchOnUIThread(() => CheckPossibleBreakModeFocusChange());
@@ -367,21 +368,27 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             return frame;
         }
 
-        private bool CheckReplFrame(IVsWindowFrame frame) {
+        private bool CheckReplFrame(IVsWindowFrame frame, bool gettingFocus) {
             if (frame != null) {
                 Guid property;
                 frame.GetGuidProperty((int)__VSFPROPID.VSFPROPID_GuidPersistenceSlot, out property);
                 if (property == RGuidList.ReplInteractiveWindowProviderGuid) {
                     object docView;
+
                     frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView);
                     if (_lastUsedReplWindow != null) {
                         _lastUsedReplWindow.InteractiveWindow.ReadyForInput -= ProcessQueuedInput;
                     }
+
                     _lastUsedReplWindow = docView as IVsInteractiveWindow;
                     if (_lastUsedReplWindow != null) {
                         IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
                         shell.UpdateCommandUI(1);
+
                         _lastUsedReplWindow.InteractiveWindow.ReadyForInput += ProcessQueuedInput;
+                        if (gettingFocus) {
+                            PositionCaretAtPrompt(_lastUsedReplWindow.InteractiveWindow.TextView);
+                        }
                     }
                     return _lastUsedReplWindow != null;
                 }
@@ -409,5 +416,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             return VSConstants.S_OK;
         }
         #endregion
+
+        public static void PositionCaretAtPrompt(ITextView textView) {
+            // Click on text view will move the caret so we need 
+            // to move caret to the prompt after view finishes its
+            // mouse processing.
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                ITextSnapshot snapshot = textView.TextBuffer.CurrentSnapshot;
+                SnapshotPoint caretPosition = new SnapshotPoint(snapshot, snapshot.Length);
+                textView.Caret.MoveTo(caretPosition);
+            });
+        }
     }
 }
