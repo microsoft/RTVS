@@ -367,7 +367,7 @@ Sys.sleep(1)
             string output = _callbacks.Output;
             string[] lines = output.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            lines.Length.Should().BeGreaterThan(0);
+            lines.Length.Should().BeGreaterOrEqualTo(4);
             lines[lines.Length-4].Should().Be("[[1]]");
             lines[lines.Length-3].Should().Be($"[1] {expectedActive}");
             lines[lines.Length-2].Should().Be("[[2]]");
