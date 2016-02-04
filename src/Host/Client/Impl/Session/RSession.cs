@@ -117,8 +117,8 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, int timeout) {
             await TaskUtilities.SwitchToBackgroundThread();
-            
-            _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this, this);
+
+            _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this);
             ClearPendingRequests();
 
             _hostRunTask = CreateAndRunHost(startupInfo, timeout);
