@@ -131,7 +131,7 @@ namespace SetupCustomActions {
             public IntPtr Handle { get; }
 
             public SetupWindowHandle() {
-                Process[] procs = Process.GetProcessesByName("msiexec");
+                Process[] procs = Process.GetProcessesByName("rtvs");
 
                 Process p = procs.FirstOrDefault(x => x.MainWindowHandle != IntPtr.Zero);
                 if (p != null) {

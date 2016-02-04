@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Help.Definitions;
@@ -13,6 +14,7 @@ namespace Microsoft.R.Host.Client.Signatures {
     public sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
         private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private IRSession _session;
+        private SemaphoreSlim _sessionSemaphore = new SemaphoreSlim(1, 1);
 
         /// <summary>
         /// Timeout to allow R-Host to start. Typically only needs
@@ -47,19 +49,24 @@ namespace Microsoft.R.Host.Client.Signatures {
         }
 
         private async Task CreateSessionAsync() {
-            if (_session == null) {
-                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                _session = provider.GetOrCreate(SessionId, null);
-                _session.Disposed += OnSessionDisposed;
-            }
+            await _sessionSemaphore.WaitAsync();
+            try {
+                if (_session == null) {
+                    var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                    _session = provider.GetOrCreate(SessionId, null);
+                    _session.Disposed += OnSessionDisposed;
+                }
 
-            if (!_session.IsHostRunning) { 
-                int timeout = EditorShell.Current.IsUnitTestEnvironment ? 10000 : 3000;
-                await _session.StartHostAsync(new RHostStartupInfo {
-                    Name = "RdData",
-                    RBasePath = RToolsSettings.Current.RBasePath,
-                    CranMirrorName = RToolsSettings.Current.CranMirror
-                }, timeout);
+                if (!_session.IsHostRunning) {
+                    int timeout = EditorShell.Current.IsUnitTestEnvironment ? 10000 : 3000;
+                    await _session.StartHostAsync(new RHostStartupInfo {
+                        Name = "RdData",
+                        RBasePath = RToolsSettings.Current.RBasePath,
+                        CranMirrorName = RToolsSettings.Current.CranMirror
+                    }, timeout);
+                }
+            } finally {
+                _sessionSemaphore.Release();
             }
         }
 

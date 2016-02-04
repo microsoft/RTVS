@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
@@ -93,17 +94,18 @@ namespace Microsoft.R.Debugger {
             return new DebugValueEvaluationResult(stackFrame, expression, name, json);
         }
 
-        public Task<DebugEvaluationResult> SetValueAsync(string value) {
+        public Task<DebugEvaluationResult> SetValueAsync(string value, CancellationToken cancellationToken) {
             if (string.IsNullOrEmpty(Expression)) {
                 throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(DebugEvaluationResult)} because it doesn't have an associated {nameof(Expression)}."));
             }
 
-            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0);
+            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0, cancellationToken:cancellationToken);
         }
 
         public Task<DebugEvaluationResult> EvaluateAsync(
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
-            int? reprMaxLength = null
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot re-evaluate an evaluation result that is not tied to a frame.");
@@ -112,7 +114,7 @@ namespace Microsoft.R.Debugger {
                 throw new InvalidOperationException("Cannot re-evaluate an evaluation result that does not have an associated expression.");
             }
 
-            return StackFrame.EvaluateAsync(Expression, Name, fields, reprMaxLength);
+            return StackFrame.EvaluateAsync(Expression, Name, fields, reprMaxLength, cancellationToken);
         }
     }
 
@@ -240,7 +242,8 @@ namespace Microsoft.R.Debugger {
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
             int? maxLength = null,
-            int? reprMaxLength = null
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -254,7 +257,7 @@ namespace Microsoft.R.Debugger {
             var call = Invariant($@"rtvs:::toJSON(rtvs:::describe_children(
                 {Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, 
                 {fields.ToRVector()}, {maxLength}, {reprMaxLength}))");
-            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call);
+            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),
                 Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
