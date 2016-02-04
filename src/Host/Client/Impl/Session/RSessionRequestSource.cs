@@ -33,16 +33,17 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public void Fail(string text) {
+        public void FailResponse(string text) {
             _responseTcs.SetException(new RException(text));
         }
 
-        public void Complete() {
+        public void CompleteResponse() {
             _responseTcs.SetResult(null);
         }
 
-        public bool TryCancel() {
-            return _createRequestTcs.TrySetCanceled();
+        public void Cancel() {
+            _createRequestTcs.TrySetCanceled();
+            _responseTcs.TrySetCanceled();
         }
     }
 }
