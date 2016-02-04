@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
@@ -128,11 +129,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 foreach (int r in newViewport.Rows.GetEnumerable()) {
                     var visual = _visualGrid[r, c];
 
-                    double width = points.Width[c] - GridLineThickness;
-                    double height = points.Height[r] - GridLineThickness;
-                    visual.Draw(new Size(width, height));
-                    points.Width[c] = Math.Max(width, visual.Size.Width + GridLineThickness);
-                    points.Height[r] = Math.Max(height, visual.Size.Height + GridLineThickness);
+                    visual.Draw();
+                    points.Width[c] = visual.Size.Width + (visual.Margin * 2) + GridLineThickness;
+                    points.Height[r] = visual.Size.Height + (visual.Margin * 2) + GridLineThickness;
 
                     _visualChildren.Add(_visualGrid[r, c]);
                 }
@@ -141,19 +140,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _dataViewport = newViewport;
         }
 
+        private bool alignRight = true;
+
         internal void ArrangeVisuals(IPoints points) {
             foreach (int c in _dataViewport.Columns.GetEnumerable()) {
                 foreach (int r in _dataViewport.Rows.GetEnumerable()) {
                     var visual = _visualGrid[r, c];
 
+                    Debug.Assert(r == visual.Row && c == visual.Column);
+                    Debug.Assert(points.Width[c] >= visual.Size.Width && points.Height[r] >= visual.Size.Height);
+
+                    double x = points.xPosition[c] + (alignRight ? (points.Width[c] - visual.Size.Width - visual.Margin - GridLineThickness) : 0.0);
+                    double y = points.yPosition[r];
+
                     var transform = visual.Transform as TranslateTransform;
                     if (transform == null) {
-                        visual.Transform = new TranslateTransform(
-                            points.xPosition[visual.Column],
-                            points.yPosition[visual.Row]);
+                        visual.Transform = new TranslateTransform(x, y);
                     } else {
-                        transform.X = points.xPosition[visual.Column];
-                        transform.Y = points.yPosition[visual.Row];
+                        transform.X = x;
+                        transform.Y = y;
                     }
                 }
             }
