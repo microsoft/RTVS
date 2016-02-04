@@ -414,7 +414,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
         #endregion
 
-        public static void PositionCaretAtPrompt(ITextView textView) {
+        public static void PositionCaretAtPrompt(ITextView textView = null) {
+            textView = textView ?? _instance.GetInteractiveWindow()?.InteractiveWindow.TextView;
+            if (textView == null) {
+                return;
+            }
+
             // Click on text view will move the caret so we need 
             // to move caret to the prompt after view finishes its
             // mouse processing.
