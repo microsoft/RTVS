@@ -117,7 +117,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, int timeout) {
             await TaskUtilities.SwitchToBackgroundThread();
-
+            
             _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this, this);
             ClearPendingRequests();
 
@@ -174,11 +174,12 @@ namespace Microsoft.R.Host.Client.Session {
         private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
             try {
                 await _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments, timeout);
-                Interlocked.Exchange(ref _initializationTcs, null);
             } catch (OperationCanceledException oce) {
                 _initializationTcs.TrySetCanceled(oce.CancellationToken);
             } catch (Exception ex) {
                 _initializationTcs.TrySetException(ex);
+            } finally {
+                Interlocked.Exchange(ref _initializationTcs, null);
             }
         }
 
