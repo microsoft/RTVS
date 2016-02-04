@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.Office.Interop.Excel;
@@ -7,9 +9,9 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
     internal sealed class ExcelInterop {
+        private const string _workbookName = "RTVS_View.xlsx";
         private static bool _busy;
         private static Application _excel;
-        private static Timer _timer;
 
         class ExcelData {
             public object[] RowNames;
@@ -17,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             public object[,] CellData;
         }
 
-        public static async Task OpenDataInExcel(string expression, int rows, int cols) {
+        public static async Task OpenDataInExcel(string variableName, string expression, int rows, int cols) {
             if (_busy) {
                 return;
             }
@@ -29,16 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Workbook wb = RunExcel();
                 if (wb != null) {
                     // Try finding existing worksheet first
-                    Worksheet ws = null;
-                    try {
-                        ws = (Worksheet)wb.Sheets[expression];
-                    }
-                    catch (COMException) { }
-
-                    if (ws == null) {
-                        ws = (Worksheet)wb.Sheets.Add();
-                    }
-
+                    Worksheet ws = GetOrCreateWorksheet(wb, variableName);
                     PopulateWorksheet(ws, xlData.RowNames, xlData.ColNames, xlData.CellData);
                     _excel.Visible = true;
                 }
@@ -62,6 +55,78 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             xlData.CellData = await MakeExcelRange(data, rows, cols);
             return xlData;
+        }
+
+        private static Workbook RunExcel() {
+            do {
+                if (_excel == null) {
+                    _excel = CreateExcel();
+                }
+
+                if (_excel != null) {
+                    try {
+                        return GetOrCreateWorkbook();
+                    } catch (COMException) {
+                        _excel = null;
+                    }
+                }
+            } while (_excel == null);
+
+            return null;
+        }
+
+        private static Application CreateExcel() {
+            Application xlApp = null;
+            try {
+                xlApp = (Application)Marshal.GetActiveObject("Excel.Application");
+            } catch (COMException) { }
+
+            if(xlApp == null) {
+                try {
+                    xlApp = new Application();
+                } catch (COMException) { }
+            }
+            return xlApp;
+        }
+
+        private static Workbook GetOrCreateWorkbook() {
+            Workbook wb = null;
+            try {
+                wb = _excel.Workbooks[_workbookName];
+            } catch (COMException) { }
+
+            if (wb == null) {
+                wb = _excel.Workbooks.Add();
+                string wbName = null;
+                try {
+                    string myDocPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    wbName = Path.Combine(myDocPath, _workbookName);
+                    if (File.Exists(wbName)) {
+                        File.Delete(wbName);
+                    }
+                } catch(IOException) { }
+
+                try {
+                    if (wbName != null) {
+                        wb.SaveAs(wbName);
+                    }
+                } catch (COMException) { }
+            }
+
+            return wb;
+        }
+
+        private static Worksheet GetOrCreateWorksheet(Workbook wb, string name) {
+            Worksheet ws = null;
+            try {
+                ws = (Worksheet)wb.Sheets[name];
+            } catch (COMException) { }
+
+            if (ws == null) {
+                ws = (Worksheet)wb.Sheets.Add();
+                ws.Name = name;
+            }
+            return ws;
         }
 
         private static void PopulateWorksheet(Worksheet ws, object[] rowNames, object[] colNames, object[,] cellData) {
@@ -94,39 +159,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Excel.Range colRange = ws.get_Range(c1, c2);
                 colRange.Value = colNames;
                 colRange.HorizontalAlignment = XlHAlign.xlHAlignRight;
-            }
-        }
-
-        private static Workbook RunExcel() {
-            int retries = 0;
-            do {
-                if (_excel == null) {
-                    _excel = new Application();
-
-                    _timer = new Timer(10 * 60 * 1000); // 10 minutes
-                    _timer.AutoReset = true;
-                    _timer.Elapsed += OnTimer;
-                    _timer.Start();
-                }
-
-                try {
-                    return _excel.Workbooks.Add();
-                } catch (COMException) {
-                    _excel = null;
-                    retries++;
-                }
-            } while (_excel == null && retries < 5);
-
-            return null;
-        }
-
-        private static void OnTimer(object sender, ElapsedEventArgs e) {
-            if(_excel != null && !_excel.Visible) {
-                _excel.Quit();
-                _excel = null;
-
-                _timer.Stop();
-                _timer.Dispose();
             }
         }
 
