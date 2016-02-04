@@ -92,32 +92,43 @@ namespace Microsoft.R.Host.Client.Session {
             var cancelTask = _host.CancelAllAsync();
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-            currentRequest?.TryCancel();
+            currentRequest?.Cancel();
             ClearPendingRequests();
 
             await cancelTask;
         }
 
+        public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, int timeout = 3000) {
+            var existingInitializationTcs = Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSource<object>(), null);
+            if (existingInitializationTcs == null) {
+                await StartHostAsyncBackground(startupInfo, timeout);
+            } else {
+                await existingInitializationTcs.Task;
+            }
+        }
+
         public async Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000) {
-            if (_hostRunTask != null && !_hostRunTask.IsCompleted) {
+            if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSource<object>(), null) != null) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
+            await StartHostAsyncBackground(startupInfo, timeout);
+        }
+
+        private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, int timeout) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this);
-            _initializationTcs = new TaskCompletionSource<object>();
+            _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this, this);
             ClearPendingRequests();
 
-            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments, timeout);
+            _hostRunTask = CreateAndRunHost(startupInfo, timeout);
             ScheduleAfterHostStarted(startupInfo);
 
-            var initializationTask = _initializationTcs.Task;
-            await Task.WhenAny(initializationTask, _hostRunTask).Unwrap();
+            await _initializationTcs.Task;
         }
 
         public async Task StopHostAsync() {
-            if (_hostRunTask == null || _hostRunTask.IsCompleted) {
+            if (_initializationTcs == null) {
                 return;
             }
 
@@ -158,6 +169,17 @@ namespace Microsoft.R.Host.Client.Session {
             // If nothing worked, then just kill the host process.
             _host?.Dispose();
             await _hostRunTask;
+        }
+
+        private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
+            try {
+                await _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments, timeout);
+                Interlocked.Exchange(ref _initializationTcs, null);
+            } catch (OperationCanceledException oce) {
+                _initializationTcs.TrySetCanceled(oce.CancellationToken);
+            } catch (Exception ex) {
+                _initializationTcs.TrySetException(ex);
+            }
         }
 
         private void ScheduleAfterHostStarted(RHostStartupInfo startupInfo) {
@@ -215,7 +237,7 @@ namespace Microsoft.R.Host.Client.Session {
             Disconnected?.Invoke(this, EventArgs.Empty);
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-            currentRequest?.Complete();
+            currentRequest?.CompleteResponse();
 
             ClearPendingRequests();
 
@@ -225,7 +247,7 @@ namespace Microsoft.R.Host.Client.Session {
         private void ClearPendingRequests() {
             RSessionRequestSource requestSource;
             while (_pendingRequestSources.TryReceive(out requestSource)) {
-                requestSource.TryCancel();
+                requestSource.Cancel();
             }
 
             RSessionEvaluationSource evalSource;
@@ -261,7 +283,7 @@ namespace Microsoft.R.Host.Client.Session {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
 
-            currentRequest?.Complete();
+            currentRequest?.CompleteResponse();
 
             string consoleInput = null;
 
@@ -360,7 +382,7 @@ namespace Microsoft.R.Host.Client.Session {
 
             if (otype == OutputType.Error) {
                 var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-                currentRequest?.Fail(buf);
+                currentRequest?.FailResponse(buf);
             }
 
             return Task.CompletedTask;
