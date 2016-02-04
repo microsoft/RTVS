@@ -146,7 +146,7 @@ UnexpectedToken Token [17...21)
             ParserTest.VerifyParse(expected1, expression);
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 17, 0, 1, "\n");
-            tree.IsDirty.Should().BeFalse();
+            tree.IsDirty.Should().BeTrue();
             tree.ProcessChanges();
 
             string expected2 =
@@ -166,15 +166,14 @@ UnexpectedToken Token [17...21)
                         TokenNode  [<- [12...14)]
                         NumericalValue  [1 [15...16)]
             TokenNode  [} [16...17)]
-        KeywordScopeStatement  []
-            TokenNode  [else [19...23)]
-            SimpleScope  [24...30)
-                ExpressionStatement  [x <- 2]
-                    Expression  [x <- 2]
-                        TokenOperator  [<- [26...28)]
-                            Variable  [x]
-                            TokenNode  [<- [26...28)]
-                            NumericalValue  [2 [29...30)]
+    ExpressionStatement  [x <- 2]
+        Expression  [x <- 2]
+            TokenOperator  [<- [26...28)]
+                Variable  [x]
+                TokenNode  [<- [26...28)]
+                NumericalValue  [2 [29...30)]
+
+UnexpectedToken Token [19...23)
 ";
             ParserTest.CompareTrees(expected2, tree.AstRoot);
         }

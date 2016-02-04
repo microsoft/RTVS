@@ -21,17 +21,8 @@ namespace Microsoft.R.Actions.Test.Installation {
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
             data.Version.Minor.Should().BeGreaterOrEqualTo(2);
-            data.Path.Should().StartWithEquivalent(@"C:\Program Files\R");
-        }
-
-        [Test]
-        [Category.R.Install]
-        public void RInstallation_Test03() {
-            RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2, useRegistry: false);
-            data.Status.Should().Be(RInstallStatus.OK);
-            data.Version.Major.Should().BeGreaterOrEqualTo(3);
-            data.Version.Minor.Should().BeGreaterOrEqualTo(2);
-            data.Path.Should().StartWithEquivalent(@"C:\Program Files\R");
+            data.Path.Should().StartWithEquivalent(@"C:\Program Files");
+            data.Path.Should().Contain("R-");
         }
     }
 }
