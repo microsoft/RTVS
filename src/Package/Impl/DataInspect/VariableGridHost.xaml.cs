@@ -21,6 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         
         internal void SetEvaluation(EvaluationWrapper evaluation) {
+            ClearError();
+
             VariableGrid.Initialize(new GridDataProvider(evaluation));
 
             _evaluation = evaluation;

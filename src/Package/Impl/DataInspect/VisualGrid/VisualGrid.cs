@@ -18,7 +18,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public VisualGrid() {
             _visualChildren = new VisualCollection(this);
+
             _gridLine = new GridLineVisual(this);
+            AddLogicalChild(_gridLine);
+            AddVisualChild(_gridLine);
+
             ClipToBounds = true;
 
             Focusable = true;
@@ -125,11 +129,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 foreach (int r in newViewport.Rows.GetEnumerable()) {
                     var visual = _visualGrid[r, c];
 
-                    double width = points.Width[c] - GridLineThickness;
-                    double height = points.Height[r] - GridLineThickness;
-                    visual.Draw(new Size(width, height));
-                    points.Width[c] = Math.Max(width, visual.Size.Width + GridLineThickness);
-                    points.Height[r] = Math.Max(height, visual.Size.Height + GridLineThickness);
+                    visual.Draw();
+                    points.Width[c] = visual.Size.Width + (visual.Margin * 2) + GridLineThickness;
+                    points.Height[r] = visual.Size.Height + (visual.Margin * 2) + GridLineThickness;
 
                     _visualChildren.Add(_visualGrid[r, c]);
                 }
@@ -138,19 +140,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _dataViewport = newViewport;
         }
 
+        private bool alignRight = true;
+
         internal void ArrangeVisuals(IPoints points) {
             foreach (int c in _dataViewport.Columns.GetEnumerable()) {
                 foreach (int r in _dataViewport.Rows.GetEnumerable()) {
                     var visual = _visualGrid[r, c];
 
+                    Debug.Assert(r == visual.Row && c == visual.Column);
+                    Debug.Assert(points.Width[c] >= visual.Size.Width && points.Height[r] >= visual.Size.Height);
+
+                    double x = points.xPosition[c] + (alignRight ? (points.Width[c] - visual.Size.Width - visual.Margin - GridLineThickness) : 0.0);
+                    double y = points.yPosition[r];
+
                     var transform = visual.Transform as TranslateTransform;
                     if (transform == null) {
-                        visual.Transform = new TranslateTransform(
-                            points.xPosition[visual.Column],
-                            points.yPosition[visual.Row]);
+                        visual.Transform = new TranslateTransform(x, y);
                     } else {
-                        transform.X = points.xPosition[visual.Column];
-                        transform.Y = points.yPosition[visual.Row];
+                        transform.X = x;
+                        transform.Y = y;
                     }
                 }
             }
@@ -171,6 +179,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             drawingContext.DrawRectangle(Background, null, new Rect(RenderSize));
         }
 
+        public void Clear() {
+            _visualChildren.Clear();
+        }
+
         protected override int VisualChildrenCount {
             get {
                 if (_visualChildren.Count == 0) return 0;
@@ -184,31 +196,5 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (index == 0) return _gridLine;
             return _visualChildren[index - 1];
         }
-    }
-
-    /// <summary>
-    /// Scroll orientation of Grid
-    /// </summary>
-    [Flags]
-    internal enum ScrollDirection {
-        /// <summary>
-        /// grid doesn't scroll
-        /// </summary>
-        None = 0x00,
-
-        /// <summary>
-        /// grid scrolls horizontally
-        /// </summary>
-        Horizontal = 0x01,
-
-        /// <summary>
-        /// grid scrolls vertically
-        /// </summary>
-        Vertical = 0x02,
-
-        /// <summary>
-        /// grid scrolls in vertical and horizontal direction
-        /// </summary>
-        Both = 0x03,
     }
 }

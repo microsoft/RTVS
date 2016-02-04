@@ -91,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     if (_scrollCommands.Count > 0
                         && _scrollCommands.Count < ScrollCommandUpperBound) {
                         // another command has been queued already. continue to next
-                        // upperbound 50 prevents infinite loop in case scroll commands is queued fast and endlessly, which happens only in theory
+                        // upperbound prevents infinite loop in case scroll commands is queued fast and endlessly, which happens only in theory
                         continue;
                     } else {
                         for (int i = 0; i < batch.Count; i++) {

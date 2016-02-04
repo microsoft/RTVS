@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="DataInspect\VisualGrid\PointChangedEventArgs.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollCommand.cs" />
+    <Compile Include="DataInspect\VisualGrid\ScrollDirection.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollType.cs" />
     <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\ThumbTrack.cs" />
