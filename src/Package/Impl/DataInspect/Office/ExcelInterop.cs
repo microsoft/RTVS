@@ -2,7 +2,6 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Timers;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Excel = Microsoft.Office.Interop.Excel;
