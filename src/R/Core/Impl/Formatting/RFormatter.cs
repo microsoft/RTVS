@@ -202,6 +202,7 @@ namespace Microsoft.R.Core.Formatting {
             AppendToken(leadingSpace: LeadingSpaceNeeded(), trailingSpace: trailingSpace);
 
             if (controlBlock) {
+                _formattingScopes.Peek().Keywords.Add(keyword);
                 // Keyword defines optional condition
                 // and possibly new '{ }' scope
                 AppendControlBlock(keyword);
@@ -380,8 +381,24 @@ namespace Microsoft.R.Core.Formatting {
                     return true;
 
                 case RTokenType.Keyword:
-                    return _tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace && 
-                           _textProvider.GetText(token) == "else";
+                    if (_tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
+                           _textProvider.GetText(token) == "else") {
+                        // Check what was the most recent keyword indented in this scope.
+                        // If it is 'if' then there should not be a break between 
+                        // the closing brace and the 'else'. This prevents false positives
+                        // in constructs like
+                        //
+                        //      if(TRUE)
+                        //          repeat {
+                        //          } else
+                        //
+                        // in which else should be placed at the next line and indented with the if.
+                        var scope = _formattingScopes.Peek();
+                        if (scope.Keywords.Count > 0) {
+                            return scope.Keywords[scope.Keywords.Count - 1] == "if";
+                        }
+                    }
+                    break;
             }
 
             return false;
@@ -391,8 +408,7 @@ namespace Microsoft.R.Core.Formatting {
             string text = _textProvider.GetText(_tokens.CurrentToken);
             if (TokenOperator.IsUnaryOperator(_tokens, TokenOperator.GetOperatorType(text))) {
                 AppendToken(leadingSpace: true, trailingSpace: false);
-            }
-            else if (IsOperatorWithoutSpaces(text)) {
+            } else if (IsOperatorWithoutSpaces(text)) {
                 AppendToken(leadingSpace: false, trailingSpace: false);
             } else {
                 AppendToken(leadingSpace: true, trailingSpace: true);
