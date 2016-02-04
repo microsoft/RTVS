@@ -2,12 +2,14 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
-    internal sealed class ExcelInterop {
+    internal static class ExcelInterop {
         private const string _workbookName = "RTVS_View.xlsx";
         private static bool _busy;
         private static Application _excel;
@@ -25,14 +27,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             _busy = true;
 
-            ExcelData xlData = await GenerateExcelData(expression, rows, cols);
             try {
-                Workbook wb = RunExcel();
-                if (wb != null) {
-                    // Try finding existing worksheet first
-                    Worksheet ws = GetOrCreateWorksheet(wb, variableName);
-                    PopulateWorksheet(ws, xlData.RowNames, xlData.ColNames, xlData.CellData);
-                    _excel.Visible = true;
+                await TaskUtilities.SwitchToBackgroundThread();
+
+                ExcelData xlData = await GenerateExcelData(expression, rows, cols);
+                if (xlData != null) {
+
+                    VsAppShell.Current.DispatchOnUIThread(() => {
+                        Workbook wb = RunExcel();
+                        if (wb != null) {
+                            // Try finding existing worksheet first
+                            Worksheet ws = GetOrCreateWorksheet(wb, variableName);
+                            PopulateWorksheet(ws, xlData.RowNames, xlData.ColNames, xlData.CellData);
+                            _excel.Visible = true;
+                        }
+                    });
                 }
             } finally {
                 _busy = false;
@@ -40,20 +49,26 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         }
 
         private static async Task<ExcelData> GenerateExcelData(string expression, int rows, int cols) {
-            ExcelData xlData = new ExcelData();
 
-            IGridData<string> data = await GridDataSource.GetGridDataAsync(expression,
-                                     new GridRange(new Range(0, rows), new Range(0, cols)));
-            if (data.RowHeader != null) {
-                xlData.RowNames = await MakeRowNames(data, rows);
-            }
+            try {
+                ExcelData xlData = new ExcelData();
+                IGridData<string> data = await GridDataSource.GetGridDataAsync(expression,
+                                         new GridRange(new Range(0, rows), new Range(0, cols)));
+                if (data != null) {
+                    if (data.RowHeader != null) {
+                        xlData.RowNames = MakeRowNames(data, rows);
+                    }
 
-            if (data.RowHeader != null) {
-                xlData.ColNames = await MakeColumnNames(data, cols);
-            }
+                    if (data.RowHeader != null) {
+                        xlData.ColNames = MakeColumnNames(data, cols);
+                    }
 
-            xlData.CellData = await MakeExcelRange(data, rows, cols);
-            return xlData;
+                    xlData.CellData = MakeExcelRange(data, rows, cols);
+                    return xlData;
+                }
+            } catch (OperationCanceledException) { }
+
+            return null;
         }
 
         private static Workbook RunExcel() {
@@ -80,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 xlApp = (Application)Marshal.GetActiveObject("Excel.Application");
             } catch (COMException) { }
 
-            if(xlApp == null) {
+            if (xlApp == null) {
                 try {
                     xlApp = new Application();
                 } catch (COMException) { }
@@ -103,7 +118,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                     if (File.Exists(wbName)) {
                         File.Delete(wbName);
                     }
-                } catch(IOException) { }
+                } catch (IOException) { }
 
                 try {
                     if (wbName != null) {
@@ -161,36 +176,30 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             }
         }
 
-        private static Task<object[]> MakeRowNames(IGridData<string> data, int rows) {
-            return Task.Run(() => {
-                object[] arr = new object[rows];
-                for (int r = 0; r < rows; r++) {
-                    arr[r] = data.RowHeader[r];
-                }
-                return arr;
-            });
+        private static object[] MakeRowNames(IGridData<string> data, int rows) {
+            object[] arr = new object[rows];
+            for (int r = 0; r < rows; r++) {
+                arr[r] = data.RowHeader[r];
+            }
+            return arr;
         }
 
-        private static Task<object[]> MakeColumnNames(IGridData<string> data, int cols) {
-            return Task.Run(() => {
-                object[] arr = new object[cols];
+        private static object[] MakeColumnNames(IGridData<string> data, int cols) {
+            object[] arr = new object[cols];
+            for (int c = 0; c < cols; c++) {
+                arr[c] = data.ColumnHeader[c];
+            }
+            return arr;
+        }
+
+        private static object[,] MakeExcelRange(IGridData<string> data, int rows, int cols) {
+            object[,] arr = new object[rows, cols];
+            for (int r = 0; r < rows; r++) {
                 for (int c = 0; c < cols; c++) {
-                    arr[c] = data.ColumnHeader[c];
+                    arr[r, c] = data.Grid[r, c];
                 }
-                return arr;
-            });
-        }
-
-        private static Task<object[,]> MakeExcelRange(IGridData<string> data, int rows, int cols) {
-            return Task.Run(() => {
-                object[,] arr = new object[rows, cols];
-                for (int r = 0; r < rows; r++) {
-                    for (int c = 0; c < cols; c++) {
-                        arr[r, c] = data.Grid[r, c];
-                    }
-                }
-                return arr;
-            });
+            }
+            return arr;
         }
     }
 }
