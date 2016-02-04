@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -180,14 +178,14 @@ namespace Microsoft.R.Debugger {
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
         }
 
-        public async Task Break() {
+        public async Task Break(CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            using (var inter = await RSession.BeginInteractionAsync(isVisible: true)) {
+            using (var inter = await RSession.BeginInteractionAsync(true, ct)) {
                 await inter.RespondAsync("browser()\n");
             }
         }
 
-        public async Task Continue(CancellationToken cancellationToken) {
+        public async Task Continue(CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
             ExecuteBrowserCommandAsync("c", cancellationToken)
                 .SilenceException<MessageTransportException>()
@@ -195,15 +193,15 @@ namespace Microsoft.R.Debugger {
                 .DoNotWait();
         }
 
-        public Task<bool> StepIntoAsync(CancellationToken cancellationToken) {
+        public Task<bool> StepIntoAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             return StepAsync(cancellationToken, "s");
         }
 
-        public Task<bool> StepOverAsync(CancellationToken cancellationToken) {
+        public Task<bool> StepOverAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             return StepAsync(cancellationToken, "n");
         }
 
-        public Task<bool> StepOutAsync(CancellationToken cancellationToken) {
+        public Task<bool> StepOutAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             return StepAsync(cancellationToken, "rtvs:::browser_set_debug()", "c");
         }
 
@@ -267,13 +265,13 @@ namespace Microsoft.R.Debugger {
             return stackFrames;
         }
 
-        public async Task EnableBreakpoints(bool enable, CancellationToken ct) {
+        public async Task EnableBreakpointsAsync(bool enable, CancellationToken ct = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
             await InvokeDebugHelperAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"), ct);
         }
 
-        public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken) {
+        public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();

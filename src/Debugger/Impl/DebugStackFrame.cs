@@ -1,9 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -49,7 +46,7 @@ namespace Microsoft.R.Debugger {
             var match = _doTraceRegex.Match(Call);
             if (match.Success) {
                 FrameKind = DebugStackFrameKind.DoTrace;
-            } 
+            }
 
             if (fallbackFrame != null) {
                 // If we still don't have the filename and line number, use those from the fallback frame.
@@ -76,7 +73,7 @@ namespace Microsoft.R.Debugger {
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length | DebugEvaluationResultFields.AttrCount,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            return EvaluateAsync("base::environment()", fields: fields, cancellationToken:cancellationToken);
+            return EvaluateAsync("base::environment()", fields: fields, cancellationToken: cancellationToken);
         }
     }
 }
