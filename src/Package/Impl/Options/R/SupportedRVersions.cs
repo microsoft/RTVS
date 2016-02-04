@@ -18,6 +18,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             if (data.Status != RInstallStatus.OK && showErrors) {
                 string message = FormatMessage(data);
                 VsAppShell.Current.ShowErrorMessage(message);
+                if(data.Status == RInstallStatus.PathNotSpecified) {
+                    Process.Start("https://mran.revolutionanalytics.com/download/#download");
+                }
                 return false;
             }
 

@@ -88,26 +88,51 @@
 
             <DataTemplate x:Key="ValueCellTemplate">
                 <Grid>
-                    <TextBlock Text="{Binding Model.Content.Value}" VerticalAlignment="Center" />
-                    <Button HorizontalAlignment="Right"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="36" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Model.Content.Value}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
+                        <Button
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
                             Command="{Binding Model.Content.ShowDetailCommand}">
-                        <Button.Template>
-                            <ControlTemplate>
-                                <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
                                         Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
                                         BorderBrush="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}">
-                                    <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Zoom}"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="true">
-                                        <Setter TargetName="Border" Property="BorderBrush"
+                                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Zoom}"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter TargetName="Border" Property="BorderBrush"
                                                 Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey}}" />
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <Button
+                            Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Command="{Binding Model.Content.OpenInExcelCommand}">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
+                                        Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
+                                        BorderBrush="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}">
+                                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.OfficeExcel2013}"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter TargetName="Border" Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey}}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>

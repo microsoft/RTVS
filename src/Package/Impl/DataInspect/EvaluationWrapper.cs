@@ -7,12 +7,10 @@ using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
+using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.R.Package.Repl;
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -35,6 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             CanShowDetail = ComputeDetailAvailability(DebugEvaluation as DebugValueEvaluationResult);
             if (CanShowDetail) {
                 ShowDetailCommand = new DelegateCommand(ShowVariableGridWindowPane, (o) => CanShowDetail);
+                OpenInExcelCommand = new DelegateCommand(OpenInExcel, (o) => CanShowDetail);
             }
         }
 
@@ -114,10 +113,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public ICommand ShowDetailCommand { get; }
 
+        public ICommand OpenInExcelCommand { get; }
+
         private void ShowVariableGridWindowPane(object parameter) {
             VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);
             pane.SetEvaluation(this);
         }
+
+        private void OpenInExcel(object parameter) {
+            ExcelInterop.OpenDataInExcel(Expression, Dimensions[0], Dimensions[1]).DoNotWait();
+         }
 
         private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
         private bool ComputeDetailAvailability(DebugValueEvaluationResult evaluation) {
@@ -128,37 +133,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             return false;
         }
-
-        public async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange gridRange) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            var rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
-            if (rSession == null) {
-                throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for {nameof(EvaluationWrapper)}"));
-            }
-
-            string rows = gridRange.Rows.ToRString();
-            string columns = gridRange.Columns.ToRString();
-
-            using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
-                var result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
-
-                if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
-                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
-                }
-
-                var data = GridParser.Parse(result.StringResult);
-                data.Range = gridRange;
-
-                if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != gridRange.Rows.Count)
-                    || (data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Column) && data.ColumnNames.Count != gridRange.Columns.Count)) {
-                    throw new InvalidOperationException("Header names lengths are different from data's length");
-                }
-
-                return data;
-            }
-        }
-
         #endregion
     }
 }
