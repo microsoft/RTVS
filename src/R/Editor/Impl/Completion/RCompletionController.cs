@@ -384,7 +384,7 @@ namespace Microsoft.R.Editor.Completion {
                     if (TextView.TextBuffer.CurrentSnapshot.Version.VersionNumber == position.Snapshot.Version.VersionNumber) {
                         TextView.TextBuffer.Insert(position.Position, "()");
                         TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position.Position + 1));
-                        SignatureBroker.TriggerSignatureHelp(TextView);
+                        EditorShell.DispatchOnUIThread(() => TriggerSignatureHelp());
                     }
                 });
             }
