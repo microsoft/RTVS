@@ -94,7 +94,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{Binding Model.Content.Value}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
-                        <Button
+                        <!--<Button
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
                             Command="{Binding Model.Content.ShowDetailCommand}">
                             <Button.Template>
@@ -112,7 +112,7 @@
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
                             </Button.Template>
-                        </Button>
+                        </Button>-->
                         <Button
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
                             Command="{Binding Model.Content.OpenInExcelCommand}">
