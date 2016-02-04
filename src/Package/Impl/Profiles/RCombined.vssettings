@@ -826,6 +826,8 @@
           <Shortcut Command="RTools.VariableExplorer" Scope="Global">Ctrl+8</Shortcut>
           <Shortcut Command="InteractiveConsole.ClearScreen" Scope="Global">Ctrl+L</Shortcut>
           <Shortcut Command="InteractiveConsole.Reset" Scope="Global">Ctrl+Shift+F10</Shortcut>
+          <Shortcut Command="InteractiveConsole.ClearScreen" Scope="Text Editor">Ctrl+L</Shortcut>
+          <Shortcut Command="InteractiveConsole.Reset" Scope="Text Editor">Ctrl+Shift+F10</Shortcut>
         </DefaultShortcuts>
         <ShortcutsScheme/>
         <UserShortcuts>
