@@ -62,8 +62,7 @@ namespace Microsoft.R.Core.Test.Formatting {
 @"if (TRUE)
 {
   1
-}
-else
+} else
 {
   2
 }
