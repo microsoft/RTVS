@@ -82,12 +82,10 @@ x <- 1";
 @"if (TRUE)
 {
   1
-}
-else if (FALSE)
+} else if (FALSE)
 {
   2
-}
-else
+} else
 {
   3
 }

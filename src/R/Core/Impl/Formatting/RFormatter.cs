@@ -380,7 +380,8 @@ namespace Microsoft.R.Core.Formatting {
                     return true;
 
                 case RTokenType.Keyword:
-                    return _textProvider.GetText(token) == "else";
+                    return _tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace && 
+                           _textProvider.GetText(token) == "else";
             }
 
             return false;
