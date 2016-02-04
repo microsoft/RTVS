@@ -64,7 +64,7 @@ namespace Microsoft.R.Debugger.Test {
   z <- 3
 ";
                     using (var sf = new SourceFile(content)) {
-                        await debugSession.EnableBreakpoints(true, default(CancellationToken));
+                        await debugSession.EnableBreakpointsAsync(true, default(CancellationToken));
 
                         var bpl = new DebugBreakpointLocation(sf.FilePath, 2);
                         DebugBreakpoint bp = await debugSession.CreateBreakpointAsync(bpl, default(CancellationToken));

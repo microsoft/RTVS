@@ -57,13 +57,13 @@ namespace Microsoft.R.Debugger {
             return Invariant($"rtvs:::add_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber}, {(reapply ? "TRUE" : "FALSE")})");
         }
 
-        internal async Task SetBreakpointAsync(CancellationToken cancellationToken) {
+        internal async Task SetBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
             await Session.InvokeDebugHelperAsync(GetAddBreakpointExpression(true), cancellationToken);
             ++UseCount;
         }
 
-        public async Task DeleteAsync(CancellationToken cancellationToken) {
+        public async Task DeleteAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             Trace.Assert(UseCount > 0);
             await TaskUtilities.SwitchToBackgroundThread();
             await Session.InitializeAsync(cancellationToken);
