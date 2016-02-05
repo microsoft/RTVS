@@ -78,7 +78,7 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        private async Task InitializeWorkerAsync(CancellationToken cancellationToken) {
+        private async Task InitializeWorkerAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
             try {
@@ -112,7 +112,7 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        public async Task ExecuteBrowserCommandAsync(string command, CancellationToken cancellationToken) {
+        public async Task ExecuteBrowserCommandAsync(string command, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -154,8 +154,8 @@ namespace Microsoft.R.Debugger {
             return token;
         }
 
-        public Task<DebugEvaluationResult> EvaluateAsync(string expression, CancellationToken cancellationToken) {
-            return EvaluateAsync(null, expression, cancellationToken:cancellationToken);
+        public Task<DebugEvaluationResult> EvaluateAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
+            return EvaluateAsync(null, expression, cancellationToken: cancellationToken);
         }
 
         public async Task<DebugEvaluationResult> EvaluateAsync(
@@ -165,7 +165,7 @@ namespace Microsoft.R.Debugger {
             string env = null,
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
             int? reprMaxLength = null,
-            CancellationToken cancellationToken = default (CancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
             ThrowIfDisposed();
 
