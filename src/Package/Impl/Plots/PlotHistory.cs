@@ -1,17 +1,17 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
-    [Export(typeof(IPlotHistory))]
     internal sealed class PlotHistory : IPlotHistory {
 
-        public PlotHistory() {
+        public PlotHistory(IRSession session) {
             ActivePlotIndex = -1;
-            PlotContentProvider = new PlotContentProvider();
+            PlotContentProvider = new PlotContentProvider(session);
             PlotContentProvider.PlotChanged += OnPlotChanged;
         }
 

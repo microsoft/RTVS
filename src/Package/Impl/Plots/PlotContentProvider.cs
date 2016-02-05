@@ -23,12 +23,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private int _lastWidth;
         private int _lastHeight;
 
-        public PlotContentProvider() {
+        public PlotContentProvider(IRSession session) {
             _lastWidth = -1;
             _lastHeight = -1;
 
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _rSession = sessionProvider.GetInteractiveWindowRSession();
+            _rSession = session;
             _rSession.Mutated += RSession_Mutated;
             _rSession.Connected += RSession_Connected;
         }
@@ -42,9 +41,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 await ApplyNewSize();
             }
 
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-
-            OnPlotChanged(null);
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                OnPlotChanged(null);
+            });
         }
 
         #region IPlotContentProvider implementation

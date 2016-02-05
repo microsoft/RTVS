@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Common.Core.Enums;
+using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.R.Support.Test.Utility {
@@ -16,14 +17,11 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public string RBasePath {
             get {
-                // Test settings are fixed and are unrelated to what is stored in VS.
-                // Therefore we need to look up R when it is not in the registry.
-                foreach(string dir in Directory.EnumerateDirectories(@"C:\Program Files\R")) {
-                    if(dir.Contains("R-3.2")) {
-                        return dir;
-                    }
+                var data = RInstallation.GetInstallationData(string.Empty, 3, 2, 3, 2);
+                if(data.Status == RInstallStatus.OK) {
+                    return data.Path;
                 }
-                return string.Empty;
+                 return string.Empty;
             }
             set { }
         }
