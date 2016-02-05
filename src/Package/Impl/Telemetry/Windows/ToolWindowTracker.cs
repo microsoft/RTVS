@@ -6,13 +6,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
     internal sealed class ToolWindowTracker: IVsDebuggerEvents, IDisposable {
         private Timer _timer = new Timer();
+        private IVsDebugger _debugger;
         private uint _debuggerEventCookie;
         private uint _reportCount;
 
         public ToolWindowTracker() {
-            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
-            if (debugger != null) {
-                debugger.AdviseDebuggerEvents(this, out _debuggerEventCookie);
+            _debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+            if (_debugger != null) {
+                _debugger.AdviseDebuggerEvents(this, out _debuggerEventCookie);
 
                 _timer.Interval = new TimeSpan(0, 0, 10).TotalMilliseconds;
                 _timer.AutoReset = true;
@@ -50,10 +51,10 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
             _timer?.Dispose();
             _timer = null;
 
-            if(_debuggerEventCookie != 0) {
-                var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
-                debugger.UnadviseDebuggerEvents(_debuggerEventCookie);
+            if(_debuggerEventCookie != 0 && _debugger != null) {
+                _debugger.UnadviseDebuggerEvents(_debuggerEventCookie);
                 _debuggerEventCookie = 0;
+                _debugger = null;
             }
         }
     }

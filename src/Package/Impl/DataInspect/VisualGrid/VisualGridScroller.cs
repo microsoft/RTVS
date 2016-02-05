@@ -212,19 +212,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             // pull data from provider
-            var data = await DataProvider.GetAsync(newViewport);
-            if (!data.Grid.Range.Contains(newViewport)
-                || !data.ColumnHeader.Range.Contains(newViewport.Columns)
-                || !data.RowHeader.Range.Contains(newViewport.Rows)) {
-                throw new InvalidOperationException("Couldn't acquire enough data");
-            }
+            try {
+                var data = await DataProvider.GetAsync(newViewport);
+                if (!data.Grid.Range.Contains(newViewport)
+                    || !data.ColumnHeader.Range.Contains(newViewport.Columns)
+                    || !data.RowHeader.Range.Contains(newViewport.Rows)) {
+                    throw new InvalidOperationException("Couldn't acquire enough data");
+                }
 
-            // actual drawing runs in UI thread
-            await Task.Factory.StartNew(
-                () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport, suppressNotification),
-                token,
-                TaskCreationOptions.None,
-                _ui);
+                // actual drawing runs in UI thread
+                await Task.Factory.StartNew(
+                    () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport, suppressNotification),
+                    token,
+                    TaskCreationOptions.None,
+                    _ui);
+            }
+            catch(OperationCanceledException) { }
         }
 
         private void DrawVisuals(

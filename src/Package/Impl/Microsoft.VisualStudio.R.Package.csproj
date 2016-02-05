@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="DataInspect\DataSource\DelegateList.cs" />
     <Compile Include="DataInspect\DataSource\Grid.cs" />
+    <Compile Include="DataInspect\DataSource\GridDataSource.cs" />
     <Compile Include="DataInspect\DataSource\IGrid.cs" />
     <Compile Include="DataInspect\DataSource\IGridProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridParser.cs" />
     <Compile Include="DataInspect\GridDataProvider.cs" />
+    <Compile Include="DataInspect\Office\ExcelInterop.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="DataInspect\VariableSubscription.cs" />
     <Compile Include="DataInspect\VariableSubscriptionToken.cs" />
@@ -413,6 +415,11 @@
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\lib\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>

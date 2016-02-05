@@ -36,8 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
         }
 
         public void Show() {
-            var frame = ReplWindow.FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
-            frame.Show();
+            ReplWindow.ShowWindow();
         }
 
         public void ReplaceCurrentExpression(string replaceWith) {
