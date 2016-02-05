@@ -178,9 +178,11 @@
     <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
     <Compile Include="Plots\Definitions\IPlotHistory.cs" />
+    <Compile Include="Plots\Definitions\IPlotHistoryProvider.cs" />
     <Compile Include="Plots\IPlotContentProvider.cs" />
     <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="Plots\PlotHistory.cs" />
+    <Compile Include="Plots\PlotHistoryProvider.cs" />
     <Compile Include="ProjectSystem\ExcludeFromProjectCommand.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />

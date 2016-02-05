@@ -25,8 +25,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
 
-            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _plotHistory = new PlotHistory(provider.GetInteractiveWindowRSession());
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
+
+            _plotHistory = historyProvider.GetPlotHistory(sessionProvider.GetInteractiveWindowRSession());
             _plotHistory.HistoryChanged += OnPlotHistoryHistoryChanged;
 
             var presenter = new XamlPresenter(_plotHistory.PlotContentProvider);

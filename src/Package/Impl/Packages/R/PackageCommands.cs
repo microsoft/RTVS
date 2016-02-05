@@ -27,7 +27,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
             var rSessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
-            var plotHistory = exportProvider.GetExportedValue<IPlotHistory>();
+            var plotHistoryProvider = exportProvider.GetExportedValue<IPlotHistoryProvider>();
+            var plotHistory = plotHistoryProvider.GetPlotHistory(rSessionProvider.GetInteractiveWindowRSession());
             var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
             var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
 
