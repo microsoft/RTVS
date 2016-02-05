@@ -94,12 +94,12 @@ namespace Microsoft.R.Debugger {
             return new DebugValueEvaluationResult(stackFrame, expression, name, json);
         }
 
-        public Task<DebugEvaluationResult> SetValueAsync(string value, CancellationToken cancellationToken) {
+        public Task<DebugEvaluationResult> SetValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrEmpty(Expression)) {
                 throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(DebugEvaluationResult)} because it doesn't have an associated {nameof(Expression)}."));
             }
 
-            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0, cancellationToken:cancellationToken);
+            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0, cancellationToken: cancellationToken);
         }
 
         public Task<DebugEvaluationResult> EvaluateAsync(

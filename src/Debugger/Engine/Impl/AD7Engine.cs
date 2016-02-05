@@ -404,31 +404,37 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugProgram2.Step(IDebugThread2 pThread, enum_STEPKIND sk, enum_STEPUNIT Step) {
             ThrowIfDisposed();
 
-            // If step was interrupted midway (e.g. by a breakpoint), we have already reported breakpoint
-            // hit event, and so we must not report step complete. Note that interrupting is not the same
-            // as canceling, and if step was canceled, we must report step completion.
-            bool completed = true;
-            try {
-                switch (sk) {
-                    case enum_STEPKIND.STEP_OVER:
-                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepOverAsync(ct));
-                        break;
-                    case enum_STEPKIND.STEP_INTO:
-                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepIntoAsync(ct));
-                        break;
-                    case enum_STEPKIND.STEP_OUT:
-                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepOutAsync(ct));
-                        break;
-                    default:
-                        return VSConstants.E_NOTIMPL;
-                }
-            } catch (OperationCanceledException) {
-            } catch (MessageTransportException) {
+            Task<bool> step;
+            switch (sk) {
+                case enum_STEPKIND.STEP_OVER:
+                    step = DebugSession.StepOverAsync();
+                    break;
+                case enum_STEPKIND.STEP_INTO:
+                    step = DebugSession.StepIntoAsync();
+                    break;
+                case enum_STEPKIND.STEP_OUT:
+                    step = DebugSession.StepOutAsync();
+                    break;
+                default:
+                    return VSConstants.E_NOTIMPL;
             }
 
-            if (completed) {
-                Send(new AD7SteppingCompleteEvent(), AD7SteppingCompleteEvent.IID);
-            }
+            step.ContinueWith(t => {
+                // If step was interrupted midway (e.g. by a breakpoint), we have already reported breakpoint
+                // hit event, and so we must not report step complete. Note that interrupting is not the same
+                // as canceling, and if step was canceled, we must report step completion.
+
+                bool completed = true;
+                try {
+                    completed = t.GetAwaiter().GetResult();
+                } catch (OperationCanceledException) {
+                } catch (MessageTransportException) {
+                }
+
+                if (completed) {
+                    Send(new AD7SteppingCompleteEvent(), AD7SteppingCompleteEvent.IID);
+                }
+            });
 
             return VSConstants.S_OK;
         }

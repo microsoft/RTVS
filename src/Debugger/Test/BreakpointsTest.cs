@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -82,29 +80,6 @@ namespace Microsoft.R.Debugger.Test {
                         eventCount.Should().Be(1);
                     }
                 }
-            }
-        }
-
-        sealed class SourceFile : IDisposable {
-            public string FilePath { get; }
-
-            public SourceFile(string content) {
-                FilePath = Path.GetTempFileName();
-                using (var sw = new StreamWriter(FilePath)) {
-                    sw.Write(content);
-                }
-            }
-
-            public async Task Source(IRSession session) {
-                using (IRSessionInteraction eval = await session.BeginInteractionAsync()) {
-                    await eval.RespondAsync($"rtvs::debug_source({FilePath.ToRStringLiteral()})" + Environment.NewLine);
-                }
-            }
-
-            public void Dispose() {
-                try {
-                    File.Delete(FilePath);
-                } catch (IOException) { }
             }
         }
     }
