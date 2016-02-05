@@ -126,7 +126,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             "plot(women)"
         };
 
-        //[Test]
+        [Test]
         [Category.Plots]
         public async Task PlotALot() {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
@@ -137,8 +137,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
 
                 foreach (var c in _commands) {
                     using (var interaction = await script.Session.BeginInteractionAsync()) {
-                        interaction.RespondAsync(c + Environment.NewLine).Wait(1000);
-                        EventsPump.DoEvents(100);
+                        try {
+                            interaction.RespondAsync(c + Environment.NewLine).Wait(1000);
+                            EventsPump.DoEvents(100);
+                        } catch (RException) { } catch(AggregateException) { }
                     }
                 }
 
