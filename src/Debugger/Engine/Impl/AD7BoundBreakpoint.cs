@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
@@ -20,8 +22,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugBoundBreakpoint2.Delete() {
-            SetState(enum_BP_STATE.BPS_DELETED);
-            return VSConstants.S_OK;
+            return SetState(enum_BP_STATE.BPS_DELETED);
         }
 
         int IDebugBoundBreakpoint2.Enable(int fEnable) {
@@ -30,8 +31,7 @@ namespace Microsoft.R.Debugger.Engine {
                 return VSConstants.E_FAIL;
             }
 
-            SetState(_state = fEnable == 0 ? enum_BP_STATE.BPS_DISABLED : enum_BP_STATE.BPS_ENABLED);
-            return VSConstants.S_OK;
+            return SetState(_state = fEnable == 0 ? enum_BP_STATE.BPS_DISABLED : enum_BP_STATE.BPS_ENABLED);
         }
 
         int IDebugBoundBreakpoint2.GetBreakpointResolution(out IDebugBreakpointResolution2 ppBPResolution) {
@@ -66,24 +66,41 @@ namespace Microsoft.R.Debugger.Engine {
             return VSConstants.E_NOTIMPL;
         }
 
-        private void SetState(enum_BP_STATE state) {
+        private int SetState(enum_BP_STATE state) {
             if (_state == enum_BP_STATE.BPS_ENABLED) {
                 if (state == enum_BP_STATE.BPS_DISABLED || state == enum_BP_STATE.BPS_DELETED) {
                     if (DebugBreakpoint != null) {
                         DebugBreakpoint.BreakpointHit -= DebugBreakpoint_BreakpointHit;
                         if (Engine.IsConnected) {
-                            TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugBreakpoint.DeleteAsync(ct));
+                            if (Engine.IsProgramDestroyed) {
+                                // If engine is shutting down, do not wait for the delete eval to complete, to avoid
+                                // blocking debugger detach if a long-running operation is in progress. This way the
+                                // engine can just report successful detach right away, and breakpoints are deleted
+                                // later, but as soon as it's actually possible.
+                                DebugBreakpoint.DeleteAsync()
+                                    .SilenceException<MessageTransportException>()
+                                    .SilenceException<RException>()
+                                    .DoNotWait();
+                            } else {
+                                TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugBreakpoint.DeleteAsync(ct));
+                            }
                         }
                     }
                 }
             } else {
                 if (state == enum_BP_STATE.BPS_ENABLED) {
+                    if (Engine.IsProgramDestroyed) {
+                        // Do not allow enabling breakpoints when engine is shutting down.
+                        return VSConstants.E_ABORT;
+                    }
+
                     DebugBreakpoint = TaskExtensions.RunSynchronouslyOnUIThread(ct => Engine.DebugSession.CreateBreakpointAsync(Location, ct));
                     DebugBreakpoint.BreakpointHit += DebugBreakpoint_BreakpointHit;
                 }
             }
 
             _state = state;
+            return VSConstants.S_OK;
         }
 
         private void DebugBreakpoint_BreakpointHit(object sender, EventArgs e) {

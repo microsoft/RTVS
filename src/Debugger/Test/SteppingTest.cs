@@ -32,7 +32,7 @@ z <- x + y";
                 IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
                 using (var debugSession = new DebugSession(session)) {
                     using (var sf = new SourceFile(code)) {
-                        await debugSession.EnableBreakpoints(true);
+                        await debugSession.EnableBreakpointsAsync(true);
 
                         var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 1));
                         var bpHit = new TaskCompletionSource<bool>();
@@ -66,7 +66,7 @@ z <- x + y";
                 IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
                 using (var debugSession = new DebugSession(session)) {
                     using (var sf = new SourceFile(code)) {
-                        await debugSession.EnableBreakpoints(true);
+                        await debugSession.EnableBreakpointsAsync(true);
 
                         var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 5));
                         var bpHit = new TaskCompletionSource<bool>();
@@ -101,7 +101,7 @@ z <- x + y";
                 IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
                 using (var debugSession = new DebugSession(session)) {
                     using (var sf = new SourceFile(code)) {
-                        await debugSession.EnableBreakpoints(true);
+                        await debugSession.EnableBreakpointsAsync(true);
 
                         var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
                         var bpHit = new TaskCompletionSource<bool>();

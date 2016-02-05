@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandStatus Status(Guid guid, int id) {
-            return ReplWindow.ReplWindowExists() ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
+            return ReplWindow.ReplWindowExists ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {

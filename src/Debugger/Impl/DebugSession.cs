@@ -181,9 +181,9 @@ namespace Microsoft.R.Debugger {
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
         }
 
-        public async Task Break() {
+        public async Task Break(CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            using (var inter = await RSession.BeginInteractionAsync(isVisible: true)) {
+            using (var inter = await RSession.BeginInteractionAsync(true, ct)) {
                 await inter.RespondAsync("browser()\n");
             }
         }
@@ -268,7 +268,7 @@ namespace Microsoft.R.Debugger {
             return stackFrames;
         }
 
-        public async Task EnableBreakpoints(bool enable, CancellationToken ct = default(CancellationToken)) {
+        public async Task EnableBreakpointsAsync(bool enable, CancellationToken ct = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
             await InvokeDebugHelperAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"), ct);

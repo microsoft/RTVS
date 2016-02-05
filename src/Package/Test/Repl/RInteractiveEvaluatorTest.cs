@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     result = await eval.ExecuteCodeAsync(new string(new char[10000]));
                     result.Should().Be(ExecutionResult.Failure);
                     string text = tb.CurrentSnapshot.GetText();
-                    text.Should().StartWith(string.Format(Resources.InputIsTooLong, 4096));
+                    text.Should().Contain(string.Format(Resources.InputIsTooLong, 4096));
 
                     tb.Clear();
 

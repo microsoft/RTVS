@@ -61,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            if (ReplWindow.ReplWindowExists()) {
+            if (ReplWindow.ReplWindowExists) {
                 return CommandStatus.SupportedAndEnabled;
             }
             return CommandStatus.Supported;

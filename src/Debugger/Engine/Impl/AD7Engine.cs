@@ -32,6 +32,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         internal bool IsDisposed { get; private set; }
         internal bool IsConnected { get; private set; }
+        internal bool IsProgramDestroyed { get; private set; }
         internal DebugSession DebugSession { get; private set; }
         internal AD7Thread MainThread { get; private set; }
 
@@ -88,7 +89,20 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private async Task ExitBrowserAsync(IRSession session) {
-            using (var inter = await session.BeginInteractionAsync(isVisible: true)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var cts = new CancellationTokenSource(1000);
+            IRSessionInteraction inter;
+            try {
+                inter = await session.BeginInteractionAsync(true, cts.Token);
+            } catch (OperationCanceledException) {
+                // If we couldn't get a prompt to put "Q" into within a reasonable timeframe, just
+                // abort the current interaction;
+                await session.CancelAllAsync();
+                return;
+            }
+
+            using (inter) {
                 // Check if this is still the same prompt as the last Browse prompt that we've seen.
                 // If it isn't, then session has moved on already, and there's nothing for us to exit.
                 DebugBrowseEventArgs currentBrowseDebugEventArgs;
@@ -147,7 +161,7 @@ namespace Microsoft.R.Debugger.Engine {
             IsConnected = true;
 
             // Enable breakpoint instrumentation.
-            TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.EnableBreakpoints(true, ct));
+            TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.EnableBreakpointsAsync(true, ct));
 
             // Send notification after acquiring the session - we need it in case there were any breakpoints pending before
             // the attach, in which case we'll immediately get breakpoint creation requests as soon as we send these, and
@@ -276,15 +290,25 @@ namespace Microsoft.R.Debugger.Engine {
             return IDebugEngine2.CauseBreak();
         }
 
+        private void DestroyProgram() {
+            IsProgramDestroyed = true;
+            Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
+        }
+
         int IDebugProgram2.Detach() {
             ThrowIfDisposed();
 
             try {
-                // Disable breakpoint instrumentation.
-                TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.EnableBreakpoints(false, ct));
+                // Queue disabling breakpoint instrumentation, but do not wait for it to complete -
+                // if there's currently some code running, this may take a while, so just detach and
+                // let breakpoints be taken care of later.
+                DebugSession.EnableBreakpointsAsync(false)
+                    .SilenceException<MessageTransportException>()
+                    .SilenceException<RException>()
+                    .DoNotWait();
             } finally {
                 // Detach should never fail, even if something above didn't work.
-                Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
+                DestroyProgram();
             }
 
             return VSConstants.S_OK;
@@ -586,7 +610,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         private void RSession_Disconnected(object sender, EventArgs e) {
             IsConnected = false;
-            Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
+            DestroyProgram();
         }
     }
 }

@@ -59,8 +59,7 @@ namespace Microsoft.R.Editor.Test.Outline {
             string content =
 @"if (ncol(x) == 1L) {
     xnames < -1
-}
-else {
+} else {
     xnames < -paste0(1, 1L:ncol(x))
   }
   if (intercept) {
@@ -70,20 +69,17 @@ else {
 ";
             OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(content);
 
-            // [0][0...165), Length = 165
-            // [1][42...90), Length = 48
-            // [2][94...163), Length = 69
             rc.Should().HaveCount(3);
 
             rc[0].Start.Should().Be(0);
-            rc[0].Length.Should().Be(90);
+            rc[0].Length.Should().Be(89);
 
-            rc[1].Start.Should().Be(42);
-            rc[1].End.Should().Be(90);
+            rc[1].Start.Should().Be(41);
+            rc[1].End.Should().Be(89);
             rc[1].DisplayText.Should().Be("else...");
 
-            rc[2].Start.Should().Be(94);
-            rc[2].End.Should().Be(163);
+            rc[2].Start.Should().Be(93);
+            rc[2].End.Should().Be(162);
             rc[2].DisplayText.Should().Be("if...");
         }
 

@@ -168,7 +168,9 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         public void SendSelectedToRepl() {
             var selectedText = GetSelectedText();
+            ReplWindow.ShowWindow();
             ReplWindow.Current.ReplaceCurrentExpression(selectedText);
+            ReplWindow.PositionCaretAtPrompt();
         }
 
         public void SendSelectedToTextView(ITextView textView) {

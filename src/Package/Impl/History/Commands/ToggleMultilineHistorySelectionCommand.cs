@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandStatus Status(Guid guid, int id) {
-            return ReplWindow.ReplWindowExists()
+            return ReplWindow.ReplWindowExists
                 ? RToolsSettings.Current.MultilineHistorySelection 
                     ? CommandStatus.Latched | CommandStatus.SupportedAndEnabled
                     : CommandStatus.SupportedAndEnabled

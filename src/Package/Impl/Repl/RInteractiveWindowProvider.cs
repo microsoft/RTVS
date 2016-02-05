@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void Open(int instanceId, bool focus) {
-            if (!ReplWindow.ReplWindowExists()) {
+            if (!ReplWindow.ReplWindowExists) {
                 var window = Create(instanceId);
                 window.Show(focus);
             } else {

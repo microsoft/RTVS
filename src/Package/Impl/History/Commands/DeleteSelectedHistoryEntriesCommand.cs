@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandStatus Status(Guid guid, int id) {
-            return ReplWindow.ReplWindowExists() && _history.HasSelectedEntries
+            return ReplWindow.ReplWindowExists && _history.HasSelectedEntries
                 ? CommandStatus.SupportedAndEnabled
                 : CommandStatus.Supported;
         }

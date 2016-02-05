@@ -26,6 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private IVsInteractiveWindow _lastUsedReplWindow;
         private ConcurrentQueue<PendingSubmission> _pendingInputs = new ConcurrentQueue<PendingSubmission>();
         private static IReplWindow _instance;
+        private static IVsWindowFrame _frame;
         private uint _debuggerEventsCookie;
         private bool _replLostFocus;
         private bool _enteredBreakMode;
@@ -44,6 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             if (debugger != null) {
                 debugger.AdviseDebuggerEvents(this, out _debuggerEventsCookie);
             }
+            EnsureReplWindow();
         }
 
         public static IReplWindow Current {
@@ -278,28 +280,23 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             return _lastUsedReplWindow;
         }
 
-        public static bool ReplWindowExists() {
-            IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
-            return frame != null;
-        }
+        public static bool ReplWindowExists => _frame != null;
 
         public static void ShowWindow() {
-            IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
-            frame?.Show();
+            _frame?.Show();
         }
 
         public static void EnsureReplWindow() {
-            if (!ReplWindowExists()) {
-                IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fForceCreate);
-                if (frame != null) {
-                    //IntPtr bitmap = Resources.ReplWindowIcon.GetHbitmap();
-                    frame.SetProperty((int)__VSFPROPID4.VSFPROPID_TabImage, Resources.ReplWindowIcon);
-                    frame.Show();
+            if (!ReplWindowExists) {
+                _frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fForceCreate);
+                if (_frame != null) {
+                    _frame.SetProperty((int)__VSFPROPID4.VSFPROPID_TabImage, Resources.ReplWindowIcon);
+                    _frame.Show();
                 }
             }
         }
 
-        public static IVsWindowFrame FindReplWindowFrame(__VSFINDTOOLWIN flags) {
+        internal static IVsWindowFrame FindReplWindowFrame(__VSFINDTOOLWIN flags) {
             IVsWindowFrame frame;
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
@@ -414,7 +411,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
         #endregion
 
-        public static void PositionCaretAtPrompt(ITextView textView) {
+        public static void PositionCaretAtPrompt(ITextView textView = null) {
+            textView = textView ?? _instance.GetInteractiveWindow()?.InteractiveWindow.TextView;
+            if (textView == null) {
+                return;
+            }
+
             // Click on text view will move the caret so we need 
             // to move caret to the prompt after view finishes its
             // mouse processing.
