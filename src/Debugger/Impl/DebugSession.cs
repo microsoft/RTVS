@@ -30,10 +30,8 @@ namespace Microsoft.R.Debugger {
 
         public bool IsBrowsing => _currentBrowseEventArgs != null;
 
-        public event EventHandler<DebugBrowseEventArgs> Browse
-        {
-            add
-            {
+        public event EventHandler<DebugBrowseEventArgs> Browse {
+            add {
                 var eventArgs = _currentBrowseEventArgs;
                 if (eventArgs != null) {
                     value?.Invoke(this, eventArgs);
@@ -43,8 +41,7 @@ namespace Microsoft.R.Debugger {
                     _browse += value;
                 }
             }
-            remove
-            {
+            remove {
                 lock (_browseLock) {
                     _browse -= value;
                 }
