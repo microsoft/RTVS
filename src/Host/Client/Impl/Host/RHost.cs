@@ -465,7 +465,7 @@ namespace Microsoft.R.Host.Client {
                     _transport = transport;
                 }
             } else if (_transport == null) {
-                throw new ArgumentNullException("transport");
+                throw new ArgumentNullException(nameof(transport));
             }
 
             try {
