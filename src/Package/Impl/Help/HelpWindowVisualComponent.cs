@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
@@ -12,6 +16,7 @@ using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using mshtml;
 using ContentControl = System.Windows.Controls.ContentControl;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
@@ -48,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionConnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            Dispatcher.FromThread(_creatorThread).InvokeAsync(() => { 
+            Dispatcher.FromThread(_creatorThread).InvokeAsync(() => {
                 CreateBrowser(showDefaultPage: false);
             });
         }
@@ -78,6 +83,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 Process.Start(url);
             }
         }
+
+        public string VisualTheme { get; set; }
         #endregion
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
@@ -107,6 +114,49 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
         }
 
+        private void SetThemeColors() {
+            string cssText = GetCssText();
+            if (!string.IsNullOrEmpty(cssText)) {
+                IHTMLDocument2 doc = Browser.Document.DomDocument as IHTMLDocument2;
+                if (doc != null) {
+                    if(doc.styleSheets.length > 0) {
+                        object index = 0;
+                        var ss = doc.styleSheets.item(ref index) as IHTMLStyleSheet;
+                        ss.cssText = cssText;
+                    }
+                    else { 
+                        IHTMLStyleSheet ss = doc.createStyleSheet();
+                        if (ss != null) {
+                            ss.cssText = cssText;
+                        }
+                    }
+                }
+            }
+        }
+
+        private string GetCssText() {
+            if (VisualTheme != null) {
+                return VisualTheme;
+            }
+
+            var shell6 = VsAppShell.Current.GetGlobalService<IVsUIShell6>(typeof(SVsUIShell));
+            //shell6.GetThemedColor(); // Get background color
+            //
+            string cssfileName = "Dark.css";
+            string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
+            string themePath = Path.Combine(Path.GetDirectoryName(assemblyPath), @"Help\Themes\", cssfileName);
+
+            try {
+                using (var sr = new StreamReader(themePath)) {
+                    return sr.ReadToEnd();
+                }
+            } catch (IOException) {
+                Trace.Fail("Unable to load theme stylesheet {0}", cssfileName);
+            }
+
+            return string.Empty;
+        }
+
         private void OnNavigating(object sender, WebBrowserNavigatingEventArgs e) {
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
@@ -116,6 +166,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
+            SetThemeColors();
             // Upon vavigation we need to ask VS to update UI so 
             // Back /Forward buttons become properly enabled or disabled.
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
