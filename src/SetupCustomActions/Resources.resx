@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DSProfilePromptText" xml:space="preserve">
-    <value>Data Scientist profile provides window layout and keyboard shorcuts similar to RStudio. Would you like setup to apply this profile to the Visual Studio?</value>
+    <value>Data Scientist profile provides window layout and keyboard shortcuts similar to RStudio. Would you like setup to apply this profile to the Visual Studio?</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="DSProfileScreen" type="System.Resources.ResXFileRef, System.Windows.Forms">
