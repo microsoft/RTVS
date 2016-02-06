@@ -129,9 +129,11 @@
                       <Directory Id="TemplatesFolder" Name="Templates">
                         <Directory Id="NewItemTemplatesFolder" Name="NewItem" />
                       </Directory>
-
-                    </Directory>
-                  </Directory>
+                      <Directory Id="HelpFolder" Name="Help">
+                        <Directory Id="HelpThemesFolder" Name="Themes" />
+                      </Directory>
+                      <Directory Id="HiddenProfilesFolder" Name="Profiles" />
+                     </Directory>
                 </Directory>
                 <Directory Id="ItemTemplatesFolder" Name="ItemTemplates">
                   <Directory Id="ItemTemplatesInstallFolder" Name="R">
@@ -175,6 +177,7 @@
     <?include ItemTemplates.wxi ?>
     <?include ProjectTemplates.wxi ?>
     <?include Profiles.wxi ?>
+    <?include Themes.wxi ?>
     <?include RtvsPackage.wxi ?>
 
     <!--<?ifdef LabBuild?>
