@@ -195,7 +195,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                     }
                     sw.WriteLine();
 
-                    string latestEngine = RInstallation.GetLatestEnginePathFromRegistry();
+                    string latestEngine = RInstallation.GetCompatibleEnginePathFromRegistry();
                     sw.WriteLine("Latest R Engine (from registry):");
                     sw.WriteLine("    " + latestEngine);
                     sw.WriteLine();

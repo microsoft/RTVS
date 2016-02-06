@@ -17,7 +17,7 @@ namespace Microsoft.R.Actions.Test.Installation {
         [Test]
         [Category.R.Install]
         public void RInstallation_Test02() {
-            RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2, useRegistry: true);
+            RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2);
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
             data.Version.Minor.Should().BeGreaterOrEqualTo(2);

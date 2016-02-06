@@ -14,12 +14,18 @@ namespace Microsoft.R.Actions.Utility {
     public static class RInstallation {
         private static string[] rFolders = new string[] { "MRO", "RRO", "R" };
 
-        public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion, bool useRegistry = true) {
-            string path = string.Empty;
-            if (useRegistry) {
-                path = RInstallation.GetRInstallPath(basePath);
-            }
+        /// <summary>
+        /// Tries to determine R installation information. If user-specified path
+        /// is supplied, it is used. If not, registry is used. If nothing is found
+        /// in the registry, makes attempt to find compatible 64-bit installation 
+        /// of MRO, RRO or R (in this order) in Program Files folder
+        /// </summary>
+        /// <param name="basePath">Path as specified by the user settings</param>
+        /// <returns></returns>
+        public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion) {
+            string path = RInstallation.GetRInstallPath(basePath);
 
+            // If nothing is found, look into the file system
             if (string.IsNullOrEmpty(path)) {
                 foreach (var f in rFolders) {
                     path = TryFindRInProgramFiles(f, minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
@@ -29,16 +35,26 @@ namespace Microsoft.R.Actions.Utility {
                 }
             }
 
+            // Still nothing? Fail, caller will typically display an error message.
             if (string.IsNullOrEmpty(path)) {
                 return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
             }
 
+            // Now verify if files do exist and are of the correct version.
+            // There may be cases when R was not fully uninstalled or when
+            // version claimed in the registry is not what is really in files.
             RInstallData data = new RInstallData() { Status = RInstallStatus.OK, Path = path };
 
             try {
                 string rDirectory = Path.Combine(path, @"bin\x64");
                 string rDllPath = Path.Combine(rDirectory, "R.dll");
-                if (File.Exists(rDllPath)) {
+                string rGraphAppPath = Path.Combine(rDirectory, "Rgraphapp.dll");
+                string rTermPath = Path.Combine(rDirectory, "RTerm.exe");
+                string rScriptPath = Path.Combine(rDirectory, "RScript.exe");
+                string rGuiPath = Path.Combine(rDirectory, "RGui.exe");
+
+                if (File.Exists(rDllPath) && File.Exists(rTermPath) && File.Exists(rScriptPath) &&
+                    File.Exists(rGraphAppPath) && File.Exists(rGuiPath)) {
                     FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(rDllPath);
                     int minor, revision;
 
@@ -65,7 +81,7 @@ namespace Microsoft.R.Actions.Utility {
         }
 
         public static void GoToRInstallPage() {
-            Process.Start("https://mran.revolutionanalytics.com/download/#download");
+            Process.Start("https://mran.revolutionanalytics.com/download");
         }
 
         /// <summary>
@@ -74,7 +90,7 @@ namespace Microsoft.R.Actions.Utility {
         /// </summary>
         public static string GetRInstallPath(string basePath) {
             if (string.IsNullOrEmpty(basePath) || !Directory.Exists(basePath)) {
-                basePath = RInstallation.GetLatestEnginePathFromRegistry();
+                basePath = RInstallation.GetCompatibleEnginePathFromRegistry();
             }
             return basePath;
         }
@@ -115,8 +131,9 @@ namespace Microsoft.R.Actions.Utility {
         /// <summary>
         /// Retrieves path to the latest (highest version) R installation
         /// from registry. Typically in the form 'Program Files\R\R-3.2.1'
+        /// Selects highest from compatible versions, not just the highest.
         /// </summary>
-        public static string GetLatestEnginePathFromRegistry() {
+        public static string GetCompatibleEnginePathFromRegistry() {
             string[] installedEngines = GetInstalledEngineVersionsFromRegistry();
             string highestVersionName = string.Empty;
             Version highest = null;
@@ -126,7 +143,7 @@ namespace Microsoft.R.Actions.Utility {
                 if (!string.IsNullOrEmpty(name)) {
                     string versionString = ExtractVersionString(name);
                     Version v;
-                    if (Version.TryParse(versionString, out v)) {
+                    if (Version.TryParse(versionString, out v) && SupportedRVersionList.IsCompatibleVersion(v)) {
                         if (highest != null) {
                             if (v > highest) {
                                 highest = v;
@@ -194,7 +211,7 @@ namespace Microsoft.R.Actions.Utility {
                             return rKey.GetValue("InstallPath") as string;
                         }
                     }
-                } catch(Exception) { }
+                } catch (Exception) { }
             }
             return string.Empty;
         }
