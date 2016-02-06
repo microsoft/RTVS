@@ -13,14 +13,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Test]
         [Category.Repl]
         public void CurrentDirectoryTest_DefaultDirectoryTest() {
+            string myDocs = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             string actual;
             using (new VsRHostScript()) {
                 WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
                 cmd.InitializationTask.Wait();
+                cmd.UserDirectory.Should().Be(myDocs);
                 actual = cmd.GetRWorkingDirectoryAsync().Result;
             };
 
-            string myDocs = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             actual.Should().Be(myDocs);
         }
 
