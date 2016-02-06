@@ -19,8 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private string _userDirectory;
         private IRSession _session;
 
-        public Task InitializationTask { get; }
-
         public WorkingDirectoryCommand() :
             base(new [] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory),
@@ -31,10 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Connected += OnSessionConnected;
             _session.DirectoryChanged += OnCurrentDirectoryChanged;
-
-            if (InitializationTask == null) {
-                InitializationTask = GetRUserDirectoryAsync();
-            }
         }
 
         public void Dispose() {
@@ -50,7 +44,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private void OnSessionConnected(object sender, EventArgs e) {
-            FetchRWorkingDirectoryAsync().DoNotWait();
+            if (_userDirectory == null) {
+                GetRUserDirectoryAsync()
+                    .ContinueWith(async (t) => await FetchRWorkingDirectoryAsync())
+                    .DoNotWait();
+            } else {
+                FetchRWorkingDirectoryAsync().DoNotWait();
+            }
         }
 
         private async Task FetchRWorkingDirectoryAsync() {
