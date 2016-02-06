@@ -21,8 +21,6 @@ using ContentControl = System.Windows.Controls.ContentControl;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     public sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
-        private static bool _showDefaultPage;
-
         /// <summary>
         /// Holds browser control. When R session is restarted
         /// it is necessary to re-create the browser control since
@@ -33,29 +31,20 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// </summary>
         private ContentControl _windowContentControl;
         private IRSession _session;
-        Thread _creatorThread;
+        private Thread _creatorThread;
+        private WindowsFormsHost _host;
 
         public HelpWindowVisualComponent() {
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Disconnected += OnRSessionDisconnected;
-            _session.Connected += OnRSessionConnected;
 
             _windowContentControl = new System.Windows.Controls.ContentControl();
             this.Control = _windowContentControl;
             _creatorThread = Thread.CurrentThread;
 
-            CreateBrowser(_showDefaultPage);
-
             var c = new Controller();
             c.AddCommandSet(GetCommands());
             this.Controller = c;
-        }
-
-        private void OnRSessionConnected(object sender, EventArgs e) {
-            // Event fires on a background thread
-            Dispatcher.FromThread(_creatorThread).InvokeAsync(() => {
-                CreateBrowser(showDefaultPage: false);
-            });
         }
 
         #region IVisualComponent
@@ -74,10 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
             if (RToolsSettings.Current.HelpBrowser == HelpBrowserType.Automatic && IsHelpUrl(url)) {
-                // When control is just being created don't navigate 
-                // to the default page since it will be replaced by
-                // the specific help page right away.
-                _showDefaultPage = false;
+                CreateBrowser();
                 NavigateTo(url);
             } else {
                 Process.Start(url);
@@ -94,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             });
         }
 
-        private void CreateBrowser(bool showDefaultPage = false) {
+        private void CreateBrowser() {
             if (Browser == null) {
                 Browser = new WebBrowser();
 
@@ -104,27 +90,21 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 Browser.Navigating += OnNavigating;
                 Browser.Navigated += OnNavigated;
 
-                var host = new WindowsFormsHost();
-                host.Child = Browser;
-
-                _windowContentControl.Content = host;
-                if (showDefaultPage) {
-                    HelpHomeCommand.ShowDefaultHelpPage();
-                }
+                _host = new WindowsFormsHost();
+                _windowContentControl.Content = _host;
             }
         }
 
         private void SetThemeColors() {
             string cssText = GetCssText();
-            if (!string.IsNullOrEmpty(cssText)) {
+            if (!string.IsNullOrEmpty(cssText) && Browser.Document != null) {
                 IHTMLDocument2 doc = Browser.Document.DomDocument as IHTMLDocument2;
                 if (doc != null) {
-                    if(doc.styleSheets.length > 0) {
+                    if (doc.styleSheets.length > 0) {
                         object index = 0;
                         var ss = doc.styleSheets.item(ref index) as IHTMLStyleSheet;
                         ss.cssText = cssText;
-                    }
-                    else { 
+                    } else {
                         IHTMLStyleSheet ss = doc.createStyleSheet();
                         if (ss != null) {
                             ss.cssText = cssText;
@@ -167,10 +147,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
             SetThemeColors();
+            _host.Child = Browser;
+
             // Upon vavigation we need to ask VS to update UI so 
             // Back /Forward buttons become properly enabled or disabled.
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            shell.UpdateCommandUI(1);
+            shell.UpdateCommandUI(0);
         }
 
         private void NavigateTo(string url) {
@@ -206,7 +188,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void DisconnectFromSessionEvents() {
             if (_session != null) {
                 _session.Disconnected -= OnRSessionDisconnected;
-                _session.Connected -= OnRSessionConnected;
                 _session = null;
             }
         }
