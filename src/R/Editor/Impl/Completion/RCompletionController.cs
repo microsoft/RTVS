@@ -366,10 +366,10 @@ namespace Microsoft.R.Editor.Completion {
             IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
             if (session != null) {
                 using (IRSessionEvaluation eval = await session.BeginEvaluationAsync(isMutating: false)) {
-                    REvaluationResult result = await eval.EvaluateAsync($"tryCatch(is.function({name}), error = function(e) {{ }})");
+                    REvaluationResult result = await eval.EvaluateAsync($"mode({name})");
                     if (result.ParseStatus == RParseStatus.OK &&
                         !string.IsNullOrEmpty(result.StringResult) &&
-                        (result.StringResult == "T" || result.StringResult == "TRUE")) {
+                        result.StringResult == "function") {
                         return true;
                     }
                 }
