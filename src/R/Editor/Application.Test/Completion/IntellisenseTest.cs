@@ -171,15 +171,10 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         [Category.Interactive]
-        public void R_CompletionFunctionBraces01() {
+        public void R_CompletionFunctionBraces() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                using (var hostScript = new RHostScript(provider)) {
-
-                    string message = null;
-                    hostScript.Session.Output += (s, e) => {
-                        message = e.Message;
-                    };
+                using (new RHostScript(provider)) {
 
                     script.DoIdle(100);
                     script.Type("instal");
@@ -190,35 +185,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     string actual = script.EditorText;
                     actual.Should().Be("install.packages()");
                     EditorWindow.CoreEditor.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length - 1);
-
-                    message.Should().BeNull();
                 }
-            }
-        }
-
-        [Test]
-        [Category.Interactive]
-        public void R_CompletionFunctionBraces02() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
-                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                using (var hostScript = new RHostScript(provider)) {
-
-                    string message = null;
-                    hostScript.Session.Output += (s, e) => {
-                        message = e.Message;
-                    };
-
-                    script.DoIdle(100);
-                    script.Type("bas");
-                    script.DoIdle(1000);
-                    script.Type("{TAB}");
-                    script.DoIdle(100);
-
-                    string actual = script.EditorText;
-                    actual.Should().Be("base");
-
-                    message.Should().BeNull();
-                 }
             }
         }
 
