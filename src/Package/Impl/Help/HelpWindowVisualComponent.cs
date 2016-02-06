@@ -48,6 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             c.AddCommandSet(GetCommands());
             this.Controller = c;
 
+            CreateBrowser();
             VSColorTheme.ThemeChanged += OnColorThemeChanged;
         }
 
@@ -71,7 +72,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
             if (RToolsSettings.Current.HelpBrowser == HelpBrowserType.Automatic && IsHelpUrl(url)) {
-                CreateBrowser();
                 NavigateTo(url);
             } else {
                 Process.Start(url);
@@ -125,16 +125,20 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private string GetCssText() {
+            string cssfileName = null;
+
             if (VisualTheme != null) {
-                return VisualTheme;
+                cssfileName = VisualTheme;
+            } else {
+                Color defaultBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+                if (!_lastDefaultBackground.HasValue || _lastDefaultBackground != defaultBackground) {
+                    _lastDefaultBackground = defaultBackground;
+                    // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
+                    cssfileName = defaultBackground.GetBrightness() < 0.5 ? "Dark.css" : "Light.css";
+                }
             }
 
-             Color defaultBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
-            if (!_lastDefaultBackground.HasValue || _lastDefaultBackground != defaultBackground) {
-                _lastDefaultBackground = defaultBackground;
-                // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
-                string cssfileName = defaultBackground.GetBrightness() < 0.5 ? "Dark.css" : "Light.css";
-
+            if (!string.IsNullOrEmpty(cssfileName)) {
                 string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
                 string themePath = Path.Combine(Path.GetDirectoryName(assemblyPath), @"Help\Themes\", cssfileName);
 
@@ -146,7 +150,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                     Trace.Fail("Unable to load theme stylesheet {0}", cssfileName);
                 }
             }
-
             return string.Empty;
         }
 
