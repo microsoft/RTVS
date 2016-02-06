@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -13,6 +13,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -33,6 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private IRSession _session;
         private Thread _creatorThread;
         private WindowsFormsHost _host;
+        private Color? _lastDefaultBackground;
 
         public HelpWindowVisualComponent() {
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
@@ -45,6 +47,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             var c = new Controller();
             c.AddCommandSet(GetCommands());
             this.Controller = c;
+
+            VSColorTheme.ThemeChanged += OnColorThemeChanged;
+        }
+
+        private void OnColorThemeChanged(ThemeChangedEventArgs e) {
+            SetThemeColors();
         }
 
         #region IVisualComponent
@@ -96,18 +104,20 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void SetThemeColors() {
-            string cssText = GetCssText();
-            if (!string.IsNullOrEmpty(cssText) && Browser.Document != null) {
-                IHTMLDocument2 doc = Browser.Document.DomDocument as IHTMLDocument2;
-                if (doc != null) {
-                    if (doc.styleSheets.length > 0) {
-                        object index = 0;
-                        var ss = doc.styleSheets.item(ref index) as IHTMLStyleSheet;
-                        ss.cssText = cssText;
-                    } else {
-                        IHTMLStyleSheet ss = doc.createStyleSheet();
-                        if (ss != null) {
+            if (Browser != null) {
+                string cssText = GetCssText();
+                if (!string.IsNullOrEmpty(cssText) && Browser.Document != null) {
+                    IHTMLDocument2 doc = Browser.Document.DomDocument as IHTMLDocument2;
+                    if (doc != null) {
+                        if (doc.styleSheets.length > 0) {
+                            object index = 0;
+                            var ss = doc.styleSheets.item(ref index) as IHTMLStyleSheet;
                             ss.cssText = cssText;
+                        } else {
+                            IHTMLStyleSheet ss = doc.createStyleSheet();
+                            if (ss != null) {
+                                ss.cssText = cssText;
+                            }
                         }
                     }
                 }
@@ -119,19 +129,22 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 return VisualTheme;
             }
 
-            var shell6 = VsAppShell.Current.GetGlobalService<IVsUIShell6>(typeof(SVsUIShell));
-            //shell6.GetThemedColor(); // Get background color
-            //
-            string cssfileName = "Dark.css";
-            string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-            string themePath = Path.Combine(Path.GetDirectoryName(assemblyPath), @"Help\Themes\", cssfileName);
+             Color defaultBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+            if (!_lastDefaultBackground.HasValue || _lastDefaultBackground != defaultBackground) {
+                _lastDefaultBackground = defaultBackground;
+                // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
+                string cssfileName = defaultBackground.GetBrightness() < 0.5 ? "Dark.css" : "Light.css";
 
-            try {
-                using (var sr = new StreamReader(themePath)) {
-                    return sr.ReadToEnd();
+                string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
+                string themePath = Path.Combine(Path.GetDirectoryName(assemblyPath), @"Help\Themes\", cssfileName);
+
+                try {
+                    using (var sr = new StreamReader(themePath)) {
+                        return sr.ReadToEnd();
+                    }
+                } catch (IOException) {
+                    Trace.Fail("Unable to load theme stylesheet {0}", cssfileName);
                 }
-            } catch (IOException) {
-                Trace.Fail("Unable to load theme stylesheet {0}", cssfileName);
             }
 
             return string.Empty;
@@ -182,6 +195,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public void Dispose() {
             DisconnectFromSessionEvents();
             CloseBrowser();
+            VSColorTheme.ThemeChanged -= OnColorThemeChanged;
         }
 
 

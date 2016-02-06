@@ -129,12 +129,17 @@
                       <Directory Id="TemplatesFolder" Name="Templates">
                         <Directory Id="NewItemTemplatesFolder" Name="NewItem" />
                       </Directory>
+
                       <Directory Id="HelpFolder" Name="Help">
                         <Directory Id="HelpThemesFolder" Name="Themes" />
                       </Directory>
+
                       <Directory Id="HiddenProfilesFolder" Name="Profiles" />
-                     </Directory>
+                    </Directory>
+                    
+                  </Directory>
                 </Directory>
+                
                 <Directory Id="ItemTemplatesFolder" Name="ItemTemplates">
                   <Directory Id="ItemTemplatesInstallFolder" Name="R">
                     <?foreach Lcid in $(var.LcidList)?>
@@ -142,6 +147,7 @@
                     <?endforeach?>
                   </Directory>
                 </Directory>
+                
                 <Directory Id="ProjectTemplatesFolder" Name="ProjectTemplates">
                   <Directory Id="ProjectTemplatesInstallFolder" Name="R">
                     <?foreach Lcid in $(var.LcidList)?>
@@ -154,6 +160,7 @@
             </Directory>
           </Directory>
         </Directory>
+        
         <Directory Id="MSBuildFolder" Name="MSBuild">
           <Directory Id="MSBuildMicrosoftFolder" Name="Microsoft">
             <Directory Id="MSBuildMicrosoftVisualStudioFolder" Name="VisualStudio">
@@ -166,6 +173,7 @@
           </Directory>
         </Directory>
       </Directory>
+      
     </Directory>
 
   </Fragment>

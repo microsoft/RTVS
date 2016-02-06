@@ -7,7 +7,7 @@
     </Component>
   </DirectoryRef>
   <DirectoryRef Id="HiddenProfilesFolder">
-    <Component Id="Profiles" Guid="{B89FE999-CC37-46AF-AFCF-4177C08337D8}">
+    <Component Id="HiddenProfiles" Guid="{B89FE999-CC37-46AF-AFCF-4177C08337D8}">
       <File Source="$(var.BinDir)\Profiles\RStudioKeyboard.vssettings" />
     </Component>
   </DirectoryRef>
