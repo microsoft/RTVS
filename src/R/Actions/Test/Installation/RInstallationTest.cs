@@ -49,7 +49,6 @@ namespace Microsoft.R.Actions.Test.Installation {
             fs.GetVersionInfo(dir + "R.dll").Returns(fvi);
 
             RInstallation.FileSystem = fs;
-
             RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2);
 
             data.Status.Should().Be(RInstallStatus.OK);
@@ -95,6 +94,36 @@ namespace Microsoft.R.Actions.Test.Installation {
 
             RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2);
             data.Status.Should().Be(RInstallStatus.PathNotSpecified);
+
+            fs.DirectoryExists(dir).Returns(true);
+            data = RInstallation.GetInstallationData(dir, 3, 2, 3, 2);
+            data.Status.Should().Be(RInstallStatus.UnsupportedVersion);
+        }
+
+        [Test]
+        [Category.R.Install]
+        public void RInstallation_Test05() {
+            var tr = new RegistryMock(SimulateRegistry04());
+            RInstallation.Registry = tr;
+
+            string dir = @"C:\Program Files\RRO\R-3.1.3";
+            string dir64 = dir+ @"\bin\x64\";
+            var fs = Substitute.For<IFileSystem>();
+            fs.DirectoryExists(dir).Returns(true);
+            fs.FileExists(dir64 + "R.dll").Returns(true);
+            fs.FileExists(dir64 + "Rgraphapp.dll").Returns(true);
+            fs.FileExists(dir64 + "RTerm.exe").Returns(true);
+            fs.FileExists(dir64 + "RScript.exe").Returns(true);
+            fs.FileExists(dir64 + "RGui.exe").Returns(true);
+
+            var fvi = Substitute.For<IFileVersionInfo>();
+            fvi.FileMajorPart.Returns(3);
+            fvi.FileMinorPart.Returns(13);
+            fs.GetVersionInfo(dir + "R.dll").Returns(fvi);
+
+            RInstallation.FileSystem = fs;
+            RInstallData data = RInstallation.GetInstallationData(dir, 3, 2, 3, 2);
+            data.Status.Should().Be(RInstallStatus.UnsupportedVersion);
         }
 
         private RegistryKeyMock[] SimulateRegistry04() {
