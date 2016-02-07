@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using Microsoft.Win32;
+using System.Linq;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
 
 namespace Microsoft.R.Actions.Utility {
     /// <summary>
@@ -13,6 +15,28 @@ namespace Microsoft.R.Actions.Utility {
     /// </summary>
     public static class RInstallation {
         private static string[] rFolders = new string[] { "MRO", "RRO", "R" };
+        private static IRegistry _registry;
+        private static IFileSystem _fileSystem;
+
+        internal static IRegistry Registry {
+            get {
+                if (_registry == null) {
+                    _registry = new RegistryImpl();
+                }
+                return _registry;
+            }
+            set { _registry = value; }
+        }
+
+        internal static IFileSystem FileSystem {
+            get {
+                if (_fileSystem == null) {
+                    _fileSystem = new FileSystem();
+                }
+                return _fileSystem;
+            }
+            set { _fileSystem = value; }
+        }
 
         /// <summary>
         /// Tries to determine R installation information. If user-specified path
@@ -53,9 +77,10 @@ namespace Microsoft.R.Actions.Utility {
                 string rScriptPath = Path.Combine(rDirectory, "RScript.exe");
                 string rGuiPath = Path.Combine(rDirectory, "RGui.exe");
 
-                if (File.Exists(rDllPath) && File.Exists(rTermPath) && File.Exists(rScriptPath) &&
-                    File.Exists(rGraphAppPath) && File.Exists(rGuiPath)) {
-                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(rDllPath);
+                if (FileSystem.FileExists(rDllPath) && FileSystem.FileExists(rTermPath) &&
+                    FileSystem.FileExists(rScriptPath) && FileSystem.FileExists(rGraphAppPath) &&
+                    FileSystem.FileExists(rGuiPath)) {
+                    IFileVersionInfo fvi = FileSystem.GetVersionInfo(rDllPath);
                     int minor, revision;
 
                     GetRVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
@@ -89,7 +114,7 @@ namespace Microsoft.R.Actions.Utility {
         /// First tries user settings, then 64-bit registry.
         /// </summary>
         public static string GetRInstallPath(string basePath) {
-            if (string.IsNullOrEmpty(basePath) || !Directory.Exists(basePath)) {
+            if (string.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
                 basePath = RInstallation.GetCompatibleEnginePathFromRegistry();
             }
             return basePath;
@@ -191,7 +216,7 @@ namespace Microsoft.R.Actions.Utility {
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core\R64\3.3.0 Pre-release
-            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
+            using (IRegistryKey hklm = Registry.OpenBaseKey(Win32.RegistryHive.LocalMachine, Win32.RegistryView.Registry64)) {
                 try {
                     using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R")) {
                         return rKey.GetSubKeyNames();
@@ -204,7 +229,7 @@ namespace Microsoft.R.Actions.Utility {
 
         private static string GetRVersionInstallPathFromRegistry(string version) {
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
-            using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
+            using (IRegistryKey hklm = Registry.OpenBaseKey(Win32.RegistryHive.LocalMachine, Win32.RegistryView.Registry64)) {
                 try {
                     using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version)) {
                         if (rKey != null) {
@@ -233,8 +258,11 @@ namespace Microsoft.R.Actions.Utility {
             string baseRFolder = Path.Combine(root + @"Program Files\", folder);
             List<Version> versions = new List<Version>();
             try {
-                foreach (string dir in Directory.EnumerateDirectories(baseRFolder)) {
-                    string subFolderName = dir.Substring(baseRFolder.Length + 1);
+                IEnumerable<IFileSystemInfo> directories = FileSystem.GetDirectoryInfo(baseRFolder)
+                                                                .EnumerateFileSystemInfos()
+                                                                .Where(x => (x.Attributes & System.IO.FileAttributes.Directory) != 0);
+                foreach (IFileSystemInfo fsi in directories) {
+                    string subFolderName = fsi.FullName.Substring(baseRFolder.Length + 1);
                     Version v = GetRVersionFromFolderName(subFolderName);
                     if (v.Major >= minMajorVersion &&
                         v.Minor >= minMinorVersion &&

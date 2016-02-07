@@ -1,11 +1,15 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.IO;
 using Microsoft.R.Actions.Utility;
 using Microsoft.UnitTests.Core.XUnit;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.Actions.Test.Installation {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class RInstallationTest {
         [Test]
         [Category.R.Install]
@@ -23,6 +27,54 @@ namespace Microsoft.R.Actions.Test.Installation {
             data.Version.Minor.Should().BeGreaterOrEqualTo(2);
             data.Path.Should().StartWithEquivalent(@"C:\Program Files");
             data.Path.Should().Contain("R-");
+        }
+
+        [Test]
+        [Category.R.Install]
+        public void RInstallation_Test03() {
+            var tr = new RegistryMock(SimulateBase03());
+            RInstallation.Registry = tr;
+
+            string dir = @"C:\Program Files\MRO\R-3.2.3\bin\x64\";
+            var fs = Substitute.For<IFileSystem>();
+            fs.FileExists(dir + "R.dll").Returns(true);
+            fs.FileExists(dir + "Rgraphapp.dll").Returns(true);
+            fs.FileExists(dir + "RTerm.exe").Returns(true);
+            fs.FileExists(dir + "RScript.exe").Returns(true);
+            fs.FileExists(dir + "RGui.exe").Returns(true);
+
+            var fvi = Substitute.For<IFileVersionInfo>();
+            fvi.FileMajorPart.Returns(3);
+            fvi.FileMinorPart.Returns(23);
+            fs.GetVersionInfo(dir + "R.dll").Returns(fvi);
+
+            RInstallation.FileSystem = fs;
+
+            RInstallData data = RInstallation.GetInstallationData(null, 3, 2, 3, 2);
+
+            data.Status.Should().Be(RInstallStatus.OK);
+            data.Version.Major.Should().BeGreaterOrEqualTo(3);
+            data.Version.Minor.Should().BeGreaterOrEqualTo(2);
+            data.Path.Should().StartWithEquivalent(@"C:\Program Files");
+            data.Path.Should().Contain("R-");
+            data.Version.Should().Be(new Version(3, 2, 3));
+        }
+
+        private RegistryKeyMock[] SimulateBase03() {
+            return new RegistryKeyMock[] {
+                new RegistryKeyMock(
+                     @"SOFTWARE\R-core\R",
+                     new RegistryKeyMock[] {
+                            new RegistryKeyMock("3.2.3"),
+                            new RegistryKeyMock("3.2.2"),
+                            new RegistryKeyMock("8.0.3")
+                     }),
+                new RegistryKeyMock(
+                     @"SOFTWARE\R-core\R\3.2.3",
+                     new RegistryKeyMock[0],
+                     new string[] {"InstallPath"}, 
+                     new string[] { @"C:\Program Files\MRO\R-3.2.3" }),
+            };
         }
     }
 }
