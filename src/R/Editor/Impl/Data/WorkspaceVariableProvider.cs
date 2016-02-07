@@ -61,9 +61,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         return new INamedItemInfo[0];
                     }
                     // Global scope
-                    return _topLevelVariables.Values.Select((m, index) => {
-                        return index < maxCount ? new VariableInfo(m) : null;
-                    }).ToArray();
+                    return _topLevelVariables.Values
+                        .Select((m, index) => {
+                            return (!m.IsHidden && index < maxCount) ? new VariableInfo(m) : null;
+                        })
+                        .Where(x => x != null)
+                        .ToArray();
                 }
 
                 // Last member name may be empty or partially typed
@@ -85,7 +88,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                         var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
                         if (children != null) {
-                            eval = children.FirstOrDefault((x) => x != null && x.Name == part);
+                            eval = children.FirstOrDefault((x) => x != null && x.Name == part && !x.IsHidden);
                             if (eval == null) {
                                 break;
                             }
@@ -95,9 +98,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     if (eval != null) {
                         var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
                         if (children != null) {
-                            return children.Select((m, index) => {
-                                return index < maxCount ? new VariableInfo(m) : null;
-                            }).ToArray();
+                            return children
+                                    .Select((m, index) => {
+                                        return (!m.IsHidden && index < maxCount) ? new VariableInfo(m) : null;
+                                    })
+                                    .Where(x => x != null)
+                                    .ToArray();
                         }
                     }
                 }
