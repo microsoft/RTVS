@@ -38,6 +38,51 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Common\Core\Impl\IO\DirectoryInfoProxy.cs">
+      <Link>IO\DirectoryInfoProxy.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\FileInfoProxy.cs">
+      <Link>IO\FileInfoProxy.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\FileSystem.cs">
+      <Link>IO\FileSystem.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\FileSystemWatcherProxy.cs">
+      <Link>IO\FileSystemWatcherProxy.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\FileVersionInfo.cs">
+      <Link>IO\FileVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\IDirectoryInfo.cs">
+      <Link>IO\IDirectoryInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\IFileInfo.cs">
+      <Link>IO\IFileInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\IFileSystem.cs">
+      <Link>IO\IFileSystem.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\IFileSystemInfo.cs">
+      <Link>IO\IFileSystemInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\IFileSystemWatcher.cs">
+      <Link>IO\IFileSystemWatcher.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\IO\IFileVersionInfo.cs">
+      <Link>IO\IFileVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\OS\IRegistry.cs">
+      <Link>OS\IRegistry.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\OS\IRegistryKey.cs">
+      <Link>OS\IRegistryKey.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\OS\RegistryImpl.cs">
+      <Link>OS\RegistryImpl.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Core\Impl\OS\RegistryKeyImpl.cs">
+      <Link>OS\RegistryKeyImpl.cs</Link>
+    </Compile>
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
@@ -100,22 +145,19 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
   <Import Project="$(WixCATargetsPath)" />
-  
   <!--Reset AfterCompile to default-->
   <Target Name="AfterCompile" />
-  <Target Name="PackAfterSign" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'" AfterTargets="SignFiles" >
+  <Target Name="PackAfterSign" Condition="'$(SignType)' == 'real' OR '$(SignType)' == 'test'" AfterTargets="SignFiles">
     <CallTarget Targets="PackCustomAction" />
     <Copy SourceFiles="@(IntermediateAssembly)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="$(IntermediateOutputPath)$(TargetCAFileName)" DestinationFolder="$(OutputPath)" />
   </Target>
-  <Target Name="PackNoSign" Condition="'$(SignType)' != 'real' AND '$(SignType)' != 'test'" AfterTargets="AfterCompile" >
+  <Target Name="PackNoSign" Condition="'$(SignType)' != 'real' AND '$(SignType)' != 'test'" AfterTargets="AfterCompile">
     <CallTarget Targets="PackCustomAction" />
   </Target>
-      
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
