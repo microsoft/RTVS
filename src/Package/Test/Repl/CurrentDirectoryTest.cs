@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             using (new VsRHostScript()) {
                 WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
                 cmd.InitializationTask.Wait();
-                cmd.UserDirectory.Should().Be(myDocs);
+                cmd.UserDirectory.Should().BeEquivalentTo(myDocs);
                 actual = cmd.GetRWorkingDirectoryAsync().Result;
             };
 
