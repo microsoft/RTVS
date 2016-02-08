@@ -85,8 +85,9 @@ namespace Microsoft.R.Host.Client.Session {
         public static Task<REvaluationResult> SetChangeDirectoryRedirection(this IRSessionEvaluation evaluation) {
             var script =
 @"utils::assignInNamespace('setwd', function(dir) {
-    .Internal(setwd(dir))
+    old <- .Internal(setwd(dir))
     invisible(.Call('Microsoft.R.Host::Call.send_message', '~/', rtvs:::toJSON(dir)))
+    old
   }, 'base')";
             return evaluation.EvaluateAsync(script);
         }
