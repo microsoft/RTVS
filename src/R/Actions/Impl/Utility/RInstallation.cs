@@ -86,9 +86,7 @@ namespace Microsoft.R.Actions.Utility {
                     GetRVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
                     data.Version = new Version(fvi.FileMajorPart, minor, revision);
 
-                    if (fvi.FileMajorPart < minMajorVersion || fvi.FileMajorPart > maxMajorVersion) {
-                        data.Status = RInstallStatus.UnsupportedVersion;
-                    } else if (minor < minMinorVersion || minor > maxMinorVersion) {
+                    if (!SupportedRVersionList.IsCompatibleVersion(data.Version)) {
                         data.Status = RInstallStatus.UnsupportedVersion;
                     }
                 } else {

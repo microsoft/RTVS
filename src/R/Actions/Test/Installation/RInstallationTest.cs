@@ -35,8 +35,8 @@ namespace Microsoft.R.Actions.Test.Installation {
             var tr = new RegistryMock(SimulateRegistry03());
             RInstallation.Registry = tr;
 
-            string dir = @"C:\Program Files\MRO\R-3.2.3\";
-            string dir64 = dir + @"bin\x64\";
+            string dir = @"C:\Program Files\MRO\R-3.2.3";
+            string dir64 = dir + @"\bin\x64\";
             var fs = Substitute.For<IFileSystem>();
             PretendRFilesAvailable(fs, dir);
 

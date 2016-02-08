@@ -13,7 +13,8 @@ namespace Microsoft.R.Actions.Utility {
         public static readonly Version MaxVersion = new Version(MaxMajorVersion, MaxMinorVersion);
 
         public static bool IsCompatibleVersion(Version v) {
-            return v >= MinVersion && v <= MaxVersion;
+            var verMajorMinor = new Version(v.Major, v.Minor);
+            return verMajorMinor >= MinVersion && verMajorMinor <= MaxVersion;
         }
     }
 }
