@@ -13,6 +13,8 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public string Prompt => ">";
 
+        public bool IsEvaluationAllowed => true;
+
         public void Dispose() {
         }
 

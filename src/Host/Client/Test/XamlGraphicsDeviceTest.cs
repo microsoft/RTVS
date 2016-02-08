@@ -261,7 +261,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
                 return Task.CompletedTask;
             }
 
-            public Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+            public Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
                 // We're getting called a few times here
                 // First time, send over the code to execute
                 // After that, send nothing
@@ -279,7 +279,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
                 await writer.WriteAsync(buf);
             }
 
-            public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+            public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, CancellationToken ct) {
                 return Task.FromResult(Client.YesNoCancel.Yes);
             }
 
@@ -295,7 +295,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
                 throw new NotImplementedException();
             }
 
-            public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
+            public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken ct) {
                 throw new NotImplementedException();
             }
         }

@@ -180,9 +180,10 @@ namespace Microsoft.R.Debugger {
 
         public async Task Break(CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            using (var inter = await RSession.BeginInteractionAsync(true, ct)) {
-                await inter.RespondAsync("browser()\n");
-            }
+            await RSession.EvaluateAsync("browser()", REvaluationKind.Reentrant, ct);
+
+            // Wait until prompt appears, but don't actually respond to it.
+            using (await RSession.BeginInteractionAsync(true, ct)) { }
         }
 
         public async Task Continue(CancellationToken cancellationToken = default(CancellationToken)) {

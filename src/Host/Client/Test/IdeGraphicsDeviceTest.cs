@@ -480,7 +480,7 @@ Sys.sleep(1)
                 return Task.CompletedTask;
             }
 
-            public Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+            public Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
                 // We're getting called a few times here
                 // First time, send over the code to execute
                 // After that, send nothing
@@ -499,7 +499,7 @@ Sys.sleep(1)
                 await writer.WriteAsync(buf);
             }
 
-            public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+            public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, CancellationToken ct) {
                 return Task.FromResult(Client.YesNoCancel.Yes);
             }
 
@@ -526,7 +526,7 @@ Sys.sleep(1)
                 throw new NotImplementedException();
             }
 
-            public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
+            public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken ct) {
                 throw new NotImplementedException();
             }
         }
