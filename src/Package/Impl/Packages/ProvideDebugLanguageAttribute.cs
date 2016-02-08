@@ -3,13 +3,17 @@ using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages {
     class ProvideDebugLanguageAttribute : RegistrationAttribute {
-        private readonly string _languageGuid, _languageName, _engineGuid, _eeGuid;
+        private readonly string _languageGuid, _languageName, _engineGuid, _eeGuid, _customViewerGuid;
 
-        public ProvideDebugLanguageAttribute(string languageName, string languageGuid, string eeGuid, string debugEngineGuid) {
+        public ProvideDebugLanguageAttribute(string languageName, string languageGuid, string eeGuid, string debugEngineGuid, string customViewerGuid = null) {
             _languageName = languageName;
             _languageGuid = new Guid(languageGuid).ToString("B");
             _eeGuid = new Guid(eeGuid).ToString("B");
             _engineGuid = debugEngineGuid;
+
+            if (customViewerGuid != null) {
+                _customViewerGuid = new Guid(customViewerGuid).ToString("B");
+            }
         }
 
         public override void Register(RegistrationContext context) {
@@ -20,6 +24,10 @@ namespace Microsoft.VisualStudio.R.Packages {
             eeKey.SetValue("Language", _languageName);
             eeKey.SetValue("Name", _languageName);
             eeKey.SetValue("CLSID", _eeGuid);
+
+            if (_customViewerGuid != null) {
+                eeKey.SetValue("CustomViewerCLSID", _customViewerGuid);
+            }
 
             var engineKey = eeKey.CreateSubkey("Engine");
             engineKey.SetValue("0", _engineGuid);

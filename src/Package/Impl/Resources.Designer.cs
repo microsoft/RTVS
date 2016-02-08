@@ -106,15 +106,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to open plot file. Exception: {0}.
-        /// </summary>
-        public static string CannotOpenPlotFile {
-            get {
-                return ResourceManager.GetString("CannotOpenPlotFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Choose Directory.
         /// </summary>
         public static string ChooseDirectory {
@@ -322,8 +313,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to determine location of R binaries. If R is not installed 
-        ///please navigate to https://cran.r-project.org, install R for Windows and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools..
+        ///   Looks up a localized string similar to Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools..
         /// </summary>
         public static string Error_UnableToFindR {
             get {
@@ -343,9 +333,18 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to Export Plot As Image.
         /// </summary>
-        public static string ExportPlotDialogTitle {
+        public static string ExportPlotAsImageDialogTitle {
             get {
-                return ResourceManager.GetString("ExportPlotDialogTitle", resourceCulture);
+                return ResourceManager.GetString("ExportPlotAsImageDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Plot As PDF.
+        /// </summary>
+        public static string ExportPlotAsPdfDialogTitle {
+            get {
+                return ResourceManager.GetString("ExportPlotAsPdfDialogTitle", resourceCulture);
             }
         }
         
@@ -531,15 +530,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open R Plot File.
-        /// </summary>
-        public static string OpenPlotDialogTitle {
-            get {
-                return ResourceManager.GetString("OpenPlotDialogTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Packages.
         /// </summary>
         public static string OutputWindowName_InstallPackages {
@@ -558,20 +548,41 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*.
+        ///   Looks up a localized string similar to Error copying plot to the clipboard.
+        ///{0}.
         /// </summary>
-        public static string PlotExportFilter {
+        public static string PlotCopyToClipboardError {
             get {
-                return ResourceManager.GetString("PlotExportFilter", resourceCulture);
+                return ResourceManager.GetString("PlotCopyToClipboardError", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Plot Files (*.vsplot)|*.vsplot|All Files (*.*)|*.*.
+        ///   Looks up a localized string similar to PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*.
         /// </summary>
-        public static string PlotFileFilter {
+        public static string PlotExportAsImageFilter {
             get {
-                return ResourceManager.GetString("PlotFileFilter", resourceCulture);
+                return ResourceManager.GetString("PlotExportAsImageFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PDF (*.pdf)|*.pdf|All Files (*.*)|*.*.
+        /// </summary>
+        public static string PlotExportAsPdfFilter {
+            get {
+                return ResourceManager.GetString("PlotExportAsPdfFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File extension &apos;{0}&apos; is not supported.
+        ///
+        ///Supported formats are: jpg/jpeg, png, tif/tiff, bmp..
+        /// </summary>
+        public static string PlotExportUnsupportedImageFormat {
+            get {
+                return ResourceManager.GetString("PlotExportUnsupportedImageFormat", resourceCulture);
             }
         }
         
@@ -652,7 +663,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|All Files (*.*)|*.*.
+        ///   Looks up a localized string similar to Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|.
         /// </summary>
         public static string SaveAsFilterMD {
             get {
@@ -661,7 +672,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Language Files (*.r)|*.r|All Files (*.*)|*.*.
+        ///   Looks up a localized string similar to R Language Files (*.r)|*.r|.
         /// </summary>
         public static string SaveAsFilterR {
             get {
@@ -851,6 +862,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Debugging.
+        /// </summary>
+        public static string Settings_DebuggingCategory {
+            get {
+                return ResourceManager.GetString("Settings_DebuggingCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show syntax errors.
         /// </summary>
         public static string Settings_EnableSyntaxCheck {
@@ -968,7 +988,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Single click in R history window selects the entire fragment that was sent to R.\r\nUp/Down arrows in the R Interactive Window navigate through chunks instead of single lines..
+        ///   Looks up a localized string similar to Single click in R history window selects the entire fragment that was sent to R. Up/Down arrows in the R Interactive Window navigate through chunks instead of single lines..
         /// </summary>
         public static string Settings_MultilineHistorySelection_Description {
             get {
@@ -1090,6 +1110,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_SendToRepl_Description {
             get {
                 return ResourceManager.GetString("Settings_SendToRepl_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show dot-prefixed variables.
+        /// </summary>
+        public static string Settings_ShowDotPrefixedVariables {
+            get {
+                return ResourceManager.GetString("Settings_ShowDotPrefixedVariables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show variables that have names beginning with &quot;.&quot; in Variable Explorer and debugger tool windows..
+        /// </summary>
+        public static string Settings_ShowDotPrefixedVariables_Description {
+            get {
+                return ResourceManager.GetString("Settings_ShowDotPrefixedVariables_Description", resourceCulture);
             }
         }
         
@@ -1238,6 +1276,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [truncated].
+        /// </summary>
+        public static string VariableExplorer_Truncated {
+            get {
+                return ResourceManager.GetString("VariableExplorer_Truncated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
         public static string VariableExplorer_TypeHeader {
@@ -1256,6 +1303,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Data.
+        /// </summary>
+        public static string VariableGrid_Caption {
+            get {
+                return ResourceManager.GetString("VariableGrid_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Variable Explorer.
         /// </summary>
         public static string VariableWindowCaption {
@@ -1265,7 +1321,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compable with the RStudio where possible?.
+        ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?.
         /// </summary>
         public static string Warning_RStudioKeyboardShortcuts {
             get {

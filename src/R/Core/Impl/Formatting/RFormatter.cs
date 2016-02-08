@@ -145,8 +145,9 @@ namespace Microsoft.R.Core.Formatting {
             if (SuppressLineBreakCount == 0 && !_tokens.IsEndOfStream()) {
                 // We insert line break after } unless next token is comma 
                 // (scope is in the argument list) or a closing brace 
-                // (last parameter in a function or indexer).
-                if (!IsClosingToken(_tokens.CurrentToken.TokenType) && !IsInArguments()) {
+                // (last parameter in a function or indexer) or it is followed by 'else'
+                // so 'else' does not get separated from 'if'.
+                if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
                     _tb.SoftLineBreak();
                 }
             }
@@ -201,6 +202,7 @@ namespace Microsoft.R.Core.Formatting {
             AppendToken(leadingSpace: LeadingSpaceNeeded(), trailingSpace: trailingSpace);
 
             if (controlBlock) {
+                _formattingScopes.Peek().Keywords.Add(keyword);
                 // Keyword defines optional condition
                 // and possibly new '{ }' scope
                 AppendControlBlock(keyword);
@@ -369,14 +371,34 @@ namespace Microsoft.R.Core.Formatting {
             return false;
         }
 
-        private static bool IsClosingToken(RTokenType tokenType) {
-            switch (tokenType) {
+        private bool IsClosingToken(RToken token) {
+            switch (token.TokenType) {
                 case RTokenType.Comma:
                 case RTokenType.CloseBrace:
                 case RTokenType.CloseSquareBracket:
                 case RTokenType.CloseDoubleSquareBracket:
                 case RTokenType.Semicolon:
                     return true;
+
+                case RTokenType.Keyword:
+                    if (_tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
+                           _textProvider.GetText(token) == "else") {
+                        // Check what was the most recent keyword indented in this scope.
+                        // If it is 'if' then there should not be a break between 
+                        // the closing brace and the 'else'. This prevents false positives
+                        // in constructs like
+                        //
+                        //      if(TRUE)
+                        //          repeat {
+                        //          } else
+                        //
+                        // in which else should be placed at the next line and indented with the if.
+                        var scope = _formattingScopes.Peek();
+                        if (scope.Keywords.Count > 0) {
+                            return scope.Keywords[scope.Keywords.Count - 1] == "if";
+                        }
+                    }
+                    break;
             }
 
             return false;
@@ -386,8 +408,7 @@ namespace Microsoft.R.Core.Formatting {
             string text = _textProvider.GetText(_tokens.CurrentToken);
             if (TokenOperator.IsUnaryOperator(_tokens, TokenOperator.GetOperatorType(text))) {
                 AppendToken(leadingSpace: true, trailingSpace: false);
-            }
-            else if (IsOperatorWithoutSpaces(text)) {
+            } else if (IsOperatorWithoutSpaces(text)) {
                 AppendToken(leadingSpace: false, trailingSpace: false);
             } else {
                 AppendToken(leadingSpace: true, trailingSpace: true);
@@ -400,7 +421,11 @@ namespace Microsoft.R.Core.Formatting {
             }
 
             string text = _textProvider.GetText(_tokens.CurrentToken);
-            _tb.AppendText(text);
+            if (text.IndexOfAny(new char[] { '\r', '\n' }) >= 0) {
+                _tb.AppendPreformattedText(text);
+            } else {
+                _tb.AppendText(text);
+            }
 
             HandleBrace();
             _tokens.MoveToNextToken();
@@ -617,7 +642,7 @@ namespace Microsoft.R.Core.Formatting {
 
         private void AppendComma() {
             bool trailingSpace;
-            if (IsClosingToken(_tokens.NextToken.TokenType)) {
+            if (IsClosingToken(_tokens.NextToken)) {
                 trailingSpace = false;
             } else {
                 trailingSpace = _options.SpaceAfterComma;
@@ -627,7 +652,7 @@ namespace Microsoft.R.Core.Formatting {
         }
 
         private bool ShouldAppendTextBeforeToken() {
-            if (IsClosingToken(_tokens.CurrentToken.TokenType)) {
+            if (IsClosingToken(_tokens.CurrentToken)) {
                 return false;
             }
 

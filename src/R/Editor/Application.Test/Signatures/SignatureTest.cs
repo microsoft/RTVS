@@ -26,7 +26,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                     FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
 
                     script.Type("x <- lm(");
-                    script.DoIdle(1000);
+                    script.DoIdle(2000);
 
                     ISignatureHelpSession session = script.GetSignatureSession();
                     session.Should().NotBeNull();

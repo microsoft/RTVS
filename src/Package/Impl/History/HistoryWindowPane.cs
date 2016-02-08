@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _history.HistoryChanged += OnHistoryChanged;
             _historyFiltering = _historyProvider.CreateFiltering(_history);
 
-            var textView = _history.GetOrCreateTextView();
+            var textView = _historyProvider.GetOrCreateTextView(_history);
             Content = _textEditorFactory.CreateTextViewHost(textView, false);
             _commandTarget = new CommandTargetToOleShim(textView, RMainController.FromTextView(textView));
 

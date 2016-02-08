@@ -16,7 +16,7 @@
         public const int icmdLoadWorkspace = 502;
         public const int icmdSaveWorkspace = 503;
         public const int icmdSelectWorkingDirectory = 504;
-        public const int icmdRestartR = 505;
+        public const int icmdResetRepl = 505;
         public const int icmdInterruptR = 506;
         public const int icmdAttachDebugger = 507;
         public const int icmdSourceRScript = 508;
@@ -27,6 +27,7 @@
         public const int icmdStepInto = 513;
         public const int icmdStepOut = 514;
         public const int icmdStepOver = 515;
+        public const int icmdAttachToRInteractive = 516;
 
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;
@@ -36,20 +37,12 @@
         public const int icmdCheckForPackageUpdates = 602;
 
         // Plots
-        //public const int icmdOpenPlot = 701;
-        //public const int icmdSavePlot = 702;
-        //public const int icmdFixPlot = 703;
-        public const int icmdExportPlot = 704;
         public const int icmdPrintPlot = 705;
-        //public const int icmdCopyPlot = 707;
-        //public const int icmdZoomInPlot = 708;
-        //public const int icmdZoomOutPlot = 709;
         public const int icmdNextPlot = 710;
         public const int icmdPrevPlot = 711;
         public const int icmdClearPlots = 712;
-        public const int icmdExportPlotAsPng = 713;
+        public const int icmdExportPlotAsImage = 713;
         public const int icmdExportPlotAsPdf = 714;
-        public const int icmdExportPlotAsBitmap = 715;
         public const int icmdCopyPlotAsBitmap = 716;
         public const int icmdCopyPlotAsMetafile = 717;
 
@@ -87,5 +80,8 @@
         public const int icmdDeleteSelectedHistoryEntries = 1204;
         public const int icmdDeleteAllHistoryEntries = 1205;
         public const int icmdToggleMultilineSelection = 1206;
+
+        // Debugger
+        public const int icmdShowDotPrefixedVariables = 1300;
     }
 }

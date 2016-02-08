@@ -6,22 +6,22 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     internal sealed class HelpRefreshCommand : Command {
-        private HelpWindowPane _pane;
+        private IHelpWindowVisualComponent _component;
 
-        public HelpRefreshCommand(HelpWindowPane pane) :
+        public HelpRefreshCommand(IHelpWindowVisualComponent component) :
             base(new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpRefresh)) {
-            _pane = pane;
+            _component = component;
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            if (_pane.Browser != null && _pane.Browser.Source != null) {
+            if (_component.Browser != null && _component.Browser.Url != null) {
                 return CommandStatus.SupportedAndEnabled;
             }
             return CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            _pane.Browser.Refresh();
+            _component.Browser.Refresh();
             return CommandResult.Executed;
         }
     }

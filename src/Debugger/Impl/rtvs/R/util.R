@@ -2,6 +2,10 @@ call_embedded <- function(name, ...) {
   .Call(paste0('Microsoft.R.Host::Call.', name, collapse = ''), ..., PACKAGE = '(embedding)')
 }
 
+external_embedded <- function(name, ...) {
+  .External(paste0('Microsoft.R.Host::External.', name, collapse = ''), ..., PACKAGE = '(embedding)')
+}
+
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
   call_embedded('memory_connection', max_length, expected_length, overflow_suffix, eof_marker)
 }
@@ -28,6 +32,10 @@ is_rdebug <- function(obj) {
 
 set_rdebug <- function(obj, debug) {
   call_embedded("set_rdebug", obj, debug)
+}
+
+browser_set_debug <- function(n = 1) {
+  call_embedded("browser_set_debug", n)
 }
 
 NA_if_error <- function(expr) {
@@ -64,12 +72,12 @@ dput_str <- function(obj, max_length = NA, expected_length = NA, overflow_suffix
   gsub("^\\s+|\\s+$", "", memory_connection_tochar(con))
 }
 
-# A wrapper for dput_str that will first make name a symbol if it can be a legitimate one.
-dput_symbol <- function(name) {
+# A wrapper for deparse that will first make name a symbol if it can be a legitimate one.
+deparse_symbol <- function(name) {
   if (is.character(name) && length(name) == 1 && !is.na(name) && nchar(name) > 0) {
     name <- as.symbol(name);
   }
-  dput_str(name)
+  deparse(name)
 }
 
 # Like str(...)[[1]], but special-cases some common types to provide a more descriptive

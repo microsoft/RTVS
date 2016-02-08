@@ -98,6 +98,7 @@
     <Compile Include="Disposables\CountdownDisposableTest.cs" />
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
+    <Compile Include="Script\EventsPump.cs" />
     <Compile Include="IO\SubstituteFactories\DirectoryInfoFactory.cs" />
     <Compile Include="IO\SubstituteFactories\FileInfoFactory.cs" />
     <Compile Include="Script\TestScript.cs" />
@@ -111,7 +112,7 @@
     <Compile Include="Telemetry\FileTelemetryRecorder.cs" />
     <Compile Include="Telemetry\ITelemetryTestSupport.cs" />
     <Compile Include="Telemetry\SimpleTelemetryEvent.cs" />
-    <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
+    <Compile Include="Telemetry\TestTelemetryRecorder.cs" />
     <Compile Include="Telemetry\StringTelemetryRecorderTests.cs" />
     <Compile Include="Telemetry\TelemetryTestService.cs" />
     <Compile Include="Telemetry\TelemetryTestServiceTests.cs" />

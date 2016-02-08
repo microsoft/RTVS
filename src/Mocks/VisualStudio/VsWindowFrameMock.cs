@@ -5,6 +5,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
     public sealed class VsWindowFrameMock : IVsWindowFrame, IVsWindowFrame2 {
+        private string _caption;
+        private bool _visible;
+
+        public VsWindowFrameMock(string caption) {
+            _caption = caption;
+            _visible = true;
+        }
+
         #region IVsWindowFrame
         public int CloseFrame(uint grfSaveOptions) {
             return VSConstants.S_OK;
@@ -25,6 +33,8 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         public int GetProperty(int propid, out object pvar) {
             if (propid == (int)__VSFPROPID.VSFPROPID_ExtWindowObject) {
                 pvar = new VsToolWindowToolbarHostMock();
+            } else if (propid == (int)__VSFPROPID.VSFPROPID_Caption) {
+                pvar = _caption;
             } else {
                 pvar = null;
             }
@@ -32,6 +42,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int Hide() {
+            _visible = false;
             return VSConstants.S_OK;
         }
 
@@ -41,7 +52,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int IsVisible() {
-            return VSConstants.S_OK;
+            return _visible ? VSConstants.S_OK : VSConstants.S_FALSE;
         }
 
         public int QueryViewInterface(ref Guid riid, out IntPtr ppv) {
@@ -62,10 +73,12 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int Show() {
+            _visible = true;
             return VSConstants.S_OK;
         }
 
         public int ShowNoActivate() {
+            _visible = true;
             return VSConstants.S_OK;
         }
         #endregion

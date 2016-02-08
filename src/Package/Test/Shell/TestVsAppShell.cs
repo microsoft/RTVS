@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.Text;
@@ -35,9 +36,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             // replacements. For example, interactive editor tests
             // need smaller MEF catalog which excludes certain 
             // VS-specific implementations.
-            _instance = new TestVsAppShell();
-            VsAppShell.Current = _instance;
-            RToolsSettings.Current = new TestRToolsSettings();
+            UIThreadHelper.Instance.Invoke(() => {
+                _instance = new TestVsAppShell();
+                _instance.MainThread = UIThreadHelper.Instance.Thread;
+                VsAppShell.Current = _instance;
+                RToolsSettings.Current = new TestRToolsSettings();
+            });
         }
 
         #region ICompositionCatalog

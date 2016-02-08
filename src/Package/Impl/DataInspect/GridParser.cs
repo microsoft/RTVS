@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -26,16 +27,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // This is for performance, as generic formatting such as json is too expensive
             //
             int current = 0;
-            current = input.IndexOf("structure", current);
+            current = input.IndexOf("structure", current, StringComparison.OrdinalIgnoreCase);
             current = input.IndexOf('(', current);
-            current = input.IndexOf("list", current);
+            current = input.IndexOf("list", current, StringComparison.OrdinalIgnoreCase);
             current = input.IndexOf('(', current);
 
-            current = input.IndexOf("dimnames", current);
+            current = input.IndexOf("dimnames", current, StringComparison.OrdinalIgnoreCase);
             current = input.IndexOf('=', current);
             string dimnamesValue;
             current = FirstQuotedString(input, current, out dimnamesValue);
-            bool validHeaderNames = bool.Parse(dimnamesValue);
+            var validHeaderNames = (GridData.HeaderNames) Enum.Parse(typeof(GridData.HeaderNames), dimnamesValue);
 
             List<string> rowNames = new List<string>();
             current = NamedValue(input, "row.names", rowNames, current, true);
@@ -45,26 +46,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             current = NamedValue(input, "col.names", columnNames, current, true);
             current = input.IndexOf(',', current);
 
-            current = input.IndexOf("data", current);
+            current = input.IndexOf("data", current, StringComparison.OrdinalIgnoreCase);
             current = input.IndexOf('=', current);
 
-            current = input.IndexOf("structure", current);
+            current = input.IndexOf("structure", current, StringComparison.OrdinalIgnoreCase);
             current = input.IndexOf('(', current);
 
 
             List<string> values = new List<string>();
             current = Vector(input, values, current);
-
-            //while (true) {
-            //    List<string> columnValues = new List<string>();
-            //    current = Vector(input, columnValues, current);
-            //    data.Values.Add(columnValues);
-
-            //    current = input.IndexOfAny(ValueDelimiter, current);
-            //    if (input[current] == ValueDelimiter[ClosingIndex]) {
-            //        break;
-            //    }
-            //}
 
             GridData data = new GridData(rowNames, columnNames, values);
             data.ValidHeaderNames = validHeaderNames;
@@ -90,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private static int NamedValue(string input, string name, List<string> names, int current, bool optional = false) {
-            int nameIndex = input.IndexOf(name, current);
+            int nameIndex = input.IndexOf(name, current, StringComparison.OrdinalIgnoreCase);
             if (optional && nameIndex == -1) {
                 return current;
             }

@@ -15,6 +15,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks
             TextVersionMock initialVersion = new TextVersionMock(this, 0, content.Length);
             CurrentSnapshot = new TextSnapshotMock(content, this, initialVersion);
         }
+        public void Clear() {
+            Replace(new Span(0, CurrentSnapshot.Length), string.Empty);
+        }
 
         #region ITextBuffer Members
 

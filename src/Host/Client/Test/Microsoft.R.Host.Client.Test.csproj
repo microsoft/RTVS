@@ -69,6 +69,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="GraphicsDeviceTestFilesFixture.cs" />
+    <Compile Include="Mocks\RContextMock.cs" />
+    <Compile Include="Mocks\RSessionEvaluationMock.cs" />
+    <Compile Include="Mocks\RSessionInteractionMock.cs" />
+    <Compile Include="Mocks\RSessionMock.cs" />
+    <Compile Include="Mocks\RSessionProviderMock.cs" />
+    <Compile Include="PdfComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdeGraphicsDeviceTest.cs" />
     <Compile Include="Script\RHostClientTestApp.cs" />
@@ -111,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Files\ExportToPdfExpectedResult.pdf" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +127,21 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Files\ExportPreviousPlotToImageExpectedResult.bmp" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryInfo-0.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryInfo-1.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryInfo-2.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryResizeOldPlot-0.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryResizeOldPlot-1.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryResizeOldPlot-2.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryResizeOldPlot-3.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-0.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-1.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-2.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-3.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-4.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeNonInteractiveMultiPlots-0.png" />
+    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeNonInteractiveMultiPlots-1.png" />
     <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-PlotCars-0.png" />
   </ItemGroup>
   <ItemGroup />

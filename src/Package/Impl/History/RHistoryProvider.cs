@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
@@ -45,13 +43,18 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public IRHistoryFiltering CreateFiltering(IRHistory history) {
-            return new RHistoryFiltering(history, RToolsSettings.Current, _textSearchService);
+            var textView = GetOrCreateTextView(history);
+            return new RHistoryFiltering(history, textView, RToolsSettings.Current, _textSearchService);
+        }
+
+        public IWpfTextView GetOrCreateTextView(IRHistory history) {
+            return history.GetOrCreateTextView(_textEditorFactory);
         }
 
         public IRHistory CreateRHistory(IRInteractive rInteractive) {
             var vsUiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             var textBuffer = _textBufferFactory.CreateTextBuffer(_contentType);
-            var history = new RHistory(rInteractive, _textEditorFactory, textBuffer, _fileSystem, RToolsSettings.Current, _editorOperationsFactory, _rtfBuilderService, vsUiShell, () => RemoveRHistory(textBuffer));
+            var history = new RHistory(rInteractive, textBuffer, _fileSystem, RToolsSettings.Current, _editorOperationsFactory, _rtfBuilderService, vsUiShell, () => RemoveRHistory(textBuffer));
             _histories[textBuffer] = history;
             return history;
         }

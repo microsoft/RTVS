@@ -6,5 +6,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
         IRHistory CreateRHistory(IRInteractive rInteractive);
         IRHistory GetAssociatedRHistory(ITextView textView);
         IRHistoryFiltering CreateFiltering(IRHistory history);
+        IWpfTextView GetOrCreateTextView(IRHistory history);
     }
 }

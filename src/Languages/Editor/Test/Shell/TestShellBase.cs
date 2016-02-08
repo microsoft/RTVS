@@ -19,10 +19,10 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return MessageButtons.OK;
         }
 
+        public void ShowContextMenu(Guid contextMenuGroup, int contextMenuId, int x, int y) { }
+
         public void DoIdle() {
-            if (Idle != null) {
-                Idle(null, EventArgs.Empty);
-            }
+            Idle?.Invoke(null, EventArgs.Empty);
             DoEvents();
         }
 

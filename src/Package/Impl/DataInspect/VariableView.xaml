@@ -6,11 +6,13 @@
              xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect"
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+             xmlns:img="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
+             img:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundColorKey}}"
              Foreground="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextBrushKey}}"
              HorizontalAlignment="Stretch">
 
@@ -80,18 +82,57 @@
                               Grid.Column="1"
                               Style="{StaticResource ExpanderToggleStyle}"
                               ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock Grid.Column="2" Text="{Binding Model.Content.Name}" />
+                    <TextBlock Grid.Column="2" Text="{Binding Model.Content.Name}" VerticalAlignment="Center" />
                 </Grid>
             </DataTemplate>
 
             <DataTemplate x:Key="ValueCellTemplate">
                 <Grid>
-                    <TextBlock Text="{Binding Model.Content.Value}" />
-                    <Button HorizontalAlignment="Right"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Model.Content.Value}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
+                        <Button
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
                             Command="{Binding Model.Content.ShowDetailCommand}">
-                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.GridDetailView}"/>
-                    </Button>
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
+                                        Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
+                                        BorderBrush="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}">
+                                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Zoom}"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter TargetName="Border" Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey}}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <!--<Button
+                            Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Command="{Binding Model.Content.OpenInExcelCommand}">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
+                                        Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
+                                        BorderBrush="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}">
+                                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.OfficeExcel2013}"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter TargetName="Border" Property="BorderBrush"
+                                                Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey}}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>-->
+                    </StackPanel>
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>

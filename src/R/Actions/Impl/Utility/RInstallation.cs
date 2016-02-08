@@ -12,6 +12,8 @@ namespace Microsoft.R.Actions.Utility {
     /// settings try and find highest version.
     /// </summary>
     public static class RInstallation {
+        private static string[] rFolders = new string[] { "MRO", "RRO", "R" };
+
         public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion, bool useRegistry = true) {
             string path = string.Empty;
             if (useRegistry) {
@@ -19,13 +21,16 @@ namespace Microsoft.R.Actions.Utility {
             }
 
             if (string.IsNullOrEmpty(path)) {
-                path = TryFindRInProgramFiles("RRO", minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
-                if(string.IsNullOrEmpty(path)) {
-                    path = TryFindRInProgramFiles("R", minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
-                    if (string.IsNullOrEmpty(path)) {
-                        return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
+                foreach (var f in rFolders) {
+                    path = TryFindRInProgramFiles(f, minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
+                    if (!string.IsNullOrEmpty(path)) {
+                        break;
                     }
                 }
+            }
+
+            if (string.IsNullOrEmpty(path)) {
+                return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
             }
 
             RInstallData data = new RInstallData() { Status = RInstallStatus.OK, Path = path };
@@ -60,7 +65,7 @@ namespace Microsoft.R.Actions.Utility {
         }
 
         public static void GoToRInstallPage() {
-            Process.Start("https://cran.r-project.org/");
+            Process.Start("https://mran.revolutionanalytics.com/download/#download");
         }
 
         /// <summary>
@@ -117,24 +122,50 @@ namespace Microsoft.R.Actions.Utility {
             Version highest = null;
 
             foreach (string name in installedEngines) {
-                Version v = new Version(name);
-                if (highest != null) {
-                    if (v > highest) {
-                        highest = v;
-                        highestVersionName = name;
+                // Protect from random key name format changes
+                if (!string.IsNullOrEmpty(name)) {
+                    string versionString = ExtractVersionString(name);
+                    Version v;
+                    if (Version.TryParse(versionString, out v)) {
+                        if (highest != null) {
+                            if (v > highest) {
+                                highest = v;
+                                highestVersionName = name;
+                            }
+                        } else {
+                            highest = v;
+                            highestVersionName = name;
+                        }
                     }
-                } else {
-                    highest = v;
-                    highestVersionName = name;
                 }
             }
 
             return GetRVersionInstallPathFromRegistry(highestVersionName);
         }
 
+        private static string ExtractVersionString(string original) {
+            int start = 0;
+            int end = original.Length;
+
+            for (; start < original.Length; start++) {
+                if (Char.IsDigit(original[start])) {
+                    break;
+                }
+            }
+
+            for (; end > 0; end--) {
+                if (Char.IsDigit(original[end - 1])) {
+                    break;
+                }
+            }
+
+            return end > start ? original.Substring(start, end - start) : string.Empty;
+        }
+
         /// <summary>
         /// Retrieves installed R versions. Returns array of strings
-        /// that typically look like 'R-3.2.1' and typically are
+        /// that typically look like 'R-3.2.1' (but development versions 
+        /// may also look like '3.3.0 Pre-release' and typically are
         /// subfolders of 'Program Files\R'
         /// </summary>
         public static string[] GetInstalledEngineVersionsFromRegistry() {
@@ -142,24 +173,13 @@ namespace Microsoft.R.Actions.Utility {
 
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
+            // HKEY_LOCAL_MACHINE\SOFTWARE\R-core\R64\3.3.0 Pre-release
             using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                RegistryKey rKey = null;
-
                 try {
-                    rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R");
-                    if (rKey == null) {
-                        // Possibly 64-bit machine with only 32-bit R installed
-                        // This is not supported as we require 64-bit R.
-                        // rKey = hklm.OpenSubKey(@"SOFTWARE\Wow6432Node\R-core\R");
-                    }
-                    if (rKey != null) {
+                    using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R")) {
                         return rKey.GetSubKeyNames();
                     }
-                } catch (Exception) { } finally {
-                    if (rKey != null) {
-                        rKey.Dispose();
-                    }
-                }
+                } catch (Exception) { }
             }
 
             return new string[0];
@@ -168,20 +188,24 @@ namespace Microsoft.R.Actions.Utility {
         private static string GetRVersionInstallPathFromRegistry(string version) {
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             using (RegistryKey hklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version)) {
-                    if (rKey != null) {
-                        return rKey.GetValue("InstallPath") as string;
+                try {
+                    using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version)) {
+                        if (rKey != null) {
+                            return rKey.GetValue("InstallPath") as string;
+                        }
                     }
-                }
+                } catch(Exception) { }
             }
-
             return string.Empty;
         }
 
-        private static Version GetRVersionFromFolderName(string folderName) {
+        public static Version GetRVersionFromFolderName(string folderName) {
             if (folderName.StartsWith("R-")) {
                 try {
-                    return new Version(folderName.Substring(2));
+                    Version v;
+                    if (Version.TryParse(folderName.Substring(2), out v)) {
+                        return v;
+                    }
                 } catch (Exception) { }
             }
             return new Version(0, 0);
@@ -191,12 +215,19 @@ namespace Microsoft.R.Actions.Utility {
             string root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
             string baseRFolder = Path.Combine(root + @"Program Files\", folder);
             List<Version> versions = new List<Version>();
-            foreach (string dir in Directory.EnumerateDirectories(baseRFolder)) {
-                string subFolderName = dir.Substring(baseRFolder.Length + 1);
-                Version v = GetRVersionFromFolderName(subFolderName);
-                if (v.Major >= minMajorVersion && v.Minor >= minMinorVersion && v.Major <= maxMajorVersion && v.Minor <= maxMinorVersion) {
-                    versions.Add(v);
+            try {
+                foreach (string dir in Directory.EnumerateDirectories(baseRFolder)) {
+                    string subFolderName = dir.Substring(baseRFolder.Length + 1);
+                    Version v = GetRVersionFromFolderName(subFolderName);
+                    if (v.Major >= minMajorVersion &&
+                        v.Minor >= minMinorVersion &&
+                        v.Major <= maxMajorVersion &&
+                        v.Minor <= maxMinorVersion) {
+                        versions.Add(v);
+                    }
                 }
+            } catch (IOException) {
+                // Don't do anything if there is no RRO installed
             }
 
             if (versions.Count > 0) {

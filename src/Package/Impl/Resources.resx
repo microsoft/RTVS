@@ -166,7 +166,7 @@
     <value>Reformat code as you type</value>
   </data>
   <data name="SaveAsFilterR" xml:space="preserve">
-    <value>R Language Files (*.r)|*.r|All Files (*.*)|*.*</value>
+    <value>R Language Files (*.r)|*.r|</value>
   </data>
   <data name="Settings_IntellisenseCategory" xml:space="preserve">
     <value>IntelliSense</value>
@@ -220,7 +220,7 @@
     <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>
   </data>
   <data name="SaveAsFilterMD" xml:space="preserve">
-    <value>Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|All Files (*.*)|*.*</value>
+    <value>Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|</value>
   </data>
   <data name="CtrlECtrlE" xml:space="preserve">
     <value>Control+E, Control+E</value>
@@ -264,17 +264,15 @@
   <data name="EmptyPlotWindowWatermark" xml:space="preserve">
     <value>Run plotting command in R Interactive Window</value>
   </data>
-  <data name="OpenPlotDialogTitle" xml:space="preserve">
-    <value>Open R Plot File</value>
+  <data name="PlotCopyToClipboardError" xml:space="preserve">
+    <value>Error copying plot to the clipboard.
+{0}</value>
   </data>
-  <data name="PlotFileFilter" xml:space="preserve">
-    <value>R Plot Files (*.vsplot)|*.vsplot|All Files (*.*)|*.*</value>
-  </data>
-  <data name="PlotExportFilter" xml:space="preserve">
+  <data name="PlotExportAsImageFilter" xml:space="preserve">
     <value>PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*</value>
   </data>
-  <data name="CannotOpenPlotFile" xml:space="preserve">
-    <value>Unable to open plot file. Exception: {0}</value>
+  <data name="PlotExportAsPdfFilter" xml:space="preserve">
+    <value>PDF (*.pdf)|*.pdf|All Files (*.*)|*.*</value>
   </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
     <value>Starting R Session...</value>
@@ -282,8 +280,16 @@
   <data name="SavePlotDialogTitle" xml:space="preserve">
     <value>Save R Plot File</value>
   </data>
-  <data name="ExportPlotDialogTitle" xml:space="preserve">
+  <data name="ExportPlotAsImageDialogTitle" xml:space="preserve">
     <value>Export Plot As Image</value>
+  </data>
+  <data name="ExportPlotAsPdfDialogTitle" xml:space="preserve">
+    <value>Export Plot As PDF</value>
+  </data>
+  <data name="PlotExportUnsupportedImageFormat" xml:space="preserve">
+    <value>File extension '{0}' is not supported.
+
+Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="LoadWorkspaceIntoGlobalEnvironment" xml:space="preserve">
     <value>Do you want to load the R data file {0} into the global environment?</value>
@@ -423,7 +429,7 @@
     <value>Use multiline selection</value>
   </data>
   <data name="Settings_MultilineHistorySelection_Description" xml:space="preserve">
-    <value>Single click in R history window selects the entire fragment that was sent to R.\r\nUp/Down arrows in the R Interactive Window navigate through chunks instead of single lines.</value>
+    <value>Single click in R history window selects the entire fragment that was sent to R. Up/Down arrows in the R Interactive Window navigate through chunks instead of single lines.</value>
   </data>
   <data name="Ask" xml:space="preserve">
     <value>Ask</value>
@@ -496,8 +502,7 @@
     <value>Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use.</value>
   </data>
   <data name="Error_UnableToFindR" xml:space="preserve">
-    <value>Unable to determine location of R binaries. If R is not installed 
-please navigate to https://cran.r-project.org, install R for Windows and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools.</value>
+    <value>Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools.</value>
   </data>
   <data name="HistoryWindowCaption" xml:space="preserve">
     <value>R History</value>
@@ -515,7 +520,7 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
     <value>History</value>
   </data>
   <data name="Warning_RStudioKeyboardShortcuts" xml:space="preserve">
-    <value>Do you want to reset keyboard shortcuts to be compable with the RStudio where possible?</value>
+    <value>Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?</value>
   </data>
   <data name="Warning_SettingsReset" xml:space="preserve">
     <value>This will reset Visual Studio window layout to the Data Scientist profile. Proceed?</value>
@@ -531,5 +536,20 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   </data>
   <data name="Settings_HelpBrowser_Description" xml:space="preserve">
     <value>Determines if R Tools should always be using external Web browser or try and send Help pages to the Help window and other Web requests to the external default Web browser.</value>
+  </data>
+  <data name="VariableExplorer_Truncated" xml:space="preserve">
+    <value>[truncated]</value>
+  </data>
+  <data name="VariableGrid_Caption" xml:space="preserve">
+    <value>R Data</value>
+  </data>
+  <data name="Settings_DebuggingCategory" xml:space="preserve">
+    <value>Debugging</value>
+  </data>
+  <data name="Settings_ShowDotPrefixedVariables" xml:space="preserve">
+    <value>Show dot-prefixed variables</value>
+  </data>
+  <data name="Settings_ShowDotPrefixedVariables_Description" xml:space="preserve">
+    <value>Show variables that have names beginning with "." in Variable Explorer and debugger tool windows.</value>
   </data>
 </root>

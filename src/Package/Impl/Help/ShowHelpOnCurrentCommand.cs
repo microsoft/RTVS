@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Common.Core;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -24,10 +25,16 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// </remarks>
     internal sealed class ShowHelpOnCurrentCommand : PackageCommand {
         private const int MaxHelpItemLength = 128;
-        public ShowHelpOnCurrentCommand() :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent) { }
+        public ShowHelpOnCurrentCommand(IRSessionProvider sessionProvider, IActiveWpfTextViewTracker textViewTracker) :
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent) {
+            _sessionProvider = sessionProvider;
+            _textViewTracker = textViewTracker;
+        }
 
-        protected override void SetStatus() {
+        private IRSessionProvider _sessionProvider;
+        private IActiveWpfTextViewTracker _textViewTracker;
+
+        internal override void SetStatus() {
             string item = GetItemUnderCaret();
             if (!string.IsNullOrEmpty(item)) {
                 Enabled = true;
@@ -37,10 +44,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
         }
 
-        protected override async void Handle() {
+        internal override async void Handle() {
             try {
-                var rSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                IRSession session = rSessionProvider.GetInteractiveWindowRSession();
+                IRSession session = _sessionProvider.GetInteractiveWindowRSession();
                 if (session != null) {
                     // Fetch identifier under the cursor
                     string item = GetItemUnderCaret();
@@ -95,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private string GetItemUnderCaret() {
-            ITextView textView = ViewUtilities.ActiveTextView;
+            ITextView textView = _textViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
             if (textView != null && !textView.Caret.InVirtualSpace) {
                 SnapshotPoint position = textView.Caret.Position.BufferPosition;
                 ITextSnapshotLine line = position.GetContainingLine();

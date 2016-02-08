@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
-        public void FormatOnPaste() {
+        public void FormatOnPasteStatus() {
             ITextBuffer textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
             ITextView textView = new TextViewMock(textBuffer);
             var clipboard = new ClipboardDataProvider();
@@ -49,10 +49,36 @@ namespace Microsoft.R.Editor.Test.Formatting {
                 status.Should().Be(CommandStatus.NotSupported);
 
                 clipboard.Format = DataFormats.UnicodeText;
-                clipboard.Data = "if(x<1){x<-2}";
+                clipboard.Data = "data";
 
                 status = command.Status(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste);
                 status.Should().Be(CommandStatus.SupportedAndEnabled);
+            }
+        }
+
+        [Test]
+        public void FormatOnPaste01() {
+            string actual = FormatFromClipboard("if(x<1){x<-2}");
+            actual.Should().Be("if (x < 1) {\r\n    x <- 2\r\n}");
+        }
+
+        [Test]
+        public void FormatOnPaste02() {
+            string content = "\"a\r\nb\r\nc\"";
+            string actual = FormatFromClipboard(content);
+            actual.Should().Be(content);
+        }
+
+        private string FormatFromClipboard(string content) {
+            ITextBuffer textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
+            ITextView textView = new TextViewMock(textBuffer);
+            var clipboard = new ClipboardDataProvider();
+
+            using (var command = new FormatOnPasteCommand(textView, textBuffer)) {
+                command.ClipboardDataProvider = clipboard;
+
+                clipboard.Format = DataFormats.UnicodeText;
+                clipboard.Data = content;
 
                 var ast = RParser.Parse(textBuffer.CurrentSnapshot.GetText());
                 var document = new EditorDocumentMock(new EditorTreeMock(textBuffer, ast));
@@ -61,8 +87,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                 command.Invoke(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste, null, ref o);
             }
 
-            string actual = textBuffer.CurrentSnapshot.GetText();
-            actual.Should().Be("if (x < 1) {\r\n    x <- 2\r\n}");
+            return textBuffer.CurrentSnapshot.GetText();
         }
 
         class ClipboardDataProvider : IClipboardDataProvider {

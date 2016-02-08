@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
@@ -12,7 +11,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -32,12 +30,12 @@ namespace Microsoft.R.Host.Client.Test {
 .rtvs.vsgd <- function() {
    invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_new'))
 }
-.rtvs.vsgdexportimage <- function(filename, device) {
-    dev.copy(device=device,filename=filename)
+.rtvs.vsgdexportimage <- function(filename, device, width, height) {
+    dev.copy(device=device,filename=filename,width=width,height=height)
     dev.off()
 }
-.rtvs.vsgdexportpdf <- function(filename) {
-    dev.copy(device=pdf,file=filename)
+.rtvs.vsgdexportpdf <- function(filename, width, height, paper) {
+    dev.copy(device=pdf,file=filename,width=width,height=height,paper=paper)
     dev.off()
 }
 .rtvs.vsgdnextplot <- function() {
@@ -145,7 +143,7 @@ plot(5:15)
 plot(0:10)
 plot(5:15)
 ";
-            GraphicsTest(code).Should().ContainSingle();
+            GraphicsTest(code).Should().HaveCount(2);
         }
 
         [Test]
@@ -214,15 +212,17 @@ Sys.sleep(1)
             var code = string.Format(@"
 plot(0:10)
 Sys.sleep(1)
-.rtvs.vsgdexportimage('{0}', bmp)
-.rtvs.vsgdexportimage('{1}', png)
-.rtvs.vsgdexportimage('{2}', jpeg)
-.rtvs.vsgdexportimage('{3}', tiff)
+.rtvs.vsgdexportimage('{0}', bmp, {4}, {5})
+.rtvs.vsgdexportimage('{1}', png, {4}, {5})
+.rtvs.vsgdexportimage('{2}', jpeg, {4}, {5})
+.rtvs.vsgdexportimage('{3}', tiff, {4}, {5})
 ",
                 exportedBmpFilePath.Replace("\\", "/"),
                 exportedPngFilePath.Replace("\\", "/"),
                 exportedJpegFilePath.Replace("\\", "/"),
-                exportedTiffFilePath.Replace("\\", "/"));
+                exportedTiffFilePath.Replace("\\", "/"),
+                DefaultExportWidth,
+                DefaultExportHeight);
 
             var actualPlotFilePaths = GraphicsTest(code).ToArray();
             actualPlotFilePaths.Should().ContainSingle();
@@ -250,14 +250,36 @@ Sys.sleep(1)
 
         [Test]
         [Category.Plots]
+        public void ExportPreviousPlotToImage() {
+            var exportedBmpFilePath = _files.ExportPreviousPlotToImageResultPath;
+
+            var code = string.Format(@"
+plot(0:10)
+plot(10:20)
+Sys.sleep(1)
+.rtvs.vsgdpreviousplot()
+.rtvs.vsgdexportimage('{0}', bmp, {1}, {2})
+",
+                exportedBmpFilePath.Replace("\\", "/"),
+                DefaultWidth,
+                DefaultHeight);
+
+            var actualPlotFilePaths = GraphicsTest(code).ToArray();
+            actualPlotFilePaths.Should().HaveCount(3);
+
+            File.ReadAllBytes(exportedBmpFilePath).Should().Equal(File.ReadAllBytes(_files.ExpectedExportPreviousPlotToImagePath));
+        }
+
+        [Test]
+        [Category.Plots]
         public void ExportToPdf() {
             var exportedFilePath = _files.ExportToPdfResultPath;
 
             var code = string.Format(@"
 plot(0:10)
 Sys.sleep(1)
-.rtvs.vsgdexportpdf('{0}')
-", exportedFilePath.Replace("\\", "/"));
+.rtvs.vsgdexportpdf('{0}', {1}, {2}, '{3}')
+", exportedFilePath.Replace("\\", "/"), 7, 7, "special");
 
             var actualPlotFilePaths = GraphicsTest(code).ToArray();
             actualPlotFilePaths.Should().ContainSingle();
@@ -266,25 +288,58 @@ Sys.sleep(1)
             bmp.Width.Should().Be(DefaultWidth);
             bmp.Height.Should().Be(DefaultHeight);
 
-            File.Exists(exportedFilePath).Should().BeTrue();
+            PdfComparer.ComparePdfFiles(exportedFilePath, _files.ExpectedExportToPdfPath);
         }
 
         [Test]
         [Category.Plots]
-        public void History() {
+        public void ResizeInteractiveMultiPlots() {
+            // Resize a graph with multiple plots, where the
+            // code is executed one line at a time interactively
+            // (simulated with sleep)
+            // Make sure that all parts of the graph are present
+            // We used to have a bug where the resized image only had
+            // the top left plot, and the others were missing
             var code = @"
-plot(0:10)
-Sys.sleep(1)
-plot(5:15)
-Sys.sleep(1)
-.rtvs.vsgdpreviousplot()
-";
-            // TODO: Make this validate against a set of expected files to avoid any false positive
-            var actualPlotFilePaths = GraphicsTest(code).ToArray();
-            actualPlotFilePaths.Should().HaveCount(3);
+par(mfrow = c(2, 2))
 
-            File.ReadAllBytes(actualPlotFilePaths[2]).Should().Equal(File.ReadAllBytes(actualPlotFilePaths[0]));
-            File.ReadAllBytes(actualPlotFilePaths[1]).Should().NotEqual(File.ReadAllBytes(actualPlotFilePaths[0]));
+plot(0:1)
+Sys.sleep(1)
+
+plot(1:2)
+Sys.sleep(1)
+
+plot(2:3)
+Sys.sleep(1)
+
+plot(3:4)
+Sys.sleep(1)
+
+.rtvs.vsgdresize(600, 600)
+";
+            GraphicsTestAgainstExpectedFiles(code);
+        }
+
+        [Test]
+        [Category.Plots]
+        public void ResizeNonInteractiveMultiPlots() {
+            // Resize a graph with multiple plots, where the
+            // code is executed all at once
+            // Make sure that all parts of the graph are present
+            // We used to have a bug where the resized image only had
+            // the top left plot, and the others were missing
+            var code = @"
+par(mfrow = c(2, 2))
+
+plot(0:1)
+plot(1:2)
+plot(2:3)
+plot(3:4)
+Sys.sleep(1)
+
+.rtvs.vsgdresize(600, 600)
+";
+            GraphicsTestAgainstExpectedFiles(code);
         }
 
         [Test]
@@ -298,8 +353,7 @@ Sys.sleep(1)
 .rtvs.vsgdpreviousplot()
 .rtvs.vsgdhistoryinfo()
 ";
-            // TODO: Make this validate against a set of expected files to avoid any false positive
-            var actualPlotFilePaths = GraphicsTest(code).ToArray();
+            var actualPlotFilePaths = GraphicsTestAgainstExpectedFiles(code);
             actualPlotFilePaths.Should().HaveCount(3);
 
             File.ReadAllBytes(actualPlotFilePaths[2]).Should().Equal(File.ReadAllBytes(actualPlotFilePaths[0]));
@@ -313,8 +367,11 @@ Sys.sleep(1)
             string output = _callbacks.Output;
             string[] lines = output.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            lines.Length.Should().BeGreaterThan(0);
-            lines[lines.Length-1].Should().Be($"[1] {expectedActive} {expectedCount}");
+            lines.Length.Should().BeGreaterOrEqualTo(4);
+            lines[lines.Length-4].Should().Be("[[1]]");
+            lines[lines.Length-3].Should().Be($"[1] {expectedActive}");
+            lines[lines.Length-2].Should().Be("[[2]]");
+            lines[lines.Length-1].Should().Be($"[1] {expectedCount}");
         }
 
         [Test]
@@ -330,8 +387,7 @@ Sys.sleep(1)
 .rtvs.vsgdpreviousplot()
 Sys.sleep(1)
 ";
-            // TODO: Make this validate against a set of expected files to avoid any false positive
-            var actualPlotFilePaths = GraphicsTest(code).ToArray();
+            var actualPlotFilePaths = GraphicsTestAgainstExpectedFiles(code);
             actualPlotFilePaths.Should().HaveCount(4);
 
             var bmp1 = (Bitmap)Image.FromFile(actualPlotFilePaths[0]);
@@ -348,27 +404,29 @@ Sys.sleep(1)
             bmp4.Height.Should().Be(600);
         }
 
-        private void GraphicsTestAgainstExpectedFiles(string code) {
+        private string[] GraphicsTestAgainstExpectedFiles(string code) {
             var actualPlotPaths = GraphicsTest(code).ToArray();
             var expectedPlotPaths = GetTestExpectedFiles();
-            actualPlotPaths.Should().BeEquivalentTo(expectedPlotPaths);
+            actualPlotPaths.Length.Should().Be(expectedPlotPaths.Length);
 
             foreach (string path in expectedPlotPaths) {
                 var actualPlotPath = actualPlotPaths.First(p => Path.GetFileName(p) == Path.GetFileName(path));
                 File.ReadAllBytes(actualPlotPath).Should().Equal(File.ReadAllBytes(path));
             }
+
+            return actualPlotPaths;
         }
 
         private string[] GetTestExpectedFiles() {
             var folderPath = _files.DestinationPath;
-            var expectedFilesFilter = $"{_testMethod.DeclaringType?.AssemblyQualifiedName}-{_testMethod.Name}-*.png";
+            var expectedFilesFilter = $"{_testMethod.DeclaringType?.FullName}-{_testMethod.Name}-*.png";
             var expectedFiles = Directory.GetFiles(folderPath, expectedFilesFilter);
             return expectedFiles;
         }
 
         internal string SavePlotFile(string plotFilePath, int i) {
-            var newFileName = $"{_testMethod.DeclaringType?.AssemblyQualifiedName}-{_testMethod.Name}-{i}{Path.GetExtension(plotFilePath)}";
-            var testOutputFilePath = Path.Combine(_files.DestinationPath, newFileName);
+            var newFileName = $"{_testMethod.DeclaringType?.FullName}-{_testMethod.Name}-{i}{Path.GetExtension(plotFilePath)}";
+            var testOutputFilePath = Path.Combine(_files.ActualFolderPath, newFileName);
             File.Copy(plotFilePath, testOutputFilePath);
             return testOutputFilePath;
         }

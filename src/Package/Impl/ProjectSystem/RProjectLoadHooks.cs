@@ -55,7 +55,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _fileWatcher.Start();
 
             // Force REPL window up
-            await ReplWindow.EnsureReplWindow();
+            await _threadHandling.SwitchToUIThread();
+            ReplWindow.EnsureReplWindow();
 
             if (!_session.IsHostRunning) {
                 return;
@@ -71,8 +72,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
                 await evaluation.SetWorkingDirectory(_projectDirectory);
             }
-
-            await _threadHandling.SwitchToUIThread();
 
             _toolsSettings.WorkingDirectory = _projectDirectory;
             var history = GetRHistory();

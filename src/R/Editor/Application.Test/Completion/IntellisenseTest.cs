@@ -1,12 +1,16 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -139,6 +143,82 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     item = list.FirstOrDefault(x => x.DisplayText == "codoc");
                     item.Should().NotBeNull();
                 }
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_CompletionFiles() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
+                RToolsSettings.Current.WorkingDirectory = Path.GetDirectoryName(asmPath);
+
+                script.DoIdle(100);
+                script.Type("x <- \"");
+                script.DoIdle(1000);
+                script.Type("{TAB}");
+                script.DoIdle(100);
+
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                script.DoIdle(200);
+
+                var list = session.SelectedCompletionSet.Completions.ToList();
+                var item = list.FirstOrDefault(x => x.DisplayText == "ItemTemplates");
+                item.Should().NotBeNull();
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_CompletionFunctionBraces01() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (var hostScript = new RHostScript(provider)) {
+
+                    string message = null;
+                    hostScript.Session.Output += (s, e) => {
+                        message = e.Message;
+                    };
+
+                    script.DoIdle(100);
+                    script.Type("instal");
+                    script.DoIdle(1000);
+                    script.Type("{TAB}");
+                    script.DoIdle(100);
+
+                    string actual = script.EditorText;
+                    actual.Should().Be("install.packages()");
+                    EditorWindow.CoreEditor.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length - 1);
+
+                    message.Should().BeNull();
+                }
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_CompletionFunctionBraces02() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (var hostScript = new RHostScript(provider)) {
+
+                    string message = null;
+                    hostScript.Session.Output += (s, e) => {
+                        message = e.Message;
+                    };
+
+                    script.DoIdle(100);
+                    script.Type("bas");
+                    script.DoIdle(1000);
+                    script.Type("{TAB}");
+                    script.DoIdle(100);
+
+                    string actual = script.EditorText;
+                    actual.Should().Be("base");
+
+                    message.Should().BeNull();
+                 }
             }
         }
 

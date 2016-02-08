@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Controller;
-using Microsoft.R.Host.Client;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Package.Plots.Commands;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
@@ -22,28 +18,21 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private const int MinWidth = 150;
         private const int MinHeight = 150;
 
-        private ExportPlotCommand _exportPlotCommand;
-        private HistoryNextPlotCommand _historyNextPlotCommand;
-        private HistoryPreviousPlotCommand _historyPreviousPlotCommand;
+        private IPlotHistory PlotHistory;
 
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
+            PlotHistory = VsAppShell.Current.ExportProvider.GetExportedValue<IPlotHistory>();
+            PlotHistory.HistoryChanged += OnPlotHistoryHistoryChanged;
 
-            // set content with presenter
-            PlotContentProvider = new PlotContentProvider();
-            PlotContentProvider.PlotChanged += ContentProvider_PlotChanged;
-
-
-            var presenter = new XamlPresenter(PlotContentProvider);
+            var presenter = new XamlPresenter(PlotHistory.PlotContentProvider);
             presenter.SizeChanged += PlotWindowPane_SizeChanged;
             Content = presenter;
 
-            // initialize toolbar
+            // initialize toolbar. Commands are added via package
+            // so they appear correctly in the top level menu as well 
+            // as on the plot window toolbar
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
-
-            Controller c = new Controller();
-            c.AddCommandSet(GetCommands());
-            this.ToolBarCommandTarget = new CommandTargetToOleShim(null, c);
         }
 
         private void PlotWindowPane_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
@@ -51,123 +40,23 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // and user will be able to use scrollbars to see the whole thing
             int width = Math.Max((int)e.NewSize.Width, MinWidth);
             int height = Math.Max((int)e.NewSize.Height, MinHeight);
-            DoNotWait(PlotContentProvider.ResizePlotAsync(width, height));
+
+            // Throttle resize requests since we get a lot of size changed events when the tool window is undocked
+            IdleTimeAction.Cancel(this);
+            IdleTimeAction.Create(() => {
+                PlotContentProvider.DoNotWait(PlotHistory.PlotContentProvider.ResizePlotAsync(width, height));
+            }, 100, this);
         }
 
-        private static void DoNotWait(System.Threading.Tasks.Task task) {
-            // Errors like invalid graphics state which go to the REPL stderr will come back
-            // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
-            // as the user can see them in the REPL.
-            // TODO:
-            // See if we can fix the cause of those errors - to be
-            // determined based on the various errors we see displayed
-            // in REPL during testing.
-            task.SilenceException<MessageTransportException>()
-                .SilenceException<Microsoft.R.Host.Client.RException>()
-                .DoNotWait();
-        }
-
-        public override void OnToolWindowCreated() {
-            base.OnToolWindowCreated();
-
-            IVsWindowFrame frame = this.Frame as IVsWindowFrame;
-            frame.SetProperty((int)__VSFPROPID.VSFPROPID_ViewHelper, this);
-        }
-
-        public IPlotContentProvider PlotContentProvider { get; private set; }
-
-        private IEnumerable<ICommand> GetCommands() {
-            List<ICommand> commands = new List<ICommand>();
-
-            _exportPlotCommand = new ExportPlotCommand(this);
-            _historyNextPlotCommand = new HistoryNextPlotCommand(this);
-            _historyPreviousPlotCommand = new HistoryPreviousPlotCommand(this);
-
-            commands.Add(_exportPlotCommand);
-            commands.Add(_historyNextPlotCommand);
-            commands.Add(_historyPreviousPlotCommand);
-
-            //commands.Add(new FixPlotCommand(this));
-            //commands.Add(new CopyPlotCommand(this));
-            //commands.Add(new PrintPlotCommand(this));
-            //commands.Add(new ZoomInPlotCommand(this));
-            //commands.Add(new ZoomOutPlotCommand(this));
-
-            return commands;
-        }
-
-        private async System.Threading.Tasks.Task RefreshHistoryInfo() {
-            var info = await PlotContentProvider.GetHistoryInfoAsync();
-            SetHistoryInfo(info.ActivePlotIndex, info.PlotCount);
-        }
-
-        private void ClearHistoryInfo() {
-            SetHistoryInfo(-1, 0);
-        }
-
-        private void SetHistoryInfo(int activeIndex, int plotCount) {
-            if (activeIndex >= 0) {
-                if (activeIndex < (plotCount - 1)) {
-                    _historyNextPlotCommand.Enable();
-                } else {
-                    _historyNextPlotCommand.Disable();
-                }
-                if (activeIndex > 0) {
-                    _historyPreviousPlotCommand.Enable();
-                } else {
-                    _historyPreviousPlotCommand.Disable();
-                }
-            } else {
-                _historyNextPlotCommand.Disable();
-                _historyPreviousPlotCommand.Disable();
-            }
-
+        private void OnPlotHistoryHistoryChanged(object sender, EventArgs e) {
+            ((IVsWindowFrame)Frame).ShowNoActivate();
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            shell.UpdateCommandUI(1);
-        }
-
-        private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e) {
-            if (e.NewPlotElement == null) {
-                ClearHistoryInfo();
-            } else {
-                DoNotWait(RefreshHistoryInfo());
-            }
-        }
-
-        internal void ExportPlot() {
-            string destinationFilePath = GetExportFilePath();
-            if (!string.IsNullOrEmpty(destinationFilePath)) {
-                PlotContentProvider.ExportFile(destinationFilePath);
-            }
-        }
-
-        internal void NextPlot() {
-            DoNotWait(PlotContentProvider.NextPlotAsync());
-        }
-
-        internal void PreviousPlot() {
-            DoNotWait(PlotContentProvider.PreviousPlotAsync());
-        }
-
-        private string GetLoadFilePath() {
-            return VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero,
-                Resources.PlotFileFilter,
-                // TODO: open in current project folder if one is active
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\",
-                Resources.OpenPlotDialogTitle);
-        }
-
-        private string GetExportFilePath() {
-            return VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportFilter, null, Resources.ExportPlotDialogTitle);
+            shell.UpdateCommandUI(0);
         }
 
         protected override void Dispose(bool disposing) {
-            if (PlotContentProvider != null) {
-                PlotContentProvider.PlotChanged -= ContentProvider_PlotChanged;
-                PlotContentProvider.Dispose();
-                PlotContentProvider = null;
-            }
-
+            PlotHistory?.Dispose();
+            PlotHistory = null;
             base.Dispose(disposing);
         }
 

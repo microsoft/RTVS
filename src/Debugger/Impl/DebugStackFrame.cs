@@ -1,8 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -21,7 +19,7 @@ namespace Microsoft.R.Debugger {
 
         public int Index { get; }
 
-        internal string SysFrame => Invariant($"sys.frame({Index})");
+        internal string SysFrame => Invariant($"base::sys.frame({Index})");
 
         public DebugStackFrame CallingFrame { get; }
 
@@ -48,24 +46,7 @@ namespace Microsoft.R.Debugger {
             var match = _doTraceRegex.Match(Call);
             if (match.Success) {
                 FrameKind = DebugStackFrameKind.DoTrace;
-                try {
-                    // When setBreakpoint injects .doTrace calls, it does not inject source information for them.
-                    // Consequently, then such a call is on the stack - i.e. when a breakpoint is hit - there is
-                    // no information about which filename and line number we're on in the call object.
-                    // To work around that, we use our own special wrapper function for tracer instead of just
-                    // plain browser(), and we pass this data as arguments to that function. The function itself
-                    // does not actually use them, but they appear as part of the calling expression, and we can
-                    // extract them from here.
-                    // In case setBreakpoint is changed in the future to correctly adjust the source info for the
-                    // function, only make use of the parsed data if the values couldn't be properly obtained. 
-                    FileName = FileName ?? match.Groups["filename"].Value.FromRStringLiteral();
-                    LineNumber = LineNumber ?? int.Parse(match.Groups["line_number"].Value);
-                } catch (FormatException) {
-                    // This should never happen with .doTrace calls that we insert, but the user can always manually
-                    // insert one. Assert in Debug to detect code changes that break our inserted .doTrace.
-                    Debug.Fail(Invariant($"Couldn't parse RTVS .doTrace call: {Call}"));
-                }
-            } 
+            }
 
             if (fallbackFrame != null) {
                 // If we still don't have the filename and line number, use those from the fallback frame.
@@ -82,13 +63,17 @@ namespace Microsoft.R.Debugger {
             string expression,
             string name = null,
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
-            int? reprMaxLength = null
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength);
+            return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength, cancellationToken);
         }
 
-        public Task<DebugEvaluationResult> GetEnvironmentAsync() {
-            return EvaluateAsync("environment()");
+        public Task<DebugEvaluationResult> GetEnvironmentAsync(
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length | DebugEvaluationResultFields.AttrCount,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            return EvaluateAsync("base::environment()", fields: fields, cancellationToken: cancellationToken);
         }
     }
 }

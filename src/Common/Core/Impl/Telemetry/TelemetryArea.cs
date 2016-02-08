@@ -8,6 +8,7 @@ namespace Microsoft.Common.Core.Telemetry {
     public enum TelemetryArea {
         // Keep these sorted
         Build,
+        Configuration,
         Debugger,
         Editor,
         History,

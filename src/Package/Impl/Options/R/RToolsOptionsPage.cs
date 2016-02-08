@@ -9,10 +9,13 @@ using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.R.Package.Telemetry;
+using System;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
-        private bool _loadingFromStorage;
+        private bool _allowLoadingFromStorage;
+        private bool _applied;
 
         public RToolsOptionsPage() {
             this.SettingsRegistryPath = @"UserSettings\R_Tools";
@@ -102,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set {
                 value = ValidateRBasePath(value);
                 if (value != null) {
-                    if (RToolsSettings.Current.RBasePath != value && !_loadingFromStorage) {
+                    if (RToolsSettings.Current.RBasePath != value && !_allowLoadingFromStorage) {
                         VsAppShell.Current.ShowErrorMessage(Resources.RPathChangedRestartVS);
                     }
                     RToolsSettings.Current.RBasePath = value;
@@ -120,6 +123,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.HelpBrowser = value; }
         }
 
+        [LocCategory("Settings_DebuggingCategory")]
+        [CustomLocDisplayName("Settings_ShowDotPrefixedVariables")]
+        [LocDescription("Settings_ShowDotPrefixedVariables_Description")]
+        [DefaultValue(false)]
+        public bool ShowDotPrefixedVariables
+        {
+            get { return RToolsSettings.Current.ShowDotPrefixedVariables; }
+            set { RToolsSettings.Current.ShowDotPrefixedVariables = value; }
+        }
+
         /// <summary>
         /// REPL working directory: not exposed in Tools | Options dialog,
         /// only saved along with other settings.
@@ -134,21 +147,40 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.WorkingDirectoryList = value; }
         }
 
-        public override void LoadSettingsFromStorage() {
-            _loadingFromStorage = true;
+        /// <summary>
+        /// Loads all values from persistent storage. Typically called when package loads.
+        /// </summary>
+        public void LoadSettings() {
+            _allowLoadingFromStorage = true;
             try {
-                base.LoadSettingsFromStorage();
+                LoadSettingsFromStorage();
             } finally {
-                _loadingFromStorage = false;
+                _allowLoadingFromStorage = false;
+            }
+        }
+
+        /// <summary>
+        /// Saves all values to persistent storage. Typically called when package unloads.
+        /// </summary>
+        public void SaveSettings() {
+            SaveSettingsToStorage();
+        }
+
+        public override void LoadSettingsFromStorage() {
+            // Only permit loading when loading was initiated via LoadSettings().
+            // Otherwise dialog will load values from registry instead of using
+            // ones currently set in memory.
+            if (_allowLoadingFromStorage) {
+                base.LoadSettingsFromStorage();
             }
         }
 
         private string ValidateRBasePath(string path) {
             // If path is null, folder selector dialog was canceled
             if (path != null) {
-                bool valid = SupportedRVersions.VerifyRIsInstalled(path, showErrors: !_loadingFromStorage);
+                bool valid = SupportedRVersions.VerifyRIsInstalled(path, showErrors: !_allowLoadingFromStorage);
                 if (!valid) {
-                    if (_loadingFromStorage) {
+                    if (_allowLoadingFromStorage) {
                         // Bad data in the settings storage. Fix the value to default.
                         path = RInstallation.GetLatestEnginePathFromRegistry();
                     } else {
@@ -158,6 +190,32 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
 
             return path;
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            if(!_applied) {
+                // On cancel load previously saved settings back
+                LoadSettings();
+            }
+            _applied = false;
+            base.OnClosed(e);
+        }
+        protected override void OnActivate(CancelEventArgs e) {
+            // Save in-memory settings to storage. In case dialog
+            // is canceled with some settings modified we will be
+            // able to restore them from storage.
+            SaveSettingsToStorage();
+            base.OnActivate(e);
+        }
+
+        protected override void OnApply(PageApplyEventArgs e) {
+            if (e.ApplyBehavior == ApplyKind.Apply) {
+                _applied = true;
+                // On OK persist settings
+                SaveSettingsToStorage();
+                RtvsTelemetry.Current.ReportSettings();
+            }
+            base.OnApply(e);
         }
     }
 }

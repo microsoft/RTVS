@@ -3,12 +3,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Common.Core.Shell;
+using Microsoft.VisualStudio.R.Package.Commands.R;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     internal class HistoryWindowPaneMouseProcessor : MouseProcessorBase, IMouseProcessor2 {
         private readonly IWpfTextView _textView;
+        private readonly ICoreShell _coreShell;
         private readonly IRHistory _history;
 
         private TimeSpan _elapsedSinceLastTap;
@@ -20,29 +24,22 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private readonly TimeSpan _maximumElapsedDoubleTap = new TimeSpan(0, 0, 0, 0, 600);
         private readonly int _minimumPositionDelta = 30;
 
-        public HistoryWindowPaneMouseProcessor(IWpfTextView wpfTextView, IRHistoryProvider historyProvider) {
+        public HistoryWindowPaneMouseProcessor(IWpfTextView wpfTextView, IRHistoryProvider historyProvider, ICoreShell coreShell) {
             _textView = wpfTextView;
+            _coreShell = coreShell;
             _history = historyProvider.GetAssociatedRHistory(_textView);
-
-            _textView.Selection.SelectionChanged += SelectionChanged;
-            _textView.Closed += TextViewClosed;
-        }
-
-        private void TextViewClosed(object sender, EventArgs e) {
-            _textView.Selection.SelectionChanged -= SelectionChanged;
-            _textView.Closed -= TextViewClosed;
-        }
-
-        private void SelectionChanged(object sender, EventArgs args) {
-            if (_textView.Selection.Start != _textView.Selection.End) {
-                _history.ClearHistoryEntrySelection();
-            }
         }
 
         #region IMouseProcessorProvider Member Implementations
 
         public override void PreprocessMouseLeftButtonDown(MouseButtonEventArgs e) {
             HandleLeftButtonDown(e);
+        }
+
+        public override void PreprocessMouseRightButtonUp(MouseButtonEventArgs e) {
+            var point = _textView.VisualElement.PointToScreen(GetPosition(e, _textView.VisualElement));
+            _coreShell.ShowContextMenu(RGuidList.RCmdSetGuid, (int)RContextMenuId.RHistory, (int)point.X, (int)point.Y);
+            e.Handled = true;
         }
 
         /// <summary>

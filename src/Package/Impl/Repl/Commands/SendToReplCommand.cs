@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class SendToReplCommand : ViewCommand {
-        private ReplWindow _replWindow;
+        private IReplWindow _replWindow;
 
         public SendToReplCommand(ITextView textView) :
             base(textView, new[]
@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteLineInInteractive),
                 new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteSelectionInInteractive)
             }, false) {
-            ReplWindow.EnsureReplWindow().DoNotWait();
+            ReplWindow.EnsureReplWindow();
             _replWindow = ReplWindow.Current;
         }
 
@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             ITextSelection selection = TextView.Selection;
             ITextSnapshot snapshot = TextView.TextBuffer.CurrentSnapshot;
-            ReplWindow replWindow = ReplWindow.Current;
+            IReplWindow replWindow = ReplWindow.Current;
             int position = selection.Start.Position;
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
 
@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
-            ReplWindow.Show();
+            _replWindow.Show();
             replWindow.EnqueueCode(text, addNewLine: true);
 
             var targetLine = line;

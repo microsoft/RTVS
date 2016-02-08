@@ -19,7 +19,6 @@ using Microsoft.VisualStudio.Shell;
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotContentProvider : IPlotContentProvider {
         private IRSession _rSession;
-        private IDebugSessionProvider _debugSessionProvider;
         private string _lastLoadFile;
         private int _lastWidth;
         private int _lastHeight;
@@ -32,14 +31,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _rSession = sessionProvider.GetInteractiveWindowRSession();
             _rSession.Mutated += RSession_Mutated;
             _rSession.Connected += RSession_Connected;
-
-            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
-
-            IdleTimeAction.Create(() => {
-                // debug session is created to trigger a load of the R package
-                // that has functions we need such as rtvs:::toJSON
-                _debugSessionProvider.GetDebugSessionAsync(_rSession).DoNotWait();
-            }, 10, typeof(PlotContentProvider));
         }
 
         private void RSession_Mutated(object sender, EventArgs e) {
@@ -66,8 +57,16 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (!string.IsNullOrEmpty(fileName)) {
                 try {
                     if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
+                        // Use Begin/EndInit to avoid locking the file on disk
+                        var bmp = new BitmapImage();
+                        bmp.BeginInit();
+                        bmp.UriSource = new Uri(fileName);
+                        bmp.CacheOption = BitmapCacheOption.OnLoad;
+                        bmp.EndInit();
+
                         var image = new Image();
-                        image.Source = new BitmapImage(new Uri(fileName));
+                        image.Source = bmp;
+
                         element = image;
                     } else {
                         element = (UIElement)XamlServices.Load(fileName);
@@ -82,35 +81,92 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             OnPlotChanged(element);
         }
 
-        public async void ExportFile(string fileName) {
-            if (_rSession == null) {
-                return;
-            }
+        public void ExportAsImage(string fileName, string deviceName) {
+            DoNotWait(ExportAsImageAsync(fileName, deviceName));
+        }
 
-            string device = String.Empty;
-            switch (Path.GetExtension(fileName).TrimStart('.').ToLowerInvariant()) {
-                case "png":
-                    device = "png";
-                    break;
-                case "bmp":
-                    device = "bmp";
-                    break;
-                case "tif":
-                case "tiff":
-                    device = "tiff";
-                    break;
-                case "jpg":
-                case "jpeg":
-                    device = "jpeg";
-                    break;
-                default:
-                    //TODO
-                    Debug.Assert(false, "Unsupported image format.");
-                    return;
+        public void CopyToClipboardAsBitmap() {
+            DoNotWait(CopyToClipboardAsBitmapAsync());
+        }
 
+        public void CopyToClipboardAsMetafile() {
+            DoNotWait(CopyToClipboardAsMetafileAsync());
+        }
+
+        public void ExportAsPdf(string fileName) {
+            DoNotWait(ExportAsPdfAsync(fileName));
+        }
+
+        private async System.Threading.Tasks.Task ExportAsImageAsync(string fileName, string deviceName) {
+            if (_rSession != null) {
+                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                    await eval.ExportToBitmap(deviceName, fileName, _lastWidth, _lastHeight);
+                }
             }
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                await eval.CopyToDevice(device, fileName);
+        }
+
+        private async System.Threading.Tasks.Task CopyToClipboardAsBitmapAsync() {
+            if (_rSession != null) {
+                string fileName = Path.GetTempFileName();
+                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                    await eval.ExportToBitmap("bmp", fileName, _lastWidth, _lastHeight);
+                    VsAppShell.Current.DispatchOnUIThread(
+                        () => {
+                            try {
+                            // Use Begin/EndInit to avoid locking the file on disk
+                            var image = new BitmapImage();
+                                image.BeginInit();
+                                image.UriSource = new Uri(fileName);
+                                image.CacheOption = BitmapCacheOption.OnLoad;
+                                image.EndInit();
+                                Clipboard.SetImage(image);
+
+                                SafeFileDelete(fileName);
+                            } catch (Exception e) when (!e.IsCriticalException()) {
+                                MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
+                            }
+                        });
+                }
+            }
+        }
+
+        private async System.Threading.Tasks.Task CopyToClipboardAsMetafileAsync() {
+            if (_rSession != null) {
+                string fileName = Path.GetTempFileName();
+                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                    await eval.ExportToMetafile(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight));
+
+                    VsAppShell.Current.DispatchOnUIThread(
+                        () => {
+                            try {
+                                var mf = new System.Drawing.Imaging.Metafile(fileName);
+                                Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
+
+                                SafeFileDelete(fileName);
+                            } catch (Exception e) when (!e.IsCriticalException()) {
+                                MessageBox.Show(string.Format(Resources.PlotCopyToClipboardError, e.Message));
+                            }
+                        });
+                }
+            }
+        }
+
+        private static double PixelsToInches(int pixels) {
+            return pixels / 96.0;
+        }
+
+        private static void SafeFileDelete(string fileName) {
+            try {
+                File.Delete(fileName);
+            } catch (IOException) {
+            }
+        }
+
+        private async System.Threading.Tasks.Task ExportAsPdfAsync(string fileName) {
+            if (_rSession != null) {
+                using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
+                    await eval.ExportToPdf(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight), "special");
+                }
             }
         }
 
@@ -183,6 +239,19 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         public void Dispose() {
+        }
+
+        public static void DoNotWait(System.Threading.Tasks.Task task) {
+            // Errors like invalid graphics state which go to the REPL stderr will come back
+            // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
+            // as the user can see them in the REPL.
+            // TODO:
+            // See if we can fix the cause of those errors - to be
+            // determined based on the various errors we see displayed
+            // in REPL during testing.
+            task.SilenceException<MessageTransportException>()
+                .SilenceException<Microsoft.R.Host.Client.RException>()
+                .DoNotWait();
         }
     }
 }

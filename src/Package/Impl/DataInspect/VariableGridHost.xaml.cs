@@ -1,58 +1,84 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Common.Core;
-using Newtonsoft.Json.Linq;
+using Microsoft.R.Debugger;
+using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
+using Microsoft.VisualStudio.R.Package.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    /// <summary>
+    /// Control that shows two dimensional R object
+    /// </summary>
     public partial class VariableGridHost : UserControl {
+        private EvaluationWrapper _evaluation;
+        private VariableSubscription _subscription;
+        private IVariableDataProvider _variableProvider;
+
         public VariableGridHost() {
             InitializeComponent();
 
-            Loaded += VariableGridHost_Loaded;
-            Unloaded += VariableGridHost_Unloaded;
+            _variableProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IVariableDataProvider>();
         }
         
         internal void SetEvaluation(EvaluationWrapper evaluation) {
-            VariableGrid.Initialize(new DataProvider(evaluation));
-        }
+            ClearError();
 
-        private void VariableGridHost_Loaded(object sender, System.Windows.RoutedEventArgs e) {
-            VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
-        }
+            VariableGrid.Initialize(new GridDataProvider(evaluation));
 
-        private void VariableGridHost_Unloaded(object sender, System.Windows.RoutedEventArgs e) {
-            VariableProvider.Current.VariableChanged -= VariableProvider_VariableChanged;
-        }
-
-        private void VariableProvider_VariableChanged(object sender, VariableChangedArgs e) {
-            VariableGrid.Refresh();
-        }
-    }
-
-    internal class DataProvider : IGridProvider<string> {
-        private EvaluationWrapper _evaluation;
-
-        public DataProvider(EvaluationWrapper evaluation) {
             _evaluation = evaluation;
 
-            RowCount = evaluation.Dimensions[0];
-            ColumnCount = evaluation.Dimensions[1];
+            if (_subscription != null) {
+                _variableProvider.Unsubscribe(_subscription);
+                _subscription = null;
+            }
+
+            _subscription = _variableProvider.Subscribe(
+                evaluation.FrameIndex,
+                evaluation.Expression,
+                SubscribeAction);
         }
 
-        public int ColumnCount { get; }
+        private void SubscribeAction(DebugEvaluationResult evaluation) {
+            VsAppShell.Current.DispatchOnUIThread(
+                () => {
+                    if (evaluation is DebugErrorEvaluationResult) {
+                        // evaluation error, this could happen if R object is removed
+                        var error = (DebugErrorEvaluationResult)evaluation;
+                        SetError(error.ErrorText);
+                        return;
+                    }
 
-        public int RowCount { get; }
+                    var wrapper = new EvaluationWrapper(evaluation);
 
-        public Task<IGridData<string>> GetAsync(GridRange gridRange) {
-            return VariableProvider.Current.GetGridDataAsync(_evaluation.Expression, gridRange);
+                    if (wrapper.Dimensions.Count != 2) {
+                        // the same evaluation changed to non-matrix
+                        SetError(Invariant($"object '{evaluation.Expression}' is not two dimensional."));
+                    } else if (wrapper.Dimensions[0] != _evaluation.Dimensions[0]
+                        || wrapper.Dimensions[1] != _evaluation.Dimensions[1]) {
+                        ClearError();
+
+                        // matrix size changed. Reset the evaluation
+                        SetEvaluation(wrapper);
+                    } else {
+                        ClearError();
+                        
+                        // size stays same. Refresh
+                        VariableGrid.Refresh();
+                    }
+                });
         }
 
-        public Task<IGrid<string>> GetRangeAsync(GridRange gridRange) {
-            throw new NotImplementedException();
+        private void SetError(string text) {
+            ErrorTextBlock.Text = text;
+            ErrorTextBlock.Visibility = Visibility.Visible;
+
+            VariableGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private void ClearError() {
+            ErrorTextBlock.Visibility = Visibility.Collapsed;
+
+            VariableGrid.Visibility = Visibility.Visible;
         }
     }
 }

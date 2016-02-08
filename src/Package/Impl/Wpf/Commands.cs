@@ -19,6 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudioTools.Wpf {
     /// <summary>
@@ -116,7 +117,7 @@ namespace Microsoft.VisualStudioTools.Wpf {
             var filter = (e.Parameter as string) ?? "All Files (*.*)|*.*";
 
             var path = tb.GetValue(TextBox.TextProperty) as string;
-            path = Dialogs.BrowseForFileOpen(
+            path = VsAppShell.Current.BrowseForFileOpen(
                 window == null ? IntPtr.Zero : new WindowInteropHelper(window).Handle,
                 filter,
                 path
@@ -135,7 +136,7 @@ namespace Microsoft.VisualStudioTools.Wpf {
             var filter = (e.Parameter as string) ?? "All Files (*.*)|*.*";
 
             var path = tb.GetValue(TextBox.TextProperty) as string;
-            path = Dialogs.BrowseForFileSave(
+            path = VsAppShell.Current.BrowseForFileSave(
                 window == null ? IntPtr.Zero : new WindowInteropHelper(window).Handle,
                 filter,
                 path

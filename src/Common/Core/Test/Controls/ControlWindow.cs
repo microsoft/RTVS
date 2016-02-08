@@ -13,7 +13,7 @@ namespace Microsoft.Common.Core.Test.Controls {
     /// Control window
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal static class ControlWindow {
+    public static class ControlWindow {
         [ExcludeFromCodeCoverage]
         class ControlTestRequest {
             public Type ControlType { get; }
@@ -24,9 +24,16 @@ namespace Microsoft.Common.Core.Test.Controls {
         }
 
         /// <summary>
+        /// Component that is being tested. May be same as <see cref="Control"/>
+        /// or may be different if component is <see cref="IVisualComponent"/>
+        /// </summary>
+        public static object Component { get; private set; }
+        
+        /// <summary>
         /// Control that is being tested
         /// </summary>
         public static Control Control { get; private set; }
+        
         /// <summary>
         /// WPF window that contains the control
         /// </summary>
@@ -59,7 +66,14 @@ namespace Microsoft.Common.Core.Test.Controls {
             Window.Width = 800;
             Window.Height = 600;
 
-            Control = Activator.CreateInstance(request.ControlType) as Control;
+            Component = Activator.CreateInstance(request.ControlType);
+            if(Component is Control) {
+                Control = Component as Control;
+            }
+            else {
+                Control = Component.GetType().GetProperty("Control").GetValue(Component) as Control;
+            }
+
             Window.Title = "Control - " + request.ControlType.ToString();
             Window.Content = Control;
 
@@ -76,6 +90,10 @@ namespace Microsoft.Common.Core.Test.Controls {
             var action = new Action(() => {
                 IDisposable disp = Window.Content as IDisposable;
                 disp?.Dispose();
+
+                disp = Component as IDisposable;
+                disp?.Dispose();
+
                 Window.Close();
             });
 

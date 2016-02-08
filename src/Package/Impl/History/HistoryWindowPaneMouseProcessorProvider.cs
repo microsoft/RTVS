@@ -1,4 +1,5 @@
 using System.ComponentModel.Composition;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -8,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
     [Name("HistoryWindowPaneMouseProcessor")]
     [Order(Before = "WordSelection")]
     [ContentType(RHistoryContentTypeDefinition.ContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Interactive)]
+    [TextViewRole(RHistory.TextViewRole)]
     internal sealed class HistoryWindowPaneMouseProcessorProvider : IMouseProcessorProvider {
         private readonly IRHistoryProvider _historyProvider;
 
@@ -18,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView wpfTextView) {
-            return wpfTextView.Properties.GetOrCreateSingletonProperty(() => new HistoryWindowPaneMouseProcessor(wpfTextView, _historyProvider));
+            return wpfTextView.Properties.GetOrCreateSingletonProperty(() => new HistoryWindowPaneMouseProcessor(wpfTextView, _historyProvider, EditorShell.Current));
         }
     }
 }

@@ -129,7 +129,6 @@
     <Compile Include="Formatting\RangeFormatter.cs" />
     <Compile Include="Imaging\IImagesProvider.cs" />
     <Compile Include="Outline\ROutlineTaggerProvider.cs" />
-    <Compile Include="Outline\OutlineTagsCommandHandler.cs" />
     <Compile Include="Outline\ROutliningRegionTag.cs" />
     <Compile Include="Outline\ROutliningTagger.cs" />
     <Compile Include="Outline\ROutlineRegion.cs" />

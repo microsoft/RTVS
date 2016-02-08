@@ -9,12 +9,16 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
-    internal sealed class AttachDebuggerCommand : DebuggerCommand {
+    internal class AttachDebuggerCommand : DebuggerCommand {
         public AttachDebuggerCommand(IRSessionProvider rSessionProvider)
             : base(rSessionProvider, RPackageCommandId.icmdAttachDebugger, DebuggerCommandVisibility.DesignMode) {
         }
 
-        protected unsafe override void Handle() {
+        protected AttachDebuggerCommand(IRSessionProvider rSessionProvider, int cmdId, DebuggerCommandVisibility visibility)
+            : base(rSessionProvider, cmdId, visibility) {
+        }
+
+        internal unsafe override void Handle() {
             if (!RSession.IsHostRunning) {
                 return;
             }
@@ -54,10 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
 
             // If we have successfully attached, VS has switched to debugging UI context, which hides
             // the REPL window. Show it again and give it focus.
-            IVsWindowFrame frame = ReplWindow.FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
-            if (frame != null) {
-                frame.Show();
-            }
+            ReplWindow.ShowWindow();
         }
     }
 }

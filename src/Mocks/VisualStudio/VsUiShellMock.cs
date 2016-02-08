@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int CreateToolWindow(uint grfCTW, uint dwToolWindowId, object punkTool, ref Guid rclsidTool, ref Guid rguidPersistenceSlot, ref Guid rguidAutoActivate, OLE.Interop.IServiceProvider psp, string pszCaption, int[] pfDefaultPosition, out IVsWindowFrame ppWindowFrame) {
-            var mock = new VsWindowFrameMock();
+            var mock = new VsWindowFrameMock(pszCaption);
             _frames[rguidPersistenceSlot] = mock;
             ppWindowFrame = mock;
             return VSConstants.S_OK;
@@ -35,8 +35,13 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         public int FindToolWindow(uint grfFTW, ref Guid rguidPersistenceSlot, out IVsWindowFrame ppWindowFrame) {
             VsWindowFrameMock mock;
             _frames.TryGetValue(rguidPersistenceSlot, out mock);
-            ppWindowFrame = mock;
-            return mock != null ? VSConstants.S_OK : VSConstants.E_FAIL;
+            if (mock == null && grfFTW == (uint)__VSFINDTOOLWIN.FTW_fForceCreate) {
+                Guid g = Guid.Empty;
+                CreateToolWindow(0, 1, null, ref g, ref rguidPersistenceSlot, ref g, null, string.Empty, null, out ppWindowFrame);
+            } else {
+                ppWindowFrame = mock;
+            }
+            return ppWindowFrame != null ? VSConstants.S_OK : VSConstants.E_FAIL;
         }
 
         public int FindToolWindowEx(uint grfFTW, ref Guid rguidPersistenceSlot, uint dwToolWinId, out IVsWindowFrame ppWindowFrame) {
@@ -87,7 +92,8 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int GetToolWindowEnum(out IEnumWindowFrames ppenum) {
-            throw new NotImplementedException();
+            ppenum = new EnumWindowFramesMock(new List<IVsWindowFrame>(_frames.Values));
+            return VSConstants.S_OK;
         }
 
         public int GetURLViaDlg(string pszDlgTitle, string pszStaticLabel, string pszHelpTopic, out string pbstrURL) {

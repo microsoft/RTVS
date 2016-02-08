@@ -14,7 +14,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
         private ITextProvider _textProvider;
 
         public MarkdownRCodeToken(int start, int length, ITextProvider textProvider) :
-            base(MarkdownTokenType.Code, new TextRange(start, length)) {
+            base(MarkdownTokenType.CodeContent, new TextRange(start, length)) {
             _textProvider = textProvider;
         }
 

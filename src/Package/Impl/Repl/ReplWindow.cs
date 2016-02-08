@@ -12,22 +12,24 @@ using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
-using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     /// <summary>
     /// Tracks most recently active REPL window
     /// </summary>
-    internal sealed class ReplWindow : IVsWindowFrameEvents, IDisposable {
+    internal sealed class ReplWindow : IReplWindow, IVsWindowFrameEvents, IVsDebuggerEvents, IDisposable {
         private uint _windowFrameEventsCookie;
         private IVsInteractiveWindow _lastUsedReplWindow;
         private ConcurrentQueue<PendingSubmission> _pendingInputs = new ConcurrentQueue<PendingSubmission>();
-        private static readonly Lazy<ReplWindow> Instance = new Lazy<ReplWindow>(() => new ReplWindow());
+        private static IReplWindow _instance;
+        private static IVsWindowFrame _frame;
+        private uint _debuggerEventsCookie;
+        private bool _replLostFocus;
+        private bool _enteredBreakMode;
 
         class PendingSubmission {
             public string Code;
@@ -35,17 +37,33 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public ReplWindow() {
-            IVsUIShell7 shell = VsAppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
-            if (shell != null) {
-                _windowFrameEventsCookie = shell.AdviseWindowFrameEvents(this);
+            IVsUIShell7 shell7 = VsAppShell.Current.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
+            if (shell7 != null) {
+                _windowFrameEventsCookie = shell7.AdviseWindowFrameEvents(this);
+            }
+            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+            if (debugger != null) {
+                debugger.AdviseDebuggerEvents(this, out _debuggerEventsCookie);
+            }
+            EnsureReplWindow();
+        }
+
+        public static IReplWindow Current {
+            get {
+                if (_instance == null) {
+                    _instance = new ReplWindow();
+                }
+                return _instance;
+            }
+            internal set {
+                _instance = value;
             }
         }
 
-        public static ReplWindow Current => Instance.Value;
-
+        #region IReplWindow
         public bool IsActive {
             get {
-                IVsWindowFrame frame = Current.GetToolWindow();
+                IVsWindowFrame frame = GetToolWindow();
                 if (frame != null) {
                     int onScreen;
                     frame.IsOnScreen(out onScreen);
@@ -55,63 +73,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
         }
 
-        public IVsWindowFrame GetToolWindow() {
-            IVsWindowFrame frame;
-            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
-
-            // First just find. If it exists, use it. 
-            shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fFindFirst, ref persistenceSlot, out frame);
-            return frame;
-        }
-
-        private void ProcessQueuedInput() {
-            IVsInteractiveWindow interactive = Instance.Value.GetInteractiveWindow();
-            if (interactive == null) {
-                return;
-            }
-
-            var window = interactive.InteractiveWindow;
-            var view = interactive.InteractiveWindow.TextView;
-
-            // Process all of our pending inputs until we get a complete statement
-            PendingSubmission current;
-            while (_pendingInputs.TryDequeue(out current)) {
-                var curLangBuffer = interactive.InteractiveWindow.CurrentLanguageBuffer;
-
-                var curLangPoint = view.MapDownToBuffer(
-                    interactive.InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.Length,
-                    curLangBuffer
-                );
-                if (curLangPoint == null) {
-                    // ensure the caret is in the input buffer, otherwise inserting code does nothing
-                    view.Caret.MoveTo(
-                        view.BufferGraph.MapUpToBuffer(
-                            new SnapshotPoint(
-                                curLangBuffer.CurrentSnapshot, curLangBuffer.CurrentSnapshot.Length
-                            ),
-                            PointTrackingMode.Positive,
-                            PositionAffinity.Successor,
-                            view.TextBuffer
-                        ).Value
-                    );
-                }
-
-                window.InsertCode(current.Code);
-                string fullCode = curLangBuffer.CurrentSnapshot.GetText();
-
-                if (window.Evaluator.CanExecuteCode(fullCode)) {
-                    // the code is complete, execute it now
-                    window.Operations.ExecuteInput();
-                    return;
-                }
-
-                if (current.AddNewLine) {
-                    // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
-                    // function() {
-                    window.InsertCode(view.Options.GetNewLineCharacter());
-                }
-            }
+        public void Show() {
+            GetToolWindow()?.Show();
         }
 
         /// <summary>
@@ -127,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// <param name="code">The code to be inserted</param>
         /// <param name="addNewLine">True to add a new line on non-complete inputs.</param>
         public void EnqueueCode(string code, bool addNewLine) {
-            IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
+            IVsInteractiveWindow current = _instance.GetInteractiveWindow();
             if (current != null) {
                 if (current.InteractiveWindow.IsResetting) {
                     return;
@@ -148,15 +111,21 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void ExecuteCode(string code) {
-            IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
+            IVsInteractiveWindow current = _instance.GetInteractiveWindow();
             if (current != null && !current.InteractiveWindow.IsInitializing && !string.IsNullOrWhiteSpace(code)) {
                 current.InteractiveWindow.AddInput(code);
+
+                var buffer = current.InteractiveWindow.CurrentLanguageBuffer;
+                var endPoint = current.InteractiveWindow.TextView.MapUpToBuffer(buffer.CurrentSnapshot.Length, buffer);
+                if (endPoint != null) {
+                    current.InteractiveWindow.TextView.Caret.MoveTo(endPoint.Value);
+                }
                 current.InteractiveWindow.Operations.ExecuteInput();
             }
         }
 
         public void ReplaceCurrentExpression(string replaceWith) {
-            IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
+            IVsInteractiveWindow current = _instance.GetInteractiveWindow();
             if (current != null && !current.InteractiveWindow.IsInitializing) {
                 var textBuffer = current.InteractiveWindow.CurrentLanguageBuffer;
                 var span = new Span(0, textBuffer.CurrentSnapshot.Length);
@@ -170,7 +139,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             ICompletionBroker broker = VsAppShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
             broker.DismissAllSessions(textView);
 
-            IVsInteractiveWindow current = Instance.Value.GetInteractiveWindow();
+            IVsInteractiveWindow current = _instance.GetInteractiveWindow();
             if (current != null && !current.InteractiveWindow.IsRunning) {
                 var curBuffer = current.InteractiveWindow.CurrentLanguageBuffer;
                 SnapshotPoint? documentPoint = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, curBuffer);
@@ -215,6 +184,67 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 }
             }
         }
+        #endregion
+
+        private void ProcessQueuedInput() {
+            IVsInteractiveWindow interactive = _instance.GetInteractiveWindow();
+            if (interactive == null) {
+                return;
+            }
+
+            var window = interactive.InteractiveWindow;
+            var view = interactive.InteractiveWindow.TextView;
+
+            // Process all of our pending inputs until we get a complete statement
+            PendingSubmission current;
+            while (_pendingInputs.TryDequeue(out current)) {
+                var curLangBuffer = interactive.InteractiveWindow.CurrentLanguageBuffer;
+                SnapshotPoint? curLangPoint = null;
+
+                // If anything is selected we need to clear it before inserting new code
+                view.Selection.Clear();
+
+                // Find out if caret position is where code can be inserted.
+                // Caret must be in the area mappable to the language buffer.
+                if (!view.Caret.InVirtualSpace) {
+                    curLangPoint = view.MapDownToBuffer(view.Caret.Position.BufferPosition, curLangBuffer);
+                }
+
+                if (curLangPoint == null) {
+                    // Ensure the caret is in the input buffer, otherwise inserting code does nothing.
+                    SnapshotPoint? viewPoint = view.BufferGraph.MapUpToBuffer(
+                        new SnapshotPoint(curLangBuffer.CurrentSnapshot, curLangBuffer.CurrentSnapshot.Length),
+                        PointTrackingMode.Positive,
+                        PositionAffinity.Predecessor,
+                        view.TextBuffer);
+
+                    if (!viewPoint.HasValue) {
+                        // Unable to map language buffer to view.
+                        // Try moving caret to the end of the view then.
+                        viewPoint = new SnapshotPoint(view.TextBuffer.CurrentSnapshot, view.TextBuffer.CurrentSnapshot.Length);
+                    }
+
+                    if (viewPoint.HasValue) {
+                        view.Caret.MoveTo(viewPoint.Value);
+                    }
+                }
+
+                window.InsertCode(current.Code);
+                string fullCode = curLangBuffer.CurrentSnapshot.GetText();
+
+                if (window.Evaluator.CanExecuteCode(fullCode)) {
+                    // the code is complete, execute it now
+                    window.Operations.ExecuteInput();
+                    return;
+                }
+
+                if (current.AddNewLine) {
+                    // We want a new line after non-complete inputs, e.g. the user ctrl-entered on
+                    // function() {
+                    window.InsertCode(view.Options.GetNewLineCharacter());
+                }
+            }
+        }
 
         private static bool IsMultiLineCandidate(string text) {
             if (text.IndexOfAny(new[] { '\n', '\r' }) != -1) {
@@ -243,36 +273,30 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
                 if (frame != null) {
                     frame.Show();
-                    CheckReplFrame(frame);
+                    CheckReplFrame(frame, gettingFocus: true);
                 }
             }
 
             return _lastUsedReplWindow;
         }
 
-        public static bool ReplWindowExists() {
-            IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
-            return frame != null;
+        public static bool ReplWindowExists => _frame != null;
+
+        public static void ShowWindow() {
+            _frame?.Show();
         }
 
-        public static void Show() {
-            IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fFindFirst);
-            frame?.Show();
-        }
-
-        public static async Task EnsureReplWindow() {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            if (!ReplWindowExists()) {
-                IVsWindowFrame frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fForceCreate);
-                if (frame != null) {
-                    //IntPtr bitmap = Resources.ReplWindowIcon.GetHbitmap();
-                    frame.SetProperty((int)__VSFPROPID4.VSFPROPID_TabImage, Resources.ReplWindowIcon);
-                    frame.Show();
+        public static void EnsureReplWindow() {
+            if (!ReplWindowExists) {
+                _frame = FindReplWindowFrame(__VSFINDTOOLWIN.FTW_fForceCreate);
+                if (_frame != null) {
+                    _frame.SetProperty((int)__VSFPROPID4.VSFPROPID_TabImage, Resources.ReplWindowIcon);
+                    _frame.Show();
                 }
             }
         }
 
-        public static IVsWindowFrame FindReplWindowFrame(__VSFINDTOOLWIN flags) {
+        internal static IVsWindowFrame FindReplWindowFrame(__VSFINDTOOLWIN flags) {
             IVsWindowFrame frame;
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
 
@@ -289,7 +313,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void OnFrameDestroyed(IVsWindowFrame frame) {
-            
+
         }
 
         public void OnFrameIsVisibleChanged(IVsWindowFrame frame, bool newIsVisible) {
@@ -299,9 +323,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) {
+            _replLostFocus = false;
             // Track last recently used REPL window
-            if (!CheckReplFrame(oldFrame)) {
-                CheckReplFrame(newFrame);
+            if (!CheckReplFrame(oldFrame, gettingFocus: false)) {
+                CheckReplFrame(newFrame, gettingFocus: true);
+            } else {
+                _replLostFocus = true;
+                VsAppShell.Current.DispatchOnUIThread(() => CheckPossibleBreakModeFocusChange());
             }
         }
         #endregion
@@ -314,31 +342,90 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 _windowFrameEventsCookie = 0;
             }
 
+            if (_debuggerEventsCookie != 0) {
+                var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+                debugger.UnadviseDebuggerEvents(_debuggerEventsCookie);
+                _debuggerEventsCookie = 0;
+            }
+
             _lastUsedReplWindow = null;
         }
         #endregion
 
-        private bool CheckReplFrame(IVsWindowFrame frame) {
+        private IVsWindowFrame GetToolWindow() {
+            IVsWindowFrame frame;
+            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            Guid persistenceSlot = RGuidList.ReplInteractiveWindowProviderGuid;
+
+            // First just find. If it exists, use it. 
+            shell.FindToolWindow((int)__VSFINDTOOLWIN.FTW_fFindFirst, ref persistenceSlot, out frame);
+            return frame;
+        }
+
+        private bool CheckReplFrame(IVsWindowFrame frame, bool gettingFocus) {
             if (frame != null) {
                 Guid property;
                 frame.GetGuidProperty((int)__VSFPROPID.VSFPROPID_GuidPersistenceSlot, out property);
                 if (property == RGuidList.ReplInteractiveWindowProviderGuid) {
                     object docView;
+
                     frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out docView);
                     if (_lastUsedReplWindow != null) {
                         _lastUsedReplWindow.InteractiveWindow.ReadyForInput -= ProcessQueuedInput;
                     }
+
                     _lastUsedReplWindow = docView as IVsInteractiveWindow;
                     if (_lastUsedReplWindow != null) {
                         IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
                         shell.UpdateCommandUI(1);
+
                         _lastUsedReplWindow.InteractiveWindow.ReadyForInput += ProcessQueuedInput;
+                        if (gettingFocus) {
+                            PositionCaretAtPrompt(_lastUsedReplWindow.InteractiveWindow.TextView);
+                        }
                     }
                     return _lastUsedReplWindow != null;
                 }
             }
 
             return false;
+        }
+
+        private void CheckPossibleBreakModeFocusChange() {
+            if (_enteredBreakMode && _replLostFocus) {
+                // When debugger hits a breakpoint it typically activates the editor.
+                // This is not desirable when focus was in the interactive window
+                // i.e. user worked in the REPL and not in the editor. Pull 
+                // the focus back here. 
+                Show();
+
+                _replLostFocus = false;
+                _enteredBreakMode = false;
+            }
+        }
+
+        #region IVsDebuggerEvents
+        public int OnModeChange(DBGMODE dbgmodeNew) {
+            _enteredBreakMode = dbgmodeNew == DBGMODE.DBGMODE_Break;
+            return VSConstants.S_OK;
+        }
+        #endregion
+
+        public static void PositionCaretAtPrompt(ITextView textView = null) {
+            textView = textView ?? _instance.GetInteractiveWindow()?.InteractiveWindow.TextView;
+            if (textView == null) {
+                return;
+            }
+
+            // Click on text view will move the caret so we need 
+            // to move caret to the prompt after view finishes its
+            // mouse processing.
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                textView.Selection.Clear();
+                ITextSnapshot snapshot = textView.TextBuffer.CurrentSnapshot;
+                SnapshotPoint caretPosition = new SnapshotPoint(snapshot, snapshot.Length);
+                textView.Caret.MoveTo(caretPosition);
+            });
         }
     }
 }

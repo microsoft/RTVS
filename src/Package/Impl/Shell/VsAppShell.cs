@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -20,6 +21,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using IServiceProvider = System.IServiceProvider;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -156,6 +158,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
+        }
+
+        public void ShowContextMenu(Guid contextMenuGroup, int contextMenuId, int x, int y) {
+            var package = EnsurePackageLoaded(RGuidList.RPackageGuid);
+            if (package != null) {
+                var menuService = (IMenuCommandService)((IServiceProvider)package).GetService(typeof(IMenuCommandService));
+                menuService.ShowContextMenu(new CommandID(contextMenuGroup, contextMenuId), x, y);
+            }
         }
 
         /// <summary>
@@ -308,6 +318,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             VSSAVEFILENAMEW[] saveInfo = new VSSAVEFILENAMEW[1];
             saveInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
+            saveInfo[0].dwFlags = 0x00000002; // OFN_OVERWRITEPROMPT
             saveInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
             saveInfo[0].hwndOwner = owner;
             saveInfo[0].pwzDlgTitle = title;
@@ -362,6 +373,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private void DetemineTestEnvironment() {
             //TODO: check for VS Test host
             this.IsUITestEnvironment = false;
+        }
+
+        private IVsPackage EnsurePackageLoaded(Guid guidPackage) {
+            var shell = GetGlobalService<IVsShell>();
+            var guid = guidPackage;
+            IVsPackage package;
+            int hr = ErrorHandler.ThrowOnFailure(shell.IsPackageLoaded(ref guid, out package), VSConstants.E_FAIL);
+            guid = guidPackage;
+            if (hr != VSConstants.S_OK) {
+                ErrorHandler.ThrowOnFailure(shell.LoadPackage(ref guid, out package), VSConstants.E_FAIL);
+            }
+
+            return package;
         }
     }
 }

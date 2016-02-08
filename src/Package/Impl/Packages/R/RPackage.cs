@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -42,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         ShowMatchingBrace = true, MatchBraces = true, MatchBracesAtCaret = true, ShowCompletion = true, EnableLineNumbers = true,
         EnableFormatSelection = true, DefaultToInsertSpaces = true, RequestStockColors = true)]
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
-    [DefaultIndentAttribute(RContentTypeDefinition.LanguageName, 2, true)]
+    [LanguageEditorOptionsAttribute(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
@@ -53,10 +54,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(HelpWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.PropertiesWindow)]
     [ProvideToolWindow(typeof(HistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideDebugEngine(RContentTypeDefinition.LanguageName, null, typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
-    [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, DebuggerGuids.LanguageGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString)]
+    [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, DebuggerGuids.LanguageGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString, DebuggerGuids.CustomViewerString)]
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
-    [ProvideDebugPortPicker(typeof(RDebugPortPicker))]
-    [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
+    [ProvideComClass(typeof(RDebugPortPicker))]
+    [ProvideComClass(typeof(AD7CustomViewer))]
+    [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
     [ProvideNewFileTemplatesAttribute(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
@@ -74,11 +76,16 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             Current = this;
             CranMirrorList.Download();
 
-            base.Initialize();
+            // Force app shell creation before everything else
+            var shell = VsAppShell.Current;
 
-            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage))) {
-                p.LoadSettingsFromStorage();
+            RtvsTelemetry.Initialize();
+
+            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p.LoadSettings();
             }
+
+            base.Initialize();
 
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
@@ -87,6 +94,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
             InitializeActiveWpfTextViewTracker();
+
+            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 
         protected override void Dispose(bool disposing) {
@@ -100,6 +109,13 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             LogCleanup.Cancel();
             ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
+
+            RtvsTelemetry.Current.Dispose();
+
+            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p.SaveSettings();
+            }
+
             base.Dispose(disposing);
         }
 

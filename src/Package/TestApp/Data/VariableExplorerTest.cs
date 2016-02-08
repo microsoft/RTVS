@@ -1,8 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Threading;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Xml.Serialization;
 using Microsoft.Common.Core.Test.Controls;
-using Microsoft.UnitTests.Core.Threading;
+using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -12,7 +15,7 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class VariableExplorerTest {
+    public class VariableExplorerTest : InteractiveTest {
         private readonly TestFilesFixture _files;
 
         public VariableExplorerTest(TestFilesFixture files) {
@@ -21,19 +24,10 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void VaraibleExplorer_ConstructorTest01() {
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
-                string actual = script.WriteVisualTree();
-                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer01");
-            }
-        }
-
-        [Test]
-        [Category.Interactive]
-        public void VaraibleExplorer_ConstructorTest02() {
+        public void VariableExplorer_ConstructorTest02() {
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
-                    string actual = script.WriteVisualTree();
+                    var actual = VisualTreeObject.Create(script.Control);
                     ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
                 }
             }
@@ -41,8 +35,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void VaraibleExplorer_SimpleDataTest() {
-            string actual = null;
+        public void VariableExplorer_SimpleDataTest() {
+            VisualTreeObject actual = null;
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
@@ -53,21 +47,10 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     }).Wait();
 
                     DoIdle(2000);
-                    actual = script.WriteVisualTree();
+                    actual = VisualTreeObject.Create(script.Control);
                 }
             }
             ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer03");
-        }
-
-        private static void DoIdle(int ms) {
-            UIThreadHelper.Instance.Invoke(() => {
-                int time = 0;
-                while (time < ms) {
-                    IdleTime.DoIdle();
-                    Thread.Sleep(20);
-                    time += 20;
-                }
-            });
         }
     }
 }
