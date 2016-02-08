@@ -10,7 +10,7 @@ namespace Microsoft.R.Actions.Test.Installation {
         public string Name { get; }
 
         public RegistryKeyMock(string name) : this(name, new RegistryKeyMock[0]) { }
-        public RegistryKeyMock(string name, RegistryKeyMock[] subkeys) : this(name, subkeys, new string[0], new string[0]) { }
+        public RegistryKeyMock(string name, params RegistryKeyMock[] subkeys) : this(name, subkeys, new string[0], new string[0]) { }
         public RegistryKeyMock(string name, RegistryKeyMock[] subkeys, string[] valueNames, string[] values) {
             Name = name;
             _subkeys = subkeys;
