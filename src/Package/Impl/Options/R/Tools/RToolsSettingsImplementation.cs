@@ -53,8 +53,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return _workingDirectory; }
             set {
                 var newDirectory = value;
-                // Trim trailing slash
-                if (newDirectory.EndsWith("\\")) {
+                // Trim trailing slash except if it is root
+                if (newDirectory.EndsWith("\\") && !(newDirectory.Length > 1 && newDirectory[newDirectory.Length-2] == ':')) {
                     newDirectory = newDirectory.Substring(0, newDirectory.Length - 1);
                 }
 
