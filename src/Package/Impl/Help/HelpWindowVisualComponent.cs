@@ -32,7 +32,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// </summary>
         private ContentControl _windowContentControl;
         private IRSession _session;
-        private Thread _creatorThread;
         private WindowsFormsHost _host;
         private Color? _lastDefaultBackground;
 
@@ -42,7 +41,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             _windowContentControl = new System.Windows.Controls.ContentControl();
             this.Control = _windowContentControl;
-            _creatorThread = Thread.CurrentThread;
 
             var c = new Controller();
             c.AddCommandSet(GetCommands());
@@ -83,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            Dispatcher.FromThread(_creatorThread).InvokeAsync(() => {
+            VsAppShell.Current.DispatchOnUIThread(() => {
                 CloseBrowser();
             });
         }

@@ -62,9 +62,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                     // Global scope
                     return _topLevelVariables.Values
-                        .Select(m => !m.IsHidden ? new VariableInfo(m) : null)
-                        .Where(x => x != null)
+                        .Where(x => !x.IsHidden)
                         .Take(maxCount)
+                        .Select(m => new VariableInfo(m))
                         .ToArray();
                 }
 
@@ -98,9 +98,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
                         if (children != null) {
                             return children
-                                    .Select(m => !m.IsHidden ? new VariableInfo(m) : null)
-                                    .Where(x => x != null)
+                                    .Where(x => !x.IsHidden)
                                     .Take(maxCount)
+                                    .Select(m => new VariableInfo(m))
                                     .ToArray();
                         }
                     }

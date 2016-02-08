@@ -16,12 +16,12 @@ using Microsoft.VisualStudioTools;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command, IDisposable {
-         private IRSession _session;
+        private IRSession _session;
 
         public Task InitializationTask { get; }
 
         public WorkingDirectoryCommand() :
-            base(new [] {
+            base(new[] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGetDirectoryList),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory)
@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private async Task FetchRWorkingDirectoryAsync() {
-            if(UserDirectory ==  null) {
+            if (UserDirectory == null) {
                 await GetRUserDirectoryAsync();
             }
 
