@@ -34,7 +34,7 @@ z <- x + y";
                     using (var sf = new SourceFile(code)) {
                         await debugSession.EnableBreakpointsAsync(true);
 
-                        var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 1));
+                        var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 5));
                         var bpHit = new TaskCompletionSource<bool>();
                         bp.BreakpointHit += (s, e) => {
                             bpHit.SetResult(true);
@@ -45,14 +45,14 @@ z <- x + y";
 
                         var stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
                         stackFrames.Should().NotBeEmpty();
-                        stackFrames[0].LineNumber.Should().Be(1);
+                        stackFrames[0].LineNumber.Should().Be(5);
 
                         bool stepCompleted = await debugSession.StepOverAsync();
                         stepCompleted.Should().Be(true);
 
                         stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
                         stackFrames.Should().NotBeEmpty();
-                        stackFrames[0].LineNumber.Should().Be(2);
+                        stackFrames[0].LineNumber.Should().Be(6);
                     }
                 }
             }
