@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     public class CurrentDirectoryTest {
         [Test]
         [Category.Repl]
-        public void CurrentDirectoryTest_DefaultDirectoryTest() {
+        public void DefaultDirectoryTest() {
             string myDocs = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             string actual;
             using (new VsRHostScript()) {
@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [Test]
         [Category.Repl]
-        public void CurrentDirectoryTest_SetDirectoryTest() {
+        public void SetDirectoryTest() {
             string dir = "c:\\";
             string actual;
             using (new VsRHostScript()) {
@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [Test]
         [Category.Repl]
-        public void CurrentDirectoryTest_GetFriendlyNameTest() {
+        public void GetFriendlyNameTest01() {
             string actual;
             using (new VsRHostScript()) {
                 WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
@@ -55,7 +55,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [Test]
         [Category.Repl]
-        public void CurrentDirectoryTest_GetFullPathNameTest() {
+        public void GetFriendlyNameTest02() {
+            string actual;
+            using (new VsRHostScript()) {
+                WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
+                cmd.InitializationTask.Wait();
+                actual = cmd.GetFriendlyDirectoryName("c:\\");
+            };
+
+            actual.Should().Be("c:/");
+        }
+
+        [Test]
+        [Category.Repl]
+        public void GetFullPathNameTest() {
             string dir;
             using (new VsRHostScript()) {
                 WorkingDirectoryCommand cmd = new WorkingDirectoryCommand();
