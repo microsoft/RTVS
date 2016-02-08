@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                     VsAppShell.Current.ShowErrorMessage(message);
                     if (data.Status == RInstallStatus.PathNotSpecified || data.Status == RInstallStatus.UnsupportedVersion) {
                         if (!string.IsNullOrEmpty(path)) {
-                            // If path is in Tools | Opions and yet we can't find proper R
+                            // If path is in Tools | Options and yet we can't find proper R
                             // we need to clear this setting.
                             RToolsSettings.Current.RBasePath = null;
                         }

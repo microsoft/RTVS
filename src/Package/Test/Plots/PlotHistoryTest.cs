@@ -10,9 +10,11 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Plots {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class PlotHistoryTest {
         private static string[] _commands = new string[] {
             "plot(AirPassengers)",

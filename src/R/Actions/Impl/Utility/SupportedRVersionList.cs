@@ -9,9 +9,11 @@ namespace Microsoft.R.Actions.Utility {
         public const int MaxMajorVersion = 3;
         public const int MaxMinorVersion = 2;
 
+        public static readonly Version MinVersion = new Version(MinMajorVersion, MinMinorVersion);
+        public static readonly Version MaxVersion = new Version(MaxMajorVersion, MaxMinorVersion);
+
         public static bool IsCompatibleVersion(Version v) {
-            return v.Major >= MinMajorVersion && v.Minor >= MinMinorVersion &&
-                   v.Major <= MaxMajorVersion && v.Minor <= MaxMinorVersion;
+            return v >= MinVersion && v <= MaxVersion;
         }
     }
 }
