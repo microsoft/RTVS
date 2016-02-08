@@ -87,7 +87,7 @@ namespace Microsoft.R.Host.Client.Session {
 @"utils::assignInNamespace('setwd', function(dir) {
     old <- .Internal(setwd(dir))
     invisible(.Call('Microsoft.R.Host::Call.send_message', '~/', rtvs:::toJSON(dir)))
-    old
+    invisible(old)
   }, 'base')";
             return evaluation.EvaluateAsync(script);
         }
