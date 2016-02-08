@@ -82,6 +82,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CodeCoverage.runsettings = CodeCoverage.runsettings
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VSIntegrationTests", "UnitTests\Microsoft.VSIntegrationTests\Microsoft.VSIntegrationTests.csproj", "{2BBB937B-EFD3-48AA-BEF8-05E203589D24}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetupCustomActions", "SetupCustomActions\SetupCustomActions.csproj", "{F2149709-A88B-4F36-ABCA-307CA96E9FD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Debugger.Test", "Debugger\Test\Microsoft.R.Debugger.Test.csproj", "{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD}"
