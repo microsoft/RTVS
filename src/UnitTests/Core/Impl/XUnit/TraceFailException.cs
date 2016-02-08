@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.UnitTests.Core.XUnit
 {
+    [ExcludeFromCodeCoverage]
     public class TraceFailException : Exception
     {
         public TraceFailException(string message)

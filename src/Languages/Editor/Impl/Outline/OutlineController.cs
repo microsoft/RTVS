@@ -100,20 +100,22 @@ namespace Microsoft.Languages.Editor.Outline {
 
         #region ICommandTarget
         public CommandStatus Status(Guid group, int id) {
-            if (group == VSConstants.VSStd2K) {
-                switch ((VSConstants.VSStd2KCmdID)id) {
-                    case VSConstants.VSStd2KCmdID.OUTLN_START_AUTOHIDING:
-                        return OutliningManager.Enabled ? CommandStatus.Supported : CommandStatus.SupportedAndEnabled;
+            if (OutliningManager != null) {
+                if (group == VSConstants.VSStd2K) {
+                    switch ((VSConstants.VSStd2KCmdID)id) {
+                        case VSConstants.VSStd2KCmdID.OUTLN_START_AUTOHIDING:
+                            return OutliningManager.Enabled ? CommandStatus.Supported : CommandStatus.SupportedAndEnabled;
 
-                    case VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL:
-                        return OutliningManager.Enabled ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
+                        case VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL:
+                            return OutliningManager.Enabled ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
 
-                    case VSConstants.VSStd2KCmdID.OUTLN_STOP_HIDING_ALL:
-                    case VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_CURRENT:
-                        return OutliningManager.Enabled ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
+                        case VSConstants.VSStd2KCmdID.OUTLN_STOP_HIDING_ALL:
+                        case VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_CURRENT:
+                            return OutliningManager.Enabled ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
 
-                    case VSConstants.VSStd2KCmdID.OUTLN_COLLAPSE_TO_DEF:
-                        return CommandStatus.Invisible;
+                        case VSConstants.VSStd2KCmdID.OUTLN_COLLAPSE_TO_DEF:
+                            return CommandStatus.Invisible;
+                    }
                 }
             }
 

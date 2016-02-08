@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseExpressionsTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    public class ParseExpressionsTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseExpressions01() {
             string expected =
 @"GlobalScope  [Global]
@@ -40,8 +38,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, @"a <-(grepl('^check', install) || R_check_use_install_log)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseListExpression01() {
             string expected =
 @"GlobalScope  [Global]
@@ -61,8 +59,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, @"fitted.zeros <- xzero * z$coefficients");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseExpressionSequence01() {
             string expected =
 @"GlobalScope  [Global]
@@ -93,8 +91,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, content);
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseExpressionSequence02() {
             string expected =
 @"GlobalScope  [Global]
@@ -132,8 +130,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, content);
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseExpressionSequence03() {
             string expected =
 @"GlobalScope  [Global]

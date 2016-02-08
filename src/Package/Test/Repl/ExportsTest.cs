@@ -1,34 +1,46 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Host.Client;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.History;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class ExportsTest {
-        [TestMethod]
-        [TestCategory("Repl")]
+        [Test]
+        [Category.Repl]
         public void FileSystem_ExportTest() {
             Lazy<IFileSystem> lazy = VsAppShell.Current.ExportProvider.GetExport<IFileSystem>();
-            Assert.IsNotNull(lazy.Value);
+            lazy.Should().NotBeNull();
+            lazy.Value.Should().NotBeNull();
         }
 
-        [TestMethod]
-        [TestCategory("Repl")]
+        [Test]
+        [Category.Repl]
         public void RSessionProvider_ExportTest() {
             Lazy<IRSessionProvider> lazy = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>();
-            Assert.IsNotNull(lazy.Value);
+            lazy.Should().NotBeNull();
+            lazy.Value.Should().NotBeNull();
         }
 
-        [TestMethod]
-        [TestCategory("Repl")]
-        public void ReplHistoryProvider_ExportTest() {
+        [Test]
+        [Category.Repl]
+        public void RHistoryProvider_ExportTest() {
             Lazy<IRHistoryProvider> provider = VsAppShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
-            Assert.IsNotNull(provider.Value);
+            provider.Should().NotBeNull();
+            provider.Value.Should().NotBeNull();
+        }
+
+        [Test]
+        [Category.Repl]
+        public void RInteractiveProvider_ExportTest() {
+            var provider = VsAppShell.Current.ExportProvider.GetExport<IRInteractiveProvider>();
+            provider.Should().NotBeNull();
+            provider.Value.Should().NotBeNull();
         }
     }
 }

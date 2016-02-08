@@ -83,13 +83,6 @@ namespace Microsoft.Languages.Editor.EditorHelpers {
             return document;
         }
 
-        public static bool IsFileName(this ITextBuffer textBuffer, string desiredFileName) {
-            string filePath = textBuffer.GetFileName();
-            string fileName = Path.GetFileName(filePath);
-
-            return fileName == null ? false : String.Equals(fileName, desiredFileName, StringComparison.OrdinalIgnoreCase);
-        }
-
         /// <summary>
         /// Converts stream buffer position to line and column.
         /// </summary>
@@ -134,59 +127,32 @@ namespace Microsoft.Languages.Editor.EditorHelpers {
             return null;
         }
 
-        /// <summary>
-        /// Converts text range positions to line and column coordinates.
-        /// </summary>
-        /// <returns>True if position was successfully converted</returns>
-        public static bool GetLineColumnFromTextRange(this ITextBuffer textBuffer, ITextRange range,
-                                                      out int startLine, out int startColumn,
-                                                      out int endLine, out int endColumn) {
-            startLine = endLine = 0;
-            startColumn = endColumn = 0;
-
-            if (GetLineColumnFromPosition(textBuffer, range.Start, out startLine, out startColumn)) {
-                return GetLineColumnFromPosition(textBuffer, range.End, out endLine, out endColumn);
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Converts line and column positions to a stream buffer range.
-        /// </summary>
-        /// <returns>Text range position or null if conversion failed</returns>
-        public static ITextRange GetTextRangeFromLineColumn(this ITextBuffer textBuffer,
-                                                            int startLine, int startColumn,
-                                                            int endLine, int endColumn) {
-            var start = GetPositionFromLineColumn(textBuffer, startLine, startColumn);
-            if (start.HasValue) {
-                var end = GetPositionFromLineColumn(textBuffer, endLine, endColumn);
-                if (end.HasValue)
-                    return TextRange.FromBounds(start.Value, end.Value);
-            }
-
-            return null;
-        }
-
-        public static bool ArePositionsOnTheSameLine(this ITextBuffer textBuffer, int position1, int position2) {
-            int lineNumber1 = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position1);
-            int lineNumber2 = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position2);
-            return lineNumber1 == lineNumber2;
-        }
-
-        public static bool IsPositionOnLineNumber(this ITextBuffer textBuffer, int position, int lineNumber) {
-            int positionLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
-            return positionLineNumber == lineNumber;
-        }
-
         public static bool IsSignatureHelpBuffer(this ITextBuffer textBuffer) {
             return textBuffer.ContentType.TypeName.EndsWithIgnoreCase(" Signature Help");
         }
 
-        public static string GetLineBreakText(this ITextBuffer textBuffer) {
-            return (textBuffer.CurrentSnapshot.LineCount > 0)
-                ? textBuffer.CurrentSnapshot.GetLineFromLineNumber(0).GetLineBreakText()
-                : "\r\n";
+        public static bool IsContentEqualsOrdinal(this ITextBuffer textBuffer, ITrackingSpan span1, ITrackingSpan span2) {
+            var snapshot = textBuffer.CurrentSnapshot;
+            var snapshotSpan1 = span1.GetSpan(snapshot);
+            var snapshotSpan2 = span2.GetSpan(snapshot);
+
+            if (snapshotSpan1 == snapshotSpan2) {
+                return true;
+            }
+
+            if (snapshotSpan1.Length != snapshotSpan2.Length) {
+                return false;
+            }
+
+            var start1 = snapshotSpan1.Start;
+            var start2 = snapshotSpan2.Start;
+            for (int i = 0; i < snapshotSpan1.Length; i++) {
+                if (snapshot[start1 + i] != snapshot[start2 + i]) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, Action<ITextBuffer> callback) {

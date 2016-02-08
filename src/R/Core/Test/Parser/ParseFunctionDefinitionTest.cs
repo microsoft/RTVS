@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseFunctionDefinitionTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    public class ParseFunctionDefinitionTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionDefinitionTest01() {
             string expected =
 @"GlobalScope  [Global]
@@ -42,8 +40,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "x <- function(a) { return(1) }");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionDefinitionTest02() {
             string expected =
 @"GlobalScope  [Global]
@@ -75,8 +73,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "x <- function(a) return(1)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionDefinitionTest03() {
             string expected =
 @"GlobalScope  [Global]
@@ -111,8 +109,8 @@ OperatorExpected Token [21...22)
             ParserTest.VerifyParse(expected, "x <- function(a b, c d, e) { }");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionDefinitionTest04() {
             string expected =
 @"GlobalScope  [Global]
@@ -138,8 +136,8 @@ OperatorExpected Token [16...17)
             ParserTest.VerifyParse(expected, "x <- function(a b) { }");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionDefinitionTest05() {
             string expected =
 @"GlobalScope  [Global]
@@ -171,8 +169,8 @@ OperatorExpected Token [16...17)
             ParserTest.VerifyParse(expected, "x <- function(a, b) a + b");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionDefinitionTest06() {
             string expected =
 @"GlobalScope  [Global]
@@ -199,8 +197,8 @@ OperatorExpected Token [16...17)
             ParserTest.VerifyParse(expected, "x <- function(a) -a");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionDefinitionTest07() {
             string expected =
 @"GlobalScope  [Global]
@@ -219,8 +217,8 @@ OperatorExpected Token [16...17)
             ParserTest.VerifyParse(expected, "function(a) {}");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseFunctionDefinitionTest08() {
             string expected =
 @"GlobalScope  [Global]

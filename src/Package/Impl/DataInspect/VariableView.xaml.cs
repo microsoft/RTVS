@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
-using System.Windows.Threading;
-using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
+using Microsoft.R.Editor.Data;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public partial class VariableView : UserControl {
+    public partial class VariableView : UserControl, IDisposable {
         ObservableTreeNode _rootNode;
 
         public VariableView() {
@@ -22,6 +23,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             VariableProvider.Current.VariableChanged += VariableProvider_VariableChanged;
 
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
+        }
+
+        public void Dispose() {
+            // Used in tests only
+            VariableProvider.Current.VariableChanged -= VariableProvider_VariableChanged;
+            RootTreeGrid.Sorting -= RootTreeGrid_Sorting;
+            VariableProvider.Current.Dispose();
         }
 
         private void RootTreeGrid_Sorting(object sender, DataGridSortingEventArgs e) {
@@ -41,15 +49,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void VariableChanged(EvaluationWrapper variable) {
-            ThreadHelper.Generic.BeginInvoke(
-                DispatcherPriority.Normal,
+            VsAppShell.Current.DispatchOnUIThread(
                 () => {
                     EnvironmentName.Text = variable.Name;
                     _rootNode.Model = new VariableNode(variable);
                 });
         }
 
-        private void SetRootNode(EvaluationWrapper evaluation) {
+        private void SetRootNode(IRSessionDataObject evaluation) {
             _rootNode = new ObservableTreeNode(
                 new VariableNode(evaluation),
                 Comparer<ITreeNode>.Create(Comparison));

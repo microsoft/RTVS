@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Permissions;
 using Microsoft.Common.Core.Disposables;
 
 namespace Microsoft.UnitTests.Core.XUnit
 {
+    [ExcludeFromCodeCoverage]
     [HostProtection(Synchronization = true)]
     internal class TestTraceListener : TraceListener
     {

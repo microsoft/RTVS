@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using NSubstitute;
 
 namespace Microsoft.UnitTests.Core.NSubstitute
 {
+    [ExcludeFromCodeCoverage]
     public static class SubstituteHelper
     {
         public static Tuple<T1, T2> For<T1, T2>(params object[] constructorArguments)

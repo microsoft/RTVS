@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.ReflectionModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
 namespace Microsoft.UnitTests.Core.NSubstitute.Mef
 {
+    [ExcludeFromCodeCoverage]
     public class FactoryReflectionComposablePart : ComposablePart
     {
         private readonly ComposablePartDefinition _composablePartDefinition;

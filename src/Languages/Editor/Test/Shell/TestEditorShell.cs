@@ -3,7 +3,6 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
@@ -13,11 +12,11 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     [ExcludeFromCodeCoverage]
-    sealed class TestEditorShell : IEditorShell {
+    internal sealed class TestEditorShell : TestShellBase, IEditorShell {
         private static TestEditorShell _instance;
         private static readonly object _lock = new object();
 
-        public TestEditorShell(ICompositionCatalog catalog) {
+        private TestEditorShell(ICompositionCatalog catalog) {
             CompositionService = catalog.CompositionService;
             ExportProvider = catalog.ExportProvider;
             MainThread = Thread.CurrentThread;
@@ -43,44 +42,15 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         #endregion
 
         #region ICoreShell
-        public Thread MainThread { get; set; }
-        public void ShowErrorMessage(string msg) { }
-
         /// <summary>
         /// Displays error message in a host-specific UI
         /// </summary>
-        public MessageButtons ShowMessage(string message, MessageButtons buttons) {
-            return MessageButtons.OK;
-        }
         public T GetGlobalService<T>(Type type = null) where T : class {
             throw new NotImplementedException();
         }
 
-        public void DoIdle() {
-            if (Idle != null) {
-                Idle(null, EventArgs.Empty);
-            }
-        }
-
-        public void DispatchOnUIThread(Action action) {
-            if (!MainThread.IsBackground) {
-                var disp = Dispatcher.FromThread(MainThread);
-                if (disp != null) {
-                    disp.BeginInvoke(action, DispatcherPriority.Normal);
-                    return;
-                }
-            }
-            action();
-        }
-
-        public int LocaleId => 1033;
         public bool IsUnitTestEnvironment { get; set; } = true;
         public bool IsUITestEnvironment { get; set; } = false;
-
-        public event EventHandler<EventArgs> Idle;
-#pragma warning disable 0067
-        public event EventHandler<EventArgs> Terminating;
-#pragma warning restore 0067
         #endregion
 
         #region IEditorShell

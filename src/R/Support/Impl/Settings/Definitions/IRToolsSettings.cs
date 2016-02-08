@@ -2,8 +2,6 @@
 
 namespace Microsoft.R.Support.Settings.Definitions {
     public interface IRToolsSettings {
-        void LoadFromStorage();
-
         /// <summary>
         /// Path to 64-bit R installation such as 
         /// 'C:\Program Files\R\R-3.2.2' without bin\x64
@@ -20,6 +18,7 @@ namespace Microsoft.R.Support.Settings.Definitions {
 
         bool AlwaysSaveHistory { get; set; }
         bool ClearFilterOnAddHistory { get; set; }
+        bool MultilineHistorySelection { get; set; }
 
         /// <summary>
         /// Current working directory for REPL
@@ -36,5 +35,12 @@ namespace Microsoft.R.Support.Settings.Definitions {
         /// to the R Host process
         /// </summary>
         string RCommandLineArguments { get; set; }
+
+        /// <summary>
+        /// Determines if R Tools should always be using external Web browser or
+        /// try and send Help pages to the Help window and other Web requests 
+        /// to the external default Web browser.
+        /// </summary>
+        HelpBrowserType HelpBrowser { get; set; }
     }
 }

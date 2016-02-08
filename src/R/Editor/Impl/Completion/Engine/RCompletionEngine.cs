@@ -54,7 +54,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             }
 
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
-                providers.Add(new WorkspaceVaraibleCompletionProvider());
+                providers.Add(new WorkspaceVariableCompletionProvider());
                 return providers;
             }
 
@@ -75,7 +75,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             }
 
             if (document != null && document.IsTransient) {
-                providers.Add(new WorkspaceVaraibleCompletionProvider());
+                providers.Add(new WorkspaceVariableCompletionProvider());
             }
 
             return providers;
@@ -90,7 +90,6 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 if (_completionProviders == null) {
                     _completionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany();
                 }
-
                 return _completionProviders;
             }
         }

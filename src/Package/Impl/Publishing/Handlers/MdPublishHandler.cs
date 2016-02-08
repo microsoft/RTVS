@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿#if _NOT_ACTIVE_
+using System.ComponentModel.Composition;
 using System.Globalization;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
@@ -40,3 +41,4 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
         }
     }
 }
+#endif

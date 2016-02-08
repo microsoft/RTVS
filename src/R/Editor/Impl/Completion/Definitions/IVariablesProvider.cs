@@ -9,6 +9,8 @@ namespace Microsoft.R.Editor.Completion.Definitions
     /// </summary>
     public interface IVariablesProvider
     {
+        void Initialize();
+
         /// <summary>
         /// Given variable name determines number of members
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if _NOT_USED_YET_
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Shell;
@@ -97,3 +98,4 @@ namespace Microsoft.R.Editor.Validation
         }
     }
 }
+#endif

@@ -4,6 +4,7 @@ using Microsoft.Common.Core.Enums;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -83,6 +84,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.ClearFilterOnAddHistory = value; }
         }
 
+        [LocCategory("Settings_HistoryCategory")]
+        [CustomLocDisplayName("Settings_MultilineHistorySelection")]
+        [LocDescription("Settings_MultilineHistorySelection_Description")]
+        [DefaultValue(false)]
+        public bool MultilineHistorySelection {
+            get { return RToolsSettings.Current.MultilineHistorySelection; }
+            set { RToolsSettings.Current.MultilineHistorySelection = value; }
+        }
+
         [LocCategory("Settings_GeneralCategory")]
         [CustomLocDisplayName("Settings_RBasePath")]
         [LocDescription("Settings_RBasePath_Description")]
@@ -98,6 +108,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                     RToolsSettings.Current.RBasePath = value;
                 }
             }
+        }
+
+        [LocCategory("Settings_GeneralCategory")]
+        [CustomLocDisplayName("Settings_HelpBrowser")]
+        [LocDescription("Settings_HelpBrowser_Description")]
+        [TypeConverter(typeof(HelpBrowserTypeConverter))]
+        [DefaultValue(HelpBrowserType.Automatic)]
+        public HelpBrowserType HelpBrowser {
+            get { return RToolsSettings.Current.HelpBrowser; }
+            set { RToolsSettings.Current.HelpBrowser = value; }
         }
 
         /// <summary>

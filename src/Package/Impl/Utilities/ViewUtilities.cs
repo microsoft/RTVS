@@ -3,9 +3,13 @@ using System.Runtime.InteropServices;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Workspace;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
@@ -36,16 +40,6 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return null;
         }
 
-        public static int ViewColumnFromString(IContentType contentType, string str) {
-            if (String.IsNullOrEmpty(str))
-                return 0;
-
-            var settings = EditorShell.GetSettings(contentType.DisplayName);
-            var tabSize = settings.GetInteger(CommonSettings.FormatterTabSizeKey, 4);
-
-            return TextHelper.ConvertTabsToSpaces(str, tabSize).Length;
-        }
-
         public static ITextView ActiveTextView {
             get {
                 IVsTextView vsTextView = null;
@@ -53,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
                 IVsTextManager2 textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
 
-                if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)(_VIEWFRAMETYPE.vftCodeWindow | _VIEWFRAMETYPE.vftToolWindow), out vsTextView))) {
+                if (ErrorHandler.Succeeded(textManager.GetActiveView2(0, null, (uint)(_VIEWFRAMETYPE.vftCodeWindow), out vsTextView))) {
                     activeTextView = AdaptersFactoryService.GetWpfTextView(vsTextView);
                 }
 
@@ -98,6 +92,23 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 windowFrame.GetProperty((int)propid, out result);
 
             return result != null;
+        }
+
+        public static void SaveFile(this ITextView textView) {
+            RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
+            string filePath = VsFileInfo.GetFileName(textView);
+            rdt.SaveFileIfDirty(filePath);
+        }
+
+        public static void SourceActiveFile() {
+            var activeView = ViewUtilities.ActiveTextView;
+            if (activeView != null) {
+                var controller = RMainController.FromTextView(activeView);
+                if (controller != null) {
+                    object o = null;
+                    controller.Invoke(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript, null, ref o);
+                }
+            }
         }
     }
 }

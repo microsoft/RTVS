@@ -26,9 +26,9 @@ namespace Microsoft.R.Debugger.Engine.PortSupplier {
 
             public string Name => $"R session {_sessionId}";
 
-            public DebugProcess(DebugPort port, int sessionId, IRSession session) {
+            public DebugProcess(DebugPort port, IRSession session) {
                 _port = port;
-                _sessionId = sessionId;
+                _sessionId = session.Id;
                 Session = session;
             }
 

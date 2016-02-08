@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
-using Microsoft.R.Support.Settings;
 using Task = System.Threading.Tasks.Task;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
-        private static string DefaultPrompt = "> ";
-        private static bool useReparentPlot = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_NEW_GFX"));
+        private readonly static string DefaultPrompt = "> ";
+        private readonly static Task<IRSessionEvaluation> CanceledEvaluationTask;
+        private readonly static Task<IRSessionInteraction> CanceledInteractionTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
@@ -25,6 +28,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<EventArgs> Connected;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
+        public event EventHandler<EventArgs> DirectoryChanged;
 
         /// <summary>
         /// ReadConsole requires a task even if there are no pending requests
@@ -34,33 +38,54 @@ namespace Microsoft.R.Host.Client.Session {
         private Task _hostRunTask;
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
-        private IRHostClientApp _hostClientApp;
+        private readonly IRHostClientApp _hostClientApp;
+        private readonly Action _onDispose;
+        private volatile bool _isHostRunning;
 
         public int Id { get; }
         public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
-        public bool IsHostRunning => _hostRunTask != null && !_hostRunTask.IsCompleted;
+        public bool IsHostRunning => _isHostRunning;
 
-        public RSession(int id, IRHostClientApp hostClientApp) {
+        static RSession() {
+            var tcs = new CancellationTokenSource();
+            tcs.Cancel();
+            CanceledEvaluationTask = Task.FromCanceled<IRSessionEvaluation>(tcs.Token);
+            CanceledInteractionTask = Task.FromCanceled<IRSessionInteraction>(tcs.Token);
+        }
+
+        public RSession(int id, IRHostClientApp hostClientApp, Action onDispose) {
             Id = id;
             _hostClientApp = hostClientApp;
+            _onDispose = onDispose;
         }
 
         public void Dispose() {
             _host?.Dispose();
             Disposed?.Invoke(this, EventArgs.Empty);
+            _onDispose();
         }
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true) {
+            if (!_isHostRunning) {
+                return CanceledInteractionTask;
+            }
+
             RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, _contexts);
             _pendingRequestSources.Post(requestSource);
-            return requestSource.CreateRequestTask;
+
+            return _isHostRunning ? requestSource.CreateRequestTask : CanceledInteractionTask;
         }
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true) {
+            if (!_isHostRunning) {
+                return CanceledEvaluationTask;
+            }
+
             var source = new RSessionEvaluationSource(isMutating);
             _pendingEvaluationSources.Post(source);
-            return source.Task;
+
+            return _isHostRunning ? source.Task : CanceledEvaluationTask;
         }
 
         public async Task CancelAllAsync() {
@@ -73,40 +98,26 @@ namespace Microsoft.R.Host.Client.Session {
             await cancelTask;
         }
 
-        public async Task StartHostAsync(IntPtr plotWindowHandle) {
+        public async Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000) {
             if (_hostRunTask != null && !_hostRunTask.IsCompleted) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
 
-            _host = new RHost(this);
+            _host = new RHost(startupInfo.Name, this);
             _initializationTcs = new TaskCompletionSource<object>();
+            ClearPendingRequests();
 
-            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath), useReparentPlot ? plotWindowHandle : IntPtr.Zero, RToolsSettings.Current);
-            this.ScheduleEvaluation(async e => {
-                await e.SetDefaultWorkingDirectory();
-                await e.SetRdHelpExtraction();
-
-                if (_hostClientApp != null) {
-                    if (!useReparentPlot) {
-                        await e.SetVsGraphicsDevice();
-                    }
-
-                    string mirrorName = RToolsSettings.Current.CranMirror;
-                    string mirrorUrl = _hostClientApp.CranUrlFromName(mirrorName);
-                    await e.SetVsCranSelection(mirrorUrl);
-
-                    await e.SetVsHelpRedirection();
-                }
-            });
+            _hostRunTask = _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments, timeout);
+            ScheduleAfterHostStarted(startupInfo);
 
             var initializationTask = _initializationTcs.Task;
             await Task.WhenAny(initializationTask, _hostRunTask).Unwrap();
         }
 
         public async Task StopHostAsync() {
-            if (_hostRunTask.IsCompleted) {
+            if (_hostRunTask == null || _hostRunTask.IsCompleted) {
                 return;
             }
 
@@ -149,12 +160,51 @@ namespace Microsoft.R.Host.Client.Session {
             await _hostRunTask;
         }
 
+        private void ScheduleAfterHostStarted(RHostStartupInfo startupInfo) {
+            var afterHostStartedEvaluationSource = new RSessionEvaluationSource(true);
+            _pendingEvaluationSources.Post(afterHostStartedEvaluationSource);
+            AfterHostStarted(afterHostStartedEvaluationSource, startupInfo).DoNotWait();
+        }
+
+        private async Task AfterHostStarted(RSessionEvaluationSource evaluationSource, RHostStartupInfo startupInfo) {
+            using (var evaluation = await evaluationSource.Task) {
+                // Load RTVS R package before doing anything in R since the calls
+                // below calls may depend on functions exposed from the RTVS package
+                await LoadRtvsPackage(evaluation);
+
+                await evaluation.SetDefaultWorkingDirectory();
+                await evaluation.SetRdHelpExtraction();
+
+                if (_hostClientApp != null) {
+                    await evaluation.SetVsGraphicsDevice();
+
+                    string mirrorUrl = _hostClientApp.CranUrlFromName(startupInfo.CranMirrorName);
+                    await evaluation.SetVsCranSelection(mirrorUrl);
+
+                    await evaluation.SetVsHelpRedirection();
+                    await evaluation.SetChangeDirectoryRedirection();
+                }
+            }
+        }
+
+        private static async Task LoadRtvsPackage(IRSessionEvaluation eval) {
+            var libPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+            var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
+
+            if (res.ParseStatus != RParseStatus.OK) {
+                throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);
+            } else if (res.Error != null) {
+                throw new InvalidDataException("Failed to execute loadNamespace('rtvs'): " + res.Error);
+            }
+        }
+
         public void FlushLog() {
             _host?.FlushLog();
         }
 
         Task IRCallbacks.Connected(string rVersion) {
             Prompt = DefaultPrompt;
+            _isHostRunning = true;
             _initializationTcs.SetResult(null);
             Connected?.Invoke(this, EventArgs.Empty);
             Mutated?.Invoke(this, EventArgs.Empty);
@@ -162,6 +212,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         Task IRCallbacks.Disconnected() {
+            _isHostRunning = false;
             Disconnected?.Invoke(this, EventArgs.Empty);
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
@@ -186,6 +237,7 @@ namespace Microsoft.R.Host.Client.Session {
             _contexts = null;
             Prompt = string.Empty;
         }
+
         async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -331,11 +383,11 @@ namespace Microsoft.R.Host.Client.Session {
             MessageButtons buttons = await ((IRCallbacks)this).ShowDialog(contexts, s, isEvaluationAllowed, MessageButtons.YesNoCancel, ct);
             switch (buttons) {
                 case MessageButtons.No:
-                    return Microsoft.R.Host.Client.YesNoCancel.No;
+                    return Client.YesNoCancel.No;
                 case MessageButtons.Cancel:
-                    return Microsoft.R.Host.Client.YesNoCancel.Cancel;
+                    return Client.YesNoCancel.Cancel;
             }
-            return Microsoft.R.Host.Client.YesNoCancel.Yes;
+            return Client.YesNoCancel.Yes;
         }
 
         /// <summary>
@@ -352,7 +404,11 @@ namespace Microsoft.R.Host.Client.Session {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
 
-            return await _hostClientApp?.ShowMessage(s, buttons);
+            if (_hostClientApp != null) {
+                return await _hostClientApp.ShowMessage(s, buttons);
+            }
+
+            return MessageButtons.OK;
         }
 
         Task IRCallbacks.Busy(bool which, CancellationToken ct) {
@@ -372,20 +428,8 @@ namespace Microsoft.R.Host.Client.Session {
             return _hostClientApp?.ShowHelp(url);
         }
 
-        private void OnBeforeRequest(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
-            var handlers = BeforeRequest;
-            if (handlers != null) {
-                var args = new RRequestEventArgs(contexts, prompt, maxLength, addToHistory);
-                handlers(this, args);
-            }
-        }
-
-        private void OnAfterRequest(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistory) {
-            var handlers = AfterRequest;
-            if (handlers != null) {
-                var args = new RRequestEventArgs(contexts, prompt, maxLength, addToHistory);
-                handlers(this, args);
-            }
+        void IRCallbacks.DirectoryChanged() {
+            DirectoryChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

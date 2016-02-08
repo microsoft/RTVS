@@ -3,6 +3,10 @@
 namespace Microsoft.R.Support.Help.Definitions {
     public interface ISignatureInfo {
         /// <summary>
+        /// Function name
+        /// </summary>
+        string FunctionName { get; }
+        /// <summary>
         /// Function arguments
         /// </summary>
         IReadOnlyList<IArgumentInfo> Arguments { get; }
@@ -13,7 +17,7 @@ namespace Microsoft.R.Support.Help.Definitions {
         /// locus points (locations withing the string) for each function
         /// parameter.
         /// </summary>
-        string GetSignatureString(string functionName, List<int> locusPoints = null);
+        string GetSignatureString(List<int> locusPoints = null);
 
         /// <summary>
         /// Given argument name returns index of the argument in the signature.

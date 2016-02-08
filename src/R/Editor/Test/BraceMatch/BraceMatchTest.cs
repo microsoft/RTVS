@@ -1,15 +1,15 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Editor.BraceMatch;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Test.Text {
+namespace Microsoft.R.Editor.Test.BraceMatch {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Category.R.BraceMatch]
     public class RBraceMatchTest {
-        [TestMethod]
-        [TestCategory("R.BraceMatch")]
+        [Test]
         public void RBraceMatch_CurlyBraces01() {
             ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a{\"{ }\"}b");
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
@@ -18,97 +18,26 @@ namespace Microsoft.R.Editor.Test.Text {
             bool result;
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 0, false, out startPosition, out endPosition);
-            Assert.IsFalse(result);
+            result.Should().BeFalse();
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 1, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(1, startPosition);
-            Assert.AreEqual(7, endPosition);
+
+            result.Should().BeTrue();
+            startPosition.Should().Be(1);
+            endPosition.Should().Be(7);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 2, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(1, startPosition);
-            Assert.AreEqual(7, endPosition);
+
+            result.Should().BeTrue();
+            startPosition.Should().Be(1);
+            endPosition.Should().Be(7);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 3, false, out startPosition, out endPosition);
-            Assert.IsFalse(result);
+
+            result.Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("R.BraceMatch")]
-        public void RBraceMatch_CurlyBraces02() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{{\"{ }\"}}");
-            RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
-
-            int startPosition, endPosition;
-            bool result;
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 0, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(0, startPosition);
-            Assert.AreEqual(8, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 1, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(1, startPosition);
-            Assert.AreEqual(7, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 3, false, out startPosition, out endPosition);
-            Assert.IsFalse(result);
-        }
-
-        [TestMethod]
-        [TestCategory("R.BraceMatch")]
-        public void RBraceMatch_MixedBraces() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{a[[b()]]}");
-            RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
-
-            int startPosition, endPosition;
-            bool result;
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 0, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(0, startPosition);
-            Assert.AreEqual(9, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 2, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(2, startPosition);
-            Assert.AreEqual(8, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 3, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(3, startPosition);
-            Assert.AreEqual(7, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 5, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(5, startPosition);
-            Assert.AreEqual(6, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 6, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(5, startPosition);
-            Assert.AreEqual(6, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 7, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(3, startPosition);
-            Assert.AreEqual(7, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 8, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(2, startPosition);
-            Assert.AreEqual(8, endPosition);
-
-            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 9, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(0, startPosition);
-            Assert.AreEqual(9, endPosition);
-        }
-
-        [TestMethod]
-        [TestCategory("R.BraceMatch")]
+        [Test]
         public void RBraceMatch_Braces() {
             ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a(\"( )\")b");
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
@@ -117,20 +46,98 @@ namespace Microsoft.R.Editor.Test.Text {
             bool result;
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 0, false, out startPosition, out endPosition);
-            Assert.IsFalse(result);
+
+            result.Should().BeFalse();
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 1, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(1, startPosition);
-            Assert.AreEqual(7, endPosition);
+
+            result.Should().BeTrue();
+            startPosition.Should().Be(1);
+            endPosition.Should().Be(7);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 2, false, out startPosition, out endPosition);
-            Assert.IsTrue(result);
-            Assert.AreEqual(1, startPosition);
-            Assert.AreEqual(7, endPosition);
+
+            result.Should().BeTrue();
+            startPosition.Should().Be(1);
+            endPosition.Should().Be(7);
 
             result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 3, false, out startPosition, out endPosition);
-            Assert.IsFalse(result);
+
+            result.Should().BeFalse();
         }
+        [Test]
+        public void RBraceMatch_CurlyBraces02() {
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{{\"{ }\"}}");
+            RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
+
+            int startPosition, endPosition;
+            bool result;
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 0, false, out startPosition, out endPosition);
+
+            result.Should().BeTrue();
+            startPosition.Should().Be(0);
+            endPosition.Should().Be(8);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 1, false, out startPosition, out endPosition);
+
+            result.Should().BeTrue();
+            startPosition.Should().Be(1);
+            endPosition.Should().Be(7);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 3, false, out startPosition, out endPosition);
+
+            result.Should().BeFalse();
+        }
+
+        [Test]
+        public void RBraceMatch_MixedBraces() {
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{a[[b()]]}");
+            RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
+
+            int startPosition, endPosition;
+            bool result;
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 0, false, out startPosition, out endPosition);
+            result.Should().BeTrue();
+            startPosition.Should().Be(0);
+            endPosition.Should().Be(9);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 2, false, out startPosition, out endPosition);
+            result.Should().BeTrue();
+            startPosition.Should().Be(2);
+            endPosition.Should().Be(8);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 3, false, out startPosition, out endPosition);
+            result.Should().BeTrue();
+            startPosition.Should().Be(3);
+            endPosition.Should().Be(7);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 5, false, out startPosition, out endPosition);
+            result.Should().BeTrue();
+            startPosition.Should().Be(5);
+            endPosition.Should().Be(6);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 6, false, out startPosition, out endPosition);
+            result.Should().BeTrue();
+            startPosition.Should().Be(5);
+            endPosition.Should().Be(6);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 7, false, out startPosition, out endPosition);
+            result.Should().BeTrue();
+            startPosition.Should().Be(3);
+            endPosition.Should().Be(7);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 8, false, out startPosition, out endPosition);
+            result.Should().BeTrue();
+            startPosition.Should().Be(2);
+            endPosition.Should().Be(8);
+
+            result = bm.GetBracesFromPosition(tv.TextBuffer.CurrentSnapshot, 9, false, out startPosition, out endPosition);
+            result.Should().BeTrue();
+            startPosition.Should().Be(0);
+            endPosition.Should().Be(9);
+        }
+
     }
 }

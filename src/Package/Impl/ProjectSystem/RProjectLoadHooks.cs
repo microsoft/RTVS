@@ -8,7 +8,6 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
@@ -29,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
-        private readonly IRSessionProvider _sessionProvider;
+        private readonly IRSession _session;
         private readonly IRToolsSettings _toolsSettings;
         private readonly IFileSystem _fileSystem;
         private readonly IThreadHandling _threadHandling;
@@ -38,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         [ImportingConstructor]
         public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRSessionProvider sessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
             _unconfiguredProject = unconfiguredProject;
-            _sessionProvider = sessionProvider;
+            _session = sessionProvider.GetInteractiveWindowRSession();
             _toolsSettings = toolsSettings;
             _fileSystem = fileSystem;
             _threadHandling = threadHandling;
@@ -58,15 +57,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             // Force REPL window up
             await ReplWindow.EnsureReplWindow();
 
-            var currentSession = _sessionProvider.Current;
-            if (currentSession == null) {
+            if (!_session.IsHostRunning) {
                 return;
             }
 
             var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
             bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
 
-            using (var evaluation = await _sessionProvider.Current.BeginEvaluationAsync()) {
+            using (var evaluation = await _session.BeginEvaluationAsync()) {
                 if (loadDefaultWorkspace) {
                     await evaluation.LoadWorkspace(rdataPath);
                 }
@@ -74,25 +72,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 await evaluation.SetWorkingDirectory(_projectDirectory);
             }
 
-            RToolsSettings.Current.WorkingDirectory = _projectDirectory;
+            await _threadHandling.SwitchToUIThread();
+
+            _toolsSettings.WorkingDirectory = _projectDirectory;
             var history = GetRHistory();
-            if (history != null) {
-                await _threadHandling.SwitchToUIThread();
-                history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
-            }
+            history?.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
-            var currentSession = _sessionProvider.Current;
-            if (currentSession == null) {
+            if (!_session.IsHostRunning) {
                 return;
             }
 
             var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
             var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
 
-            using (var evaluation = await currentSession.BeginEvaluationAsync()) {
+            using (var evaluation = await _session.BeginEvaluationAsync()) {
                 if (saveDefaultWorkspace) {
                     await evaluation.SaveWorkspace(rdataPath);
                 }
@@ -100,11 +96,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
+                await _threadHandling.SwitchToUIThread();
                 var history = GetRHistory();
-                if (history != null) {
-                    await _threadHandling.SwitchToUIThread();
-                    history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
-                }
+                history?.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
             }
         }
 

@@ -1,87 +1,74 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Parser;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Support.Test.RD.Help {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class GetFunctionInfoTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void GetRdFunctionAliasesTest() {
-            string rdData = @"\alias{abs}\alias{sqrt}";
-            IFunctionInfo functionInfo = RdParser.GetFunctionInfo("abs", rdData);
+    public class GetFunctionInfoTest {
+        private readonly SupportTestFilesSetup _files;
 
-            Assert.IsNotNull(functionInfo);
-            Assert.AreEqual("abs", functionInfo.Name);
-
-            Assert.AreEqual(2, functionInfo.Aliases.Count);
-            Assert.AreEqual("abs", functionInfo.Aliases[0]);
-            Assert.AreEqual("sqrt", functionInfo.Aliases[1]);
+        public GetFunctionInfoTest(SupportTestFilesSetup files) {
+            _files = files;
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void GetRdFunctionDescriptionTest() {
-            string rdData = "\\description{\rA.  BC\r\n\t  EF}";
-            IFunctionInfo functionInfo = RdParser.GetFunctionInfo("abs", rdData);
-
-            Assert.IsNotNull(functionInfo);
-            Assert.AreEqual("A. BC EF", functionInfo.Description);
-        }
-
-        [TestMethod]
-        [TestCategory("R.Signatures")]
+        [Test]
+        [Category.R.Signatures]
         public void GetRdFunctionArgumentsTest01() {
-            string rdData = @"
+            string rdData = @"\alias{abind}
 \usage{
     abind(..., along=N, rev.along=NULL, new.names='abc', force.array=TRUE,
       make.names=use.anon.names, use.anon.names=1.75*(2/3),
       use.first.dimnames=FALSE, hier.names=FALSE, use.dnns=
       FALSE)
 }";
-            IFunctionInfo functionInfo = RdParser.GetFunctionInfo("abind", rdData);
-
-            Assert.IsNotNull(functionInfo);
-            Assert.AreEqual(1, functionInfo.Signatures.Count);
-            Assert.AreEqual(10, functionInfo.Signatures[0].Arguments.Count);
-
-            Assert.AreEqual("...", functionInfo.Signatures[0].Arguments[0].Name);
-
-            Assert.AreEqual("along", functionInfo.Signatures[0].Arguments[1].Name);
-            Assert.AreEqual("N", functionInfo.Signatures[0].Arguments[1].DefaultValue);
-
-            Assert.AreEqual("rev.along", functionInfo.Signatures[0].Arguments[2].Name);
-            Assert.AreEqual("NULL", functionInfo.Signatures[0].Arguments[2].DefaultValue);
-
-            Assert.AreEqual("new.names", functionInfo.Signatures[0].Arguments[3].Name);
-            Assert.AreEqual(@"'abc'", functionInfo.Signatures[0].Arguments[3].DefaultValue);
-
-            Assert.AreEqual("force.array", functionInfo.Signatures[0].Arguments[4].Name);
-            Assert.AreEqual("TRUE", functionInfo.Signatures[0].Arguments[4].DefaultValue);
-
-            Assert.AreEqual("make.names", functionInfo.Signatures[0].Arguments[5].Name);
-            Assert.AreEqual("use.anon.names", functionInfo.Signatures[0].Arguments[5].DefaultValue);
-
-            Assert.AreEqual("use.anon.names", functionInfo.Signatures[0].Arguments[6].Name);
-            Assert.AreEqual("1.75*(2/3)", functionInfo.Signatures[0].Arguments[6].DefaultValue);
-
-            Assert.AreEqual("use.first.dimnames", functionInfo.Signatures[0].Arguments[7].Name);
-            Assert.AreEqual("FALSE", functionInfo.Signatures[0].Arguments[7].DefaultValue);
-
-            Assert.AreEqual("hier.names", functionInfo.Signatures[0].Arguments[8].Name);
-            Assert.AreEqual("FALSE", functionInfo.Signatures[0].Arguments[8].DefaultValue);
-
-            Assert.AreEqual("use.dnns", functionInfo.Signatures[0].Arguments[9].Name);
-            Assert.AreEqual("FALSE", functionInfo.Signatures[0].Arguments[9].DefaultValue);
+            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
+            functionInfos.Should().ContainSingle()
+                .Which.Signatures.Should().ContainSingle()
+                .Which.Arguments.ShouldBeEquivalentTo(new [] {
+                    new { Name = "...", DefaultValue = (string)null },
+                    new { Name = "along", DefaultValue = "N" },
+                    new { Name = "rev.along", DefaultValue = "NULL" },
+                    new { Name = "new.names", DefaultValue = @"'abc'" },
+                    new { Name = "force.array", DefaultValue = "TRUE" },
+                    new { Name = "make.names", DefaultValue = "use.anon.names" },
+                    new { Name = "use.anon.names", DefaultValue = "1.75*(2/3)" },
+                    new { Name = "use.first.dimnames", DefaultValue = "FALSE" },
+                    new { Name = "hier.names", DefaultValue = "FALSE" },
+                    new { Name = "use.dnns", DefaultValue = "FALSE" },
+                }, o => o.ExcludingMissingMembers());
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void GetRdFunctionArgumentsDescriptionsTest01() {
+        [Test]
+        [Category.R.Signatures]
+        public void GetRdFunctionArgumentsTest02() {
             string rdData = @"
+\usage{
+matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE,
+       dimnames = NULL)
+
+as.matrix(x, \dots)
+\method{as.matrix}{data.frame}(x, rownames.force = NA, \dots)
+
+is.matrix(x)
+}";
+            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
+            functionInfos.Should().Equal(new[] {"matrix", "as.matrix", "is.matrix"}, (a, e) => a.Name == e)
+                .And.OnlyContain(fi => fi.Signatures.Count == 1, "there should be only one signature");
+
+            var arguments = functionInfos[0].Signatures[0].Arguments;
+            arguments.Should().HaveCount(5);
+            arguments[1].Name.Should().Be("nrow");
+            arguments[1].DefaultValue.Should().Be("1");
+        }
+
+        [Test]
+        [Category.R.Signatures]
+        public void GetRdFunctionArgumentsDescriptionsTest01() {
+            string rdData = @"\alias{abind}
 \usage {
     abind(..., along=N, rev.along=NULL, new.names='abc')
 }
@@ -92,45 +79,65 @@ namespace Microsoft.R.Support.Test.RD.Help {
   }
 }
 ";
-            IFunctionInfo functionInfo = RdParser.GetFunctionInfo("abind", rdData);
+            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
 
-            Assert.IsNotNull(functionInfo);
-            Assert.AreEqual(1, functionInfo.Signatures.Count);
-            Assert.AreEqual(4, functionInfo.Signatures[0].Arguments.Count);
-
-            Assert.AreEqual("...", functionInfo.Signatures[0].Arguments[0].Name);
-            Assert.AreEqual("Any number of vectors", functionInfo.Signatures[0].Arguments[0].Description);
-
-            Assert.AreEqual("along", functionInfo.Signatures[0].Arguments[1].Name);
-            Assert.AreEqual("(optional) The dimension along which to bind the arrays.", functionInfo.Signatures[0].Arguments[1].Description);
-
-            Assert.AreEqual("rev.along", functionInfo.Signatures[0].Arguments[2].Name);
-            Assert.AreEqual("", functionInfo.Signatures[0].Arguments[2].Description);
-
-            Assert.AreEqual("new.names", functionInfo.Signatures[0].Arguments[3].Name);
-            Assert.AreEqual("", functionInfo.Signatures[0].Arguments[3].Description);
+            functionInfos.Should().ContainSingle()
+                .Which.Signatures.Should().ContainSingle()
+                .Which.Arguments.ShouldBeEquivalentTo(new[] {
+                    new { Name = "...", Description = "Any number of vectors" },
+                    new { Name = "along", Description = "(optional) The dimension along which to bind the arrays." },
+                    new { Name = "rev.along", Description = string.Empty },
+                    new { Name = "new.names", Description = string.Empty }
+                }, o => o.ExcludingMissingMembers());
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
+        [Test]
+        [Category.R.Signatures]
         public void GetRdFunctionInfoTest01() {
-            string rdData = TestFiles.LoadFile(this.TestContext, @"Help\01.rd");
-            IFunctionInfo functionInfo = RdParser.GetFunctionInfo("abs", rdData);
+            string rdData = _files.LoadDestinationFile(@"Help\01.rd");
+            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
 
-            Assert.IsNotNull(functionInfo);
-            Assert.AreEqual("abs", functionInfo.Name);
+            functionInfos.Should().HaveCount(2);
 
-            Assert.AreEqual("abs(x) computes the absolute value of x, sqrt(x) computes the (principal) square root of x, x. The naming follows the standard for computer languages such as C or Fortran.",
-                functionInfo.Description);
+            IFunctionInfo functionInfo = functionInfos[0];
+            functionInfo.Name.Should().Be("abs");
+            functionInfo.Description.Should().Be("abs(x) computes the absolute value of x, sqrt(x) computes the (principal) square root of x, x. The naming follows the standard for computer languages such as C or Fortran.");
+            functionInfo.Signatures.Should().ContainSingle()
+                .Which.Arguments.Should().ContainSingle()
+                .Which.Description.Should().Be("a numeric or complex vector or array.");
+        }
 
-            Assert.AreEqual(2, functionInfo.Aliases.Count);
-            Assert.AreEqual("abs", functionInfo.Aliases[0]);
-            Assert.AreEqual("sqrt", functionInfo.Aliases[1]);
+        [Test]
+        [Category.R.Signatures]
+        public void GetRdFunctionInfoTest02() {
+            string rdData = _files.LoadDestinationFile(@"Help\02.rd");
+            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
+            functionInfos.Should().Equal(new[] {
+                    "lockEnvironment",
+                    "environmentIsLocked",
+                    "lockBinding",
+                    "unlockBinding",
+                    "bindingIsLocked",
+                    "makeActiveBinding",
+                    "bindingIsActive",
+                }, (a, e) => a.Name == e)
+                .And.OnlyContain(f => f.Signatures.Count == 1)
+                .And.OnlyContain(f => f.Description == "These functions represent an experimental interface for adjustments to environments and bindings within environments. They allow for locking environments as well as individual bindings, and for linking a variable to a function.")
+                .And.Equal(new [] {
+                    2,1,2,2,2,3,2
+                }, (a, e) => a.Signatures[0].Arguments.Count == e);
 
-            Assert.AreEqual(1, functionInfo.Signatures.Count);
-            Assert.AreEqual(1, functionInfo.Signatures[0].Arguments.Count);
-            Assert.AreEqual("a numeric or complex vector or array.", functionInfo.Signatures[0].Arguments[0].Description);
+            functionInfos[0].Signatures[0].Arguments[0].Description.Should().Be("an environment.");
+            functionInfos[0].Signatures[0].Arguments[1].Description.Should().Be("logical specifying whether bindings should be locked.");
+            functionInfos[2].Signatures[0].Arguments[0].Description.Should().Be("a name object or character string.");
+            functionInfos[5].Signatures[0].Arguments[1].Description.Should().Be("a function taking zero or one arguments.");
+        }
 
+        [Test]
+        [Category.R.Signatures]
+        public void GetRdFunctionArgumentsBadData01() {
+            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(string.Empty);
+            functionInfos.Should().BeEmpty();
         }
     }
 }

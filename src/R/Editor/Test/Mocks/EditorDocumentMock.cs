@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Editor.Document.Definitions;
@@ -49,9 +50,25 @@ namespace Microsoft.R.Editor.Test.Mocks
         }
 
 #pragma warning disable 67
+        private readonly object _syncObj = new object();
+
         public event EventHandler<EventArgs> Activated;
         public event EventHandler<EventArgs> Deactivated;
-        public event EventHandler<EventArgs> DocumentClosing;
+
+        public EventHandler<EventArgs> DocumentClosing { get; private set; }
+        event EventHandler<EventArgs> IEditorDocument.DocumentClosing {
+            add {
+                lock (_syncObj) {
+                    DocumentClosing = (EventHandler<EventArgs>)Delegate.Combine(DocumentClosing, value);
+                }
+            }
+            remove {
+                lock (_syncObj) {
+                    DocumentClosing = (EventHandler<EventArgs>)Delegate.Remove(DocumentClosing, value);
+                }
+            }
+        }
+
         public event EventHandler<EventArgs> MassiveChangeBegun;
         public event EventHandler<EventArgs> MassiveChangeEnded;
 

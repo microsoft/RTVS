@@ -4,13 +4,11 @@ locals <- as.environment(list(breakpoints_enabled = FALSE));
 # Names are filenames, values are vectors of line numbers.
 breakpoints <- new.env(parent = emptyenv())
 
-# Used to report a breakpoint. Before breaking, will check that the breakpoint is still set.
-breakpoint <- function(filename, line_number) {
+# Used to check whether a breakpoint is still valid at this location.
+is_breakpoint <- function(filename, line_number) {
   if (locals$breakpoints_enabled) {
     line_numbers <- breakpoints[[filename]];
-    if (line_number %in% line_numbers) {
-      browser();
-    }
+    return(line_number %in% line_numbers);
   }
 }
 
@@ -126,7 +124,7 @@ inject_breakpoints <- function(expr) {
   }
   
   filename <- getSrcFilename(expr);
-  if (is.null(filename) || !is.character(filename) || length(filename) != 1 || is.na(filename)) {
+  if (is.null(filename) || !is.character(filename) || length(filename) != 1 || is.na(filename) || identical(filename, '')) {
     return(NULL);
   }
   
@@ -145,7 +143,7 @@ inject_breakpoints <- function(expr) {
         original_expr <- bp_expr;
     }
           
-    expr[[step]] <- substitute({.doTrace(rtvs:::breakpoint(FILENAME, LINE_NUMBER)); EXPR},
+    expr[[step]] <- substitute({.doTrace(if (rtvs:::is_breakpoint(FILENAME, LINE_NUMBER)) browser()); EXPR},
                                     list(FILENAME = filename, LINE_NUMBER = line_num, EXPR = original_expr));
     attr(expr[[step]], 'rtvs::original_expr') <- original_expr;
     attr(expr[[step]], 'srcref') <- attr(original_expr, 'srcref');
@@ -171,4 +169,35 @@ enable_breakpoints <- function(enable) {
       call_embedded('set_instrumentation_callback', NULL);
     }
   }
+}
+
+# Like parse, but returns a single `{` call object wrapping the content of the file, rather than
+# an expression object containing separate calls. Consequently, when the returned object is eval'd,
+# it is possible to use debug stepping commands to execute expressions sequentially.
+debug_parse <- function(filename, encoding = getOption('encoding')) {
+   exprs <- parse(filename, encoding = encoding);
+
+   # Create a `{` call wrapping all expressions in the file.
+   result <- quote({});
+   for (i in 1:length(exprs)) {
+     result[[i + 1]] <- exprs[[i]];
+   }
+
+   # Copy top-level source info.
+   attr(result, 'srcfile') <- attr(exprs, 'srcfile');
+
+   # Since the result has indices shifted by 1 due to the addition of `{` at the beginning,
+   # per-line source info needs to be adjusted accordingly before copying.
+   old_srcref <- attr(exprs, 'srcref');
+   new_srcref <- list(attr(exprs, 'srcref')[[1]]);
+   for (i in 1:length(exprs)) {
+      new_srcref[[i + 1]] <- old_srcref[[i]];
+   }
+   attr(result, 'srcref') <- new_srcref;
+
+   result
+}
+
+debug_source <- function(file, encoding = getOption('encoding')) {
+    eval.parent(debug_parse(file, encoding))
 }

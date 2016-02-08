@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Data;
+using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
 
@@ -22,14 +23,21 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
                 new GoToEditorOptionsCommand(),
+                new ImportRSettingsCommand(),
 
                 new SendSmileCommand(),
                 new SendFrownCommand(),
 
                 new LoadWorkspaceCommand(rSessionProvider, projectServiceAccessor),
                 new SaveWorkspaceCommand(rSessionProvider, projectServiceAccessor),
+
                 new AttachDebuggerCommand(rSessionProvider),
-                new RestartRCommand(),
+                new StopDebuggingCommand(rSessionProvider),
+                new ContinueDebuggingCommand(rSessionProvider),
+                new StepOverCommand(rSessionProvider),
+                new StepOutCommand(rSessionProvider),
+                new StepIntoCommand(rSessionProvider),
+
                 new InterruptRCommand(rSessionProvider),
 
                 new ImportDataSetTextFileCommand(),

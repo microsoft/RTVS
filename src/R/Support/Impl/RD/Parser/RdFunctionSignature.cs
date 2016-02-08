@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
@@ -20,40 +23,27 @@ namespace Microsoft.R.Support.RD.Parser {
             //                             keep.frequencies = fitted, param = TRUE, eps = 1 / 10,
             //                             iter = 40, print = FALSE, \dots)
             // }
+            //
+            // Signatures can be for multiple related functions
+            //  }\usage{
+            //      lockEnvironment(env, bindings = FALSE)
+            //      environmentIsLocked(env)
+            //      lockBinding(sym, env)
+            //      unlockBinding(sym, env)
+            //      bindingIsLocked(sym, env)
 
             TokenStream<RdToken> tokens = context.Tokens;
             List<ISignatureInfo> signatures = new List<ISignatureInfo>();
 
+            // Must be at '\usage{'
             int startTokenIndex, endTokenIndex;
             if (RdParseUtility.GetKeywordArgumentBounds(tokens, out startTokenIndex, out endTokenIndex)) {
-                // Counting ( and ) find the end of the signature string
-                int usageBlockStart = tokens[startTokenIndex].End;
-                int usageBlockEnd = FindEndOfSignatureText(context, usageBlockStart);
-                if (usageBlockEnd > usageBlockStart) {
-                    TextRange range = TextRange.FromBounds(usageBlockStart, usageBlockEnd);
-                    string usage = context.TextProvider.GetText(range).Trim();
-
-                    ISignatureInfo sig = ParseSignature(usage);
-                    if (sig != null) {
-                        signatures.Add(sig);
-                    }
-
-                    while (!tokens.IsEndOfStream() && tokens.Position < usageBlockEnd) {
-                        RdToken token = tokens.CurrentToken;
-
-                        if (context.IsAtKeywordWithParameters(@"\method")) {
-                            sig = ParseMethod(context);
-                            if (sig == null) {
-                                break;
-                            }
-
-                            signatures.Add(sig);
-                        } else {
-                            tokens.MoveToNextToken();
-                        }
-                    }
+                // Get inner content of the \usage{...} block cleaned up for R parsing
+                string usage = GetRText(context, startTokenIndex, endTokenIndex);
+                IReadOnlyList<ISignatureInfo> sigs = ParseSignatures(usage);
+                if (sigs != null) {
+                    signatures.AddRange(sigs);
                 }
-
                 tokens.Position = endTokenIndex;
             }
 
@@ -61,131 +51,170 @@ namespace Microsoft.R.Support.RD.Parser {
         }
 
         /// <summary>
-        /// Parses \method{name}{suffix}(formula, data, \dots)
+        /// Extracts R-parseable text from RD \usage{...} block.
+        /// RD text may contain \dots sequence  which denotes ellipsis.
+        /// R parser does not know  about it and hence we must replace \dots by ...
+        /// Also, signatures may contain S3 method info like 
+        /// '\method{as.matrix}{data.frame}(x, rownames.force = NA, \dots)'
+        /// which we need to filter out since they are irrelevant to intellisense.
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        private static ISignatureInfo ParseMethod(RdParseContext context) {
-            TokenStream<RdToken> tokens = context.Tokens;
+        private static string GetRText(RdParseContext context, int startTokenIndex, int endTokenIndex) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = startTokenIndex; i < endTokenIndex; i++) {
+                int fragmentStart;
+                int fragmentEnd;
 
-            // Move past \method{
-            tokens.Advance(2);
-
-            // Expected '}{suffix}'
-            if (tokens.CurrentToken.TokenType == RdTokenType.CloseCurlyBrace &&
-                tokens.NextToken.TokenType == RdTokenType.OpenCurlyBrace &&
-                tokens.LookAhead(2).TokenType == RdTokenType.CloseCurlyBrace) {
-                // Move past '{suffix'
-                tokens.Advance(2);
-
-                TextRange range = TextRange.FromBounds(tokens.PreviousToken.End, tokens.CurrentToken.Start);
-                string suffix = context.TextProvider.GetText(range).Trim();
-
-                // Skip final '}'
-                tokens.MoveToNextToken();
-
-                // Should be at '(formula, data, \dots)'
-                int start = tokens.PreviousToken.End;
-                int end = FindEndOfSignatureText(context, start);
-                if (end > start) {
-                    // Advance token stream to be past the end of the signature
-                    while (!tokens.IsEndOfStream() && tokens.CurrentToken.Start < end) {
-                        tokens.MoveToNextToken();
+                RdToken token = context.Tokens[i];
+                if (token.TokenType == RdTokenType.Keyword && context.TextProvider.GetText(token) == "\\method") {
+                    fragmentStart = SkipS3Method(context, ref i);
+                    fragmentEnd = context.Tokens[i].Start;
+                } else {
+                    if (token.TokenType == RdTokenType.Keyword && context.TextProvider.GetText(token) == "\\dots") {
+                        sb.Append("...");
                     }
+                    fragmentStart = context.Tokens[i].End;
+                    fragmentEnd = context.Tokens[i + 1].Start;
+                }
 
-                    range = TextRange.FromBounds(start, end);
-                    string signatureText = context.TextProvider.GetText(range).Trim();
-
-                    return ParseSignature(signatureText);
+                Debug.Assert(fragmentStart <= fragmentEnd);
+                if (fragmentStart <= fragmentEnd) {
+                    ITextRange range = TextRange.FromBounds(fragmentStart, fragmentEnd);
+                    string fragment = context.TextProvider.GetText(range);
+                    sb.Append(fragment);
+                }
+                else {
+                    break; // Something went wrong;
                 }
             }
-
-            return null;
+            return sb.ToString().Trim();
         }
 
-        private static int FindEndOfSignatureText(RdParseContext context, int start) {
-            // Counting ( and ) find the end of the signature.
-            BraceCounter<char> braceCounter = new BraceCounter<char>('(', ')');
-            for (int i = start; i < context.TextProvider.Length; i++) {
-                if (braceCounter.CountBrace(context.TextProvider[i])) {
-                    if (braceCounter.Count == 0)
+        private static int SkipS3Method(RdParseContext context, ref int index) {
+            RdToken token = context.Tokens[index];
+            Debug.Assert(token.TokenType == RdTokenType.Keyword && context.TextProvider.GetText(token) == "\\method");
+
+            index++;
+            for (int i = 0; i < 2; i++) {
+                if (context.Tokens[index].TokenType == RdTokenType.OpenCurlyBrace) {
+                    index++;
+                }
+                if (context.Tokens[index].TokenType == RdTokenType.CloseCurlyBrace) {
+                    index++;
+                }
+            }
+            // Should be past \method{...}{...}. Now skip signature
+            BraceCounter<char> bc = new BraceCounter<char>(new char[] { '(', ')' });
+            for (int i = context.Tokens[index - 1].End; i < context.TextProvider.Length; i++) {
+                if (bc.CountBrace(context.TextProvider[i])) {
+                    if (bc.Count == 0) {
+                        // Calculate index of the next token after text position 'i'
+                        index = context.Tokens.Length - 1;
+                        for (int j = index; j < context.Tokens.Length; j++) {
+                            if (context.Tokens[j].Start >= i) {
+                                index = j;
+                                break;
+                            }
+                        }
                         return i + 1;
+                    }
                 }
             }
-
-            return -1;
+            return context.Tokens[index].End;
         }
 
-        public static SignatureInfo ParseSignature(string text, IReadOnlyDictionary<string, string> argumentsDescriptions = null) {
-            // RD signature text may contain \dots sequence 
-            // which denotes ellipsis. R parser does not know 
-            // about it and hence we will replace \dots by ...
+        public static IReadOnlyList<ISignatureInfo> ParseSignatures(string usageContent, IReadOnlyDictionary<string, string> argumentsDescriptions = null) {
+            // RD signature text may contain \dots sequence  which denotes ellipsis.
+            // R parser does not know  about it and hence we will replace \dots by ...
+            // Also, signatures may contain S3 method info like 
+            // '\method{as.matrix}{data.frame}(x, rownames.force = NA, \dots)'
+            // which we need to filter out since they are irrelevant to intellisense.
 
-            text = text.Replace(@"\dots", "...");
-
-            int openBraceIndex = text.IndexOf('(');
-            if (openBraceIndex < 0) {
-                return null;
-            }
-
-            text = text.Substring(openBraceIndex);
+            List<ISignatureInfo> signatures = new List<ISignatureInfo>();
+            usageContent = usageContent.Replace(@"\dots", "...");
 
             RTokenizer tokenizer = new RTokenizer(separateComments: true);
-            IReadOnlyTextRangeCollection<RToken> collection = tokenizer.Tokenize(text);
-            ITextProvider textProvider = new TextStream(text);
+            IReadOnlyTextRangeCollection<RToken> collection = tokenizer.Tokenize(usageContent);
+            ITextProvider textProvider = new TextStream(usageContent);
             TokenStream<RToken> tokens = new TokenStream<RToken>(collection, RToken.EndOfStreamToken);
 
-            SignatureInfo info = new SignatureInfo();
+            var parseContext = new ParseContext(textProvider,
+                         TextRange.FromBounds(tokens.CurrentToken.Start, textProvider.Length),
+                         tokens, tokenizer.CommentTokens);
+
+            while (!tokens.IsEndOfStream()) {
+                // Filter out '\method{...}{}(signature)
+                if (tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace) {
+                    // Check if { is preceded by \method
+                }
+
+                if (tokens.CurrentToken.TokenType != RTokenType.Identifier) {
+                    break;
+                }
+
+                string functionName = textProvider.GetText(tokens.CurrentToken);
+                tokens.MoveToNextToken();
+
+                ISignatureInfo info = ParseSignature(functionName, parseContext, argumentsDescriptions);
+                if (info != null) {
+                    signatures.Add(info);
+                }
+            }
+
+            return signatures;
+        }
+
+        private static ISignatureInfo ParseSignature(string functionName, ParseContext context, IReadOnlyDictionary<string, string> argumentsDescriptions = null) {
+            SignatureInfo info = new SignatureInfo(functionName);
             List<IArgumentInfo> signatureArguments = new List<IArgumentInfo>();
 
-            var rParseContext = new Microsoft.R.Core.Parser.ParseContext(textProvider, new TextRange(0, text.Length), tokens, tokenizer.CommentTokens);
+            // RD data may contain function name(s) without braces
+            if (context.Tokens.CurrentToken.TokenType == RTokenType.OpenBrace) {
+                FunctionCall functionCall = new FunctionCall();
+                functionCall.Parse(context, context.AstRoot);
 
-            FunctionCall functionCall = new FunctionCall();
-            functionCall.Parse(rParseContext, rParseContext.AstRoot);
+                for (int i = 0; i < functionCall.Arguments.Count; i++) {
+                    IAstNode arg = functionCall.Arguments[i];
 
-            for (int i = 0; i < functionCall.Arguments.Count; i++) {
-                IAstNode arg = functionCall.Arguments[i];
+                    string argName = null;
+                    string argDefaultValue = null;
+                    bool isEllipsis = false;
+                    bool isOptional = false;
 
-                string argName = null;
-                string argDefaultValue = null;
-                bool isEllipsis = false;
-                bool isOptional = false;
-
-                ExpressionArgument expArg = arg as ExpressionArgument;
-                if (expArg != null) {
-                    argName = textProvider.GetText(expArg.ArgumentValue);
-                } else {
-                    NamedArgument nameArg = arg as NamedArgument;
-                    if (nameArg != null) {
-                        argName = textProvider.GetText(nameArg.NameRange);
-                        argDefaultValue = RdText.CleanRawRdText(textProvider.GetText(nameArg.DefaultValue));
+                    ExpressionArgument expArg = arg as ExpressionArgument;
+                    if (expArg != null) {
+                        argName = context.TextProvider.GetText(expArg.ArgumentValue);
                     } else {
-                        MissingArgument missingArg = arg as MissingArgument;
-                        if (missingArg != null) {
-                            argName = string.Empty;
+                        NamedArgument nameArg = arg as NamedArgument;
+                        if (nameArg != null) {
+                            argName = context.TextProvider.GetText(nameArg.NameRange);
+                            argDefaultValue = RdText.CleanRawRdText(context.TextProvider.GetText(nameArg.DefaultValue));
                         } else {
-                            EllipsisArgument ellipsisArg = arg as EllipsisArgument;
-                            if (ellipsisArg != null) {
-                                argName = "...";
-                                isEllipsis = true;
+                            MissingArgument missingArg = arg as MissingArgument;
+                            if (missingArg != null) {
+                                argName = string.Empty;
+                            } else {
+                                EllipsisArgument ellipsisArg = arg as EllipsisArgument;
+                                if (ellipsisArg != null) {
+                                    argName = "...";
+                                    isEllipsis = true;
+                                }
                             }
                         }
                     }
-                }
 
-                ArgumentInfo argInfo = new ArgumentInfo(argName);
-                argInfo.DefaultValue = argDefaultValue;
-                argInfo.IsEllipsis = isEllipsis;
-                argInfo.IsOptional = isOptional; // TODO: actually parse
+                    ArgumentInfo argInfo = new ArgumentInfo(argName);
+                    argInfo.DefaultValue = argDefaultValue;
+                    argInfo.IsEllipsis = isEllipsis;
+                    argInfo.IsOptional = isOptional; // TODO: actually parse
 
-                if (argumentsDescriptions != null) {
-                    string description;
-                    if (argumentsDescriptions.TryGetValue(argName, out description)) {
-                        argInfo.Description = description;
+                    if (argumentsDescriptions != null) {
+                        string description;
+                        if (argumentsDescriptions.TryGetValue(argName, out description)) {
+                            argInfo.Description = description;
+                        }
                     }
+                    signatureArguments.Add(argInfo);
                 }
-
-                signatureArguments.Add(argInfo);
             }
 
             info.Arguments = signatureArguments;

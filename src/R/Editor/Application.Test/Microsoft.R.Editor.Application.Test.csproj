@@ -27,6 +27,22 @@
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
+      <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
+      <Name>Microsoft.Common.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Debugger\Impl\Microsoft.R.Debugger.csproj">
+      <Project>{17e155bf-351c-4253-b9b1-36eeea35fe3c}</Project>
+      <Name>Microsoft.R.Debugger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
+      <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
@@ -51,6 +67,10 @@
       <Project>{56534417-6c60-48a5-b355-12225c70431e}</Project>
       <Name>Microsoft.Markdown.Editor.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+      <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
+      <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
@@ -61,7 +81,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\EditorTestApp\Microsoft.Languages.Editor.Application.csproj">
       <Project>{9174c912-e757-4ecd-9d6e-9604bef74900}</Project>
-      <Name>Microsoft.Web.Editor.Application</Name>
+      <Name>Microsoft.Languages.Editor.Application</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Support\Test\Microsoft.R.Support.Test.csproj">
       <Project>{5504f3d6-08d3-401f-8214-409a60735185}</Project>
@@ -75,16 +95,20 @@
       <Project>{9066522e-780e-4409-b410-2525e6a621fc}</Project>
       <Name>Microsoft.R.Editor.Test</Name>
     </ProjectReference>
+    <Reference Include="FluentAssertions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\FluentAssertions.4.1.1\lib\net45\FluentAssertions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentAssertions.Core, Version=4.1.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\FluentAssertions.4.1.1\lib\net45\FluentAssertions.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.CoreUtility.14.1.24720\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.Common" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.Text.Data, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.Data.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
@@ -108,24 +132,44 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
+    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.assert, Version=2.2.0.3239, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\xunit.assert.2.2.0-beta1-build3239\lib\dotnet\xunit.assert.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.core, Version=2.2.0.3239, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\xunit.extensibility.core.2.2.0-beta1-build3239\lib\dotnet\xunit.core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.execution.desktop, Version=2.2.0.3239, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\xunit.extensibility.execution.2.2.0-beta1-build3239\lib\net45\xunit.execution.desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Completion\ProvisionalTextTest.cs" />
-    <Compile Include="EditorAppTestFilesSetup.cs" />
+    <Compile Include="EditorAppTestFilesFixture.cs" />
     <Compile Include="Formatting\FormatSelectionTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />
     <Compile Include="Formatting\AutoFormatTest.cs" />
+    <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
-    <Compile Include="TestShell\Editor.cs" />
+    <Compile Include="TestShell\EditorWindow.cs" />
     <Compile Include="Completion\IntellisenseTest.cs" />
-    <Compile Include="IO\OpenFilesTest.cs" />
     <Compile Include="TestShell\Navigation.cs" />
     <Compile Include="TestShell\TestScript.cs" />
     <Compile Include="TestShell\Typing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Typing\TypeFileTest.cs" />
+    <Compile Include="Validation\ErrorTagTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -139,6 +183,9 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />

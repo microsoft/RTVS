@@ -1,15 +1,17 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Settings;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Collection(CollectionNames.NonParallel)]
     public class SmartIndentTest {
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_SmartIndentTest() {
             using (var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -20,7 +22,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "{\r\n    a\r\n}";
                 string actual = script.EditorText;
 
-                Assert.AreEqual(expected, actual);
+                actual.Should().Be(expected);
             }
         }
     }

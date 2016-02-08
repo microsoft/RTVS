@@ -114,7 +114,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugCodeContext2.Compare(enum_CONTEXT_COMPARE Compare, IDebugMemoryContext2[] rgpMemoryContextSet, uint dwMemoryContextSetLen, out uint pdwMemoryContext) {
-            return IDebugCodeContext2.Compare(Compare, rgpMemoryContextSet, dwMemoryContextSetLen, out pdwMemoryContext);
+            return IDebugMemoryContext2.Compare(Compare, rgpMemoryContextSet, dwMemoryContextSetLen, out pdwMemoryContext);
         }
 
         int IDebugCodeContext2.GetDocumentContext(out IDebugDocumentContext2 ppSrcCxt) {

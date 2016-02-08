@@ -1,20 +1,22 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class TokenizeRandomStringsTest : TokenizeTestBase<RToken, RTokenType> {
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
         public void Tokenize_NonEnglishString01() {
-            var tokens = this.Tokenize(" русский ", new RTokenizer());
-            Assert.AreEqual(1, tokens.Count);
-            Assert.AreEqual(RTokenType.Unknown, tokens[0].TokenType);
-            Assert.AreEqual(1, tokens[0].Start);
-            Assert.AreEqual(7, tokens[0].Length);
+            var tokens = Tokenize(" русский ", new RTokenizer());
+
+            tokens.Should().ContainSingle()
+                .Which.Should().HaveType(RTokenType.Unknown)
+                .And.StartAt(1)
+                .And.HaveLength(7);
         }
     }
 }

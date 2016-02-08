@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using Microsoft.Languages.Core.Test.Utility;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.ContentType;
@@ -10,19 +10,18 @@ using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Editor.Tree;
-using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParameterTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Signatures")]
+    [Category.R.Signatures]
+    public class ParameterTest {
+        [Test]
         public void ParameterTest01() {
             string content = @"x <- foo(a,b,c,d)";
             AstRoot ast = RParser.Parse(content);
@@ -30,30 +29,29 @@ namespace Microsoft.R.Editor.Test.Signatures {
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 10);
 
-            Assert.IsNotNull(parametersInfo);
-            Assert.IsNotNull(parametersInfo.FunctionCall);
-            Assert.AreEqual("foo", parametersInfo.FunctionName);
-            Assert.AreEqual(0, parametersInfo.ParameterIndex);
-            Assert.AreEqual(17, parametersInfo.SignatureEnd);
+            parametersInfo.Should().NotBeNull()
+                .And.HaveFunctionCall()
+                .And.HaveFunctionName("foo")
+                .And.HaveParameterIndex(0)
+                .And.HaveSignatureEnd(17);
 
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 11);
-            Assert.AreEqual(1, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(1);
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 12);
-            Assert.AreEqual(1, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(1);
 
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 13);
-            Assert.AreEqual(2, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(2);
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 14);
-            Assert.AreEqual(2, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(2);
 
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 15);
-            Assert.AreEqual(3, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(3);
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 16);
-            Assert.AreEqual(3, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(3);
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
+        [Test]
         public void ParameterTest02() {
             string content = @"x <- foo(,,,)";
             AstRoot ast = RParser.Parse(content);
@@ -61,34 +59,31 @@ namespace Microsoft.R.Editor.Test.Signatures {
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 9);
 
-            Assert.IsNotNull(parametersInfo);
-            Assert.IsNotNull(parametersInfo.FunctionCall);
-            Assert.AreEqual("foo", parametersInfo.FunctionName);
-            Assert.AreEqual(0, parametersInfo.ParameterIndex);
+            parametersInfo.Should().NotBeNull()
+                .And.HaveFunctionCall()
+                .And.HaveFunctionName("foo")
+                .And.HaveParameterIndex(0);
 
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 10);
-            Assert.AreEqual(1, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(1);
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 11);
-            Assert.AreEqual(2, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(2);
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 12);
-            Assert.AreEqual(3, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(3);
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
+        [Test]
         public void ParameterTest03() {
             string content = @"x <- foo(,,";
-            ParameterInfo parametersInfo;
 
             AstRoot ast = RParser.Parse(content);
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
 
-            parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 11);
-            Assert.AreEqual(2, parametersInfo.ParameterIndex);
+            var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 11);
+            parametersInfo.Should().HaveParameterIndex(2);
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
+        [Test]
         public void ParameterTest04() {
             string content =
 @"x <- foo(,, 
@@ -100,13 +95,12 @@ if(x > 1) {";
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
 
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 11);
-            Assert.AreEqual(2, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(2);
             parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 12);
-            Assert.AreEqual(2, parametersInfo.ParameterIndex);
+            parametersInfo.Should().HaveParameterIndex(2);
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
+        [Test]
         public void ParameterTest05() {
             string content =
 @"x <- abs(cos(
@@ -118,15 +112,14 @@ while";
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length - 5);
 
-            Assert.IsNotNull(parametersInfo);
-            Assert.IsNotNull(parametersInfo.FunctionCall);
-            Assert.AreEqual("cos", parametersInfo.FunctionName);
-            Assert.AreEqual(0, parametersInfo.ParameterIndex);
-            Assert.AreEqual(content.Length - 5, parametersInfo.SignatureEnd);
+            parametersInfo.Should().NotBeNull()
+                .And.HaveFunctionCall()
+                .And.HaveFunctionName("cos")
+                .And.HaveParameterIndex(0)
+                .And.HaveSignatureEnd(content.Length - 5);
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
+        [Test]
         public void ParameterTest06() {
             string content =
 @"x <- abs(
@@ -138,216 +131,165 @@ function(a) {
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, content.Length - 1);
 
-            Assert.IsNotNull(parametersInfo);
-            Assert.IsNotNull(parametersInfo.FunctionCall);
-            Assert.AreEqual("abs", parametersInfo.FunctionName);
-            Assert.AreEqual(0, parametersInfo.ParameterIndex);
-            Assert.AreEqual(content.Length, parametersInfo.SignatureEnd);
+            parametersInfo.Should().NotBeNull()
+                .And.HaveFunctionCall()
+                .And.HaveFunctionName("abs")
+                .And.HaveParameterIndex(0)
+                .And.HaveSignatureEnd(content.Length);
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void ParameterTest_ComputeCurrentParameter01() {
-            ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
-            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
-            TextViewMock textView = session.TextView as TextViewMock;
-            List<ISignature> signatures = new List<ISignature>();
+        [ExcludeFromCodeCoverage]
+        [Category.R.Signatures]
+        [Collection(CollectionNames.NonParallel)]
+        public class ComputeCurrentParameter : IAsyncLifetime {
+            public Task InitializeAsync() {
+                return FunctionIndexUtility.InitializeAsync();
+            }
 
-            EditorTree tree = new EditorTree(textBuffer);
-            tree.Build();
-            var document = new EditorDocumentMock(tree);
+            public Task DisposeAsync() {
+                return FunctionIndexUtility.DisposeAsync();
+            }
 
-            session.TrackingPoint = new TrackingPointMock(textBuffer, 4, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) => {
-                object result = FunctionIndex.GetFunctionInfo("aov", (object o) => {
-                    ComputeCurrentParameter01_Body(completed);
-                });
+            [Test]
+            public async Task ParameterTest_ComputeCurrentParameter01() {
+                ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
+                SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+                SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
+                TextViewMock textView = session.TextView as TextViewMock;
+                List<ISignature> signatures = new List<ISignature>();
 
-                if (result != null && !completed.IsSet) {
-                    ComputeCurrentParameter01_Body(completed);
+                EditorTree tree = new EditorTree(textBuffer);
+                tree.Build();
+                var document = new EditorDocumentMock(tree);
+
+                session.TrackingPoint = new TrackingPointMock(textBuffer, 4, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
+                await FunctionIndexUtility.GetFunctionInfoAsync("aov");
+
+                tree.TakeThreadOwnerShip();
+                await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
+
+                signatures.Should().ContainSingle();
+
+                int index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+                index.Should().Be(0);
+
+                textView.Caret = new TextCaretMock(textView, 5);
+                TextBufferUtility.ApplyTextChange(textBuffer, 4, 0, 1, "a");
+                index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+                index.Should().Be(0);
+
+                textView.Caret = new TextCaretMock(textView, 6);
+                TextBufferUtility.ApplyTextChange(textBuffer, 5, 0, 1, ",");
+                index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+                index.Should().Be(1);
+
+                textView.Caret = new TextCaretMock(textView, 7);
+                TextBufferUtility.ApplyTextChange(textBuffer, 6, 0, 1, ",");
+                index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+                index.Should().Be(2);
+            }
+
+            private int GetCurrentParameterIndex(SignatureHelp sh, IParameter parameter) {
+                for (int i = 0; i < sh.Parameters.Count; i++) {
+                    if (sh.Parameters[i] == parameter) {
+                        return i;
+                    }
                 }
 
-            });
-        }
+                return -1;
+            }
 
-        private void ComputeCurrentParameter01_Body(ManualResetEventSlim completed) {
-            ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
-            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
-            TextViewMock textView = session.TextView as TextViewMock;
-            List<ISignature> signatures = new List<ISignature>();
+            [Test]
+            public async Task ParameterTest_ComputeCurrentParameter02() {
+                await FunctionIndexUtility.GetFunctionInfoAsync("legend");
 
-            EditorTree tree = new EditorTree(textBuffer);
-            tree.Build();
-            var document = new EditorDocumentMock(tree);
+                REditorSettings.PartialArgumentNameMatch = true;
 
-            session.TrackingPoint = new TrackingPointMock(textBuffer, 4, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
+                ITextBuffer textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
+                SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+                SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
+                TextViewMock textView = session.TextView as TextViewMock;
+                List<ISignature> signatures = new List<ISignature>();
 
-            tree.TakeThreadOwnerShip();
-            source.AugmentSignatureHelpSession(session, signatures, tree.AstRoot, (x) => { });
+                using (EditorTree tree = new EditorTree(textBuffer)) {
+                    tree.Build();
+                    var document = new EditorDocumentMock(tree);
 
-            Assert.AreEqual(1, signatures.Count);
+                    session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
 
-            int index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
-            Assert.AreEqual(0, index);
+                    tree.TakeThreadOwnerShip();
+                    await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
 
-            textView.Caret = new TextCaretMock(textView, 5);
-            TextBufferUtility.ApplyTextChange(textBuffer, 4, 0, 1, "a");
-            index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
-            Assert.AreEqual(0, index);
+                    signatures.Should().ContainSingle();
 
-            textView.Caret = new TextCaretMock(textView, 6);
-            TextBufferUtility.ApplyTextChange(textBuffer, 5, 0, 1, ",");
-            index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
-            Assert.AreEqual(1, index);
+                    textView.Caret = new TextCaretMock(textView, 8);
+                    SignatureHelp sh = signatures[0] as SignatureHelp;
+                    int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+                    index.Should().Be(11);
 
-            textView.Caret = new TextCaretMock(textView, 7);
-            TextBufferUtility.ApplyTextChange(textBuffer, 6, 0, 1, ",");
-            index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
-            Assert.AreEqual(2, index);
-
-            completed.Set();
-        }
-
-        private int GetCurrentParameterIndex(SignatureHelp sh, IParameter parameter) {
-            for (int i = 0; i < sh.Parameters.Count; i++) {
-                if (sh.Parameters[i] == parameter) {
-                    return i;
+                    textView.Caret = new TextCaretMock(textView, 15);
+                    index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 15);
+                    index.Should().Be(6);
                 }
             }
 
-            return -1;
-        }
+            [Test]
+            public async Task ParameterTest_ComputeCurrentParameter03() {
+                await FunctionIndexUtility.GetFunctionInfoAsync("legend");
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void ParameterTest_ComputeCurrentParameter02() {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) => {
-                object result = FunctionIndex.GetFunctionInfo("legend", (object o) => {
-                    ComputeCurrentParameter02_Body(completed);
-                });
+                REditorSettings.PartialArgumentNameMatch = false;
 
-                if (result != null && !completed.IsSet) {
-                    ComputeCurrentParameter02_Body(completed);
-                }
-            });
-        }
+                ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
+                SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+                SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
+                TextViewMock textView = session.TextView as TextViewMock;
+                List<ISignature> signatures = new List<ISignature>();
 
-        private void ComputeCurrentParameter02_Body(ManualResetEventSlim completed) {
-            REditorSettings.PartialArgumentNameMatch = true;
+                EditorTree tree = new EditorTree(textBuffer);
+                tree.Build();
+                var document = new EditorDocumentMock(tree);
 
-            ITextBuffer textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
-            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
-            TextViewMock textView = session.TextView as TextViewMock;
-            List<ISignature> signatures = new List<ISignature>();
+                session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
 
-            EditorTree tree = new EditorTree(textBuffer);
-            tree.Build();
-            var document = new EditorDocumentMock(tree);
+                tree.TakeThreadOwnerShip();
+                await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
 
-            session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
+                signatures.Should().ContainSingle();
 
-            tree.TakeThreadOwnerShip();
-            source.AugmentSignatureHelpSession(session, signatures, tree.AstRoot, (x) => { });
+                textView.Caret = new TextCaretMock(textView, 8);
+                SignatureHelp sh = signatures[0] as SignatureHelp;
+                int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+                index.Should().Be(0);
+            }
 
-            Assert.AreEqual(1, signatures.Count);
+            [Test]
+            public async Task ParameterTest_ComputeCurrentParameter04() {
+                await FunctionIndexUtility.GetFunctionInfoAsync("legend");
 
-            textView.Caret = new TextCaretMock(textView, 8);
-            SignatureHelp sh = signatures[0] as SignatureHelp;
-            int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
-            Assert.AreEqual(11, index);
+                REditorSettings.PartialArgumentNameMatch = true;
 
-            textView.Caret = new TextCaretMock(textView, 15);
-            index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 15);
-            Assert.AreEqual(6, index);
+                ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
+                SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+                SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
+                TextViewMock textView = session.TextView as TextViewMock;
+                List<ISignature> signatures = new List<ISignature>();
 
-            completed.Set();
-        }
+                EditorTree tree = new EditorTree(textBuffer);
+                tree.Build();
+                var document = new EditorDocumentMock(tree);
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void ParameterTest_ComputeCurrentParameter03() {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) => {
-                object result = FunctionIndex.GetFunctionInfo("legend", (object o) => {
-                    ComputeCurrentParameter03_Body(completed);
-                });
+                session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
 
-                if (result != null && !completed.IsSet) {
-                    ComputeCurrentParameter03_Body(completed);
-                }
-            });
-        }
+                tree.TakeThreadOwnerShip();
+                await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
 
-        private void ComputeCurrentParameter03_Body(ManualResetEventSlim completed) {
-            REditorSettings.PartialArgumentNameMatch = false;
+                signatures.Should().ContainSingle();
 
-            ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
-            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
-            TextViewMock textView = session.TextView as TextViewMock;
-            List<ISignature> signatures = new List<ISignature>();
-
-            EditorTree tree = new EditorTree(textBuffer);
-            tree.Build();
-            var document = new EditorDocumentMock(tree);
-
-            session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
-
-            tree.TakeThreadOwnerShip();
-            source.AugmentSignatureHelpSession(session, signatures, tree.AstRoot, (x) => { });
-
-            Assert.AreEqual(1, signatures.Count);
-
-            textView.Caret = new TextCaretMock(textView, 8);
-            SignatureHelp sh = signatures[0] as SignatureHelp;
-            int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
-            Assert.AreEqual(0, index);
-
-            completed.Set();
-        }
-
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void ParameterTest_ComputeCurrentParameter04() {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim completed) => {
-                object result = FunctionIndex.GetFunctionInfo("legend", (object o) => {
-                    ComputeCurrentParameter04_Body(completed);
-                });
-
-                if (result != null && !completed.IsSet) {
-                    ComputeCurrentParameter04_Body(completed);
-                }
-            });
-        }
-
-        private void ComputeCurrentParameter04_Body(ManualResetEventSlim completed) {
-            REditorSettings.PartialArgumentNameMatch = true;
-
-            ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
-            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
-            TextViewMock textView = session.TextView as TextViewMock;
-            List<ISignature> signatures = new List<ISignature>();
-
-            EditorTree tree = new EditorTree(textBuffer);
-            tree.Build();
-            var document = new EditorDocumentMock(tree);
-
-            session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
-
-            tree.TakeThreadOwnerShip();
-            source.AugmentSignatureHelpSession(session, signatures, tree.AstRoot, (x) => { });
-
-            Assert.AreEqual(1, signatures.Count);
-
-            textView.Caret = new TextCaretMock(textView, 8);
-            SignatureHelp sh = signatures[0] as SignatureHelp;
-            int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
-            Assert.AreEqual(9, index);
-
-            completed.Set();
+                textView.Caret = new TextCaretMock(textView, 8);
+                SignatureHelp sh = signatures[0] as SignatureHelp;
+                int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+                index.Should().Be(9);
+            }
         }
     }
 }

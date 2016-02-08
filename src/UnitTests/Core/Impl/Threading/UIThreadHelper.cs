@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -11,6 +11,7 @@ using System.Windows.Threading;
 
 namespace Microsoft.UnitTests.Core.Threading
 {
+    [ExcludeFromCodeCoverage]
     public class UIThreadHelper
     {
         [DllImport("ole32.dll", ExactSpelling = true, SetLastError = true)]
@@ -128,6 +129,11 @@ namespace Microsoft.UnitTests.Core.Threading
                 }
             }
 
+            var dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
+            if (dispatcher != null && !dispatcher.HasShutdownStarted) {
+                dispatcher.InvokeShutdown();
+            }
+
             if (exceptionInfos.Any())
             {
                 throw new AggregateException(exceptionInfos.Select(ce => ce.SourceException).ToArray());
@@ -144,10 +150,8 @@ namespace Microsoft.UnitTests.Core.Threading
             _frame.Continue = false;
 
             // If the thread is still alive, allow it to exit normally so the dispatcher can continue to clear pending work items
-            if (mainThread.IsAlive)
-            {
-                Debug.WriteLine("Thread is alive, trying to wait.");
-            }
+            // 10 seconds should be enough
+            mainThread.Join(10000);
         }
 
         private static ExceptionDispatchInfo CallSafe(Action action)

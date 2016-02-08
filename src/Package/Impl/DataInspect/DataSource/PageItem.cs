@@ -20,15 +20,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public TData Data {
             get { return _data; }
             set {
-                SetData(value);
+                SetValue(ref _data, value);
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void SetData(TData value) {
-            SetValue<TData>(ref _data, value, "Data");
-        }
 
         protected virtual bool SetValue<T>(ref T storage, T value, [CallerMemberName]string propertyName = null) {
             if (EqualityComparer<T>.Default.Equals(storage, value)) {

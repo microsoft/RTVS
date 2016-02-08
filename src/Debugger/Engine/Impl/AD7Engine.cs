@@ -10,8 +10,8 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Task = System.Threading.Tasks.Task;
 using static System.FormattableString;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Debugger.Engine {
     [ComVisible(true)]
@@ -25,9 +25,11 @@ namespace Microsoft.R.Debugger.Engine {
         private Guid _programId;
         private bool _firstContinue = true;
         private bool? _sentContinue = null;
+        private volatile DebugBrowseEventArgs _currentBrowseEventArgs;
+        private readonly object _browseLock = new object();
 
         internal bool IsDisposed { get; private set; }
-        internal bool IsBrowsing { get; private set; }
+        internal bool IsConnected { get; private set; }
         internal DebugSession DebugSession { get; private set; }
         internal AD7Thread MainThread { get; private set; }
 
@@ -51,6 +53,7 @@ namespace Microsoft.R.Debugger.Engine {
                 return;
             }
 
+            var rSession = DebugSession.RSession;
             DebugSession.Browse -= Session_Browse;
             DebugSession.RSession.AfterRequest -= RSession_AfterRequest;
             DebugSession.RSession.Disconnected -= RSession_Disconnected;
@@ -66,11 +69,28 @@ namespace Microsoft.R.Debugger.Engine {
             DebugSessionProvider = null;
 
             IsDisposed = true;
+
+            ExitBrowserAsync(rSession).SilenceException<MessageTransportException>().DoNotWait();
         }
 
         private void ThrowIfDisposed() {
             if (IsDisposed) {
                 throw new ObjectDisposedException(nameof(AD7Engine));
+            }
+        }
+
+        private async Task ExitBrowserAsync(IRSession session) {
+            using (var inter = await session.BeginInteractionAsync(isVisible: true)) {
+                // Check if this is still the same prompt as the last Browse prompt that we've seen.
+                // If it isn't, then session has moved on already, and there's nothing for us to exit.
+                DebugBrowseEventArgs currentBrowseDebugEventArgs;
+                lock (_browseLock) {
+                    currentBrowseDebugEventArgs = _currentBrowseEventArgs;
+                }
+
+                if (currentBrowseDebugEventArgs != null && currentBrowseDebugEventArgs.Contexts == inter.Contexts) {
+                    await inter.RespondAsync("Q\n");
+                }
             }
         }
 
@@ -116,6 +136,7 @@ namespace Microsoft.R.Debugger.Engine {
             _events = pCallback;
             DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetResultOnUIThread();
             MainThread = new AD7Thread(this);
+            IsConnected = true;
 
             // Enable breakpoint instrumentation.
             DebugSession.EnableBreakpoints(true).GetResultOnUIThread();
@@ -130,21 +151,27 @@ namespace Microsoft.R.Debugger.Engine {
             // Register event handlers after notifying VS that debug engine has loaded. This order is important because
             // we may get a Browse event immediately, and we want to raise a breakpoint notification in response to that
             // to pause the debugger - but it will be ignored unless the engine has reported its creation.
+            // Also, AfterRequest must be registered before Browse, so that we never get in a situation where we get
+            // Browse but not AfterRequest that follows it because of a race between raising and registration.
             DebugSession.RSession.AfterRequest += RSession_AfterRequest;
             DebugSession.RSession.Disconnected += RSession_Disconnected;
-            DebugSession.Browse += Session_Browse;
+
+            // If we're already at the Browse prompt, registering the handler will result in its immediate invocation.
+            // We want to handle that fully before we process any following AfterRequest event to avoid concurrency issues
+            // where we pause and never resume, so hold the lock while adding the handler. 
+            lock (_browseLock) {
+                DebugSession.Browse += Session_Browse;
+            }
 
             return VSConstants.S_OK;
         }
 
         int IDebugEngine2.CauseBreak() {
             ThrowIfDisposed();
-            DebugSession.RSession.BeginInteractionAsync(isVisible: true).ContinueWith(async t => {
-                using (var inter = await t.ConfigureAwait(false)) {
-                    await inter.RespondAsync("browser()\n").ConfigureAwait(false);
-                }
-            }).DoNotWait();
-
+            DebugSession.Break()
+                .SilenceException<MessageTransportException>()
+                .SilenceException<RException>()
+                .DoNotWait();
             return VSConstants.S_OK;
         }
 
@@ -262,10 +289,19 @@ namespace Microsoft.R.Debugger.Engine {
                 _firstContinue = false;
             } else {
                 // If _sentContinue is true, then this is a dummy Continue issued to notify the
-                // debugger that user has explicitly entered something at the Browse prompt. 
-                if (_sentContinue != true) {
-                    _sentContinue = true;
-                    DebugSession.ExecuteBrowserCommandAsync("c").DoNotWait();
+                // debugger that user has explicitly entered something at the Browse prompt, and
+                // we don't actually need to issue the command to R debugger.
+
+                Task continueTask = null;
+                lock (_browseLock) {
+                    if (_sentContinue != true) {
+                        _sentContinue = true;
+                        continueTask = DebugSession.Continue();
+                    }
+                }
+
+                if (continueTask != null) {
+                    continueTask.GetResultOnUIThread();
                 }
             }
 
@@ -487,8 +523,10 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void Session_Browse(object sender, DebugBrowseEventArgs e) {
-            IsBrowsing = true;
-            _sentContinue = false;
+            lock (_browseLock) {
+                _currentBrowseEventArgs = e;
+                _sentContinue = false;
+            }
 
             // If we hit a breakpoint or completed a step, we have already reported the stop from the corresponding handlers.
             // Otherwise, this is just a random Browse prompt, so raise a dummy breakpoint event with no breakpoints to stop.
@@ -500,16 +538,23 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
-            if (!IsBrowsing) {
-                return;
-            }
-            IsBrowsing = false;
+            bool? sentContinue;
+            lock (_browseLock) {
+                var browseEventArgs = _currentBrowseEventArgs;
+                if (browseEventArgs == null || browseEventArgs.Contexts != e.Contexts) {
+                    // This AfterRequest does not correspond to a Browse prompt, or at least not one
+                    // that we have seen before (and paused on), so there's nothing to do.
+                    return;
+                }
 
-            if (_sentContinue == false) {
+                _currentBrowseEventArgs = null;
+                sentContinue = _sentContinue;
+                _sentContinue = true;
+            }
+
+            if (sentContinue == false) {
                 // User has explicitly typed something at the Browse prompt, so tell the debugger that
                 // we're moving on by issuing a dummy Continue request to switch it to the running state.
-                _sentContinue = true;
-
                 var vsShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
                 Guid group = VSConstants.GUID_VSStandardCommandSet97;
                 object arg = null;
@@ -518,7 +563,8 @@ namespace Microsoft.R.Debugger.Engine {
             }
         }
 
-        private async void RSession_Disconnected(object sender, EventArgs e) {
+        private void RSession_Disconnected(object sender, EventArgs e) {
+            IsConnected = false;
             Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
         }
     }

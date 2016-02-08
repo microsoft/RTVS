@@ -419,6 +419,12 @@
   <data name="Settings_ClearFilterOnAddHistory_Description" xml:space="preserve">
     <value>Reset search filter in history window when new entry is added or .RHistory file is loaded</value>
   </data>
+  <data name="Settings_MultilineHistorySelection" xml:space="preserve">
+    <value>Use multiline selection</value>
+  </data>
+  <data name="Settings_MultilineHistorySelection_Description" xml:space="preserve">
+    <value>Single click in R history window selects the entire fragment that was sent to R.\r\nUp/Down arrows in the R Interactive Window navigate through chunks instead of single lines.</value>
+  </data>
   <data name="Ask" xml:space="preserve">
     <value>Ask</value>
   </data>
@@ -507,5 +513,23 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   </data>
   <data name="Settings_HistoryCategory" xml:space="preserve">
     <value>History</value>
+  </data>
+  <data name="Warning_RStudioKeyboardShortcuts" xml:space="preserve">
+    <value>Do you want to reset keyboard shortcuts to be compable with the RStudio where possible?</value>
+  </data>
+  <data name="Warning_SettingsReset" xml:space="preserve">
+    <value>This will reset Visual Studio window layout to the Data Scientist profile. Proceed?</value>
+  </data>
+  <data name="HelpBrowser_Automatic" xml:space="preserve">
+    <value>Automatic</value>
+  </data>
+  <data name="HelpBrowser_External" xml:space="preserve">
+    <value>External</value>
+  </data>
+  <data name="Settings_HelpBrowser" xml:space="preserve">
+    <value>Help Browser</value>
+  </data>
+  <data name="Settings_HelpBrowser_Description" xml:space="preserve">
+    <value>Determines if R Tools should always be using external Web browser or try and send Help pages to the Help window and other Web requests to the external default Web browser.</value>
   </data>
 </root>

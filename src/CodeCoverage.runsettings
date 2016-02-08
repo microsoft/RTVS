@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0"
+                     assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <CodeCoverage>
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*\.dll$</ModulePath>
+                <ModulePath>.*\.exe</ModulePath>
+              </Include>
+              <Exclude>
+                <ModulePath>.*test.*</ModulePath>
+                <ModulePath>.*xunit.*</ModulePath>
+                <ModulePath>.*fluent.*</ModulePath>
+                <ModulePath>.*mocks.*</ModulePath>
+                <ModulePath>.*editor.application.*</ModulePath>
+              </Exclude>
+            </ModulePaths>
+            <Functions>
+              <Exclude>
+                <Function>^std::.*</Function>
+                <Function>^boost::.*</Function>
+                <Function>^websocketpp::.*</Function>
+                <Function>^__sc.*</Function>
+              </Exclude>
+            </Functions>
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

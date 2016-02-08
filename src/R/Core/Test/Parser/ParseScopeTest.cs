@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseScopeTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    public class ParseScopeTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseScopeTest01() {
             string expected =
 @"GlobalScope  [Global]
@@ -42,8 +40,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "x <- as.matrix(x) \n y <- as.matrix(y)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseScopeTest02() {
             string expected =
 @"GlobalScope  [Global]
@@ -58,8 +56,8 @@ CloseCurlyBraceExpected AfterToken [2...3)
             ParserTest.VerifyParse(expected, "{{}");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseScopeTest03() {
             string expected =
 @"GlobalScope  [Global]
@@ -71,8 +69,8 @@ CloseCurlyBraceExpected AfterToken [0...1)
             ParserTest.VerifyParse(expected, "{");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseScopeTest04() {
             string expected =
 @"GlobalScope  [Global]

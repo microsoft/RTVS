@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.UnitTests.Core.NSubstitute.Mef
 {
+    [ExcludeFromCodeCoverage]
     public class MefSubstitute
     {
         private readonly NSubstituteCompositionContainer _container;

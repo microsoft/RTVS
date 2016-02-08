@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.UnitTests.Core.Threading;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Tagging;
 
-namespace Microsoft.R.Editor.Application.Test.TestShell
-{
+namespace Microsoft.R.Editor.Application.Test.TestShell {
     [ExcludeFromCodeCoverage]
     public sealed partial class TestScript: IDisposable
     {
@@ -55,21 +56,20 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
         /// Create script that opens a disk file in an editor window
         /// </summary>
         /// <param name="fileName">File name</param>
-        public TestScript(TestContext context, string fileName, bool unused)
+        public TestScript(DeployFilesFixture fixture, string fileName, bool unused)
         {
-            OpenFile(context, fileName);
+            OpenFile(fixture, fileName);
         }
         #endregion
 
         /// <summary>
         /// Open a disk file in an editor window
         /// </summary>
+        /// <param name="fixture"></param>
         /// <param name="fileName">File name</param>
-        /// <param name="contentType">File content type</param>
         /// <returns>Editor instance</returns>
-        public void OpenFile(TestContext context, string fileName)
-        {
-            string content = TestFiles.LoadFile(context, fileName);
+        public void OpenFile(DeployFilesFixture fixture, string fileName) {
+            string content = fixture.LoadDestinationFile(fileName);
             EditorWindow.Create(content, fileName);
         }
 
@@ -99,15 +99,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
         /// </summary>
         public void Invoke(Action action)
         {
-            EditorWindow.Invoke(action);
-        }
-
-        /// <summary>
-        /// Invokes a callback function in the editor window and return result
-        /// </summary>
-        public object Invoke(EditorWindow.FunctionInvoke func, object param)
-        {
-            return EditorWindow.Invoke(func, param);
+            UIThreadHelper.Instance.Invoke(action);
         }
 
         /// <summary>
@@ -187,6 +179,58 @@ namespace Microsoft.R.Editor.Application.Test.TestShell
 
             return session;
         }
+
+        public ICompletionSession GetCompletionSession() {
+            ICompletionBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+            var sessions = broker.GetSessions(EditorWindow.CoreEditor.View);
+            ICompletionSession session = sessions.FirstOrDefault();
+
+            int retries = 0;
+            while (session == null && retries < 10) {
+                this.DoIdle(1000);
+                sessions = broker.GetSessions(EditorWindow.CoreEditor.View);
+                session = sessions.FirstOrDefault();
+                retries++;
+            }
+
+            return session;
+        }
+
+        public IList<IMappingTagSpan<IErrorTag>> GetErrorTagSpans() {
+            var aggregatorService = EditorShell.Current.ExportProvider.GetExport<IViewTagAggregatorFactoryService>().Value;
+            var tagAggregator = aggregatorService.CreateTagAggregator<IErrorTag>(EditorWindow.CoreEditor.View);
+            var textBuffer = EditorWindow.CoreEditor.View.TextBuffer;
+            return tagAggregator.GetTags(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length))).ToList();
+        }
+
+        public IList<IMappingTagSpan<IOutliningRegionTag>> GetOutlineTagSpans() {
+            var aggregatorService = EditorShell.Current.ExportProvider.GetExport<IViewTagAggregatorFactoryService>().Value;
+            var tagAggregator = aggregatorService.CreateTagAggregator<IOutliningRegionTag>(EditorWindow.CoreEditor.View);
+            var textBuffer = EditorWindow.CoreEditor.View.TextBuffer;
+            return tagAggregator.GetTags(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length))).ToList();
+        }
+
+        public string WriteErrorTags(IList<IMappingTagSpan<IErrorTag>> tags) {
+            var sb = new StringBuilder();
+
+            foreach (var c in tags) {
+                IMappingSpan span = c.Span;
+                SnapshotPoint? ptStart = span.Start.GetPoint(span.AnchorBuffer, PositionAffinity.Successor);
+                SnapshotPoint? ptEnd = span.End.GetPoint(span.AnchorBuffer, PositionAffinity.Successor);
+                sb.Append('[');
+                sb.Append(ptStart.Value.Position);
+                sb.Append(" - ");
+                sb.Append(ptEnd.Value.Position);
+                sb.Append(']');
+                sb.Append(' ');
+                sb.Append(c.Tag.ToolTipContent);
+                sb.Append('\r');
+                sb.Append('\n');
+            }
+
+            return sb.ToString();
+        }
+
 
         public void Dispose() {
             Close();

@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseEmptyStatementTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    public class ParseEmptyStatementTest {
+        [Test]
+        [Category.R.Parser]
         public void ParseEmptyStatementTest1() {
             string expected =
 @"GlobalScope  [Global]

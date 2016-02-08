@@ -43,16 +43,6 @@ namespace Microsoft.R.Editor.Settings {
 
         public static event EventHandler<EventArgs> Changed;
 
-        public static void BeginBatchChange() {
-            if (IsWritable)
-                WritableStorage.BeginBatchChange();
-        }
-
-        public static void EndBatchChange() {
-            if (IsWritable)
-                WritableStorage.EndBatchChange();
-        }
-
         public static void ResetSettings() {
             if (IsWritable)
                 WritableStorage.ResetSettings();

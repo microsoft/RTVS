@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
+using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
@@ -14,131 +11,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
-    internal class EvaluationWrapper : IIndexedItem {
-        private readonly DebugEvaluationResult _evaluation;
+    internal sealed class EvaluationWrapper : RSessionDataObject, IIndexedItem {
+        public EvaluationWrapper() { }
 
-        private static readonly char[] NameTrimChars = new char[] { '$' };
-        private static readonly string HiddenVariablePrefix = ".";
-        private static readonly char[] NewLineDelimiter = new char[] { '\r', '\n' };
-
-        private readonly bool _truncateChildren;
-
-        private EvaluationWrapper() { Index = -1; }
-
-        public EvaluationWrapper(int index, DebugEvaluationResult evaluation) : this(index, evaluation, true) { }
+        public EvaluationWrapper(int index, DebugEvaluationResult evaluation) :
+            this(index, evaluation, true) { }
 
         /// <summary>
         /// Create new instance of <see cref="EvaluationWrapper"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public EvaluationWrapper(int index, DebugEvaluationResult evaluation, bool truncateChildren) {
-            Index = index;
-            _evaluation = evaluation;
-            _truncateChildren = truncateChildren;
-
-            Name = _evaluation.Name.TrimStart(NameTrimChars);
-
-            if (_evaluation is DebugValueEvaluationResult) {
-                var valueEvaluation = (DebugValueEvaluationResult)_evaluation;
-
-                Value = GetValue(valueEvaluation);
-                ValueDetail = valueEvaluation.Representation.DPut;
-                TypeName = valueEvaluation.TypeName;
-                var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
-                Class = string.Join(", ", escaped); // TODO: escape ',' in class names
-                HasChildren = valueEvaluation.HasChildren;
-
-                CanShowDetail = ComputeDetailAvailability(valueEvaluation);
-                if (CanShowDetail) {
-                    ShowDetailCommand = new DelegateCommand(
-                        ShowVariableGridWindowPane,
-                        (o) => CanShowDetail);
-                    Dimensions = valueEvaluation.Dim;
-                } else {
-                    Dimensions = new List<int>();
-                }
+        public EvaluationWrapper(int index, DebugEvaluationResult evaluation, bool truncateChildren) :
+            base(index, evaluation, truncateChildren) {
+            if (CanShowDetail) {
+                ShowDetailCommand = new DelegateCommand(ShowVariableGridWindowPane, (o) => CanShowDetail);
             }
         }
 
-        private readonly object syncObj = new object();
-        private Task<IReadOnlyList<EvaluationWrapper>> _getChildrenTask = null;
-        public Task<IReadOnlyList<EvaluationWrapper>> GetChildrenAsync() {
-            if (_getChildrenTask == null) {
-                lock (syncObj) {
-                    if (_getChildrenTask == null) {
-                        _getChildrenTask = GetChildrenAsyncInternal();
-                    }
-                }
-            }
-
-            return _getChildrenTask;
-        }
-
-        public async Task<IReadOnlyList<EvaluationWrapper>> GetChildrenAsyncInternal() {
-            List<EvaluationWrapper> result = null;
-
-            var valueEvaluation = _evaluation as DebugValueEvaluationResult;
-            if (valueEvaluation == null) {
-                Debug.Assert(false, $"EvaluationWrapper result type is not {typeof(DebugValueEvaluationResult)}");
-                return result;
-            }
-
-            if (valueEvaluation.HasChildren) {
-                await TaskUtilities.SwitchToBackgroundThread();
-
-                var fields = (DebugEvaluationResultFields.All & ~DebugEvaluationResultFields.ReprAll) |
-                    DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
-
-                // assumumption: DebugEvaluationResult returns children in ascending order
-                var children = await valueEvaluation.GetChildrenAsync(fields, _truncateChildren ? (int?)20 : null, 100);    // TODO: consider exception propagation such as OperationCanceledException
-
-                result = new List<EvaluationWrapper>();
-                for (int i = 0; i < children.Count; i++) {
-                    result.Add(new EvaluationWrapper(i, children[i]));
-                }
-
-                if (valueEvaluation.Length > result.Count) {
-                    result.Add(EvaluationWrapper.Ellipsis); // insert dummy child to indicate truncation in UI
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Index returned from evaluation provider, Sort is based on this, and assumes that DebugEvaluationResult returns in ascending order
-        /// </summary>
-        public int Index { get; }
-
-        public string Name { get; private set; }
-
-        public string Value { get; private set; }
-
-        public string ValueDetail { get; private set; }
-
-        public string TypeName { get; private set; }
-
-        public string Class { get; private set; }
-
-        public bool HasChildren { get; private set; }
-
-        public IReadOnlyList<int> Dimensions { get; private set; }
-
-        public bool IsHidden {
-            get { return Name.StartsWith(HiddenVariablePrefix); }
-        }
-
-        private string FirstLine(string multiLine) {
-            int firstLine = multiLine.IndexOfAny(NewLineDelimiter);
-            if (firstLine == -1) {
-                return multiLine;
-            } else {
-                return multiLine.Substring(0, firstLine);
-            }
-        }
-
-        private static Lazy<EvaluationWrapper> _ellipsis = new Lazy<EvaluationWrapper>(() => {
+        private static Lazy<EvaluationWrapper> _ellipsis = Lazy.Create(() => {
             var instance = new EvaluationWrapper();
             instance.Name = string.Empty;
             instance.Value = "[truncated]";
@@ -149,39 +40,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get { return _ellipsis.Value; }
         }
 
-        private static string DataFramePrefix = "'data.frame':([^:]+):";
-        private string GetValue(DebugValueEvaluationResult v) {
-            var value = v.Representation.Str;
-            if (value != null) {
-                Match match = Regex.Match(value, DataFramePrefix);
-                if (match.Success) {
-                    return match.Groups[1].Value.Trim();
-                }
+        protected override List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<DebugEvaluationResult> children, bool truncateChildren) {
+            var result = new List<IRSessionDataObject>();
+            for (int i = 0; i < children.Count; i++) {
+                result.Add(new EvaluationWrapper(i, children[i], truncateChildren));
             }
-            return value;
+            return result;
         }
 
         #region Detail Grid
-
-        public bool CanShowDetail { get; private set; }
-
-        private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
-        private bool ComputeDetailAvailability(DebugValueEvaluationResult evaluation) {
-            if (evaluation.Classes.Any(t => detailClasses.Contains(t))) {
-                if (evaluation.Dim != null && evaluation.Dim.Count == 2) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public ICommand ShowDetailCommand { get; }
 
         private void ShowVariableGridWindowPane(object parameter) {
             VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);
             pane.SetEvaluation(this);
         }
-
         #endregion
     }
 }

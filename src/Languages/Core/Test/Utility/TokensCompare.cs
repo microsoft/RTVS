@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Languages.Core.Test.Utility
 {
@@ -23,17 +23,16 @@ namespace Microsoft.Languages.Core.Test.Utility
     [ExcludeFromCodeCoverage]
     public static class TokensCompare<TTokenType, TTokenClass> where TTokenClass: IToken<TTokenType>
     {
-        public static void Compare(IReadOnlyCollection<TokenData<TTokenType>> expectedTokens, IReadOnlyCollection<TTokenClass> actualTokens)
-        {
-            Assert.AreEqual(expectedTokens.Count, actualTokens.Count);
+        public static void Compare(IReadOnlyCollection<TokenData<TTokenType>> expectedTokens, IReadOnlyCollection<TTokenClass> actualTokens) {
+            actualTokens.Should().HaveSameCount(expectedTokens);
 
-            IEnumerable<TokenData< TTokenType >> expectedEnum = expectedTokens as IEnumerable<TokenData<TTokenType>>;
-            IEnumerable<TTokenClass> actualEnum = actualTokens as IEnumerable<TTokenClass>;
+            IEnumerable<TokenData<TTokenType>> expectedEnum = expectedTokens;
+            IEnumerable<TTokenClass> actualEnum = actualTokens;
 
             IEnumerator<TokenData< TTokenType >> expectedEnumerator = expectedEnum.GetEnumerator();
             IEnumerator<TTokenClass> actualEnumerator = actualEnum.GetEnumerator();
 
-            for (int i = 0; i < expectedTokens.Count; i++)
+            for (var i = 0; i < expectedTokens.Count; i++)
             {
                 expectedEnumerator.MoveNext();
                 actualEnumerator.MoveNext();
@@ -41,9 +40,9 @@ namespace Microsoft.Languages.Core.Test.Utility
                 TokenData<TTokenType> expected = expectedEnumerator.Current;
                 TTokenClass actual = actualEnumerator.Current;
 
-                Assert.AreEqual(expected.TokenType, actual.TokenType);
-                Assert.AreEqual(expected.Start, actual.Start);
-                Assert.AreEqual(expected.Length, actual.Length);
+                actual.Should().HaveType(expected.TokenType)
+                    .And.StartAt(expected.Start)
+                    .And.HaveLength(expected.Length);
             }
         }
     }

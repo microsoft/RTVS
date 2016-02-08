@@ -1,15 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Formatting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class FormatFunctionTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+    public class FormatFunctionTest {
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunction() {
             RFormatter f = new RFormatter();
             string actual = f.Format("function(a,b) {return(a+b)}");
@@ -17,20 +16,20 @@ namespace Microsoft.R.Core.Test.Formatting {
 @"function(a, b) {
   return(a + b)
 }";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatInlineFunction() {
             RFormatter f = new RFormatter();
             string actual = f.Format("function(a,b) a+b");
             string expected = @"function(a, b) a + b";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionAlignArguments() {
             RFormatOptions options = new RFormatOptions();
             options.IndentType = IndentType.Tabs;
@@ -48,11 +47,11 @@ namespace Microsoft.R.Core.Test.Formatting {
 " intercept = TRUE, tolerance = 1e-07,\r\n" +
 "\t\tyname = NULL)\r\n";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionInlineScope01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x <- func(a,{return(b)})");
@@ -60,11 +59,11 @@ namespace Microsoft.R.Core.Test.Formatting {
 @"x <- func(a, {
   return(b)
 })";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionInlineScope02() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x <- func({return(b)})");
@@ -72,11 +71,11 @@ namespace Microsoft.R.Core.Test.Formatting {
 @"x <- func({
   return(b)
 })";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionInlineIf01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x <- func(a,{if(TRUE) {x} else {y}})");
@@ -88,11 +87,11 @@ namespace Microsoft.R.Core.Test.Formatting {
     y
   }
 })";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionInlineIf02() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x <- func(a,{if(TRUE) 1 else 2})");
@@ -100,11 +99,11 @@ namespace Microsoft.R.Core.Test.Formatting {
 @"x <- func(a, {
   if (TRUE) 1 else 2
 })";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionInlineIf03() {
             RFormatter f = new RFormatter();
             string original =
@@ -117,11 +116,11 @@ if(TRUE) 1 else 2})";
   if (TRUE) 1 else 2
 })";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionInlineIf04() {
             RFormatter f = new RFormatter();
             string original =
@@ -138,11 +137,11 @@ if(TRUE) {1} else {2}})";
   }
 })";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionInlineIf05() {
             RFormatter f = new RFormatter();
             string original =
@@ -160,11 +159,11 @@ if(TRUE) {1} else {2}})";
     2
   }
 })";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionInlineIf06() {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
@@ -184,11 +183,11 @@ if(TRUE) {1} else {2}})";
      if (TRUE) 1 else 2
    })";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionInlineIf07() {
             RFormatter f = new RFormatter();
 
@@ -215,11 +214,11 @@ else
     }
 })";
 
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [TestMethod]
-        [TestCategory("R.Formatting")]
+        [Test]
+        [Category.R.Formatting]
         public void Formatter_FormatFunctionNoSpaceAfterComma() {
             RFormatOptions options = new RFormatOptions();
             options.SpaceAfterComma = false;
@@ -230,7 +229,7 @@ else
 @"function(a,b) {
   return(a + b)
 }";
-            Assert.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
     }
 }

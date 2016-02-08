@@ -1,40 +1,46 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class TokenizeFunctionsTest : TokenizeTestBase<RToken, RTokenType> {
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
-        public void TokenizeFunctionsTest1() {
-            var tokens = this.Tokenize("x <- function( ", new RTokenizer());
+        private readonly CoreTestFilesFixture _files;
 
-            Assert.AreEqual(4, tokens.Count);
-
-            Assert.AreEqual(RTokenType.Identifier, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(1, tokens[0].Length);
-
-            Assert.AreEqual(RTokenType.Operator, tokens[1].TokenType);
-            Assert.AreEqual(2, tokens[1].Start);
-            Assert.AreEqual(2, tokens[1].Length);
-
-            Assert.AreEqual(RTokenType.Keyword, tokens[2].TokenType);
-            Assert.AreEqual(5, tokens[2].Start);
-            Assert.AreEqual(8, tokens[2].Length);
-
-            Assert.AreEqual(RTokenType.OpenBrace, tokens[3].TokenType);
-            Assert.AreEqual(13, tokens[3].Start);
-            Assert.AreEqual(1, tokens[3].Length);
+        public TokenizeFunctionsTest(CoreTestFilesFixture files) {
+            _files = files;
         }
 
-        [TestMethod]
-        [TestCategory("R.Tokenizer")]
+        [Test]
+        [Category.R.Tokenizer]
+        public void TokenizeFunctionsTest1() {
+            var tokens = Tokenize("x <- function( ", new RTokenizer());
+
+            tokens.Should().HaveCount(4);
+
+            tokens[0].Should().HaveType(RTokenType.Identifier)
+                .And.StartAt(0)
+                .And.HaveLength(1);
+
+            tokens[1].Should().HaveType(RTokenType.Operator)
+                .And.StartAt(2)
+                .And.HaveLength(2);
+
+            tokens[2].Should().HaveType(RTokenType.Keyword)
+                .And.StartAt(5)
+                .And.HaveLength(8);
+
+            tokens[3].Should().HaveType(RTokenType.OpenBrace)
+                .And.StartAt(13)
+                .And.HaveLength(1);
+        }
+
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeFile_FunctionsFile() {
-            TokenizeFiles.TokenizeFile(this.TestContext, @"Tokenization\Functions.r");
+            TokenizeFiles.TokenizeFile(_files, @"Tokenization\Functions.r");
         }
     }
 }

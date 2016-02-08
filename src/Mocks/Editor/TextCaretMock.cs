@@ -4,56 +4,33 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 
-namespace Microsoft.VisualStudio.Editor.Mocks
-{
+namespace Microsoft.VisualStudio.Editor.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class TextCaretMock : ITextCaret
-    {
+    public sealed class TextCaretMock : ITextCaret {
         private int _position;
         private ITextView _textView;
 
-        public TextCaretMock(ITextView textView, int position)
-        {
+        public TextCaretMock(ITextView textView, int position) {
             _textView = textView;
             _position = position;
         }
 
-        public double Bottom
-        {
-            get { return 100; }
+        public double Bottom => 100;
+
+        public ITextViewLine ContainingTextViewLine {
+            get { return new TextViewLineMock(_textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(_position)); }
         }
 
-        public ITextViewLine ContainingTextViewLine
-        {
-            get { return null; }
-        }
-
-        public double Height
-        {
-            get { return 100; }
-        }
-
-        public bool InVirtualSpace
-        {
-            get { return false; }
-        }
+        public double Height => 100;
+        public bool InVirtualSpace => false;
 
         public bool IsHidden { get; set; }
 
-        public double Left
-        {
-            get { return 0; }
-        }
+        public double Left => 0;
+        public bool OverwriteMode => false;
 
-        public bool OverwriteMode
-        {
-            get { return false; }
-        }
-
-        public CaretPosition Position
-        {
-            get
-            {
+        public CaretPosition Position {
+            get {
                 return new CaretPosition(
                     new VirtualSnapshotPoint(_textView.TextBuffer.CurrentSnapshot, _position),
                     new MappingPointMock(_textView.TextBuffer, _position),
@@ -61,42 +38,26 @@ namespace Microsoft.VisualStudio.Editor.Mocks
             }
         }
 
-        public double Right
-        {
-            get { return 0; }
+        public double Right => 1;
+        public double Top => 0;
+        public double Width => 1;
+
+        public void EnsureVisible() {
         }
 
-        public double Top
-        {
-            get { return 0; }
-        }
-
-        public double Width
-        {
-            get { return 1; }
-        }
-
-        public void EnsureVisible()
-        {
-        }
-
-        public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition)
-        {
+        public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition) {
             return MoveTo(bufferPosition, PositionAffinity.Successor);
         }
 
-        public CaretPosition MoveTo(SnapshotPoint bufferPosition)
-        {
+        public CaretPosition MoveTo(SnapshotPoint bufferPosition) {
             return MoveTo(bufferPosition, PositionAffinity.Successor);
         }
 
-        public CaretPosition MoveTo(ITextViewLine textLine)
-        {
+        public CaretPosition MoveTo(ITextViewLine textLine) {
             return MoveTo(new SnapshotPoint(textLine.Snapshot, textLine.Start));
         }
 
-        public CaretPosition MoveTo(SnapshotPoint bufferPosition, PositionAffinity caretAffinity)
-        {
+        public CaretPosition MoveTo(SnapshotPoint bufferPosition, PositionAffinity caretAffinity) {
             _position = bufferPosition.Position;
 
             return new CaretPosition(new VirtualSnapshotPoint(bufferPosition),
@@ -104,8 +65,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks
                   caretAffinity);
         }
 
-        public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition, PositionAffinity caretAffinity)
-        {
+        public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition, PositionAffinity caretAffinity) {
             _position = bufferPosition.Position.Position;
 
             return new CaretPosition(bufferPosition,
@@ -113,38 +73,31 @@ namespace Microsoft.VisualStudio.Editor.Mocks
                   PositionAffinity.Successor);
         }
 
-        public CaretPosition MoveTo(ITextViewLine textLine, double xCoordinate)
-        {
+        public CaretPosition MoveTo(ITextViewLine textLine, double xCoordinate) {
             throw new NotImplementedException();
         }
 
-        public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition, PositionAffinity caretAffinity, bool captureHorizontalPosition)
-        {
+        public CaretPosition MoveTo(VirtualSnapshotPoint bufferPosition, PositionAffinity caretAffinity, bool captureHorizontalPosition) {
             return MoveTo(bufferPosition, caretAffinity);
         }
 
-        public CaretPosition MoveTo(SnapshotPoint bufferPosition, PositionAffinity caretAffinity, bool captureHorizontalPosition)
-        {
+        public CaretPosition MoveTo(SnapshotPoint bufferPosition, PositionAffinity caretAffinity, bool captureHorizontalPosition) {
             return MoveTo(bufferPosition, caretAffinity);
         }
 
-        public CaretPosition MoveTo(ITextViewLine textLine, double xCoordinate, bool captureHorizontalPosition)
-        {
+        public CaretPosition MoveTo(ITextViewLine textLine, double xCoordinate, bool captureHorizontalPosition) {
             throw new NotImplementedException();
         }
 
-        public CaretPosition MoveToNextCaretPosition()
-        {
+        public CaretPosition MoveToNextCaretPosition() {
             throw new NotImplementedException();
         }
 
-        public CaretPosition MoveToPreferredCoordinates()
-        {
+        public CaretPosition MoveToPreferredCoordinates() {
             throw new NotImplementedException();
         }
 
-        public CaretPosition MoveToPreviousCaretPosition()
-        {
+        public CaretPosition MoveToPreviousCaretPosition() {
             throw new NotImplementedException();
         }
 

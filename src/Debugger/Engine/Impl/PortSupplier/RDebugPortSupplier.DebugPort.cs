@@ -27,7 +27,7 @@ namespace Microsoft.R.Debugger.Engine.PortSupplier {
             }
 
             private IEnumerable<DebugProcess> GetProcesses() {
-                return RSessionProvider.GetSessions().Select(kv => new DebugProcess(this, kv.Key, kv.Value));
+                return RSessionProvider.GetSessions().Select(session => new DebugProcess(this, session));
             }
 
             public int EnumProcesses(out IEnumDebugProcesses2 ppEnum) {

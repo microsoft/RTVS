@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.R.Support.RD.Classification;
 using Microsoft.R.Support.RD.ContentTypes;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
 namespace Microsoft.R.Support.Test.RD.Classification {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class RdClassifierTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Classifier")]
+    public class RdClassifierTest {
+        [Test]
+        [Category.R.Classifier]
         public void ClassifyRContent() {
             string expected1 =
 @"[0:9] keyword

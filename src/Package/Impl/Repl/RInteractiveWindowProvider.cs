@@ -3,16 +3,11 @@ using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Editor.ContentType;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
-using Microsoft.VisualStudio.R.Package.History;
-using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -24,42 +19,22 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private IVsInteractiveWindowFactory VsInteractiveWindowFactory { get; set; }
 
         [Import]
-        private IRSessionProvider SessionProvider { get; set; }
-
-        [Import]
-        private IRHistoryProvider HistoryProvider { get; set; }
+        private IRInteractiveProvider RInteractiveProvider { get; set; }
 
         public RInteractiveWindowProvider() {
             VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
         }
 
         public IVsInteractiveWindow Create(int instanceId) {
-            var historyWindow = ToolWindowUtilities.FindWindowPane<HistoryWindowPane>(0);
-            return Create(instanceId, historyWindow.TextView);
-        }
+            var interactive = RInteractiveProvider.GetOrCreate();
+            var evaluator = interactive.GetOrCreateEvaluator(instanceId);
 
-        public IVsInteractiveWindow Create(int instanceId, ITextView textView) {
-            IInteractiveEvaluator evaluator;
-            EventHandler textViewOnClosed;
-
-            if (SupportedRVersions.VerifyRIsInstalled()) {
-                var session = SessionProvider.Create(instanceId, new RHostClientApp());
-                var history = HistoryProvider.GetAssociatedRHistory(textView);
-
-                evaluator = new RInteractiveEvaluator(session, history);
-
-                EventHandler<EventArgs> clearPendingInputsHandler = (sender, args) => ReplWindow.Current.ClearPendingInputs();
-                session.Disconnected += clearPendingInputsHandler;
-
-                textViewOnClosed = (_, __) => {
-                    session.Disconnected -= clearPendingInputsHandler;
-                    evaluator.Dispose();
-                    session.Dispose();
-                };
-            } else {
-                evaluator = new NullInteractiveEvaluator();
-                textViewOnClosed = (_, __) => { evaluator.Dispose(); };
-            }
+            EventHandler<EventArgs> clearPendingInputsHandler = (sender, args) => ReplWindow.Current.ClearPendingInputs();
+            interactive.RSession.Disconnected += clearPendingInputsHandler;
+            EventHandler textViewOnClosed = (_, __) => {
+                interactive.RSession.Disconnected -= clearPendingInputsHandler;
+                evaluator.Dispose();
+            };
 
             var vsWindow = VsInteractiveWindowFactory.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType));

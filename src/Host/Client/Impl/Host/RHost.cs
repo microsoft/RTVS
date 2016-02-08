@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
-using Microsoft.R.Support.Settings;
-using Microsoft.R.Support.Settings.Definitions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -27,11 +25,14 @@ namespace Microsoft.R.Host.Client {
 
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
 
+        private static bool showConsole = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
+
         private IMessageTransport _transport;
         private readonly object _transportLock = new object();
         private readonly TaskCompletionSource<IMessageTransport> _transportTcs = new TaskCompletionSource<IMessageTransport>();
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly string _name;
         private readonly IRCallbacks _callbacks;
         private readonly LinesLog _log;
         private readonly FileLogWriter _fileLogWriter;
@@ -44,9 +45,11 @@ namespace Microsoft.R.Host.Client {
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
-        public RHost(IRCallbacks callbacks) {
+        public RHost(string name, IRCallbacks callbacks) {
             _callbacks = callbacks;
-            _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client");
+            _name = name;
+
+            _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Host.Client" + (name != null ? "_" + name : ""));
             _log = new LinesLog(_fileLogWriter);
         }
 
@@ -244,6 +247,10 @@ namespace Microsoft.R.Host.Client {
                 var id = await SendAsync(name, ct, expression);
 
                 var response = await RunLoop(ct, reentrant);
+                if (response == null) {
+                    throw new OperationCanceledException("Evaluation canceled because host process has been terminated.");
+                }
+
                 if (response.RequestId != id || response.Name != name) {
                     throw ProtocolError($"Mismatched host response ['{response.Id}',':','{response.Name}',...] to evaluation request ['{id}','{name}','{expression}']");
                 }
@@ -388,6 +395,10 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.Busy(false, ct);
                                 break;
 
+                            case "~/":
+                                _callbacks.DirectoryChanged();
+                                break;
+
                             case "Plot":
                                 await _callbacks.Plot(message.GetString(0, "xaml_file_path"), ct);
                                 break;
@@ -476,10 +487,10 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task CreateAndRun(string rHome, IntPtr plotWindowContainerHandle, IRToolsSettings settings, ProcessStartInfo psi = null, CancellationToken ct = default(CancellationToken)) {
+        public async Task CreateAndRun(string rHome, string rCommandLineArguments, int timeout = 3000, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.ManifestModule.FullyQualifiedName), RHostExe);
+            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath()), RHostExe);
             string rBinPath = Path.Combine(rHome, RBinPathX64);
 
             if (!File.Exists(rhostExe)) {
@@ -521,15 +532,26 @@ namespace Microsoft.R.Host.Client {
                 throw new MessageTransportException(new SocketException((int)SocketError.AddressAlreadyInUse));
             }
 
-            psi = psi ?? new ProcessStartInfo();
-            psi.FileName = rhostExe;
-            psi.UseShellExecute = false;
+            var psi = new ProcessStartInfo {
+                FileName = rhostExe,
+                UseShellExecute = false
+            };
+
             psi.EnvironmentVariables["R_HOME"] = rHome;
             psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
-            psi.Arguments = Invariant($"--rhost-connect ws://127.0.0.1:{server.Port} --rhost-reparent-plot-windows {plotWindowContainerHandle.ToInt64()}");
 
-            if (!string.IsNullOrWhiteSpace(settings.RCommandLineArguments)) {
-                psi.Arguments += Invariant($" {settings.RCommandLineArguments}");
+            if (_name != null) {
+                psi.Arguments += " --rhost-name " + _name;
+            }
+
+            psi.Arguments += Invariant($" --rhost-connect ws://127.0.0.1:{server.Port}");
+
+            if (!showConsole) {
+                psi.CreateNoWindow = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(rCommandLineArguments)) {
+                psi.Arguments += Invariant($" {rCommandLineArguments}");
             }
 
             using (this)
@@ -542,7 +564,7 @@ namespace Microsoft.R.Host.Client {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
 
                     // Timeout increased to allow more time in test and code coverage runs.
-                    await Task.WhenAny(_transportTcs.Task, Task.Delay(3000)).Unwrap();
+                    await Task.WhenAny(_transportTcs.Task, Task.Delay(timeout)).Unwrap();
                     if (!_transportTcs.Task.IsCompleted) {
                         _log.FailedToConnectToRHost();
                         throw new RHostTimeoutException("Timed out waiting for R host process to connect");

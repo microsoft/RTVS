@@ -7,7 +7,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         //TODO: localize
         private const string _disclaimer =
 "Please briefly describe what you were doing that led to the issue if applicable.\r\n\r\n" +
-"Please be aware that the data contained in the attached logs contain " +
+"Note that the data contained in the attached logs includes " +
 "your command history as well as all output displayed in the R Interactive Window.";
 
         public SendFrownCommand() :
@@ -19,9 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         }
 
         protected override void Handle() {
-
             string zipPath = DiagnosticLogs.Collect();
-                SendMail(_disclaimer, "RTVS Frown", zipPath);
-            }
+            SendMail(_disclaimer, "RTVS Frown", zipPath);
         }
     }
+}

@@ -2,9 +2,12 @@
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.R.Debugger;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -15,11 +18,34 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         };
 
         private readonly ReplWindow _replWindow;
+        private readonly IVsMonitorSelection _monitorSelection;
+        private readonly uint _debugUIContextCookie;
 
         public SourceRScriptCommand(ITextView textView)
             : base(textView, Commands, false) {
             ReplWindow.EnsureReplWindow().DoNotWait();
             _replWindow = ReplWindow.Current;
+
+            _monitorSelection = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
+            if (_monitorSelection != null) {
+                var debugUIContextGuid = new Guid(UIContextGuids.Debugging);
+                if (ErrorHandler.Failed(_monitorSelection.GetCmdUIContextCookie(ref debugUIContextGuid, out _debugUIContextCookie))) {
+                    _monitorSelection = null;
+                }
+            }
+        }
+
+        private bool IsDebugging() {
+            if (_monitorSelection == null) {
+                return false;
+            }
+
+            int fActive;
+            if (ErrorHandler.Succeeded(_monitorSelection.IsCmdUIContextActive(_debugUIContextCookie, out fActive))) {
+                return fActive != 0;
+            }
+
+            return false;
         }
 
         private string GetFilePath() {
@@ -41,17 +67,11 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 return CommandResult.NotSupported;
             }
 
-            _replWindow.ExecuteCode($"source({filePath.ToRStringLiteral()})");
+            // Save file before sourcing
+            TextView.SaveFile();
+
+            _replWindow.ExecuteCode($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
             return CommandResult.Executed;
         }
-
-        //protected override void Dispose(bool disposing) {
-        //    if (_replWindow != null) {
-        //        _replWindow.Dispose();
-        //        _replWindow = null;
-        //    }
-
-        //    base.Dispose(disposing);
-        //}
     }
 }

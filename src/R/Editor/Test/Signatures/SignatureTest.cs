@@ -1,54 +1,29 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
+using FluentAssertions;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class SignatureTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void SignatureTest1() {
-            string content = @"x <- as.matrix(x); break;";
+    [Category.R.Signatures]
+    public class SignatureTest {
+        [CompositeTest]
+        [InlineData(@"x <- as.matrix(x); break;", "as.matrix", 17)]
+        [InlineData(@"x <- as.matrix(x; break;", "as.matrix", 16)]
+        [InlineData(@"x <- as.matrix(x  ; break;", "as.matrix", 18)]
+        public void Signature(string content, string expectedFunctionName, int expectedSignatureEnd) {
             AstRoot ast = RParser.Parse(content);
 
             int signatureEnd;
             int position = 7;
             string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
 
-            Assert.AreEqual("as.matrix", functionName);
-            Assert.AreEqual(17, signatureEnd);
-        }
-
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void SignatureTest2() {
-            string content = @"x <- as.matrix(x; break;";
-            AstRoot ast = RParser.Parse(content);
-
-            int signatureEnd;
-            int position = 7;
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
-
-            Assert.AreEqual("as.matrix", functionName);
-            Assert.AreEqual(16, signatureEnd);
-        }
-
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void SignatureTest3() {
-            string content = @"x <- as.matrix(x  ; break;";
-            AstRoot ast = RParser.Parse(content);
-
-            int signatureEnd;
-            int position = 7;
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
-
-            Assert.AreEqual("as.matrix", functionName);
-            Assert.AreEqual(18, signatureEnd);
+            functionName.Should().Be(expectedFunctionName);
+            signatureEnd.Should().Be(expectedSignatureEnd);
         }
     }
 }

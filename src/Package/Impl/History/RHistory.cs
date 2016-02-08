@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
-using Microsoft.R.Support.Settings;
+using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -19,43 +19,108 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private const string BlockSeparator = "\r\n";
         private const string LineSeparator = "\u00a0";
 
-        private readonly IRHistoryEntries _entries = new RHistoryEntries();
-        private readonly ITextView _textView;
         private readonly IFileSystem _fileSystem;
+        private readonly IRToolsSettings _settings;
         private readonly IEditorOperationsFactoryService _editorOperationsFactory;
-        private readonly IElisionBuffer _elisionBuffer;
+        private readonly IRInteractive _rInteractive;
+        private readonly ITextEditorFactoryService _textEditorFactory;
         private readonly ITextBuffer _historyTextBuffer;
         private readonly CountdownDisposable _textBufferIsEditable;
-        private readonly IEditorOperations _editorOperations;
         private readonly IRtfBuilderService _rtfBuilderService;
-        private readonly ITextSearchService2 _textSearchService;
         private readonly IVsUIShell _vsUiShell;
+        private readonly Action _dispose;
 
+        private IWpfTextView _textView;
+        private ITextSelection _textViewSelection;
+        private IEditorOperations _editorOperations;
+
+        private IRHistoryEntries _entries;
         private IReadOnlyRegion _readOnlyRegion;
         private bool _isInsideWorkaround169159;
-        private string _searchPattern;
         private IRHistoryEntry _currentEntry;
+        private bool _isMultiline;
 
         public event EventHandler<EventArgs> HistoryChanged;
         public event EventHandler<EventArgs> SelectionChanged;
 
-        public RHistory(ITextView textView, IFileSystem fileSystem, IEditorOperationsFactoryService editorOperationsFactory, IElisionBuffer elisionBuffer, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService, IVsUIShell vsShell) {
-            _textView = textView;
-            _historyTextBuffer = textView.TextDataModel.DataBuffer;
+        public RHistory(IRInteractive rInteractive, ITextEditorFactoryService textEditorFactory, ITextBuffer textBuffer, IFileSystem fileSystem, IRToolsSettings settings, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, IVsUIShell vsShell, Action dispose) {
+            _rInteractive = rInteractive;
+            _textEditorFactory = textEditorFactory;
+            _historyTextBuffer = textBuffer;
             _fileSystem = fileSystem;
+            _settings = settings;
             _editorOperationsFactory = editorOperationsFactory;
-            _elisionBuffer = elisionBuffer;
             _rtfBuilderService = rtfBuilderService;
             _vsUiShell = vsShell;
-            _editorOperations = _editorOperationsFactory.GetEditorOperations(_textView);
-            _textSearchService = textSearchService;
+            _dispose = dispose;
 
             _textBufferIsEditable = new CountdownDisposable(MakeTextBufferReadOnly);
+            _isMultiline = settings.MultilineHistorySelection;
+
+            if (_isMultiline) {
+                _entries = new MultilineRHistoryEntries();
+            } else {
+                _entries = new SinglelineRHistoryEntries();
+            }
+
             MakeTextBufferReadOnly();
         }
 
         public bool HasEntries => _entries.HasEntries;
         public bool HasSelectedEntries => _entries.HasSelectedEntries;
+
+        public bool IsMultiline {
+            get { return _isMultiline; }
+            set {
+                if (value == _isMultiline) {
+                    return;
+                }
+
+                var snapshot = _historyTextBuffer.CurrentSnapshot;
+                if (value) {
+                    _entries = new MultilineRHistoryEntries(_entries);
+                } else {
+                    _entries = new SinglelineRHistoryEntries(_entries);
+                }
+                
+                if (_currentEntry != null) {
+                    var currentEntryStart = _currentEntry.Span.GetStartPoint(snapshot);
+                    _currentEntry = _entries.Find(e => e.Span.GetSpan(snapshot).Contains(currentEntryStart));
+                }
+
+                _isMultiline = value;
+                OnSelectionChanged();
+            }
+        }
+
+        public IWpfTextView GetOrCreateTextView() {
+            if (_textView != null) {
+                return _textView;
+            }
+
+            _textView = CreateTextView();
+            _textViewSelection = _textView.Selection;
+            _editorOperations = _editorOperationsFactory.GetEditorOperations(_textView);
+            return _textView;
+        }
+
+        private IWpfTextView CreateTextView() {
+            var textView = _textEditorFactory.CreateTextView(_historyTextBuffer);
+            textView.Options.SetOptionValue(DefaultTextViewHostOptions.VerticalScrollBarId, true);
+            textView.Options.SetOptionValue(DefaultTextViewHostOptions.HorizontalScrollBarId, true);
+            textView.Options.SetOptionValue(DefaultTextViewHostOptions.SelectionMarginId, false);
+            textView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
+            textView.Options.SetOptionValue(DefaultTextViewHostOptions.ZoomControlId, false);
+            textView.Options.SetOptionValue(DefaultWpfViewOptions.EnableMouseWheelZoomId, false);
+            textView.Options.SetOptionValue(DefaultWpfViewOptions.EnableHighlightCurrentLineId, false);
+            textView.Options.SetOptionValue(DefaultTextViewOptions.AutoScrollId, true);
+            textView.Options.SetOptionValue(DefaultTextViewOptions.BraceCompletionEnabledOptionId, false);
+            textView.Options.SetOptionValue(DefaultTextViewOptions.DragDropEditingId, false);
+            textView.Options.SetOptionValue(DefaultTextViewOptions.UseVirtualSpaceId, false);
+            textView.Caret.IsHidden = true;
+            textView.Properties.AddProperty(typeof(IRHistory), this);
+            return textView;
+        }
 
         public bool TryLoadFromFile(string path) {
             string[] historyLines;
@@ -69,12 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             var raiseEvent = _entries.HasSelectedEntries;
 
             DeleteAllEntries();
-
-            foreach (var historyLine in historyLines.Where(l => !string.IsNullOrWhiteSpace(l))) {
-                _entries.Add(historyLine.Replace(LineSeparator, BlockSeparator));
-            }
-
-            SetTrackingSpans();
+            CreateEntries(historyLines);
 
             if (raiseEvent) {
                 OnSelectionChanged();
@@ -84,7 +144,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public bool TrySaveToFile(string path) {
-            var content = _entries.GetEntriesText().Select(t => t.Replace(BlockSeparator, LineSeparator)).ToArray();
+            var snapshot = _historyTextBuffer.CurrentSnapshot;
+            var content = _entries.GetEntries().Select(e => e.Span.GetText(snapshot).Replace(BlockSeparator, LineSeparator)).ToArray();
             try {
                 _fileSystem.FileWriteAllLines(path, content);
                 return true;
@@ -117,13 +178,13 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 _currentEntry = _entries.LastOrDefault();
             } else while (_currentEntry.Previous != null) {
                 _currentEntry = _currentEntry.Previous;
-                if (!_currentEntry.Next.Text.EqualsOrdinal(_currentEntry.Text)) {
+                if (!_historyTextBuffer.IsContentEqualsOrdinal(_currentEntry.Next.Span, _currentEntry.Span)) {
                     break;
                 }
             }
 
             if (_currentEntry != null) {
-                ReplWindow.Current.ReplaceCurrentExpression(_currentEntry.Text);
+                ReplWindow.Current.ReplaceCurrentExpression(_currentEntry.Span.GetText(_historyTextBuffer.CurrentSnapshot));
             }
         }
 
@@ -134,22 +195,27 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             while (_currentEntry.Next != null) {
                 _currentEntry = _currentEntry.Next;
-                if (!_currentEntry.Previous.Text.EqualsOrdinal(_currentEntry.Text)) {
+                if (!_historyTextBuffer.IsContentEqualsOrdinal(_currentEntry.Previous.Span, _currentEntry.Span)) {
                     break;
                 }
             }
 
             if (_currentEntry != null) {
-                ReplWindow.Current.ReplaceCurrentExpression(_currentEntry.Text);
+                ReplWindow.Current.ReplaceCurrentExpression(_currentEntry.Span.GetText(_historyTextBuffer.CurrentSnapshot));
             }
         }
 
         public void CopySelection() {
-            var selectedEntries = GetSelectedHistoryEntrySpans();
-            if (!selectedEntries.Any()) {
-                _editorOperations.CopySelection();
+            if (_textView == null) {
+                return;
             }
-            
+
+            if (!HasSelectedEntries) {
+                _editorOperations.CopySelection();
+                return;
+            }
+
+            var selectedEntries = GetSelectedHistoryEntrySpans();
             var normalizedCollection = new NormalizedSnapshotSpanCollection(selectedEntries);
             var text = GetSelectedText();
             var rtf = _rtfBuilderService.GenerateRtf(normalizedCollection, _textView);
@@ -159,6 +225,15 @@ namespace Microsoft.VisualStudio.R.Package.History {
             data.SetText(rtf, TextDataFormat.Rtf);
             data.SetData(DataFormats.StringFormat, text);
             Clipboard.SetDataObject(data, false);
+        }
+
+        public IReadOnlyList<SnapshotSpan> GetAllHistoryEntrySpans() {
+            if (!HasEntries) {
+                return new List<SnapshotSpan>();
+            }
+
+            var snapshot = _historyTextBuffer.CurrentSnapshot;
+            return _entries.GetEntries().Select(e => e.Span.GetSpan(snapshot)).ToList();
         }
 
         public IReadOnlyList<SnapshotSpan> GetSelectedHistoryEntrySpans() {
@@ -172,11 +247,11 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             foreach (var entry in _entries.GetSelectedEntries()) {
                 if (entry.Previous == null || !entry.Previous.IsSelected) {
-                    start = entry.TrackingSpan.GetStartPoint(snapshot);
+                    start = entry.Span.GetStartPoint(snapshot);
                 }
 
                 if (entry.Next == null || !entry.Next.IsSelected) {
-                    var end = entry.TrackingSpan.GetEndPoint(snapshot);
+                    var end = entry.Span.GetEndPoint(snapshot);
                     if (start != end) {
                         snapshotSpans.Add(new SnapshotSpan(start, end));
                     }
@@ -187,13 +262,16 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public string GetSelectedText() {
-            var selectedText = string.Join(BlockSeparator, _entries.GetSelectedEntriesText());
-
-            if (selectedText.Length > 0 || _textView.Selection.IsEmpty) {
-                return selectedText;
+            if (HasSelectedEntries) {
+                var snapshot = _historyTextBuffer.CurrentSnapshot;
+                return string.Join(BlockSeparator, _entries.GetSelectedEntries().Select(e => e.Span.GetText(snapshot)));
             }
 
-            return string.Join(BlockSeparator, _textView.Selection.SelectedSpans.Select(s => s.GetText()));
+            if (_textViewSelection == null || _textViewSelection.IsEmpty) {
+                return string.Empty;
+            }
+
+            return string.Join(BlockSeparator, _textViewSelection.SelectedSpans.Select(s => s.GetText()));
         }
 
         public SnapshotSpan SelectHistoryEntry(int lineNumber) {
@@ -203,7 +281,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 OnSelectionChanged();
             }
 
-            return entry.TrackingSpan.GetSpan(_historyTextBuffer.CurrentSnapshot);
+            return entry.Span.GetSpan(_historyTextBuffer.CurrentSnapshot);
         }
 
         public void SelectHistoryEntries(IEnumerable<int> lineNumbers) {
@@ -228,14 +306,14 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 OnSelectionChanged();
             }
 
-            return entry.TrackingSpan.GetSpan(_historyTextBuffer.CurrentSnapshot);
+            return entry.Span.GetSpan(_historyTextBuffer.CurrentSnapshot);
         }
 
         public SnapshotSpan ToggleHistoryEntrySelection(int lineNumber) {
             var entry = GetHistoryBlockFromLineNumber(lineNumber);
             entry.IsSelected = !entry.IsSelected;
             OnSelectionChanged();
-            return entry.TrackingSpan.GetSpan(_historyTextBuffer.CurrentSnapshot);
+            return entry.Span.GetSpan(_historyTextBuffer.CurrentSnapshot);
         }
 
         public void SelectAllEntries() {
@@ -276,105 +354,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
         }
 
-        public void Filter(string searchPattern) {
-            if (!_entries.HasEntries || _searchPattern.EqualsIgnoreCase(searchPattern)) {
-                return;
-            }
-
-            if (string.IsNullOrEmpty(searchPattern)) {
-                ClearFilter();
-                return;
-            }
-
-            _searchPattern = searchPattern;
-
-            FilterImpl(searchPattern);
-        }
-
-        private void FilterImpl(string searchPattern) {
-            var snapshot = _historyTextBuffer.CurrentSnapshot;
-            var entries = _entries.GetEntries();
-            var startPoints = entries.Select(e => e.TrackingSpan.GetStartPoint(snapshot)).ToList();
-            var endPoints = startPoints.Skip(1).Append(entries[entries.Count - 1].TrackingSpan.GetEndPoint(snapshot));
-            var spans = startPoints.Zip(endPoints, (start, end) => new SnapshotSpan(start, end));
-
-            ClearHistoryEntrySelection();
-            _textView.Selection.Clear();
-
-            IList<Span> spansToShow;
-            IList<Span> spansToHide;
-            spans.Split(s => _textSearchService.Find(s, s.Start, searchPattern, FindOptions.Multiline).HasValue, s => new Span(s.Start, s.Length), out spansToShow,
-                out spansToHide);
-
-            if (spansToShow.Count == 0) {
-                if (_elisionBuffer.CurrentSnapshot.Length == 0) {
-                    return;
-                }
-
-                Workaround169159();
-                //Uncomment lines when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
-                //_textView.Caret.MoveTo(new SnapshotPoint(snapshot, 0));
-                //_elisionBuffer.ElideSpans(new NormalizedSpanCollection(new Span(0, snapshot.Length)));
-                return;
-            }
-
-            _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(new Span(0, _historyTextBuffer.CurrentSnapshot.Length)));
-
-            MoveCaretToVisiblePoint(spansToShow, snapshot);
-
-            if (spansToHide.Count != 0) {
-                _elisionBuffer.ElideSpans(new NormalizedSpanCollection(spansToHide));
-            }
-
-            _textView.Caret.EnsureVisible();
-        }
-
-        private void MoveCaretToVisiblePoint(IList<Span> spansToShow, ITextSnapshot snapshot) {
-            var caretPosition = _textView.Caret.Position.BufferPosition.Position;
-
-            Span? previousSpan = null;
-            foreach (var span in spansToShow) {
-                if (span.Contains(caretPosition)) {
-                    return;
-                }
-
-                if (span.Start > caretPosition) {
-                    var newCaretPosition = previousSpan?.End ?? span.Start;
-                    _textView.Caret.MoveTo(new SnapshotPoint(snapshot, newCaretPosition));
-                    return;
-                }
-
-                previousSpan = span;
-            }
-        }
-
-        //Remove this method when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
-        private void Workaround169159() {
-            _isInsideWorkaround169159 = true;
-            using (EditTextBuffer()) {
-                _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(new Span(0, _historyTextBuffer.CurrentSnapshot.Length)));
-                _historyTextBuffer.Insert(0, "\u200B"); // 200B is a zero-width space
-                _textView.Caret.MoveTo(new SnapshotPoint(_historyTextBuffer.CurrentSnapshot, 0));
-                _elisionBuffer.ElideSpans(new NormalizedSpanCollection(new Span(1, _historyTextBuffer.CurrentSnapshot.Length - 1)));
-                _historyTextBuffer.Delete(new Span(0, 1));
-            }
-            _isInsideWorkaround169159 = false;
-        }
-
-        public void ClearFilter() {
-            if (!_entries.HasEntries) {
-                return;
-            }
-
-            ClearHistoryEntrySelection();
-            _textView.Selection.Clear();
-
-            _searchPattern = null;
-            var span = new Span(0, _historyTextBuffer.CurrentSnapshot.Length);
-            _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(span));
-            _textView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_textView.TextSnapshot, new Span(0, 0)));
-        }
-
         public void AddToHistory(string text) {
             text = text.TrimEnd('\r', '\n');
             if (string.IsNullOrWhiteSpace(text)) {
@@ -382,7 +361,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
             }
 
             var hasEntries = _entries.HasEntries;
-            var entry = _entries.Add(text);
             var snapshot = _historyTextBuffer.CurrentSnapshot;
 
             using (EditTextBuffer()) {
@@ -393,44 +371,52 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 var position = snapshot.Length;
                 snapshot = _historyTextBuffer.Insert(position, text);
 
-                entry.TrackingSpan = snapshot.CreateTrackingSpan(new Span(position, text.Length), SpanTrackingMode.EdgeExclusive);
-            }
-
-            if (_searchPattern != null && !RToolsSettings.Current.ClearFilterOnAddHistory) {
-                FilterImpl(_searchPattern);
+                _entries.Add(snapshot.CreateTrackingSpan(new Span(position, text.Length), SpanTrackingMode.EdgeExclusive));
             }
         }
 
-        private string GetWholeHistory() => string.Join(BlockSeparator, _entries.GetEntriesText());
+        //TODO: Remove this method when bug #169159 is fixed: https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems/edit/169159
+        public void Workaround169159(IElisionBuffer elisionBuffer) {
+            _isInsideWorkaround169159 = true;
+            using (EditTextBuffer()) {
+                elisionBuffer.ExpandSpans(new NormalizedSpanCollection(new Span(0, _historyTextBuffer.CurrentSnapshot.Length)));
+                _historyTextBuffer.Insert(0, "\u200B"); // 200B is a zero-width space
+                _textView.Caret.MoveTo(new SnapshotPoint(_historyTextBuffer.CurrentSnapshot, 0));
+                elisionBuffer.ElideSpans(new NormalizedSpanCollection(new Span(1, _historyTextBuffer.CurrentSnapshot.Length - 1)));
+                _historyTextBuffer.Delete(new Span(0, 1));
+            }
 
-        private void SetTrackingSpans() {
+            _isInsideWorkaround169159 = false;
+        }
+
+        private void CreateEntries(string[] historyLines) {
             if (_historyTextBuffer == null) {
                 return;
             }
 
-            using (EditTextBuffer()) {
-                var snapshot = _historyTextBuffer.Replace(new Span(0, _historyTextBuffer.CurrentSnapshot.Length), GetWholeHistory());
+            historyLines = historyLines
+                .Where(l => !string.IsNullOrWhiteSpace(l))
+                .Select(l => l.Replace(LineSeparator, BlockSeparator))
+                .ToArray();
 
-                var position = 0;
-                foreach (var entry in _entries.GetEntries()) {
-                    var span = new Span(position, entry.Text.Length);
-                    entry.TrackingSpan = snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive);
-                    position = snapshot.GetLineFromPosition(span.End).EndIncludingLineBreak;
-                }
+            using (EditTextBuffer()) {
+                var text = string.Join(BlockSeparator, historyLines);
+                _historyTextBuffer.Replace(new Span(0, _historyTextBuffer.CurrentSnapshot.Length), text);
             }
 
-            if (_searchPattern != null && !RToolsSettings.Current.ClearFilterOnAddHistory) {
-                FilterImpl(_searchPattern);
+            var position = 0;
+            var snapshot = _historyTextBuffer.CurrentSnapshot;
+            foreach (var historyLine in historyLines) {
+                var span = new Span(position, historyLine.Length);
+                _entries.Add(snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive));
+                position = snapshot.GetLineFromPosition(span.End).EndIncludingLineBreak;
             }
         }
 
         private void DeleteAllEntries() {
             using (EditTextBuffer()) {
-                _historyTextBuffer?.Delete(new Span(0, _historyTextBuffer.CurrentSnapshot.Length));
-                foreach (var entry in _entries.GetEntries()) {
-                    entry.TrackingSpan = null;
-                }
                 _entries.RemoveAll();
+                _historyTextBuffer?.Delete(new Span(0, _historyTextBuffer.CurrentSnapshot.Length));
             }
         }
 
@@ -439,8 +425,15 @@ namespace Microsoft.VisualStudio.R.Package.History {
             using (EditTextBuffer()) {
                 foreach (var entry in selectedEntries) {
                     var snapshot = _historyTextBuffer.CurrentSnapshot;
-                    var startPoint = entry.Previous?.TrackingSpan.GetEndPoint(snapshot) ?? entry.TrackingSpan.GetStartPoint(snapshot);
-                    var endPoint = entry.TrackingSpan.GetEndPoint(snapshot);
+                    SnapshotPoint startPoint, endPoint;
+                    if (entry.Previous != null) {
+                        startPoint = entry.Previous.Span.GetEndPoint(snapshot);
+                        endPoint = entry.Span.GetEndPoint(snapshot);
+                    } else {
+                        startPoint = entry.Span.GetStartPoint(snapshot);
+                        endPoint = entry.Next?.Span.GetStartPoint(snapshot) ?? entry.Span.GetEndPoint(snapshot);
+                    }
+
                     var span = new SnapshotSpan(startPoint, endPoint);
                     _historyTextBuffer.Delete(span);
                 }
@@ -448,7 +441,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private IDisposable EditTextBuffer() {
-            if (_readOnlyRegion != null && _historyTextBuffer != null) {
+            if (_readOnlyRegion != null) {
                 using (var edit = _historyTextBuffer.CreateReadOnlyRegionEdit()) {
                     edit.RemoveReadOnlyRegion(_readOnlyRegion);
                     _readOnlyRegion = null;
@@ -460,10 +453,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private void MakeTextBufferReadOnly() {
-            if (_historyTextBuffer == null) {
-                return;
-            }
-
             using (var edit = _historyTextBuffer.CreateReadOnlyRegionEdit()) {
                 var span = new Span(0, edit.Snapshot.Length);
                 _readOnlyRegion = edit.CreateReadOnlyRegion(span, SpanTrackingMode.EdgeInclusive, EdgeInsertionMode.Deny);
@@ -488,7 +477,11 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private IRHistoryEntry GetHistoryBlockFromLineNumber(int lineNumber) {
             var snapshot = _historyTextBuffer.CurrentSnapshot;
             var line = snapshot.GetLineFromLineNumber(lineNumber);
-            return _entries.Find(b => b.TrackingSpan != null && b.TrackingSpan.GetSpan(snapshot).Contains(line.Extent));
+            return _entries.Find(b => b.Span != null && b.Span.GetSpan(snapshot).Contains(line.Extent));
+        }
+
+        public void Dispose() {
+            _dispose();
         }
     }
 }

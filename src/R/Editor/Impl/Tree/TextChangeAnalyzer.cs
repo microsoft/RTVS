@@ -6,35 +6,25 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Editor.Tree
-{
-    internal static class TextChangeAnalyzer
-    {
+namespace Microsoft.R.Editor.Tree {
+    internal static class TextChangeAnalyzer {
         private static char[] _lineBreaks = new char[] { '\n', '\r' };
         private static char[] _stringSensitiveCharacters = new char[] { '\\', '\'', '\"' };
 
-        public static void DetermineChangeType(TextChangeContext change)
-        {
+        public static void DetermineChangeType(TextChangeContext change) {
             change.PendingChanges.TextChangeType |= CheckChangeInsideComment(change);
-            if (change.PendingChanges.TextChangeType == TextChangeType.Comment)
-            {
+            if (change.PendingChanges.TextChangeType == TextChangeType.Comment) {
                 return;
-            }
-            else if (change.PendingChanges.TextChangeType == TextChangeType.Trivial)
-            {
+            } else if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
                 IAstNode node;
                 PositionType positionType;
 
                 change.PendingChanges.TextChangeType |= CheckChangeInsideString(change, out node, out positionType);
-                if (change.PendingChanges.TextChangeType == TextChangeType.Token)
-                {
+                if (change.PendingChanges.TextChangeType == TextChangeType.Token) {
                     return;
-                }
-                else if (change.PendingChanges.TextChangeType == TextChangeType.Trivial)
-                {
+                } else if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
                     change.PendingChanges.TextChangeType |= CheckWhiteSpaceChange(change, node, positionType);
-                    if (change.PendingChanges.TextChangeType == TextChangeType.Trivial)
-                    {
+                    if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
                         return;
                     }
                 }
@@ -44,51 +34,65 @@ namespace Microsoft.R.Editor.Tree
             change.PendingChanges.FullParseRequired = true;
         }
 
-        private static TextChangeType CheckWhiteSpaceChange(TextChangeContext context, IAstNode node, PositionType positionType)
-        {
+        private static TextChangeType CheckWhiteSpaceChange(TextChangeContext context, IAstNode node, PositionType positionType) {
             context.ChangedNode = node;
 
-            if (string.IsNullOrWhiteSpace(context.OldText) && string.IsNullOrWhiteSpace(context.NewText))
-            {
+            if (string.IsNullOrWhiteSpace(context.OldText) && string.IsNullOrWhiteSpace(context.NewText)) {
                 // In R there is no line continuation so expression may change when user adds or deletes line breaks.
                 bool lineBreakSensitive = (node is If) && ((If)node).LineBreakSensitive;
-                if (lineBreakSensitive)
-                {
+                if (lineBreakSensitive) {
                     string oldLineText = context.OldTextProvider.GetText(new TextRange(context.OldStart, context.OldLength));
                     string newLineText = context.NewTextProvider.GetText(new TextRange(context.NewStart, context.NewLength));
 
-                    if (oldLineText.IndexOfAny(_lineBreaks) >= 0 || newLineText.IndexOfAny(_lineBreaks) >= 0)
-                    {
+                    if (oldLineText.IndexOfAny(_lineBreaks) >= 0 || newLineText.IndexOfAny(_lineBreaks) >= 0) {
                         return TextChangeType.Structure;
                     }
                 }
 
-                return TextChangeType.Trivial;
+                // Change inside token node is destructive: consider adding space inside an indentifier
+                if (!IsChangeDestructiveForChildNodes(node, context.OldRange)) {
+                    return TextChangeType.Trivial;
+                }
             }
 
             return TextChangeType.Structure;
         }
 
-        private static TextChangeType CheckChangeInsideComment(TextChangeContext context)
-        {
+        private static bool IsChangeDestructiveForChildNodes(IAstNode node, ITextRange changedRange) {
+            if(changedRange.End <= node.Start || changedRange.Start >= node.End) {
+                return false;
+            }
+            else if(node.Children.Count == 0) {
+                return true;
+            }
+
+            bool result = false;
+            foreach (var child in node.Children) {
+                result |= IsChangeDestructiveForChildNodes(child, changedRange);
+                if(result) {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        private static TextChangeType CheckChangeInsideComment(TextChangeContext context) {
             var comments = context.EditorTree.AstRoot.Comments;
 
             IReadOnlyList<int> affectedComments = comments.GetItemsContainingInclusiveEnd(context.NewStart);
-            if (affectedComments.Count == 0)
-            {
+            if (affectedComments.Count == 0) {
                 return TextChangeType.Trivial;
             }
 
-            if (affectedComments.Count > 1)
-            {
+            if (affectedComments.Count > 1) {
                 return TextChangeType.Structure;
             }
 
             // Make sure user is not deleting leading # effectively 
             // destroying the comment
             RToken comment = comments[affectedComments[0]];
-            if (comment.Start == context.NewStart && context.OldLength > 0)
-            {
+            if (comment.Start == context.NewStart && context.OldLength > 0) {
                 return TextChangeType.Structure;
             }
 
@@ -97,17 +101,14 @@ namespace Microsoft.R.Editor.Tree
             // inside the comment if it's at the comment start and 
             // the old length of the change is zero.
 
-            if (comment.Start == context.NewStart && context.OldLength == 0)
-            {
-                if (context.NewText.IndexOf('#') < 0)
-                {
+            if (comment.Start == context.NewStart && context.OldLength == 0) {
+                if (context.NewText.IndexOf('#') < 0) {
                     context.ChangedComment = comment;
                     return TextChangeType.Comment;
                 }
             }
 
-            if (context.NewText.IndexOfAny(_lineBreaks) >= 0)
-            {
+            if (context.NewText.IndexOfAny(_lineBreaks) >= 0) {
                 return TextChangeType.Structure;
             }
 
@@ -116,8 +117,7 @@ namespace Microsoft.R.Editor.Tree
             // line break at the end of the comment may bring code into 
             // the comment range and change the entire file structure.
 
-            if (context.OldText.IndexOfAny(_lineBreaks) >= 0)
-            {
+            if (context.OldText.IndexOfAny(_lineBreaks) >= 0) {
                 return TextChangeType.Structure;
             }
 
@@ -125,25 +125,20 @@ namespace Microsoft.R.Editor.Tree
             return TextChangeType.Comment;
         }
 
-        private static TextChangeType CheckChangeInsideString(TextChangeContext context, out IAstNode node, out PositionType positionType)
-        {
+        private static TextChangeType CheckChangeInsideString(TextChangeContext context, out IAstNode node, out PositionType positionType) {
             positionType = context.EditorTree.AstRoot.GetPositionNode(context.NewStart, out node);
 
-            if (positionType == PositionType.Token)
-            {
+            if (positionType == PositionType.Token) {
                 TokenNode tokenNode = node as TokenNode;
                 Debug.Assert(tokenNode != null);
 
-                if (tokenNode.Token.TokenType == RTokenType.String)
-                {
+                if (tokenNode.Token.TokenType == RTokenType.String) {
 
-                    if (context.OldText.IndexOfAny(_stringSensitiveCharacters) >= 0)
-                    {
+                    if (context.OldText.IndexOfAny(_stringSensitiveCharacters) >= 0) {
                         return TextChangeType.Structure;
                     }
 
-                    if (context.NewText.IndexOfAny(_stringSensitiveCharacters) >= 0)
-                    {
+                    if (context.NewText.IndexOfAny(_stringSensitiveCharacters) >= 0) {
                         return TextChangeType.Structure;
                     }
 

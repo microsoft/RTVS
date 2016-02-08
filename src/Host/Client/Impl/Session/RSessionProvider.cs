@@ -2,45 +2,31 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
+using System.Threading;
 
 namespace Microsoft.R.Host.Client.Session {
-
     [Export(typeof(IRSessionProvider))]
     public class RSessionProvider : IRSessionProvider {
-        private readonly ConcurrentDictionary<int, IRSession> _sessions = new ConcurrentDictionary<int, IRSession>();
+        private int _sessionCounter;
+        private readonly ConcurrentDictionary<Guid, IRSession> _sessions = new ConcurrentDictionary<Guid, IRSession>();
 
-        public IRSession Create(int sessionId, IRHostClientApp hostClientApp) {
-            IRSession session = new RSession(sessionId, hostClientApp);
-            IRSession currentSession = this.Current;
-
-            if (!_sessions.TryAdd(sessionId, session)) {
-                return _sessions[sessionId];
-            }
-
-            IRSession currentSessionAfterAdd = this.Current;
-
-            if (!Equals(currentSession, currentSessionAfterAdd)) {
-                CurrentSessionChanged?.Invoke(this, EventArgs.Empty);
-            }
-
-            return session;
+        public IRSession GetOrCreate(Guid guid, IRHostClientApp hostClientApp) {
+            return _sessions.GetOrAdd(guid, id => new RSession(Interlocked.Increment(ref _sessionCounter), hostClientApp, () => DisposeSession(guid)));
         }
 
-        public IReadOnlyDictionary<int, IRSession> GetSessions() {
-            return new Dictionary<int, IRSession>(_sessions);
+        public IEnumerable<IRSession> GetSessions() {
+            return _sessions.Values;
         }
-
-        public IRSession Current => _sessions.Values.FirstOrDefault();
-
-        public event EventHandler CurrentSessionChanged;
-
+        
         public void Dispose() {
             foreach (var session in _sessions.Values) {
                 session.Dispose();
             }
+        }
 
-            _sessions.Clear();
+        private void DisposeSession(Guid guid) {
+            IRSession session;
+            _sessions.TryRemove(guid, out session);
         }
     }
 }

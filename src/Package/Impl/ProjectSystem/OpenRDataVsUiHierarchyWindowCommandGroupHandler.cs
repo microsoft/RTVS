@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         public OpenRDataVsUiHierarchyWindowCommandGroupHandler(UnconfiguredProject unconfiguredProject, IRSessionProvider sessionProvider)
             : base(unconfiguredProject, sessionProvider, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_DoubleClick, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_EnterKey) {}
 
-        protected override async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode, IRSession session) {
+        protected override async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             
             // Don't do anything for file preview
@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 return true;
             }
 
-            return await base.TryHandleCommandAsyncInternal(rDataNode, session);
+            return await base.TryHandleCommandAsyncInternal(rDataNode);
         }
     }
 }

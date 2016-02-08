@@ -26,10 +26,10 @@ namespace Microsoft.R.Host.Client.Session {
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
             var script = @"
 .rtvs.vsgdresize <- function(width, height) {
-   invisible(.External('rtvs::External.ide_graphicsdevice_resize', width, height))
+   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_resize', width, height))
 }
 .rtvs.vsgd <- function() {
-   invisible(.External('rtvs::External.ide_graphicsdevice_new'))
+   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_new'))
 }
 .rtvs.vsgdexportimage <- function(filename, device) {
     dev.copy(device=device,filename=filename)
@@ -40,16 +40,16 @@ namespace Microsoft.R.Host.Client.Session {
     dev.off()
 }
 .rtvs.vsgdnextplot <- function() {
-   invisible(.External('rtvs::External.ide_graphicsdevice_next_plot'))
+   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_next_plot'))
 }
 .rtvs.vsgdpreviousplot <- function() {
-   invisible(.External('rtvs::External.ide_graphicsdevice_previous_plot'))
+   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_previous_plot'))
 }
 .rtvs.vsgdhistoryinfo <- function() {
-   .External('rtvs::External.ide_graphicsdevice_history_info')
+   .External('Microsoft.R.Host::External.ide_graphicsdevice_history_info')
 }
 xaml <- function(filename, width, height) {
-   invisible(.External('rtvs::External.xaml_graphicsdevice_new', filename, width, height))
+   invisible(.External('Microsoft.R.Host::External.xaml_graphicsdevice_new', filename, width, height))
 }
 options(device='.rtvs.vsgd')
 ";
@@ -104,7 +104,7 @@ options(device='.rtvs.vsgd')
         public static Task<REvaluationResult> SetVsHelpRedirection(this IRSessionEvaluation evaluation) {
             var script =
 @"options(browser = function(url) { 
-      .Call('rtvs::Call.send_message', 'Browser', rtvs:::toJSON(url)) 
+      .Call('Microsoft.R.Host::Call.send_message', 'Browser', rtvs:::toJSON(url)) 
   })";
             return evaluation.EvaluateAsync(script);
         }
@@ -122,6 +122,15 @@ options(device='.rtvs.vsgd')
         y <- utils:::.getHelpFile(x)
         paste0(y, collapse = '')
     }";
+            return evaluation.EvaluateAsync(script);
+        }
+
+        public static Task<REvaluationResult> SetChangeDirectoryRedirection(this IRSessionEvaluation evaluation) {
+            var script =
+@"utils::assignInNamespace('setwd', function(dir) {
+    .Internal(setwd(dir))
+    invisible(.Call('Microsoft.R.Host::Call.send_message', '~/', rtvs:::toJSON(dir)))
+  }, 'base')";
             return evaluation.EvaluateAsync(script);
         }
 

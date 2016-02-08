@@ -1,70 +1,89 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Signatures;
+using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Signatures {
     [ExcludeFromCodeCoverage]
-    [TestClass]
+    [Collection(CollectionNames.NonParallel)]
     public class SignatureTest {
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_SignatureParametersMatch() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
-                PrepareFunctionIndex();
+                FunctionRdDataProvider.HostStartTimeout = 10000;
+                using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
+                    PrepareFunctionIndex();
+                    FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
 
-                script.Type("x <- lm(");
+                    script.Type("x <- lm(");
+                    script.DoIdle(1000);
 
-                ISignatureHelpSession session = script.GetSignatureSession();
-                Assert.IsNotNull(session);
-                IParameter parameter = session.SelectedSignature.CurrentParameter;
-                Assert.IsNotNull(parameter);
+                    ISignatureHelpSession session = script.GetSignatureSession();
+                    session.Should().NotBeNull();
+                    IParameter parameter = session.SelectedSignature.CurrentParameter;
+                    parameter.Should().NotBeNull();
 
-                Assert.AreEqual("formula", parameter.Name);
+                    parameter.Name.Should().Be("formula");
 
-                script.Type("sub");
-                script.DoIdle(100);
-                script.Type("{TAB}");
-                script.DoIdle(200);
+                    script.Type("sub");
+                    script.DoIdle(500);
+                    script.Type("{TAB}");
+                    script.DoIdle(1000);
 
-                parameter = session.SelectedSignature.CurrentParameter;
-                Assert.AreEqual("subset", parameter.Name);
+                    parameter = session.SelectedSignature.CurrentParameter;
+                    parameter.Name.Should().Be("subset");
 
-                string actual = script.EditorText;
-                Assert.AreEqual("x <- lm(subset = )", actual);
+                    string actual = script.EditorText;
+                    actual.Should().Be("x <- lm(subset = )");
 
-                session = script.GetSignatureSession();
-                parameter = session.SelectedSignature.CurrentParameter;
+                    session = script.GetSignatureSession();
+                    parameter = session.SelectedSignature.CurrentParameter;
+                }
             }
         }
 
-        [TestMethod]
-        [TestCategory("Interactive")]
+        [Test]
+        [Category.Interactive]
         public void R_SignatureSessionNavigation() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
-                PrepareFunctionIndex();
+                FunctionRdDataProvider.HostStartTimeout = 10000;
+                using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
+                    PrepareFunctionIndex();
+                    FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
 
-                script.Type("x <- lm(subset = a, sing");
-                script.DoIdle(100);
-                script.Type("{TAB}");
-                script.DoIdle(1000);
+                    script.Type("x <- lm(subset = a, sing");
+                    script.DoIdle(1000);
+                    script.Type("{TAB}");
+                    script.DoIdle(1000);
 
-                ISignatureHelpSession session = script.GetSignatureSession();
-                Assert.IsNotNull(session);
-                IParameter parameter = session.SelectedSignature.CurrentParameter;
-                Assert.IsNotNull(parameter);
+                    ISignatureHelpSession session = script.GetSignatureSession();
+                    session.Should().NotBeNull();
 
-                Assert.AreEqual("singular.ok", parameter.Name);
+                    script.DoIdle(200);
+                    IParameter parameter = session.SelectedSignature.CurrentParameter;
+                    parameter.Should().NotBeNull();
+                    parameter.Name.Should().Be("singular.ok");
 
-                script.MoveLeft(17);
-                parameter = session.SelectedSignature.CurrentParameter;
-                Assert.AreEqual("subset", parameter.Name);
+                    script.MoveLeft(17);
+                    script.DoIdle(200);
+                    parameter = session.SelectedSignature.CurrentParameter;
+                    parameter.Name.Should().Be("subset");
 
-                script.MoveRight(3);
-                parameter = session.SelectedSignature.CurrentParameter;
-                Assert.AreEqual("singular.ok", parameter.Name);
+                    script.MoveRight(3);
+                    script.DoIdle(200);
+                    parameter = session.SelectedSignature.CurrentParameter;
+                    parameter.Name.Should().Be("singular.ok");
+                }
             }
         }
 

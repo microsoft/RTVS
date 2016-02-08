@@ -359,6 +359,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Automatic.
+        /// </summary>
+        public static string HelpBrowser_Automatic {
+            get {
+                return ResourceManager.GetString("HelpBrowser_Automatic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External.
+        /// </summary>
+        public static string HelpBrowser_External {
+            get {
+                return ResourceManager.GetString("HelpBrowser_External", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Help.
         /// </summary>
         public static string HelpWindowCaption {
@@ -887,6 +905,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Help Browser.
+        /// </summary>
+        public static string Settings_HelpBrowser {
+            get {
+                return ResourceManager.GetString("Settings_HelpBrowser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Determines if R Tools should always be using external Web browser or try and send Help pages to the Help window and other Web requests to the external default Web browser..
+        /// </summary>
+        public static string Settings_HelpBrowser_Description {
+            get {
+                return ResourceManager.GetString("Settings_HelpBrowser_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to History.
         /// </summary>
         public static string Settings_HistoryCategory {
@@ -919,6 +955,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_LoadRDataOnProjectLoad_Description {
             get {
                 return ResourceManager.GetString("Settings_LoadRDataOnProjectLoad_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use multiline selection.
+        /// </summary>
+        public static string Settings_MultilineHistorySelection {
+            get {
+                return ResourceManager.GetString("Settings_MultilineHistorySelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Single click in R history window selects the entire fragment that was sent to R.\r\nUp/Down arrows in the R Interactive Window navigate through chunks instead of single lines..
+        /// </summary>
+        public static string Settings_MultilineHistorySelection_Description {
+            get {
+                return ResourceManager.GetString("Settings_MultilineHistorySelection_Description", resourceCulture);
             }
         }
         
@@ -1207,6 +1261,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string VariableWindowCaption {
             get {
                 return ResourceManager.GetString("VariableWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compable with the RStudio where possible?.
+        /// </summary>
+        public static string Warning_RStudioKeyboardShortcuts {
+            get {
+                return ResourceManager.GetString("Warning_RStudioKeyboardShortcuts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will reset Visual Studio window layout to the Data Scientist profile. Proceed?.
+        /// </summary>
+        public static string Warning_SettingsReset {
+            get {
+                return ResourceManager.GetString("Warning_SettingsReset", resourceCulture);
             }
         }
         

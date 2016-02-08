@@ -1,92 +1,75 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Utilities {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class CollectionUtilitiesTest {
-        [TestMethod]
-        [TestCategory("Variable.Explorer")]
+        [Test]
+        [Category.Variable.Explorer]
         public void InplaceUpdateAddTest() {
             List<IntegerWrap> source = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(3) };
             List<IntegerWrap> update = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
+            source.Should().Equal(update, IntegerComparer);
 
-            Assert.AreEqual(update.Count, source.Count);
-            for (int i = 0; i < update.Count; i++) {
-                Assert.IsTrue(IntegerComparer(source[i], update[i]));
-            }
-            Assert.IsTrue(source[0].Updated);
-            Assert.IsFalse(source[1].Updated);
-            Assert.IsTrue(source[2].Updated);
-            Assert.IsFalse(source[3].Updated);
+            source[0].Updated.Should().BeTrue();
+            source[1].Updated.Should().BeFalse();
+            source[2].Updated.Should().BeTrue();
+            source[3].Updated.Should().BeFalse();
         }
 
-        [TestMethod]
-        [TestCategory("Variable.Explorer")]
+        [Test]
+        [Category.Variable.Explorer]
         public void InplaceUpdateRemoveTest() {
             List<IntegerWrap> source = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
             List<IntegerWrap> update = new List<IntegerWrap>() { new IntegerWrap(2), new IntegerWrap(4) };
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
+            source.Should().Equal(update, IntegerComparer);
 
-            Assert.AreEqual(update.Count, source.Count);
-            for (int i = 0; i < update.Count; i++) {
-                Assert.IsTrue(IntegerComparer(source[i], update[i]));
-            }
-            Assert.IsTrue(source[0].Updated);
-            Assert.IsTrue(source[1].Updated);
+            source[0].Updated.Should().BeTrue();
+            source[1].Updated.Should().BeTrue();
         }
 
-        [TestMethod]
-        [TestCategory("Variable.Explorer")]
+        [Test]
+        [Category.Variable.Explorer]
         public void InplaceUpdateMixedTest() {
             List<IntegerWrap> source = new List<IntegerWrap>() { new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
             List<IntegerWrap> update = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3) };
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
+            source.Should().Equal(update, IntegerComparer);
 
-            Assert.AreEqual(update.Count, source.Count);
-            for (int i = 0; i < update.Count; i++) {
-                Assert.IsTrue(IntegerComparer(source[i], update[i]));
-            }
-            Assert.IsFalse(source[0].Updated);
-            Assert.IsTrue(source[1].Updated);
-            Assert.IsTrue(source[1].Updated);
+            source[0].Updated.Should().BeFalse();
+            source[1].Updated.Should().BeTrue();
         }
 
-        [TestMethod]
-        [TestCategory("Variable.Explorer")]
+        [Test]
+        [Category.Variable.Explorer]
         public void InplaceUpdateRemoveAllTest() {
-            List<IntegerWrap> source = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3) };
-            List<IntegerWrap> update = new List<IntegerWrap>() { };
+            List<IntegerWrap> source = new List<IntegerWrap> { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3) };
+            List<IntegerWrap> update = new List<IntegerWrap>();
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
-
-            Assert.AreEqual(update.Count, source.Count);
-            for (int i = 0; i < update.Count; i++) {
-                Assert.IsTrue(IntegerComparer(source[i], update[i]));
-            }
+            source.Should().Equal(update, IntegerComparer);
         }
 
-        [TestMethod]
-        [TestCategory("Variable.Explorer")]
+        [Test]
+        [Category.Variable.Explorer]
         public void InplaceUpdateAddToEmptyTest() {
-            List<IntegerWrap> source = new List<IntegerWrap>() { };
-            List<IntegerWrap> update = new List<IntegerWrap>() { new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
+            List<IntegerWrap> source = new List<IntegerWrap>();
+            List<IntegerWrap> update = new List<IntegerWrap> { new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
+            source.Should().Equal(update, IntegerComparer);
 
-            Assert.AreEqual(update.Count, source.Count);
-            for (int i = 0; i < update.Count; i++) {
-                Assert.IsTrue(IntegerComparer(source[i], update[i]));
-            }
-            Assert.IsFalse(source[0].Updated);
-            Assert.IsFalse(source[1].Updated);
-            Assert.IsFalse(source[2].Updated);
+            source[0].Updated.Should().BeFalse();
+            source[1].Updated.Should().BeFalse();
+            source[2].Updated.Should().BeFalse();
         }
 
         private bool IntegerComparer(IntegerWrap value1, IntegerWrap value2) {
@@ -108,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utilities {
             public bool Updated { get; set; }
 
             public override string ToString() {
-                return string.Format("{0} {1}", Value, Updated);
+                return $"{Value} {Updated}";
             }
         }
     }

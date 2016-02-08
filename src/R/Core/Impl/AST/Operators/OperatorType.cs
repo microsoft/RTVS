@@ -33,6 +33,7 @@
         FunctionCall, // ()
         LeftAssign, // <- <<-
         RightAssign, // -> ->>
+        Help, // ? and ??
         Unary, // pseudo-type since unary-ness is defined from context
         Group, // ( ) pseudo-operator
         Sentinel // pseudo-type used in expression parsing

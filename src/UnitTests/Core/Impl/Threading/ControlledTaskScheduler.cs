@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security;
@@ -10,6 +11,7 @@ using Microsoft.Common.Core.Disposables;
 
 namespace Microsoft.UnitTests.Core.Threading
 {
+    [ExcludeFromCodeCoverage]
     public class ControlledTaskScheduler : TaskScheduler
     {
         private readonly SynchronizationContext _syncContext;

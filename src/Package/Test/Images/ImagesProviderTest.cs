@@ -1,25 +1,25 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Editor.Imaging;
+using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.VisualStudio.R.Package.Test.Repl {
+namespace Microsoft.VisualStudio.R.Package.Test.Images {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class ImagesProviderTest {
-        [TestMethod]
-        [TestCategory("Project.Services")]
+        [Test]
+        [Category.Project.Services]
         public void ImagesProvider_Test() {
             IImagesProvider p = VsAppShell.Current.ExportProvider.GetExportedValue<IImagesProvider>();
-            Assert.IsNotNull(p);
+            p.Should().NotBeNull();
 
-            Assert.IsNotNull(p.GetFileIcon("foo.R"));
-            Assert.IsNotNull(p.GetFileIcon("foo.rproj"));
-            Assert.IsNotNull(p.GetFileIcon("foo.rdata"));
+            p.GetFileIcon("foo.R").Should().NotBeNull();
+            p.GetFileIcon("foo.rproj").Should().NotBeNull();
+            p.GetFileIcon("foo.rdata").Should().NotBeNull();
 
-            Assert.IsNotNull(p.GetImage("RProjectNode"));
-            Assert.IsNotNull(p.GetImage("RFileNode"));
-            Assert.IsNotNull(p.GetImage("RDataNode"));
+            p.GetImage("RProjectNode").Should().NotBeNull();
+            p.GetImage("RFileNode").Should().NotBeNull();
+            p.GetImage("RDataNode").Should().NotBeNull();
         }
     }
 }

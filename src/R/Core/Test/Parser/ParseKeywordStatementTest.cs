@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
-    [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseKeywordStatement : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
+    [ExcludeFromCodeCoverage]   
+    public class ParseKeywordStatement {
+        [Test]
+        [Category.R.Parser]
         public void ParseBreakTest1() {
             string expected =
 @"GlobalScope  [Global]
@@ -18,8 +16,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "break");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseBreakTest2() {
             string expected =
 @"GlobalScope  [Global]
@@ -30,8 +28,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "break;");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseNextTest1() {
             string expected =
 @"GlobalScope  [Global]
@@ -41,8 +39,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "next");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseNextTest2() {
             string expected =
 @"GlobalScope  [Global]
@@ -53,8 +51,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "next;");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseLibraryTest01() {
             string expected =
 @"GlobalScope  [Global]
@@ -72,8 +70,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "library(abind)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseLibraryTest02() {
             string expected =
 @"GlobalScope  [Global]
@@ -91,8 +89,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "library('abind')");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseLibraryTest03() {
             string expected =
 @"GlobalScope  [Global]
@@ -106,8 +104,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "library()");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseReturnTest01() {
             string expected =
 @"GlobalScope  [Global]
@@ -121,8 +119,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "return()");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseTypeofTest() {
             string expected =
 @"GlobalScope  [Global]
@@ -140,8 +138,8 @@ namespace Microsoft.R.Core.Test.Parser {
             ParserTest.VerifyParse(expected, "typeof(1)");
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
         public void ParseSwitchTest() {
             string expected =
 @"GlobalScope  [Global]

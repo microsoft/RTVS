@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
+using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
@@ -9,38 +9,39 @@ using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.AST {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class AstNodeTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("AST")]
+    public class AstNodeTest {
+        [Test]
+        [Category.R.Ast]
         public void AstNode_RemoveChildrenTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a+b"));
-            IScope scope = ast.Children[0] as IScope;
-            IStatement statement = scope.Children[0] as IStatement;
-            IExpression exp = statement.Children[0] as IExpression;
 
-            IOperator op = exp.Children[0] as IOperator;
-            Assert.AreEqual(3, op.Children.Count);
+            IOperator op = ast.Children[0].Should().BeAssignableTo<IScope>()
+                .Which.Children[0].Should().BeAssignableTo<IStatement>()
+                .Which.Children[0].Should().BeAssignableTo<IExpression>()
+                .Which.Children[0].Should().BeAssignableTo<IOperator>()
+                .Which;
+
+            op.Children.Should().HaveCount(3);
 
             op.RemoveChildren(1, 0);
-            Assert.AreEqual(3, op.Children.Count);
+            op.Children.Should().HaveCount(3);
 
             op.RemoveChildren(0, 1);
-            Assert.AreEqual(2, op.Children.Count);
+            op.Children.Should().HaveCount(2);
 
             op.RemoveChildren(0, 0);
-            Assert.AreEqual(2, op.Children.Count);
+            op.Children.Should().HaveCount(2);
 
             op.RemoveChildren(1, 1);
-            Assert.AreEqual(1, op.Children.Count);
+            op.Children.Should().HaveCount(1);
         }
 
-        [TestMethod]
-        [TestCategory("AST")]
+        [Test]
+        [Category.R.Ast]
         public void AstNode_GetPositionNodeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a+b"));
 
@@ -48,16 +49,14 @@ namespace Microsoft.R.Core.Test.AST {
             IAstNode variable;
 
             ast.GetPositionNode(0, out scope);
-            Assert.IsNotNull(scope);
-            Assert.IsTrue(scope is IScope);
+            scope.Should().BeAssignableTo<IScope>();
 
             scope.GetPositionNode(1, out variable);
-            Assert.IsNotNull(variable);
-            Assert.IsTrue(variable is Variable);
+            variable.Should().BeOfType<Variable>();
         }
 
-        [TestMethod]
-        [TestCategory("AST")]
+        [Test]
+        [Category.R.Ast]
         public void AstNode_GetElementsEnclosingRangeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a123+b"));
 
@@ -66,57 +65,53 @@ namespace Microsoft.R.Core.Test.AST {
 
             ast.GetElementsEnclosingRange(2, 5, out startNode, out startPositionType, out endNode, out endPositionType);
 
-            Assert.IsNotNull(startNode);
-            Assert.IsNotNull(endNode);
+            startNode.Should().BeAssignableTo<IOperator>();
+            endNode.Should().BeOfType<Variable>();
 
-            Assert.AreEqual(PositionType.Node, startPositionType);
-            Assert.IsTrue(startNode is IOperator);
+            startPositionType.Should().Be(PositionType.Node);
+            endPositionType.Should().Be(PositionType.Token);
 
-            Assert.AreEqual(PositionType.Token, endPositionType);
-            Assert.IsTrue(endNode is Variable);
-
-            Assert.AreEqual("a123", ((Variable)endNode).Name);
+            ((Variable) endNode).Name.Should().Be("a123");
         }
 
-        [TestMethod]
-        [TestCategory("AST")]
+        [Test]
+        [Category.R.Ast]
         public void AstNode_NodeFromRangeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a123+b"));
 
             IAstNode node = ast.NodeFromRange(new TextRange(2, 5));
-            Assert.IsNotNull(node);
-            Assert.IsTrue(node is IOperator);
+            node.Should().BeAssignableTo<IOperator>();
 
             node = ast.NodeFromRange(new TextRange(7, 2));
-            Assert.IsNotNull(node);
-            Assert.IsTrue(node is Variable);
+            node.Should().BeOfType<Variable>();
         }
 
-        [TestMethod]
-        [TestCategory("AST")]
+        [Test]
+        [Category.R.Ast]
         public void AstNode_PropertiesTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a+b"));
 
             ast.Properties.AddProperty("a", "b");
-            Assert.AreEqual(1, ast.Properties.PropertyList.Count);
-            Assert.IsTrue(ast.Properties.ContainsProperty("a"));
-            Assert.IsFalse(ast.Properties.ContainsProperty("b"));
-            Assert.AreEqual("b", ast.Properties.GetProperty("a"));
-            Assert.AreEqual("b", ast.Properties.GetProperty<object>("a"));
+
+            ast.Properties.PropertyList.Should().HaveCount(1);
+            ast.Properties.ContainsProperty("a").Should().BeTrue();
+            ast.Properties.ContainsProperty("b").Should().BeFalse();
+            ast.Properties.GetProperty("a").Should().Be("b");
+            ast.Properties.GetProperty<object>("a").Should().Be("b");
 
             ast.Properties["a"] = "c";
-            Assert.IsTrue(ast.Properties.ContainsProperty("a"));
-            Assert.IsFalse(ast.Properties.ContainsProperty("b"));
-            Assert.AreEqual("c", ast.Properties.GetProperty("a"));
-            Assert.AreEqual("c", ast.Properties.GetProperty<object>("a"));
+            ast.Properties.ContainsProperty("a").Should().BeTrue();
+            ast.Properties.ContainsProperty("b").Should().BeFalse();
+            ast.Properties.GetProperty("a").Should().Be("c");
+            ast.Properties.GetProperty<object>("a").Should().Be("c");
 
             string s;
-            Assert.IsTrue(ast.Properties.TryGetProperty("a", out s));
-            Assert.AreEqual("c", s);
+            ast.Properties.TryGetProperty("a", out s).Should().BeTrue();
+            s.Should().Be("c");
 
             ast.Properties.RemoveProperty("a");
-            Assert.AreEqual(0, ast.Properties.PropertyList.Count);
-            Assert.IsFalse(ast.Properties.ContainsProperty("a"));
+            ast.Properties.PropertyList.Should().BeEmpty();
+            ast.Properties.ContainsProperty("a").Should().BeFalse();
         }
     }
 }

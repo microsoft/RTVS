@@ -1,67 +1,35 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Markdown.Editor.Tokens;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.Markdown.Editor.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    [TestClass]
     public class TokenizeListTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
-        public void TokenizeMd_List01() {
-            var tokens = this.Tokenize(@"- item", new MdTokenizer());
+        [CompositeTest]
+        [InlineData(@"- item", 0, 6)]
+        [InlineData(@"* item", 0, 6)]
+        [InlineData(@"12. item", 0, 8)]
+        [Category.Md.Tokenizer]
+        public void TokenizeMd_List(string text, int start, int length) {
+            var tokens = Tokenize(text, new MdTokenizer());
 
-            Assert.AreEqual(1, tokens.Count);
-
-            Assert.AreEqual(MarkdownTokenType.ListItem, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(6, tokens[0].Length);
+            tokens.Should().ContainSingle()
+                .Which.Should().HaveType(MarkdownTokenType.ListItem)
+                .And.StartAt(start)
+                .And.HaveLength(length);
         }
 
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
-        public void TokenizeMd_List02() {
-            var tokens = this.Tokenize(@"* item", new MdTokenizer());
-
-            Assert.AreEqual(1, tokens.Count);
-
-            Assert.AreEqual(MarkdownTokenType.ListItem, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(6, tokens[0].Length);
-        }
-
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
-        public void TokenizeMd_List03() {
-            var tokens = this.Tokenize(@"12. item", new MdTokenizer());
-
-            Assert.AreEqual(1, tokens.Count);
-
-            Assert.AreEqual(MarkdownTokenType.ListItem, tokens[0].TokenType);
-            Assert.AreEqual(0, tokens[0].Start);
-            Assert.AreEqual(8, tokens[0].Length);
-        }
-
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
-        public void TokenizeMd_List04() {
-            var tokens = this.Tokenize(@"-item", new MdTokenizer());
-            Assert.AreEqual(0, tokens.Count);
-        }
-
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
-        public void TokenizeMd_List05() {
-            var tokens = this.Tokenize(@"*item", new MdTokenizer());
-            Assert.AreEqual(0, tokens.Count);
-        }
-
-        [TestMethod]
-        [TestCategory("Md.Tokenizer")]
-        public void TokenizeMd_List06() {
-            var tokens = this.Tokenize(@"1.item", new MdTokenizer());
-            Assert.AreEqual(0, tokens.Count);
+        [CompositeTest]
+        [InlineData(@"-item")]
+        [InlineData(@"*item")]
+        [InlineData(@"1.item")]
+        [Category.Md.Tokenizer]
+        public void TokenizeMd_EmptyList(string text) {
+            var tokens = Tokenize(text, new MdTokenizer());
+            tokens.Should().BeEmpty();
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Host.Client {
     class Program : IRCallbacks {
@@ -12,8 +11,8 @@ namespace Microsoft.R.Host.Client {
 
         static void Main(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
-            var host = new RHost(new Program());
-            host.CreateAndRun(args[0], IntPtr.Zero, RToolsSettings.Current).GetAwaiter().GetResult();
+            var host = new RHost(null, new Program());
+            host.CreateAndRun(args[0], string.Empty).GetAwaiter().GetResult();
             _evaluator = host;
         }
 
@@ -93,6 +92,10 @@ namespace Microsoft.R.Host.Client {
 
         public async Task Browser(string url) {
             await Console.Error.WriteLineAsync("Browser: " + url);
+        }
+
+        public async void DirectoryChanged() {
+            await Console.Error.WriteLineAsync("Directory changed.");
         }
 
         private async Task<string> ReadLineAsync(string prompt, bool isEvaluationAllowed, CancellationToken ct) {

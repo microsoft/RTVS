@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
+using FluentAssertions.Collections;
 using FluentAssertions.Specialized;
 
 namespace Microsoft.UnitTests.Core.FluentAssertions
 {
+    [ExcludeFromCodeCoverage]
     public static class FluentAssertionExtensions
     {
         private static readonly MethodInfo ShouldThrowActionMethod;

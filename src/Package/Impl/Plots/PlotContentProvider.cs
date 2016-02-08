@@ -7,10 +7,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xaml;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 
@@ -22,48 +24,22 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private int _lastWidth;
         private int _lastHeight;
 
-        /// <summary>
-        /// R current session change triggers this SessionsChanged event
-        /// </summary>
-        public event EventHandler SessionsChanged;
-
         public PlotContentProvider() {
             _lastWidth = -1;
             _lastHeight = -1;
 
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
-            sessionProvider.CurrentSessionChanged += RSessionProvider_CurrentChanged;
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _rSession = sessionProvider.GetInteractiveWindowRSession();
+            _rSession.Mutated += RSession_Mutated;
+            _rSession.Connected += RSession_Connected;
 
-            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExport<IDebugSessionProvider>().Value;
+            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
 
             IdleTimeAction.Create(() => {
-                SetRSession(sessionProvider.Current);
-            }, 10, typeof(PlotContentProvider));
-        }
-
-        private async void SetRSession(IRSession session) {
-            // cleans up old RSession
-            if (_rSession != null) {
-                _rSession.Mutated -= RSession_Mutated;
-                _rSession.Connected -= RSession_Connected;
-            }
-
-            // set new RSession
-            _rSession = session;
-
-            if (_rSession != null) {
-                _rSession.Mutated += RSession_Mutated;
-                _rSession.Connected += RSession_Connected;
-
                 // debug session is created to trigger a load of the R package
                 // that has functions we need such as rtvs:::toJSON
-                var debugSession = await _debugSessionProvider.GetDebugSessionAsync(_rSession);
-            }
-
-            // notify the change
-            if (SessionsChanged != null) {
-                SessionsChanged(this, EventArgs.Empty);
-            }
+                _debugSessionProvider.GetDebugSessionAsync(_rSession).DoNotWait();
+            }, 10, typeof(PlotContentProvider));
         }
 
         private void RSession_Mutated(object sender, EventArgs e) {
@@ -80,18 +56,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             OnPlotChanged(null);
         }
 
-        /// <summary>
-        /// IRSessionProvider.CurrentSessionChanged handler. When current session changes, this is called
-        /// </summary>
-        private void RSessionProvider_CurrentChanged(object sender, EventArgs e) {
-            var sessionProvider = sender as IRSessionProvider;
-            Debug.Assert(sessionProvider != null);
-
-            if (sessionProvider != null) {
-                SetRSession(sessionProvider.Current);
-            }
-        }
-
         #region IPlotContentProvider implementation
 
         public event EventHandler<PlotChangedEventArgs> PlotChanged;
@@ -99,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public void LoadFile(string fileName) {
             UIElement element = null;
             // Empty filename means clear
-            if (fileName.Length > 0) {
+            if (!string.IsNullOrEmpty(fileName)) {
                 try {
                     if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
                         var image = new Image();
@@ -109,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                         element = (UIElement)XamlServices.Load(fileName);
                     }
                     _lastLoadFile = fileName;
-                } catch (Exception e) {
+                } catch (Exception e) when (!e.IsCriticalException()) {
                     element = CreateErrorContent(
                         new FormatException(string.Format("Couldn't load XAML file from {0}", fileName), e));
                 }

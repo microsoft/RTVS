@@ -8,34 +8,26 @@ using Microsoft.Common.Core;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
-using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveEvaluator : IInteractiveEvaluator {
-        private static bool useReparentPlot = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_USE_NEW_GFX"));
-
-        private readonly IntPtr _plotWindowHandle;
+        private readonly IRToolsSettings _toolsSettings;
 
         public IRHistory History { get; }
         public IRSession Session { get; }
 
-        public RInteractiveEvaluator(IRSession session, IRHistory history) {
+        public RInteractiveEvaluator(IRSession session, IRHistory history, IRToolsSettings toolsSettings) {
             History = history;
             Session = session;
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
-
-            if (useReparentPlot) {
-                // Cache handle here since it must be done on UI thread
-                _plotWindowHandle = RPlotWindowHost.RPlotWindowContainerHandle;
-            } else {
-                _plotWindowHandle = IntPtr.Zero;
-            }
+            _toolsSettings = toolsSettings;
         }
 
         public void Dispose() {
@@ -45,7 +37,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public async Task<ExecutionResult> InitializeAsync() {
             try {
-                await Session.StartHostAsync(_plotWindowHandle);
+                await Session.StartHostAsync(new RHostStartupInfo {
+                    Name = "REPL",
+                    RBasePath = _toolsSettings.RBasePath,
+                    RCommandLineArguments = _toolsSettings.RCommandLineArguments,
+                    CranMirrorName = _toolsSettings.CranMirror
+                });
+
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
@@ -152,31 +150,34 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private void SessionOnOutput(object sender, ROutputEventArgs args) {
             if (args.OutputType == OutputType.Output) {
-                Write(args.Message).DoNotWait();
+                Write(args.Message);
             } else {
-                WriteError(args.Message).DoNotWait();
+                WriteError(args.Message);
             }
         }
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
-            if (!CurrentWindow.IsResetting) {
-                WriteLine(Resources.MicrosoftRHostStopped).DoNotWait();
+            if (CurrentWindow == null || !CurrentWindow.IsResetting) {
+                WriteLine(Resources.MicrosoftRHostStopped);
             }
         }
 
-        private async Task Write(string message) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CurrentWindow.Write(message);
+        private void Write(string message) {
+            if (CurrentWindow != null) {
+                VsAppShell.Current.DispatchOnUIThread(() => CurrentWindow.Write(message));
+            }
         }
 
-        private async Task WriteError(string message) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CurrentWindow.WriteError(message);
+        private void WriteError(string message) {
+            if (CurrentWindow != null) {
+                VsAppShell.Current.DispatchOnUIThread(() => CurrentWindow.WriteError(message));
+            }
         }
 
-        private async Task WriteLine(string message) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            CurrentWindow.WriteLine(message);
+        private void WriteLine(string message) {
+            if (CurrentWindow != null) {
+                VsAppShell.Current.DispatchOnUIThread(() => CurrentWindow.WriteLine(message));
+            }
         }
 
         /// <summary>

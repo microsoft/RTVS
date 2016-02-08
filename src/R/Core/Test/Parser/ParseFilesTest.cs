@@ -1,22 +1,26 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class ParseFilesTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Parser")]
-        public void ParseFile_CheckR() {
-            ParseFiles.ParseFile(this.TestContext, @"Parser\Check.r");
+    public class ParseFilesTest {
+        private readonly CoreTestFilesFixture _files;
+
+        public ParseFilesTest(CoreTestFilesFixture files) {
+            _files = files;
         }
 
-        [TestMethod]
-        [TestCategory("R.Parser")]
+        [Test]
+        [Category.R.Parser]
+        public void ParseFile_CheckR() {
+            ParseFiles.ParseFile(_files, @"Parser\Check.r");
+        }
+
+        [Test]
+        [Category.R.Parser]
         public void ParseFile_FrametoolsR() {
-            ParseFiles.ParseFile(this.TestContext, @"Parser\frametools.r");
+            ParseFiles.ParseFile(_files, @"Parser\frametools.r");
         }
     }
 }

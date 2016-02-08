@@ -1,12 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.VisualStudio.R.Package.Test.Commands {
+namespace Microsoft.VisualStudio.R.Package.Test.Package {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class RPackageTest : UnitTestBase {
-       // [TestMethod]
+    public class RPackageTest {
+       // [Test]
         //public void RPackage_ConstructionTest() {
         //    SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
         //        var package = new TestRPackage();
@@ -17,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
         //    }, RPackageTestCompositionCatalog.Current);
         //}
 
-        //[TestMethod]
+        //[Test]
         //public void RPackage_EditorFactoryTest() {
         //    SequentialEditorTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
         //        var package = new TestRPackage();

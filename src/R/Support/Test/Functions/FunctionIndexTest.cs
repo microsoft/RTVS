@@ -1,95 +1,54 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using Microsoft.Languages.Core.Test.Utility;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Support.Test.Functions {
     [ExcludeFromCodeCoverage]
-    [TestClass]
-    public class FunctionIndexTest : UnitTestBase {
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void FunctionInfoTest1() {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
-                object result = FunctionIndex.GetFunctionInfo("abs", (object o) => {
-                    FunctionInfoTest1_TestBody(evt);
-                });
-
-                if (result != null && !evt.IsSet) {
-                    FunctionInfoTest1_TestBody(evt);
-                }
-            });
+    [Collection(CollectionNames.NonParallel)]
+    public class FunctionIndexTest : IAsyncLifetime {
+        public Task InitializeAsync() {
+            return FunctionIndexUtility.InitializeAsync();
         }
 
-        [TestMethod]
-        [TestCategory("R.Signatures")]
-        public void FunctionInfoTest2() {
-            FunctionIndexTestExecutor.ExecuteTest((ManualResetEventSlim evt) => {
-                object result = FunctionIndex.GetFunctionInfo("eval", (object o) => {
-                    FunctionInfoTest2_TestBody(evt);
-                });
-
-                if (result != null && !evt.IsSet) {
-                    FunctionInfoTest2_TestBody(evt);
-                }
-            });
+        public Task DisposeAsync() {
+            return FunctionIndexUtility.DisposeAsync();
         }
 
-        private void FunctionInfoTest1_TestBody(ManualResetEventSlim completed) {
-            IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo("abs");
-            Assert.IsNotNull(functionInfo);
+        [Test]
+        [Category.R.Signatures]
+         public async Task FunctionInfoTest1() {
+            var functionInfo = await FunctionIndexUtility.GetFunctionInfoAsync("abs");
 
-            Assert.AreEqual("abs", functionInfo.Name);
-            Assert.IsTrue(functionInfo.Description.Length > 0);
-
-            Assert.AreEqual(2, functionInfo.Aliases.Count);
-            Assert.AreEqual("abs", functionInfo.Aliases[0]);
-            Assert.AreEqual("sqrt", functionInfo.Aliases[1]);
-
-            Assert.AreEqual(1, functionInfo.Signatures.Count);
-            Assert.AreEqual(1, functionInfo.Signatures[0].Arguments.Count);
+            functionInfo.Should().NotBeNull();
+            functionInfo.Name.Should().Be("abs");
+            functionInfo.Description.Should().NotBeEmpty();
+            functionInfo.Signatures.Should().ContainSingle()
+                .Which.Arguments.Should().ContainSingle();
 
             List<int> locusPoints = new List<int>();
-            Assert.AreEqual("abs(x)", functionInfo.Signatures[0].GetSignatureString("abs", locusPoints));
-
-            Assert.AreEqual(2, locusPoints.Count);
-            Assert.AreEqual(4, locusPoints[0]);
-            Assert.AreEqual(5, locusPoints[1]);
-
-            completed.Set();
+            functionInfo.Signatures[0].GetSignatureString(locusPoints).Should().Be("abs(x)");
+            locusPoints.Should().Equal(4, 5);
         }
 
-        private void FunctionInfoTest2_TestBody(ManualResetEventSlim completed) {
-            IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo("eval");
-            Assert.IsNotNull(functionInfo);
+        [Test]
+        [Category.R.Signatures]
+        public async Task FunctionInfoTest2() {
+            var functionInfo = await FunctionIndexUtility.GetFunctionInfoAsync("eval");
 
-            Assert.AreEqual("eval", functionInfo.Name);
-            Assert.IsTrue(functionInfo.Description.Length > 0);
-
-            Assert.AreEqual(4, functionInfo.Aliases.Count);
-            Assert.AreEqual("eval", functionInfo.Aliases[0]);
-            Assert.AreEqual("evalq", functionInfo.Aliases[1]);
-            Assert.AreEqual("eval.parent", functionInfo.Aliases[2]);
-            Assert.AreEqual("local", functionInfo.Aliases[3]);
-
-            Assert.AreEqual(1, functionInfo.Signatures.Count);
-            Assert.AreEqual(3, functionInfo.Signatures[0].Arguments.Count);
+            functionInfo.Should().NotBeNull();
+            functionInfo.Name.Should().Be("eval");
+            functionInfo.Description.Should().NotBeEmpty();
+            functionInfo.Signatures.Should().ContainSingle()
+                .Which.Arguments.Should().HaveCount(3);
 
             List<int> locusPoints = new List<int>();
-            string signature = functionInfo.Signatures[0].GetSignatureString("eval", locusPoints);
-            Assert.AreEqual("eval(expr, envir = parent.frame(), enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())", signature);
-
-            Assert.AreEqual(4, locusPoints.Count);
-            Assert.AreEqual(5, locusPoints[0]);
-            Assert.AreEqual(11, locusPoints[1]);
-            Assert.AreEqual(35, locusPoints[2]);
-            Assert.AreEqual(114, locusPoints[3]);
-
-            completed.Set();
+            string signature = functionInfo.Signatures[0].GetSignatureString(locusPoints);
+            signature.Should().Be("eval(expr, envir = parent.frame(), enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())");
+            locusPoints.Should().Equal(5, 11, 35, 114);
         }
     }
 }
