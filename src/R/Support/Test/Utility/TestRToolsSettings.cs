@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Common.Core.Enums;
+using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.R.Support.Test.Utility {

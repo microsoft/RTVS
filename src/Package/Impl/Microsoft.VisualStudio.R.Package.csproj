@@ -178,9 +178,11 @@
     <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
     <Compile Include="Plots\Definitions\IPlotHistory.cs" />
+    <Compile Include="Plots\Definitions\IPlotHistoryProvider.cs" />
     <Compile Include="Plots\IPlotContentProvider.cs" />
     <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="Plots\PlotHistory.cs" />
+    <Compile Include="Plots\PlotHistoryProvider.cs" />
     <Compile Include="ProjectSystem\ExcludeFromProjectCommand.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />
@@ -415,6 +417,9 @@
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -483,6 +488,7 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Interop.7.10.6071\lib\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
       <Private>True</Private>
@@ -590,7 +596,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
@@ -661,6 +666,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Help\Themes\Dark.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Help\Themes\Light.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Images\ReplWindowIcon.png" />
     <Content Include="Profiles\RCombined.vssettings">
       <SubType>Designer</SubType>

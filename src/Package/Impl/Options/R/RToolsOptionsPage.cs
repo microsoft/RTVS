@@ -1,16 +1,15 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
-using Microsoft.R.Actions.Utility;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
-using System;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
@@ -127,8 +126,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName("Settings_ShowDotPrefixedVariables")]
         [LocDescription("Settings_ShowDotPrefixedVariables_Description")]
         [DefaultValue(false)]
-        public bool ShowDotPrefixedVariables
-        {
+        public bool ShowDotPrefixedVariables {
             get { return RToolsSettings.Current.ShowDotPrefixedVariables; }
             set { RToolsSettings.Current.ShowDotPrefixedVariables = value; }
         }
@@ -180,12 +178,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             if (path != null) {
                 bool valid = SupportedRVersions.VerifyRIsInstalled(path, showErrors: !_allowLoadingFromStorage);
                 if (!valid) {
-                    if (_allowLoadingFromStorage) {
-                        // Bad data in the settings storage. Fix the value to default.
-                        path = RInstallation.GetLatestEnginePathFromRegistry();
-                    } else {
-                        path = null; // Prevents assignment of bad values to the property.
-                    }
+                    path = null; // Prevents assignment of bad values to the property.
                 }
             }
 
@@ -193,7 +186,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         protected override void OnClosed(EventArgs e) {
-            if(!_applied) {
+            if (!_applied) {
                 // On cancel load previously saved settings back
                 LoadSettings();
             }

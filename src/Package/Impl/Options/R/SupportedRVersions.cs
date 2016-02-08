@@ -15,15 +15,21 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                         SupportedRVersionList.MinMajorVersion, SupportedRVersionList.MinMinorVersion,
                         SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion);
 
-            if (data.Status != RInstallStatus.OK && showErrors) {
-                string message = FormatMessage(data);
-                VsAppShell.Current.ShowErrorMessage(message);
-                if(data.Status == RInstallStatus.PathNotSpecified) {
-                    Process.Start("https://mran.revolutionanalytics.com/download/#download");
+            if (data.Status != RInstallStatus.OK) {
+                if (showErrors) {
+                    string message = FormatMessage(data);
+                    VsAppShell.Current.ShowErrorMessage(message);
+                    if (data.Status == RInstallStatus.PathNotSpecified || data.Status == RInstallStatus.UnsupportedVersion) {
+                        if (!string.IsNullOrEmpty(path)) {
+                            // If path is in Tools | Options and yet we can't find proper R
+                            // we need to clear this setting.
+                            RToolsSettings.Current.RBasePath = null;
+                        }
+                        RInstallation.GoToRInstallPage();
+                    }
                 }
                 return false;
             }
-
             return true;
         }
 
