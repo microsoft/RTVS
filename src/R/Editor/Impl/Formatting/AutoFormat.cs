@@ -3,6 +3,7 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
@@ -26,34 +27,42 @@ namespace Microsoft.R.Editor.Formatting {
 
             IEditorTree tree;
             SnapshotPoint? rPoint = GetCaretPointInBuffer(textView, out tree);
-            if (rPoint.HasValue) {
-                ITextBuffer subjectBuffer = rPoint.Value.Snapshot.TextBuffer;
-                if (typedChar.IsLineBreak()) {
-                    // Special case for hitting caret after } and before 'else'. We do want to format
-                    // the construct as '} else {' but if user types Enter after } and we auto-format
-                    // it will look as if the editor just eats the Enter. Instead, we will not be
-                    // autoformatting in this specific case. User can always format either the document
-                    // or select the block and reformat it.
-                    if (!IsBetweenCurlyAndElse(subjectBuffer, rPoint.Value.Position)) {
-                        bool formatScope = ShouldFormatScope(textView, subjectBuffer, -1);
-                        if (formatScope) {
-                            FormatOperations.FormatCurrentNode<IStatement>(textView, subjectBuffer);
-                        } else {
-                            FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, -1);
-                        }
+            if (!rPoint.HasValue) {
+                return;
+            }
+
+            // We don't want to auto-format inside strings
+            TokenNode node = tree.AstRoot.NodeFromPosition(rPoint.Value.Position) as TokenNode;
+            if (node != null && node.Token.TokenType == RTokenType.String) {
+                return;
+            }
+
+            ITextBuffer subjectBuffer = rPoint.Value.Snapshot.TextBuffer;
+            if (typedChar.IsLineBreak()) {
+                // Special case for hitting caret after } and before 'else'. We do want to format
+                // the construct as '} else {' but if user types Enter after } and we auto-format
+                // it will look as if the editor just eats the Enter. Instead, we will not be
+                // autoformatting in this specific case. User can always format either the document
+                // or select the block and reformat it.
+                if (!IsBetweenCurlyAndElse(subjectBuffer, rPoint.Value.Position)) {
+                    bool formatScope = ShouldFormatScope(textView, subjectBuffer, -1);
+                    if (formatScope) {
+                        FormatOperations.FormatCurrentNode<IStatement>(textView, subjectBuffer);
+                    } else {
+                        FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, -1);
                     }
-                } else if (typedChar == ';') {
-                    // Verify we are at the end of the string and not in a middle
-                    // of another string or inside a statement.
-                    ITextSnapshotLine line = subjectBuffer.CurrentSnapshot.GetLineFromPosition(rPoint.Value.Position);
-                    int positionInLine = rPoint.Value.Position - line.Start;
-                    string lineText = line.GetText();
-                    if (positionInLine >= lineText.TrimEnd().Length) {
-                        FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, 0);
-                    }
-                } else if (typedChar == '}') {
-                    FormatOperations.FormatNode<IStatement>(textView, subjectBuffer, Math.Max(rPoint.Value - 1, 0));
                 }
+            } else if (typedChar == ';') {
+                // Verify we are at the end of the string and not in a middle
+                // of another string or inside a statement.
+                ITextSnapshotLine line = subjectBuffer.CurrentSnapshot.GetLineFromPosition(rPoint.Value.Position);
+                int positionInLine = rPoint.Value.Position - line.Start;
+                string lineText = line.GetText();
+                if (positionInLine >= lineText.TrimEnd().Length) {
+                    FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, 0);
+                }
+            } else if (typedChar == '}') {
+                FormatOperations.FormatNode<IStatement>(textView, subjectBuffer, Math.Max(rPoint.Value - 1, 0));
             }
         }
 
@@ -64,7 +73,7 @@ namespace Microsoft.R.Editor.Formatting {
                 return false;
             }
 
-            ITextSnapshotLine prevLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum-1);
+            ITextSnapshotLine prevLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum - 1);
 
             string leftSide = prevLine.GetText().TrimEnd();
             if (!leftSide.EndsWith("}", StringComparison.Ordinal)) {

@@ -4,6 +4,8 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.R.Core.AST;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
@@ -54,7 +56,13 @@ namespace Microsoft.R.Editor.Formatting {
                         targetSpan.Snapshot.TextBuffer.Replace(targetSpan, text);
                         document.EditorTree.EnsureTreeReady();
 
-                        RangeFormatter.FormatRange(TextView, targetSpan.Snapshot.TextBuffer, new TextRange(insertionPoint, text.Length), document.EditorTree.AstRoot, REditorSettings.FormatOptions);
+                        // We don't want to auto-format inside strings
+                        TokenNode node = document.EditorTree.AstRoot.NodeFromPosition(insertionPoint) as TokenNode;
+                        if (node == null || node.Token.TokenType != RTokenType.String) {
+                            RangeFormatter.FormatRange(TextView, targetSpan.Snapshot.TextBuffer,
+                                new TextRange(insertionPoint, text.Length), document.EditorTree.AstRoot,
+                                REditorSettings.FormatOptions);
+                        }
                     }
                 }
             }
