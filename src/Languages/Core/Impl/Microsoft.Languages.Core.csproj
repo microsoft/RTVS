@@ -48,6 +48,7 @@
     <Compile Include="Settings\ISettingsStorage.cs" />
     <Compile Include="Text\BraceCounter.cs" />
     <Compile Include="Text\CharacterStream.cs" />
+    <Compile Include="Text\CharExtensions.cs" />
     <Compile Include="Text\ICompositeTextRange.cs" />
     <Compile Include="Text\ITextProvider.cs" />
     <Compile Include="Text\ITextRange.cs" />

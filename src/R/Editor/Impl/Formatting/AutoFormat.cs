@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -27,7 +28,7 @@ namespace Microsoft.R.Editor.Formatting {
             SnapshotPoint? rPoint = GetCaretPointInBuffer(textView, out tree);
             if (rPoint.HasValue) {
                 ITextBuffer subjectBuffer = rPoint.Value.Snapshot.TextBuffer;
-                if (typedChar == '\r' || typedChar == '\n') {
+                if (typedChar.IsLineBreak()) {
                     // Special case for hitting caret after } and before 'else'. We do want to format
                     // the construct as '} else {' but if user types Enter after } and we auto-format
                     // it will look as if the editor just eats the Enter. Instead, we will not be

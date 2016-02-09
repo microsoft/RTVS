@@ -215,7 +215,7 @@ namespace Microsoft.Languages.Core.Formatting {
                 return tabSize - spacesSoFar % tabSize;
             }
 
-            if (character == '\r' || character == '\n') {
+            if (character.IsLineBreak()) {
                 Debug.Fail("We don't expect any new lines here");
                 return 1;
             }
@@ -237,7 +237,7 @@ namespace Microsoft.Languages.Core.Formatting {
             for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
 
-                if (ch == '\r' || ch == '\n')
+                if (ch.IsLineBreak())
                     break;
 
                 length += IndentBuilder.GetWhiteSpaceCharLength(ch, spaces, tabSize);
@@ -267,7 +267,7 @@ namespace Microsoft.Languages.Core.Formatting {
                 if (!Char.IsWhiteSpace(ch))
                     break;
 
-                if (ch == '\r' || ch == '\n')
+                if (ch.IsLineBreak())
                     break;
 
                 indent += IndentBuilder.GetWhiteSpaceCharLength(ch, spaces, tabSize);

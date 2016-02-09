@@ -332,7 +332,7 @@ namespace Microsoft.R.Support.RD.Tokens {
         /// </summary>
         /// <returns></returns>
         private bool HandlePragma() {
-            if (_cs.Position == 0 || _cs.PrevChar == '\r' || _cs.PrevChar == '\n') {
+            if (_cs.Position == 0 || _cs.PrevChar.IsLineBreak()) {
                 int start = _cs.Position;
                 SkipUnknown();
 

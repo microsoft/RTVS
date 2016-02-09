@@ -25,7 +25,7 @@ namespace Microsoft.Languages.Core.Formatting {
                     if (!Char.IsWhiteSpace(ch))
                         return false;
 
-                    if (ch == '\r' || ch == '\n')
+                    if (ch.IsLineBreak())
                         return true;
                 }
             }
@@ -105,7 +105,7 @@ namespace Microsoft.Languages.Core.Formatting {
                 if (!Char.IsWhiteSpace(ch))
                     return false;
 
-                if (ch == '\r' || ch == '\n')
+                if (ch.IsLineBreak())
                     return true;
             }
 

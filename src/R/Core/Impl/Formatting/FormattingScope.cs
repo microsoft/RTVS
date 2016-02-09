@@ -96,7 +96,7 @@ namespace Microsoft.R.Core.Formatting {
                     break;
                 }
 
-                if (ch == '\n' || ch == '\r') {
+                if (ch.IsLineBreak()) {
                     string userIndentString = textProvider.GetText(TextRange.FromBounds(i + 1, position));
                     int indentSize = IndentBuilder.TextIndentInSpaces(userIndentString, options.TabSize);
                     return IndentBuilder.GetIndentString(indentSize, options.IndentType, options.IndentSize);

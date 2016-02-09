@@ -19,6 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Microsoft.Languages.Core.Text;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudioTools.Wpf {
@@ -102,7 +103,7 @@ namespace Microsoft.VisualStudioTools.Wpf {
                     if (string.IsNullOrEmpty(existing)) {
                         tb.SetCurrentValue(TextBox.TextProperty, path);
                     } else {
-                        tb.SetCurrentValue(TextBox.TextProperty, existing.TrimEnd(new[] { '\r', '\n' }) + Environment.NewLine + path);
+                        tb.SetCurrentValue(TextBox.TextProperty, existing.TrimEnd(CharExtensions.LineBreakChars) + Environment.NewLine + path);
                     }
                     var binding = BindingOperations.GetBindingExpressionBase(tb, TextBox.TextProperty);
                     if (binding != null) {

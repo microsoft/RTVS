@@ -64,7 +64,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                     char ch = e.Changes[0].NewText[0];
                     if (AutoFormat.IsAutoformatTriggerCharacter(ch)) {
                         int offset = 0;
-                        if (e.Changes[0].NewText[0] == '\r' || e.Changes[0].NewText[0] == '\n') {
+                        if (e.Changes[0].NewText[0].IsLineBreak()) {
                             position = e.Changes[0].OldPosition + 1;
                             textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
                             offset = -1;

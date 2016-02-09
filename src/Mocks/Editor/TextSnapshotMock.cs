@@ -192,7 +192,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks
             for (int i = 0; i < text.Length; i++)
             {
                 char ch = text[i];
-                if (ch == '\r' || ch == '\n')
+                if (ch.IsLineBreak())
                 {
                     list.Add(new TextLineMock(this, start, i - start, list.Count));
 
@@ -209,7 +209,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks
             {
                 start = list[list.Count - 1].End;
 
-                if (start < text.Length && (text[start] == '\n' || text[start] == '\r'))
+                if (start < text.Length && text[start].IsLineBreak())
                 {
                     start++;
 
