@@ -129,7 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 cssfileName = VisualTheme;
             } else {
                 Color defaultBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
-                if (!_lastDefaultBackground.HasValue || _lastDefaultBackground != defaultBackground) {
+                if (!_lastDefaultBackground.HasValue || _lastDefaultBackground.Value != defaultBackground) {
                     _lastDefaultBackground = defaultBackground;
                     // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
                     cssfileName = defaultBackground.GetBrightness() < 0.5 ? "Dark.css" : "Light.css";
@@ -209,6 +209,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void CloseBrowser() {
             _windowContentControl.Content = null;
+            _lastDefaultBackground = null;
 
             if (Browser != null) {
                 Browser.Navigating -= OnNavigating;
