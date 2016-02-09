@@ -3,7 +3,6 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
-using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
@@ -32,8 +31,7 @@ namespace Microsoft.R.Editor.Formatting {
             }
 
             // We don't want to auto-format inside strings
-            TokenNode node = tree.AstRoot.NodeFromPosition(rPoint.Value.Position) as TokenNode;
-            if (node != null && node.Token.TokenType == RTokenType.String) {
+            if(tree.AstRoot.IsPositionInsideString(rPoint.Value.Position)) {
                 return;
             }
 

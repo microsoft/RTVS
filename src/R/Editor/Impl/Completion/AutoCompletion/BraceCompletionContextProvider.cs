@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
@@ -43,17 +42,16 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
                 tree.EnsureTreeReady();
 
                 // We don't want to complete inside strings
-                TokenNode node = tree.AstRoot.NodeFromPosition(openingPoint.Position) as TokenNode;
-                if(node != null && node.Token.TokenType == RTokenType.String) {
+                if (tree.AstRoot.IsPositionInsideString(openingPoint.Position)) {
                     context = null;
                     return false;
                 }
 
                 // We don't want to complete single quotes after # since
                 // it is not convenient when typing #' in doxygen comments.
-                if(openingBrace == '\'') {
+                if (openingBrace == '\'') {
                     int index = tree.AstRoot.Comments.GetItemContaining(openingPoint.Position);
-                    if (index >= 0 && openingPoint.Position == tree.AstRoot.Comments[index].Start+1) {
+                    if (index >= 0 && openingPoint.Position == tree.AstRoot.Comments[index].Start + 1) {
                         context = null;
                         return false;
                     }
