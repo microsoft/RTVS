@@ -8,16 +8,8 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
     public static class CompletionUtilities {
         public static IVsExpansionManager GetExpansionManager() {
             IVsExpansionManager expansionManager = null;
-
             IVsTextManager2 textManager2 = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
-
-            Debug.Assert(textManager2 != null, "Null text manager in ExpansionClient");
-            if (textManager2 != null) {
-                int expansionManagerResult = textManager2.GetExpansionManager(out expansionManager);
-                Debug.Assert((expansionManagerResult == VSConstants.S_OK) && (expansionManager != null),
-                    "Error getting ExpansionManager in ExpansionClient");
-            }
-
+            textManager2.GetExpansionManager(out expansionManager);
             return expansionManager;
         }
 

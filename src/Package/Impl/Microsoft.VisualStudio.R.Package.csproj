@@ -336,6 +336,15 @@
     <Compile Include="Packages\R\RPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell\IdleTimeSource.cs" />
+    <Compile Include="Snippets\ExpansionClient.cs" />
+    <Compile Include="Snippets\Definitions\ISnippetInfo.cs" />
+    <Compile Include="Snippets\Definitions\ISnippetProvider.cs" />
+    <Compile Include="Snippets\SnippetCache.cs" />
+    <Compile Include="Snippets\SnippetController.cs" />
+    <Compile Include="Snippets\SnippetControllerFactory.cs" />
+    <Compile Include="Snippets\SnippetInfo.cs" />
+    <Compile Include="Snippets\SnippetListManager.cs" />
+    <Compile Include="Snippets\VsExpansionEx.cs" />
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
@@ -418,6 +427,9 @@
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.MSXML, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
