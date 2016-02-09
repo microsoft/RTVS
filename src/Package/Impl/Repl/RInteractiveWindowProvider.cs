@@ -48,8 +48,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private static async Task InitializeWindowAsync(IInteractiveWindow window) {
             await window.InitializeAsync();
-            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            shell.UpdateCommandUI(1);
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                shell.UpdateCommandUI(0);
+            });
         }
 
         public void Open(int instanceId, bool focus) {
