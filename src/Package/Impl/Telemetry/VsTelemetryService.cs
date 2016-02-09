@@ -12,9 +12,9 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         private static Lazy<VsTelemetryService> _instance = Lazy.Create(() => new VsTelemetryService());
 
         public VsTelemetryService()
-            : base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, new StringTelemetryRecorder()) {
-//            : base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, VsTelemetryRecorder.Current) {
-        }
+            //: base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, new StringTelemetryRecorder()) {
+            : base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, VsTelemetryRecorder.Current) {
+            }
 
         public static TelemetryServiceBase Current => _instance.Value;
 
