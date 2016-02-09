@@ -8,7 +8,6 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Editor.Tree {
     internal static class TextChangeAnalyzer {
-        private static char[] _lineBreaks = new char[] { '\n', '\r' };
         private static char[] _stringSensitiveCharacters = new char[] { '\\', '\'', '\"' };
 
         public static void DetermineChangeType(TextChangeContext change) {
@@ -44,7 +43,7 @@ namespace Microsoft.R.Editor.Tree {
                     string oldLineText = context.OldTextProvider.GetText(new TextRange(context.OldStart, context.OldLength));
                     string newLineText = context.NewTextProvider.GetText(new TextRange(context.NewStart, context.NewLength));
 
-                    if (oldLineText.IndexOfAny(_lineBreaks) >= 0 || newLineText.IndexOfAny(_lineBreaks) >= 0) {
+                    if (oldLineText.IndexOfAny(CharExtensions.LineBreakChars) >= 0 || newLineText.IndexOfAny(CharExtensions.LineBreakChars) >= 0) {
                         return TextChangeType.Structure;
                     }
                 }
@@ -108,7 +107,7 @@ namespace Microsoft.R.Editor.Tree {
                 }
             }
 
-            if (context.NewText.IndexOfAny(_lineBreaks) >= 0) {
+            if (context.NewText.IndexOfAny(CharExtensions.LineBreakChars) >= 0) {
                 return TextChangeType.Structure;
             }
 
@@ -117,7 +116,7 @@ namespace Microsoft.R.Editor.Tree {
             // line break at the end of the comment may bring code into 
             // the comment range and change the entire file structure.
 
-            if (context.OldText.IndexOfAny(_lineBreaks) >= 0) {
+            if (context.OldText.IndexOfAny(CharExtensions.LineBreakChars) >= 0) {
                 return TextChangeType.Structure;
             }
 

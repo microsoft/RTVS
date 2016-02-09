@@ -2,12 +2,19 @@ body {
     background: black;
     color: white;
     font-family: Segoe UI;
-    font-size: 9pt
+    font-size: 9pt;
+    scrollbar-highlight-color: rgb(62,62,66);
+    scrollbar-3dlight-color: rgb(62,62,66);
+    scrollbar-darkshadow-color:rgb(62,62,66);
+    scrollbar-shadow-color: rgb(62,62,66);
+    scrollbar-face-color: rgb(100,100,100);
+    scrollbar-arrow-color: rgb(153,153,153);
+    scrollbar-track-color: rgb(62,62,66);
 }
 
 p {
     font-family: Segoe UI;
-    font-size: 9pt
+    font-size: 9pt;
 }
 
 a:link {
@@ -65,7 +72,7 @@ h6 {
     font-family: 'Segoe UI';
     font-style: italic;
 }
-		
+
 img.toplogo {
     vertical-align: middle;
 }
@@ -88,7 +95,7 @@ span.file {
     font-family: Consolas;
 }
 
-span.option{
+span.option {
     font-family: Consolas;
 }
 
@@ -96,7 +103,7 @@ span.pkg {
     font-weight: bold;
 }
 
-span.samp{
+span.samp {
     font-family: Consolas;
 }
 

@@ -17,6 +17,7 @@ namespace Microsoft.R.Editor.Completion {
     using System.Threading.Tasks;
     using Core.Tokens;
     using Host.Client;
+    using Languages.Core.Text;
     using Languages.Editor.Shell;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
@@ -170,7 +171,7 @@ namespace Microsoft.R.Editor.Completion {
                         return CompletionSession.SelectedCompletionSet.SelectionStatus.IsSelected && typedChar == '\t';
                     }
 
-                    if (typedChar == '\n' || typedChar == '\r') {
+                    if (typedChar.IsLineBreak()) {
                         if (REditorSettings.CommitOnEnter)
                             return true;
 

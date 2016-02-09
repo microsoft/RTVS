@@ -39,6 +39,14 @@ namespace Microsoft.R.Editor.Test.Formatting {
         }
 
         [Test]
+        public void NoFormatInStringTest01() {
+            ITextView textView = TestAutoFormat(5, "\n", "'x<-1'");
+
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            actual.Should().Be("'x<-1\n'");
+        }
+
+        [Test]
         public void SmartIndentTest05() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
@@ -64,7 +72,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                     char ch = e.Changes[0].NewText[0];
                     if (AutoFormat.IsAutoformatTriggerCharacter(ch)) {
                         int offset = 0;
-                        if (e.Changes[0].NewText[0] == '\r' || e.Changes[0].NewText[0] == '\n') {
+                        if (e.Changes[0].NewText[0].IsLineBreak()) {
                             position = e.Changes[0].OldPosition + 1;
                             textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
                             offset = -1;

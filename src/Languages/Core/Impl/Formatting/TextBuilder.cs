@@ -117,7 +117,7 @@ namespace Microsoft.Languages.Core.Formatting {
                 for (i = _formattedText.Length - 1; i >= 0; i--) {
                     char ch = _formattedText[i];
 
-                    if (ch == '\r' || ch == '\n')
+                    if (ch.IsLineBreak())
                         break;
 
                     if (!Char.IsWhiteSpace(ch)) {
@@ -180,7 +180,7 @@ namespace Microsoft.Languages.Core.Formatting {
         }
 
         public void AppendText(string text) {
-            Debug.Assert(text.IndexOfAny(new char[] { '\r', '\n' }) < 0, "AppendText only accepts texts without line breaks. Use AppendPreformattedText instead");
+            Debug.Assert(text.IndexOfAny(CharExtensions.LineBreakChars) < 0, "AppendText only accepts texts without line breaks. Use AppendPreformattedText instead");
 
             if (_currentLineLength == 0 && !string.IsNullOrWhiteSpace(text)) {
                 SoftIndent();
@@ -193,7 +193,7 @@ namespace Microsoft.Languages.Core.Formatting {
         public void AppendPreformattedText(string text) {
             for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
-                if (ch == '\r' || ch == '\n') {
+                if (ch.IsLineBreak()) {
                     AppendNewLine();
                     i++;
                 } else {

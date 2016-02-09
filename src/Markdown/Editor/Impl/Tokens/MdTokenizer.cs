@@ -83,7 +83,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
         }
 
         protected bool HandleHeading() {
-            if (_cs.Position == 0 || _cs.PrevChar == '\n' || _cs.PrevChar == '\r') {
+            if (_cs.Position == 0 || _cs.PrevChar.IsLineBreak()) {
                 return HandleSequenceToEol(MarkdownTokenType.Heading);
             }
 
@@ -91,7 +91,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
         }
 
         protected bool HandleQuote() {
-            if (_cs.Position == 0 || _cs.PrevChar == '\n' || _cs.PrevChar == '\r') {
+            if (_cs.Position == 0 || _cs.PrevChar.IsLineBreak()) {
                 if (_cs.NextChar == ' ')
                     return HandleSequenceToEmptyLine(MarkdownTokenType.Blockquote);
             }
@@ -313,7 +313,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
                         break;
                     }
 
-                    if (ch == '\r' || ch == '\n') {
+                    if (ch.IsLineBreak()) {
                         atStartOfLine = true;
                         break;
                     }
