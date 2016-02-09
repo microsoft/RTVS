@@ -72,12 +72,16 @@ dput_str <- function(obj, max_length = NA, expected_length = NA, overflow_suffix
   gsub("^\\s+|\\s+$", "", memory_connection_tochar(con))
 }
 
+# Like deparse, but always returns a single string.
+deparse_str <- function(x)
+    paste0(deparse(x), collapse = '')
+
 # A wrapper for deparse that will first make name a symbol if it can be a legitimate one.
 deparse_symbol <- function(name) {
   if (is.character(name) && length(name) == 1 && !is.na(name) && nchar(name) > 0) {
     name <- as.symbol(name);
   }
-  deparse(name)
+  deparse_str(name)
 }
 
 # Like str(...)[[1]], but special-cases some common types to provide a more descriptive

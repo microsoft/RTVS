@@ -194,7 +194,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
 
       if (!is.null(code)) {
         # It's a promise - we don't want to force it as it could affect the debugged code.
-        value <- list(promise = deparse(code), expression = item_expr);
+        value <- list(promise = deparse_str(code), expression = item_expr);
       } else if (bindingIsActive(name, obj)) {
         # It's an active binding - we don't want to read it to avoid inadvertently changing program state.
         value <- list(active_binding = TRUE, expression = item_expr);
@@ -248,7 +248,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
       if (is_S4) {
         slot_expr <- paste0('(', expr, ')', accessor, collapse = '')
       } else {
-        slot_expr <- paste0('methods::slot((', expr, '), ', deparse(name), ')', collapse = '')
+        slot_expr <- paste0('methods::slot((', expr, '), ', deparse_str(name), ')', collapse = '')
       }
       
       value <- eval_and_describe(slot_expr, environment(), '@', fields, slot(obj, name), repr_max_length);
@@ -304,7 +304,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
           if (is.list(obj)) {
             accessor <- paste0('$', deparse_symbol(name), collapse = '');
           } else {
-            accessor <- paste0('[[', deparse(name), ']]', collapse = '');
+            accessor <- paste0('[[', deparse_str(name), ']]', collapse = '');
           }
         }
         
