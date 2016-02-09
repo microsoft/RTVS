@@ -155,6 +155,14 @@
     <Compile Include="Signatures\SignatureParameter.cs" />
     <Compile Include="SmartIndent\SmartIndenter.cs" />
     <Compile Include="SmartIndent\SmartIndentProvider.cs" />
+    <Compile Include="SuggestedActions\Actions\LibrarySuggestedAction.cs" />
+    <Compile Include="SuggestedActions\Definitions\IRSuggestedActionProvider.cs" />
+    <Compile Include="SuggestedActions\Actions\InstallPackageSuggestedAction.cs" />
+    <Compile Include="SuggestedActions\Actions\LoadLibrarySuggestedAction.cs" />
+    <Compile Include="SuggestedActions\Providers\LibraryStatementSuggestedActionProvider.cs" />
+    <Compile Include="SuggestedActions\Actions\RSuggestedActionBase.cs" />
+    <Compile Include="SuggestedActions\RSuggestedActionSource.cs" />
+    <Compile Include="SuggestedActions\RSuggestedActionSourceProvider.cs" />
     <Compile Include="Tree\ApplyTreeChanges.cs" />
     <Compile Include="Tree\ChangeProcessor.cs" />
     <Compile Include="Tree\Debug.cs" />
