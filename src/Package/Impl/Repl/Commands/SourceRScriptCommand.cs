@@ -19,16 +19,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         [Import]
         private IContentTypeRegistryService ContentTypeRegistryService { get; set; }
 
-        private readonly IReplWindow _replWindow;
         private readonly IVsMonitorSelection _monitorSelection;
         private readonly uint _debugUIContextCookie;
 
         public SourceRScriptCommand(ICompositionService cs)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript) {
            cs.SatisfyImportsOnce(this);
-
-            ReplWindow.EnsureReplWindow();
-            _replWindow = ReplWindow.Current;
 
             _monitorSelection = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
             if (_monitorSelection != null) {
@@ -77,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 // Save file before sourcing
                 ITextView textView = GetActiveTextView();
                 textView.SaveFile();
-                _replWindow.ExecuteCode($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
+                ReplWindow.Current.ExecuteCode($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
             }
         }
     }
