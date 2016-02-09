@@ -28,7 +28,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
                 if (!File.Exists(settingsFilePath1)) {
                     string ideFolder = asmDirectory.Substring(0, asmDirectory.IndexOf(@"\Extensions", StringComparison.OrdinalIgnoreCase));
                     settingsFilePath1 = Path.Combine(ideFolder, @"Profiles\", "R.vssettings");
-                    settingsFilePath2 = Path.Combine(ideFolder, @"Profiles\", "RStudioKeyboard.vssettings");
                 }
 
                 object arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath1);

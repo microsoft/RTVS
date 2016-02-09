@@ -11,5 +11,7 @@ namespace Microsoft.Common.Core.IO {
 
         IEnumerable<string> FileReadAllLines(string path);
         void FileWriteAllLines(string path, IEnumerable<string> contents);
+
+        IFileVersionInfo GetVersionInfo(string path);
     }
 }

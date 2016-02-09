@@ -4,16 +4,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Script;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Test.Utility;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
@@ -25,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             base(VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>()) {
             _variableProvider = new VariableProvider(base.SessionProvider, VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>());
 
-            DoIdle(100);
+            VsRHostScript.DoIdle(100);
         }
 
         public IVariableDataProvider VariableProvider {
@@ -104,27 +102,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         protected override void Dispose(bool disposing) {
-            DoIdle(2000);
+            VsRHostScript.DoIdle(2000);
 
             base.Dispose(disposing);
-
             if (disposing) {
                 _variableProvider.Dispose();
             }
         }
-
-        public static void DoIdle(int ms) {
-            UIThreadHelper.Instance.Invoke(() => {
-                int time = 0;
-                while (time < ms) {
-                    TestScript.DoEvents();
-                    VsAppShell.Current.DoIdle();
-                    EditorShell.Current.DoIdle();
-
-                    Thread.Sleep(20);
-                    time += 20;
-                }
-            });
-        }
-    }
+     }
 }

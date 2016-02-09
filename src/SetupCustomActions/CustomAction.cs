@@ -80,7 +80,7 @@ namespace SetupCustomActions {
 
             if (ds == DialogResult.Yes) {
                 session["InstallMRO"] = "Yes";
-                Process.Start("https://mran.revolutionanalytics.com/download/#download");
+                RInstallation.GoToRInstallPage();
             }
 
             session.Log("End R detection action");

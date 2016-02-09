@@ -26,6 +26,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
                     var component = ControlWindow.Component as IHelpWindowVisualComponent;
                     component.Should().NotBeNull();
+
+                    component.VisualTheme = "Light.css";
                     clientApp.Component = component;
 
                     var viewTracker = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);

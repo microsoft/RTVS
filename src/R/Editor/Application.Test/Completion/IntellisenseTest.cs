@@ -12,6 +12,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.Text;
 using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Completion {
@@ -191,7 +192,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     actual.Should().Be("install.packages()");
                     EditorWindow.CoreEditor.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length - 1);
 
-                    message.Should().BeNull();
+                    message.Should().NotContain("Error");
                 }
             }
         }
@@ -217,8 +218,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     string actual = script.EditorText;
                     actual.Should().Be("base");
 
-                    message.Should().BeNull();
-                 }
+                    message.Should().NotContain("Error");
+                }
             }
         }
 

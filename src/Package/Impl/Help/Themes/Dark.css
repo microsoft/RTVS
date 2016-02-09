@@ -1,0 +1,113 @@
+body {
+    background: black;
+    color: white;
+    font-family: Segoe UI;
+    font-size: 9pt
+}
+
+p {
+    font-family: Segoe UI;
+    font-size: 9pt
+}
+
+a:link {
+    background: black;
+    color: #00a4ff;
+    font-family: Segoe UI;
+}
+
+a:visited {
+    background: black;
+    color: rgb(211, 5, 207);
+    font-family: Segoe UI;
+}
+
+h1 {
+    background: black;
+    color: rgb(80%, 80%, 80%);
+    font-family: Segoe UI;
+    font-size: 14pt;
+    text-align: center;
+}
+
+h2 {
+    background: black;
+    color: rgb(65%, 65%, 65%);
+    font-family: Segoe UI;
+    font-size: 11pt;
+    text-align: center;
+}
+
+h3 {
+    background: black;
+    color: rgb(65%, 65%, 65%);
+    font-family: Segoe UI;
+    font-size: 11pt;
+}
+
+h4 {
+    background: black;
+    color: rgb(65%, 65%, 65%);
+    font-family: Segoe UI;
+    font-style: italic;
+    font-size: 11pt;
+}
+
+h5 {
+    background: black;
+    color: rgb(65%, 65%, 65%);
+    font-family: Segoe UI;
+}
+
+h6 {
+    background: black;
+    color: rgb(65%, 65%, 65%);
+    font-family: 'Segoe UI';
+    font-style: italic;
+}
+		
+img.toplogo {
+    vertical-align: middle;
+}
+
+img.arrow {
+    width: 30px;
+    height: 30px;
+    border: 0;
+}
+
+span.acronym {
+    font-size: small;
+}
+
+span.env {
+    font-family: Consolas;
+}
+
+span.file {
+    font-family: Consolas;
+}
+
+span.option{
+    font-family: Consolas;
+}
+
+span.pkg {
+    font-weight: bold;
+}
+
+span.samp{
+    font-family: Consolas;
+}
+
+div.vignettes a:hover {
+    background: rgb(60%, 60%, 60%);
+}
+
+pre {
+    font-family: Consolas;
+}
+
+code {
+    font-family: Consolas;
+}

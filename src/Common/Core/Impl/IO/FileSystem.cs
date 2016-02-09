@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Microsoft.Common.Core.IO {
@@ -29,6 +30,10 @@ namespace Microsoft.Common.Core.IO {
 
         public FileAttributes GetFileAttributes(string path) {
             return File.GetAttributes(path);
+        }
+        public IFileVersionInfo GetVersionInfo(string path) {
+            var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
+            return new FileVersionInfo(fvi.FileMajorPart, fvi.FileMinorPart);
         }
     }
 }
