@@ -14,7 +14,14 @@ toJSON <- function(data, con) {
   if (missing(con)) {
     con <- memory_connection(NA, 0x10000);
     on.exit(close(con), add = TRUE);
-    Recall(data, con);
+
+    tryCatch({
+        Recall(data, con);
+    }, error = function(e) {
+        warning('Error serializing to JSON:\n', data, '\n');
+        stop(e)
+    });
+
     return(memory_connection_tochar(con));
   }
 
@@ -35,13 +42,13 @@ toJSON <- function(data, con) {
         dput(data, con);
       }
     } else {
-      stop("vector must have 0 or 1 element to be convertible to JSON");
+      stop("vector must have 0 or 1 element to be convertible to JSON:\n\n", data);
     }
   }
 
   to_object <- function() {
     if (any(is.na(names)) || any(names == '')) {
-      stop("list must either have all elements named or all elements unnamed to be convertible to JSON");
+      stop("list must either have all elements named or all elements unnamed to be convertible to JSON:\n\n", data);
     }
     
     cat('{', file = con, sep = '');
