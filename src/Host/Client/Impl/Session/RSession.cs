@@ -380,12 +380,6 @@ namespace Microsoft.R.Host.Client.Session {
 
         Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
             Output?.Invoke(this, new ROutputEventArgs(otype, buf));
-
-            if (otype == OutputType.Error) {
-                var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-                currentRequest?.FailResponse(buf);
-            }
-
             return Task.CompletedTask;
         }
 
