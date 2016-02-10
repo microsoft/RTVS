@@ -170,9 +170,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void NavigateTo(string url) {
-            if (Browser != null) {
-                Browser.Navigate(url);
+            if (Browser == null) {
+                CreateBrowser();
             }
+            Browser.Navigate(url);
         }
 
         private static bool IsHelpUrl(string url) {
