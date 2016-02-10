@@ -502,8 +502,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use.</value>
   </data>
   <data name="Error_UnableToFindR" xml:space="preserve">
-    <value>Unable to determine location of R binaries. If R is not installed 
-please navigate to https://cran.r-project.org, install R for Windows and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools.</value>
+    <value>Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools.</value>
   </data>
   <data name="HistoryWindowCaption" xml:space="preserve">
     <value>R History</value>
@@ -552,5 +551,8 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   </data>
   <data name="Settings_ShowDotPrefixedVariables_Description" xml:space="preserve">
     <value>Show variables that have names beginning with "." in Variable Explorer and debugger tool windows.</value>
+  </data>
+  <data name="Warning_LogTooLarge" xml:space="preserve">
+    <value />
   </data>
 </root>

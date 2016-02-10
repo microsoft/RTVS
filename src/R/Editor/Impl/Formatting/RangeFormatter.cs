@@ -144,7 +144,7 @@ namespace Microsoft.R.Editor.Formatting {
         private static bool LineBreakBeforePosition(ITextBuffer textBuffer, int position) {
             for (int i = position - 1; i >= 0; i--) {
                 char ch = textBuffer.CurrentSnapshot[i];
-                if (ch == '\r' || ch == '\n') {
+                if (ch.IsLineBreak()) {
                     return true;
                 }
                 if (!char.IsWhiteSpace(ch)) {

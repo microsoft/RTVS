@@ -434,7 +434,7 @@ Sys.sleep(1)
         private IEnumerable<string> GraphicsTest(string code) {
             _callbacks.SetInput(SetupCode + "\n" + code + "\n");
             var host = new RHost("Test", _callbacks);
-            var rhome = RInstallation.GetLatestEnginePathFromRegistry();
+            var rhome = RInstallation.GetCompatibleEnginePathFromRegistry();
             host.CreateAndRun(rhome, string.Empty, 10000).GetAwaiter().GetResult();
 
             // Ensure that all plot files created by the graphics device have been deleted

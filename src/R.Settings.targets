@@ -16,6 +16,30 @@
 		<VSThreadingAssembly>Microsoft.VisualStudio.Threading, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</VSThreadingAssembly>
 	</PropertyGroup>
 
+	<!--
+  Inside Visual Studio, we want to deploy to the experimental hive when
+  building for ease of debugging.
+  -->
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+    <DeployExtension Condition="'$(DeployExtension)' == ''">true</DeployExtension>
+    <DeployVSTemplates Condition="'$(DeployVSTemplates)' == ''">false</DeployVSTemplates>
+    <CreateVsixContainer Condition="'$(CreateVsixContainer)' == ''">false</CreateVsixContainer>
+    <CopyVsixManifestToOutput Condition="'$(CopyVsixManifestToOutput)' == ''">true</CopyVsixManifestToOutput>
+    <RegisterOutputPackage Condition="'$(RegisterOutputPackage)' == ''">true</RegisterOutputPackage>
+  </PropertyGroup>
+  
+  <!--
+  Outside of Visual Studio, we want to create VSIX containers rather than
+  deploying to the experimental hive.
+  -->
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
+    <DeployExtension Condition="'$(DeployExtension)' == ''">false</DeployExtension>
+    <DeployVSTemplates Condition="'$(DeployVSTemplates)' == ''">false</DeployVSTemplates>
+    <CreateVsixContainer Condition="'$(CreateVsixContainer)' == ''">false</CreateVsixContainer>
+    <CopyVsixManifestToOutput Condition="'$(CopyVsixManifestToOutput)' == ''">true</CopyVsixManifestToOutput>
+    <RegisterOutputPackage Condition="'$(RegisterOutputPackage)' == ''">false</RegisterOutputPackage>
+  </PropertyGroup>
+	
   <!-- Signing -->
   <PropertyGroup Condition=" '$(SignType)' == 'real' OR '$(SignType)' == 'test' ">
     <DefineConstants>$(DefineConstants);SIGN</DefineConstants>

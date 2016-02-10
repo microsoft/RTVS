@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
     /// <summary>
@@ -111,7 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
         }
 
         private static void ReadCsv(string content) {
-            string[] lines = content.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = content.Split(CharExtensions.LineBreakChars, StringSplitOptions.RemoveEmptyEntries);
             char[] comma = new char[] { ',' };
 
             List<CranMirrorEntry> entries = new List<CranMirrorEntry>();

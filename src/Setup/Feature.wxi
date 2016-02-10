@@ -21,7 +21,9 @@
     <ComponentRef Id="FileNewTemplates" />
 
     <ComponentRef Id="Profiles" />
-    
+    <ComponentRef Id="HiddenProfiles" />
+    <ComponentRef Id="HelpThemes" />
+
     <ComponentGroupRef Id="RtvsPackage" />
     
   </Feature>

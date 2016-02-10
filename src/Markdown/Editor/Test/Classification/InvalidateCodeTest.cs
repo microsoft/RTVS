@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Classification.MD;
@@ -17,7 +18,9 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         [Category.Md.Classifier]
         public void Markdown_InvalidateCodeTest() {
             string content = "```{r}#R\n```";
-            TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
+            var factory = EditorShell.Current.ExportProvider.GetExportedValue<ITextBufferFactoryService>();
+            ITextBuffer textBuffer = factory.CreateTextBuffer(new ContentTypeMock(MdContentTypeDefinition.ContentType));
+            textBuffer.Insert(0, content);
 
             MdClassifierProvider classifierProvider = new MdClassifierProvider();
             IClassifier cls = classifierProvider.GetClassifier(textBuffer);

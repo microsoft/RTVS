@@ -34,8 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public void UpdateCommandStatus(bool immediate) {
-            var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof (SVsUIShell));
-            shell.UpdateCommandUI(immediate ? 1 : 0);
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof (SVsUIShell));
+                shell.UpdateCommandUI(immediate ? 1 : 0);
+            });
         }
 
         public void Show(bool focus) {

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
@@ -15,6 +16,11 @@ namespace Microsoft.R.Core.Formatting {
         public int CloseBracePosition { get; private set; } = -1;
 
         public int SuppressLineBreakCount { get; set; }
+
+        /// <summary>
+        /// Control block defining keywords indented in this scope
+        /// </summary>
+        public List<string> Keywords { get; } = new List<string>();
 
         public FormattingScope(IndentBuilder indentBuilder) {
             _indentBuilder = indentBuilder;
@@ -90,7 +96,7 @@ namespace Microsoft.R.Core.Formatting {
                     break;
                 }
 
-                if (ch == '\n' || ch == '\r') {
+                if (ch.IsLineBreak()) {
                     string userIndentString = textProvider.GetText(TextRange.FromBounds(i + 1, position));
                     int indentSize = IndentBuilder.TextIndentInSpaces(userIndentString, options.TabSize);
                     return IndentBuilder.GetIndentString(indentSize, options.IndentType, options.IndentSize);

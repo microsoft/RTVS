@@ -4,10 +4,12 @@ using FluentAssertions;
 using Microsoft.R.Actions.Script;
 using Microsoft.R.Actions.Utility;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Actions.Test.Script
 {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class InstallPackagesTest
     {
         [Test]

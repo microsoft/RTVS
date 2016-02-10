@@ -15,9 +15,7 @@ using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
@@ -25,8 +23,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
-            var plotHistory = exportProvider.GetExportedValue<IPlotHistory>();
-            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+            var plotHistoryProvider = exportProvider.GetExportedValue<IPlotHistoryProvider>();
+            var plotHistory = plotHistoryProvider.GetPlotHistory(interactiveWorkflow.RSession);
             var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
             var debuggerModeTracker = exportProvider.GetExportedValue<IDebuggerModeTracker>();
 

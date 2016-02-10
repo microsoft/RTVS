@@ -14,7 +14,6 @@ namespace Microsoft.R.Editor.Data {
     public class RSessionDataObject : IRSessionDataObject {
         private static readonly char[] NameTrimChars = new char[] { '$' };
         private static readonly string HiddenVariablePrefix = ".";
-        private static readonly char[] NewLineDelimiter = new char[] { '\r', '\n' };
 
         private readonly object syncObj = new object();
         private Task<IReadOnlyList<IRSessionDataObject>> _getChildrenTask = null;

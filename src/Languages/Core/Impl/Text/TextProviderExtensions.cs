@@ -31,7 +31,7 @@ namespace Microsoft.Languages.Core.Text {
                     if (!Char.IsWhiteSpace(ch))
                         return false;
 
-                    if (ch == '\r' || ch == '\n') {
+                    if (ch.IsLineBreak()) {
                         newLinePosition = i;
                         return true;
                     }
@@ -64,7 +64,7 @@ namespace Microsoft.Languages.Core.Text {
                     if (!Char.IsWhiteSpace(ch))
                         return count;
 
-                    if (ch == '\r' || ch == '\n') {
+                    if (ch.IsLineBreak()) {
                         if (i > 0 && (textProvider[i - 1] == '\r' || textProvider[i - 1] == '\n')) {
                             i--;
                         }
@@ -98,8 +98,8 @@ namespace Microsoft.Languages.Core.Text {
                 if (!Char.IsWhiteSpace(ch))
                     return count;
 
-                if (ch == '\r' || ch == '\n') {
-                    if (i < textProvider.Length - 1 && (textProvider[i + 1] == '\r' || textProvider[i + 1] == '\n')) {
+                if (ch.IsLineBreak()) {
+                    if (i < textProvider.Length - 1 && (textProvider[i + 1].IsLineBreak())) {
                         i++;
                     }
 
@@ -123,7 +123,7 @@ namespace Microsoft.Languages.Core.Text {
                     if (!Char.IsWhiteSpace(ch))
                         return false;
 
-                    if (ch == '\r' || ch == '\n')
+                    if (ch.IsLineBreak())
                         return true;
                 }
             }
@@ -135,7 +135,7 @@ namespace Microsoft.Languages.Core.Text {
             int start = position;
             while (start > 0) {
                 char ch = textProvider[start - 1];
-                if (ch == '\r' || ch == '\n')
+                if (ch.IsLineBreak())
                     break;
 
                 start -= 1;
@@ -151,7 +151,7 @@ namespace Microsoft.Languages.Core.Text {
             while (start > 0) {
                 char ch = textProvider[start - 1];
 
-                if (ch == '\r' || ch == '\n')
+                if (ch.IsLineBreak())
                     break;
 
                 if (!Char.IsWhiteSpace(ch)) {

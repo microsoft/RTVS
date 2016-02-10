@@ -191,47 +191,41 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task DrawVisualsAsync(bool refresh, bool suppressNotification, CancellationToken token) {
-            ScrollDirection overflowDirection = ScrollDirection.None;
-
             Rect visualViewport = new Rect(
                     Points.HorizontalOffset,
                     Points.VerticalOffset,
                     Points.ViewportWidth,
                     Points.ViewportHeight);
 
-            GridRange newViewport = Points.ComputeDataViewport(visualViewport, ref overflowDirection);
-            if (LayoutDoubleUtil.AreClose(Points.HorizontalOffset + Points.ViewportWidth, Points.HorizontalExtent)) {
-                overflowDirection |= ScrollDirection.Horizontal;
-            }
-            if (LayoutDoubleUtil.AreClose(Points.VerticalOffset + Points.ViewportHeight, Points.VerticalExtent)) {
-                overflowDirection |= ScrollDirection.Vertical;
-            }
+            GridRange newViewport = Points.ComputeDataViewport(visualViewport);
 
             if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
                 return;
             }
 
             // pull data from provider
-            var data = await DataProvider.GetAsync(newViewport);
-            if (!data.Grid.Range.Contains(newViewport)
-                || !data.ColumnHeader.Range.Contains(newViewport.Columns)
-                || !data.RowHeader.Range.Contains(newViewport.Rows)) {
-                throw new InvalidOperationException("Couldn't acquire enough data");
-            }
+            try {
+                var data = await DataProvider.GetAsync(newViewport);
+                if (!data.Grid.Range.Contains(newViewport)
+                    || !data.ColumnHeader.Range.Contains(newViewport.Columns)
+                    || !data.RowHeader.Range.Contains(newViewport.Rows)) {
+                    throw new InvalidOperationException("Couldn't acquire enough data");
+                }
 
-            // actual drawing runs in UI thread
-            await Task.Factory.StartNew(
-                () => DrawVisuals(newViewport, data, refresh, overflowDirection, visualViewport, suppressNotification),
-                token,
-                TaskCreationOptions.None,
-                _ui);
+                // actual drawing runs in UI thread
+                await Task.Factory.StartNew(
+                    () => DrawVisuals(newViewport, data, refresh, visualViewport, suppressNotification),
+                    token,
+                    TaskCreationOptions.None,
+                    _ui);
+            }
+            catch(OperationCanceledException) { }
         }
 
         private void DrawVisuals(
             GridRange dataViewport,
             IGridData<string> data,
             bool refresh,
-            ScrollDirection overflowDirection,
             Rect visualViewport,
             bool suppressNotification) {
 
@@ -256,10 +250,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     refresh);
 
                 // adjust Offset in case of overflow
-                if (overflowDirection.HasFlag(ScrollDirection.Horizontal)) {
+                if ((Points.HorizontalOffset + visualViewport.Width).GreaterThanOrClose(Points.HorizontalExtent)) {
                     Points.HorizontalOffset = Points.HorizontalExtent - visualViewport.Width;
                 }
-                if (overflowDirection.HasFlag(ScrollDirection.Vertical)) {
+                if ((Points.VerticalOffset + visualViewport.Height).GreaterThanOrClose(Points.VerticalExtent)) {
                     Points.VerticalOffset = Points.VerticalExtent - visualViewport.Height;
                 }
 

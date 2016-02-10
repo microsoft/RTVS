@@ -232,7 +232,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
         private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
             var callbacks = new Callbacks(code);
             var host = new RHost("Test", callbacks);
-            var rhome = RInstallation.GetLatestEnginePathFromRegistry();
+            var rhome = RInstallation.GetCompatibleEnginePathFromRegistry();
             
             await host.CreateAndRun(rhome, string.Empty, 10000);
 

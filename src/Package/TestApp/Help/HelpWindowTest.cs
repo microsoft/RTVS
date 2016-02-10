@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Controls;
@@ -9,6 +10,7 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.R.Packages.R;
+using mshtml;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
@@ -26,14 +28,20 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     var component = ControlWindow.Component as IHelpWindowVisualComponent;
                     component.Should().NotBeNull();
 
+                    component.VisualTheme = "Dark.css";
                     clientApp.Component = component;
 
                     ShowHelp("?plot\n", hostScript, clientApp);
                     clientApp.Uri.IsLoopback.Should().Be(true);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
 
+                    GetBackgroundColor(component.Browser).Should().Be("black");
+
+                    component.VisualTheme = "Light.css";
                     ShowHelp("?lm\n", hostScript, clientApp);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
+
+                    GetBackgroundColor(component.Browser).Should().Be("white");
 
                     ExecCommand(clientApp, RPackageCommandId.icmdHelpPrevious);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
@@ -43,6 +51,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
                     ExecCommand(clientApp, RPackageCommandId.icmdHelpHome);
                     clientApp.Uri.PathAndQuery.Should().Be("/doc/html/index.html");
+
                 }
             }
         }
@@ -68,6 +77,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
             for (int i = 0; i < 100 && !clientApp.Ready; i++) {
                 DoIdle(200);
             }
+        }
+
+        private string GetBackgroundColor(WebBrowser browser) {
+            string color = "red";
+            UIThreadHelper.Instance.Invoke(() => {
+                IHTMLElement2 body = browser.Document.Body.DomElement as IHTMLElement2;
+                color = body.currentStyle.backgroundColor as string;
+            });
+            return color;
         }
     }
 }

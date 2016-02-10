@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
 
             string latestRPath = Environment.SystemDirectory;
             try {
-                latestRPath = RInstallation.GetLatestEnginePathFromRegistry();
+                latestRPath = RInstallation.GetCompatibleEnginePathFromRegistry();
                 if (string.IsNullOrEmpty(latestRPath) || !Directory.Exists(latestRPath)) {
                     // Force 64-bit PF
                     latestRPath = Environment.GetEnvironmentVariable("ProgramFiles");

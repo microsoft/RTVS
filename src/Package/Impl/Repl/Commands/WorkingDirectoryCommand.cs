@@ -18,13 +18,12 @@ using Microsoft.VisualStudioTools;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command, IDisposable {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private string _userDirectory;
         private IRSession _session;
 
         public Task InitializationTask { get; }
 
         public WorkingDirectoryCommand(IRInteractiveWorkflow interactiveWorkflow) :
-            base(new [] {
+            base(new[] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGetDirectoryList),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory)
@@ -35,10 +34,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _session.Connected += OnSessionConnected;
             _session.DirectoryChanged += OnCurrentDirectoryChanged;
 
-            if (InitializationTask == null) {
+            if (InitializationTask == null && _session.IsHostRunning) {
                 InitializationTask = GetRUserDirectoryAsync();
             }
         }
+
+        internal string UserDirectory { get; private set; }
 
         public void Dispose() {
             if (_session != null) {
@@ -57,6 +58,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private async Task FetchRWorkingDirectoryAsync() {
+            if (UserDirectory == null) {
+                await GetRUserDirectoryAsync();
+            }
+
             string directory = await GetRWorkingDirectoryAsync();
             if (!string.IsNullOrEmpty(directory)) {
                 RToolsSettings.Current.WorkingDirectory = directory;
@@ -126,13 +131,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         internal string GetFriendlyDirectoryName(string directory) {
-            if (!string.IsNullOrEmpty(_userDirectory)) {
-                if (directory.StartsWithIgnoreCase(_userDirectory)) {
-                    var relativePath = PathHelper.MakeRelative(_userDirectory, directory);
+            if (!string.IsNullOrEmpty(UserDirectory)) {
+                if (directory.StartsWithIgnoreCase(UserDirectory)) {
+                    var relativePath = PathHelper.MakeRelative(UserDirectory, directory);
                     if (relativePath.Length > 0) {
                         return "~/" + relativePath.Replace('\\', '/');
                     }
                     return "~";
+                }
+                else {
+                    return directory.Replace('\\', '/');
                 }
             }
             return directory;
@@ -170,7 +178,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return Task.Run(async () => {
                 using (IRSessionEvaluation eval = await _session.BeginEvaluationAsync(false)) {
                     REvaluationResult result = await eval.EvaluateAsync("Sys.getenv('R_USER')");
-                    _userDirectory = ToWindowsPath(result.StringResult);
+                    UserDirectory = ToWindowsPath(result.StringResult);
                 }
             });
         }

@@ -61,7 +61,7 @@ namespace SetupCustomActions {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data Scientist profile provides window layout and keyboard shorcuts similar to RStudio. Would you like setup to apply this profile to the Visual Studio?.
+        ///   Looks up a localized string similar to Data Scientist profile provides window layout and keyboard shortcuts similar to RStudio. Would you like setup to apply this profile to the Visual Studio?.
         /// </summary>
         internal static string DSProfilePromptText {
             get {

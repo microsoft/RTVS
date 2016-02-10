@@ -205,7 +205,8 @@ namespace Microsoft.Languages.Core.Tokens {
                 nextTokenStart = textProvider.Length;
             }
 
-            if (textProvider.IndexOf('\n', TextRange.FromBounds(currentTokenEnd, nextTokenStart)) >= 0) {
+            var range = TextRange.FromBounds(currentTokenEnd, nextTokenStart);
+            if (textProvider.IndexOf('\n', range) >= 0 || textProvider.IndexOf('\r', range) >= 0) {
                 return true;
             }
 

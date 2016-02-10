@@ -202,6 +202,7 @@ namespace Microsoft.R.Core.Formatting {
             AppendToken(leadingSpace: LeadingSpaceNeeded(), trailingSpace: trailingSpace);
 
             if (controlBlock) {
+                _formattingScopes.Peek().Keywords.Add(keyword);
                 // Keyword defines optional condition
                 // and possibly new '{ }' scope
                 AppendControlBlock(keyword);
@@ -275,7 +276,7 @@ namespace Microsoft.R.Core.Formatting {
                     // } else
                     // i.e. keep 'else' at the same line.
                     if (!_options.BracesOnNewLine && _tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace) {
-                        while (_tb.LastCharacter == '\r' || _tb.LastCharacter == '\n') {
+                        while (_tb.LastCharacter.IsLineBreak()) {
                             // Undo line break
                             _tb.Remove(_tb.Length - 1, 1);
                         }
@@ -380,7 +381,24 @@ namespace Microsoft.R.Core.Formatting {
                     return true;
 
                 case RTokenType.Keyword:
-                    return _textProvider.GetText(token) == "else";
+                    if (_tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
+                           _textProvider.GetText(token) == "else") {
+                        // Check what was the most recent keyword indented in this scope.
+                        // If it is 'if' then there should not be a break between 
+                        // the closing brace and the 'else'. This prevents false positives
+                        // in constructs like
+                        //
+                        //      if(TRUE)
+                        //          repeat {
+                        //          } else
+                        //
+                        // in which else should be placed at the next line and indented with the if.
+                        var scope = _formattingScopes.Peek();
+                        if (scope.Keywords.Count > 0) {
+                            return scope.Keywords[scope.Keywords.Count - 1] == "if";
+                        }
+                    }
+                    break;
             }
 
             return false;
@@ -390,8 +408,7 @@ namespace Microsoft.R.Core.Formatting {
             string text = _textProvider.GetText(_tokens.CurrentToken);
             if (TokenOperator.IsUnaryOperator(_tokens, TokenOperator.GetOperatorType(text))) {
                 AppendToken(leadingSpace: true, trailingSpace: false);
-            }
-            else if (IsOperatorWithoutSpaces(text)) {
+            } else if (IsOperatorWithoutSpaces(text)) {
                 AppendToken(leadingSpace: false, trailingSpace: false);
             } else {
                 AppendToken(leadingSpace: true, trailingSpace: true);
@@ -404,7 +421,7 @@ namespace Microsoft.R.Core.Formatting {
             }
 
             string text = _textProvider.GetText(_tokens.CurrentToken);
-            if (text.IndexOfAny(new char[] { '\r', '\n' }) >= 0) {
+            if (text.IndexOfAny(CharExtensions.LineBreakChars) >= 0) {
                 _tb.AppendPreformattedText(text);
             } else {
                 _tb.AppendText(text);
@@ -607,7 +624,7 @@ namespace Microsoft.R.Core.Formatting {
                 _tb.CopyPrecedingLineBreaks(_textProvider, end);
 
                 if (preserveUserIndent) {
-                    int lastLineBreakIndex = text.LastIndexOfAny(new char[] { '\r', '\n' });
+                    int lastLineBreakIndex = text.LastIndexOfAny(CharExtensions.LineBreakChars);
                     if (lastLineBreakIndex >= 0) {
                         text = text.Substring(lastLineBreakIndex + 1);
                         int textIndentInSpaces = IndentBuilder.TextIndentInSpaces(text, _options.TabSize);
@@ -692,7 +709,7 @@ namespace Microsoft.R.Core.Formatting {
                 if (!char.IsWhiteSpace(ch)) {
                     return false;
                 }
-                if (ch == '\r' || ch == '\n') {
+                if (ch.IsLineBreak()) {
                     return false;
                 }
             }

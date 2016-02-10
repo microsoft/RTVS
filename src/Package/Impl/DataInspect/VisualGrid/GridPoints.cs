@@ -278,7 +278,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ComputePositions();
         }
 
-        public GridRange ComputeDataViewport(Rect visualViewport, ref ScrollDirection overflow) {
+        public GridRange ComputeDataViewport(Rect visualViewport) {
             int columnStart = xIndex(visualViewport.X);
             int rowStart = yIndex(visualViewport.Y);
 
@@ -296,7 +296,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (width.LessThan(visualViewport.Width)) {
-                overflow |= ScrollDirection.Horizontal;
                 for (int c = columnStart - 1; c >= 0; c--) {
                     width += GetWidth(c);
                     if (width.GreaterThanOrClose(visualViewport.Width)) {
@@ -317,7 +316,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (height.LessThan(visualViewport.Height)) {
-                overflow |= ScrollDirection.Vertical;
                 for (int r = rowStart - 1; r >= 0; r--) {
                     height += GetHeight(r);
                     if (height.GreaterThanOrClose(visualViewport.Height)) {

@@ -54,8 +54,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return _workingDirectory; }
             set {
                 var newDirectory = value;
-                // Trim trailing slash
-                if (newDirectory.EndsWith("\\")) {
+                // Trim trailing slash except if it is root
+                if (newDirectory.EndsWith("\\") && !(newDirectory.Length > 1 && newDirectory[newDirectory.Length-2] == ':')) {
                     newDirectory = newDirectory.Substring(0, newDirectory.Length - 1);
                 }
 
@@ -83,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             // Default settings. Will be overwritten with actual
             // settings (if any) when settings are loaded from storage
             _cranMirror = "0-Cloud [https]";
-            RBasePath = RInstallation.GetLatestEnginePathFromRegistry();
+            RBasePath = RInstallation.GetCompatibleEnginePathFromRegistry();
             WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -8,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// grid data provider to control
     /// </summary>
     internal class GridDataProvider : IGridProvider<string> {
-        private EvaluationWrapper _evaluation;
+        private readonly EvaluationWrapper _evaluation;
 
         public GridDataProvider(EvaluationWrapper evaluation) {
             _evaluation = evaluation;
@@ -22,12 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public int RowCount { get; }
 
         public Task<IGridData<string>> GetAsync(GridRange gridRange) {
-            var t = _evaluation.GetGridDataAsync(_evaluation.Expression, gridRange);
+            var t = GridDataSource.GetGridDataAsync(_evaluation.Expression, gridRange);
             if (t == null) {
-                Debug.Fail(Invariant($"{nameof(EvaluationWrapper)} returned null grid data"));
+                // May happen when R host is not running
+                Trace.Fail(Invariant($"{nameof(EvaluationWrapper)} returned null grid data"));
                 return Task.FromResult<IGridData<string>>(null);
             }
-
             return t;
         }
     }

@@ -17,6 +17,7 @@ namespace Microsoft.R.Editor.Completion {
     using System.Threading.Tasks;
     using Core.Tokens;
     using Host.Client;
+    using Languages.Core.Text;
     using Languages.Editor.Shell;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
@@ -170,7 +171,7 @@ namespace Microsoft.R.Editor.Completion {
                         return CompletionSession.SelectedCompletionSet.SelectionStatus.IsSelected && typedChar == '\t';
                     }
 
-                    if (typedChar == '\n' || typedChar == '\r') {
+                    if (typedChar.IsLineBreak()) {
                         if (REditorSettings.CommitOnEnter)
                             return true;
 
@@ -366,10 +367,10 @@ namespace Microsoft.R.Editor.Completion {
             IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
             if (session != null) {
                 using (IRSessionEvaluation eval = await session.BeginEvaluationAsync(isMutating: false)) {
-                    REvaluationResult result = await eval.EvaluateAsync($"mode({name})");
+                    REvaluationResult result = await eval.EvaluateAsync($"tryCatch(is.function({name}), error = function(e) {{ }})");
                     if (result.ParseStatus == RParseStatus.OK &&
                         !string.IsNullOrEmpty(result.StringResult) &&
-                        result.StringResult == "function") {
+                         (result.StringResult == "T" || result.StringResult == "TRUE")) {
                         return true;
                     }
                 }

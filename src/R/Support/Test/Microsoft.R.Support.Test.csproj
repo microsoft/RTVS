@@ -160,6 +160,10 @@
       <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Actions\Impl\Microsoft.R.Actions.csproj">
+      <Project>{b68d4ad2-2dc2-473e-ab06-408172c4fb92}</Project>
+      <Name>Microsoft.R.Actions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>

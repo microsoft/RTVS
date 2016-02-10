@@ -27,7 +27,7 @@ your command history as well as all output displayed in the R Interactive Window
 
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.UseShellExecute = true;
-                psi.FileName = string.Format(CultureInfo.InvariantCulture, "mailto://rtvscore@microsoft.com?subject={0}&body={1}", subject, body);
+                psi.FileName = string.Format(CultureInfo.InvariantCulture, "mailto://rtvsuserfeedback@microsoft.com?subject={0}&body={1}", subject, body);
                 Process.Start(psi);
 
                 if (attachmentFile != null) {
@@ -40,7 +40,7 @@ your command history as well as all output displayed in the R Interactive Window
                 mail.Body = body;
                 AddressEntry currentUser = outlookApp.Session.CurrentUser.AddressEntry;
                 if (currentUser.Type == "EX") {
-                    mail.To = "rtvscore";
+                    mail.To = "rtvsuserfeedback";
                     mail.Recipients.ResolveAll();
 
                     if (!string.IsNullOrEmpty(attachmentFile)) {

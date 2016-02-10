@@ -8,8 +8,6 @@ namespace Microsoft.Languages.Core.Text {
     /// are used in formatting, smart indent and elsewhere else.
     /// </summary>
     public static class TextHelper {
-        public static char[] EndOfLineChars = { '\r', '\n' };
-
         /// <summary>
         /// Determines if there is nothing but whitespace between
         /// given position and the next line break or end of file.
@@ -22,7 +20,7 @@ namespace Microsoft.Languages.Core.Text {
             for (int i = position; i < textProvider.Length; i++) {
                 char ch = textProvider[i];
 
-                if (ch == '\n' || ch == '\r')
+                if (ch.IsLineBreak())
                     return true;
 
                 if (!Char.IsWhiteSpace(ch))
@@ -61,7 +59,7 @@ namespace Microsoft.Languages.Core.Text {
 
             for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
-                if (ch == '\r' || ch == '\n') {
+                if (ch.IsLineBreak()) {
                     lines.Add(text.Substring(lineStart, i - lineStart));
 
                     // Skip '\n' but only in "\r\n" sequence. 

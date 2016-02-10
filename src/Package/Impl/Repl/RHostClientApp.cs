@@ -59,7 +59,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async Task Plot(string filePath, CancellationToken ct) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken.None);
-            IPlotHistory history = VsAppShell.Current.ExportProvider.GetExportedValue<IPlotHistory>();
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
+            var history = historyProvider.GetPlotHistory(sessionProvider.GetInteractiveWindowRSession());
             history.PlotContentProvider.LoadFile(filePath);
         }
 

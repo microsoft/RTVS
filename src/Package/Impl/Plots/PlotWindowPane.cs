@@ -2,8 +2,10 @@
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
@@ -18,14 +20,18 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private const int MinWidth = 150;
         private const int MinHeight = 150;
 
-        private IPlotHistory PlotHistory;
+        private IPlotHistory _plotHistory;
 
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
-            PlotHistory = VsAppShell.Current.ExportProvider.GetExportedValue<IPlotHistory>();
-            PlotHistory.HistoryChanged += OnPlotHistoryHistoryChanged;
 
-            var presenter = new XamlPresenter(PlotHistory.PlotContentProvider);
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
+
+            _plotHistory = historyProvider.GetPlotHistory(sessionProvider.GetInteractiveWindowRSession());
+            _plotHistory.HistoryChanged += OnPlotHistoryHistoryChanged;
+
+            var presenter = new XamlPresenter(_plotHistory.PlotContentProvider);
             presenter.SizeChanged += PlotWindowPane_SizeChanged;
             Content = presenter;
 
@@ -44,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // Throttle resize requests since we get a lot of size changed events when the tool window is undocked
             IdleTimeAction.Cancel(this);
             IdleTimeAction.Create(() => {
-                PlotContentProvider.DoNotWait(PlotHistory.PlotContentProvider.ResizePlotAsync(width, height));
+                PlotContentProvider.DoNotWait(_plotHistory.PlotContentProvider.ResizePlotAsync(width, height));
             }, 100, this);
         }
 
@@ -55,8 +61,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         protected override void Dispose(bool disposing) {
-            PlotHistory?.Dispose();
-            PlotHistory = null;
+            _plotHistory?.Dispose();
+            _plotHistory = null;
             base.Dispose(disposing);
         }
 

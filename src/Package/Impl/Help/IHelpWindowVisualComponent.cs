@@ -9,5 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         WebBrowser Browser { get; }
 
         void Navigate(string url);
+
+        string VisualTheme { get; set; }
     }
 }

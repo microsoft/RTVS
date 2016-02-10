@@ -25,21 +25,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [Test]
         [Category.Repl]
-        public void CurrentDirectoryTest_DefaultDirectoryTest() {
+        public void DefaultDirectoryTest() {
+            string myDocs = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             string actual;
             using (new VsRHostScript()) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
+                cmd.UserDirectory.Should().BeEquivalentTo(myDocs);
                 actual = cmd.GetRWorkingDirectoryAsync().Result;
             };
 
-            string myDocs = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             actual.Should().Be(myDocs);
         }
 
         [Test]
         [Category.Repl]
-        public void CurrentDirectoryTest_SetDirectoryTest() {
+        public void SetDirectoryTest() {
             string dir = "c:\\";
             string actual;
             using (new VsRHostScript()) {
@@ -54,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [Test]
         [Category.Repl]
-        public void CurrentDirectoryTest_GetFriendlyNameTest() {
+        public void GetFriendlyNameTest01() {
             string actual;
             using (new VsRHostScript()) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
@@ -67,7 +68,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [Test]
         [Category.Repl]
-        public void CurrentDirectoryTest_GetFullPathNameTest() {
+        public void GetFriendlyNameTest02() {
+            string actual;
+            using (new VsRHostScript()) {
+                WorkingDirectoryCommand cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
+                cmd.InitializationTask.Wait();
+                actual = cmd.GetFriendlyDirectoryName("c:\\");
+            };
+
+            actual.Should().Be("c:/");
+        }
+
+        [Test]
+        [Category.Repl]
+        public void GetFullPathNameTest() {
             string dir;
             using (new VsRHostScript()) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
