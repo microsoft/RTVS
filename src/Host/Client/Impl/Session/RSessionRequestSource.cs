@@ -33,10 +33,6 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public void FailResponse(string text) {
-            _responseTcs.SetException(new RException(text));
-        }
-
         public void CompleteResponse() {
             _responseTcs.SetResult(null);
         }
