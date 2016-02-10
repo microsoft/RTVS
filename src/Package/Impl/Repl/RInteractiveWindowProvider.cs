@@ -44,15 +44,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 interactive.RSession.Disconnected -= clearPendingInputsHandler;
                 evaluator.Dispose();
             };
+            window.TextView.Closed += textViewOnClosed;
 
-            window.TextView.Closed += TextView_Closed;
             InitializeWindowAsync(window).DoNotWait();
-
             return _vsInteractiveWindow;
-        }
-
-        private void TextView_Closed(object sender, EventArgs e) {
-            throw new NotImplementedException();
         }
 
         private static async Task InitializeWindowAsync(IInteractiveWindow window) {
